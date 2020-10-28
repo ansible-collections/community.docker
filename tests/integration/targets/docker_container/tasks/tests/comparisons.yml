@@ -382,7 +382,7 @@
   # If the image isn't there, it will pull it and return 'changed'.
   docker_image:
     name: hello-world
-    pull: true
+    source: pull
 
 - name: wildcard
   docker_container:

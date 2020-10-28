@@ -1344,12 +1344,10 @@ class DockerService(DockerBaseClass):
         parallelism = get_value(
             'parallelism',
             update_config,
-            default=params['update_parallelism']
         )
         delay = get_value(
             'delay',
             update_config,
-            default=params['update_delay']
         )
         delay = get_nanoseconds_from_raw_option(
             'update_delay',
@@ -1358,12 +1356,10 @@ class DockerService(DockerBaseClass):
         failure_action = get_value(
             'failure_action',
             update_config,
-            default=params['update_failure_action']
         )
         monitor = get_value(
             'monitor',
             update_config,
-            default=params['update_monitor']
         )
         monitor = get_nanoseconds_from_raw_option(
             'update_monitor',
@@ -1372,12 +1368,10 @@ class DockerService(DockerBaseClass):
         max_failure_ratio = get_value(
             'max_failure_ratio',
             update_config,
-            default=params['update_max_failure_ratio']
         )
         order = get_value(
             'order',
             update_config,
-            default=params['update_order']
         )
         return {
             'update_parallelism': parallelism,

@@ -30,7 +30,6 @@ options:
       - "Use C(pull) to pull the image from a registry."
       - "Use C(local) to make sure that the image is already available on the local
          docker daemon, i.e. do not try to build, pull or load the image."
-    required: yes
     type: str
     choices:
     - build
@@ -672,7 +671,7 @@ class ImageManager(DockerBaseClass):
 
 def main():
     argument_spec = dict(
-        source=dict(type='str', required=True, choices=['build', 'load', 'pull', 'local']),
+        source=dict(type='str', choices=['build', 'load', 'pull', 'local']),
         build=dict(type='dict', options=dict(
             cache_from=dict(type='list', elements='str'),
             container_limits=dict(type='dict', options=dict(
@@ -686,7 +685,7 @@ def main():
             network=dict(type='str'),
             nocache=dict(type='bool', default=False),
             path=dict(type='path', required=True),
-            pull=dict(type='bool', deafult=False),
+            pull=dict(type='bool', default=False),
             rm=dict(type='bool', default=True),
             args=dict(type='dict'),
             use_config_proxy=dict(type='bool'),
