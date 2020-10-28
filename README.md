@@ -1,49 +1,75 @@
-# collection_template
-You can build a new repository for an Ansible Collection using this template by following [Creating a repository from a template](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template). This README.md contains recommended headings for your collection README.md, with comments describing what each section should contain. Once you have created your collection repository, delete this paragraph and the title above it from your README.md.
+# Docker Community Collection
+[![Run Status](https://api.shippable.com/projects/5f992599cc07df00079b99d1/badge?branch=main)](https://app.shippable.com/github/ansible-collections/community.docker/dashboard)
+[![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/community.docker)](https://codecov.io/gh/ansible-collections/community.docker)
 
-# Foo Collection
-<!-- Add CI and code coverage badges here. Samples included below. -->
-[![CI](https://github.com/ansible-collections/REPONAMEHERE/workflows/CI/badge.svg?event=push)](https://github.com/ansible-collections/REPONAMEHERE/actions) [![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/REPONAMEHERE)](https://codecov.io/gh/ansible-collections/REPONAMEHERE)
-
-<!-- Describe the collection and why a user would want to use it. What does the collection do? -->
+This repo contains the `community.docker` Ansible Collection. The collection includes many modules and plugins to work with Docker.
 
 ## Tested with Ansible
 
-<!-- List the versions of Ansible the collection has been tested with. Must match what is in galaxy.yml. -->
+Tested with the current Ansible 2.9 and 2.10 releases and the current development version of Ansible. Ansible versions before 2.9.10 are not supported.
 
 ## External requirements
 
-<!-- List any external resources the collection depends on, for example minimum versions of an OS, libraries, or utilities. Do not list other Ansible collections here. -->
-
-### Supported connections
-<!-- Optional. If your collection supports only specific connection types (such as HTTPAPI, netconf, or others), list them here. -->
+Most modules and plugins require the [Docker SDK for Python](https://pypi.org/project/docker/). For Python 2.6 support, use [the deprecated docker-py library](https://pypi.org/project/docker-py/) instead.
 
 ## Included content
 
-<!-- Galaxy will eventually list the module docs within the UI, but until that is ready, you may need to either describe your plugins etc here, or point to an external docsite to cover that information. -->
+* Connection plugins:
+  - community.docker.docker
+* Inventory plugins:
+  - community.docker.docker_machine
+  - community.docker.docker_swarm
+* Modules:
+  - community.docker.docker_compose
+  - community.docker.docker_config
+  - community.docker.docker_container_info
+  - community.docker.docker_container
+  - community.docker.docker_host_info
+  - community.docker.docker_image_info
+  - community.docker.docker_image
+  - community.docker.docker_login
+  - community.docker.docker_network_info
+  - community.docker.docker_network
+  - community.docker.docker_node_info
+  - community.docker.docker_node
+  - community.docker.docker_prune
+  - community.docker.docker_secret
+  - community.docker.docker_stack_info
+  - community.docker.docker_stack
+  - community.docker.docker_stack_task_info
+  - community.docker.docker_swarm_info
+  - community.docker.docker_swarm
+  - community.docker.docker_swarm_service_info
+  - community.docker.docker_swarm_service
+  - community.docker.docker_volume_info
+  - community.docker.docker_volume
 
 ## Using this collection
 
-<!--Include some quick examples that cover the most common use cases for your collection content. -->
+Before using the General community collection, you need to install the collection with the `ansible-galaxy` CLI:
+
+    ansible-galaxy collection install community.docker
+
+You can also include it in a `requirements.yml` file and install it via `ansible-galaxy collection install -r requirements.yml` using the format:
+
+```yaml
+collections:
+- name: community.docker
+```
 
 See [Ansible Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
 
 ## Contributing to this collection
 
-<!--Describe how the community can contribute to your collection. At a minimum, include how and where users can create issues to report problems or request features for this collection.  List contribution requirements, including preferred workflows and necessary testing, so you can benefit from community PRs. If you are following general Ansible contributor guidelines, you can link to - [Ansible Community Guide](https://docs.ansible.com/ansible/latest/community/index.html). -->
+If you want to develop new content for this collection or improve what is already here, the easiest way to work on the collection is to clone it into one of the configured [`COLLECTIONS_PATH`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#collections-paths), and work on it there.
 
+You can find more information in the [developer guide for collections](https://docs.ansible.com/ansible/devel/dev_guide/developing_collections.html#contributing-to-collections), and in the [Ansible Community Guide](https://docs.ansible.com/ansible/latest/community/index.html).
 
 ## Release notes
 
-See the [changelog](https://github.com/ansible-collections/REPONAMEHERE/tree/main/CHANGELOG.rst).
-
-## Roadmap
-
-<!-- Optional. Include the roadmap for this collection, and the proposed release/versioning strategy so users can anticipate the upgrade/update cycle. -->
+See the [changelog](https://github.com/ansible-collections/community.docker/tree/main/CHANGELOG.rst).
 
 ## More information
-
-<!-- List out where the user can find additional information, such as working group meeting times, slack/IRC channels, or documentation for the product this collection automates. At a minimum, link to: -->
 
 - [Ansible Collection overview](https://github.com/ansible-collections/overview)
 - [Ansible User guide](https://docs.ansible.com/ansible/latest/user_guide/index.html)
@@ -55,8 +81,6 @@ See the [changelog](https://github.com/ansible-collections/REPONAMEHERE/tree/mai
 
 ## Licensing
 
-<!-- Include the appropriate license information here and a pointer to the full licensing details. If the collection contains modules migrated from the ansible/ansible repo, you must use the same license that existed in the ansible/ansible repo. See the GNU license example below. -->
-
 GNU General Public License v3.0 or later.
 
-See [LICENSE](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.
+See [COPYING](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.

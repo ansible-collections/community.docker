@@ -1,0 +1,3 @@
+plugins/modules/docker_container.py use-argspec-type-path # uses colon-separated paths, can't use type=path
+tests/utils/shippable/check_matrix.py replace-urlopen
+tests/utils/shippable/timing.py shebang
