@@ -15,28 +15,11 @@ matrix:
 
     - env: T=2.9/sanity/1
 
-    - env: T=devel/units/2.6/1
-    - env: T=devel/units/2.7/1
-    - env: T=devel/units/3.5/1
-    - env: T=devel/units/3.6/1
-    - env: T=devel/units/3.7/1
-    - env: T=devel/units/3.8/1
-    - env: T=devel/units/3.9/1
+    - env: T=devel/units/1
 
-    - env: T=2.10/units/2.6/1
-    - env: T=2.10/units/2.7/1
-    - env: T=2.10/units/3.5/1
-    - env: T=2.10/units/3.6/1
-    - env: T=2.10/units/3.7/1
-    - env: T=2.10/units/3.8/1
-    - env: T=2.10/units/3.9/1
+    - env: T=2.10/units/1
 
-    - env: T=2.9/units/2.6/1
-    - env: T=2.9/units/2.7/1
-    - env: T=2.9/units/3.5/1
-    - env: T=2.9/units/3.6/1
-    - env: T=2.9/units/3.7/1
-    - env: T=2.9/units/3.8/1
+    - env: T=2.9/units/1
 
     # Group 1: docker_swarm
     - env: T=devel/rhel/7.8/1
