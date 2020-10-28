@@ -427,14 +427,6 @@ class AnsibleDockerClient(Client):
         for key in DOCKER_COMMON_ARGS:
             params[key] = self.module.params.get(key)
 
-        if self.module.params.get('use_tls'):
-            # support use_tls option in docker_image.py. This will be deprecated.
-            use_tls = self.module.params.get('use_tls')
-            if use_tls == 'encrypt':
-                params['tls'] = True
-            if use_tls == 'verify':
-                params['validate_certs'] = True
-
         result = dict(
             docker_host=self._get_value('docker_host', params['docker_host'], 'DOCKER_HOST',
                                         DEFAULT_DOCKER_HOST),

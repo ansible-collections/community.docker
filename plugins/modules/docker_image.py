@@ -134,15 +134,6 @@ options:
       - Use with state C(present) to load an image from a .tar file.
       - Set I(source) to C(load) if you want to load the image.
     type: path
-  force:
-    description:
-      - Use with state I(absent) to un-tag and remove all images matching the specified name. Use with state
-        C(present) to build, load or pull an image when the image already exists. Also use with state C(present)
-        to force tagging an image.
-      - Please stop using this option, and use the more specialized force options
-        I(force_source), I(force_absent) and I(force_tag) instead.
-      - This option will be removed in community.general 2.0.0.
-    type: bool
   force_source:
     description:
       - Use with state C(present) to build, load or pull an image (depending on the
@@ -203,19 +194,6 @@ options:
       - If I(name) parameter format is I(name:tag), then tag value from I(name) will take precedence.
     type: str
     default: latest
-  use_tls:
-    description:
-      - "DEPRECATED. Whether to use tls to connect to the docker daemon. Set to
-        C(encrypt) to use TLS. And set to C(verify) to use TLS and verify that
-        the server's certificate is valid for the server."
-      - "*Note:* If you specify this option, it will set the value of the I(tls) or
-        I(validate_certs) parameters if not set to C(no)."
-      - Will be removed in community.general 2.0.0.
-    type: str
-    choices:
-      - 'no'
-      - 'encrypt'
-      - 'verify'
 
 extends_documentation_fragment:
 - community.docker.docker
@@ -724,7 +702,6 @@ def main():
             etc_hosts=dict(type='dict'),
         )),
         archive_path=dict(type='path'),
-        force=dict(type='bool', removed_in_version='2.0.0', removed_from_collection='community.general'),  # was Ansible 2.12
         force_source=dict(type='bool', default=False),
         force_absent=dict(type='bool', default=False),
         force_tag=dict(type='bool', default=False),
@@ -734,8 +711,6 @@ def main():
         repository=dict(type='str'),
         state=dict(type='str', default='present', choices=['absent', 'present', 'build']),
         tag=dict(type='str', default='latest'),
-        use_tls=dict(type='str', choices=['no', 'encrypt', 'verify'], removed_in_version='2.0.0',
-                     removed_from_collection='community.general'),  # was Ansible 2.12
     )
 
     required_if = [
@@ -780,10 +755,6 @@ def main():
                                 'Please use "present", which has the same meaning as "build".',
                                 version='2.0.0', collection_name='community.general')  # was Ansible 2.11
         client.module.params['state'] = 'present'
-    if client.module.params['use_tls']:
-        client.module.deprecate('The "use_tls" option has been deprecated for a long time. '
-                                'Please use the "tls" and "validate_certs" options instead.',
-                                version='2.0.0', collection_name='community.general')  # was Ansible 2.11
 
     if not is_valid_tag(client.module.params['tag'], allow_empty=True):
         client.fail('"{0}" is not a valid docker tag!'.format(client.module.params['tag']))
@@ -791,15 +762,6 @@ def main():
     if client.module.params['source'] == 'build':
         if not client.module.params['build'] or not client.module.params['build'].get('path'):
             client.fail('If "source" is set to "build", the "build.path" option must be specified.')
-
-    if client.module.params['force']:
-        client.module.params['force_source'] = True
-        client.module.params['force_absent'] = True
-        client.module.params['force_tag'] = True
-        client.module.deprecate('The "force" option will be removed in community.general 2.0.0. Please '
-                                'use the "force_source", "force_absent" or "force_tag" option '
-                                'instead, depending on what you want to force.',
-                                version='2.0.0', collection_name='community.general')  # was Ansible 2.12
 
     try:
         results = dict(
