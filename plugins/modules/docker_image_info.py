@@ -248,9 +248,6 @@ def main():
         supports_check_mode=True,
         min_docker_api_version='1.20',
     )
-    if client.module._name in ('docker_image_facts', 'community.docker.docker_image_facts'):
-        client.module.deprecate("The 'docker_image_facts' module has been renamed to 'docker_image_info'",
-                                version='2.0.0', collection_name='community.general')  # was Ansible 2.12
 
     try:
         results = dict(

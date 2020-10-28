@@ -1,0 +1,5 @@
+removed_features:
+- "docker_image_facts - this alias is on longer availabe, use ``docker_image_info`` instead."
+- "docker_image - the ``source`` option is now mandatory."
+- "docker_image - the default of the ``build.pull`` option changed to ``false``."
+- "docker_image - the ``container_limits``, ``dockerfile``, ``http_timeout``, ``nocache``, ``rm``, ``path``, ``buildargs``, ``pull`` have been removed. Use the corresponding suboptions of ``build`` instead."
