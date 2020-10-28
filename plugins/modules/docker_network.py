@@ -79,32 +79,6 @@ options:
       - Dictionary of IPAM driver options.
     type: dict
 
-  ipam_options:
-    description:
-      - Dictionary of IPAM options.
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter I(ipam_config) instead. In Docker 1.10.0, IPAM
-        options were introduced (see L(here,https://github.com/moby/moby/pull/17316)). This module parameter addresses
-        the IPAM config not the newly introduced IPAM options. For the IPAM options, see the I(ipam_driver_options)
-        parameter.
-    type: dict
-    suboptions:
-      subnet:
-        description:
-          - IP subset in CIDR notation.
-        type: str
-      iprange:
-        description:
-          - IP address range in CIDR notation.
-        type: str
-      gateway:
-        description:
-          - IP gateway address.
-        type: str
-      aux_addresses:
-        description:
-          - Auxiliary IP addresses used by Network driver, as a mapping from hostname to IP.
-        type: dict
-
   ipam_config:
     description:
       - List of IPAM config blocks. Consult
@@ -270,8 +244,6 @@ RETURN = '''
 network:
     description:
     - Network inspection results for the affected network.
-    - Note that facts are part of the registered vars since Ansible 2.8. For compatibility reasons, the facts
-      are also accessible directly as C(docker_network). Note that the returned fact will be removed in community.general 2.0.0.
     returned: success
     type: dict
     sample: {}
@@ -312,7 +284,6 @@ class TaskParameters(DockerBaseClass):
         self.driver_options = None
         self.ipam_driver = None
         self.ipam_driver_options = None
-        self.ipam_options = None
         self.ipam_config = None
         self.appends = None
         self.force = None
@@ -393,10 +364,6 @@ class DockerNetworkManager(object):
 
         if not self.parameters.connected and self.existing_network:
             self.parameters.connected = container_names_in_network(self.existing_network)
-
-        if (self.parameters.ipam_options['subnet'] or self.parameters.ipam_options['iprange'] or
-                self.parameters.ipam_options['gateway'] or self.parameters.ipam_options['aux_addresses']):
-            self.parameters.ipam_config = [self.parameters.ipam_options]
 
         if self.parameters.ipam_config:
             try:
@@ -644,7 +611,6 @@ class DockerNetworkManager(object):
             self.results.pop('actions')
 
         network_facts = self.get_existing_network()
-        self.results['ansible_facts'] = {u'docker_network': network_facts}
         self.results['network'] = network_facts
 
     def absent(self):
@@ -663,12 +629,6 @@ def main():
         appends=dict(type='bool', default=False, aliases=['incremental']),
         ipam_driver=dict(type='str'),
         ipam_driver_options=dict(type='dict'),
-        ipam_options=dict(type='dict', default={}, options=dict(
-            subnet=dict(type='str'),
-            iprange=dict(type='str'),
-            gateway=dict(type='str'),
-            aux_addresses=dict(type='dict'),
-        ), removed_in_version='2.0.0', removed_from_collection='community.general'),  # was Ansible 2.12
         ipam_config=dict(type='list', elements='dict', options=dict(
             subnet=dict(type='str'),
             iprange=dict(type='str'),
@@ -683,10 +643,6 @@ def main():
         attachable=dict(type='bool'),
     )
 
-    mutually_exclusive = [
-        ('ipam_config', 'ipam_options')
-    ]
-
     option_minimal_versions = dict(
         scope=dict(docker_py_version='2.6.0', docker_api_version='1.30'),
         attachable=dict(docker_py_version='2.0.0', docker_api_version='1.26'),
@@ -696,7 +652,6 @@ def main():
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
-        mutually_exclusive=mutually_exclusive,
         supports_check_mode=True,
         min_docker_version='1.10.0',
         min_docker_api_version='1.22',

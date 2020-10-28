@@ -522,10 +522,9 @@ options:
       - List of networks the container belongs to.
       - For examples of the data structure and usage see EXAMPLES below.
       - To remove a container from one or more networks, use the I(purge_networks) option.
-      - Note that as opposed to C(docker run ...), M(community.docker.docker_container) does not remove the default
+      - Note that if I(networks_cli_compatible) is set to C(false), this will as opposed to C(docker run ...) not remove the default
         network if I(networks) is specified. You need to explicitly use I(purge_networks) to enforce
         the removal of the default network (and all other networks not explicitly mentioned in I(networks)).
-        Alternatively, use the I(networks_cli_compatible) option, which will be enabled by default from community.general 2.0.0 on.
     type: list
     elements: dict
     suboptions:
@@ -571,8 +570,8 @@ options:
          automatically be set to the first network name in I(networks) if I(network_mode)
          is not specified, I(networks) has at least one entry and I(networks_cli_compatible)
          is C(true)."
-      - Current value is C(no). A new default of C(yes) will be set in community.general 2.0.0.
     type: bool
+    default: true
   oom_killer:
     description:
       - Whether or not to disable OOM Killer for the container.
@@ -747,12 +746,6 @@ options:
         the docker daemon will always use the container's configured C(StopTimeout)
         value if it has been configured.
     type: int
-  trust_image_content:
-    description:
-      - If C(yes), skip image verification.
-      - The option has never been used by the module. It will be removed in community.general 3.0.0.
-    type: bool
-    default: no
   tmpfs:
     description:
       - Mount a tmpfs directory.
@@ -1053,9 +1046,6 @@ RETURN = '''
 container:
     description:
       - Facts representing the current state of the container. Matches the docker inspection output.
-      - Note that facts are part of the registered vars since Ansible 2.8. For compatibility reasons, the facts
-        are also accessible directly as C(docker_container). Note that the returned fact will be removed in
-        community.general 2.0.0.
       - Before 2.3 this was C(ansible_docker_container) but was renamed in 2.3 to C(docker_container) due to
         conflicts with the connection plugin.
       - Empty if I(state) is C(absent)
@@ -1288,7 +1278,6 @@ class TaskParameters(DockerBaseClass):
         self.stop_signal = None
         self.stop_timeout = None
         self.tmpfs = None
-        self.trust_image_content = None
         self.tty = None
         self.user = None
         self.uts = None
@@ -2621,7 +2610,6 @@ class ContainerManager(DockerBaseClass):
             self.results['diff'] = self.diff
 
         if self.facts:
-            self.results['ansible_facts'] = {'docker_container': self.facts}
             self.results['container'] = self.facts
 
     def wait_for_state(self, container_id, complete_states=None, wait_states=None, accept_removal=False, max_wait=None):
@@ -3078,7 +3066,7 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
     # A list of module options which are not docker container properties
     __NON_CONTAINER_PROPERTY_OPTIONS = tuple([
         'env_file', 'force_kill', 'keep_volumes', 'ignore_image', 'name', 'pull', 'purge_networks',
-        'recreate', 'restart', 'state', 'trust_image_content', 'networks', 'cleanup', 'kill_signal',
+        'recreate', 'restart', 'state', 'networks', 'cleanup', 'kill_signal',
         'output_logs', 'paused', 'removal_wait_timeout'
     ] + list(DOCKER_COMMON_ARGS.keys()))
 
@@ -3379,7 +3367,7 @@ def main():
             aliases=dict(type='list', elements='str'),
             links=dict(type='list', elements='str'),
         )),
-        networks_cli_compatible=dict(type='bool'),
+        networks_cli_compatible=dict(type='bool', default=True),
         oom_killer=dict(type='bool'),
         oom_score_adj=dict(type='int'),
         output_logs=dict(type='bool', default=False),
@@ -3404,8 +3392,6 @@ def main():
         stop_timeout=dict(type='int'),
         sysctls=dict(type='dict'),
         tmpfs=dict(type='list', elements='str'),
-        trust_image_content=dict(type='bool', default=False, removed_in_version='2.0.0',
-                                 removed_from_collection='community.general'),  # was Ansible 2.12
         tty=dict(type='bool'),
         ulimits=dict(type='list', elements='str'),
         user=dict(type='str'),
@@ -3427,16 +3413,6 @@ def main():
         supports_check_mode=True,
         min_docker_api_version='1.20',
     )
-    if client.module.params['networks_cli_compatible'] is None and client.module.params['networks']:
-        client.module.deprecate(
-            'Please note that docker_container handles networks slightly different than docker CLI. '
-            'If you specify networks, the default network will still be attached as the first network. '
-            '(You can specify purge_networks to remove all networks not explicitly listed.) '
-            'This behavior will change in community.general 2.0.0. You can change the behavior now by setting '
-            'the new `networks_cli_compatible` option to `yes`, and remove this warning by setting '
-            'it to `no`',
-            version='2.0.0', collection_name='community.general',  # was Ansible 2.12
-        )
     if client.module.params['networks_cli_compatible'] is True and client.module.params['networks'] and client.module.params['network_mode'] is None:
         client.module.deprecate(
             'Please note that the default value for `network_mode` will change from not specified '

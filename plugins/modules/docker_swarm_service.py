@@ -62,13 +62,6 @@ options:
         description:
           - File access mode inside the container. Must be an octal number (like C(0644) or C(0444)).
         type: int
-  constraints:
-    description:
-      - List of the service constraints.
-      - Corresponds to the C(--constraint) option of C(docker service create).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(placement.constraints) instead.
-    type: list
-    elements: str
   container_labels:
     description:
       - Dictionary of key value pairs.
@@ -215,22 +208,6 @@ options:
           - Corresponds to the C(--limit-memory) option of C(docker service create).
         type: str
     type: dict
-  limit_cpu:
-    description:
-      - Service CPU limit. C(0) equals no limit.
-      - Corresponds to the C(--limit-cpu) option of C(docker service create).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(limits.cpus) instead.
-    type: float
-  limit_memory:
-    description:
-      - "Service memory limit in format C(<number>[<unit>]). Number is a positive integer.
-        Unit can be C(B) (byte), C(K) (kibibyte, 1024B), C(M) (mebibyte), C(G) (gibibyte),
-        C(T) (tebibyte), or C(P) (pebibyte)."
-      - C(0) equals no limit.
-      - Omitting the unit defaults to bytes.
-      - Corresponds to the C(--limit-memory) option of C(docker service create).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(limits.memory) instead.
-    type: str
   logging:
     description:
       - "Logging configuration for the service."
@@ -245,18 +222,6 @@ options:
           - Options for service logging driver.
           - Corresponds to the C(--log-opt) option of C(docker service create).
         type: dict
-    type: dict
-  log_driver:
-    description:
-      - Configure the logging driver for a service.
-      - Corresponds to the C(--log-driver) option of C(docker service create).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(logging.driver) instead.
-    type: str
-  log_driver_options:
-    description:
-      - Options for service logging driver.
-      - Corresponds to the C(--log-opt) option of C(docker service create).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(logging.options) instead.
     type: dict
   mode:
     description:
@@ -447,22 +412,6 @@ options:
           - Corresponds to the C(--reserve-memory) option of C(docker service create).
         type: str
     type: dict
-  reserve_cpu:
-    description:
-      - Service CPU reservation. C(0) equals no reservation.
-      - Corresponds to the C(--reserve-cpu) option of C(docker service create).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(reservations.cpus) instead.
-    type: float
-  reserve_memory:
-    description:
-      - "Service memory reservation in format C(<number>[<unit>]). Number is a positive integer.
-        Unit can be C(B) (byte), C(K) (kibibyte, 1024B), C(M) (mebibyte), C(G) (gibibyte),
-        C(T) (tebibyte), or C(P) (pebibyte)."
-      - C(0) equals no reservation.
-      - Omitting the unit defaults to bytes.
-      - Corresponds to the C(--reserve-memory) option of C(docker service create).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(reservations.memory) instead.
-    type: str
   resolve_image:
     description:
       - If the current image digest should be resolved from registry and updated if changed.
@@ -502,38 +451,6 @@ options:
           - Corresponds to the C(--restart-window) option of C(docker service create).
         type: str
     type: dict
-  restart_policy:
-    description:
-      - Restart condition of the service.
-      - Corresponds to the C(--restart-condition) option of C(docker service create).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(restart_config.condition) instead.
-    type: str
-    choices:
-      - none
-      - on-failure
-      - any
-  restart_policy_attempts:
-    description:
-      - Maximum number of service restarts.
-      - Corresponds to the C(--restart-condition) option of C(docker service create).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(restart_config.max_attempts) instead.
-    type: int
-  restart_policy_delay:
-    description:
-      - Delay between restarts.
-      - "Accepts a duration as an integer in nanoseconds or as a string in a format that look like:
-        C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
-      - Corresponds to the C(--restart-delay) option of C(docker service create).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(restart_config.delay) instead.
-    type: raw
-  restart_policy_window:
-    description:
-      - Restart policy evaluation window.
-      - "Accepts a duration as an integer in nanoseconds or as a string in a format that look like:
-        C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
-      - Corresponds to the C(--restart-window) option of C(docker service create).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(restart_config.window) instead.
-    type: raw
   rollback_config:
     description:
       - Configures how the service should be rolled back in case of a failing update.
@@ -691,59 +608,6 @@ options:
           - Requires API version >= 1.29.
         type: str
     type: dict
-  update_delay:
-    description:
-      - Rolling update delay.
-      - "Accepts a duration as an integer in nanoseconds or as a string in a format that look like:
-        C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
-      - Corresponds to the C(--update-delay) option of C(docker service create).
-      - Before Ansible 2.8, the default value for this option was C(10).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(update_config.delay) instead.
-    type: raw
-  update_parallelism:
-    description:
-      - Rolling update parallelism.
-      - Corresponds to the C(--update-parallelism) option of C(docker service create).
-      - Before Ansible 2.8, the default value for this option was C(1).
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(update_config.parallelism) instead.
-    type: int
-  update_failure_action:
-    description:
-      - Action to take in case of container failure.
-      - Corresponds to the C(--update-failure-action) option of C(docker service create).
-      - Usage of I(rollback) requires API version >= 1.29.
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(update_config.failure_action) instead.
-    type: str
-    choices:
-      - continue
-      - pause
-      - rollback
-  update_monitor:
-    description:
-      - Time to monitor updated tasks for failures.
-      - "Accepts a duration as an integer in nanoseconds or as a string in a format that look like:
-        C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
-      - Corresponds to the C(--update-monitor) option of C(docker service create).
-      - Requires API version >= 1.25.
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(update_config.monitor) instead.
-    type: raw
-  update_max_failure_ratio:
-    description:
-      - Fraction of tasks that may fail during an update before the failure action is invoked.
-      - Corresponds to the C(--update-max-failure-ratio) option of C(docker service create).
-      - Requires API version >= 1.25.
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(update_config.max_failure_ratio) instead.
-    type: float
-  update_order:
-    description:
-      - Specifies the order of operations when rolling out an updated task.
-      - Corresponds to the C(--update-order) option of C(docker service create).
-      - Requires API version >= 1.29.
-      - Deprecated in 2.8, will be removed in community.general 2.0.0. Use parameter C(update_config.order) instead.
-    type: str
-    choices:
-      - stop-first
-      - start-first
   user:
     description:
       - Sets the username or UID used for the specified command.
@@ -1446,12 +1310,10 @@ class DockerService(DockerBaseClass):
         condition = get_value(
             'condition',
             restart_config,
-            default=params['restart_policy']
         )
         delay = get_value(
             'delay',
             restart_config,
-            default=params['restart_policy_delay']
         )
         delay = get_nanoseconds_from_raw_option(
             'restart_policy_delay',
@@ -1460,12 +1322,10 @@ class DockerService(DockerBaseClass):
         max_attempts = get_value(
             'max_attempts',
             restart_config,
-            default=params['restart_policy_attempts']
         )
         window = get_value(
             'window',
             restart_config,
-            default=params['restart_policy_window']
         )
         window = get_nanoseconds_from_raw_option(
             'restart_policy_window',
@@ -1557,12 +1417,10 @@ class DockerService(DockerBaseClass):
         driver = get_value(
             'driver',
             logging_config,
-            default=params['log_driver']
         )
         options = get_value(
             'options',
             logging_config,
-            default=params['log_driver_options']
         )
         return {
             'log_driver': driver,
@@ -1575,12 +1433,10 @@ class DockerService(DockerBaseClass):
         cpus = get_value(
             'cpus',
             limits,
-            default=params['limit_cpu']
         )
         memory = get_value(
             'memory',
             limits,
-            default=params['limit_memory']
         )
         if memory is not None:
             try:
@@ -1598,12 +1454,10 @@ class DockerService(DockerBaseClass):
         cpus = get_value(
             'cpus',
             reservations,
-            default=params['reserve_cpu']
         )
         memory = get_value(
             'memory',
             reservations,
-            default=params['reserve_memory']
         )
 
         if memory is not None:
@@ -1621,8 +1475,7 @@ class DockerService(DockerBaseClass):
         placement = params['placement'] or {}
         constraints = get_value(
             'constraints',
-            placement,
-            default=params['constraints']
+            placement
         )
 
         preferences = placement.get('preferences')
@@ -2748,10 +2601,6 @@ def main():
             driver=dict(type='str'),
             options=dict(type='dict'),
         )),
-        log_driver=dict(type='str', removed_in_version='2.0.0',
-                        removed_from_collection='community.general'),  # was Ansible 2.12
-        log_driver_options=dict(type='dict', removed_in_version='2.0.0',
-                                removed_from_collection='community.general'),  # was Ansible 2.12
         publish=dict(type='list', elements='dict', options=dict(
             published_port=dict(type='int', required=True),
             target_port=dict(type='int', required=True),
@@ -2762,8 +2611,6 @@ def main():
             constraints=dict(type='list', elements='str'),
             preferences=dict(type='list', elements='dict'),
         )),
-        constraints=dict(type='list', elements='str', removed_in_version='2.0.0',
-                         removed_from_collection='community.general'),  # was Ansible 2.12
         tty=dict(type='bool'),
         dns=dict(type='list', elements='str'),
         dns_search=dict(type='list', elements='str'),
@@ -2792,19 +2639,11 @@ def main():
             cpus=dict(type='float'),
             memory=dict(type='str'),
         )),
-        limit_cpu=dict(type='float', removed_in_version='2.0.0',
-                       removed_from_collection='community.general'),  # was Ansible 2.12
-        limit_memory=dict(type='str', removed_in_version='2.0.0',
-                          removed_from_collection='community.general'),  # was Ansible 2.12
         read_only=dict(type='bool'),
         reservations=dict(type='dict', options=dict(
             cpus=dict(type='float'),
             memory=dict(type='str'),
         )),
-        reserve_cpu=dict(type='float', removed_in_version='2.0.0',
-                         removed_from_collection='community.general'),  # was Ansible 2.12
-        reserve_memory=dict(type='str', removed_in_version='2.0.0',
-                            removed_from_collection='community.general'),  # was Ansible 2.12
         resolve_image=dict(type='bool', default=False),
         restart_config=dict(type='dict', options=dict(
             condition=dict(type='str', choices=['none', 'on-failure', 'any']),
@@ -2812,18 +2651,6 @@ def main():
             max_attempts=dict(type='int'),
             window=dict(type='str'),
         )),
-        restart_policy=dict(
-            type='str',
-            choices=['none', 'on-failure', 'any'],
-            removed_in_version='2.0.0',
-            removed_from_collection='community.general',  # was Ansible 2.12
-        ),
-        restart_policy_delay=dict(type='raw', removed_in_version='2.0.0',
-                                  removed_from_collection='community.general'),  # was Ansible 2.12
-        restart_policy_attempts=dict(type='int', removed_in_version='2.0.0',
-                                     removed_from_collection='community.general'),  # was Ansible 2.12
-        restart_policy_window=dict(type='raw', removed_in_version='2.0.0',
-                                   removed_from_collection='community.general'),  # was Ansible 2.12
         rollback_config=dict(type='dict', options=dict(
             parallelism=dict(type='int'),
             delay=dict(type='str'),
@@ -2846,33 +2673,12 @@ def main():
             max_failure_ratio=dict(type='float'),
             order=dict(type='str'),
         )),
-        update_delay=dict(type='raw', removed_in_version='2.0.0',
-                          removed_from_collection='community.general'),  # was Ansible 2.12
-        update_parallelism=dict(type='int', removed_in_version='2.0.0',
-                                removed_from_collection='community.general'),  # was Ansible 2.12
-        update_failure_action=dict(
-            type='str',
-            choices=['continue', 'pause', 'rollback'],
-            removed_in_version='2.0.0',
-            removed_from_collection='community.general',  # was Ansible 2.12
-        ),
-        update_monitor=dict(type='raw', removed_in_version='2.0.0',
-                            removed_from_collection='community.general'),  # was Ansible 2.12
-        update_max_failure_ratio=dict(type='float', removed_in_version='2.0.0',
-                                      removed_from_collection='community.general'),  # was Ansible 2.12
-        update_order=dict(
-            type='str',
-            choices=['stop-first', 'start-first'],
-            removed_in_version='2.0.0',
-            removed_from_collection='community.general',  # was Ansible 2.12
-        ),
         user=dict(type='str'),
         working_dir=dict(type='str'),
         init=dict(type='bool'),
     )
 
     option_minimal_versions = dict(
-        constraints=dict(docker_py_version='2.4.0'),
         dns=dict(docker_py_version='2.6.0', docker_api_version='1.25'),
         dns_options=dict(docker_py_version='2.6.0', docker_api_version='1.25'),
         dns_search=dict(docker_py_version='2.6.0', docker_api_version='1.25'),
@@ -2885,9 +2691,6 @@ def main():
         tty=dict(docker_py_version='2.4.0', docker_api_version='1.25'),
         secrets=dict(docker_py_version='2.4.0', docker_api_version='1.25'),
         configs=dict(docker_py_version='2.6.0', docker_api_version='1.30'),
-        update_max_failure_ratio=dict(docker_py_version='2.1.0', docker_api_version='1.25'),
-        update_monitor=dict(docker_py_version='2.1.0', docker_api_version='1.25'),
-        update_order=dict(docker_py_version='2.7.0', docker_api_version='1.29'),
         stop_signal=dict(docker_py_version='2.6.0', docker_api_version='1.28'),
         publish=dict(docker_py_version='3.0.0', docker_api_version='1.25'),
         read_only=dict(docker_py_version='2.6.0', docker_api_version='1.28'),

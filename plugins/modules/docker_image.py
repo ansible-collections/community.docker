@@ -174,19 +174,11 @@ options:
         matching the provided name.
       - When C(present) check if an image exists using the provided name and tag. If the image is not found or the
         force option is used, the image will either be pulled, built or loaded, depending on the I(source) option.
-      - By default the image will be pulled from Docker Hub, or the registry specified in the image's name. Note that
-        this will change in community.general 2.0.0, so to make sure that you are pulling, set I(source) to C(pull). To build
-        the image, provide a I(path) value set to a directory containing a context and Dockerfile, and set I(source)
-        to C(build). To load an image, specify I(load_path) to provide a path to an archive file. To tag an image to
-        a repository, provide a I(repository) path. If the name contains a repository path, it will be pushed.
-      - "*Note:* C(state=build) is DEPRECATED and will be removed in community.general 2.0.0. Specifying C(build) will behave the
-         same as C(present)."
     type: str
     default: present
     choices:
       - absent
       - present
-      - build
   tag:
     description:
       - Used to select an image when pulling. Will be added to the image when pushing, tagging or building. Defaults to
@@ -709,13 +701,13 @@ def main():
         name=dict(type='str', required=True),
         push=dict(type='bool', default=False),
         repository=dict(type='str'),
-        state=dict(type='str', default='present', choices=['absent', 'present', 'build']),
+        state=dict(type='str', default='present', choices=['absent', 'present']),
         tag=dict(type='str', default='latest'),
     )
 
     required_if = [
-        # ('state', 'present', ['source']),   -- enable in community.general 2.0.0
-        # ('source', 'build', ['build']),   -- enable in community.general 2.0.0
+        ('state', 'present', ['source']),
+        ('source', 'build', ['build']),
         ('source', 'load', ['load_path']),
     ]
 
@@ -749,12 +741,6 @@ def main():
         min_docker_api_version='1.20',
         option_minimal_versions=option_minimal_versions,
     )
-
-    if client.module.params['state'] == 'build':
-        client.module.deprecate('The "build" state has been deprecated for a long time. '
-                                'Please use "present", which has the same meaning as "build".',
-                                version='2.0.0', collection_name='community.general')  # was Ansible 2.11
-        client.module.params['state'] = 'present'
 
     if not is_valid_tag(client.module.params['tag'], allow_empty=True):
         client.fail('"{0}" is not a valid docker tag!'.format(client.module.params['tag']))
