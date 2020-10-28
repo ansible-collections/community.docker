@@ -29,7 +29,7 @@ notes:
     these options, it will be recreated instead. The options with default values which can cause this are I(auto_remove),
     I(detach), I(init), I(interactive), I(memory), I(paused), I(privileged), I(read_only) and I(tty). This behavior
     can be changed by setting I(container_default_behavior) to C(no_defaults), which will be the default value from
-    community.general 3.0.0 on.
+    community.docker 2.0.0 on.
 
 options:
   auto_remove:
@@ -89,7 +89,7 @@ options:
         containers which use different values for these options.
       - The default value is C(compatibility), which will ensure that the default values
         are used when the values are not explicitly specified by the user.
-      - From community.general 3.0.0 on, the default value will switch to C(no_defaults). To avoid
+      - From community.docker 2.0.0 on, the default value will switch to C(no_defaults). To avoid
         deprecation warnings, please set I(container_default_behavior) to an explicit
         value.
       - This affects the I(auto_remove), I(detach), I(init), I(interactive), I(memory),
@@ -508,7 +508,7 @@ options:
   network_mode:
     description:
       - Connect the container to a network. Choices are C(bridge), C(host), C(none), C(container:<name|id>), C(<network_name>) or C(default).
-      - "*Note* that from community.general 3.0.0 on, if I(networks_cli_compatible) is C(true) and I(networks) contains at least one network,
+      - "*Note* that from community.docker 2.0.0 on, if I(networks_cli_compatible) is C(true) and I(networks) contains at least one network,
          the default value for I(network_mode) will be the name of the first network in the I(networks) list. You can prevent this
          by explicitly specifying a value for I(network_mode), like the default value C(default) which will be used by Docker if
          I(network_mode) is not specified."
@@ -566,7 +566,7 @@ options:
       - "*Note* that docker CLI also sets I(network_mode) to the name of the first network
          added if C(--network) is specified. For more compatibility with docker CLI, you
          explicitly have to set I(network_mode) to the name of the first network you're
-         adding. This behavior will change for community.general 3.0.0: then I(network_mode) will
+         adding. This behavior will change for community.docker 2.0.0: then I(network_mode) will
          automatically be set to the first network name in I(networks) if I(network_mode)
          is not specified, I(networks) has at least one entry and I(networks_cli_compatible)
          is C(true)."
@@ -3254,8 +3254,8 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
             self.module.params['container_default_behavior'] = 'compatibility'
             self.module.deprecate(
                 'The container_default_behavior option will change its default value from "compatibility" to '
-                '"no_defaults" in community.general 3.0.0. To remove this warning, please specify an explicit value for it now',
-                version='3.0.0', collection_name='community.general'  # was Ansible 2.14
+                '"no_defaults" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
+                version='2.0.0', collection_name='community.docker'  # was Ansible 2.14 / community.general 3.0.0
             )
         if self.module.params['container_default_behavior'] == 'compatibility':
             old_default_values = dict(
@@ -3423,7 +3423,7 @@ def main():
             'Please make sure that the value you set to `network_mode` equals the inspection result '
             'for existing containers, otherwise the module will recreate them. You can find out the '
             'correct value by running "docker inspect --format \'{{.HostConfig.NetworkMode}}\' <container_name>"',
-            version='3.0.0', collection_name='community.general',  # was Ansible 2.14
+            version='2.0.0', collection_name='community.docker',  # was Ansible 2.14 / community.general 3.0.0
         )
 
     try:

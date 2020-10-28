@@ -43,7 +43,7 @@ options:
   email:
     description:
       - Does nothing, do not use.
-      - Will be removed in community.general 3.0.0.
+      - Will be removed in community.docker 2.0.0.
     type: str
   reauthorize:
     description:
@@ -445,7 +445,8 @@ def main():
         registry_url=dict(type='str', default=DEFAULT_DOCKER_REGISTRY, aliases=['registry', 'url']),
         username=dict(type='str'),
         password=dict(type='str', no_log=True),
-        email=dict(type='str', removed_in_version='3.0.0', removed_from_collection='community.general'),  # was Ansible 2.14
+        email=dict(type='str', removed_in_version='2.0.0', removed_from_collection='community.docker'),
+            # was Ansible 2.14 / community.general 3.0.0
         reauthorize=dict(type='bool', default=False, aliases=['reauth']),
         state=dict(type='str', default='present', choices=['present', 'absent']),
         config_path=dict(type='path', default='~/.docker/config.json', aliases=['dockercfg_path']),
