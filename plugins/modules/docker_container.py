@@ -98,7 +98,6 @@ options:
     choices:
       - compatibility
       - no_defaults
-    version_added: '0.2.0'
   cpu_period:
     description:
       - Limit CPU CFS (Completely Fair Scheduler) period.
@@ -114,7 +113,6 @@ options:
       - Specify how much of the available CPU resources a container can use.
       - A value of C(1.5) means that at most one and a half CPU (core) will be used.
     type: float
-    version_added: '0.2.0'
   cpuset_cpus:
     description:
       - CPUs in which to allow execution C(1,3) or C(1-3).
@@ -705,7 +703,6 @@ options:
         removed. If the container is still in the removal phase after this many seconds, the module will
         fail.
     type: float
-    version_added: '0.2.0'
   restart:
     description:
       - Use with started state to force a matching container to be stopped and restarted.

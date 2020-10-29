@@ -22,7 +22,6 @@ options:
       - Stack name.
     type: str
     required: yes
-version_added: "1.1.0"
 '''
 
 RETURN = '''

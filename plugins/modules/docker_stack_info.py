@@ -16,7 +16,6 @@ short_description: Return information on a docker stack
 description:
   - Retrieve information on docker stacks using the C(docker stack) command
     on the target node (see examples).
-version_added: "1.0.0"
 '''
 
 RETURN = '''
