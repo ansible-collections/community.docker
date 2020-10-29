@@ -12,37 +12,43 @@ Tested with the current Ansible 2.9 and 2.10 releases and the current developmen
 
 Most modules and plugins require the [Docker SDK for Python](https://pypi.org/project/docker/). For Python 2.6 support, use [the deprecated docker-py library](https://pypi.org/project/docker-py/) instead.
 
+Both libraries cannot be installed at the same time. If you accidentally did install them simultaneously, you have to uninstall *both* before re-installing one of them.
+
 ## Included content
 
 * Connection plugins:
-  - community.docker.docker
+  - community.docker.docker: use Docker containers as remotes
 * Inventory plugins:
-  - community.docker.docker_machine
-  - community.docker.docker_swarm
+  - community.docker.docker_machine: collect Docker machines as inventory
+  - community.docker.docker_swarm: collect Docker Swarm nodes as inventory
 * Modules:
-  - community.docker.docker_compose
-  - community.docker.docker_config
-  - community.docker.docker_container_info
-  - community.docker.docker_container
-  - community.docker.docker_host_info
-  - community.docker.docker_image_info
-  - community.docker.docker_image
-  - community.docker.docker_login
-  - community.docker.docker_network_info
-  - community.docker.docker_network
-  - community.docker.docker_node_info
-  - community.docker.docker_node
-  - community.docker.docker_prune
-  - community.docker.docker_secret
-  - community.docker.docker_stack_info
-  - community.docker.docker_stack
-  - community.docker.docker_stack_task_info
-  - community.docker.docker_swarm_info
-  - community.docker.docker_swarm
-  - community.docker.docker_swarm_service_info
-  - community.docker.docker_swarm_service
-  - community.docker.docker_volume_info
-  - community.docker.docker_volume
+  * Docker:
+    - community.docker.docker_container: manage Docker containers
+    - community.docker.docker_container_info: retrieve information on Docker containers
+    - community.docker.docker_host_info: retrieve information on the Docker daemon
+    - community.docker.docker_image: manage Docker images
+    - community.docker.docker_image_info: retrieve information on Docker images
+    - community.docker.docker_login: log in and out to/from registries
+    - community.docker.docker_network: manage Docker networks
+    - community.docker.docker_network_info: retrieve information on Docker networks
+    - community.docker.docker_prune: prune Docker containers, images, networks, volumes, and build data
+    - community.docker.docker_volume: manage Docker volumes
+    - community.docker.docker_volume_info: retrieve information on Docker volumes
+  * Docker Compose:
+    - community.docker.docker_compose: manage Docker Compose files
+  * Docker Swarm:
+    - community.docker.docker_config: manage configurations
+    - community.docker.docker_node: manage Docker Swarm nodes
+    - community.docker.docker_node_info: retrieve information on Docker Swarm nodes
+    - community.docker.docker_secret: manage secrets
+    - community.docker.docker_swarm: manage Docker Swarm
+    - community.docker.docker_swarm_info: retrieve information on Docker Swarm
+    - community.docker.docker_swarm_service: manage Docker Swarm services
+    - community.docker.docker_swarm_service_info: retrieve information on Docker Swarm services
+  * Docker Stack:
+    - community.docker.docker_stack: manage Docker Stacks
+    - community.docker.docker_stack_info: retrieve information on Docker Stacks
+    - community.docker.docker_stack_task_info: retrieve information on tasks in Docker Stacks
 
 ## Using this collection
 
