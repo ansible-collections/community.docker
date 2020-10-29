@@ -16,8 +16,7 @@ short_description: Manage docker images.
 
 description:
   - Build, load or pull an image, making the image available for creating containers. Also supports tagging an
-    image into a repository and archiving an image to a .tar file.
-  - You have to explicitly specify the image's source (I(source) can be C(build), C(load), C(pull) or C(local)).
+    image into a repository and archiving an image to a C(.tar) file.
 
 options:
   source:

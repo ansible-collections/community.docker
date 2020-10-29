@@ -133,22 +133,11 @@ class TaskParameters(DockerBaseClass):
         self.driver = None
         self.driver_options = None
         self.labels = None
-        self.force = None
         self.recreate = None
         self.debug = None
 
         for key, value in iteritems(client.module.params):
             setattr(self, key, value)
-
-        if self.force is not None:
-            if self.recreate != 'never':
-                client.fail('Cannot use the deprecated "force" '
-                            'option when "recreate" is set. Please stop '
-                            'using the force option.')
-            client.module.warn('The "force" option of docker_volume has been deprecated '
-                               'in Ansible 2.8. Please use the "recreate" '
-                               'option, which provides the same functionality as "force".')
-            self.recreate = 'options-changed' if self.force else 'never'
 
 
 class DockerVolumeManager(object):

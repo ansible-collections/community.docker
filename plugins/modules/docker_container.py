@@ -522,9 +522,9 @@ options:
       - List of networks the container belongs to.
       - For examples of the data structure and usage see EXAMPLES below.
       - To remove a container from one or more networks, use the I(purge_networks) option.
-      - Note that if I(networks_cli_compatible) is set to C(false), this will as opposed to C(docker run ...) not remove the default
-        network if I(networks) is specified. You need to explicitly use I(purge_networks) to enforce
-        the removal of the default network (and all other networks not explicitly mentioned in I(networks)).
+      - If I(networks_cli_compatible) is set to C(false), this will not remove the default network if I(networks) is specified.
+        This is different from the behavior of C(docker run ...). You need to explicitly use I(purge_networks) to enforce
+        the removal of the default network (and all other networks not explicitly mentioned in I(networks)) in that case.
     type: list
     elements: dict
     suboptions:
@@ -554,15 +554,15 @@ options:
         elements: str
   networks_cli_compatible:
     description:
-      - "When networks are provided to the module via the I(networks) option, the module
-         behaves differently than C(docker run --network): C(docker run --network other)
-         will create a container with network C(other) attached, but the default network
-         not attached. This module with I(networks: {name: other}) will create a container
-         with both C(default) and C(other) attached. If I(purge_networks) is set to C(yes),
-         the C(default) network will be removed afterwards."
-      - "If I(networks_cli_compatible) is set to C(yes), this module will behave as
+      - "If I(networks_cli_compatible) is set to C(yes) (default), this module will behave as
          C(docker run --network) and will *not* add the default network if I(networks) is
          specified. If I(networks) is not specified, the default network will be attached."
+      - "When I(networks_cli_compatible) is set to C(no) and networks are provided to the module
+         via the I(networks) option, the module behaves differently than C(docker run --network):
+         C(docker run --network other) will create a container with network C(other) attached,
+         but the default network not attached. This module with I(networks: {name: other}) will
+         create a container with both C(default) and C(other) attached. If I(purge_networks) is
+         set to C(yes), the C(default) network will be removed afterwards."
       - "*Note* that docker CLI also sets I(network_mode) to the name of the first network
          added if C(--network) is specified. For more compatibility with docker CLI, you
          explicitly have to set I(network_mode) to the name of the first network you're
