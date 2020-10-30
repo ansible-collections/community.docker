@@ -16,9 +16,7 @@ short_description: Manage docker images.
 
 description:
   - Build, load or pull an image, making the image available for creating containers. Also supports tagging an
-    image into a repository and archiving an image to a .tar file.
-  - Since Ansible 2.8, it is recommended to explicitly specify the image's source (I(source) can be C(build),
-    C(load), C(pull) or C(local)). This will be required from community.general 2.0.0 on.
+    image into a repository and archiving an image to a C(.tar) file.
 
 options:
   source:
@@ -31,10 +29,6 @@ options:
       - "Use C(pull) to pull the image from a registry."
       - "Use C(local) to make sure that the image is already available on the local
          docker daemon, i.e. do not try to build, pull or load the image."
-      - "Before community.general 2.0.0, the value of this option will be auto-detected
-         to be backwards compatible, but a warning will be issued if it is not
-         explicitly specified. From community.general 2.0.0 on, auto-detection will be disabled
-         and this option will be made mandatory."
     type: str
     choices:
     - build
@@ -70,8 +64,8 @@ options:
       pull:
         description:
           - When building an image downloads any updates to the FROM image in Dockerfile.
-          - The default is currently C(yes). This will change to C(no) in community.general 2.0.0.
         type: bool
+        default: no
       rm:
         description:
           - Remove intermediate containers after build.
@@ -136,26 +130,8 @@ options:
   load_path:
     description:
       - Use with state C(present) to load an image from a .tar file.
-      - Set I(source) to C(load) if you want to load the image. The option will
-        be set automatically before community.general 2.0.0 if this option is used (except
-        if I(path) is specified as well, in which case building will take precedence).
-        From community.general 2.0.0 on, you have to set I(source) to C(load).
+      - Set I(source) to C(load) if you want to load the image.
     type: path
-  dockerfile:
-    description:
-      - Use with state C(present) and source C(build) to provide an alternate name for the Dockerfile to use when building an image.
-      - This can also include a relative path (relative to I(path)).
-      - Please use I(build.dockerfile) instead. This option will be removed in community.general 2.0.0.
-    type: str
-  force:
-    description:
-      - Use with state I(absent) to un-tag and remove all images matching the specified name. Use with state
-        C(present) to build, load or pull an image when the image already exists. Also use with state C(present)
-        to force tagging an image.
-      - Please stop using this option, and use the more specialized force options
-        I(force_source), I(force_absent) and I(force_tag) instead.
-      - This option will be removed in community.general 2.0.0.
-    type: bool
   force_source:
     description:
       - Use with state C(present) to build, load or pull an image (depending on the
@@ -172,12 +148,6 @@ options:
       - Use with state C(present) to force tagging an image.
     type: bool
     default: false
-  http_timeout:
-    description:
-      - Timeout for HTTP requests during the image build operation. Provide a positive integer value for the number of
-        seconds.
-      - Please use I(build.http_timeout) instead. This option will be removed in community.general 2.0.0.
-    type: int
   name:
     description:
       - "Image name. Name format will be one of: name, repository/name, registry_server:port/name.
@@ -185,38 +155,9 @@ options:
       - Note that image IDs (hashes) are not supported.
     type: str
     required: yes
-  path:
-    description:
-      - Use with state 'present' to build an image. Will be the path to a directory containing the context and
-        Dockerfile for building an image.
-      - Set I(source) to C(build) if you want to build the image. The option will
-        be set automatically before community.general 2.0.0 if this option is used. From community.general 2.0.0
-        on, you have to set I(source) to C(build).
-      - Please use I(build.path) instead. This option will be removed in community.general 2.0.0.
-    type: path
-    aliases:
-      - build_path
-  pull:
-    description:
-      - When building an image downloads any updates to the FROM image in Dockerfile.
-      - Please use I(build.pull) instead. This option will be removed in community.general 2.0.0.
-      - The default is currently C(yes). This will change to C(no) in community.general 2.0.0.
-    type: bool
   push:
     description:
       - Push the image to the registry. Specify the registry as part of the I(name) or I(repository) parameter.
-    type: bool
-    default: no
-  rm:
-    description:
-      - Remove intermediate containers after build.
-      - Please use I(build.rm) instead. This option will be removed in community.general 2.0.0.
-    type: bool
-    default: yes
-  nocache:
-    description:
-      - Do not use cache when building an image.
-      - Please use I(build.nocache) instead. This option will be removed in community.general 2.0.0.
     type: bool
     default: no
   repository:
@@ -231,19 +172,11 @@ options:
         matching the provided name.
       - When C(present) check if an image exists using the provided name and tag. If the image is not found or the
         force option is used, the image will either be pulled, built or loaded, depending on the I(source) option.
-      - By default the image will be pulled from Docker Hub, or the registry specified in the image's name. Note that
-        this will change in community.general 2.0.0, so to make sure that you are pulling, set I(source) to C(pull). To build
-        the image, provide a I(path) value set to a directory containing a context and Dockerfile, and set I(source)
-        to C(build). To load an image, specify I(load_path) to provide a path to an archive file. To tag an image to
-        a repository, provide a I(repository) path. If the name contains a repository path, it will be pushed.
-      - "*Note:* C(state=build) is DEPRECATED and will be removed in community.general 2.0.0. Specifying C(build) will behave the
-         same as C(present)."
     type: str
     default: present
     choices:
       - absent
       - present
-      - build
   tag:
     description:
       - Used to select an image when pulling. Will be added to the image when pushing, tagging or building. Defaults to
@@ -251,48 +184,6 @@ options:
       - If I(name) parameter format is I(name:tag), then tag value from I(name) will take precedence.
     type: str
     default: latest
-  buildargs:
-    description:
-      - Provide a dictionary of C(key:value) build arguments that map to Dockerfile ARG directive.
-      - Docker expects the value to be a string. For convenience any non-string values will be converted to strings.
-      - Requires Docker API >= 1.21.
-      - Please use I(build.args) instead. This option will be removed in community.general 2.0.0.
-    type: dict
-  container_limits:
-    description:
-      - A dictionary of limits applied to each container created by the build process.
-      - Please use I(build.container_limits) instead. This option will be removed in community.general 2.0.0.
-    type: dict
-    suboptions:
-      memory:
-        description:
-          - Set memory limit for build.
-        type: int
-      memswap:
-        description:
-          - Total memory (memory + swap), -1 to disable swap.
-        type: int
-      cpushares:
-        description:
-          - CPU shares (relative weight).
-        type: int
-      cpusetcpus:
-        description:
-          - CPUs in which to allow execution, e.g., "0-3", "0,1".
-        type: str
-  use_tls:
-    description:
-      - "DEPRECATED. Whether to use tls to connect to the docker daemon. Set to
-        C(encrypt) to use TLS. And set to C(verify) to use TLS and verify that
-        the server's certificate is valid for the server."
-      - "*Note:* If you specify this option, it will set the value of the I(tls) or
-        I(validate_certs) parameters if not set to C(no)."
-      - Will be removed in community.general 2.0.0.
-    type: str
-    choices:
-      - 'no'
-      - 'encrypt'
-      - 'verify'
 
 extends_documentation_fragment:
 - community.docker.docker
@@ -793,7 +684,7 @@ def main():
             network=dict(type='str'),
             nocache=dict(type='bool', default=False),
             path=dict(type='path', required=True),
-            pull=dict(type='bool'),
+            pull=dict(type='bool', default=False),
             rm=dict(type='bool', default=True),
             args=dict(type='dict'),
             use_config_proxy=dict(type='bool'),
@@ -801,36 +692,20 @@ def main():
             etc_hosts=dict(type='dict'),
         )),
         archive_path=dict(type='path'),
-        container_limits=dict(type='dict', options=dict(
-            memory=dict(type='int'),
-            memswap=dict(type='int'),
-            cpushares=dict(type='int'),
-            cpusetcpus=dict(type='str'),
-        ), removed_in_version='2.0.0', removed_from_collection='community.general'),  # was Ansible 2.12
-        dockerfile=dict(type='str', removed_in_version='2.0.0', removed_from_collection='community.general'),  # was Ansible 2.12
-        force=dict(type='bool', removed_in_version='2.0.0', removed_from_collection='community.general'),  # was Ansible 2.12
         force_source=dict(type='bool', default=False),
         force_absent=dict(type='bool', default=False),
         force_tag=dict(type='bool', default=False),
-        http_timeout=dict(type='int', removed_in_version='2.0.0', removed_from_collection='community.general'),  # was Ansible 2.12
         load_path=dict(type='path'),
         name=dict(type='str', required=True),
-        nocache=dict(type='bool', default=False, removed_in_version='2.0.0', removed_from_collection='community.general'),  # was Ansible 2.12
-        path=dict(type='path', aliases=['build_path'], removed_in_version='2.0.0', removed_from_collection='community.general'),  # was Ansible 2.12
-        pull=dict(type='bool', removed_in_version='2.0.0', removed_from_collection='community.general'),  # was Ansible 2.12
         push=dict(type='bool', default=False),
         repository=dict(type='str'),
-        rm=dict(type='bool', default=True, removed_in_version='2.0.0', removed_from_collection='community.general'),  # was Ansible 2.12
-        state=dict(type='str', default='present', choices=['absent', 'present', 'build']),
+        state=dict(type='str', default='present', choices=['absent', 'present']),
         tag=dict(type='str', default='latest'),
-        use_tls=dict(type='str', choices=['no', 'encrypt', 'verify'], removed_in_version='2.0.0',
-                     removed_from_collection='community.general'),  # was Ansible 2.12
-        buildargs=dict(type='dict', removed_in_version='2.0.0', removed_from_collection='community.general'),  # was Ansible 2.12
     )
 
     required_if = [
-        # ('state', 'present', ['source']),   -- enable in community.general 2.0.0
-        # ('source', 'build', ['build']),   -- enable in community.general 2.0.0
+        ('state', 'present', ['source']),
+        ('source', 'build', ['build']),
         ('source', 'load', ['load_path']),
     ]
 
@@ -865,74 +740,12 @@ def main():
         option_minimal_versions=option_minimal_versions,
     )
 
-    if client.module.params['state'] == 'build':
-        client.module.deprecate('The "build" state has been deprecated for a long time. '
-                                'Please use "present", which has the same meaning as "build".',
-                                version='2.0.0', collection_name='community.general')  # was Ansible 2.11
-        client.module.params['state'] = 'present'
-    if client.module.params['use_tls']:
-        client.module.deprecate('The "use_tls" option has been deprecated for a long time. '
-                                'Please use the "tls" and "validate_certs" options instead.',
-                                version='2.0.0', collection_name='community.general')  # was Ansible 2.11
-
     if not is_valid_tag(client.module.params['tag'], allow_empty=True):
         client.fail('"{0}" is not a valid docker tag!'.format(client.module.params['tag']))
 
-    build_options = dict(
-        container_limits='container_limits',
-        dockerfile='dockerfile',
-        http_timeout='http_timeout',
-        nocache='nocache',
-        path='path',
-        pull='pull',
-        rm='rm',
-        buildargs='args',
-    )
-    for option, build_option in build_options.items():
-        default_value = None
-        if option in ('rm', ):
-            default_value = True
-        elif option in ('nocache', ):
-            default_value = False
-        if client.module.params[option] != default_value:
-            if client.module.params['build'] is None:
-                client.module.params['build'] = dict()
-            if client.module.params['build'].get(build_option, default_value) != default_value:
-                client.fail('Cannot specify both %s and build.%s!' % (option, build_option))
-            client.module.params['build'][build_option] = client.module.params[option]
-            client.module.deprecate('Please specify build.%s instead of %s. The %s option '
-                                    'has been renamed' % (build_option, option, option),
-                                    version='2.0.0', collection_name='community.general')  # was Ansible 2.12
     if client.module.params['source'] == 'build':
-        if (not client.module.params['build'] or not client.module.params['build'].get('path')):
+        if not client.module.params['build'] or not client.module.params['build'].get('path'):
             client.fail('If "source" is set to "build", the "build.path" option must be specified.')
-        if client.module.params['build'].get('pull') is None:
-            client.module.deprecate("The default for build.pull is currently 'yes', but will be changed to "
-                                    "'no' in community.general 2.0.0. Please set build.pull explicitly to the value you need",
-                                    version='2.0.0', collection_name='community.general')  # was Ansible 2.12
-            client.module.params['build']['pull'] = True  # TODO: change to False in community.general 2.0.0
-
-    if client.module.params['state'] == 'present' and client.module.params['source'] is None:
-        # Autodetection. To be removed in community.general 2.0.0.
-        if (client.module.params['build'] or dict()).get('path'):
-            client.module.params['source'] = 'build'
-        elif client.module.params['load_path']:
-            client.module.params['source'] = 'load'
-        else:
-            client.module.params['source'] = 'pull'
-        client.module.deprecate('The value of the "source" option was determined to be "%s". '
-                                'Please set the "source" option explicitly. Autodetection will '
-                                'be removed in community.general 2.0.0.' % client.module.params['source'],
-                                version='2.0.0', collection_name='community.general')  # was Ansible 2.12
-
-    if client.module.params['force']:
-        client.module.params['force_source'] = True
-        client.module.params['force_absent'] = True
-        client.module.params['force_tag'] = True
-        client.module.deprecate('The "force" option will be removed in community.general 2.0.0. Please '
-                                'use the "force_source", "force_absent" or "force_tag" option '
-                                'instead, depending on what you want to force.',
-                                version='2.0.0', collection_name='community.general')  # was Ansible 2.12
 
     try:
         results = dict(

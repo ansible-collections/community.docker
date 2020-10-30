@@ -32,15 +32,6 @@
       delay: 5s
   register: update_delay_2
 
-- name: update_delay (idempotency, old name)
-  docker_swarm_service:
-    name: "{{ service_name }}"
-    image: alpine:3.8
-    resolve_image: no
-    command: '/bin/sh -v -c "sleep 10m"'
-    update_delay: 5000000000
-  register: update_delay_2b
-
 - name: update_config.delay (change)
   docker_swarm_service:
     name: "{{ service_name }}"
@@ -61,7 +52,6 @@
     that:
       - update_delay_1 is changed
       - update_delay_2 is not changed
-      - update_delay_2b is not changed
       - update_delay_3 is changed
 
 ###################################################################
@@ -87,15 +77,6 @@
     update_config:
       failure_action: "pause"
   register: update_failure_action_2
-
-- name: update_failure_action (idempotency, old name)
-  docker_swarm_service:
-    name: "{{ service_name }}"
-    image: alpine:3.8
-    resolve_image: no
-    command: '/bin/sh -v -c "sleep 10m"'
-    update_failure_action: "pause"
-  register: update_failure_action_2b
 
 - name: update_config.failure_action (change)
   docker_swarm_service:
@@ -138,7 +119,6 @@
     that:
       - update_failure_action_1 is changed
       - update_failure_action_2 is not changed
-      - update_failure_action_2b is not changed
       - update_failure_action_3 is changed
 
 - assert:
@@ -179,16 +159,6 @@
   register: update_max_failure_ratio_2
   ignore_errors: yes
 
-- name: update_max_failure_ratio (idempotency, old name)
-  docker_swarm_service:
-    name: "{{ service_name }}"
-    image: alpine:3.8
-    resolve_image: no
-    command: '/bin/sh -v -c "sleep 10m"'
-    update_max_failure_ratio: 0.25
-  register: update_max_failure_ratio_2b
-  ignore_errors: yes
-
 - name: update_config.max_failure_ratio (change)
   docker_swarm_service:
     name: "{{ service_name }}"
@@ -210,7 +180,6 @@
     that:
       - update_max_failure_ratio_1 is changed
       - update_max_failure_ratio_2 is not changed
-      - update_max_failure_ratio_2b is not changed
       - update_max_failure_ratio_3 is changed
   when: docker_api_version is version('1.25', '>=') and docker_py_version is version('2.1.0', '>=')
 - assert:
@@ -245,16 +214,6 @@
   register: update_monitor_2
   ignore_errors: yes
 
-- name: update_monitor (idempotency, old name)
-  docker_swarm_service:
-    name: "{{ service_name }}"
-    image: alpine:3.8
-    resolve_image: no
-    command: '/bin/sh -v -c "sleep 10m"'
-    update_monitor: 10s
-  register: update_monitor_2b
-  ignore_errors: yes
-
 - name: update_config.monitor (change)
   docker_swarm_service:
     name: "{{ service_name }}"
@@ -276,7 +235,6 @@
     that:
       - update_monitor_1 is changed
       - update_monitor_2 is not changed
-      - update_monitor_2b is not changed
       - update_monitor_3 is changed
   when: docker_api_version is version('1.25', '>=') and docker_py_version is version('2.1.0', '>=')
 - assert:
@@ -311,16 +269,6 @@
   register: update_order_2
   ignore_errors: yes
 
-- name: update_order (idempotency, old name)
-  docker_swarm_service:
-    name: "{{ service_name }}"
-    image: alpine:3.8
-    resolve_image: no
-    command: '/bin/sh -v -c "sleep 10m"'
-    update_order: "start-first"
-  register: update_order_2b
-  ignore_errors: yes
-
 - name: update_config.order (change)
   docker_swarm_service:
     name: "{{ service_name }}"
@@ -342,7 +290,6 @@
     that:
       - update_order_1 is changed
       - update_order_2 is not changed
-      - update_order_2b is not changed
       - update_order_3 is changed
   when: docker_api_version is version('1.29', '>=') and docker_py_version is version('2.7.0', '>=')
 - assert:
@@ -375,15 +322,6 @@
       parallelism: 2
   register: update_parallelism_2
 
-- name: update_parallelism (idempotency, old name)
-  docker_swarm_service:
-    name: "{{ service_name }}"
-    image: alpine:3.8
-    resolve_image: no
-    command: '/bin/sh -v -c "sleep 10m"'
-    update_parallelism: 2
-  register: update_parallelism_2b
-
 - name: update_config.parallelism (change)
   docker_swarm_service:
     name: "{{ service_name }}"
@@ -404,5 +342,4 @@
     that:
       - update_parallelism_1 is changed
       - update_parallelism_2 is not changed
-      - update_parallelism_2b is not changed
       - update_parallelism_3 is changed

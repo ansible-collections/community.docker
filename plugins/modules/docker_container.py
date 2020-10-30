@@ -29,7 +29,7 @@ notes:
     these options, it will be recreated instead. The options with default values which can cause this are I(auto_remove),
     I(detach), I(init), I(interactive), I(memory), I(paused), I(privileged), I(read_only) and I(tty). This behavior
     can be changed by setting I(container_default_behavior) to C(no_defaults), which will be the default value from
-    community.general 3.0.0 on.
+    community.docker 2.0.0 on.
 
 options:
   auto_remove:
@@ -89,7 +89,7 @@ options:
         containers which use different values for these options.
       - The default value is C(compatibility), which will ensure that the default values
         are used when the values are not explicitly specified by the user.
-      - From community.general 3.0.0 on, the default value will switch to C(no_defaults). To avoid
+      - From community.docker 2.0.0 on, the default value will switch to C(no_defaults). To avoid
         deprecation warnings, please set I(container_default_behavior) to an explicit
         value.
       - This affects the I(auto_remove), I(detach), I(init), I(interactive), I(memory),
@@ -540,7 +540,7 @@ options:
   network_mode:
     description:
       - Connect the container to a network. Choices are C(bridge), C(host), C(none), C(container:<name|id>), C(<network_name>) or C(default).
-      - "*Note* that from community.general 3.0.0 on, if I(networks_cli_compatible) is C(true) and I(networks) contains at least one network,
+      - "*Note* that from community.docker 2.0.0 on, if I(networks_cli_compatible) is C(true) and I(networks) contains at least one network,
          the default value for I(network_mode) will be the name of the first network in the I(networks) list. You can prevent this
          by explicitly specifying a value for I(network_mode), like the default value C(default) which will be used by Docker if
          I(network_mode) is not specified."
@@ -554,10 +554,9 @@ options:
       - List of networks the container belongs to.
       - For examples of the data structure and usage see EXAMPLES below.
       - To remove a container from one or more networks, use the I(purge_networks) option.
-      - Note that as opposed to C(docker run ...), M(community.docker.docker_container) does not remove the default
-        network if I(networks) is specified. You need to explicitly use I(purge_networks) to enforce
-        the removal of the default network (and all other networks not explicitly mentioned in I(networks)).
-        Alternatively, use the I(networks_cli_compatible) option, which will be enabled by default from community.general 2.0.0 on.
+      - If I(networks_cli_compatible) is set to C(false), this will not remove the default network if I(networks) is specified.
+        This is different from the behavior of C(docker run ...). You need to explicitly use I(purge_networks) to enforce
+        the removal of the default network (and all other networks not explicitly mentioned in I(networks)) in that case.
     type: list
     elements: dict
     suboptions:
@@ -587,24 +586,24 @@ options:
         elements: str
   networks_cli_compatible:
     description:
-      - "When networks are provided to the module via the I(networks) option, the module
-         behaves differently than C(docker run --network): C(docker run --network other)
-         will create a container with network C(other) attached, but the default network
-         not attached. This module with I(networks: {name: other}) will create a container
-         with both C(default) and C(other) attached. If I(purge_networks) is set to C(yes),
-         the C(default) network will be removed afterwards."
-      - "If I(networks_cli_compatible) is set to C(yes), this module will behave as
+      - "If I(networks_cli_compatible) is set to C(yes) (default), this module will behave as
          C(docker run --network) and will *not* add the default network if I(networks) is
          specified. If I(networks) is not specified, the default network will be attached."
+      - "When I(networks_cli_compatible) is set to C(no) and networks are provided to the module
+         via the I(networks) option, the module behaves differently than C(docker run --network):
+         C(docker run --network other) will create a container with network C(other) attached,
+         but the default network not attached. This module with I(networks: {name: other}) will
+         create a container with both C(default) and C(other) attached. If I(purge_networks) is
+         set to C(yes), the C(default) network will be removed afterwards."
       - "*Note* that docker CLI also sets I(network_mode) to the name of the first network
          added if C(--network) is specified. For more compatibility with docker CLI, you
          explicitly have to set I(network_mode) to the name of the first network you're
-         adding. This behavior will change for community.general 3.0.0: then I(network_mode) will
+         adding. This behavior will change for community.docker 2.0.0: then I(network_mode) will
          automatically be set to the first network name in I(networks) if I(network_mode)
          is not specified, I(networks) has at least one entry and I(networks_cli_compatible)
          is C(true)."
-      - Current value is C(no). A new default of C(yes) will be set in community.general 2.0.0.
     type: bool
+    default: true
   oom_killer:
     description:
       - Whether or not to disable OOM Killer for the container.
@@ -778,12 +777,6 @@ options:
         the docker daemon will always use the container's configured C(StopTimeout)
         value if it has been configured.
     type: int
-  trust_image_content:
-    description:
-      - If C(yes), skip image verification.
-      - The option has never been used by the module. It will be removed in community.general 3.0.0.
-    type: bool
-    default: no
   tmpfs:
     description:
       - Mount a tmpfs directory.
@@ -1104,9 +1097,6 @@ RETURN = '''
 container:
     description:
       - Facts representing the current state of the container. Matches the docker inspection output.
-      - Note that facts are part of the registered vars since Ansible 2.8. For compatibility reasons, the facts
-        are also accessible directly as C(docker_container). Note that the returned fact will be removed in
-        community.general 2.0.0.
       - Before 2.3 this was C(ansible_docker_container) but was renamed in 2.3 to C(docker_container) due to
         conflicts with the connection plugin.
       - Empty if I(state) is C(absent)
@@ -1340,7 +1330,6 @@ class TaskParameters(DockerBaseClass):
         self.stop_signal = None
         self.stop_timeout = None
         self.tmpfs = None
-        self.trust_image_content = None
         self.tty = None
         self.user = None
         self.uts = None
@@ -2710,7 +2699,6 @@ class ContainerManager(DockerBaseClass):
             self.results['diff'] = self.diff
 
         if self.facts:
-            self.results['ansible_facts'] = {'docker_container': self.facts}
             self.results['container'] = self.facts
 
     def wait_for_state(self, container_id, complete_states=None, wait_states=None, accept_removal=False, max_wait=None):
@@ -3167,7 +3155,7 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
     # A list of module options which are not docker container properties
     __NON_CONTAINER_PROPERTY_OPTIONS = tuple([
         'env_file', 'force_kill', 'keep_volumes', 'ignore_image', 'name', 'pull', 'purge_networks',
-        'recreate', 'restart', 'state', 'trust_image_content', 'networks', 'cleanup', 'kill_signal',
+        'recreate', 'restart', 'state', 'networks', 'cleanup', 'kill_signal',
         'output_logs', 'paused', 'removal_wait_timeout'
     ] + list(DOCKER_COMMON_ARGS.keys()))
 
@@ -3357,8 +3345,8 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
             self.module.params['container_default_behavior'] = 'compatibility'
             self.module.deprecate(
                 'The container_default_behavior option will change its default value from "compatibility" to '
-                '"no_defaults" in community.general 3.0.0. To remove this warning, please specify an explicit value for it now',
-                version='3.0.0', collection_name='community.general'  # was Ansible 2.14
+                '"no_defaults" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
+                version='2.0.0', collection_name='community.docker'  # was Ansible 2.14 / community.general 3.0.0
             )
         if self.module.params['container_default_behavior'] == 'compatibility':
             old_default_values = dict(
@@ -3477,7 +3465,7 @@ def main():
             aliases=dict(type='list', elements='str'),
             links=dict(type='list', elements='str'),
         )),
-        networks_cli_compatible=dict(type='bool'),
+        networks_cli_compatible=dict(type='bool', default=True),
         oom_killer=dict(type='bool'),
         oom_score_adj=dict(type='int'),
         output_logs=dict(type='bool', default=False),
@@ -3502,8 +3490,6 @@ def main():
         stop_timeout=dict(type='int'),
         sysctls=dict(type='dict'),
         tmpfs=dict(type='list', elements='str'),
-        trust_image_content=dict(type='bool', default=False, removed_in_version='2.0.0',
-                                 removed_from_collection='community.general'),  # was Ansible 2.12
         tty=dict(type='bool'),
         ulimits=dict(type='list', elements='str'),
         user=dict(type='str'),
@@ -3525,16 +3511,6 @@ def main():
         supports_check_mode=True,
         min_docker_api_version='1.20',
     )
-    if client.module.params['networks_cli_compatible'] is None and client.module.params['networks']:
-        client.module.deprecate(
-            'Please note that docker_container handles networks slightly different than docker CLI. '
-            'If you specify networks, the default network will still be attached as the first network. '
-            '(You can specify purge_networks to remove all networks not explicitly listed.) '
-            'This behavior will change in community.general 2.0.0. You can change the behavior now by setting '
-            'the new `networks_cli_compatible` option to `yes`, and remove this warning by setting '
-            'it to `no`',
-            version='2.0.0', collection_name='community.general',  # was Ansible 2.12
-        )
     if client.module.params['networks_cli_compatible'] is True and client.module.params['networks'] and client.module.params['network_mode'] is None:
         client.module.deprecate(
             'Please note that the default value for `network_mode` will change from not specified '
@@ -3545,7 +3521,7 @@ def main():
             'Please make sure that the value you set to `network_mode` equals the inspection result '
             'for existing containers, otherwise the module will recreate them. You can find out the '
             'correct value by running "docker inspect --format \'{{.HostConfig.NetworkMode}}\' <container_name>"',
-            version='3.0.0', collection_name='community.general',  # was Ansible 2.14
+            version='2.0.0', collection_name='community.docker',  # was Ansible 2.14 / community.general 3.0.0
         )
 
     try:

@@ -67,7 +67,6 @@ options:
       - Set to C(absent), to leave an existing cluster.
       - Set to C(remove), to remove an absent node from the cluster.
         Note that removing requires Docker SDK for Python >= 2.4.0.
-      - Set to C(inspect) to display swarm informations.
     type: str
     default: present
     choices:
@@ -75,7 +74,6 @@ options:
       - join
       - absent
       - remove
-      - inspect
   node_id:
     description:
       - Swarm id of the node to remove.
@@ -218,11 +216,6 @@ EXAMPLES = '''
   community.docker.docker_swarm:
     state: remove
     node_id: mynode
-
-- name: Inspect swarm
-  community.docker.docker_swarm:
-    state: inspect
-  register: swarm_info
 '''
 
 RETURN = '''
@@ -438,13 +431,7 @@ class SwarmManager(DockerBaseClass):
             "join": self.join,
             "absent": self.leave,
             "remove": self.remove,
-            "inspect": self.inspect_swarm
         }
-
-        if self.state == 'inspect':
-            self.client.module.deprecate(
-                "The 'inspect' state is deprecated, please use 'docker_swarm_info' to inspect swarm cluster",
-                version='2.0.0', collection_name='community.general')  # was Ansible 2.12
 
         choice_map.get(self.state)()
 
@@ -600,7 +587,7 @@ def _detect_remove_operation(client):
 def main():
     argument_spec = dict(
         advertise_addr=dict(type='str'),
-        state=dict(type='str', default='present', choices=['present', 'join', 'absent', 'remove', 'inspect']),
+        state=dict(type='str', default='present', choices=['present', 'join', 'absent', 'remove']),
         force=dict(type='bool', default=False),
         listen_addr=dict(type='str', default='0.0.0.0:2377'),
         remote_addrs=dict(type='list', elements='str'),
