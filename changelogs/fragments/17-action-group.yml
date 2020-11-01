@@ -1,0 +1,2 @@
+minor_changes:
+- "Add collection-side support of the ``docker`` action group / module defaults group (https://github.com/ansible-collections/community.docker/pull/17)."
