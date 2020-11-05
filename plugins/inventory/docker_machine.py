@@ -7,7 +7,6 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
     name: docker_machine
-    plugin_type: inventory
     author: Ximon Eighteen (@ximon18)
     short_description: Docker Machine inventory source
     requirements:

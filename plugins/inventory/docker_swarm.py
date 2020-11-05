@@ -9,7 +9,6 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
     name: docker_swarm
-    plugin_type: inventory
     author:
       - Stefan Heitmüller (@morph027) <stefan.heitmueller@gmx.com>
     short_description: Ansible dynamic inventory plugin for Docker swarm nodes.
