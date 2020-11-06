@@ -13,7 +13,7 @@ DOCUMENTATION = '''
     author:
         - Lorin Hochestein (!UNKNOWN)
         - Leendert Brouwer (!UNKNOWN)
-    connection: docker
+    name: docker
     short_description: Run tasks in docker containers
     description:
         - Run commands or put/fetch files to an existing docker container.
