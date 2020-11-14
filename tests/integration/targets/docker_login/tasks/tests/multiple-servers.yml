@@ -1,0 +1,57 @@
+---
+- block:
+  - name: Log out server 1
+    docker_login:
+      registry_url: "{{ registry_frontend_address }}"
+      username: testuser
+      password: hunter2
+      state: absent
+
+  - name: Log out server 2
+    docker_login:
+      registry_url: "{{ registry_frontend2_address }}"
+      username: testuser
+      password: hunter2
+      state: absent
+
+  - name: Log in server 1
+    docker_login:
+      registry_url: "{{ registry_frontend_address }}"
+      username: testuser
+      password: hunter2
+      state: present
+    register: login_1
+
+  - name: Log in server 2
+    docker_login:
+      registry_url: "{{ registry_frontend2_address }}"
+      username: testuser
+      password: hunter2
+      state: present
+    register: login_2
+
+  - name: Log in server 1 (idempotent)
+    docker_login:
+      registry_url: "{{ registry_frontend_address }}"
+      username: testuser
+      password: hunter2
+      state: present
+    register: login_1_2
+
+  - name: Log in server 2 (idempotent)
+    docker_login:
+      registry_url: "{{ registry_frontend2_address }}"
+      username: testuser
+      password: hunter2
+      state: present
+    register: login_2_2
+
+  - name: Make sure that login worked
+    assert:
+      that:
+        - login_1 is changed
+        - login_2 is changed
+        - login_1_2 is not changed
+        - login_2_2 is not changed
+
+  when: registry_frontend_address != 'n/a' and registry_frontend2_address != 'n/a'
