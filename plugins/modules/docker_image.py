@@ -296,7 +296,7 @@ stdout:
     returned: success
     type: str
     sample: ""
-    version_added: 1.3.0
+    version_added: 1.0.0
 '''
 
 import errno
