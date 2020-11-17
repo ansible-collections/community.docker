@@ -5,6 +5,22 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v1.0.0
+======
+
+Release Summary
+---------------
+
+This is the first production (non-prerelease) release of ``community.docker``.
+
+
+Minor Changes
+-------------
+
+- Add collection-side support of the ``docker`` action group / module defaults group (https://github.com/ansible-collections/community.docker/pull/17).
+- docker_image - return docker build output (https://github.com/ansible-collections/community.general/pull/805).
+- docker_secret - add a warning when the secret does not have an ``ansible_key`` label but the ``force`` parameter is not set (https://github.com/ansible-collections/community.docker/issues/30, https://github.com/ansible-collections/community.docker/pull/31).
+
 v0.1.0
 ======
 

@@ -70,3 +70,21 @@ releases:
     - c.g-1119-docker_container-device-reqests.yml
     - c.g-2.0.0-deprecations.yml
     release_date: '2020-10-30'
+  1.0.0:
+    changes:
+      minor_changes:
+      - Add collection-side support of the ``docker`` action group / module defaults
+        group (https://github.com/ansible-collections/community.docker/pull/17).
+      - docker_image - return docker build output (https://github.com/ansible-collections/community.general/pull/805).
+      - docker_secret - add a warning when the secret does not have an ``ansible_key``
+        label but the ``force`` parameter is not set (https://github.com/ansible-collections/community.docker/issues/30,
+        https://github.com/ansible-collections/community.docker/pull/31).
+      release_summary: 'This is the first production (non-prerelease) release of ``community.docker``.
+
+        '
+    fragments:
+    - 1.0.0.yml
+    - 17-action-group.yml
+    - 31-docker-secret.yml
+    - community.general-805-docker_image-build-output.yml
+    release_date: '2020-11-17'
