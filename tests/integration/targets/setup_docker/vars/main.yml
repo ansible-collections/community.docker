@@ -1,9 +1,9 @@
 ---
-docker_test_image_hello_world_digest_v1: 0256e8a36e2070f7bf2d0b0763dbabdd67798512411de4cdcf9431a1feb60fd9
-docker_test_image_hello_world_digest_v2: 2557e3c07ed1e38f26e389462d03ed943586f744621577a99efb77324b0fe535
-docker_test_image_hello_world: hello-world
-docker_test_image_busybox: busybox
-docker_test_image_alpine: alpine:3.8
-docker_test_image_alpine_different: alpine:3.7
+docker_test_image_hello_world_digest_v1: e004c2cc521c95383aebb1fb5893719aa7a8eae2e7a71f316a4410784edb00a9
+docker_test_image_hello_world_digest_v2: c9249fdf56138f0d929e2080ae98ee9cb2946f71498fc1484288e6a935b5e5bc
+docker_test_image_hello_world: quay.io/app-sre/busybox
+docker_test_image_busybox: quay.io/app-sre/busybox
+docker_test_image_alpine: quay.io/app-sre/alpine:3.8
+docker_test_image_alpine_different: quay.io/app-sre/alpine:3.7
 docker_test_image_registry_nginx: nginx:alpine
 docker_test_image_registry: registry:2.6.1
