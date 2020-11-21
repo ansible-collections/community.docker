@@ -15,7 +15,7 @@
 - name: restart_config.condition
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     restart_config:
@@ -25,7 +25,7 @@
 - name: restart_config.condition (idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     restart_config:
@@ -35,7 +35,7 @@
 - name: restart_config.condition (change)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     restart_config:
@@ -61,7 +61,7 @@
 - name: restart_config.max_attempts
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     restart_config:
@@ -71,7 +71,7 @@
 - name: restart_config.max_attempts (idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     restart_config:
@@ -81,7 +81,7 @@
 - name: restart_config.max_attempts (change)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     restart_config:
@@ -107,7 +107,7 @@
 - name: restart_config.delay
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     restart_config:
@@ -117,7 +117,7 @@
 - name: restart_config.delay (idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     restart_config:
@@ -127,7 +127,7 @@
 - name: restart_config.delay (change)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     restart_config:
@@ -153,7 +153,7 @@
 - name: restart_config.window
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     restart_config:
@@ -163,7 +163,7 @@
 - name: restart_config.window (idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     restart_config:
@@ -173,7 +173,7 @@
 - name: restart_config.window (change)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     restart_config:

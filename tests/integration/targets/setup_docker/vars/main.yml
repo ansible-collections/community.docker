@@ -1,0 +1,9 @@
+---
+docker_test_image_hello_world_digest_v1: 0256e8a36e2070f7bf2d0b0763dbabdd67798512411de4cdcf9431a1feb60fd9
+docker_test_image_hello_world_digest_v2: 2557e3c07ed1e38f26e389462d03ed943586f744621577a99efb77324b0fe535
+docker_test_image_hello_world: hello-world
+docker_test_image_busybox: busybox
+docker_test_image_alpine: alpine:3.8
+docker_test_image_alpine_different: alpine:3.7
+docker_test_image_registry_nginx: nginx:alpine
+docker_test_image_registry: registry:2.6.1
