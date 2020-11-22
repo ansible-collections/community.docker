@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# If you use another image, you possibly also need to adjust
+# ansible_python_interpreter in test_connection.inventory.
+IMAGE=python:3-alpine
+
 # Setup phase
 
 echo "Setup"
@@ -33,7 +37,7 @@ trap cleanup INT TERM EXIT
 
 echo "Start containers"
 for CONTAINER in ${DOCKER_CONTAINERS}; do
-    docker run --rm --name ${CONTAINER} --detach python:3-alpine /bin/sh -c 'sleep 10m'
+    docker run --rm --name ${CONTAINER} --detach ${IMAGE} /bin/sh -c 'sleep 10m'
     docker exec ${CONTAINER} pip3 install coverage
     echo ${CONTAINER}
 done
