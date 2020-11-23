@@ -15,7 +15,7 @@
 - name: limits.cpus
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     limits:
@@ -25,7 +25,7 @@
 - name: limits.cpus (idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     limits:
@@ -35,7 +35,7 @@
 - name: limits.cpus (change)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     limits:
@@ -61,7 +61,7 @@
 - name: limits.memory
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     limits:
@@ -71,7 +71,7 @@
 - name: limits.memory (idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     limits:
@@ -81,7 +81,7 @@
 - name: limits.memory (change)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     limits:
@@ -107,7 +107,7 @@
 - name: reserve_cpu
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     reservations:
@@ -117,7 +117,7 @@
 - name: reserve_cpu (idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     reservations:
@@ -127,7 +127,7 @@
 - name: reserve_cpu (change)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     reservations:
@@ -153,7 +153,7 @@
 - name: reservations.memory
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     reservations:
@@ -163,7 +163,7 @@
 - name: reservations.memory (idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     reservations:
@@ -173,7 +173,7 @@
 - name: reservations.memory (change)
   docker_swarm_service:
     name: "{{ service_name }}"
-    image: alpine:3.8
+    image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
     reservations:
