@@ -122,10 +122,10 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
         raise AnsibleConnectionFailure(msg)
 
     def _get_params(self):
-        return {
-            option: self.connection_plugin.get_option(option)
+        return dict([
+            (option, self.connection_plugin.get_option(option))
             for option in DOCKER_COMMON_ARGS
-        }
+        ])
 
 
 class DockerSocketHandler:

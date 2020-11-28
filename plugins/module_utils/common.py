@@ -628,7 +628,7 @@ class AnsibleDockerClientBase(Client):
                     self._url('/distribution/{0}/json', image),
                     headers={'X-Registry-Auth': header}
                 ), json=True)
-        return super(AnsibleDockerClient, self).inspect_distribution(image, **kwargs)
+        return super(AnsibleDockerClientBase, self).inspect_distribution(image, **kwargs)
 
 
 class AnsibleDockerClient(AnsibleDockerClientBase):
