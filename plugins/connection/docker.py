@@ -17,6 +17,10 @@ DOCUMENTATION = '''
     short_description: Run tasks in docker containers
     description:
         - Run commands or put/fetch files to an existing docker container.
+        - Uses the Docker CLI to execute commands in the container. If you prefer
+          to directly connect to the Docker daemon, use the
+          R(ansible_collections.community.docker.docker_api_connection,community.docker.docker_api)
+          connection plugin.
     options:
       remote_user:
         description:
