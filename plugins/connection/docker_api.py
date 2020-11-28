@@ -14,7 +14,7 @@ description:
     - Run commands or put/fetch files to an existing docker container.
     - Uses Docker SDK for Python to interact directly with the Docker daemon instead of
       using the Docker CLI. Use the
-      R(ansible_collections.community.docker.docker_connection,community.docker.docker)
+      R(community.docker.docker,ansible_collections.community.docker.docker_connection)
       connection plugin if you want to use the Docker CLI.
 options:
     remote_user:
