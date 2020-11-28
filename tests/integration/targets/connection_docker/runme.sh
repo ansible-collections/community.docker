@@ -38,7 +38,7 @@ trap cleanup INT TERM EXIT
 
 echo "Start containers"
 for CONTAINER in ${DOCKER_CONTAINERS}; do
-    if [ "${ANSIBLE_TEST_COVERAGE}" == "" ]; then
+    if [ "${ANSIBLE_TEST_COVERAGE:-}" == "" ]; then
         docker run --rm --name ${CONTAINER} --detach "${IMAGE}" /bin/sh -c 'sleep 10m'
     else
         docker run --rm --name ${CONTAINER} --detach -v /tmp:/tmp "${IMAGE}" /bin/sh -c 'sleep 10m'

@@ -1,8 +1,8 @@
-[docker]
-docker-no-pipelining ansible_pipelining=false
-docker-pipelining    ansible_pipelining=true
+[docker_api]
+docker_api-no-pipelining ansible_pipelining=false
+docker_api-pipelining    ansible_pipelining=true
 
-[docker:vars]
+[docker_api:vars]
 ansible_host=docker-connection-test-container
 ansible_connection=community.docker.docker_api
 ansible_python_interpreter=/usr/local/bin/python3
