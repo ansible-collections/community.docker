@@ -18,8 +18,9 @@ fi
 
 # Test phase
 
+CONTAINER_SUFFIX=-${RANDOM}
 
-DOCKER_CONTAINERS="docker-connection-test-container"
+DOCKER_CONTAINERS="docker-connection-test-container${CONTAINER_SUFFIX}"
 
 [[ -n "$DEBUG" || -n "$ANSIBLE_DEBUG" ]] && set -x
 
@@ -47,5 +48,16 @@ for CONTAINER in ${DOCKER_CONTAINERS}; do
     echo ${CONTAINER}
 done
 
+cat > test_connection.inventory << EOF
+[docker_api]
+docker_api-no-pipelining ansible_pipelining=false
+docker_api-pipelining    ansible_pipelining=true
+
+[docker_api:vars]
+ansible_host=docker-connection-test-container${CONTAINER_SUFFIX}
+ansible_connection=community.docker.docker_api
+ansible_python_interpreter=/usr/local/bin/python3
+EOF
+
 echo "Run tests"
-./runme-connection.sh
+./runme-connection.sh "$@"
