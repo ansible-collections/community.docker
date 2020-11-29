@@ -510,9 +510,11 @@ class Connection(ConnectionBase):
         # TODO: stream tar file, instead of creating it in-memory into a BytesIO
 
         bio = io.BytesIO()
-        with tarfile.open(fileobj=bio, mode='w|', dereference=True) as tar:
-            tarinfo = tar.gettarinfo(to_text(in_path) if PY3 else b_in_path)
-            tarinfo.name = out_file
+        with tarfile.open(fileobj=bio, mode='w|', dereference=True, encoding='utf-8') as tar:
+            # Note that without both name (bytes) and arcname (unicode), this either fails for
+            # Python 2.6/2.7, Python 3.5/3.6, or Python 3.7+. Only when passing both (in this
+            # form) it works with Python 2.6, 2.7, 3.5, 3.6, and 3.7 up to 3.9.
+            tarinfo = tar.gettarinfo(b_in_path, arcname=to_text(out_file))
             user_id, group_id = self.ids[self.actual_user]
             tarinfo.uid = user_id
             tarinfo.uname = ''
