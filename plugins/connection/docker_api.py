@@ -90,7 +90,6 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClientBase,
     DOCKER_COMMON_ARGS,
     RequestException,
-    docker_version,
 )
 
 try:
