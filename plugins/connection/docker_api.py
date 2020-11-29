@@ -76,6 +76,7 @@ import io
 import os
 import os.path
 import socket as pysocket
+import shutil
 import tarfile
 
 from ansible.compat import selectors
@@ -547,6 +548,7 @@ class Connection(ConnectionBase):
         display.vvv("FETCH %s TO %s" % (in_path, out_path), host=self._play_context.remote_addr)
 
         in_path = self._prefix_login_path(in_path)
+        b_out_path = to_bytes(out_path, errors='surrogate_or_strict')
 
         considered_in_paths = set()
 
@@ -554,10 +556,6 @@ class Connection(ConnectionBase):
             if in_path in considered_in_paths:
                 raise AnsibleConnectionFailure('Found infinite symbolic link loop when trying to fetch "{0}"'.format(in_path))
             considered_in_paths.add(in_path)
-
-            out_dir, out_file = os.path.split(out_path)
-            b_out_file = to_bytes(out_file, errors='surrogate_or_strict')
-            b_out_dir = to_bytes(out_dir, errors='surrogate_or_strict')
 
             display.vvvv('FETCH: Fetching "%s"' % in_path, host=self._play_context.remote_addr)
             stream, stats = self._call_client(self._play_context, lambda: self.client.get_archive(
@@ -584,12 +582,9 @@ class Connection(ConnectionBase):
                         continue
                     if not member.isfile():
                         raise AnsibleConnectionFailure('Remote file "%s" is not a regular file or a symbolic link' % in_path)
-                    if PY3:
-                        member.name = out_file
-                        tar.extract(member, out_dir, set_attrs=False)
-                    else:
-                        member.name = b_out_file
-                        tar.extract(member, b_out_dir)
+                    in_f = tar.extractfile(member)  # in Python 2, this *cannot* be used in `with`...
+                    with open(b_out_path, 'wb') as out_f:
+                        shutil.copyfileobj(in_f, out_f, member.size)
                 if first:
                     raise AnsibleConnectionFailure('Received tarfile is empty!')
                 # If the only member was a file, it's already extracted. If it is a symlink, process it now.
