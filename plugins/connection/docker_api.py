@@ -20,7 +20,7 @@ options:
     remote_user:
         type: str
         description:
-            - The user to execute as inside the container
+            - The user to execute as inside the container.
         vars:
             - name: ansible_user
             - name: ansible_docker_user
