@@ -132,7 +132,7 @@ stages:
           groups:
             - 4
             - 5
-  - stage: Docker_2.9
+  - stage: Docker_2_9
     displayName: Docker 2.9
     dependsOn: []
     jobs:
