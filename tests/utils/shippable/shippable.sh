@@ -14,13 +14,19 @@ function join {
     echo "$*";
 }
 
+# HACK remove once azure-pipelines-test-container has been fixed
+export PATH=$PATH:$HOME/.local/bin
+
+# Ensure we can write other collections to this dir
+sudo chown "$(whoami)" "${PWD}/../../"
+
 test="$(join / "${args[@]:1}")"
 
 docker images ansible/ansible
 docker images quay.io/ansible/*
 docker ps
 
-for container in $(docker ps --format '{{.Image}} {{.ID}}' | grep -v '^drydock/' | sed 's/^.* //'); do
+for container in $(docker ps --format '{{.Image}} {{.ID}}' | grep -v -e '^drydock/' -e '^quay.io/ansible/azure-pipelines-test-container:' | sed 's/^.* //'); do
     docker rm -f "${container}" || true  # ignore errors
 done
 
@@ -59,12 +65,16 @@ else
     retry pip install "https://github.com/ansible/ansible/archive/stable-${ansible_version}.tar.gz" --disable-pip-version-check
 fi
 
-export ANSIBLE_COLLECTIONS_PATHS="${HOME}/.ansible"
-SHIPPABLE_RESULT_DIR="$(pwd)/shippable"
-TEST_DIR="${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/docker"
-mkdir -p "${TEST_DIR}"
-cp -aT "${SHIPPABLE_BUILD_DIR}" "${TEST_DIR}"
-cd "${TEST_DIR}"
+if [ "${SHIPPABLE_BUILD_ID:-}" ]; then
+    export ANSIBLE_COLLECTIONS_PATHS="${HOME}/.ansible"
+    SHIPPABLE_RESULT_DIR="$(pwd)/shippable"
+    TEST_DIR="${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/docker"
+    mkdir -p "${TEST_DIR}"
+    cp -aT "${SHIPPABLE_BUILD_DIR}" "${TEST_DIR}"
+    cd "${TEST_DIR}"
+else
+    export ANSIBLE_COLLECTIONS_PATHS="${PWD}/../../../"
+fi
 
 if [ "${script}" != "sanity" ] || [ "${test}" == "sanity/extra" ]; then
     # Nothing further should be added to this list.
@@ -198,7 +208,7 @@ function cleanup
     fi
 }
 
-trap cleanup EXIT
+if [ "${SHIPPABLE_BUILD_ID:-}" ]; then trap cleanup EXIT; fi
 
 if [[ "${COVERAGE:-}" == "--coverage" ]]; then
     timeout=60
@@ -208,5 +218,5 @@ fi
 
 ansible-test env --dump --show --timeout "${timeout}" --color -v
 
-"tests/utils/shippable/check_matrix.py"
+if [ "${SHIPPABLE_BUILD_ID:-}" ]; then "tests/utils/shippable/check_matrix.py"; fi
 "tests/utils/shippable/${script}.sh" "${test}"
