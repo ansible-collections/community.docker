@@ -14,9 +14,6 @@ function join {
     echo "$*";
 }
 
-# HACK remove once azure-pipelines-test-container has been fixed
-export PATH=$PATH:$HOME/.local/bin
-
 # Ensure we can write other collections to this dir
 sudo chown "$(whoami)" "${PWD}/../../"
 
