@@ -1,6 +1,6 @@
 # Docker Community Collection
 [![Build Status](
-https://dev.azure.com/ansible/community.docker/_apis/build/status/CI?branchName=main)](https://dev.azure.com/ansible/community.docker/_build?definitionId=21)
+https://dev.azure.com/ansible/community.docker/_apis/build/status/CI?branchName=main)](https://dev.azure.com/ansible/community.docker/_build?definitionId=25)
 [![Run Status](https://api.shippable.com/projects/5f992599cc07df00079b99d1/badge?branch=main)](https://app.shippable.com/github/ansible-collections/community.docker/dashboard)
 [![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/community.docker)](https://codecov.io/gh/ansible-collections/community.docker)
 
