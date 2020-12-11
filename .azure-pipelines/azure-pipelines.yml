@@ -36,7 +36,7 @@ variables:
 resources:
   containers:
     - container: default
-      image: quay.io/ansible/azure-pipelines-test-container:1.7.0
+      image: quay.io/ansible/azure-pipelines-test-container:1.7.1
 
 pool: Standard
 
@@ -183,10 +183,10 @@ stages:
     jobs:
       - template: templates/matrix.yml
         parameters:
-          nameFormat: RHEL 8.2 {0}
-          testFormat: 2.10/rhel/8.2/{0}
+          nameFormat: RHEL {0}
+          testFormat: devel/rhel/{0}
           targets:
-            - test: ''
+            - test: '8.2'
           groups:
             - 1
             - 2
@@ -197,14 +197,17 @@ stages:
     jobs:
       - template: templates/matrix.yml
         parameters:
-          nameFormat: RHEL 8.2 {0}
-          testFormat: 2.9/rhel/8.2/{0}
+          nameFormat: RHEL {0}
+          testFormat: devel/rhel/{0}
           targets:
-            - test: ''
+            - test: '8.2'
           groups:
             - 1
             - 2
             - 3
+
+  ## Finally
+
   - stage: Summary
     condition: succeededOrFailed()
     dependsOn:
