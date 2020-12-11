@@ -88,3 +88,14 @@ releases:
     - 31-docker-secret.yml
     - community.general-805-docker_image-build-output.yml
     release_date: '2020-11-17'
+  1.0.1:
+    changes:
+      bugfixes:
+      - docker_container - the validation for ``capabilities`` in ``device_requests``
+        was incorrect (https://github.com/ansible-collections/community.docker/issues/42,
+        https://github.com/ansible-collections/community.docker/pull/43).
+      release_summary: Maintenance release with a bugfix for ``docker_container``.
+    fragments:
+    - 1.0.1.yml
+    - 43-docker_container-device_requests.yml
+    release_date: '2020-12-11'
