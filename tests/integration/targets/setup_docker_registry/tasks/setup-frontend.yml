@@ -21,7 +21,7 @@
     networks: >-
       {{
         [dict([['name', current_container_network_ip]])]
-        if current_container_network_ip else omit
+        if current_container_network_ip not in ['', 'bridge'] else omit
       }}
   register: nginx_container
 
