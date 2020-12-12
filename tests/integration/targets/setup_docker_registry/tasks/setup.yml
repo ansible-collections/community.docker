@@ -44,6 +44,12 @@
       name: '{{ docker_registry_container_name_registry }}'
       image: "{{ docker_test_image_registry }}"
       ports: 5000
+      network_mode: '{{ current_container_network_ip | default(omit, true) }}'
+      networks: >-
+        {{
+          [dict([['name', current_container_network_ip]])]
+          if current_container_network_ip else omit
+        }}
     register: registry_container
 
   - name: Get registry URL
