@@ -274,7 +274,7 @@ DOCKERPYUPGRADE_RECOMMEND_DOCKER = ("Use `pip install --upgrade docker-py` to up
 class AnsibleDockerClientBase(Client):
     def __init__(self, min_docker_version=None, min_docker_api_version=None):
         if min_docker_version is None:
-            min_docker_verison = MIN_DOCKER_VERSION
+            min_docker_version = MIN_DOCKER_VERSION
         NEEDS_DOCKER_PY2 = (LooseVersion(min_docker_version) >= LooseVersion('2.0.0'))
 
         self.docker_py_version = LooseVersion(docker_version)
