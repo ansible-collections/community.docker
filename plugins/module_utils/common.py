@@ -1,20 +1,5 @@
-#
-#  Copyright 2016 Red Hat | Ansible
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright 2016 Red Hat | Ansible
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
@@ -287,7 +272,9 @@ DOCKERPYUPGRADE_RECOMMEND_DOCKER = ("Use `pip install --upgrade docker-py` to up
 
 
 class AnsibleDockerClientBase(Client):
-    def __init__(self, min_docker_version=MIN_DOCKER_VERSION, min_docker_api_version=None):
+    def __init__(self, min_docker_version=None, min_docker_api_version=None):
+        if min_docker_version is None:
+            min_docker_verison = MIN_DOCKER_VERSION
         NEEDS_DOCKER_PY2 = (LooseVersion(min_docker_version) >= LooseVersion('2.0.0'))
 
         self.docker_py_version = LooseVersion(docker_version)
@@ -634,7 +621,7 @@ class AnsibleDockerClientBase(Client):
 class AnsibleDockerClient(AnsibleDockerClientBase):
 
     def __init__(self, argument_spec=None, supports_check_mode=False, mutually_exclusive=None,
-                 required_together=None, required_if=None, min_docker_version=MIN_DOCKER_VERSION,
+                 required_together=None, required_if=None, min_docker_version=None,
                  min_docker_api_version=None, option_minimal_versions=None,
                  option_minimal_versions_ignore_params=None, fail_results=None):
 
