@@ -85,7 +85,7 @@ from ansible.utils.display import Display
 from ansible_collections.community.docker.plugins.module_utils.common import (
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.socket_handler import (
+from ansible_collections.community.docker.plugins.plugin_utils.socket_handler import (
     DockerSocketHandler,
 )
 from ansible_collections.community.docker.plugins.plugin_utils.common import (
