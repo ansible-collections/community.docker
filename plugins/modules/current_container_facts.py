@@ -11,10 +11,10 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: current_container_facts
-short_description: Return facts about whether the module runs in a container
+short_description: Return facts about whether the module runs in a Docker container
 version_added: 1.1.0
 description:
-  - Return facts about whether the module runs in a container.
+  - Return facts about whether the module runs in a Docker container.
 author:
   - Felix Fontein (@felixfontein)
 '''
@@ -48,7 +48,7 @@ ansible_facts:
             type: str
         ansible_module_container_type:
             description:
-              - The detected container ID.
+              - The detected container environment.
               - Contains an empty string if no container was detected.
               - Otherwise, will be one of C(docker) or C(azure_pipelines).
             returned: always
