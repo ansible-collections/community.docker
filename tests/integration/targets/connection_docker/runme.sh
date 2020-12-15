@@ -2,7 +2,8 @@
 
 # If you use another image, you possibly also need to adjust
 # ansible_python_interpreter in test_connection.inventory.
-IMAGE=python:3-alpine
+source ../setup_docker/vars/main.env
+IMAGE="${DOCKER_TEST_IMAGE_PYTHON3}"
 
 # Setup phase
 
