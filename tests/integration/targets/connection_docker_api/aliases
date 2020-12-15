@@ -1,0 +1,3 @@
+shippable/posix/group4
+skip/docker  # coverage does not work if we're inside a docker container, since we cannot access this container's /tmp dir from the new container
+destructive

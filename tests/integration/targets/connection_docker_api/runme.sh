@@ -49,13 +49,13 @@ for CONTAINER in ${DOCKER_CONTAINERS}; do
 done
 
 cat > test_connection.inventory << EOF
-[docker]
-docker-no-pipelining ansible_pipelining=false
-docker-pipelining    ansible_pipelining=true
+[docker_api]
+docker_api-no-pipelining ansible_pipelining=false
+docker_api-pipelining    ansible_pipelining=true
 
-[docker:vars]
+[docker_api:vars]
 ansible_host=docker-connection-test-container${CONTAINER_SUFFIX}
-ansible_connection=community.docker.docker
+ansible_connection=community.docker.docker_api
 ansible_python_interpreter=/usr/local/bin/python3
 EOF
 
