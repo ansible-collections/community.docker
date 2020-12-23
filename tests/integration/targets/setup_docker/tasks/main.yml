@@ -7,6 +7,13 @@
 - name: Setup Docker
   when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in  ['CentOS6', 'RedHat6']
   block:
+    - name: Detect whether we are running inside a container
+      current_container_facts:
+
+    - name: Determine whether Docker Daemon needs to be installed
+      set_fact:
+        needs_docker_daemon: '{{ not ansible_module_running_in_container }}'
+
     - name: Include distribution specific variables
       include_vars: "{{ lookup('first_found', params) }}"
       vars:
@@ -135,9 +142,6 @@
             images: "{{ docker_images.stdout_lines | default([]) }}"
 
       when: docker_cli_version is version('0.0', '>')
-
-    - name: Detect whether we are running inside a container
-      current_container_facts:
 
     - name: Inspect current container
       docker_container_info:

@@ -1,3 +1,4 @@
+---
 docker_prereq_packages:
   - yum-utils
   - device-mapper-persistent-data
@@ -6,4 +7,6 @@ docker_prereq_packages:
 
 docker_packages:
   - docker-ce-19.03.13
+  - docker-ce-cli-19.03.13
+docker_cli_packages:
   - docker-ce-cli-19.03.13

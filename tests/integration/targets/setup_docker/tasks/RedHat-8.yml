@@ -23,7 +23,7 @@
 
 - name: Install docker
   dnf:
-    name: "{{ docker_packages }}"
+    name: "{{ docker_packages if needs_docker_daemon else docker_cli_packages }}"
     state: present
   notify: cleanup docker
 
@@ -32,3 +32,4 @@
     name: docker
     state: started
   ignore_errors: "{{ ansible_virtualization_type in ['docker', 'container', 'containerd'] }}"
+  when: needs_docker_daemon

@@ -1,3 +1,4 @@
+---
 docker_cli_version: '0.0'
 docker_api_version: '0.0'
 docker_py_version: '0.0'
@@ -5,6 +6,8 @@ docker_skip_cleanup: yes
 docker_prereq_packages: []
 docker_packages:
   - docker-ce
+docker_cli_packages:
+  - docker-ce-cli
 
 docker_pip_extra_packages: []
 docker_pip_package: docker

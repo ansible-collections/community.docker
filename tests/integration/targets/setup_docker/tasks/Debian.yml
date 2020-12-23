@@ -27,7 +27,7 @@
 
   - name: Install Docker CE
     apt:
-      name: '{{ docker_packages }}'
+      name: '{{ docker_packages if needs_docker_daemon else docker_cli_packages }}'
       state: present
       update_cache: true
 

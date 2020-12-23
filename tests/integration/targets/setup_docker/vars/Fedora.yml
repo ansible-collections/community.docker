@@ -1,4 +1,1 @@
-docker_prereq_packages: []
-
-docker_packages:
-  - docker-ce
+---
