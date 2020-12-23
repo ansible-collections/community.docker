@@ -123,6 +123,11 @@ options:
           - When building an image specifies an intermediate build stage by
             name as a final stage for the resulting image.
         type: str
+      platform:
+        description:
+          - Platform in the format C(os[/arch[/variant]]).
+        type: str
+        version_added: 1.1.0
   archive_path:
     description:
       - Use with state C(present) to archive an image to a .tar file.
@@ -365,6 +370,7 @@ class ImageManager(DockerBaseClass):
         self.http_timeout = build.get('http_timeout')
         self.push = parameters.get('push')
         self.buildargs = build.get('args')
+        self.build_platform = build.get('platform')
         self.use_config_proxy = build.get('use_config_proxy')
 
         # If name contains a tag, it takes precedence over tag parameter.
@@ -634,6 +640,8 @@ class ImageManager(DockerBaseClass):
                 params['buildargs'] = {}
         if self.target:
             params['target'] = self.target
+        if self.build_platform is not None:
+            params['platform'] = self.build_platform
 
         build_output = []
         for line in self.client.build(**params):
@@ -702,6 +710,7 @@ def main():
             use_config_proxy=dict(type='bool'),
             target=dict(type='str'),
             etc_hosts=dict(type='dict'),
+            platform=dict(type='str'),
         )),
         archive_path=dict(type='path'),
         force_source=dict(type='bool', default=False),
@@ -736,12 +745,16 @@ def main():
     def detect_etc_hosts(client):
         return client.module.params['build'] and bool(client.module.params['build'].get('etc_hosts'))
 
+    def detect_platform(client):
+        return client.module.params['build'] and client.module.params['build'].get('platform') is not None
+
     option_minimal_versions = dict()
     option_minimal_versions["build.cache_from"] = dict(docker_py_version='2.1.0', docker_api_version='1.25', detect_usage=detect_build_cache_from)
     option_minimal_versions["build.network"] = dict(docker_py_version='2.4.0', docker_api_version='1.25', detect_usage=detect_build_network)
     option_minimal_versions["build.target"] = dict(docker_py_version='2.4.0', detect_usage=detect_build_target)
     option_minimal_versions["build.use_config_proxy"] = dict(docker_py_version='3.7.0', detect_usage=detect_use_config_proxy)
     option_minimal_versions["build.etc_hosts"] = dict(docker_py_version='2.6.0', docker_api_version='1.27', detect_usage=detect_etc_hosts)
+    option_minimal_versions["build.platform"] = dict(docker_py_version='3.0.0', docker_api_version='1.32', detect_usage=detect_platform)
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
