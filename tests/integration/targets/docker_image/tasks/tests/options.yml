@@ -30,6 +30,7 @@
       pull: no
     source: build
   register: buildargs_1
+  ignore_errors: yes
 
 - name: buildargs (idempotency)
   docker_image:
@@ -43,6 +44,7 @@
       pull: no
     source: build
   register: buildargs_2
+  ignore_errors: yes
 
 - name: cleanup
   docker_image:
@@ -53,7 +55,7 @@
 - assert:
     that:
     - buildargs_1 is changed
-    - buildargs_2 is not changed
+    - buildargs_2 is not failed and buildargs_2 is not changed
   when: docker_py_version is version('1.6.0', '>=')
 
 - assert:
@@ -63,7 +65,7 @@
   when: docker_py_version is version('1.6.0', '<')
 
 ####################################################################
-## container_limits ################################################
+## build.container_limits ##########################################
 ####################################################################
 
 - name: container_limits (Failed due to min memory limit)
@@ -108,7 +110,7 @@
     - "container_limits_1 is changed or container_limits_2 is changed and not (container_limits_1 is changed and container_limits_2 is changed)"
 
 ####################################################################
-## dockerfile ######################################################
+## build.dockerfile ################################################
 ####################################################################
 
 - name: dockerfile
@@ -132,6 +134,56 @@
     - dockerfile_1 is changed
     - "('FROM ' ~ docker_test_image_alpine) in dockerfile_1.stdout"
     - dockerfile_1['image']['Config']['WorkingDir'] == '/newdata'
+
+####################################################################
+## build.platform ##################################################
+####################################################################
+
+- name: cleanup
+  docker_image:
+    name: "{{ iname }}"
+    state: absent
+    force_absent: yes
+
+- name: build.platform
+  docker_image:
+    name: "{{ iname }}"
+    build:
+      path: "{{ output_dir }}/files"
+      platform: linux
+      pull: no
+    source: build
+  register: platform_1
+  ignore_errors: yes
+
+- name: build.platform (idempotency)
+  docker_image:
+    name: "{{ iname }}"
+    build:
+      path: "{{ output_dir }}/files"
+      platform: linux
+      pull: no
+    source: build
+  register: platform_2
+  ignore_errors: yes
+
+- name: cleanup
+  docker_image:
+    name: "{{ iname }}"
+    state: absent
+    force_absent: yes
+
+- assert:
+    that:
+    - platform_1 is changed
+    - platform_2 is not failed and platform_2 is not changed
+  when: docker_py_version is version('3.0.0', '>=')
+
+- assert:
+    that:
+    - platform_1 is failed
+    - platform_2 is failed
+  when: docker_py_version is version('3.0.0', '<')
 
 ####################################################################
 ## force ###########################################################
@@ -216,7 +268,7 @@
     - archive_image['image']['Id'] == load_image['image']['Id']
 
 ####################################################################
-## path ############################################################
+## build.path ######################################################
 ####################################################################
 
 - name: Build image
@@ -249,7 +301,7 @@
       - path_2 is not changed
 
 ####################################################################
-## target ##########################################################
+## build.target ####################################################
 ####################################################################
 
 - name: Build multi-stage image
