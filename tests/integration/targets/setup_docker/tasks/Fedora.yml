@@ -20,7 +20,7 @@
 
 - name: Install docker
   dnf:
-    name: "{{ docker_packages }}"
+    name: "{{ docker_packages if needs_docker_daemon else docker_cli_packages }}"
     state: present
     enablerepo: docker-ce-test
   notify: cleanup docker

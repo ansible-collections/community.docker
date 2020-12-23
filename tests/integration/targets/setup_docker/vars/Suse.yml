@@ -1,2 +1,8 @@
+---
 docker_packages:
+  - docker>=17
+
+# OpenSUSE 15 does not seem to have docker-client (https://software.opensuse.org/package/docker-client)
+# or any other Docker CLI-only package
+docker_cli_packages:
   - docker>=17
