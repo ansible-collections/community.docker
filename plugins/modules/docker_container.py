@@ -52,6 +52,11 @@ options:
       - List of capabilities to drop from the container.
     type: list
     elements: str
+  cgroup_parent:
+    description:
+      - Specify the parent cgroup for the container.
+    type: str
+    version_added: 1.1.0
   cleanup:
     description:
       - Use with I(detach=false) to remove the container after successful execution.
@@ -1589,6 +1594,7 @@ class TaskParameters(DockerBaseClass):
             publish_all_ports='publish_all_ports',
             links='links',
             privileged='privileged',
+            cgroup_parent='cgroup_parent',
             dns='dns_servers',
             dns_opt='dns_opts',
             dns_search='dns_search_domains',
@@ -2175,6 +2181,7 @@ class Container(DockerBaseClass):
             interactive=config.get('OpenStdin'),
             capabilities=host_config.get('CapAdd'),
             cap_drop=host_config.get('CapDrop'),
+            cgroup_parent=host_config.get('CgroupParent'),
             expected_devices=host_config.get('Devices'),
             dns_servers=host_config.get('Dns'),
             dns_opts=host_config.get('DnsOptions'),
@@ -3371,6 +3378,7 @@ def main():
         blkio_weight=dict(type='int'),
         capabilities=dict(type='list', elements='str'),
         cap_drop=dict(type='list', elements='str'),
+        cgroup_parent=dict(type='str'),
         cleanup=dict(type='bool', default=False),
         command=dict(type='raw'),
         comparisons=dict(type='dict'),
