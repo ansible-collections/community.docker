@@ -1366,7 +1366,7 @@ class TaskParameters(DockerBaseClass):
 
         self.publish_all_ports = False
         self.published_ports = self._parse_publish_ports()
-        if self.published_ports in ('all', 'ALL'):
+        if self.published_ports == 'all':
             self.publish_all_ports = True
             self.published_ports = None
 
@@ -1684,6 +1684,14 @@ class TaskParameters(DockerBaseClass):
             return None
 
         if 'all' in self.published_ports:
+            if len(self.published_ports) > 1:
+                self.client.module.deprecate(
+                    'Specifying "all" in published_ports together with port mappings is not properly '
+                    'supported by the module. The port mappings are currently ignored. Please specify '
+                    'only port mappings, or the value "all". The behavior for mixed usage will either '
+                    'be forbidden in version 2.0.0, or properly handled. In any case, the way you '
+                    'currently use the module will change in a breaking way',
+                    collection_name='community.docker', version='2.0.0')
             return 'all'
 
         default_ip = self.default_host_ip
