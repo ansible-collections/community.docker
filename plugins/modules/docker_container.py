@@ -1136,6 +1136,13 @@ container:
             },
             ...
     }'
+status:
+    description:
+      - In case a container is started without detaching, this contains the exit code of the process in the container.
+      - Before community.docker 1.1.0, this was only returned when non-zero.
+    returned: when I(state) is C(started) and I(detached) is C(false), and when waiting for the container result did not fail
+    type: int
+    sample: 0
 '''
 
 import os
@@ -2999,6 +3006,9 @@ class ContainerManager(DockerBaseClass):
                     status = self.client.wait(container_id)['StatusCode']
                 else:
                     status = self.client.wait(container_id)
+                self.client.fail_results['status'] = status
+                self.results['status'] = status
+
                 if self.parameters.auto_remove:
                     output = "Cannot retrieve result as auto_remove is enabled"
                     if self.parameters.output_logs:
@@ -3015,7 +3025,7 @@ class ContainerManager(DockerBaseClass):
                         output = "Result logged using `%s` driver" % logging_driver
 
                 if status != 0:
-                    self.fail(output, status=status)
+                    self.fail(output)
                 if self.parameters.cleanup:
                     self.container_remove(container_id, force=True)
                 insp = self._get_container(container_id)
