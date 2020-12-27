@@ -36,10 +36,6 @@ LOVING_THARP = {
     },
     'Config': {
         'Image': 'quay.io/ansible/ubuntu1804-test-container:1.21.0',
-        'Labels': {
-            #'com.docker.stack.namespace': 'my_stack',
-            #'com.docker.swarm.service.name': 'my_service',
-        },
     },
 }
 
