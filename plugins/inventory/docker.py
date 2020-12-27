@@ -56,6 +56,8 @@ options:
             - Toggle to (not) include all available inspection metadata.
             - Note that all top-level keys will be transformed to the format C(docker_xxx).
               For example, C(HostConfig) is converted to C(docker_hostconfig).
+            - If this is C(false), these values can only be used during I(constructed), I(groups), and I(keyed_groups).
+            - The C(docker) inventory script always added these variables, so for compatibility set this to C(true).
         type: bool
         default: false
 
@@ -158,9 +160,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
     NAME = 'community.docker.docker'
 
-    def _fail(self, msg):
-        raise AnsibleError(msg)
-
     def _slugify(self, value):
         return 'docker_%s' % (re.sub(r'[^\w-]', '_', value).lower().lstrip('_'))
 
@@ -189,8 +188,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
             try:
                 name = container.get('Names', list())[0].lstrip('/')
+                full_name = name
             except IndexError:
                 name = short_id
+                full_name = id
 
             self.inventory.add_host(name)
             facts = dict(
@@ -204,42 +205,31 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             except APIError as exc:
                 raise AnsibleError("Error inspecting container %s - %s" % (name, str(exc)))
 
-            running = inspect.get('State', dict()).get('Running')
+            state = inspect.get('State') or dict()
+            config = inspect.get('Config') or dict()
+            labels = config.get('Labels') or dict()
+
+            running = state.get('Running')
 
             # Add container to groups
-            image_name = inspect.get('Config', dict()).get('Image')
+            image_name = config.get('Image')
             if image_name and add_legacy_groups:
                 self.inventory.add_group('image_{0}'.format(image_name))
                 self.inventory.add_host(name, group='image_{0}'.format(image_name))
 
-            stack_name = inspect.get('Config', dict()).get('Labels', dict()).get('com.docker.stack.namespace')
+            stack_name = labels.get('com.docker.stack.namespace')
             if stack_name:
                 full_facts['docker_stack'] = stack_name
                 if add_legacy_groups:
                     self.inventory.add_group('stack_{0}'.format(stack_name))
                     self.inventory.add_host(name, group='stack_{0}'.format(stack_name))
 
-            service_name = inspect.get('Config', dict()).get('Labels', dict()).get('com.docker.swarm.service.name')
+            service_name = labels.get('com.docker.swarm.service.name')
             if service_name:
                 full_facts['docker_service'] = service_name
                 if add_legacy_groups:
                     self.inventory.add_group('service_{0}'.format(service_name))
                     self.inventory.add_host(name, group='service_{0}'.format(service_name))
-
-            if add_legacy_groups:
-                self.inventory.add_group(id)
-                self.inventory.add_host(name, group=id)
-                self.inventory.add_group(name)
-                self.inventory.add_host(name, group=name)
-                self.inventory.add_group(short_id)
-                self.inventory.add_host(name, group=short_id)
-                self.inventory.add_group(hostname)
-                self.inventory.add_host(name, group=hostname)
-
-                if running is True:
-                    self.inventory.add_host(name, group='running')
-                else:
-                    self.inventory.add_host(name, group='stopped')
 
             if connection_type == 'ssh':
                 # Figure out ssh IP and Port
@@ -256,16 +246,16 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
                 facts.update(dict(
                     ansible_ssh_host=ip,
-                    ansible_ssh_port=port.get('HostPort', int()),
+                    ansible_ssh_port=port.get('HostPort', 0),
                 ))
             elif connection_type == 'docker-cli':
                 facts.update(dict(
-                    ansible_host=name,
+                    ansible_host=full_name,
                     ansible_connection='community.docker.docker',
                 ))
             elif connection_type == 'docker-api':
                 facts.update(dict(
-                    ansible_host=name,
+                    ansible_host=full_name,
                     ansible_connection='community.docker.docker_api',
                 ))
 
@@ -288,16 +278,37 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             # Create groups based on variable values and add the corresponding hosts to it
             self._add_host_to_keyed_groups(self.get_option('keyed_groups'), full_facts, name, strict=strict)
 
+            # We need to do this last since we also add a group called `name`.
+            # When we do this before a set_variable() call, the variables are assigned
+            # to the group, and not to the host.
+            if add_legacy_groups:
+                self.inventory.add_group(id)
+                self.inventory.add_host(name, group=id)
+                self.inventory.add_group(name)
+                self.inventory.add_host(name, group=name)
+                self.inventory.add_group(short_id)
+                self.inventory.add_host(name, group=short_id)
+                self.inventory.add_group(hostname)
+                self.inventory.add_host(name, group=hostname)
+
+                if running is True:
+                    self.inventory.add_host(name, group='running')
+                else:
+                    self.inventory.add_host(name, group='stopped')
+
     def verify_file(self, path):
         """Return the possibly of a file being consumable by this plugin."""
         return (
             super(InventoryModule, self).verify_file(path) and
             path.endswith(('docker.yaml', 'docker.yml')))
 
+    def _create_client(self):
+        return AnsibleDockerClient(self, min_docker_version=MIN_DOCKER_PY, min_docker_api_version=MIN_DOCKER_API)
+
     def parse(self, inventory, loader, path, cache=True):
-        client = AnsibleDockerClient(self, min_docker_version=MIN_DOCKER_PY, min_docker_api_version=MIN_DOCKER_API)
         super(InventoryModule, self).parse(inventory, loader, path, cache)
         self._read_config_data(path)
+        client = self._create_client()
         try:
             self._populate(client)
         except DockerException as e:
