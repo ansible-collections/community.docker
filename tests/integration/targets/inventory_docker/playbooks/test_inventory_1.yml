@@ -9,22 +9,28 @@
     - name: Make sure that the default groups are there, but no others
       assert:
         that:
-          - groups.all | length == 2
-          - groups.ungrouped | length == 2
+          - groups.all | length >= 2
+          - groups.ungrouped | length >= 2
           - groups | length == 2
 
 - hosts: all
   gather_facts: false
   tasks:
-    - name: Run raw command
-      raw: ls /
-      register: output
+    - when:
+        # When the integration tests are run inside a docker container, there
+        # will be other containers.
+        - inventory_hostname.startswith('ansible-test-docker-inventory-container-')
+      block:
 
-    - name: Check whether we have some directories we expect in the output
-      assert:
-        that:
-          - "'bin' in output.stdout_lines"
-          - "'dev' in output.stdout_lines"
-          - "'lib' in output.stdout_lines"
-          - "'proc' in output.stdout_lines"
-          - "'sys' in output.stdout_lines"
+      - name: Run raw command
+        raw: ls /
+        register: output
+
+      - name: Check whether we have some directories we expect in the output
+        assert:
+          that:
+            - "'bin' in output.stdout_lines"
+            - "'dev' in output.stdout_lines"
+            - "'lib' in output.stdout_lines"
+            - "'proc' in output.stdout_lines"
+            - "'sys' in output.stdout_lines"
