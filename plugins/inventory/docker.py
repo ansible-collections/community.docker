@@ -73,10 +73,10 @@ options:
             - Only used if I(connection_type) is C(ssh).
         type: int
         default: 22
-    
+
     add_legacy_groups:
         description:
-            - Add the same groups as the C(docker) inventory script does. These are the following:
+            - "Add the same groups as the C(docker) inventory script does. These are the following:"
             - "C(<container id>): contains the container of this ID."
             - "C(<container name>): contains the container that has this name."
             - "C(<container short id>): contains the containers that have this short ID (first 13 letters of ID)."
