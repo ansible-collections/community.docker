@@ -138,7 +138,7 @@ class Connection(ConnectionBase):
     def __init__(self, play_context, new_stdin, *args, **kwargs):
         super(Connection, self).__init__(play_context, new_stdin, *args, **kwargs)
 
-        self.client = AnsibleDockerClient(self, min_docker_version=MIN_DOCKER_PY, min_docker_api_version=MIN_DOCKER_API)
+        self.client = None
         self.ids = dict()
 
         # Windows uses Powershell modules
@@ -146,13 +146,6 @@ class Connection(ConnectionBase):
             self.module_implementation_preferences = ('.ps1', '.exe', '')
 
         self.actual_user = play_context.remote_user
-        if self.actual_user is None and display.verbosity > 2:
-            # Since we're not setting the actual_user, look it up so we have it for logging later
-            # Only do this if display verbosity is high enough that we'll need the value
-            # This saves overhead from calling into docker when we don't need to
-            result = self._call_client(play_context, lambda: self.client.inspect_container(play_context.remote_addr))
-            if result.get('Config'):
-                self.actual_user = result['Config'].get('User')
 
     def _connect(self, port=None):
         """ Connect to the container. Nothing to do """
@@ -161,7 +154,20 @@ class Connection(ConnectionBase):
             display.vvv(u"ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
                 self.actual_user or u'?'), host=self._play_context.remote_addr
             )
+            if self.client is None:
+                self.client = AnsibleDockerClient(self, min_docker_version=MIN_DOCKER_PY, min_docker_api_version=MIN_DOCKER_API)
             self._connected = True
+
+            if self.actual_user is None and display.verbosity > 2:
+                # Since we're not setting the actual_user, look it up so we have it for logging later
+                # Only do this if display verbosity is high enough that we'll need the value
+                # This saves overhead from calling into docker when we don't need to
+                display.vvv(u"Trying to determine actual user")
+                result = self._call_client(self._play_context, lambda: self.client.inspect_container(self._play_context.remote_addr))
+                if result.get('Config'):
+                    self.actual_user = result['Config'].get('User')
+                    if self.actual_user is not None:
+                        display.vvv(u"Actual user is '{0}'".format(self.actual_user))
 
     def exec_command(self, cmd, in_data=None, sudoable=False):
         """ Run a command on the docker host """
