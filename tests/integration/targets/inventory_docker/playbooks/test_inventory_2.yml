@@ -14,7 +14,7 @@
           - groups.all | length >= 2
           - groups.ungrouped | length >= 0
           - groups.running | length >= 2
-          - groups.stopped | length == 0
+          - groups.stopped | length >= 0
           - groups['image_' ~ docker_test_image_alpine] | length == 2
           - groups['ansible-test-docker-inventory-container-1'] | length == 1
           - groups['ansible-test-docker-inventory-container-2'] | length == 1
