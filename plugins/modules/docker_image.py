@@ -598,6 +598,17 @@ class ImageManager(DockerBaseClass):
         if push:
             self.push_image(repo, repo_tag)
 
+    @staticmethod
+    def _extract_output_line(line, output):
+        '''
+        Extract text line from stream output and, if found, adds it to output.
+        '''
+        if 'stream' in line or 'status' in line:
+            # Make sure we have a string (assuming that line['stream'] and
+            # line['status'] are either not defined, falsish, or a string)
+            text_line = line.get('stream') or line.get('status') or ''
+            output.append(text_line)
+
     def build_image(self):
         '''
         Build an image
@@ -647,9 +658,7 @@ class ImageManager(DockerBaseClass):
         for line in self.client.build(**params):
             # line = json.loads(line)
             self.log(line, pretty_print=True)
-            if "stream" in line or "status" in line:
-                build_line = line.get("stream") or line.get("status") or ''
-                build_output.append(build_line)
+            self._extract_output_line(line, build_output)
 
             if line.get('error'):
                 if line.get('errorDetail'):
@@ -681,9 +690,7 @@ class ImageManager(DockerBaseClass):
                 self.log("Loading image from %s" % self.load_path)
                 for line in self.client.load_image(image_tar):
                     self.log(line, pretty_print=True)
-                    if "stream" in line or "status" in line:
-                        load_line = line.get("stream") or line.get("status") or ''
-                        load_output.append(load_line)
+                    self._extract_output_line(line, load_output)
         except EnvironmentError as exc:
             if exc.errno == errno.ENOENT:
                 self.client.fail("Error opening image %s - %s" % (self.load_path, str(exc)))
