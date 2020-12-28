@@ -12,7 +12,7 @@ __metaclass__ = type
 
 
 DOCUMENTATION = '''
-name: docker
+name: docker_containers
 short_description: Ansible dynamic inventory plugin for Docker containers.
 version_added: 1.1.0
 author:
@@ -29,11 +29,11 @@ description:
 options:
     plugin:
         description:
-            - The name of this plugin, it should always be set to C(community.docker.docker)
+            - The name of this plugin, it should always be set to C(community.docker.docker_containers)
               for this plugin to recognize it as it's own.
         type: str
         required: true
-        choices: [ community.docker.docker ]
+        choices: [ community.docker.docker_containers ]
 
     connection_type:
         description:
@@ -97,20 +97,20 @@ options:
 
 EXAMPLES = '''
 # Minimal example using local Docker daemon
-plugin: community.docker.docker
+plugin: community.docker.docker_containers
 docker_host: unix://var/run/docker.sock
 
 # Minimal example using remote Docker daemon
-plugin: community.docker.docker
+plugin: community.docker.docker_containers
 docker_host: tcp://my-docker-host:2375
 
 # Example using remote Docker daemon with unverified TLS
-plugin: community.docker.docker
+plugin: community.docker.docker_containers
 docker_host: tcp://my-docker-host:2376
 tls: true
 
 # Example using remote Docker daemon with verified TLS and client certificate verification
-plugin: community.docker.docker
+plugin: community.docker.docker_containers
 docker_host: tcp://my-docker-host:2376
 validate_certs: true
 ca_cert: /somewhere/ca.pem
@@ -118,7 +118,7 @@ client_key: /somewhere/key.pem
 client_cert: /somewhere/cert.pem
 
 # Example using constructed features to create groups
-plugin: community.docker.docker
+plugin: community.docker.docker_containers
 docker_host: tcp://my-docker-host:2375
 strict: false
 keyed_groups:
@@ -158,7 +158,7 @@ MIN_DOCKER_API = None
 class InventoryModule(BaseInventoryPlugin, Constructable):
     ''' Host inventory parser for ansible using Docker daemon as source. '''
 
-    NAME = 'community.docker.docker'
+    NAME = 'community.docker.docker_containers'
 
     def _slugify(self, value):
         return 'docker_%s' % (re.sub(r'[^\w-]', '_', value).lower().lstrip('_'))

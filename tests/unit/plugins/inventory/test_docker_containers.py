@@ -17,7 +17,7 @@ from ansible.errors import AnsibleError
 from ansible.inventory.data import InventoryData
 from ansible.inventory.manager import InventoryManager
 
-from ansible_collections.community.docker.plugins.inventory.docker import InventoryModule
+from ansible_collections.community.docker.plugins.inventory.docker_containers import InventoryModule
 
 
 @pytest.fixture(scope="module")

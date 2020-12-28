@@ -15,8 +15,8 @@ trap cleanup INT TERM EXIT
 echo "Setup"
 ANSIBLE_ROLES_PATH=.. ansible-playbook  playbooks/docker_setup.yml
 
-echo "Test docker inventory 1"
+echo "Test docker_containers inventory 1"
 ansible-playbook -i inventory_1.docker.yml playbooks/test_inventory_1.yml
 
-echo "Test docker inventory 2"
+echo "Test docker_containers inventory 2"
 ansible-playbook -i inventory_2.docker.yml playbooks/test_inventory_2.yml
