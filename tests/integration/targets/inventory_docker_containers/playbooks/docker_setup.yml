@@ -1,0 +1,22 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars:
+    docker_skip_cleanup: yes
+
+  tasks:
+    - name: Setup docker
+      import_role:
+        name: setup_docker
+
+    - name: Start containers
+      docker_container:
+        name: "{{ item.name }}"
+        image: "{{ docker_test_image_alpine }}"
+        state: started
+        command: '/bin/sh -c "sleep 10m"'
+        published_ports:
+          - 22/tcp
+      loop:
+        - name: ansible-test-docker-inventory-container-1
+        - name: ansible-test-docker-inventory-container-2

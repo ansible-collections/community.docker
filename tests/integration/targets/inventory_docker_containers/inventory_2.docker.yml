@@ -1,0 +1,6 @@
+plugin: community.docker.docker_containers
+docker_host: unix://var/run/docker.sock
+connection_type: ssh
+verbose_output: true
+add_legacy_groups: true
+default_ip: 1.2.3.4
