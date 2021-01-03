@@ -1,2 +1,0 @@
-minor_changes:
-- "docker_image - support ``platform`` when building images (https://github.com/ansible-collections/community.docker/issues/22, https://github.com/ansible-collections/community.docker/pull/54)."
