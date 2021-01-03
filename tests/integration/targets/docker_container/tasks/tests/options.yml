@@ -158,6 +158,40 @@
     - capabilities_4 is changed
 
 ####################################################################
+## cgroup_parent ###################################################
+####################################################################
+
+- name: cgroup_parent
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    cgroup_parent: ''
+  register: cgroup_parent_1
+
+- name: cgroup_parent (idempotency)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    cgroup_parent: ''
+  register: cgroup_parent_2
+
+- name: cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
+  diff: no
+
+- assert:
+    that:
+    - cgroup_parent_1 is changed
+    - cgroup_parent_2 is not changed
+
+####################################################################
 ## command #########################################################
 ####################################################################
 

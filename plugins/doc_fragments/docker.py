@@ -111,6 +111,9 @@ notes:
 
     DOCKER_PY_1_DOCUMENTATION = r'''
 options: {}
+notes:
+  - This module uses the L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) to
+    communicate with the Docker daemon.
 requirements:
   - "Docker SDK for Python: Please note that the L(docker-py,https://pypi.org/project/docker-py/)
      Python module has been superseded by L(docker,https://pypi.org/project/docker/)
@@ -127,6 +130,9 @@ requirements:
 
     DOCKER_PY_2_DOCUMENTATION = r'''
 options: {}
+notes:
+  - This module uses the L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) to
+    communicate with the Docker daemon.
 requirements:
   - "Python >= 2.7"
   - "Docker SDK for Python: Please note that the L(docker-py,https://pypi.org/project/docker-py/)

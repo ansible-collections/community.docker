@@ -1,0 +1,2 @@
+minor_changes:
+- "docker_container - support specifying ``cgroup_parent`` (https://github.com/ansible-collections/community.docker/issues/6, https://github.com/ansible-collections/community.docker/pull/59)."
