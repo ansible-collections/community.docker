@@ -1,0 +1,3 @@
+bugfixes:
+- "docker_container - allow IPv6 zones (RFC 4007) in bind IPs (https://github.com/ansible-collections/community.docker/pull/66)."
+- "docker_image - allow IPv6 zones (RFC 4007) in network CIDRs (https://github.com/ansible-collections/community.docker/pull/66)."
