@@ -1,5 +1,6 @@
 # Docker Community Collection
 
+
 [![Build Status](https://dev.azure.com/ansible/community.docker/_apis/build/status/CI?branchName=main)](https://dev.azure.com/ansible/community.docker/_build?definitionId=25)
 [![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/community.docker)](https://codecov.io/gh/ansible-collections/community.docker)
 
