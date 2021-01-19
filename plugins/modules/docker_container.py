@@ -130,6 +130,18 @@ options:
     description:
       - CPU shares (relative weight).
     type: int
+  default_host_ip:
+    description:
+      - Define the default host IP to use.
+      - Must be an empty string, an IPv4 address, or an IPv6 address.
+      - With Docker 20.10.2 or newer, this should be set to an empty string (C("")) to avoid the
+        port bindings without an explicit IP address to only bind to IPv4.
+        See U(https://github.com/ansible-collections/community.docker/issues/70) for details.
+      - By default, the module will try to auto-detect this value from the C(bridge) network's
+        C(com.docker.network.bridge.host_binding_ipv4) option. If it cannot auto-detect it, it
+        will fall back to C(0.0.0.0).
+    type: str
+    version_added: 1.2.0
   detach:
     description:
       - Enable detached mode to leave the container running in background.
@@ -1277,8 +1289,9 @@ class TaskParameters(DockerBaseClass):
         self.cpuset_cpus = None
         self.cpuset_mems = None
         self.cpu_shares = None
-        self.detach = None
         self.debug = None
+        self.default_host_ip = None
+        self.detach = None
         self.devices = None
         self.device_read_bps = None
         self.device_write_bps = None
@@ -1360,6 +1373,19 @@ class TaskParameters(DockerBaseClass):
         # Only the container's name is needed.
         if self.state == 'absent':
             return
+
+        if self.default_host_ip:
+            valid_ip = False
+            if re.match(r'^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$', self.default_host_ip):
+                valid_ip = True
+            if re.match(r'^\[[0-9a-fA-F:]+\]$', self.default_host_ip):
+                valid_ip = True
+            if re.match(r'^[0-9a-fA-F:]+$', self.default_host_ip):
+                self.default_host_ip = '[{0}]'.format(self.default_host_ip)
+                valid_ip = True
+            if not valid_ip:
+                self.fail('The value of default_host_ip must be an empty string, an IPv4 address, '
+                          'or an IPv6 address. Got "{0}" instead.'.format(self.default_host_ip))
 
         if self.cpus is not None:
             self.cpus = int(round(self.cpus * 1E9))
@@ -1669,8 +1695,9 @@ class TaskParameters(DockerBaseClass):
 
         return self.client.create_host_config(**params)
 
-    @property
-    def default_host_ip(self):
+    def get_default_host_ip(self):
+        if self.default_host_ip is not None:
+            return self.default_host_ip
         ip = '0.0.0.0'
         if not self.networks:
             return ip
@@ -1707,7 +1734,7 @@ class TaskParameters(DockerBaseClass):
                     collection_name='community.docker', version='2.0.0')
             return 'all'
 
-        default_ip = self.default_host_ip
+        default_ip = self.get_default_host_ip()
 
         binds = {}
         for port in self.published_ports:
@@ -3181,7 +3208,7 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
     __NON_CONTAINER_PROPERTY_OPTIONS = tuple([
         'env_file', 'force_kill', 'keep_volumes', 'ignore_image', 'name', 'pull', 'purge_networks',
         'recreate', 'restart', 'state', 'networks', 'cleanup', 'kill_signal',
-        'output_logs', 'paused', 'removal_wait_timeout'
+        'output_logs', 'paused', 'removal_wait_timeout', 'default_host_ip',
     ] + list(DOCKER_COMMON_ARGS.keys()))
 
     def _parse_comparisons(self):
@@ -3407,6 +3434,7 @@ def main():
         cpuset_cpus=dict(type='str'),
         cpuset_mems=dict(type='str'),
         cpu_shares=dict(type='int'),
+        default_host_ip=dict(type='str'),
         detach=dict(type='bool'),
         devices=dict(type='list', elements='str'),
         device_read_bps=dict(type='list', elements='dict', options=dict(
