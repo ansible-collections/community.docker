@@ -2894,7 +2894,7 @@ avoid such warnings, please quote the value.' in log_options_2.warnings"
     - privileged_3 is changed
 
 ####################################################################
-## published_ports #################################################
+## published_ports and default_host_ip #############################
 ####################################################################
 
 - name: published_ports
@@ -2965,6 +2965,55 @@ avoid such warnings, please quote the value.' in log_options_2.warnings"
     force_kill: yes
   register: published_ports_6
 
+- name: published_ports (default_host_ip not set)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    published_ports:
+    - '9001'
+    - '9002'
+    force_kill: yes
+  register: published_ports_7
+
+- name: published_ports (default_host_ip set to empty string)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    published_ports:
+    - '9002'
+    - '9001'
+    default_host_ip: ''
+    force_kill: yes
+  register: published_ports_8
+
+- name: published_ports (default_host_ip set to empty string, idempotent)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    published_ports:
+    - '9002'
+    - '9001'
+    default_host_ip: ''
+  register: published_ports_9
+
+- name: published_ports (default_host_ip unset)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    published_ports:
+    - '9002'
+    - '9001'
+    force_kill: yes
+  register: published_ports_10
+
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
@@ -2980,6 +3029,10 @@ avoid such warnings, please quote the value.' in log_options_2.warnings"
     - published_ports_4 is changed
     - published_ports_5 is changed
     - published_ports_6 is changed
+    - published_ports_7 is changed
+    - published_ports_8 is changed
+    - published_ports_9 is not changed
+    - published_ports_10 is changed
 
 ####################################################################
 ## pull ############################################################
