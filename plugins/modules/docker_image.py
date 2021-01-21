@@ -684,13 +684,23 @@ class ImageManager(DockerBaseClass):
         '''
         # Load image(s) from file
         load_output = []
+        has_output = False
         try:
             self.log("Opening image %s" % self.load_path)
             with open(self.load_path, 'rb') as image_tar:
                 self.log("Loading image from %s" % self.load_path)
-                for line in self.client.load_image(image_tar):
-                    self.log(line, pretty_print=True)
-                    self._extract_output_line(line, load_output)
+                output = self.client.load_image(image_tar)
+                if output is not None:
+                    # Old versions of Docker SDK of Python (before version 2.5.0) do not return anything.
+                    # (See https://github.com/docker/docker-py/commit/7139e2d8f1ea82340417add02090bfaf7794f159)
+                    # Note that before that commit, something else than None was returned, but that was also
+                    # only introduced in a commit that first appeared in 2.5.0 (see
+                    # https://github.com/docker/docker-py/commit/9e793806ff79559c3bc591d8c52a3bbe3cdb7350).
+                    # So the above check works for every released version of Docker SDK for Python.
+                    has_output = True
+                    for line in output:
+                        self.log(line, pretty_print=True)
+                        self._extract_output_line(line, load_output)
         except EnvironmentError as exc:
             if exc.errno == errno.ENOENT:
                 self.client.fail("Error opening image %s - %s" % (self.load_path, str(exc)))
@@ -699,26 +709,28 @@ class ImageManager(DockerBaseClass):
             self.client.fail("Error loading image %s - %s" % (self.name, str(exc)), stdout='\n'.join(load_output))
 
         # Collect loaded images
-        loaded_images = set()
-        for line in load_output:
-            if line.startswith('Loaded image:'):
-                loaded_images.add(line[len('Loaded image:'):].strip())
+        if has_output:
+            # We can only do this when we actually got some output from Docker daemon
+            loaded_images = set()
+            for line in load_output:
+                if line.startswith('Loaded image:'):
+                    loaded_images.add(line[len('Loaded image:'):].strip())
 
-        if not loaded_images:
-            self.client.fail("Detected no loaded images. Archive potentially corrupt?", stdout='\n'.join(load_output))
+            if not loaded_images:
+                self.client.fail("Detected no loaded images. Archive potentially corrupt?", stdout='\n'.join(load_output))
 
-        expected_image = '%s:%s' % (self.name, self.tag)
-        if expected_image not in loaded_images:
-            self.client.fail(
-                "The archive did not contain image '%s'. Instead, found %s." % (
-                    expected_image, ', '.join(["'%s'" % image for image in sorted(loaded_images)])),
-                stdout='\n'.join(load_output))
-        loaded_images.remove(expected_image)
+            expected_image = '%s:%s' % (self.name, self.tag)
+            if expected_image not in loaded_images:
+                self.client.fail(
+                    "The archive did not contain image '%s'. Instead, found %s." % (
+                        expected_image, ', '.join(["'%s'" % image for image in sorted(loaded_images)])),
+                    stdout='\n'.join(load_output))
+            loaded_images.remove(expected_image)
 
-        if loaded_images:
-            self.client.module.warn(
-                "The archive contained more images than specified: %s" % (
-                    ', '.join(["'%s'" % image for image in sorted(loaded_images)]), ))
+            if loaded_images:
+                self.client.module.warn(
+                    "The archive contained more images than specified: %s" % (
+                        ', '.join(["'%s'" % image for image in sorted(loaded_images)]), ))
 
         return self.client.find_image(self.name, self.tag)
 
