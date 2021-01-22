@@ -701,6 +701,22 @@ class ImageManager(DockerBaseClass):
                     for line in output:
                         self.log(line, pretty_print=True)
                         self._extract_output_line(line, load_output)
+                else:
+                    if LooseVersion(docker_version) < LooseVersion('2.5.0'):
+                        self.client.module.warn(
+                            'The installed version of the Docker SDK for Python does not return the loading results'
+                            ' from the Docker daemon. Therefore, we cannot verify whether the expected image was'
+                            ' loaded, whether multiple images where loaded, or whether the load actually succeeded.'
+                            ' If you are not stuck with Python 2.6, *please* upgrade to a version newer than 2.5.0.'
+                            ' (2.5.0 was released in August 2017.)'
+                        )
+                    else:
+                        self.client.module.warn(
+                            'The API version of your Docker daemon is < 1.23, which does not return the image'
+                            ' loading result from the Docker daemon. Therefore, we cannot verify whether the'
+                            ' expected image was loaded, whether multiple images where loaded, or whether the load'
+                            ' actually succeeded. You should consider upgrading your Docker daemon.'
+                        )
         except EnvironmentError as exc:
             if exc.errno == errno.ENOENT:
                 self.client.fail("Error opening image %s - %s" % (self.load_path, str(exc)))
