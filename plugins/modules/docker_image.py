@@ -707,8 +707,8 @@ class ImageManager(DockerBaseClass):
                             'The installed version of the Docker SDK for Python does not return the loading results'
                             ' from the Docker daemon. Therefore, we cannot verify whether the expected image was'
                             ' loaded, whether multiple images where loaded, or whether the load actually succeeded.'
-                            ' If you are not stuck with Python 2.6, *please* upgrade to a version newer than 2.5.0.'
-                            ' (2.5.0 was released in August 2017.)'
+                            ' If you are not stuck with Python 2.6, *please* upgrade to a version newer than 2.5.0'
+                            ' (2.5.0 was released in August 2017).'
                         )
                     else:
                         self.client.module.warn(
