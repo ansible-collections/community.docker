@@ -303,7 +303,7 @@ def container_names_in_network(network):
 
 
 CIDR_IPV4 = re.compile(r'^([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])$')
-CIDR_IPV6 = re.compile(r'^[0-9a-fA-F:]+(?:|%[^\]/]+)/([0-9]|[1-9][0-9]|1[0-2][0-9])$')
+CIDR_IPV6 = re.compile(r'^[0-9a-fA-F:]+/([0-9]|[1-9][0-9]|1[0-2][0-9])$')
 
 
 def validate_cidr(cidr):
