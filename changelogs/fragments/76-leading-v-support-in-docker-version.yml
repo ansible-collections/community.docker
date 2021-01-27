@@ -1,2 +1,2 @@
 bugfixes:
-  - community.docker.docker - some docker versions have a leading 'v' in the output of the command ``docker version --format "{{.Server.Version}}"`` wich raise a ``TypeError`` (https://github.com/ansible-collections/community.docker/pull/76)
+  - docker connection plugin - fix Docker version parsing, as some docker versions have a leading ``v`` in the output of the command ``docker version --format "{{.Server.Version}}"`` (https://github.com/ansible-collections/community.docker/pull/76).
