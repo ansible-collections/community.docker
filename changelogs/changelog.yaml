@@ -170,3 +170,14 @@ releases:
     - 71-docker_container-default_host_ip.yml
     - 73-docker_image-fix-old-docker-py-version.yml
     release_date: '2021-01-25'
+  1.2.1:
+    changes:
+      bugfixes:
+      - docker connection plugin - fix Docker version parsing, as some docker versions
+        have a leading ``v`` in the output of the command ``docker version --format
+        "{{.Server.Version}}"`` (https://github.com/ansible-collections/community.docker/pull/76).
+      release_summary: Bugfix release.
+    fragments:
+    - 1.2.1.yml
+    - 76-leading-v-support-in-docker-version.yml
+    release_date: '2021-01-28'
