@@ -181,3 +181,13 @@ releases:
     - 1.2.1.yml
     - 76-leading-v-support-in-docker-version.yml
     release_date: '2021-01-28'
+  1.2.2:
+    changes:
+      release_summary: Security bugfix release to address CVE-2021-20191.
+      security_fixes:
+      - docker_swarm - enabled ``no_log`` for the option ``signing_ca_key`` to prevent
+        accidental disclosure (CVE-2021-20191, https://github.com/ansible-collections/community.docker/pull/80).
+    fragments:
+    - 1.2.2.yml
+    - CVE-2021-20191_no_log.yml
+    release_date: '2021-02-05'

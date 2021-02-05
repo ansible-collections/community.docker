@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v1.2.2
+======
+
+Release Summary
+---------------
+
+Security bugfix release to address CVE-2021-20191.
+
+Security Fixes
+--------------
+
+- docker_swarm - enabled ``no_log`` for the option ``signing_ca_key`` to prevent accidental disclosure (CVE-2021-20191, https://github.com/ansible-collections/community.docker/pull/80).
+
 v1.2.1
 ======
 
