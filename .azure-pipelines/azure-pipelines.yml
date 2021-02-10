@@ -98,8 +98,6 @@ stages:
               test: opensuse15py2
             - name: openSUSE 15 py3
               test: opensuse15
-            - name: Ubuntu 16.04
-              test: ubuntu1604
             - name: Ubuntu 18.04
               test: ubuntu1804
             - name: Ubuntu 20.04
@@ -170,8 +168,8 @@ stages:
           nameFormat: RHEL {0}
           testFormat: devel/rhel/{0}
           targets:
-            - test: 7.8
-            - test: 8.2
+            - test: '7.9'
+            - test: '8.3'
           groups:
             - 1
             - 2
@@ -187,6 +185,7 @@ stages:
           nameFormat: RHEL {0}
           testFormat: devel/rhel/{0}
           targets:
+            - test: '7.8'
             - test: '8.2'
           groups:
             - 1
