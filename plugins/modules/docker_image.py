@@ -512,17 +512,17 @@ class ImageManager(DockerBaseClass):
         if not self.check_mode:
             self.log("Getting archive of image %s" % image_name)
             try:
-                image = self.client.get_image(image_name)
+                saved_image = self.client.get_image(image_name)
             except Exception as exc:
                 self.fail("Error getting image %s - %s" % (image_name, str(exc)))
 
             try:
                 with open(self.archive_path, 'wb') as fd:
                     if self.client.docker_py_version >= LooseVersion('3.0.0'):
-                        for chunk in image:
+                        for chunk in saved_image:
                             fd.write(chunk)
                     else:
-                        for chunk in image.stream(2048, decode_content=False):
+                        for chunk in saved_image.stream(2048, decode_content=False):
                             fd.write(chunk)
             except Exception as exc:
                 self.fail("Error writing image archive %s - %s" % (self.archive_path, str(exc)))
