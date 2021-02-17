@@ -769,7 +769,8 @@ class ImageManager(DockerBaseClass):
             if found_image:
                 self.client.fail(
                     "The archive did not contain image '%s'. Instead, found %s." % (
-                        expected_image, ', '.join(sorted(["'%s'" % image for image in loaded_images] + list(loaded_image_ids))))),
+                        expected_image,
+                        ', '.join(sorted(["'%s'" % image for image in loaded_images] + list(loaded_image_ids)))),
                     stdout='\n'.join(load_output))
             loaded_images.remove(expected_image)
 
