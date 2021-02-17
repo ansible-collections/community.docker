@@ -776,8 +776,8 @@ class ImageManager(DockerBaseClass):
 
             if loaded_images:
                 self.client.module.warn(
-                    "The archive contained more images than specified: %s" %
-                        ', '.join(sorted(["'%s'" % image for image in loaded_images] + list(loaded_image_ids))))
+                    "The archive contained more images than specified: %s" % (
+                        ', '.join(sorted(["'%s'" % image for image in loaded_images] + list(loaded_image_ids))), ))
 
         if is_image_name_id(self.name):
             return self.client.find_image_by_id(self.name)
