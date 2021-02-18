@@ -163,6 +163,8 @@ options:
   pull_platform:
     description:
       - When pulling an image, ask for this specific platform.
+      - Note that this value is not used to determine whether the image needs to be pulled. This might change
+        in the future in a minor release, though.
     type: str
     version_added: 1.3.0
   push:

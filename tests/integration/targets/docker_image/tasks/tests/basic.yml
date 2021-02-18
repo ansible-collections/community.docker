@@ -25,6 +25,7 @@
     name: "{{ docker_test_image_hello_world }}"
     state: present
     source: pull
+    pull_platform: amd64
   register: present_1
 
 - name: Make sure image is there (idempotent)
@@ -32,6 +33,7 @@
     name: "{{ docker_test_image_hello_world }}"
     state: present
     source: pull
+    pull_platform: amd64
   register: present_2
 
 - assert:
