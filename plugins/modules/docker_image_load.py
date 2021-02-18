@@ -16,13 +16,13 @@ short_description: Load docker images from archives
 version_added: 1.3.0
 
 description:
-  - Load one or multiple images from a C(.tar) archive.
+  - Load one or multiple Docker images from a C(.tar) archive, and return information on
+    the loaded images.
 
 options:
   path:
     description:
-      - Use with state C(present) to load an image from a .tar file.
-      - Set I(source) to C(load) if you want to load the image.
+      - The path to the C(.tar) archive to load Docker images from.
     type: path
     required: true
 
@@ -30,6 +30,8 @@ extends_documentation_fragment:
 - community.docker.docker
 - community.docker.docker.docker_py_2_documentation
 
+notes:
+  - Does not support C(check_mode).
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.5.0"
@@ -41,7 +43,6 @@ author:
 '''
 
 EXAMPLES = '''
-
 - name: Load all images from the given tar file
   community.docker.docker_image_load:
     path: /path/to/images.tar
@@ -153,6 +154,7 @@ class ImageManager(DockerBaseClass):
 
         self.results['image_names'] = loaded_images
         self.results['images'] = images
+        self.results['changed'] = True
 
 
 def main():
@@ -160,16 +162,15 @@ def main():
         argument_spec=dict(
             path=dict(type='path', required=True),
         ),
-        supports_check_mode=True,
+        supports_check_mode=False,
         min_docker_version='2.5.0',
         min_docker_api_version='1.23',
     )
 
     try:
         results = dict(
-            changed=False,
-            actions=[],
-            image={}
+            image_names=[],
+            images=[],
         )
 
         ImageManager(client, results)
