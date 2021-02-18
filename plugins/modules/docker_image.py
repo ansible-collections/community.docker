@@ -409,7 +409,7 @@ class ImageManager(DockerBaseClass):
         if not image or self.force_source:
             if self.source == 'build':
                 if is_image_name_id(self.name):
-                    self.fail("image name must not be an image ID for source=build; got: %s" % self.name)
+                    self.fail("Image name must not be an image ID for source=build; got: %s" % self.name)
 
                 # Build the image
                 if not os.path.isdir(self.build_path):
@@ -437,7 +437,7 @@ class ImageManager(DockerBaseClass):
                     self.results['image'] = self.load_image()
             elif self.source == 'pull':
                 if is_image_name_id(self.name):
-                    self.fail("image name must not be an image ID for source=pull; got: %s" % self.name)
+                    self.fail("Image name must not be an image ID for source=pull; got: %s" % self.name)
 
                 # pull the image
                 self.results['actions'].append('Pulled image %s:%s' % (self.name, self.tag))
