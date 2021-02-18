@@ -160,6 +160,11 @@ options:
       - Note that image IDs (hashes) are not supported.
     type: str
     required: yes
+  pull_platform:
+    description:
+      - When pulling an image, ask for this specific platform.
+    type: str
+    version_added: 1.3.0
   push:
     description:
       - Push the image to the registry. Specify the registry as part of the I(name) or I(repository) parameter.
@@ -368,6 +373,7 @@ class ImageManager(DockerBaseClass):
         self.state = parameters.get('state')
         self.tag = parameters.get('tag')
         self.http_timeout = build.get('http_timeout')
+        self.pull_platform = parameters.get('pull_platform')
         self.push = parameters.get('push')
         self.buildargs = build.get('args')
         self.build_platform = build.get('platform')
@@ -428,7 +434,13 @@ class ImageManager(DockerBaseClass):
                 self.results['actions'].append('Pulled image %s:%s' % (self.name, self.tag))
                 self.results['changed'] = True
                 if not self.check_mode:
-                    self.results['image'], dummy = self.client.pull_image(self.name, tag=self.tag)
+                    extra_args = {}
+                    if self.pull_platform is not None:
+                        if LooseVersion(docker_version) < LooseVersion('3.0.0'):
+                            self.fail('Specifying the platform to pull requires Docker SDK for Python version 3.0.0 or higher.'
+                                      ' You have version %s.' % docker_version)
+                        extra_args['platform'] = self.pull_platform
+                    self.results['image'], dummy = self.client.pull_image(self.name, tag=self.tag, **extra_args)
             elif self.source == 'local':
                 if image is None:
                     name = self.name
@@ -781,6 +793,7 @@ def main():
         force_tag=dict(type='bool', default=False),
         load_path=dict(type='path'),
         name=dict(type='str', required=True),
+        pull_platform=dict(type='str'),
         push=dict(type='bool', default=False),
         repository=dict(type='str'),
         state=dict(type='str', default='present', choices=['absent', 'present']),
