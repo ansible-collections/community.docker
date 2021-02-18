@@ -452,6 +452,8 @@ class ImageManager(DockerBaseClass):
                     self.client.fail('Cannot find the image %s locally.' % name)
             if not self.check_mode and image and image['Id'] == self.results['image']['Id']:
                 self.results['changed'] = False
+        else:
+            self.results['image'] = image
 
         if self.archive_path:
             self.archive_image(self.name, self.tag)

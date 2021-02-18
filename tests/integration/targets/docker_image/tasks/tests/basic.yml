@@ -89,15 +89,9 @@
   docker_image:
     source: local
     name: "{{ docker_test_image_hello_world }}"
-    repository: "{{ docker_test_image_hello_world_base }}:alias"
+    repository: "{{ present_1.image.Id }}"
   register: fail_1
   ignore_errors: true
-
-- name: Cleanup alias tag (must not do anything)
-  docker_image:
-    name: "{{ docker_test_image_hello_world_base }}:alias"
-    state: absent
-  register: cleanup
 
 - name: Push image with ID (must fail)
   docker_image:
@@ -111,6 +105,7 @@
   docker_image:
     source: pull
     name: "{{ present_1.image.Id }}"
+    force_source: true
   register: fail_3
   ignore_errors: true
 
@@ -120,6 +115,7 @@
     name: "{{ present_1.image.Id }}"
     build:
       path: "{{ output_dir }}/files"
+    force_source: true
   register: fail_4
   ignore_errors: yes
 
@@ -127,7 +123,6 @@
     that:
     - fail_1 is failed
     - "'`repository` must not be an image ID' in fail_1.msg"
-    - cleanup is not changed
     - fail_2 is failed
     - "'Cannot push an image by ID' in fail_2.msg"
     - fail_3 is failed
