@@ -433,10 +433,6 @@ class ImageManager(DockerBaseClass):
                     self.results['image'] = self.load_image()
             elif self.source == 'pull':
                 # pull the image
-                if self.pull_platform is not None:
-                    if LooseVersion(docker_version) < LooseVersion('3.0.0'):
-                        self.fail('Specifying the platform to pull requires Docker SDK for Python version 3.0.0 or higher.'
-                                  ' You have version %s.' % docker_version)
                 self.results['actions'].append('Pulled image %s:%s' % (self.name, self.tag))
                 self.results['changed'] = True
                 if not self.check_mode:
@@ -831,6 +827,7 @@ def main():
     option_minimal_versions["build.use_config_proxy"] = dict(docker_py_version='3.7.0', detect_usage=detect_use_config_proxy)
     option_minimal_versions["build.etc_hosts"] = dict(docker_py_version='2.6.0', docker_api_version='1.27', detect_usage=detect_etc_hosts)
     option_minimal_versions["build.platform"] = dict(docker_py_version='3.0.0', docker_api_version='1.32', detect_usage=detect_platform)
+    option_minimal_versions["pull_platform"] = dict(docker_py_version='3.0.0')
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
