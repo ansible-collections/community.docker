@@ -109,7 +109,7 @@ class ImageManager(DockerBaseClass):
             # Make sure we have a string (assuming that line['stream'] and
             # line['status'] are either not defined, falsish, or a string)
             text_line = line.get('stream') or line.get('status') or ''
-            output.append(text_line)
+            output.extend(text_line.splitlines())
 
     def load_images(self):
         '''
@@ -118,9 +118,9 @@ class ImageManager(DockerBaseClass):
         # Load image(s) from file
         load_output = []
         try:
-            self.log("Opening image {0}".format(self.load_path))
-            with open(self.load_path, 'rb') as image_tar:
-                self.log("Loading images from {0}".format(self.load_path))
+            self.log("Opening image {0}".format(self.path))
+            with open(self.path, 'rb') as image_tar:
+                self.log("Loading images from {0}".format(self.path))
                 for line in self.client.load_image(image_tar):
                     self.log(line, pretty_print=True)
                     self._extract_output_line(line, load_output)
@@ -135,9 +135,9 @@ class ImageManager(DockerBaseClass):
         loaded_images = []
         for line in load_output:
             if line.startswith('Loaded image:'):
-                loaded_images.add(line[len('Loaded image:'):].strip())
+                loaded_images.append(line[len('Loaded image:'):].strip())
             if line.startswith('Loaded image ID:'):
-                loaded_images.add(line[len('Loaded image ID:'):].strip())
+                loaded_images.append(line[len('Loaded image ID:'):].strip())
 
         if not loaded_images:
             self.client.fail("Detected no loaded images. Archive potentially corrupt?", stdout='\n'.join(load_output))
