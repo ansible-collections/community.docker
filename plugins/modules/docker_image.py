@@ -433,16 +433,14 @@ class ImageManager(DockerBaseClass):
                     self.results['image'] = self.load_image()
             elif self.source == 'pull':
                 # pull the image
+                if self.pull_platform is not None:
+                    if LooseVersion(docker_version) < LooseVersion('3.0.0'):
+                        self.fail('Specifying the platform to pull requires Docker SDK for Python version 3.0.0 or higher.'
+                                  ' You have version %s.' % docker_version)
                 self.results['actions'].append('Pulled image %s:%s' % (self.name, self.tag))
                 self.results['changed'] = True
                 if not self.check_mode:
-                    extra_args = {}
-                    if self.pull_platform is not None:
-                        if LooseVersion(docker_version) < LooseVersion('3.0.0'):
-                            self.fail('Specifying the platform to pull requires Docker SDK for Python version 3.0.0 or higher.'
-                                      ' You have version %s.' % docker_version)
-                        extra_args['platform'] = self.pull_platform
-                    self.results['image'], dummy = self.client.pull_image(self.name, tag=self.tag, **extra_args)
+                    self.results['image'], dummy = self.client.pull_image(self.name, tag=self.tag, platform=self.pull_platform)
             elif self.source == 'local':
                 if image is None:
                     name = self.name
