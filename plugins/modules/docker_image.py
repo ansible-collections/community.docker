@@ -329,7 +329,7 @@ if docker_version is not None:
         else:
             from docker.auth.auth import resolve_repository_name
         from docker.utils.utils import parse_repository_tag
-        from docker.errors import DockerException
+        from docker.errors import DockerException, NotFound
     except ImportError:
         # missing Docker SDK for Python handled in module_utils.docker.common
         pass
@@ -402,7 +402,7 @@ class ImageManager(DockerBaseClass):
         :returns None
         '''
         if is_image_name_id(self.name):
-            image = self.client.find_image_by_id(self.name)
+            image = self.client.find_image_by_id(self.name, accept_not_there=True)
         else:
             image = self.client.find_image(name=self.name, tag=self.tag)
 
@@ -471,7 +471,7 @@ class ImageManager(DockerBaseClass):
         '''
         name = self.name
         if is_image_name_id(name):
-            image = self.client.find_image_by_id(name)
+            image = self.client.find_image_by_id(name, accept_not_there=True)
         else:
             image = self.client.find_image(name, self.tag)
             if self.tag:
@@ -480,6 +480,9 @@ class ImageManager(DockerBaseClass):
             if not self.check_mode:
                 try:
                     self.client.remove_image(name, force=self.force_absent)
+                except NotFound as dummy:
+                    # If the image vanished while we were trying to remove it, don't fail
+                    pass
                 except Exception as exc:
                     self.fail("Error removing image %s - %s" % (name, str(exc)))
 
@@ -499,7 +502,7 @@ class ImageManager(DockerBaseClass):
             tag = "latest"
 
         if is_image_name_id(name):
-            image = self.client.find_image_by_id(name)
+            image = self.client.find_image_by_id(name, accept_not_there=True)
             image_name = name
         else:
             image = self.client.find_image(name=name, tag=tag)
@@ -631,7 +634,7 @@ class ImageManager(DockerBaseClass):
             # Make sure we have a string (assuming that line['stream'] and
             # line['status'] are either not defined, falsish, or a string)
             text_line = line.get('stream') or line.get('status') or ''
-            output.append(text_line)
+            output.extend(text_line.splitlines())
 
     def build_image(self):
         '''
@@ -782,7 +785,7 @@ class ImageManager(DockerBaseClass):
                         ', '.join(sorted(["'%s'" % image for image in loaded_images] + list(loaded_image_ids))), ))
 
         if is_image_name_id(self.name):
-            return self.client.find_image_by_id(self.name)
+            return self.client.find_image_by_id(self.name, accept_not_there=True)
         else:
             return self.client.find_image(self.name, self.tag)
 
