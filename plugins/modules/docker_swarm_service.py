@@ -13,6 +13,7 @@ author:
   - "Dario Zanzico (@dariko)"
   - "Jason Witkowski (@jwitko)"
   - "Hannes Ljungberg (@hannseman)"
+  - "Piotr Wojciechowski (@wojciechowskipiotr)"
 short_description: docker swarm service
 description:
   - Manages docker services via a swarm manager node.
