@@ -1698,7 +1698,7 @@ class DockerService(DockerBaseClass):
             differences.add('args', parameter=self.args, active=os.args)
         if has_list_changed(self.constraints, os.constraints):
             differences.add('constraints', parameter=self.constraints, active=os.constraints)
-        if has_list_changed(self.replicas_max_per_node, os.replicas_max_per_node):
+        if self.replicas_max_per_node is not None and self.replicas_max_per_node != os.replicas_max_per_node:
             differences.add('replicas_max_per_node', parameter=self.replicas_max_per_node, active=os.replicas_max_per_node)
         if has_list_changed(self.placement_preferences, os.placement_preferences, sort_lists=False):
             differences.add('placement_preferences', parameter=self.placement_preferences, active=os.placement_preferences)
