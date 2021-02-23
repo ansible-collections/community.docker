@@ -351,6 +351,7 @@ options:
           - Corresponds to the C(--replicas_max_per_node) option of C(docker service create).
           - Requires API version >= 1.40
         type: int
+        version_added: 1.3.0
     type: dict
   publish:
     description:
