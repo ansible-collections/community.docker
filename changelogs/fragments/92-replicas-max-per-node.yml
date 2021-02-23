@@ -1,0 +1,2 @@
+minor_changes:
+  - "docker_swarm_service - Adding support for maximum number of tasks per node (replicas_max_per_node) when running swarm service in replicated mode. Introduced in API 1.40"

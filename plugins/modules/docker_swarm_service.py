@@ -726,6 +726,7 @@ swarm_service:
     "publish": null,
     "read_only": null,
     "replicas": 1,
+    "replicas_max_per_node": 1,
     "reserve_cpu": 0.25,
     "reserve_memory": 20971520,
     "restart_policy": "on-failure",
