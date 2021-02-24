@@ -200,3 +200,59 @@
     - constraints_1 is failed
     - "'Minimum version required' in constraints_1.msg"
   when: docker_api_version is version('1.27', '<') or docker_py_version is version('2.4.0', '<')
+
+####################################################################
+## placement.replicas_max_per_node #####################################################
+####################################################################
+
+- name: placement.replicas_max_per_node
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: no
+    command: '/bin/sh -v -c "sleep 10m"'
+    placement:
+      replicas_max_per_node: 1
+  register: replicas_max_per_node_1
+  ignore_errors: yes
+
+- name: placement.replicas_max_per_node (idempotency)
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: no
+    command: '/bin/sh -v -c "sleep 10m"'
+    placement:
+      replicas_max_per_node: 1
+  register: replicas_max_per_node_2
+  ignore_errors: yes
+
+- name: placement.replicas_max_per_node (change)
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: no
+    command: '/bin/sh -v -c "sleep 10m"'
+    placement:
+      replicas_max_per_node: 2
+  register: replicas_max_per_node_3
+  ignore_errors: yes
+
+
+- name: cleanup
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    state: absent
+  diff: no
+
+- assert:
+    that:
+      - replicas_max_per_node_1 is changed
+      - replicas_max_per_node_2 is not changed
+      - replicas_max_per_node_3 is changed
+  when: docker_api_version is version('1.40', '>=') and docker_py_version is version('4.4.3', '>=')
+- assert:
+    that:
+    - replicas_max_per_node_1 is failed
+    - "'Minimum version required' in replicas_max_per_node_1.msg"
+  when: docker_api_version is version('1.40', '<') or docker_py_version is version('4.4.3', '<')

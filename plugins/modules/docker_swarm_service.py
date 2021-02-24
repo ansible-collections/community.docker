@@ -13,6 +13,7 @@ author:
   - "Dario Zanzico (@dariko)"
   - "Jason Witkowski (@jwitko)"
   - "Hannes Ljungberg (@hannseman)"
+  - "Piotr Wojciechowski (@wojciechowskipiotr)"
 short_description: docker swarm service
 description:
   - Manages docker services via a swarm manager node.
@@ -344,6 +345,13 @@ options:
           - Requires API version >= 1.27.
         type: list
         elements: dict
+      replicas_max_per_node:
+        description:
+          - Maximum number of tasks per node.
+          - Corresponds to the C(--replicas_max_per_node) option of C(docker service create).
+          - Requires API version >= 1.40
+        type: int
+        version_added: 1.3.0
     type: dict
   publish:
     description:
@@ -718,6 +726,7 @@ swarm_service:
     "publish": null,
     "read_only": null,
     "replicas": 1,
+    "replicas_max_per_node": 1,
     "reserve_cpu": 0.25,
     "reserve_memory": 20971520,
     "restart_policy": "on-failure",
@@ -840,6 +849,7 @@ EXAMPLES = '''
       constraints:
         - node.role == manager
         - engine.labels.operatingsystem == ubuntu 14.04
+      replicas_max_per_node: 2
 
 - name: Set configs
   community.docker.docker_swarm_service:
@@ -1208,6 +1218,7 @@ class DockerService(DockerBaseClass):
         self.configs = None
         self.secrets = None
         self.constraints = None
+        self.replicas_max_per_node = None
         self.networks = None
         self.stop_grace_period = None
         self.stop_signal = None
@@ -1257,6 +1268,7 @@ class DockerService(DockerBaseClass):
             'log_driver_options': self.log_driver_options,
             'publish': self.publish,
             'constraints': self.constraints,
+            'replicas_max_per_node': self.replicas_max_per_node,
             'placement_preferences': self.placement_preferences,
             'labels': self.labels,
             'container_labels': self.container_labels,
@@ -1472,9 +1484,15 @@ class DockerService(DockerBaseClass):
         )
 
         preferences = placement.get('preferences')
+        replicas_max_per_node = get_value(
+            'replicas_max_per_node',
+            placement
+        )
+
         return {
             'constraints': constraints,
             'placement_preferences': preferences,
+            'replicas_max_per_node': replicas_max_per_node,
         }
 
     @classmethod
@@ -1683,6 +1701,8 @@ class DockerService(DockerBaseClass):
             differences.add('args', parameter=self.args, active=os.args)
         if has_list_changed(self.constraints, os.constraints):
             differences.add('constraints', parameter=self.constraints, active=os.constraints)
+        if self.replicas_max_per_node is not None and self.replicas_max_per_node != os.replicas_max_per_node:
+            differences.add('replicas_max_per_node', parameter=self.replicas_max_per_node, active=os.replicas_max_per_node)
         if has_list_changed(self.placement_preferences, os.placement_preferences, sort_lists=False):
             differences.add('placement_preferences', parameter=self.placement_preferences, active=os.placement_preferences)
         if has_list_changed(self.groups, os.groups):
@@ -1923,6 +1943,8 @@ class DockerService(DockerBaseClass):
         placement_args = {}
         if self.constraints is not None:
             placement_args['constraints'] = self.constraints
+        if self.replicas_max_per_node is not None:
+            placement_args['maxreplicas'] = self.replicas_max_per_node
         if self.placement_preferences is not None:
             placement_args['preferences'] = [
                 {key.title(): {'SpreadDescriptor': value}}
@@ -2164,6 +2186,7 @@ class DockerServiceManager(object):
         placement = task_template_data.get('Placement')
         if placement:
             ds.constraints = placement.get('Constraints')
+            ds.replicas_max_per_node = placement.get('MaxReplicas')
             placement_preferences = []
             for preference in placement.get('Preferences', []):
                 placement_preferences.append(
@@ -2603,6 +2626,7 @@ def main():
         placement=dict(type='dict', options=dict(
             constraints=dict(type='list', elements='str'),
             preferences=dict(type='list', elements='dict'),
+            replicas_max_per_node=dict(type='int'),
         )),
         tty=dict(type='bool'),
         dns=dict(type='list', elements='str'),
@@ -2747,6 +2771,14 @@ def main():
                 'constraints'
             ) is not None,
             usage_msg='set placement.constraints'
+        ),
+        placement_config_replicas_max_per_node=dict(
+            docker_py_version='4.4.3',
+            docker_api_version='1.40',
+            detect_usage=lambda c: (c.module.params['placement'] or {}).get(
+                'replicas_max_per_node'
+            ) is not None,
+            usage_msg='set placement.replicas_max_per_node'
         ),
         mounts_tmpfs=dict(
             docker_py_version='2.6.0',
