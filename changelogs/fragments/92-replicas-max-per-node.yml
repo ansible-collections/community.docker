@@ -1,2 +1,2 @@
 minor_changes:
-  - "docker_swarm_service - Adding support for maximum number of tasks per node (replicas_max_per_node) when running swarm service in replicated mode. Introduced in API 1.40"
+  - "docker_swarm_service - adding support for maximum number of tasks per node (``replicas_max_per_node``) when running swarm service in replicated mode. Introduced in API 1.40 (https://github.com/ansible-collections/community.docker/issues/7, https://github.com/ansible-collections/community.docker/pull/92)."
