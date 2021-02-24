@@ -224,6 +224,9 @@ EXAMPLES = '''
   community.docker.docker_image:
     name: pacur/centos-7
     source: pull
+    # Select platform for pulling. If not specified, will pull whatever docker prefers.
+    pull:
+      platform: amd64
 
 - name: Tag and push to docker hub
   community.docker.docker_image:
