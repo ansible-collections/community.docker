@@ -578,14 +578,21 @@ class AnsibleDockerClientBase(Client):
                     break
         return images
 
-    def pull_image(self, name, tag="latest"):
+    def pull_image(self, name, tag="latest", platform=None):
         '''
         Pull an image
         '''
+        kwargs = dict(
+            tag=tag,
+            stream=True,
+            decode=True,
+        )
+        if platform is not None:
+            kwargs['platform'] = platform
         self.log("Pulling image %s:%s" % (name, tag))
         old_tag = self.find_image(name, tag)
         try:
-            for line in self.pull(name, tag=tag, stream=True, decode=True):
+            for line in self.pull(name, **kwargs):
                 self.log(line, pretty_print=True)
                 if line.get('error'):
                     if line.get('errorDetail'):

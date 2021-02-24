@@ -160,6 +160,18 @@ options:
       - Note that image IDs (hashes) are not supported.
     type: str
     required: yes
+  pull:
+    description:
+      - "Specifies options used for pulling images."
+    type: dict
+    version_added: 1.3.0
+    suboptions:
+      platform:
+        description:
+          - When pulling an image, ask for this specific platform.
+          - Note that this value is not used to determine whether the image needs to be pulled. This might change
+            in the future in a minor release, though.
+        type: str
   push:
     description:
       - Push the image to the registry. Specify the registry as part of the I(name) or I(repository) parameter.
@@ -212,6 +224,9 @@ EXAMPLES = '''
   community.docker.docker_image:
     name: pacur/centos-7
     source: pull
+    # Select platform for pulling. If not specified, will pull whatever docker prefers.
+    pull:
+      platform: amd64
 
 - name: Tag and push to docker hub
   community.docker.docker_image:
@@ -348,27 +363,29 @@ class ImageManager(DockerBaseClass):
 
         self.source = parameters['source']
         build = parameters['build'] or dict()
-        self.archive_path = parameters.get('archive_path')
+        pull = parameters['pull'] or dict()
+        self.archive_path = parameters['archive_path']
         self.cache_from = build.get('cache_from')
         self.container_limits = build.get('container_limits')
         self.dockerfile = build.get('dockerfile')
-        self.force_source = parameters.get('force_source')
-        self.force_absent = parameters.get('force_absent')
-        self.force_tag = parameters.get('force_tag')
-        self.load_path = parameters.get('load_path')
-        self.name = parameters.get('name')
+        self.force_source = parameters['force_source']
+        self.force_absent = parameters['force_absent']
+        self.force_tag = parameters['force_tag']
+        self.load_path = parameters['load_path']
+        self.name = parameters['name']
         self.network = build.get('network')
         self.extra_hosts = clean_dict_booleans_for_docker_api(build.get('etc_hosts'))
         self.nocache = build.get('nocache', False)
         self.build_path = build.get('path')
         self.pull = build.get('pull')
         self.target = build.get('target')
-        self.repository = parameters.get('repository')
+        self.repository = parameters['repository']
         self.rm = build.get('rm', True)
-        self.state = parameters.get('state')
-        self.tag = parameters.get('tag')
+        self.state = parameters['state']
+        self.tag = parameters['tag']
         self.http_timeout = build.get('http_timeout')
-        self.push = parameters.get('push')
+        self.pull_platform = pull.get('platform')
+        self.push = parameters['push']
         self.buildargs = build.get('args')
         self.build_platform = build.get('platform')
         self.use_config_proxy = build.get('use_config_proxy')
@@ -428,7 +445,7 @@ class ImageManager(DockerBaseClass):
                 self.results['actions'].append('Pulled image %s:%s' % (self.name, self.tag))
                 self.results['changed'] = True
                 if not self.check_mode:
-                    self.results['image'], dummy = self.client.pull_image(self.name, tag=self.tag)
+                    self.results['image'], dummy = self.client.pull_image(self.name, tag=self.tag, platform=self.pull_platform)
             elif self.source == 'local':
                 if image is None:
                     name = self.name
@@ -781,6 +798,9 @@ def main():
         force_tag=dict(type='bool', default=False),
         load_path=dict(type='path'),
         name=dict(type='str', required=True),
+        pull=dict(type='dict', options=dict(
+            platform=dict(type='str'),
+        )),
         push=dict(type='bool', default=False),
         repository=dict(type='str'),
         state=dict(type='str', default='present', choices=['absent', 'present']),
@@ -808,8 +828,11 @@ def main():
     def detect_etc_hosts(client):
         return client.module.params['build'] and bool(client.module.params['build'].get('etc_hosts'))
 
-    def detect_platform(client):
+    def detect_build_platform(client):
         return client.module.params['build'] and client.module.params['build'].get('platform') is not None
+
+    def detect_pull_platform(client):
+        return client.module.params['pull'] and client.module.params['pull'].get('platform') is not None
 
     option_minimal_versions = dict()
     option_minimal_versions["build.cache_from"] = dict(docker_py_version='2.1.0', docker_api_version='1.25', detect_usage=detect_build_cache_from)
@@ -817,7 +840,8 @@ def main():
     option_minimal_versions["build.target"] = dict(docker_py_version='2.4.0', detect_usage=detect_build_target)
     option_minimal_versions["build.use_config_proxy"] = dict(docker_py_version='3.7.0', detect_usage=detect_use_config_proxy)
     option_minimal_versions["build.etc_hosts"] = dict(docker_py_version='2.6.0', docker_api_version='1.27', detect_usage=detect_etc_hosts)
-    option_minimal_versions["build.platform"] = dict(docker_py_version='3.0.0', docker_api_version='1.32', detect_usage=detect_platform)
+    option_minimal_versions["build.platform"] = dict(docker_py_version='3.0.0', docker_api_version='1.32', detect_usage=detect_build_platform)
+    option_minimal_versions["pull.platform"] = dict(docker_py_version='3.0.0', docker_api_version='1.32', detect_usage=detect_pull_platform)
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
