@@ -827,7 +827,7 @@ def main():
     option_minimal_versions["build.use_config_proxy"] = dict(docker_py_version='3.7.0', detect_usage=detect_use_config_proxy)
     option_minimal_versions["build.etc_hosts"] = dict(docker_py_version='2.6.0', docker_api_version='1.27', detect_usage=detect_etc_hosts)
     option_minimal_versions["build.platform"] = dict(docker_py_version='3.0.0', docker_api_version='1.32', detect_usage=detect_platform)
-    option_minimal_versions["pull_platform"] = dict(docker_py_version='3.0.0')
+    option_minimal_versions["pull_platform"] = dict(docker_py_version='3.0.0', docker_api_version='1.32')
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
