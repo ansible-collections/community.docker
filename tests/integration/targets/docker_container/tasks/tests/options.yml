@@ -3465,6 +3465,65 @@ avoid such warnings, please quote the value.' in log_options_2.warnings"
     - stop_timeout_3 is not changed
 
 ####################################################################
+## storage_opts ####################################################
+####################################################################
+
+- name: storage_opts
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    storage_opts:
+      size: 12m
+    state: started
+  register: storage_opts_1
+  ignore_errors: yes
+
+- name: storage_opts (idempotency)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    storage_opts:
+      size: 12m
+    state: started
+  register: storage_opts_2
+  ignore_errors: yes
+
+- name: storage_opts (change)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    storage_opts:
+      size: 24m
+    state: started
+    force_kill: yes
+  register: storage_opts_3
+  ignore_errors: yes
+
+- name: cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
+  diff: no
+
+- assert:
+    that:
+    - storage_opts_1 is changed
+    - storage_opts_2 is not failed and storage_opts_2 is not changed
+    - storage_opts_3 is not failed and storage_opts_3 is changed
+  when: storage_opts_1 is not failed
+
+- assert:
+    that:
+    - "'is supported only for' in storage_opts_1.msg"
+    - storage_opts_2 is failed
+    - storage_opts_3 is failed
+  when: storage_opts_1 is failed
+
+####################################################################
 ## sysctls #########################################################
 ####################################################################
 

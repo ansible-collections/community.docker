@@ -795,6 +795,11 @@ options:
         the docker daemon will always use the container's configured C(StopTimeout)
         value if it has been configured.
     type: int
+  storage_opts:
+    description:
+      - Storage driver options for this container as a key-value mapping.
+    type: dict
+    version_added: 1.3.0
   tmpfs:
     description:
       - Mount a tmpfs directory.
@@ -1109,6 +1114,16 @@ EXAMPLES = '''
             - utility
           # See https://github.com/NVIDIA/nvidia-container-runtime#supported-driver-capabilities
           # for a list of capabilities supported by the nvidia driver
+
+- name: Start container with storage options
+  community.docker.docker_container:
+    name: test
+    image: ubuntu:18.04
+    state: started
+    storage_opts:
+      # Limit root filesystem to 12 MB - note that this requires special storage backends
+      # (https://fabianlee.org/2020/01/15/docker-use-overlay2-with-an-xfs-backing-filesystem-to-limit-rootfs-size/)
+      size: 12m
 '''
 
 RETURN = '''
@@ -1355,6 +1370,7 @@ class TaskParameters(DockerBaseClass):
         self.state = None
         self.stop_signal = None
         self.stop_timeout = None
+        self.storage_opts = None
         self.tmpfs = None
         self.tty = None
         self.user = None
@@ -1665,6 +1681,7 @@ class TaskParameters(DockerBaseClass):
             pids_limit='pids_limit',
             mounts='mounts',
             nano_cpus='cpus',
+            storage_opt='storage_opts',
         )
 
         if self.client.docker_py_version >= LooseVersion('1.9') and self.client.docker_api_version >= LooseVersion('1.22'):
@@ -2269,6 +2286,7 @@ class Container(DockerBaseClass):
             device_write_iops=host_config.get('BlkioDeviceWriteIOps'),
             expected_device_requests=host_config.get('DeviceRequests'),
             pids_limit=host_config.get('PidsLimit'),
+            storage_opts=host_config.get('StorageOpt'),
             # According to https://github.com/moby/moby/, support for HostConfig.Mounts
             # has been included at least since v17.03.0-ce, which has API version 1.26.
             # The previous tag, v1.9.1, has API version 1.21 and does not have
@@ -3379,6 +3397,7 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
             pids_limit=dict(docker_py_version='1.10.0', docker_api_version='1.23'),
             mounts=dict(docker_py_version='2.6.0', docker_api_version='1.25'),
             cpus=dict(docker_py_version='2.3.0', docker_api_version='1.25'),
+            storage_opts=dict(docker_py_version='2.1.0', docker_api_version='1.24'),
             # specials
             ipvX_address_supported=dict(docker_py_version='1.9.0', docker_api_version='1.22',
                                         detect_usage=detect_ipvX_address_usage,
@@ -3548,6 +3567,7 @@ def main():
         state=dict(type='str', default='started', choices=['absent', 'present', 'started', 'stopped']),
         stop_signal=dict(type='str'),
         stop_timeout=dict(type='int'),
+        storage_opts=dict(type='dict'),
         sysctls=dict(type='dict'),
         tmpfs=dict(type='list', elements='str'),
         tty=dict(type='bool'),
