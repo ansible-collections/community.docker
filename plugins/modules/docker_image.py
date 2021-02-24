@@ -362,32 +362,33 @@ class ImageManager(DockerBaseClass):
         self.check_mode = self.client.check_mode
 
         self.source = parameters['source']
-        build = parameters['build']
+        build = parameters['build'] or dict()
+        pull = parameters['pull'] or dict()
         self.archive_path = parameters['archive_path']
-        self.cache_from = build['cache_from']
-        self.container_limits = build['container_limits']
-        self.dockerfile = build['dockerfile']
+        self.cache_from = build.get('cache_from')
+        self.container_limits = build.get('container_limits')
+        self.dockerfile = build.get('dockerfile')
         self.force_source = parameters['force_source']
         self.force_absent = parameters['force_absent']
         self.force_tag = parameters['force_tag']
         self.load_path = parameters['load_path']
         self.name = parameters['name']
-        self.network = build['network']
-        self.extra_hosts = clean_dict_booleans_for_docker_api(build['etc_hosts'])
-        self.nocache = build['nocache']
-        self.build_path = build['path']
-        self.pull = build['pull']
-        self.target = build['target']
+        self.network = build.get('network')
+        self.extra_hosts = clean_dict_booleans_for_docker_api(build.get('etc_hosts'))
+        self.nocache = build.get('nocache', False)
+        self.build_path = build.get('path')
+        self.pull = build.get('pull')
+        self.target = build.get('target')
         self.repository = parameters['repository']
-        self.rm = build['rm']
+        self.rm = build.get('rm', True)
         self.state = parameters['state']
         self.tag = parameters['tag']
-        self.http_timeout = build['http_timeout']
-        self.pull_platform = parameters['pull']['platform']
+        self.http_timeout = build.get('http_timeout')
+        self.pull_platform = pull.get('platform')
         self.push = parameters['push']
-        self.buildargs = build['args']
-        self.build_platform = build['platform']
-        self.use_config_proxy = build['use_config_proxy']
+        self.buildargs = build.get('args')
+        self.build_platform = build.get('platform')
+        self.use_config_proxy = build.get('use_config_proxy')
 
         # If name contains a tag, it takes precedence over tag parameter.
         if not is_image_name_id(self.name):
@@ -770,7 +771,7 @@ class ImageManager(DockerBaseClass):
 def main():
     argument_spec = dict(
         source=dict(type='str', choices=['build', 'load', 'pull', 'local']),
-        build=dict(type='dict', apply_defaults=True, options=dict(
+        build=dict(type='dict', options=dict(
             cache_from=dict(type='list', elements='str'),
             container_limits=dict(type='dict', options=dict(
                 memory=dict(type='int'),
@@ -797,7 +798,7 @@ def main():
         force_tag=dict(type='bool', default=False),
         load_path=dict(type='path'),
         name=dict(type='str', required=True),
-        pull=dict(type='dict', apply_defaults=True, options=dict(
+        pull=dict(type='dict', options=dict(
             platform=dict(type='str'),
         )),
         push=dict(type='bool', default=False),
@@ -813,25 +814,25 @@ def main():
     ]
 
     def detect_build_cache_from(client):
-        return client.module.params['build']['cache_from'] is not None
+        return client.module.params['build'] and client.module.params['build'].get('cache_from') is not None
 
     def detect_build_network(client):
-        return client.module.params['build']['network'] is not None
+        return client.module.params['build'] and client.module.params['build'].get('network') is not None
 
     def detect_build_target(client):
-        return client.module.params['build']['target'] is not None
+        return client.module.params['build'] and client.module.params['build'].get('target') is not None
 
     def detect_use_config_proxy(client):
-        return client.module.params['build']['use_config_proxy'] is not None
+        return client.module.params['build'] and client.module.params['build'].get('use_config_proxy') is not None
 
     def detect_etc_hosts(client):
-        return bool(client.module.params['build']['etc_hosts'])
+        return client.module.params['build'] and bool(client.module.params['build'].get('etc_hosts'))
 
     def detect_build_platform(client):
-        return client.module.params['build']['platform'] is not None
+        return client.module.params['build'] and client.module.params['build'].get('platform') is not None
 
     def detect_pull_platform(client):
-        return client.module.params['pull']['platform'] is not None
+        return client.module.params['pull'] and client.module.params['pull'].get('platform') is not None
 
     option_minimal_versions = dict()
     option_minimal_versions["build.cache_from"] = dict(docker_py_version='2.1.0', docker_api_version='1.25', detect_usage=detect_build_cache_from)
@@ -854,8 +855,9 @@ def main():
     if not is_valid_tag(client.module.params['tag'], allow_empty=True):
         client.fail('"{0}" is not a valid docker tag!'.format(client.module.params['tag']))
 
-    if client.module.params['source'] == 'build' and not client.module.params['build']['path']:
-        client.fail('If "source" is set to "build", the "build.path" option must be specified.')
+    if client.module.params['source'] == 'build':
+        if not client.module.params['build'] or not client.module.params['build'].get('path'):
+            client.fail('If "source" is set to "build", the "build.path" option must be specified.')
 
     try:
         results = dict(
