@@ -15,7 +15,6 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = '''
 module: docker_plugin
-version_added: "2.10"
 short_description: Manage Docker plugins
 description:
   - Install/Delete docker plugins.
@@ -40,6 +39,24 @@ options:
       - present
       - enable
       - disable
+    type: str
+
+  plugin_options:
+    description:
+      - Dictionary of plugin settings.
+    type: dict
+
+  force_remove:
+    description:
+      - Remove even if the plugin is enabled.
+    default: False
+    type: bool
+
+  enable_timeout:
+    description:
+      - Timeout in seconds.
+    type: int
+    default: 0
 
 extends_documentation_fragment:
   - community.docker.docker
@@ -105,7 +122,7 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
     DifferenceTracker,
     RequestException
-    )
+)
 
 from ansible.module_utils.six import text_type
 
@@ -117,8 +134,8 @@ class TaskParameters(DockerBaseClass):
         self.plugin_name = None
         self.plugin_options = None
         self.debug = None
-        self.force_remove=None
-        self.enable_timeout=None
+        self.force_remove = None
+        self.enable_timeout = None
 
         for key, value in client.module.params.items():
             setattr(self, key, value)
@@ -126,6 +143,7 @@ class TaskParameters(DockerBaseClass):
 
 def prepare_options(options):
     return ['%s=%s' % (k, v if v is not None else "") for k, v in options.items()] if options else []
+
 
 def parse_options(options_list):
     return dict((k, v) for k, v in map(lambda x: x.split('=', 1), options_list)) if options_list else {}
@@ -147,7 +165,7 @@ class DockerPluginManager(object):
         }
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()
-        self.diff_result=dict()
+        self.diff_result = dict()
 
         self.existing_plugin = self.get_existing_plugin()
 
@@ -189,13 +207,13 @@ class DockerPluginManager(object):
         differences = DifferenceTracker()
         if self.parameters.plugin_options:
             if not self.existing_plugin.settings:
-                differences.add('plugin_options',parameters=plugin_options,active=plugins.settings['Env'])
+                differences.add('plugin_options', parameters=self.parameters.plugin_options, active=self.existing_plugin.settings['Env'])
             else:
                 existing_options_list = self.existing_plugin.settings['Env']
                 existing_options = parse_options(existing_options_list)
 
                 for key, value in self.parameters.plugin_options.items():
-                    options_count=0
+                    options_count = 0
                     if ((not existing_options.get(key) and value) or
                             not value or
                             value != existing_options[key]):
@@ -217,7 +235,7 @@ class DockerPluginManager(object):
             self.results['changed'] = True
 
     def remove_plugin(self):
-        force=self.parameters.force_remove
+        force = self.parameters.force_remove
         if self.existing_plugin:
             if not self.check_mode:
                 try:
@@ -265,9 +283,9 @@ class DockerPluginManager(object):
         self.remove_plugin()
 
     def enable(self):
-        timeout=self.parameters.enable_timeout
+        timeout = self.parameters.enable_timeout
         if self.existing_plugin:
-            if not self.check_mode and self.existing_plugin.enabled == False:
+            if not self.check_mode and not self.existing_plugin.enabled:
                 try:
                     self.existing_plugin.enable(timeout)
                 except APIError as e:
@@ -285,7 +303,7 @@ class DockerPluginManager(object):
 
     def disable(self):
         if self.existing_plugin:
-            if not self.check_mode and self.existing_plugin.enabled == True:
+            if not self.check_mode and self.existing_plugin.enabled:
                 try:
                     self.existing_plugin.disable()
                 except APIError as e:
@@ -303,7 +321,7 @@ def main():
         plugin_options=dict(type='dict', default={}),
         debug=dict(type='bool', default=False),
         force_remove=dict(type='bool', default=False),
-        enable_timeout=dict(type='int',default=0)
+        enable_timeout=dict(type='int', default=0)
     )
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
@@ -319,6 +337,7 @@ def main():
         client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
     except RequestException as e:
         client.fail('An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
+
 
 if __name__ == '__main__':
     main()

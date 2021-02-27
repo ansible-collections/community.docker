@@ -70,22 +70,9 @@
 
 ############ Plugin_Options ############
 ########################################
-
 # Integration-Test with plugin_options is in TODO-List
-
 
 - name: Cleanup
   docker_plugin:
     name: "{{ plugin_name }}"
     state: absent
-
-
-
-
-
-
-
-
-
-
-
