@@ -11,18 +11,18 @@ DOCUMENTATION = '''
 ---
 module: docker_image_load
 
-short_description: Load docker images from archives
+short_description: Load docker image(s) from archives
 
 version_added: 1.3.0
 
 description:
   - Load one or multiple Docker images from a C(.tar) archive, and return information on
-    the loaded images.
+    the loaded image(s).
 
 options:
   path:
     description:
-      - The path to the C(.tar) archive to load Docker images from.
+      - The path to the C(.tar) archive to load Docker image(s) from.
     type: path
     required: true
 
@@ -43,14 +43,14 @@ author:
 '''
 
 EXAMPLES = '''
-- name: Load all images from the given tar file
+- name: Load all image(s) from the given tar file
   community.docker.docker_image_load:
     path: /path/to/images.tar
   register: result
 
 - name: Print the loaded image names
   debug:
-    msg: "Loaded the following images: {{ resut.image_names | join(', ') }}"
+    msg: "Loaded the following images: {{ result.image_names | join(', ') }}"
 '''
 
 RETURN = '''
