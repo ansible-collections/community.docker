@@ -1,7 +1,7 @@
 - name: Create random name prefix
   set_fact:
     name_prefix: "cvmfs/overlay2-graphdriver"
-    plugin_names: ""
+    plugin_names: []
 
 - debug:
     msg: "Using name prefix {{ name_prefix }}"
@@ -16,6 +16,7 @@
     docker_plugin:
       plugin_name: "{{ item }}"
       state: absent
+    with_items: "{{ plugin_names }}"
 
   when: docker_py_version is version('1.10.0', '>=') and docker_api_version is version('1.20', '>=')
 
