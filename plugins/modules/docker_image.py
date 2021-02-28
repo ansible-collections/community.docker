@@ -480,7 +480,7 @@ class ImageManager(DockerBaseClass):
             if not self.check_mode:
                 try:
                     self.client.remove_image(name, force=self.force_absent)
-                except NotFound as dummy:
+                except NotFound:
                     # If the image vanished while we were trying to remove it, don't fail
                     pass
                 except Exception as exc:
