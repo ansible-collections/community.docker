@@ -75,5 +75,5 @@
 
 - name: Cleanup
   docker_plugin:
-    name: "{{ plugin_name }}"
+    plugin_name: "{{ plugin_name }}"
     state: absent
