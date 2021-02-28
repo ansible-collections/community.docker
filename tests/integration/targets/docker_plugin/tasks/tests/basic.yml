@@ -1,7 +1,8 @@
 ---
 - name: Registering plugin name
   set_fact:
-    plugin_name: "{{ name_prefix ~ '-basic' }}"
+    plugin_name: "{{ name_prefix }}"
+
 - name: Registering container name
   set_fact:
     plugin_names: "{{ plugin_names + [plugin_name] }}"
