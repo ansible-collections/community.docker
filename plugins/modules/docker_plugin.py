@@ -247,16 +247,16 @@ class DockerPluginManager(object):
     def update_plugin(self):
         if self.existing_plugin:
             differences = self.has_different_config()
-                if not differences.empty:
-                    if not self.check_mode:
-                        try:
-                            self.existing_plugin.configure(prepare_options(self.parameters.plugin_options))
-                        except APIError as e:
-                            self.client.fail(text_type(e))
-                    self.results['actions'].append("Updated plugin %s settings" % self.parameters.plugin_name)
-                    self.results['changed'] = True
-            else:
-                self.fail("Cannot update the plugin: Plugin does not exist")
+            if not differences.empty:
+                if not self.check_mode:
+                    try:
+                        self.existing_plugin.configure(prepare_options(self.parameters.plugin_options))
+                    except APIError as e:
+                        self.client.fail(text_type(e))
+                self.results['actions'].append("Updated plugin %s settings" % self.parameters.plugin_name)
+                self.results['changed'] = True
+        else:
+            self.fail("Cannot update the plugin: Plugin does not exist")
 
     def present(self):
         differences = DifferenceTracker()
@@ -303,7 +303,7 @@ class DockerPluginManager(object):
     def disable(self):
         if self.existing_plugin:
             if self.existing_plugin.enabled:
-                if not self.check_mode: 
+                if not self.check_mode:
                     try:
                         self.existing_plugin.disable()
                     except APIError as e:
