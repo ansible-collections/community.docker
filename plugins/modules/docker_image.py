@@ -155,9 +155,9 @@ options:
     default: false
   name:
     description:
-      - "Image name. Name format will be one of: name, repository/name, registry_server:port/name.
-        When pushing or pulling an image the name can optionally include the tag by appending ':tag_name'."
-      - Note that image IDs (hashes) are not supported.
+      - "Image name. Name format will be one of: C(name), C(repository/name), C(registry_server:port/name).
+        When pushing or pulling an image the name can optionally include the tag by appending C(:tag_name)."
+      - Note that image IDs (hashes) are only supported for I(state=absent), and for I(state=present) with I(source=load).
     type: str
     required: yes
   pull:
@@ -344,7 +344,7 @@ if docker_version is not None:
         else:
             from docker.auth.auth import resolve_repository_name
         from docker.utils.utils import parse_repository_tag
-        from docker.errors import DockerException
+        from docker.errors import DockerException, NotFound
     except ImportError:
         # missing Docker SDK for Python handled in module_utils.docker.common
         pass
@@ -397,6 +397,12 @@ class ImageManager(DockerBaseClass):
                 self.name = repo
                 self.tag = repo_tag
 
+        # Sanity check: fail early when we know that something will fail later
+        if self.repository and is_image_name_id(self.repository):
+            self.fail("`repository` must not be an image ID; got: %s" % self.repository)
+        if not self.repository and self.push and is_image_name_id(self.name):
+            self.fail("Cannot push an image by ID; specify `repository` to tag and push the image with ID %s instead" % self.name)
+
         if self.state == 'present':
             self.present()
         elif self.state == 'absent':
@@ -412,10 +418,16 @@ class ImageManager(DockerBaseClass):
 
         :returns None
         '''
-        image = self.client.find_image(name=self.name, tag=self.tag)
+        if is_image_name_id(self.name):
+            image = self.client.find_image_by_id(self.name, accept_missing_image=True)
+        else:
+            image = self.client.find_image(name=self.name, tag=self.tag)
 
         if not image or self.force_source:
             if self.source == 'build':
+                if is_image_name_id(self.name):
+                    self.fail("Image name must not be an image ID for source=build; got: %s" % self.name)
+
                 # Build the image
                 if not os.path.isdir(self.build_path):
                     self.fail("Requested build path %s could not be found or you do not have access." % self.build_path)
@@ -434,13 +446,16 @@ class ImageManager(DockerBaseClass):
                     self.fail("Error loading image %s. Specified path %s does not exist." % (self.name,
                                                                                              self.load_path))
                 image_name = self.name
-                if self.tag:
+                if self.tag and not is_image_name_id(image_name):
                     image_name = "%s:%s" % (self.name, self.tag)
                 self.results['actions'].append("Loaded image %s from %s" % (image_name, self.load_path))
                 self.results['changed'] = True
                 if not self.check_mode:
                     self.results['image'] = self.load_image()
             elif self.source == 'pull':
+                if is_image_name_id(self.name):
+                    self.fail("Image name must not be an image ID for source=pull; got: %s" % self.name)
+
                 # pull the image
                 self.results['actions'].append('Pulled image %s:%s' % (self.name, self.tag))
                 self.results['changed'] = True
@@ -449,11 +464,13 @@ class ImageManager(DockerBaseClass):
             elif self.source == 'local':
                 if image is None:
                     name = self.name
-                    if self.tag:
+                    if self.tag and not is_image_name_id(name):
                         name = "%s:%s" % (self.name, self.tag)
                     self.client.fail('Cannot find the image %s locally.' % name)
             if not self.check_mode and image and image['Id'] == self.results['image']['Id']:
                 self.results['changed'] = False
+        else:
+            self.results['image'] = image
 
         if self.archive_path:
             self.archive_image(self.name, self.tag)
@@ -471,7 +488,7 @@ class ImageManager(DockerBaseClass):
         '''
         name = self.name
         if is_image_name_id(name):
-            image = self.client.find_image_by_id(name)
+            image = self.client.find_image_by_id(name, accept_missing_image=True)
         else:
             image = self.client.find_image(name, self.tag)
             if self.tag:
@@ -480,6 +497,9 @@ class ImageManager(DockerBaseClass):
             if not self.check_mode:
                 try:
                     self.client.remove_image(name, force=self.force_absent)
+                except NotFound:
+                    # If the image vanished while we were trying to remove it, don't fail
+                    pass
                 except Exception as exc:
                     self.fail("Error removing image %s - %s" % (name, str(exc)))
 
@@ -498,33 +518,37 @@ class ImageManager(DockerBaseClass):
         if not tag:
             tag = "latest"
 
-        image = self.client.find_image(name=name, tag=tag)
+        if is_image_name_id(name):
+            image = self.client.find_image_by_id(name, accept_missing_image=True)
+            image_name = name
+        else:
+            image = self.client.find_image(name=name, tag=tag)
+            image_name = "%s:%s" % (name, tag)
+
         if not image:
-            self.log("archive image: image %s:%s not found" % (name, tag))
+            self.log("archive image: image %s not found" % image_name)
             return
 
-        image_name = "%s:%s" % (name, tag)
         self.results['actions'].append('Archived image %s to %s' % (image_name, self.archive_path))
         self.results['changed'] = True
         if not self.check_mode:
             self.log("Getting archive of image %s" % image_name)
             try:
-                image = self.client.get_image(image_name)
+                saved_image = self.client.get_image(image_name)
             except Exception as exc:
                 self.fail("Error getting image %s - %s" % (image_name, str(exc)))
 
             try:
                 with open(self.archive_path, 'wb') as fd:
                     if self.client.docker_py_version >= LooseVersion('3.0.0'):
-                        for chunk in image:
+                        for chunk in saved_image:
                             fd.write(chunk)
                     else:
-                        for chunk in image.stream(2048, decode_content=False):
+                        for chunk in saved_image.stream(2048, decode_content=False):
                             fd.write(chunk)
             except Exception as exc:
                 self.fail("Error writing image archive %s - %s" % (self.archive_path, str(exc)))
 
-        image = self.client.find_image(name=name, tag=tag)
         if image:
             self.results['image'] = image
 
@@ -536,6 +560,9 @@ class ImageManager(DockerBaseClass):
         :param tag Use a specific tag.
         :return: None
         '''
+
+        if is_image_name_id(name):
+            self.fail("Cannot push an image ID: %s" % name)
 
         repository = name
         if not tag:
@@ -624,7 +651,7 @@ class ImageManager(DockerBaseClass):
             # Make sure we have a string (assuming that line['stream'] and
             # line['status'] are either not defined, falsish, or a string)
             text_line = line.get('stream') or line.get('status') or ''
-            output.append(text_line)
+            output.extend(text_line.splitlines())
 
     def build_image(self):
         '''
@@ -745,27 +772,39 @@ class ImageManager(DockerBaseClass):
         if has_output:
             # We can only do this when we actually got some output from Docker daemon
             loaded_images = set()
+            loaded_image_ids = set()
             for line in load_output:
                 if line.startswith('Loaded image:'):
                     loaded_images.add(line[len('Loaded image:'):].strip())
+                if line.startswith('Loaded image ID:'):
+                    loaded_image_ids.add(line[len('Loaded image ID:'):].strip().lower())
 
-            if not loaded_images:
+            if not loaded_images and not loaded_image_ids:
                 self.client.fail("Detected no loaded images. Archive potentially corrupt?", stdout='\n'.join(load_output))
 
-            expected_image = '%s:%s' % (self.name, self.tag)
-            if expected_image not in loaded_images:
+            if is_image_name_id(self.name):
+                expected_image = self.name.lower()
+                found_image = expected_image not in loaded_image_ids
+            else:
+                expected_image = '%s:%s' % (self.name, self.tag)
+                found_image = expected_image not in loaded_images
+            if found_image:
                 self.client.fail(
                     "The archive did not contain image '%s'. Instead, found %s." % (
-                        expected_image, ', '.join(["'%s'" % image for image in sorted(loaded_images)])),
+                        expected_image,
+                        ', '.join(sorted(["'%s'" % image for image in loaded_images] + list(loaded_image_ids)))),
                     stdout='\n'.join(load_output))
             loaded_images.remove(expected_image)
 
             if loaded_images:
                 self.client.module.warn(
                     "The archive contained more images than specified: %s" % (
-                        ', '.join(["'%s'" % image for image in sorted(loaded_images)]), ))
+                        ', '.join(sorted(["'%s'" % image for image in loaded_images] + list(loaded_image_ids))), ))
 
-        return self.client.find_image(self.name, self.tag)
+        if is_image_name_id(self.name):
+            return self.client.find_image_by_id(self.name, accept_missing_image=True)
+        else:
+            return self.client.find_image(self.name, self.tag)
 
 
 def main():
