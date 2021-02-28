@@ -155,6 +155,7 @@ class ImageManager(DockerBaseClass):
         self.results['image_names'] = loaded_images
         self.results['images'] = images
         self.results['changed'] = True
+        self.results['stdout'] = '\n'.join(load_output)
 
 
 def main():
