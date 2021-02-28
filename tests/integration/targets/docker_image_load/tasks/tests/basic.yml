@@ -47,10 +47,9 @@
   ignore_errors: true
   register: remove_all_images
 
-- name: Prune all images (if removing failed)
+- name: Prune all containers (if removing failed)
   docker_prune:
     containers: true
-    images: true
   when: remove_all_images is failed
 
 - name: Obtain all docker containers and images (if removing failed)
