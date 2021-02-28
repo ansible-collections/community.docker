@@ -52,6 +52,16 @@
     images: true
   when: remove_all_images is failed
 
+- name: Obtain all docker containers and images (if removing failed)
+  shell: docker ps -a ; docker images -a
+  when: remove_all_images is failed
+  register: docker_container_image_list
+
+- name: Show all docker containers and images (if removing failed)
+  debug:
+    var: docker_container_image_list.stdout_lines
+  when: remove_all_images is failed
+
 - name: Remove all images (after pruning)
   docker_image:
     name: "{{ item }}"
