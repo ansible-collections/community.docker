@@ -2,23 +2,19 @@
 # coding: utf-8
 #
 # Copyright: (c) 2021 Red Hat | Ansible Sakar Mehra<@sakarmehra100@gmail.com | @sakar97>
+# Copyright: (c) 2019, Vladimir Porshkevich (@porshkevich) <neosonic@mail.ru>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'community'}
-
-
 DOCUMENTATION = '''
 module: docker_plugin
 short_description: Manage Docker plugins
+version_added: 1.3.0
 description:
-  - Install/Delete docker plugins.
-  - Enable/Disable docker plugins.
+  - This module allows to install, delete, enable and disable Docker plugins.
   - Performs largely the same function as the C(docker plugin) CLI subcommand.
 options:
   plugin_name:
@@ -60,14 +56,16 @@ options:
 
 extends_documentation_fragment:
   - community.docker.docker
-  - community.docker.docker.docker_py_1_documentation
+  - community.docker.docker.docker_py_2_documentation
 
 author:
   - Sakar Mehra (@sakar97)
+  - Vladimir Porshkevich (@porshkevich)
 
 requirements:
   - "python >= 2.7"
-  - "docker-py >= 2.6.0"
+  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.6.0"
+  - "Docker API >= 1.25"
 '''
 
 EXAMPLES = '''
@@ -146,7 +144,7 @@ def prepare_options(options):
 
 
 def parse_options(options_list):
-    return dict((k, v) for k, v in map(lambda x: x.split('=', 1), options_list)) if options_list else {}
+    return dict(x.split('=', 1) for x in options_list) if options_list else {}
 
 
 class DockerPluginManager(object):
@@ -187,16 +185,16 @@ class DockerPluginManager(object):
     def get_existing_plugin(self):
         name = self.parameters.plugin_name
         try:
-            plugins = self.dclient.plugins.get(name)
+            plugin = self.dclient.plugins.get(name)
         except NotFound:
             return None
         except APIError as e:
             self.client.fail(text_type(e))
 
-        if plugins is None:
+        if plugin is None:
             return None
         else:
-            return plugins
+            return plugin
 
     def has_different_config(self):
         """
@@ -273,7 +271,6 @@ class DockerPluginManager(object):
             self.install_plugin()
 
         if self.diff or self.check_mode or self.parameters.debug:
-            self.diff_result['differences'] = differences.get_legacy_docker_diffs()
             self.diff_tracker.merge(differences)
 
         if not self.check_mode and not self.parameters.debug:
@@ -285,21 +282,23 @@ class DockerPluginManager(object):
     def enable(self):
         timeout = self.parameters.enable_timeout
         if self.existing_plugin:
-            if not self.check_mode and not self.existing_plugin.enabled:
+            if not self.existing_plugin.enabled:
+                if not self.check_mode:
+                    try:
+                        self.existing_plugin.enable(timeout)
+                    except APIError as e:
+                        self.client.fail(text_type(e))
+                    self.results['actions'].append("Enabled plugin %s" % self.parameters.plugin_name)
+                    self.results['changed'] = True
+        else:
+            self.install_plugin()
+            if not self.check_mode:
                 try:
                     self.existing_plugin.enable(timeout)
                 except APIError as e:
                     self.client.fail(text_type(e))
                 self.results['actions'].append("Enabled plugin %s" % self.parameters.plugin_name)
                 self.results['changed'] = True
-        else:
-            self.install_plugin()
-            try:
-                self.existing_plugin.enable(timeout)
-            except APIError as e:
-                self.client.fail(text_type(e))
-            self.results['actions'].append("Enabled plugin %s" % self.parameters.plugin_name)
-            self.results['changed'] = True
 
     def disable(self):
         if self.existing_plugin:
@@ -321,13 +320,13 @@ def main():
         plugin_options=dict(type='dict', default={}),
         debug=dict(type='bool', default=False),
         force_remove=dict(type='bool', default=False),
-        enable_timeout=dict(type='int', default=0)
+        enable_timeout=dict(type='int', default=0),
     )
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
         min_docker_version='2.6.0',
-        min_docker_api_version='1.25'
+        min_docker_api_version='1.25',
     )
 
     try:
