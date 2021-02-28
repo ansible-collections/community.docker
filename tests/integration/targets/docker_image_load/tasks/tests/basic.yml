@@ -42,6 +42,7 @@
   docker_image:
     name: "{{ item }}"
     state: absent
+    force_absent: true
   loop: "{{ all_images }}"
 
 - name: Load all images (IDs)
