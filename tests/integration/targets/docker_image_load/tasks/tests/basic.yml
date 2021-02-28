@@ -49,6 +49,7 @@
 
 - name: Prune all images (if removing failed)
   docker_prune:
+    containers: true
     images: true
   when: remove_all_images is failed
 
