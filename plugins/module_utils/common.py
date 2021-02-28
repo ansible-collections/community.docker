@@ -544,7 +544,7 @@ class AnsibleDockerClientBase(Client):
         self.log("Image %s:%s not found." % (name, tag))
         return None
 
-    def find_image_by_id(self, image_id, accept_not_there=False):
+    def find_image_by_id(self, image_id, accept_missing_image=False):
         '''
         Lookup an image (by ID) and return the inspection results.
         '''
@@ -555,7 +555,7 @@ class AnsibleDockerClientBase(Client):
         try:
             inspection = self.inspect_image(image_id)
         except NotFound as exc:
-            if not accept_not_there:
+            if not accept_missing_image:
                 self.fail("Error inspecting image ID %s - %s" % (image_id, str(exc)))
             self.log("Image %s not found." % image_id)
             return None

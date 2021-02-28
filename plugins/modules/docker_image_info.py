@@ -215,7 +215,7 @@ class ImageManager(DockerBaseClass):
         for name in names:
             if is_image_name_id(name):
                 self.log('Fetching image %s (ID)' % (name))
-                image = self.client.find_image_by_id(name, accept_not_there=True)
+                image = self.client.find_image_by_id(name, accept_missing_image=True)
             else:
                 repository, tag = utils.parse_repository_tag(name)
                 if not tag:

@@ -402,7 +402,7 @@ class ImageManager(DockerBaseClass):
         :returns None
         '''
         if is_image_name_id(self.name):
-            image = self.client.find_image_by_id(self.name, accept_not_there=True)
+            image = self.client.find_image_by_id(self.name, accept_missing_image=True)
         else:
             image = self.client.find_image(name=self.name, tag=self.tag)
 
@@ -471,7 +471,7 @@ class ImageManager(DockerBaseClass):
         '''
         name = self.name
         if is_image_name_id(name):
-            image = self.client.find_image_by_id(name, accept_not_there=True)
+            image = self.client.find_image_by_id(name, accept_missing_image=True)
         else:
             image = self.client.find_image(name, self.tag)
             if self.tag:
@@ -502,7 +502,7 @@ class ImageManager(DockerBaseClass):
             tag = "latest"
 
         if is_image_name_id(name):
-            image = self.client.find_image_by_id(name, accept_not_there=True)
+            image = self.client.find_image_by_id(name, accept_missing_image=True)
             image_name = name
         else:
             image = self.client.find_image(name=name, tag=tag)
@@ -785,7 +785,7 @@ class ImageManager(DockerBaseClass):
                         ', '.join(sorted(["'%s'" % image for image in loaded_images] + list(loaded_image_ids))), ))
 
         if is_image_name_id(self.name):
-            return self.client.find_image_by_id(self.name, accept_not_there=True)
+            return self.client.find_image_by_id(self.name, accept_missing_image=True)
         else:
             return self.client.find_image(self.name, self.tag)
 
