@@ -40,7 +40,7 @@
     state: disable
   register: absent_1
 
-- name: Disable a plugin
+- name: Disable a plugin (Idempotent)
   docker_plugin:
     plugin_name: "{{ plugin_name }}"
     state: disable
@@ -77,3 +77,4 @@
   docker_plugin:
     plugin_name: "{{ plugin_name }}"
     state: absent
+    force_remove: true
