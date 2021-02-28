@@ -103,6 +103,10 @@
     path: "{{ output_dir }}/archive-3.tar"
   register: result
 
+- name: Print loading log
+  debug:
+    var: result.stdout_lines
+
 - name: Print loaded image names
   debug:
     var: result.image_names
@@ -110,9 +114,11 @@
 - assert:
     that:
       - result is changed
-      - result.image_names | sort == [image_names[0], image_ids[0], image_ids[1]] | sort
-      - result.images | length == 3
-      - result.images | map(attribute='Id') | sort == [image_ids[0], image_ids[0], image_ids[1]] | sort
+      # For some reason, *sometimes* only the named image is found; in fact, in that case, the log only mentions that image and nothing else
+      - "result.images | length == 3 or ('Loaded image: ' ~ docker_test_image_hello_world) == result.stdout"
+      - (result.image_names | sort) in [[image_names[0], image_ids[0], image_ids[1]] | sort, [image_names[0]]]
+      - result.images | length in [1, 3]
+      - (result.images | map(attribute='Id') | sort) in [[image_ids[0], image_ids[0], image_ids[1]] | sort, [image_ids[0]]]
 
 # Same image twice
 
