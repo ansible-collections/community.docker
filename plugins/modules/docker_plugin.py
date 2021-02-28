@@ -245,14 +245,14 @@ class DockerPluginManager(object):
             self.results['changed'] = True
 
     def update_plugin(self):
-        if not self.check_mode:
-            if self.existing_plugin:
-                differences = self.has_different_config()
+        if self.existing_plugin:
+            differences = self.has_different_config()
                 if not differences.empty:
-                    try:
-                        self.existing_plugin.configure(prepare_options(self.parameters.plugin_options))
-                    except APIError as e:
-                        self.client.fail(text_type(e))
+                    if not self.check_mode:
+                        try:
+                            self.existing_plugin.configure(prepare_options(self.parameters.plugin_options))
+                        except APIError as e:
+                            self.client.fail(text_type(e))
                     self.results['actions'].append("Updated plugin %s settings" % self.parameters.plugin_name)
                     self.results['changed'] = True
             else:
@@ -288,8 +288,8 @@ class DockerPluginManager(object):
                         self.existing_plugin.enable(timeout)
                     except APIError as e:
                         self.client.fail(text_type(e))
-                    self.results['actions'].append("Enabled plugin %s" % self.parameters.plugin_name)
-                    self.results['changed'] = True
+                self.results['actions'].append("Enabled plugin %s" % self.parameters.plugin_name)
+                self.results['changed'] = True
         else:
             self.install_plugin()
             if not self.check_mode:
@@ -297,16 +297,17 @@ class DockerPluginManager(object):
                     self.existing_plugin.enable(timeout)
                 except APIError as e:
                     self.client.fail(text_type(e))
-                self.results['actions'].append("Enabled plugin %s" % self.parameters.plugin_name)
-                self.results['changed'] = True
+            self.results['actions'].append("Enabled plugin %s" % self.parameters.plugin_name)
+            self.results['changed'] = True
 
     def disable(self):
         if self.existing_plugin:
-            if not self.check_mode and self.existing_plugin.enabled:
-                try:
-                    self.existing_plugin.disable()
-                except APIError as e:
-                    self.client.fail(text_type(e))
+            if self.existing_plugin.enabled:
+                if not self.check_mode: 
+                    try:
+                        self.existing_plugin.disable()
+                    except APIError as e:
+                        self.client.fail(text_type(e))
                 self.results['actions'].append("Disable plugin %s" % self.parameters.plugin_name)
                 self.results['changed'] = True
         else:

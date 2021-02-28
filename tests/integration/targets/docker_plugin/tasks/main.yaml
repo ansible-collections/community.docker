@@ -7,7 +7,7 @@
     msg: "Using name prefix {{ name_prefix }}"
 
 - block:
-  - include_tasks: run-Itest.yml
+  - include_tasks: run-test.yml
     with_fileglob:
     - "tests/*.yml"
 
