@@ -1,0 +1,80 @@
+---
+- name: Registering plugin name
+  set_fact:
+    plugin_name: "{{ name_prefix }}"
+
+- name: Registering container name
+  set_fact:
+    plugin_names: "{{ plugin_names + [plugin_name] }}"
+
+############ basic test ############
+####################################
+
+- name: Create a plugin
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: present
+  register: create_1
+
+- name: Create a plugin (Idempotent)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: present
+  register: create_2
+
+- name: Enable a plugin
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: enable
+  register: create_3
+
+- name: Enable a plugin (Idempotent)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: enable
+  register: create_4
+
+- name: Disable a plugin
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: disable
+  register: absent_1
+
+- name: Disable a plugin (Idempotent)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: disable
+  register: absent_2
+
+- name: Remove a plugin
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: absent
+  register: absent_3
+
+- name: Remove a plugin (Idempotent)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: absent
+  register: absent_4
+
+- assert:
+    that:
+    - create_1 is changed
+    - create_2 is not changed
+    - create_3 is changed
+    - create_4 is not changed
+    - absent_1 is changed
+    - absent_2 is not changed
+    - absent_3 is changed
+    - absent_4 is not changed
+
+############ Plugin_Options ############
+########################################
+# Integration-Test with plugin_options is in TODO-List
+
+- name: Cleanup
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: absent
+    force_remove: true
