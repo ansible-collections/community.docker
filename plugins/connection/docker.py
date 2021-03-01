@@ -13,7 +13,7 @@ DOCUMENTATION = '''
     author:
         - Lorin Hochestein (!UNKNOWN)
         - Leendert Brouwer (!UNKNOWN)
-    connection: docker
+    name: docker
     short_description: Run tasks in docker containers
     description:
         - Run commands or put/fetch files to an existing docker container.
@@ -65,7 +65,7 @@ display = Display()
 class Connection(ConnectionBase):
     ''' Local docker based connections '''
 
-    transport = 'community.general.docker'
+    transport = 'community.docker.docker'
     has_pipelining = True
 
     def __init__(self, play_context, new_stdin, *args, **kwargs):
