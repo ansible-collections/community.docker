@@ -280,10 +280,6 @@ class Connection(ConnectionBase):
         if getattr(self._shell, "_IS_WINDOWS", False) and stderr.startswith(b"#< CLIXML"):
             stderr = _parse_clixml(stderr)
 
-        display.debug(u"p.returncode == {0}".format(p.returncode))
-        display.debug(u"stderr == {0}".format(stderr))
-        display.debug(u"stdout == {0}".format(stdout))
-
         return (p.returncode, stdout, stderr)
 
     def _prefix_login_path(self, remote_path):
@@ -357,18 +353,14 @@ $strm.Dispose() }''' % (out_path)
             args = [to_bytes(i, errors='surrogate_or_strict') for i in args]
             try:
                 p = subprocess.Popen(
-                        args,
-                        stdin=in_file,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE
-                    )
+                    args,
+                    stdin=in_file,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
             except OSError:
                 raise AnsibleError("docker connection requires dd command in the container to put files")
             stdout, stderr = p.communicate()
-
-            display.debug(u"p.returncode == {0}".format(p.returncode))
-            display.debug(u"stderr == {0}".format(stderr))
-            display.debug(u"stdout == {0}".format(stdout))
 
             if p.returncode != 0:
                 raise AnsibleError("failed to transfer file %s to %s:\n%s\n%s" %
