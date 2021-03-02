@@ -183,7 +183,7 @@ stages:
       - template: templates/matrix.yml
         parameters:
           nameFormat: RHEL {0}
-          testFormat: devel/rhel/{0}
+          testFormat: 2.10/rhel/{0}
           targets:
             - test: '7.8'
             - test: '8.2'
@@ -199,7 +199,7 @@ stages:
       - template: templates/matrix.yml
         parameters:
           nameFormat: RHEL {0}
-          testFormat: devel/rhel/{0}
+          testFormat: 2.9/rhel/{0}
           targets:
             - test: '8.2'
           groups:
