@@ -57,7 +57,6 @@ from ansible.module_utils.six.moves import shlex_quote
 from ansible.module_utils._text import to_bytes, to_native, to_text
 from ansible.plugins.connection import ConnectionBase, BUFSIZE
 from ansible.utils.display import Display
-from ansible.plugins.shell.powershell import _parse_clixml
 
 display = Display()
 
@@ -278,6 +277,7 @@ class Connection(ConnectionBase):
 
         # When running on Windows, stderr may contain CLIXML encoded output
         if getattr(self._shell, "_IS_WINDOWS", False) and stderr.startswith(b"#< CLIXML"):
+            from ansible.plugins.shell.powershell import _parse_clixml
             stderr = _parse_clixml(stderr)
 
         return (p.returncode, stdout, stderr)
@@ -346,9 +346,7 @@ $strm.Dispose() }''' % (out_path)
                 args = self._build_exec_cmd(["cmd", "/c", self._shell._encode_script(cmd, as_list=False, strict_mode=False, preserve_rc=False)])
                 display.debug(u"Command to execute: {0}".format(args))
             else:
-                out_path = self._prefix_login_path(out_path)
-                out_path = shlex_quote(out_path)
-            args = self._build_exec_cmd([self._play_context.executable, "-c", "dd of=%s bs=%s%s" % (out_path, BUFSIZE, count)])
+                args = self._build_exec_cmd([self._play_context.executable, "-c", "dd of=%s bs=%s%s" % (out_path, BUFSIZE, count)])
 
             args = [to_bytes(i, errors='surrogate_or_strict') for i in args]
             try:
