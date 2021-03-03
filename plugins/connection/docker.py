@@ -333,7 +333,7 @@ class Connection(ConnectionBase):
             if getattr(self._shell, "_IS_WINDOWS", False):
                 cmd = '''& { $strm = [Console]::OpenStandardInput(1024)
 $data = [System.Array]::CreateInstance([byte],1024)
-$fstrm = [IO.File]::OpenWrite('%s')
+$fstrm = [IO.File]::OpenWrite(%s)
 do {
     $read = $strm.Read($data, 0, $data.Length)
     if ($read -gt 0) {
