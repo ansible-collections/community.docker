@@ -39,7 +39,6 @@ requirements:
 
 author:
   - Felix Fontein (@felixfontein)
-
 '''
 
 EXAMPLES = '''
@@ -49,7 +48,7 @@ EXAMPLES = '''
   register: result
 
 - name: Print the loaded image names
-  debug:
+  ansible.builtin.debug:
     msg: "Loaded the following images: {{ result.image_names | join(', ') }}"
 '''
 
@@ -179,7 +178,8 @@ def main():
     except DockerException as e:
         client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
     except RequestException as e:
-        client.fail('An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
+        client.fail('An unexpected requests error occurred when docker-py tried to talk '
+                    'to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
 
 
 if __name__ == '__main__':
