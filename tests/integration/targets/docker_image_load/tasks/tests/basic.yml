@@ -1,0 +1,213 @@
+---
+- set_fact:
+    image_names:
+      - "{{ docker_test_image_hello_world }}"
+      - "{{ docker_test_image_busybox }}"
+      - "{{ docker_test_image_alpine }}"
+
+- name: Make sure images are there
+  docker_image:
+    name: "{{ item }}"
+    source: pull
+  register: images
+  loop: "{{ image_names }}"
+
+- name: Compile list of all image names and IDs
+  set_fact:
+    image_ids: "{{ images.results | map(attribute='image') | map(attribute='Id') | list }}"
+    all_images: "{{ image_names + (images.results | map(attribute='image') | map(attribute='Id') | list) }}"
+
+- name: Create archives
+  command: docker save {{ item.images | join(' ') }} -o {{ output_dir }}/{{ item.file }}
+  loop:
+    - file: archive-1.tar
+      images: "{{ image_names }}"
+    - file: archive-2.tar
+      images: "{{ image_ids }}"
+    - file: archive-3.tar
+      images:
+        - "{{ image_names[0] }}"
+        - "{{ image_ids[1] }}"
+    - file: archive-4.tar
+      images:
+        - "{{ image_ids[0] }}"
+        - "{{ image_names[0] }}"
+    - file: archive-5.tar
+      images:
+        - "{{ image_ids[0] }}"
+
+# All images by IDs
+
+- name: Remove all images
+  docker_image:
+    name: "{{ item }}"
+    state: absent
+    force_absent: true
+  loop: "{{ all_images }}"
+  ignore_errors: true
+  register: remove_all_images
+
+- name: Prune all containers (if removing failed)
+  docker_prune:
+    containers: true
+  when: remove_all_images is failed
+
+- name: Obtain all docker containers and images (if removing failed)
+  shell: docker ps -a ; docker images -a
+  when: remove_all_images is failed
+  register: docker_container_image_list
+
+- name: Show all docker containers and images (if removing failed)
+  debug:
+    var: docker_container_image_list.stdout_lines
+  when: remove_all_images is failed
+
+- name: Remove all images (after pruning)
+  docker_image:
+    name: "{{ item }}"
+    state: absent
+    force_absent: true
+  loop: "{{ all_images }}"
+  when: remove_all_images is failed
+
+- name: Load all images (IDs)
+  docker_image_load:
+    path: "{{ output_dir }}/archive-2.tar"
+  register: result
+
+- name: Print loaded image names
+  debug:
+    var: result.image_names
+
+- assert:
+    that:
+      - result is changed
+      - result.image_names | sort == image_ids | sort
+      - result.image_names | length == result.images | length
+
+- name: Load all images (IDs, should be same result)
+  docker_image_load:
+    path: "{{ output_dir }}/archive-2.tar"
+  register: result_2
+
+- name: Print loaded image names
+  debug:
+    var: result_2.image_names
+
+- assert:
+    that:
+      - result_2 is changed
+      - result_2.image_names | sort == image_ids | sort
+      - result_2.image_names | length == result_2.images | length
+
+# Mixed images and IDs
+
+- name: Remove all images
+  docker_image:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ all_images }}"
+
+- name: Load all images (mixed images and IDs)
+  docker_image_load:
+    path: "{{ output_dir }}/archive-3.tar"
+  register: result
+
+- name: Print loading log
+  debug:
+    var: result.stdout_lines
+
+- name: Print loaded image names
+  debug:
+    var: result.image_names
+
+- assert:
+    that:
+      - result is changed
+      # For some reason, *sometimes* only the named image is found; in fact, in that case, the log only mentions that image and nothing else
+      - "result.images | length == 3 or ('Loaded image: ' ~ docker_test_image_hello_world) == result.stdout"
+      - (result.image_names | sort) in [[image_names[0], image_ids[0], image_ids[1]] | sort, [image_names[0]]]
+      - result.images | length in [1, 3]
+      - (result.images | map(attribute='Id') | sort) in [[image_ids[0], image_ids[0], image_ids[1]] | sort, [image_ids[0]]]
+
+# Same image twice
+
+- name: Remove all images
+  docker_image:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ all_images }}"
+
+- name: Load all images (same image twice)
+  docker_image_load:
+    path: "{{ output_dir }}/archive-4.tar"
+  register: result
+
+- name: Print loaded image names
+  debug:
+    var: result.image_names
+
+- assert:
+    that:
+      - result is changed
+      - result.image_names | length == 1
+      - result.image_names[0] == image_names[0]
+      - result.images | length == 1
+      - result.images[0].Id == image_ids[0]
+
+# Single image by ID
+
+- name: Remove all images
+  docker_image:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ all_images }}"
+
+- name: Load all images (single image by ID)
+  docker_image_load:
+    path: "{{ output_dir }}/archive-5.tar"
+  register: result
+
+- name: Print loaded image names
+  debug:
+    var: result.image_names
+
+- assert:
+    that:
+      - result is changed
+      - result.image_names | length == 1
+      - result.image_names[0] == image_ids[0]
+      - result.images | length == 1
+      - result.images[0].Id == image_ids[0]
+
+- name: Try to get image info by name
+  docker_image_info:
+    name: "{{ image_names[0] }}"
+  register: result
+
+- name: Make sure that image does not exist by name
+  assert:
+    that:
+      - result.images | length == 0
+
+# All images by names
+
+- name: Remove all images
+  docker_image:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ all_images }}"
+
+- name: Load all images (names)
+  docker_image_load:
+    path: "{{ output_dir }}/archive-1.tar"
+  register: result
+
+- name: Print loaded image names
+  debug:
+    var: result.image_names
+
+- assert:
+    that:
+      - result.image_names | sort == image_names | sort
+      - result.image_names | length == result.images | length
