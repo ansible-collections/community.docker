@@ -1,3 +1,5 @@
+.. _ansible_collection.community.docker.docsite.scenario_guide:
+
 Docker Guide
 ============
 
