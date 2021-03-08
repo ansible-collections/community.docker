@@ -1,2 +1,0 @@
-minor_changes:
-- "docker_container - add ``storage_opts`` option to specify storage options (https://github.com/ansible-collections/community.docker/issues/91, https://github.com/ansible-collections/community.docker/pull/93)."
