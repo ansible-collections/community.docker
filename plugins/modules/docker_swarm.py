@@ -233,7 +233,7 @@ swarm_facts:
           contains:
               Worker:
                   description:
-                    - Token to create a new *worker* node.
+                    - Token to join the cluster as a new *worker* node.
                     - "B(Note:) if this value has been specified as I(join_token), the value here will not
                        be the token, but C(VALUE_SPECIFIED_IN_NO_LOG_PARAMETER). If you pass I(join_token),
                        make sure your playbook/role does not depend on this return value!"
@@ -242,7 +242,7 @@ swarm_facts:
                   example: SWMTKN-1--xxxxx
               Manager:
                   description:
-                    - Token to create a new *manager* node.
+                    - Token to join the cluster as a new *manager* node.
                     - "B(Note:) if this value has been specified as I(join_token), the value here will not
                        be the token, but C(VALUE_SPECIFIED_IN_NO_LOG_PARAMETER). If you pass I(join_token),
                        make sure your playbook/role does not depend on this return value!"
