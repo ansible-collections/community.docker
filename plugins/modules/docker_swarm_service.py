@@ -365,7 +365,7 @@ options:
         description:
           - The port to make externally available.
         type: int
-        required: yes
+        required: no
       target_port:
         description:
           - The port inside the container to expose.
@@ -2066,9 +2066,10 @@ class DockerService(DockerBaseClass):
             for port in self.publish:
                 port_spec = {
                     'Protocol': port['protocol'],
-                    'PublishedPort': port['published_port'],
                     'TargetPort': port['target_port']
                 }
+                if port.get('published_port'):
+                    port_spec['PublishedPort'] = port['published_port']
                 if port.get('mode'):
                     port_spec['PublishMode'] = port['mode']
                 ports.append(port_spec)
@@ -2214,7 +2215,7 @@ class DockerServiceManager(object):
                     ds.publish.append({
                         'protocol': port['Protocol'],
                         'mode': port.get('PublishMode', None),
-                        'published_port': int(port['PublishedPort']),
+                        'published_port': port.get('PublishedPort', None),
                         'target_port': int(port['TargetPort'])
                     })
 
@@ -2618,7 +2619,7 @@ def main():
             options=dict(type='dict'),
         )),
         publish=dict(type='list', elements='dict', options=dict(
-            published_port=dict(type='int', required=True),
+            published_port=dict(type='int', required=False),
             target_port=dict(type='int', required=True),
             protocol=dict(type='str', default='tcp', choices=['tcp', 'udp']),
             mode=dict(type='str', choices=['ingress', 'host']),
