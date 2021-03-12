@@ -2598,9 +2598,9 @@ def main():
             gid=dict(type='str'),
             mode=dict(type='int'),
         )),
-        secrets=dict(type='list', elements='dict', options=dict(
-            secret_id=dict(type='str'),
-            secret_name=dict(type='str', required=True),
+        secrets=dict(type='list', elements='dict', no_log=False, options=dict(
+            secret_id=dict(type='str', no_log=False),
+            secret_name=dict(type='str', required=True, no_log=False),
             filename=dict(type='str'),
             uid=dict(type='str'),
             gid=dict(type='str'),
