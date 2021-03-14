@@ -105,7 +105,8 @@
     image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     command: '/bin/sh -v -c "sleep 10m"'
-    update_failure_action: "rollback"
+    update_config:
+      failure_action: "rollback"
   register: update_failure_action_5
   ignore_errors: yes
 
@@ -124,6 +125,7 @@
 - assert:
     that:
       - update_failure_action_4 is changed
+      - update_failure_action_5 is not failed
       - update_failure_action_5 is not changed
   when: docker_api_version is version('1.28', '>=') and docker_py_version is version('3.5.0', '>=')
 
