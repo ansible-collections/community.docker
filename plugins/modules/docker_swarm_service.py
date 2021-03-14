@@ -2551,11 +2551,7 @@ def _detect_update_config_failure_action_rollback(client):
     rollback_config_failure_action = (
         (client.module.params['update_config'] or {}).get('failure_action')
     )
-    update_failure_action = (
-        client.module.params.get('update_failure_action')
-    )
-    failure_action = rollback_config_failure_action or update_failure_action
-    return failure_action == 'rollback'
+    return rollback_config_failure_action == 'rollback'
 
 
 def main():
