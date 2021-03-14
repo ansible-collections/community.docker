@@ -1,3 +1,0 @@
-bugfixes:
-  - "``docker_swarm_service`` - fix KeyError on caused by reference to 
-    deprecated option ``update_failure_action`` (https://github.com/ansible-collections/community.docker/pull/100)."

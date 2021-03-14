@@ -1,3 +1,0 @@
-minor_changes:
-  - docker_swarm_service - change ``publish.published_port`` option from mandatory
-    to optional. Docker will assign random high port if not specified (https://github.com/ansible-collections/community.docker/issues/99).
