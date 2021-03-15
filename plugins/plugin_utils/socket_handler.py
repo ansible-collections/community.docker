@@ -5,7 +5,6 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 
-import fcntl
 import os
 import os.path
 import socket as pysocket
@@ -20,18 +19,19 @@ except Exception:
     # missing Docker SDK for Python handled in ansible_collections.community.docker.plugins.module_utils.common
     pass
 
+from ansible_collections.community.docker.plugins.module_utils.socket_helper import (
+    make_unblocking,
+    shutdown_writing,
+    write_to_socket,
+)
+
 
 PARAMIKO_POLL_TIMEOUT = 0.01  # 10 milliseconds
 
 
 class DockerSocketHandler:
     def __init__(self, display, sock, container=None):
-        if hasattr(sock, '_sock'):
-            sock._sock.setblocking(0)
-        elif hasattr(sock, 'setblocking'):
-            sock.setblocking(0)
-        else:
-            fcntl.fcntl(sock.fileno(), fcntl.F_SETFL, fcntl.fcntl(sock.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK)
+        make_unblocking(sock)
 
         self._display = display
         self._paramiko_read_workaround = hasattr(sock, 'send_ready') and 'paramiko' in str(type(sock))
@@ -122,30 +122,11 @@ class DockerSocketHandler:
         if self._end_of_writing and len(self._write_buffer) == 0:
             self._end_of_writing = False
             self._display.vvvv('Shutting socket down for writing', host=self._container)
-            if hasattr(self._sock, 'shutdown_write'):
-                self._sock.shutdown_write()
-            elif hasattr(self._sock, 'shutdown'):
-                try:
-                    self._sock.shutdown(pysocket.SHUT_WR)
-                except TypeError as e:
-                    # probably: "TypeError: shutdown() takes 1 positional argument but 2 were given"
-                    self._display.vvvv('Shutting down for writing not possible; trying shutdown instead: {0}'.format(e), host=self._container)
-                    self._sock.shutdown()
-            elif PY3 and isinstance(self._sock, getattr(pysocket, 'SocketIO')):
-                self._sock._sock.shutdown(pysocket.SHUT_WR)
-            else:
-                self._display.vvvv('No idea how to signal end of writing', host=self._container)
+            shutdown_writing(self._sock, lambda msg: self._display.vvvv(msg, host=self._container))
 
     def _write(self):
         if len(self._write_buffer) > 0:
-            if hasattr(self._sock, '_send_until_done'):
-                # WrappedSocket (urllib3/contrib/pyopenssl) doesn't have `send`, but
-                # only `sendall`, which uses `_send_until_done` under the hood.
-                written = self._sock._send_until_done(self._write_buffer)
-            elif hasattr(self._sock, 'send'):
-                written = self._sock.send(self._write_buffer)
-            else:
-                written = os.write(self._sock.fileno(), self._write_buffer)
+            written = write_to_socket(self._sock, self._write_buffer)
             self._write_buffer = self._write_buffer[written:]
             self._display.vvvv('wrote {0} bytes, {1} are left'.format(written, len(self._write_buffer)), host=self._container)
             if len(self._write_buffer) > 0:
