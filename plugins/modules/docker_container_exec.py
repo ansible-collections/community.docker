@@ -205,7 +205,7 @@ def main():
                 while write_buffer:
                     written = write_to_socket(exec_socket, write_buffer)
                     write_buffer = write_buffer[written:]
-                shutdown_writing(exec_socket, lambda msg: client.module.debug(msg))
+                shutdown_writing(exec_socket, client.module.debug)
 
                 # Read stdout/stderr
                 gen = frames_iter(exec_socket, tty)
