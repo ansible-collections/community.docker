@@ -30,10 +30,15 @@ PARAMIKO_POLL_TIMEOUT = 0.01  # 10 milliseconds
 
 
 class DockerSocketHandler:
-    def __init__(self, display, sock, container=None):
+    def __init__(self, display, sock, log=None, container=None):
         make_unblocking(sock)
 
-        self._display = display
+        if log is not None:
+            self._log = log
+        elif display is not None:
+            self._log = lambda msg: display.vvvv(msg, host=self._container)
+        else:
+            self._log = lambda msg: True
         self._paramiko_read_workaround = hasattr(sock, 'send_ready') and 'paramiko' in str(type(sock))
 
         self._container = container
@@ -94,7 +99,7 @@ class DockerSocketHandler:
         if data is None:
             # no data available
             return
-        self._display.vvvv('read {0} bytes'.format(len(data)), host=self._container)
+        self._log('read {0} bytes'.format(len(data)))
         if len(data) == 0:
             # Stream EOF
             self._eof = True
@@ -121,14 +126,14 @@ class DockerSocketHandler:
     def _handle_end_of_writing(self):
         if self._end_of_writing and len(self._write_buffer) == 0:
             self._end_of_writing = False
-            self._display.vvvv('Shutting socket down for writing', host=self._container)
-            shutdown_writing(self._sock, lambda msg: self._display.vvvv(msg, host=self._container))
+            self._log('Shutting socket down for writing')
+            shutdown_writing(self._sock, self._log)
 
     def _write(self):
         if len(self._write_buffer) > 0:
             written = write_to_socket(self._sock, self._write_buffer)
             self._write_buffer = self._write_buffer[written:]
-            self._display.vvvv('wrote {0} bytes, {1} are left'.format(written, len(self._write_buffer)), host=self._container)
+            self._log('wrote {0} bytes, {1} are left'.format(written, len(self._write_buffer)))
             if len(self._write_buffer) > 0:
                 self._selector.modify(self._sock, selectors.EVENT_READ | selectors.EVENT_WRITE)
             else:
@@ -152,13 +157,12 @@ class DockerSocketHandler:
                     return True
                 if timeout is not None:
                     timeout -= PARAMIKO_POLL_TIMEOUT
-        self._display.vvvv('select... ({0})'.format(timeout), host=self._container)
+        self._log('select... ({0})'.format(timeout))
         events = self._selector.select(timeout)
         for key, event in events:
             if key.fileobj == self._sock:
-                self._display.vvvv(
-                    'select event read:{0} write:{1}'.format(event & selectors.EVENT_READ != 0, event & selectors.EVENT_WRITE != 0),
-                    host=self._container)
+                self._log(
+                    'select event read:{0} write:{1}'.format(event & selectors.EVENT_READ != 0, event & selectors.EVENT_WRITE != 0))
                 if event & selectors.EVENT_READ != 0:
                     self._read()
                 if event & selectors.EVENT_WRITE != 0:
