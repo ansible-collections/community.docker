@@ -137,9 +137,13 @@ from ansible_collections.community.docker.plugins.module_utils.socket_helper imp
     write_to_socket,
 )
 
+from ansible_collections.community.docker.plugins.module_utils.socket_handler import (
+    find_selectors,
+    DockerSocketHandlerModule,
+)
+
 try:
     from docker.errors import DockerException, APIError, NotFound
-    from docker.utils.socket import consume_socket_output, demux_adaptor, frames_iter
 except Exception:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
     pass
@@ -180,6 +184,10 @@ def main():
     if stdin is not None and client.module.params['stdin_add_newline']:
         stdin += '\n'
 
+    selectors = None
+    if stdin:
+        selectors = find_selectors(client.module)
+
     try:
         exec_data = client.exec_create(
             container,
@@ -192,7 +200,7 @@ def main():
         )
         exec_id = exec_data['Id']
 
-        if stdin:
+        if selectors:
             exec_socket = client.exec_start(
                 exec_id,
                 tty=tty,
@@ -200,17 +208,11 @@ def main():
                 socket=True,
             )
             try:
-                # Write stdin
-                write_buffer = to_bytes(stdin)
-                while write_buffer:
-                    written = write_to_socket(exec_socket, write_buffer)
-                    write_buffer = write_buffer[written:]
-                shutdown_writing(exec_socket, client.module.debug)
+                with DockerSocketHandlerModule(exec_socket, client.module, selectors) as exec_socket_handler:
+                    if stdin:
+                        exec_socket_handler.write(to_bytes(stdin))
 
-                # Read stdout/stderr
-                gen = frames_iter(exec_socket, tty)
-                gen = (demux_adaptor(*frame) for frame in gen)
-                stdout, stderr = consume_socket_output(gen, demux=True)
+                    stdout, stderr = exec_socket_handler.consume()
             finally:
                 exec_socket.close()
         else:

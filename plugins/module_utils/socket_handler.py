@@ -9,6 +9,7 @@ import os
 import os.path
 import socket as pysocket
 
+from ansible.module_utils.basic import missing_required_lib
 from ansible.module_utils.six import PY3
 
 try:
@@ -202,3 +203,30 @@ class DockerSocketHandlerBase(object):
         self._write_buffer += str
         if len(self._write_buffer) == len(str):
             self._write()
+
+
+class DockerSocketHandlerModule(DockerSocketHandlerBase):
+    def __init__(self, sock, module, selectors):
+        super(DockerSocketHandlerModule, self).__init__(sock, selectors, module.debug)
+
+
+def find_selectors(module):
+    try:
+        # ansible-base 2.10+ has selectors a compat version of selectors, which a bundled fallback:
+        from ansible.module_utils.compat import selectors
+        return selectors
+    except ImportError:
+        pass
+    try:
+        # Python 3.4+
+        import selectors
+        return selectors
+    except ImportError:
+        pass
+    try:
+        # backport package installed in the system
+        import selectors2
+        return selectors2
+    except ImportError:
+        pass
+    module.fail_json(msg=missing_required_lib('selectors2', reason='for handling stdin'))
