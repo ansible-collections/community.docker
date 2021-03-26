@@ -143,13 +143,16 @@ options:
     default: no
   timeout:
     description:
-        - timeout in seconds for container shutdown when attached or when containers are already running.
+      - Timeout in seconds for container shutdown when attached or when containers are already running.
     type: int
     default: 10
+  use_ssh_client:
+    description:
+      - Currently ignored for this module, but might suddenly be supported later on.
 
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
+  - community.docker.docker
+  - community.docker.docker.docker_py_1_documentation
 
 
 requirements:
