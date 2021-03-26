@@ -1,5 +1,12 @@
 ---
 - block:
+  - name: Log out server
+    docker_login:
+      registry_url: "{{ registry_frontend_address }}"
+      username: testuser
+      password: hunter2
+      state: absent
+
   - name: Log in with wrong password (check mode)
     docker_login:
       registry_url: "{{ registry_frontend_address }}"
