@@ -1,0 +1,6 @@
+---
+- name: Install paramiko
+  pip:
+    name: "paramiko{% if cryptography_version.stdout is version('2.5.0', '<') %}<2.5.0{% endif %}"
+    extra_args: "-c {{ remote_constraints }}"
+  become: true
