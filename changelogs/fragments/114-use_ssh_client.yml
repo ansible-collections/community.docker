@@ -1,0 +1,2 @@
+minor_changes:
+- "Add the ``use_ssh_client`` option to most docker modules and plugins (https://github.com/ansible-collections/community.docker/issues/108, https://github.com/ansible-collections/community.docker/pull/114)."

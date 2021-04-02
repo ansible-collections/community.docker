@@ -80,6 +80,13 @@ options:
               instead. If the environment variable is not set, the default value will be used.
         type: bool
         default: no
+    use_ssh_client:
+        description:
+            - For SSH transports, use the C(ssh) CLI tool instead of paramiko.
+            - Requires Docker SDK for Python 4.4.0 or newer.
+        type: bool
+        default: no
+        version_added: 1.5.0
     validate_certs:
         description:
             - Secure the connection to the API by using TLS and verifying the authenticity of the Docker host server.

@@ -1,0 +1,77 @@
+---
+####################################################################
+# WARNING: These are designed specifically for Ansible tests       #
+# and should not be used as examples of how to write Ansible roles #
+####################################################################
+
+- name: Get docker daemon information directly
+  docker_host_info:
+  register: output
+
+- name: Make sure we got information
+  assert:
+    that:
+      - 'output.host_info.Name is string'
+      - 'output.containers is not defined'
+      - 'output.networks is not defined'
+      - 'output.volumes is not defined'
+      - 'output.images is not defined'
+      - 'output.disk_usage is not defined'
+
+- name: Show contents of ~/.ssh
+  command: ls -lah ~/.ssh
+  ignore_errors: true
+
+- name: Create SSH config
+  copy:
+    dest: "{{ lookup('env', 'HOME') }}/.ssh/config"
+    mode: '0600'
+    content: |
+      Host localhost
+      User root
+      IdentityFile ~/.ssh/id_rsa
+
+- name: Get docker daemon information via ssh (paramiko) to localhost
+  docker_host_info:
+    docker_host: "ssh://root@localhost"
+  register: output
+  ignore_errors: true
+
+- name: Make sure we got information
+  assert:
+    that:
+      - 'output.host_info.Name is string'
+      - 'output.containers is not defined'
+      - 'output.networks is not defined'
+      - 'output.volumes is not defined'
+      - 'output.images is not defined'
+      - 'output.disk_usage is not defined'
+  when: output is succeeded or 'Install paramiko package to enable' in output.msg
+  # For whatever reason, even though paramiko is installed, *sometimes* this error
+  # shows up. I have no idea why it sometimes works and sometimes not...
+
+- name: Get docker daemon information via ssh (OpenSSH) to localhost
+  docker_host_info:
+    docker_host: "ssh://root@localhost"
+    use_ssh_client: true
+  register: output
+  ignore_errors: true
+
+- name: Make sure we got information
+  assert:
+    that:
+      - output is succeeded
+      - 'output.host_info.Name is string'
+      - 'output.containers is not defined'
+      - 'output.networks is not defined'
+      - 'output.volumes is not defined'
+      - 'output.images is not defined'
+      - 'output.disk_usage is not defined'
+  when: docker_py_version is version('4.4.0', '>=')
+
+- name: Make sure we got information
+  assert:
+    that:
+      - output is failed
+      - "'use_ssh_client=True requires Docker SDK for Python 4.4.0 or newer' in output.msg"
+  when: docker_py_version is version('4.4.0', '<')

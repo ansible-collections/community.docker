@@ -86,6 +86,13 @@ DOCUMENTATION = '''
             type: int
             default: 60
             aliases: [ time_out ]
+        use_ssh_client:
+            description:
+                - For SSH transports, use the C(ssh) CLI tool instead of paramiko.
+                - Requires Docker SDK for Python 4.4.0 or newer.
+            type: bool
+            default: no
+            version_added: 1.5.0
         include_host_uri:
             description: Toggle to return the additional attribute C(ansible_host_uri) which contains the URI of the
                          swarm leader in format of C(tcp://172.16.0.1:2376). This value may be used without additional
@@ -171,6 +178,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             api_version=self.get_option('api_version'),
             timeout=self.get_option('timeout'),
             ssl_version=self.get_option('ssl_version'),
+            use_ssh_client=self.get_option('use_ssh_client'),
             debug=None,
         )
         update_tls_hostname(raw_params)

@@ -134,9 +134,7 @@ import re
 
 from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
-from ansible_collections.community.docker.plugins.module_utils.common import update_tls_hostname, get_connect_params
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
-from ansible.parsing.utils.addresses import parse_address
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     RequestException,
@@ -146,7 +144,7 @@ from ansible_collections.community.docker.plugins.plugin_utils.common import (
 )
 
 try:
-    from docker.errors import DockerException, APIError, NotFound
+    from docker.errors import DockerException, APIError
 except Exception:
     # missing Docker SDK for Python handled in ansible_collections.community.docker.plugins.module_utils.common
     pass
