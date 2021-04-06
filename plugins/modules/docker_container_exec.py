@@ -67,7 +67,7 @@ options:
 extends_documentation_fragment:
   - community.docker.docker
   - community.docker.docker.docker_py_1_documentation
-note:
+notes:
   - Does not support C(check_mode).
 author:
   - "Felix Fontein (@felixfontein)"
