@@ -11,7 +11,7 @@ DOCUMENTATION = '''
 ---
 module: docker_container_exec
 
-short_description: execute command in a docker container
+short_description: Execute command in a docker container
 
 version_added: 1.5.0
 
@@ -67,7 +67,8 @@ options:
 extends_documentation_fragment:
   - community.docker.docker
   - community.docker.docker.docker_py_1_documentation
-
+note:
+  - Does not support C(check_mode).
 author:
   - "Felix Fontein (@felixfontein)"
 
