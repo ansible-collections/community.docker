@@ -25,13 +25,16 @@ Both libraries cannot be installed at the same time. If you accidentally did ins
 * Modules:
   * Docker:
     - community.docker.docker_container: manage Docker containers
+    - community.docker.docker_container_exec: run commands in Docker containers
     - community.docker.docker_container_info: retrieve information on Docker containers
     - community.docker.docker_host_info: retrieve information on the Docker daemon
     - community.docker.docker_image: manage Docker images
     - community.docker.docker_image_info: retrieve information on Docker images
+    - community.docker.docker_image_load: load Docker images from archives
     - community.docker.docker_login: log in and out to/from registries
     - community.docker.docker_network: manage Docker networks
     - community.docker.docker_network_info: retrieve information on Docker networks
+    - community.docker.docker_plugin: manage Docker plugins
     - community.docker.docker_prune: prune Docker containers, images, networks, volumes, and build data
     - community.docker.docker_volume: manage Docker volumes
     - community.docker.docker_volume_info: retrieve information on Docker volumes
@@ -50,6 +53,8 @@ Both libraries cannot be installed at the same time. If you accidentally did ins
     - community.docker.docker_stack: manage Docker Stacks
     - community.docker.docker_stack_info: retrieve information on Docker Stacks
     - community.docker.docker_stack_task_info: retrieve information on tasks in Docker Stacks
+  * Other:
+    - current_container_facts: return facts about whether the module runs in a Docker container
 
 ## Using this collection
 
