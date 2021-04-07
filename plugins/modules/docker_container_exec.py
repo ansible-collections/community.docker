@@ -126,7 +126,7 @@ rc:
 import shlex
 import traceback
 
-from ansible.module_utils._text import to_text, to_bytes
+from ansible.module_utils._text import to_text, to_bytes, to_native
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
@@ -244,12 +244,14 @@ def main():
         client.fail('Could not find container "{0}"'.format(container))
     except APIError as e:
         if e.response and e.response.status_code == 409:
-            client.fail('The container "{0}" has been paused ({1})'.format(container, e))
-        client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
+            client.fail('The container "{0}" has been paused ({1})'.format(container, to_native(e)))
+        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
+        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
-        client.fail('An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
+        client.fail(
+            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

@@ -77,6 +77,8 @@ volume:
 
 import traceback
 
+from ansible.module_utils._text import to_native
+
 try:
     from docker.errors import DockerException, NotFound
 except ImportError:
@@ -95,7 +97,7 @@ def get_existing_volume(client, volume_name):
     except NotFound as dummy:
         return None
     except Exception as exc:
-        client.fail("Error inspecting volume: %s" % exc)
+        client.fail("Error inspecting volume: %s" % to_native(exc))
 
 
 def main():
@@ -119,9 +121,11 @@ def main():
             volume=volume,
         )
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
+        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
-        client.fail('An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
+        client.fail(
+            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

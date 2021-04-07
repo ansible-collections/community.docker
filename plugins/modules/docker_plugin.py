@@ -108,6 +108,8 @@ plugin:
 
 import traceback
 
+from ansible.module_utils._text import to_native
+
 try:
     from docker.errors import APIError, NotFound, DockerException
     from docker import DockerClient
@@ -121,8 +123,6 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
     DifferenceTracker,
     RequestException
 )
-
-from ansible.module_utils.six import text_type
 
 
 class TaskParameters(DockerBaseClass):
@@ -189,7 +189,7 @@ class DockerPluginManager(object):
         except NotFound:
             return None
         except APIError as e:
-            self.client.fail(text_type(e))
+            self.client.fail(to_native(e))
 
         if plugin is None:
             return None
@@ -227,7 +227,7 @@ class DockerPluginManager(object):
                 try:
                     self.existing_plugin = self.dclient.plugins.install(self.parameters.plugin_name, None)
                 except APIError as e:
-                    self.client.fail(text_type(e))
+                    self.client.fail(to_native(e))
 
             self.results['actions'].append("Installed plugin %s" % self.parameters.plugin_name)
             self.results['changed'] = True
@@ -239,7 +239,7 @@ class DockerPluginManager(object):
                 try:
                     self.existing_plugin.remove(force)
                 except APIError as e:
-                    self.client.fail(text_type(e))
+                    self.client.fail(to_native(e))
 
             self.results['actions'].append("Removed plugin %s" % self.parameters.plugin_name)
             self.results['changed'] = True
@@ -252,7 +252,7 @@ class DockerPluginManager(object):
                     try:
                         self.existing_plugin.configure(prepare_options(self.parameters.plugin_options))
                     except APIError as e:
-                        self.client.fail(text_type(e))
+                        self.client.fail(to_native(e))
                 self.results['actions'].append("Updated plugin %s settings" % self.parameters.plugin_name)
                 self.results['changed'] = True
         else:
@@ -287,7 +287,7 @@ class DockerPluginManager(object):
                     try:
                         self.existing_plugin.enable(timeout)
                     except APIError as e:
-                        self.client.fail(text_type(e))
+                        self.client.fail(to_native(e))
                 self.results['actions'].append("Enabled plugin %s" % self.parameters.plugin_name)
                 self.results['changed'] = True
         else:
@@ -296,7 +296,7 @@ class DockerPluginManager(object):
                 try:
                     self.existing_plugin.enable(timeout)
                 except APIError as e:
-                    self.client.fail(text_type(e))
+                    self.client.fail(to_native(e))
             self.results['actions'].append("Enabled plugin %s" % self.parameters.plugin_name)
             self.results['changed'] = True
 
@@ -307,7 +307,7 @@ class DockerPluginManager(object):
                     try:
                         self.existing_plugin.disable()
                     except APIError as e:
-                        self.client.fail(text_type(e))
+                        self.client.fail(to_native(e))
                 self.results['actions'].append("Disable plugin %s" % self.parameters.plugin_name)
                 self.results['changed'] = True
         else:
@@ -334,9 +334,11 @@ def main():
         cm = DockerPluginManager(client)
         client.module.exit_json(**cm.results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
+        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
-        client.fail('An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
+        client.fail(
+            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

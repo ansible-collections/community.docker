@@ -485,6 +485,8 @@ except ImportError as dummy:
     HAS_COMPOSE_EXC = traceback.format_exc()
     DEFAULT_TIMEOUT = 10
 
+from ansible.module_utils._text import to_native
+
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
     DockerBaseClass,
@@ -632,7 +634,7 @@ class ContainerManager(DockerBaseClass):
 
         if not HAS_COMPOSE:
             self.client.fail("Unable to load docker-compose. Try `pip install docker-compose`. Error: %s" %
-                             HAS_COMPOSE_EXC)
+                             to_native(HAS_COMPOSE_EXC))
 
         if LooseVersion(compose_version) < LooseVersion(MINIMUM_COMPOSE_VERSION):
             self.client.fail("Found docker-compose version %s. Minimum required version is %s. "
@@ -647,7 +649,7 @@ class ContainerManager(DockerBaseClass):
 
         if self.definition:
             if not HAS_YAML:
-                self.client.fail("Unable to load yaml. Try `pip install PyYAML`. Error: %s" % HAS_YAML_EXC)
+                self.client.fail("Unable to load yaml. Try `pip install PyYAML`. Error: %s" % to_native(HAS_YAML_EXC))
 
             if not self.project_name:
                 self.client.fail("Parameter error - project_name required when providing definition.")
@@ -660,7 +662,7 @@ class ContainerManager(DockerBaseClass):
                 with open(compose_file, 'w') as f:
                     f.write(yaml.dump(self.definition, default_flow_style=False))
             except Exception as exc:
-                self.client.fail("Error writing to %s - %s" % (compose_file, str(exc)))
+                self.client.fail("Error writing to %s - %s" % (compose_file, to_native(exc)))
         else:
             if not self.project_src:
                 self.client.fail("Parameter error - project_src required.")
@@ -669,7 +671,7 @@ class ContainerManager(DockerBaseClass):
             self.log("project_src: %s" % self.project_src)
             self.project = project_from_options(self.project_src, self.options)
         except Exception as exc:
-            self.client.fail("Configuration error - %s" % str(exc))
+            self.client.fail("Configuration error - %s" % to_native(exc))
 
     def exec_module(self):
         result = dict()
@@ -886,7 +888,7 @@ class ContainerManager(DockerBaseClass):
                 except NoSuchImageError:
                     pass
                 except Exception as exc:
-                    self.client.fail("Error: service image lookup failed - %s" % str(exc))
+                    self.client.fail("Error: service image lookup failed - %s" % to_native(exc))
 
                 out_redir_name, err_redir_name = make_redirection_tempfiles()
                 # pull the image
@@ -908,7 +910,7 @@ class ContainerManager(DockerBaseClass):
                     if image and image.get('Id'):
                         new_image_id = image['Id']
                 except NoSuchImageError as exc:
-                    self.client.fail("Error: service image lookup failed after pull - %s" % str(exc))
+                    self.client.fail("Error: service image lookup failed after pull - %s" % to_native(exc))
 
                 if new_image_id != old_image_id:
                     # if a new image was pulled
@@ -940,7 +942,7 @@ class ContainerManager(DockerBaseClass):
                     except NoSuchImageError:
                         pass
                     except Exception as exc:
-                        self.client.fail("Error: service image lookup failed - %s" % str(exc))
+                        self.client.fail("Error: service image lookup failed - %s" % to_native(exc))
 
                     out_redir_name, err_redir_name = make_redirection_tempfiles()
                     # build the image
@@ -1099,7 +1101,7 @@ class ContainerManager(DockerBaseClass):
             return int(self.scale[service_name])
         except ValueError:
             self.client.fail("Error scaling %s - expected int, got %s",
-                             service_name, str(type(self.scale[service_name])))
+                             service_name, to_native(type(self.scale[service_name])))
 
 
 def main():
@@ -1142,9 +1144,11 @@ def main():
         result = ContainerManager(client).exec_module()
         client.module.exit_json(**result)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
+        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
-        client.fail('An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
+        client.fail(
+            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            exception=traceback.format_exc())
 
 
 if __name__ == '__main__':
