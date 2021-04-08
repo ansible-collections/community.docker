@@ -73,6 +73,8 @@ images:
 import errno
 import traceback
 
+from ansible.module_utils._text import to_native
+
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
     DockerBaseClass,
@@ -126,10 +128,10 @@ class ImageManager(DockerBaseClass):
                     self._extract_output_line(line, load_output)
         except EnvironmentError as exc:
             if exc.errno == errno.ENOENT:
-                self.client.fail("Error opening archive {0} - {1}".format(self.path, str(exc)))
-            self.client.fail("Error loading archive {0} - {1}".format(self.path, str(exc)), stdout='\n'.join(load_output))
+                self.client.fail("Error opening archive {0} - {1}".format(self.path, to_native(exc)))
+            self.client.fail("Error loading archive {0} - {1}".format(self.path, to_native(exc)), stdout='\n'.join(load_output))
         except Exception as exc:
-            self.client.fail("Error loading archive {0} - {1}".format(self.path, str(exc)), stdout='\n'.join(load_output))
+            self.client.fail("Error loading archive {0} - {1}".format(self.path, to_native(exc)), stdout='\n'.join(load_output))
 
         # Collect loaded images
         loaded_images = []
@@ -177,10 +179,11 @@ def main():
         ImageManager(client, results)
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
+        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
-        client.fail('An unexpected requests error occurred when docker-py tried to talk '
-                    'to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
+        client.fail(
+            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

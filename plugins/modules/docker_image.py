@@ -501,7 +501,7 @@ class ImageManager(DockerBaseClass):
                     # If the image vanished while we were trying to remove it, don't fail
                     pass
                 except Exception as exc:
-                    self.fail("Error removing image %s - %s" % (name, str(exc)))
+                    self.fail("Error removing image %s - %s" % (name, to_native(exc)))
 
             self.results['changed'] = True
             self.results['actions'].append("Removed image %s" % (name))
@@ -536,7 +536,7 @@ class ImageManager(DockerBaseClass):
             try:
                 saved_image = self.client.get_image(image_name)
             except Exception as exc:
-                self.fail("Error getting image %s - %s" % (image_name, str(exc)))
+                self.fail("Error getting image %s - %s" % (image_name, to_native(exc)))
 
             try:
                 with open(self.archive_path, 'wb') as fd:
@@ -547,7 +547,7 @@ class ImageManager(DockerBaseClass):
                         for chunk in saved_image.stream(2048, decode_content=False):
                             fd.write(chunk)
             except Exception as exc:
-                self.fail("Error writing image archive %s - %s" % (self.archive_path, str(exc)))
+                self.fail("Error writing image archive %s - %s" % (self.archive_path, to_native(exc)))
 
         if image:
             self.results['image'] = image
@@ -590,11 +590,11 @@ class ImageManager(DockerBaseClass):
                     if re.search('unauthorized', str(exc)):
                         if re.search('authentication required', str(exc)):
                             self.fail("Error pushing image %s/%s:%s - %s. Try logging into %s first." %
-                                      (registry, repo_name, tag, str(exc), registry))
+                                      (registry, repo_name, tag, to_native(exc), registry))
                         else:
                             self.fail("Error pushing image %s/%s:%s - %s. Does the repository exist?" %
                                       (registry, repo_name, tag, str(exc)))
-                    self.fail("Error pushing image %s: %s" % (repository, str(exc)))
+                    self.fail("Error pushing image %s: %s" % (repository, to_native(exc)))
                 self.results['image'] = self.client.find_image(name=repository, tag=tag)
                 if not self.results['image']:
                     self.results['image'] = dict()
@@ -634,7 +634,7 @@ class ImageManager(DockerBaseClass):
                     if not tag_status:
                         raise Exception("Tag operation failed.")
                 except Exception as exc:
-                    self.fail("Error: failed to tag image - %s" % str(exc))
+                    self.fail("Error: failed to tag image - %s" % to_native(exc))
                 self.results['image'] = self.client.find_image(name=repo, tag=repo_tag)
                 if image and image['Id'] == self.results['image']['Id']:
                     self.results['changed'] = False
@@ -763,10 +763,10 @@ class ImageManager(DockerBaseClass):
                         )
         except EnvironmentError as exc:
             if exc.errno == errno.ENOENT:
-                self.client.fail("Error opening image %s - %s" % (self.load_path, str(exc)))
-            self.client.fail("Error loading image %s - %s" % (self.name, str(exc)), stdout='\n'.join(load_output))
+                self.client.fail("Error opening image %s - %s" % (self.load_path, to_native(exc)))
+            self.client.fail("Error loading image %s - %s" % (self.name, to_native(exc)), stdout='\n'.join(load_output))
         except Exception as exc:
-            self.client.fail("Error loading image %s - %s" % (self.name, str(exc)), stdout='\n'.join(load_output))
+            self.client.fail("Error loading image %s - %s" % (self.name, to_native(exc)), stdout='\n'.join(load_output))
 
         # Collect loaded images
         if has_output:
@@ -908,9 +908,11 @@ def main():
         ImageManager(client, results)
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
+        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
-        client.fail('An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
+        client.fail(
+            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

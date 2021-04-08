@@ -109,6 +109,8 @@ volume:
 
 import traceback
 
+from ansible.module_utils._text import to_native
+
 try:
     from docker.errors import DockerException, APIError
 except ImportError:
@@ -171,7 +173,7 @@ class DockerVolumeManager(object):
         try:
             volumes = self.client.volumes()
         except APIError as e:
-            self.client.fail(text_type(e))
+            self.client.fail(to_native(e))
 
         if volumes[u'Volumes'] is None:
             return None
@@ -228,7 +230,7 @@ class DockerVolumeManager(object):
                     resp = self.client.create_volume(self.parameters.volume_name, **params)
                     self.existing_volume = self.client.inspect_volume(resp['Name'])
                 except APIError as e:
-                    self.client.fail(text_type(e))
+                    self.client.fail(to_native(e))
 
             self.results['actions'].append("Created volume %s with driver %s" % (self.parameters.volume_name, self.parameters.driver))
             self.results['changed'] = True
@@ -239,7 +241,7 @@ class DockerVolumeManager(object):
                 try:
                     self.client.remove_volume(self.parameters.volume_name)
                 except APIError as e:
-                    self.client.fail(text_type(e))
+                    self.client.fail(to_native(e))
 
             self.results['actions'].append("Removed volume %s" % self.parameters.volume_name)
             self.results['changed'] = True
@@ -299,9 +301,11 @@ def main():
         cm = DockerVolumeManager(client)
         client.module.exit_json(**cm.results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
+        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
-        client.fail('An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
+        client.fail(
+            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

@@ -934,7 +934,7 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
 
 from ansible.module_utils.basic import human_to_bytes
 from ansible.module_utils.six import string_types
-from ansible.module_utils._text import to_text
+from ansible.module_utils._text import to_text, to_native
 
 try:
     from docker import types
@@ -2419,7 +2419,7 @@ class DockerServiceManager(object):
         except DockerException as e:
             self.client.fail(
                 'Error looking for an image named %s: %s'
-                % (image, e)
+                % (image, to_native(e))
             )
 
         try:
@@ -2427,7 +2427,7 @@ class DockerServiceManager(object):
         except Exception as e:
             self.client.fail(
                 'Error looking for service named %s: %s'
-                % (module.params['name'], e)
+                % (module.params['name'], to_native(e))
             )
         try:
             secret_ids = self.get_missing_secret_ids()
@@ -2445,7 +2445,7 @@ class DockerServiceManager(object):
             )
         except Exception as e:
             return self.client.fail(
-                'Error parsing module parameters: %s' % e
+                'Error parsing module parameters: %s' % to_native(e)
             )
 
         changed = False
@@ -2822,9 +2822,11 @@ def main():
 
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
+        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
-        client.fail('An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
+        client.fail(
+            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

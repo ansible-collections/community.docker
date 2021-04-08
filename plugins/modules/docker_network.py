@@ -254,6 +254,8 @@ import traceback
 
 from distutils.version import LooseVersion
 
+from ansible.module_utils._text import to_native
+
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
     DockerBaseClass,
@@ -370,7 +372,7 @@ class DockerNetworkManager(object):
                 for ipam_config in self.parameters.ipam_config:
                     validate_cidr(ipam_config['subnet'])
             except ValueError as e:
-                self.client.fail(str(e))
+                self.client.fail(to_native(e))
 
         if self.parameters.driver_options:
             self.parameters.driver_options = clean_dict_booleans_for_docker_api(self.parameters.driver_options)
@@ -663,9 +665,11 @@ def main():
         cm = DockerNetworkManager(client)
         client.module.exit_json(**cm.results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
+        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
-        client.fail('An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
+        client.fail(
+            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

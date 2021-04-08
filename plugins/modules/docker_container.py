@@ -1416,7 +1416,7 @@ class TaskParameters(DockerBaseClass):
                 try:
                     setattr(self, param_name, human_to_bytes(client.module.params.get(param_name)))
                 except ValueError as exc:
-                    self.fail("Failed to convert %s to bytes: %s" % (param_name, exc))
+                    self.fail("Failed to convert %s to bytes: %s" % (param_name, to_native(exc)))
 
         self.publish_all_ports = False
         self.published_ports = self._parse_publish_ports()
@@ -1728,7 +1728,7 @@ class TaskParameters(DockerBaseClass):
                         break
                 except NotFound as nfe:
                     self.client.fail(
-                        "Cannot inspect the network '{0}' to determine the default IP: {1}".format(net['name'], nfe),
+                        "Cannot inspect the network '{0}' to determine the default IP: {1}".format(net['name'], to_native(nfe)),
                         exception=traceback.format_exc()
                     )
         return ip
@@ -1898,7 +1898,7 @@ class TaskParameters(DockerBaseClass):
             try:
                 results.append(Ulimit(**limits))
             except ValueError as exc:
-                self.fail("Error parsing ulimits value %s - %s" % (limit, exc))
+                self.fail("Error parsing ulimits value %s - %s" % (limit, to_native(exc)))
         return results
 
     def _parse_sysctls(self):
@@ -1935,7 +1935,7 @@ class TaskParameters(DockerBaseClass):
         try:
             return LogConfig(**options)
         except ValueError as exc:
-            self.fail('Error parsing logging options - %s' % (exc))
+            self.fail('Error parsing logging options - %s' % (to_native(exc), ))
 
     def _parse_tmpfs(self):
         '''
@@ -2019,7 +2019,7 @@ class TaskParameters(DockerBaseClass):
                 try:
                     mount_dict['tmpfs_size'] = human_to_bytes(mount_dict['tmpfs_size'])
                 except ValueError as exc:
-                    self.fail('Failed to convert tmpfs_size of mount "{0}" to bytes: {1}'.format(target, exc))
+                    self.fail('Failed to convert tmpfs_size of mount "{0}" to bytes: {1}'.format(target, to_native(exc)))
             if mount_dict.get('tmpfs_mode') is not None:
                 try:
                     mount_dict['tmpfs_mode'] = int(mount_dict['tmpfs_mode'], 8)
@@ -3164,7 +3164,7 @@ class ContainerManager(DockerBaseClass):
                 else:
                     response = self.client.kill(container_id)
             except Exception as exc:
-                self.fail("Error killing container %s: %s" % (container_id, exc))
+                self.fail("Error killing container %s: %s" % (container_id, to_native(exc)))
         return response
 
     def container_restart(self, container_id):
@@ -3608,9 +3608,11 @@ def main():
         cm = ContainerManager(client)
         client.module.exit_json(**sanitize_result(cm.results))
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(e), exception=traceback.format_exc())
+        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
-        client.fail('An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(e), exception=traceback.format_exc())
+        client.fail(
+            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            exception=traceback.format_exc())
 
 
 if __name__ == '__main__':
