@@ -5,7 +5,9 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
+import base64
 import io
+import json
 import os
 import os.path
 import shutil
@@ -87,6 +89,48 @@ def put_file(call_client, container, in_path, out_path, user_id, group_id, mode=
     )
     if not ok:
         raise DockerFileCopyError('Unknown error while creating file "{0}" in container "{1}".'.format(out_path, container))
+
+
+def stat_file(call_client, container, in_path, follow_links=False, log=None):
+    considered_in_paths = set()
+
+    while True:
+        if in_path in considered_in_paths:
+            raise DockerFileCopyError('Found infinite symbolic link loop when trying to stating "{0}"'.format(in_path))
+        considered_in_paths.add(in_path)
+
+        if log:
+            log('FETCH: Stating "%s"' % in_path)
+
+        def f(client):
+            response = client._head(
+                client._url('/containers/{0}/archive', container),
+                params={'path': in_path},
+            )
+            if response.status_code == 404:
+                return None
+            client._raise_for_status(response)
+            header = response.headers.get('x-docker-container-path-stat')
+            try:
+                return json.loads(base64.b64decode(header))
+            except Exception as exc:
+                raise DockerUnexpectedError(
+                    'When retrieving information for {in_path} from {container}, obtained header {header!r} that cannot be loaded as JSON: {exc}'
+                    .format(in_path=in_path, container=container, header=header, exc=exc)
+                )
+
+        stat_data = call_client(f)
+        if stat_data is None:
+            return in_path, None, None
+
+        link_target = stat_data.pop('linkTarget', '')
+        if link_target:
+            if not follow_links:
+                return in_path, None, link_target
+            in_path = os.path.join(os.path.split(in_path)[0], link_target)
+            continue
+
+        return in_path, stat_data, None
 
 
 def fetch_file_ex(call_client, container, in_path, process_none, process_regular, process_symlink, follow_links=False, log=None):
@@ -208,3 +252,68 @@ def call_client(client, container, use_file_not_found_exception=False):
             )
 
     return f
+
+
+def _execute_command(client, container, command, log=None, check_rc=False):
+    if log:
+        log('Executing {command} in {container}'.format(command=command, container=container))
+
+    data = {
+        'Container': container,
+        'User': '',
+        'Privileged': False,
+        'Tty': False,
+        'AttachStdin': False,
+        'AttachStdout': True,
+        'AttachStderr': True,
+        'Cmd': command,
+    }
+
+    if 'detachKeys' in client._general_configs:
+        data['detachKeys'] = client._general_configs['detachKeys']
+
+    exec_data = client.post_json_to_json('/containers/{0}/exec', container, data=data)
+    exec_id = exec_data['Id']
+
+    data = {
+        'Tty': False,
+        'Detach': False
+    }
+    stdout, stderr = client.post_json_to_stream('/exec/{0}/start', exec_id, stream=False, demux=True, tty=False)
+
+    result = client.get_json('/exec/{0}/json', exec_id)
+
+    rc = result.get('ExitCode') or 0
+    stdout = stdout or b''
+    stderr = stderr or b''
+
+    if log:
+        log('Exit code {rc}, stdout {stdout!r}, stderr {stderr!r}'.format(rc=rc, stdout=stdout, stderr=stderr))
+
+    if check_rc and rc != 0:
+        raise DockerFileCopyError(
+            'Obtained unexpected exit code {rc} when running "{command}" in {container}.\nSTDOUT: {stdout}\nSTDERR: {stderr}'
+            .format(command=' '.join(command), container=container, rc=rc, stdout=stdout, stderr=stderr)
+        )
+
+    return rc, stdout, stderr
+
+
+def determine_user_group(client, container, log=None):
+    dummy, stdout, stderr = _execute_command(client, container, ['/bin/sh', '-c', 'id -u && id -g'], check_rc=True, log=log)
+
+    stdout_lines = stdout.splitlines()
+    if len(stdout_lines) != 2:
+        raise DockerFileCopyError(
+            'Expected two-line output to obtain user and group ID for container {container}, but got {lc} lines:\n{stdout}'
+            .format(container=container, lc=len(stdout_lines), stdout=stdout)
+        )
+
+    user_id, group_id = stdout_lines
+    try:
+        return int(user_id), int(group_id)
+    except ValueError:
+        raise DockerFileCopyError(
+            'Expected two-line output with numeric IDs to obtain user and group ID for container {container}, but got "{l1}" and "{l2}" instead'
+            .format(container=container, l1=user_id, l2=group_id)
+        )

@@ -228,6 +228,10 @@ class APIClient(
         return self.get(url, **self._set_request_timeout(kwargs))
 
     @update_headers
+    def _head(self, url, **kwargs):
+        return self.head(url, **self._set_request_timeout(kwargs))
+
+    @update_headers
     def _put(self, url, **kwargs):
         return self.put(url, **self._set_request_timeout(kwargs))
 
