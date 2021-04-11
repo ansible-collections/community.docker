@@ -1,2 +1,0 @@
-bugfixes:
-- "all modules - use ``to_native`` to convert exceptions to strings (https://github.com/ansible-collections/community.docker/pull/121)."

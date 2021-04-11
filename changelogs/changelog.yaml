@@ -262,3 +262,20 @@ releases:
     - 102-no_log-false.yml
     - 103-docker_swarm-join_token.yml
     release_date: '2021-03-14'
+  1.5.0:
+    changes:
+      bugfixes:
+      - all modules - use ``to_native`` to convert exceptions to strings (https://github.com/ansible-collections/community.docker/pull/121).
+      minor_changes:
+      - Add the ``use_ssh_client`` option to most docker modules and plugins (https://github.com/ansible-collections/community.docker/issues/108,
+        https://github.com/ansible-collections/community.docker/pull/114).
+      release_summary: Regular feature release.
+    fragments:
+    - 1.5.0.yml
+    - 114-use_ssh_client.yml
+    - 121-exception-handling.yml
+    modules:
+    - description: Execute command in a docker container
+      name: docker_container_exec
+      namespace: ''
+    release_date: '2021-04-11'

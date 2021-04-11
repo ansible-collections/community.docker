@@ -5,6 +5,29 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v1.5.0
+======
+
+Release Summary
+---------------
+
+Regular feature release.
+
+Minor Changes
+-------------
+
+- Add the ``use_ssh_client`` option to most docker modules and plugins (https://github.com/ansible-collections/community.docker/issues/108, https://github.com/ansible-collections/community.docker/pull/114).
+
+Bugfixes
+--------
+
+- all modules - use ``to_native`` to convert exceptions to strings (https://github.com/ansible-collections/community.docker/pull/121).
+
+New Modules
+-----------
+
+- docker_container_exec - Execute command in a docker container
+
 v1.4.0
 ======
 
