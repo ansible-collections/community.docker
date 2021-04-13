@@ -1,0 +1,2 @@
+bugfixes:
+- docker-compose - fixed not pull if ``state: present`` and ``stopped: true``
