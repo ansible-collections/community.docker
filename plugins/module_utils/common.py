@@ -258,11 +258,15 @@ class AnsibleDockerClientBase(Client):
 
         if not HAS_DOCKER_PY:
             if NEEDS_DOCKER_PY2:
-                msg = missing_required_lib("Docker SDK for Python: docker")
-                msg = msg + ", for example via `pip install docker`. The error was: %s"
+                msg = missing_required_lib("Docker SDK for Python: docker above 5.0.0 (Python >= 3.6) or "
+                                           "docker before 5.0.0 (Python 2.7)")
+                msg = msg + ", for example via `pip install docker` (Python >= 3.6) or " \
+                    + "`pip install docker==4.4.4` (Python 2.7). The error was: %s"
             else:
-                msg = missing_required_lib("Docker SDK for Python: docker (Python >= 2.7) or docker-py (Python 2.6)")
-                msg = msg + ", for example via `pip install docker` or `pip install docker-py` (Python 2.6). The error was: %s"
+                msg = missing_required_lib("Docker SDK for Python: docker above 5.0.0 (Python >= 3.6) or "
+                                           "docker before 5.0.0 (Python 2.7) or docker-py (Python 2.6)")
+                msg = msg + ", for example via `pip install docker` (Python >= 3.6) or `pip install docker==4.4.4` (Python 2.7) " \
+                    + "or `pip install docker-py` (Python 2.6). The error was: %s"
             self.fail(msg % HAS_DOCKER_ERROR)
 
         if self.docker_py_version < LooseVersion(min_docker_version):
