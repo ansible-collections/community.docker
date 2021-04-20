@@ -795,7 +795,7 @@ class ContainerManager(DockerBaseClass):
 
         if self.stopped:
             stop_output = self.cmd_stop(service_names)
-            result['changed'] = stop_output['changed']
+            result['changed'] |= stop_output['changed']
             result['actions'] += stop_output['actions']
 
         if self.restarted:
