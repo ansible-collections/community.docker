@@ -15,8 +15,9 @@ options:
     docker_host:
         description:
             - The URL or Unix socket path used to connect to the Docker API. To connect to a remote host, provide the
-              TCP connection string. For example, C(tcp://192.0.2.23:2376). If TLS is used to encrypt the connection,
-              the module will automatically replace C(tcp) in the connection URL with C(https).
+              TCP connection string. For example, C(tcp://192.0.2.23:2376).
+            - If TLS is used to encrypt the connection, the module will automatically replace C(tcp) in the connection
+              URL with C(https). See the documentation on I(tls_hostname) for additional information about using TLS.
             - If the value is not specified in the task, the value of environment variable C(DOCKER_HOST) will be used
               instead. If the environment variable is not set, the default value will be used.
         type: str
@@ -27,6 +28,9 @@ options:
             - When verifying the authenticity of the Docker Host server, provide the expected name of the server.
             - If the value is not specified in the task, the value of environment variable C(DOCKER_TLS_HOSTNAME) will
               be used instead. If the environment variable is not set, the default value will be used.
+            - Due to an implementation error in this module, if you are connecting to a host other than C(localhost)
+              using TLS, you B(must) set this parameter (or C(DOCKER_TLS_HOSTNAME)) to the remote hostname.  This issue
+              will be corrected in a future version of this module.
         type: str
         default: localhost
     api_version:
