@@ -77,7 +77,7 @@ except ImportError:
 DEFAULT_DOCKER_HOST = 'unix://var/run/docker.sock'
 DEFAULT_TLS = False
 DEFAULT_TLS_VERIFY = False
-DEFAULT_TLS_HOSTNAME = 'localhost'
+DEFAULT_TLS_HOSTNAME = None
 MIN_DOCKER_VERSION = "1.8.0"
 DEFAULT_TIMEOUT_SECONDS = 60
 
