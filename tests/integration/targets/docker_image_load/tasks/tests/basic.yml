@@ -2,7 +2,7 @@
 - set_fact:
     image_names:
       - "{{ docker_test_image_hello_world }}"
-      - "{{ docker_test_image_busybox }}"
+      - "{{ docker_test_image_alpine_different }}"
       - "{{ docker_test_image_alpine }}"
 
 - name: Make sure images are there
