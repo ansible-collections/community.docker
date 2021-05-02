@@ -27,7 +27,9 @@ options:
             - When verifying the authenticity of the Docker Host server, provide the expected name of the server.
             - If the value is not specified in the task, the value of environment variable C(DOCKER_TLS_HOSTNAME) will
               be used instead. If the environment variable is not set, the default value will be used.
-            - The current default value is C(localhost).
+            - The current default value is C(localhost). This default is deprecated and will change in community.docker
+              2.0.0 to be a value computed from I(docker_host). Explicitly specify C(localhost) to make sure this value
+              will still be used, and to disable the deprecation message which will be shown otherwise.
         type: str
     api_version:
         description:
