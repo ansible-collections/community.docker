@@ -77,13 +77,13 @@ except ImportError:
 DEFAULT_DOCKER_HOST = 'unix://var/run/docker.sock'
 DEFAULT_TLS = False
 DEFAULT_TLS_VERIFY = False
-DEFAULT_TLS_HOSTNAME = 'localhost'
+DEFAULT_TLS_HOSTNAME = 'localhost'  # deprecated
 MIN_DOCKER_VERSION = "1.8.0"
 DEFAULT_TIMEOUT_SECONDS = 60
 
 DOCKER_COMMON_ARGS = dict(
     docker_host=dict(type='str', default=DEFAULT_DOCKER_HOST, fallback=(env_fallback, ['DOCKER_HOST']), aliases=['docker_url']),
-    tls_hostname=dict(type='str', default=DEFAULT_TLS_HOSTNAME, fallback=(env_fallback, ['DOCKER_TLS_HOSTNAME'])),
+    tls_hostname=dict(type='str', fallback=(env_fallback, ['DOCKER_TLS_HOSTNAME'])),
     api_version=dict(type='str', default='auto', fallback=(env_fallback, ['DOCKER_API_VERSION']), aliases=['docker_api_version']),
     timeout=dict(type='int', default=DEFAULT_TIMEOUT_SECONDS, fallback=(env_fallback, ['DOCKER_TIMEOUT'])),
     ca_cert=dict(type='path', aliases=['tls_ca_cert', 'cacert_path']),
@@ -172,8 +172,12 @@ class DockerBaseClass(object):
         #         log_file.write(msg + u'\n')
 
 
-def update_tls_hostname(result):
+def update_tls_hostname(result, old_behavior=False):
     if result['tls_hostname'] is None:
+        if old_behavior:
+            result['tls_hostname'] = DEFAULT_TLS_HOSTNAME
+            return
+
         # get default machine name from the url
         parsed_url = urlparse(result['docker_host'])
         if ':' in parsed_url.netloc:
@@ -360,7 +364,7 @@ class AnsibleDockerClientBase(Client):
             docker_host=self._get_value('docker_host', params['docker_host'], 'DOCKER_HOST',
                                         DEFAULT_DOCKER_HOST),
             tls_hostname=self._get_value('tls_hostname', params['tls_hostname'],
-                                         'DOCKER_TLS_HOSTNAME', DEFAULT_TLS_HOSTNAME),
+                                         'DOCKER_TLS_HOSTNAME', None),
             api_version=self._get_value('api_version', params['api_version'], 'DOCKER_API_VERSION',
                                         'auto'),
             cacert_path=self._get_value('cacert_path', params['ca_cert'], 'DOCKER_CERT_PATH', None),
@@ -375,7 +379,7 @@ class AnsibleDockerClientBase(Client):
             use_ssh_client=self._get_value('use_ssh_client', params['use_ssh_client'], None, False),
         )
 
-        update_tls_hostname(result)
+        update_tls_hostname(result, old_behavior=True)
 
         return result
 
