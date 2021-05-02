@@ -314,6 +314,9 @@ class AnsibleDockerClientBase(Client):
     def fail(self, msg, **kwargs):
         pass
 
+    def deprecate(self, msg, version=None, date=None, collection_name=None):
+        pass
+
     @staticmethod
     def _get_value(param_name, param_value, env_variable, default_value):
         if param_value is not None:
@@ -660,6 +663,9 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
     def fail(self, msg, **kwargs):
         self.fail_results.update(kwargs)
         self.module.fail_json(msg=msg, **sanitize_result(self.fail_results))
+
+    def deprecate(self, msg, version=None, date=None, collection_name=None):
+        self.module.deprecate(msg, version=version, date=date, collection_name=collection_name)
 
     def _get_params(self):
         return self.module.params
