@@ -172,10 +172,16 @@ class DockerBaseClass(object):
         #         log_file.write(msg + u'\n')
 
 
-def update_tls_hostname(result, old_behavior=False):
+def update_tls_hostname(result, old_behavior=False, deprecate_function=None):
     if result['tls_hostname'] is None:
         if old_behavior:
             result['tls_hostname'] = DEFAULT_TLS_HOSTNAME
+            if deprecate_function is not None:
+                deprecate_function(
+                    'The default value "localhost" for tls_hostname is deprecated and will be removed in community.docker 2.0.0.'
+                    ' From then on, docker_host will be used to compute tls_hostname. If you want to keep using "localhost",'
+                    ' please set that value explicitly.',
+                    version='2.0.0', collection_name='community.docker')
             return
 
         # get default machine name from the url
@@ -382,7 +388,10 @@ class AnsibleDockerClientBase(Client):
             use_ssh_client=self._get_value('use_ssh_client', params['use_ssh_client'], None, False),
         )
 
-        update_tls_hostname(result, old_behavior=True)
+        def depr(*args, **kwargs):
+            self.deprecate(*args, **kwargs)
+
+        update_tls_hostname(result, old_behavior=True, deprecate_function=depr)
 
         return result
 
