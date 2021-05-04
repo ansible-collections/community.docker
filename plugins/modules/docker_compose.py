@@ -772,7 +772,7 @@ class ContainerManager(DockerBaseClass):
                         ))
                     result['actions'].append(result_action)
 
-        if not self.check_mode and result['changed'] and not self.stopped:
+        if not self.check_mode and result['changed']:
             out_redir_name, err_redir_name = make_redirection_tempfiles()
             try:
                 with stdout_redirector(out_redir_name):
@@ -786,7 +786,8 @@ class ContainerManager(DockerBaseClass):
                             do_build=do_build,
                             detached=detached,
                             remove_orphans=self.remove_orphans,
-                            timeout=self.timeout)
+                            timeout=self.timeout,
+                            start=not self.stopped)
             except Exception as exc:
                 fail_reason = get_failure_info(exc, out_redir_name, err_redir_name,
                                                msg_format="Error starting project %s")
@@ -796,7 +797,7 @@ class ContainerManager(DockerBaseClass):
 
         if self.stopped:
             stop_output = self.cmd_stop(service_names)
-            result['changed'] = stop_output['changed']
+            result['changed'] |= stop_output['changed']
             result['actions'] += stop_output['actions']
 
         if self.restarted:
