@@ -917,7 +917,6 @@ EXAMPLES = '''
 
 import shlex
 import time
-import operator
 import traceback
 
 from distutils.version import LooseVersion
@@ -1792,7 +1791,7 @@ class DockerService(DockerBaseClass):
         old_publish = old_publish or []
         if len(self.publish) != len(old_publish):
             return True
-        publish_sorter = operator.itemgetter('published_port', 'target_port', 'protocol')
+        publish_sorter = lambda item: (item.get('published_port') or 0, item.get('target_port') or 0, item.get('protocol') or '')
         publish = sorted(self.publish, key=publish_sorter)
         old_publish = sorted(old_publish, key=publish_sorter)
         for publish_item, old_publish_item in zip(publish, old_publish):
