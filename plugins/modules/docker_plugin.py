@@ -226,6 +226,8 @@ class DockerPluginManager(object):
             if not self.check_mode:
                 try:
                     self.existing_plugin = self.dclient.plugins.install(self.parameters.plugin_name, None)
+                    if self.parameters.plugin_options:
+                        self.existing_plugin.configure(prepare_options(self.parameters.plugin_options))
                 except APIError as e:
                     self.client.fail(to_native(e))
 
