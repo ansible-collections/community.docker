@@ -1526,6 +1526,40 @@
     name: "{{ service_name }}"
   register: publish_8_info
 
+- name: publish (without published_port)
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: no
+    command: '/bin/sh -v -c "sleep 10m"'
+    publish:
+      - protocol: udp
+        target_port: 60001
+        mode: host
+  register: publish_9
+  ignore_errors: yes
+- name: gather service info
+  docker_swarm_service_info:
+    name: "{{ service_name }}"
+  register: publish_9_info
+
+- name: publish (without published_port, idempotence)
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: no
+    command: '/bin/sh -v -c "sleep 10m"'
+    publish:
+      - protocol: udp
+        target_port: 60001
+        mode: host
+  register: publish_10
+  ignore_errors: yes
+- name: gather service info
+  docker_swarm_service_info:
+    name: "{{ service_name }}"
+  register: publish_10_info
+
 - name: cleanup
   docker_swarm_service:
     name: "{{ service_name }}"
@@ -1543,6 +1577,8 @@
       - publish_7 is not changed
       - publish_8 is changed
       - (publish_8_info.service.Endpoint.Ports | length) == 2
+      - publish_9 is changed
+      - publish_10 is not changed
   when: docker_api_version is version('1.25', '>=') and docker_py_version is version('3.0.0', '>=')
 - assert:
     that:
