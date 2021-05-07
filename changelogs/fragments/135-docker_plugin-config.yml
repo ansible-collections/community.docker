@@ -1,0 +1,2 @@
+bugfixes:
+- "docker_plugin - also configure plugin after installing (https://github.com/ansible-collections/community.docker/issues/118, https://github.com/ansible-collections/community.docker/pull/135)."
