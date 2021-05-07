@@ -81,7 +81,9 @@ class Connection(ConnectionBase):
 
         # Windows uses Powershell modules
         if getattr(self._shell, "_IS_WINDOWS", False):
+            self.has_native_async = True
             self.module_implementation_preferences = ('.ps1', '.exe', '')
+            self.allow_executable = False
 
         if 'docker_command' in kwargs:
             self.docker_cmd = kwargs['docker_command']
@@ -214,7 +216,11 @@ class Connection(ConnectionBase):
         """ Run a command on the docker host """
         super(Connection, self).exec_command(cmd, in_data=in_data, sudoable=sudoable)
 
-        local_cmd = self._build_exec_cmd([self._play_context.executable, '-c', cmd])
+        if getattr(self._shell, "_IS_WINDOWS", False):
+            sudoable = False
+            local_cmd = self._build_exec_cmd(["cmd", "/c", cmd])
+        else:
+            local_cmd = self._build_exec_cmd([self._play_context.executable, '-c', cmd])
 
         display.vvv(u"EXEC {0}".format(to_text(local_cmd)), host=self._play_context.remote_addr)
         display.debug("opening command with Popen()")
@@ -268,6 +274,12 @@ class Connection(ConnectionBase):
         display.debug("done communicating")
 
         display.debug("done with docker.exec_command()")
+
+        # When running on Windows, stderr may contain CLIXML encoded output
+        if getattr(self._shell, "_IS_WINDOWS", False) and stderr.startswith(b"#< CLIXML"):
+            from ansible.plugins.shell.powershell import _parse_clixml
+            stderr = _parse_clixml(stderr)
+
         return (p.returncode, stdout, stderr)
 
     def _prefix_login_path(self, remote_path):
@@ -287,6 +299,16 @@ class Connection(ConnectionBase):
             if not remote_path.startswith(os.path.sep):
                 remote_path = os.path.join(os.path.sep, remote_path)
             return os.path.normpath(remote_path)
+
+    def _escape_win_path(self, path):
+        """ converts a Windows path to one that's supported by SFTP and SCP """
+        # If using a root path then we need to start with /
+        prefix = ""
+        if re.match(r'^\w{1}:', path):
+            prefix = "/"
+
+        # Convert all '\' to '/'
+        return "%s%s" % (prefix, path.replace("\\", "/"))
 
     def put_file(self, in_path, out_path):
         """ Transfer a file from local to docker container """
@@ -308,11 +330,32 @@ class Connection(ConnectionBase):
                 count = ' count=0'
             else:
                 count = ''
-            args = self._build_exec_cmd([self._play_context.executable, "-c", "dd of=%s bs=%s%s" % (out_path, BUFSIZE, count)])
+            if getattr(self._shell, "_IS_WINDOWS", False):
+                cmd = '''& { $strm = [Console]::OpenStandardInput(1024)
+$data = [System.Array]::CreateInstance([byte],1024)
+$fstrm = [IO.File]::OpenWrite(%s)
+do {
+    $read = $strm.Read($data, 0, $data.Length)
+    if ($read -gt 0) {
+        $fstrm.Write($data, 0, $read)
+    }
+} while ($read -gt 0)
+$fstrm.Flush()
+$fstrm.Dispose()
+$strm.Dispose() }''' % (out_path)
+                args = self._build_exec_cmd(["cmd", "/c", self._shell._encode_script(cmd, as_list=False, strict_mode=False, preserve_rc=False)])
+                display.debug(u"Command to execute: {0}".format(args))
+            else:
+                args = self._build_exec_cmd([self._play_context.executable, "-c", "dd of=%s bs=%s%s" % (out_path, BUFSIZE, count)])
+
             args = [to_bytes(i, errors='surrogate_or_strict') for i in args]
             try:
-                p = subprocess.Popen(args, stdin=in_file,
-                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                p = subprocess.Popen(
+                    args,
+                    stdin=in_file,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
             except OSError:
                 raise AnsibleError("docker connection requires dd command in the container to put files")
             stdout, stderr = p.communicate()

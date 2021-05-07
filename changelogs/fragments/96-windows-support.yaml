@@ -1,0 +1,2 @@
+minor_changes:
+  - docker connection plugin - added support for Windows containers (https://github.com/ansible-collections/community.docker/pull/96).
