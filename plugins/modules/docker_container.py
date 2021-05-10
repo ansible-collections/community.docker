@@ -458,10 +458,10 @@ options:
     type: str
   memory_swap:
     description:
-      - "Total memory limit (memory + swap) in format C(<number>[<unit>]).
-        Number is a positive integer or 'unlimited'/-1 for unlimited swap usage.
-        Unit can be C(B) (byte), C(K) (kibibyte, 1024B), C(M) (mebibyte), C(G) (gibibyte),
-        C(T) (tebibyte), or C(P) (pebibyte)."
+      - "Total memory limit (memory + swap) in format C(<number>[<unit>]), or
+        the special values C(unlimited) or C(-1) for unlimited swap usage.
+        Number is a positive integer. Unit can be C(B) (byte), C(K) (kibibyte, 1024B),
+        C(M) (mebibyte), C(G) (gibibyte), C(T) (tebibyte), or C(P) (pebibyte)."
       - Omitting the unit defaults to bytes.
     type: str
   memory_swappiness:
