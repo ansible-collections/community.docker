@@ -2520,6 +2520,32 @@ avoid such warnings, please quote the value.' in log_options_2.warnings"
     debug: yes
   register: memory_swap_3
 
+- name: memory_swap (unlimited)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    # Docker daemon does not accept memory_swap if memory is not specified
+    memory: 32M
+    memory_swap: unlimited
+    state: started
+    force_kill: yes
+    debug: yes
+  register: memory_swap_4
+
+- name: memory_swap (unlimited via -1)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    # Docker daemon does not accept memory_swap if memory is not specified
+    memory: 32M
+    memory_swap: -1
+    state: started
+    force_kill: yes
+    debug: yes
+  register: memory_swap_5
+
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
@@ -2534,6 +2560,11 @@ avoid such warnings, please quote the value.' in log_options_2.warnings"
     # on a proper VM), memory_swap cannot be set and will be -1 afterwards.
     - memory_swap_2 is not changed or memory_swap_2.container.HostConfig.MemorySwap == -1
     - memory_swap_3 is changed
+    # Unlimited memory_swap (using 'unlimited') should be allowed
+    # (If the value was already -1 because of the above reasons, it won't change)
+    - (memory_swap_4 is changed or memory_swap_3.container.HostConfig.MemorySwap == -1) and memory_swap_4.container.HostConfig.MemorySwap == -1
+    # Unlimited memory_swap (using '-1') should be allowed
+    - memory_swap_5 is not changed and memory_swap_5.container.HostConfig.MemorySwap == -1
 
 - debug: var=memory_swap_1
   when: memory_swap_2 is changed
