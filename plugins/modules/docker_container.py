@@ -459,8 +459,9 @@ options:
   memory_swap:
     description:
       - "Total memory limit (memory + swap) in format C(<number>[<unit>]).
-        Number is a positive integer. Unit can be C(B) (byte), C(K) (kibibyte, 1024B),
-        C(M) (mebibyte), C(G) (gibibyte), C(T) (tebibyte), or C(P) (pebibyte)."
+        Number is a positive integer or 'unlimited'/-1 for unlimited swap usage.
+        Unit can be C(B) (byte), C(K) (kibibyte, 1024B), C(M) (mebibyte), C(G) (gibibyte),
+        C(T) (tebibyte), or C(P) (pebibyte)."
       - Omitting the unit defaults to bytes.
     type: str
   memory_swappiness:
@@ -1413,10 +1414,13 @@ class TaskParameters(DockerBaseClass):
 
         for param_name in REQUIRES_CONVERSION_TO_BYTES:
             if client.module.params.get(param_name):
-                try:
-                    setattr(self, param_name, human_to_bytes(client.module.params.get(param_name)))
-                except ValueError as exc:
-                    self.fail("Failed to convert %s to bytes: %s" % (param_name, to_native(exc)))
+                if param_name == 'memory_swap' and client.module.params.get(param_name) in ['unlimited', '-1']:
+                    setattr(self, param_name, -1)
+                else:
+                    try:
+                        setattr(self, param_name, human_to_bytes(client.module.params.get(param_name)))
+                    except ValueError as exc:
+                        self.fail("Failed to convert %s to bytes: %s" % (param_name, to_native(exc)))
 
         self.publish_all_ports = False
         self.published_ports = self._parse_publish_ports()
