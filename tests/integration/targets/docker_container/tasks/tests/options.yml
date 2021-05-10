@@ -2561,7 +2561,8 @@ avoid such warnings, please quote the value.' in log_options_2.warnings"
     - memory_swap_2 is not changed or memory_swap_2.container.HostConfig.MemorySwap == -1
     - memory_swap_3 is changed
     # Unlimited memory_swap (using 'unlimited') should be allowed
-    - memory_swap_4 is changed and memory_swap_4.container.HostConfig.MemorySwap == -1
+    # (If the value was already -1 because of the above reasons, it won't change)
+    - (memory_swap_4 is changed or memory_swap_3.container.HostConfig.MemorySwap == -1) and memory_swap_4.container.HostConfig.MemorySwap == -1
     # Unlimited memory_swap (using '-1') should be allowed
     - memory_swap_5 is not changed and memory_swap_5.container.HostConfig.MemorySwap == -1
 
