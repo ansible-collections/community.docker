@@ -203,6 +203,7 @@ def _get_tls_config(fail_function, **kwargs):
 def is_using_tls(auth):
     return auth['tls_verify'] or auth['tls']
 
+
 def get_connect_params(auth, fail_function):
     if is_using_tls(auth):
         auth['docker_host'] = auth['docker_host'].replace('tcp://', 'https://')
