@@ -172,11 +172,11 @@ class DockerBaseClass(object):
         #         log_file.write(msg + u'\n')
 
 
-def update_tls_hostname(result, old_behavior=False, deprecate_function=None):
+def update_tls_hostname(result, old_behavior=False, deprecate_function=None, uses_tls=True):
     if result['tls_hostname'] is None:
         if old_behavior:
             result['tls_hostname'] = DEFAULT_TLS_HOSTNAME
-            if deprecate_function is not None:
+            if uses_tls and deprecate_function is not None:
                 deprecate_function(
                     'The default value "localhost" for tls_hostname is deprecated and will be removed in community.docker 2.0.0.'
                     ' From then on, docker_host will be used to compute tls_hostname. If you want to keep using "localhost",'
@@ -200,8 +200,12 @@ def _get_tls_config(fail_function, **kwargs):
         fail_function("TLS config error: %s" % exc)
 
 
+def is_using_tls(auth):
+    return auth['tls_verify'] or auth['tls']
+
+
 def get_connect_params(auth, fail_function):
-    if auth['tls'] or auth['tls_verify']:
+    if is_using_tls(auth):
         auth['docker_host'] = auth['docker_host'].replace('tcp://', 'https://')
 
     result = dict(
@@ -391,7 +395,7 @@ class AnsibleDockerClientBase(Client):
         def depr(*args, **kwargs):
             self.deprecate(*args, **kwargs)
 
-        update_tls_hostname(result, old_behavior=True, deprecate_function=depr)
+        update_tls_hostname(result, old_behavior=True, deprecate_function=depr, uses_tls=is_using_tls(result))
 
         return result
 
