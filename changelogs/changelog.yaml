@@ -311,3 +311,14 @@ releases:
     - 136-docker_swarm_service-fix-idempotence-bug.yml
     - 138-docker_container-allow-memory-swap-unlimited.yml
     release_date: '2021-05-11'
+  1.6.1:
+    changes:
+      bugfixes:
+      - docker_* modules and plugins, except ``docker_swarm`` connection plugin and
+        ``docker_compose`` and ``docker_stack*` modules - only emit ``tls_hostname``
+        deprecation message if TLS is actually used (https://github.com/ansible-collections/community.docker/pull/143).
+      release_summary: Bugfix release to reduce deprecation warning spam.
+    fragments:
+    - 1.6.1.yml
+    - 143-tls_hostname-deprecation.yml
+    release_date: '2021-05-17'
