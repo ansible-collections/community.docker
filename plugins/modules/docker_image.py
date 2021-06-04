@@ -180,8 +180,10 @@ options:
     default: no
   repository:
     description:
-      - Full path to a repository. Use with state C(present) to tag the image into the repository. Expects
-        format I(repository:tag). If no tag is provided, will use the value of the C(tag) parameter or I(latest).
+      - Use with state C(present) to tag the image.
+      - Expects format C(repository:tag). If no tag is provided, will use the value of the I(tag) parameter or C(latest).
+      - If I(push=true), I(repository) must either include a registry, or will be assumed to belong to the default
+        registry (Docker Hub).
     type: str
   state:
     description:
