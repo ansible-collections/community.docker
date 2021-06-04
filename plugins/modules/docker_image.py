@@ -624,7 +624,7 @@ class ImageManager(DockerBaseClass):
 
         if not image or self.force_tag:
             image_name = name
-            if not is_image_name_id(name) and tag and re.search(tag, name):
+            if not is_image_name_id(name) and tag and not re.search(tag, name):
                 image_name = "%s:%s" % (name, tag)
             self.log("tagging %s to %s:%s" % (image_name, repo, repo_tag))
             self.results['changed'] = True
