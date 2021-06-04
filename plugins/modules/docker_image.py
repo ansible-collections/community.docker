@@ -157,7 +157,8 @@ options:
     description:
       - "Image name. Name format will be one of: C(name), C(repository/name), C(registry_server:port/name).
         When pushing or pulling an image the name can optionally include the tag by appending C(:tag_name)."
-      - Note that image IDs (hashes) are only supported for I(state=absent), and for I(state=present) with I(source=load).
+      - Note that image IDs (hashes) are only supported for I(state=absent), for I(state=present) with I(source=load),
+        and for I(state=present) with I(source=local).
     type: str
     required: yes
   pull:
