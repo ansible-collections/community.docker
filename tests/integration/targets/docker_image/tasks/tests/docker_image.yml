@@ -206,14 +206,14 @@
 
 - name: repository, tag with ID
   docker_image:
-    name: "{{ repository_1.image.ID }}"
+    name: "{{ repository_1.image.Id }}"
     repository: "{{ test_image_base }}:other"
     source: local
   register: repository_3
 
 - name: repository, tag with ID (idempotent)
   docker_image:
-    name: "{{ repository_1.image.ID }}"
+    name: "{{ repository_1.image.Id }}"
     repository: "{{ test_image_base }}:other"
     source: local
     force_tag: true
