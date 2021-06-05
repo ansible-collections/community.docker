@@ -590,8 +590,8 @@ class ImageManager(DockerBaseClass):
                             changed = True
                     self.results['changed'] = changed
                 except Exception as exc:
-                    if re.search('unauthorized', str(exc)):
-                        if re.search('authentication required', str(exc)):
+                    if 'unauthorized' in str(exc):
+                        if 'authentication required' in str(exc):
                             self.fail("Error pushing image %s/%s:%s - %s. Try logging into %s first." %
                                       (registry, repo_name, tag, to_native(exc), registry))
                         else:
@@ -624,7 +624,7 @@ class ImageManager(DockerBaseClass):
 
         if not image or self.force_tag:
             image_name = name
-            if not is_image_name_id(name) and tag and not re.search(tag, name):
+            if not is_image_name_id(name) and tag and not name.endswith(':' + tag):
                 image_name = "%s:%s" % (name, tag)
             self.log("tagging %s to %s:%s" % (image_name, repo, repo_tag))
             self.results['changed'] = True
