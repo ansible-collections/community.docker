@@ -11,12 +11,12 @@ DOCUMENTATION = '''
 ---
 module: docker_image
 
-short_description: Manage docker images.
+short_description: Manage docker images
 
 
 description:
-  - Build, load or pull an image, making the image available for creating containers. Also supports tagging an
-    image into a repository and archiving an image to a C(.tar) file.
+  - Build, load or pull an image, making the image available for creating containers. Also supports tagging
+    an image, pushing an image, and archiving an image to a C(.tar) file.
 
 options:
   source:
