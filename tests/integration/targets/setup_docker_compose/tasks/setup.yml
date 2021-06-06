@@ -1,0 +1,6 @@
+---
+- name: Install docker-compose
+  pip:
+    state: present
+    name: "{{ docker_compose_pip_package }}"
+    extra_args: "-c {{ remote_constraints }}"

@@ -1,0 +1,100 @@
+---
+- name: Registering container name
+  set_fact:
+    pname: "{{ cname_prefix }}"
+    cname: "{{ cname_prefix ~ '-hi' }}"
+- name: Registering container name
+  set_fact:
+    cnames: "{{ cnames + [pname ~ '_' ~ cname] }}"
+    dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
+
+- name: Define service
+  set_fact:
+    test_service: |
+      version: '2'
+      services:
+        {{ cname }}:
+          image: "{{ docker_test_image_alpine }}"
+          command: '/bin/sh -c "sleep 10m"'
+
+####################################################################
+## Present #########################################################
+####################################################################
+
+- name: Present (check)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+  check_mode: yes
+  register: present_1
+
+- name: Present
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+  register: present_2
+
+- name: Present (idempotent)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+  register: present_3
+
+- name: Present (idempotent check)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+  check_mode: yes
+  register: present_4
+
+- assert:
+    that:
+    - present_1 is changed
+    - present_2 is changed
+    - present_3 is not changed
+    - present_4 is not changed
+
+####################################################################
+## Absent ##########################################################
+####################################################################
+
+- name: Absent (check)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: absent
+    definition: "{{ test_service | from_yaml }}"
+  check_mode: yes
+  register: absent_1
+
+- name: Absent
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: absent
+    definition: "{{ test_service | from_yaml }}"
+  register: absent_2
+
+- name: Absent (idempotent)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: absent
+    definition: "{{ test_service | from_yaml }}"
+  register: absent_3
+
+- name: Absent (idempotent check)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: absent
+    definition: "{{ test_service | from_yaml }}"
+  check_mode: yes
+  register: absent_4
+
+- assert:
+    that:
+    - absent_1 is changed
+    - absent_2 is changed
+    - absent_3 is not changed
+    - absent_4 is not changed
