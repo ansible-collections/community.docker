@@ -1,3 +1,5 @@
+bcrypt < 3.2.0 ; python_version <= '3.6'
+cffi >= 1.14.2, != 1.14.3 # Yanked version which older versions of pip will still install
 coverage >= 4.2, < 5.0.0, != 4.3.2 ; python_version <= '3.7' # features in 4.2+ required, avoid known bug in 4.3.2 on python 2.6, coverage 5.0+ incompatible
 coverage >= 4.5.4, < 5.0.0 ; python_version > '3.7' # coverage had a bug in < 4.5.4 that would cause unit tests to hang in Python 3.8, coverage 5.0+ incompatible
 cryptography >= 1.3.0, < 2.2 ; python_version < '2.7' # cryptography 2.2 drops support for python 2.6
@@ -41,7 +43,7 @@ boto3 < 1.11 ; python_version < '2.7' # boto3 1.11 drops Python 2.6 support
 botocore >= 1.10.0, < 1.14 ; python_version < '2.7' # adds support for the following AWS services: secretsmanager, fms, and acm-pca; botocore 1.14 drops Python 2.6 support
 botocore >= 1.10.0 ; python_version >= '2.7' # adds support for the following AWS services: secretsmanager, fms, and acm-pca
 setuptools < 45 ; python_version <= '2.7' # setuptools 45 and later require python 3.5 or later
-cffi >= 1.14.2, != 1.14.3 # Yanked version which older versions of pip will still install:
+websocket-client < 1.0.0 ; python_version <= '3.6'
 
 # freeze pylint and its requirements for consistent test results
 astroid == 2.2.5
@@ -54,4 +56,4 @@ wrapt == 1.11.1
 
 # Restrict docker versions depending on Python version
 docker < 5.0.0 ; python_version <= '3.6'
-websocket-client < 1.0.0 ; python_version <= '3.6'
+docker-compose < 1.25.0 ; python_version <= '3.6'
