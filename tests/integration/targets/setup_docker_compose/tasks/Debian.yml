@@ -1,5 +1,5 @@
 ---
-- name: Install Docker Compose
+- name: Install docker-compose as system package
   apt:
-    name: '{{ docker_packages if needs_docker_daemon else docker_cli_packages }}'
+    name: "{{ docker_compose_packages }}"
     state: present

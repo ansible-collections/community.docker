@@ -1,5 +1,5 @@
 ---
-- name: Install docker 17
+- name: Install docker-compose as system package
   community.general.zypper:
     name: "{{ docker_compose_packages }}"
     force: yes

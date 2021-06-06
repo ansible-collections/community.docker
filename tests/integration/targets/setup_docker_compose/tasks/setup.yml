@@ -4,8 +4,12 @@
   vars:
     params:
       files:
+        - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}-py{{ ansible_python.version.major }}.yml"
+        - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}-py{{ ansible_python.version.major }}.yml"
         - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}.yml"
         - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
+        - "{{ ansible_facts.distribution }}-py{{ ansible_python.version.major }}.yml"
+        - "{{ ansible_facts.os_family }}-py{{ ansible_python.version.major }}.yml"
         - "{{ ansible_facts.distribution }}.yml"
         - "{{ ansible_facts.os_family }}.yml"
         - default.yml
@@ -17,8 +21,12 @@
   vars:
     params:
       files:
+        - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}-py{{ ansible_python.version.major }}.yml"
+        - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}-py{{ ansible_python.version.major }}.yml"
         - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}.yml"
         - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
+        - "{{ ansible_facts.distribution }}-py{{ ansible_python.version.major }}.yml"
+        - "{{ ansible_facts.os_family }}-py{{ ansible_python.version.major }}.yml"
         - "{{ ansible_facts.distribution }}.yml"
         - "{{ ansible_facts.os_family }}.yml"
       paths:
@@ -27,5 +35,5 @@
 - name: Install docker-compose
   pip:
     state: present
-    name: "{{ docker_compose_pip_package }}"
+    name: "{{ docker_compose_pip_packages }}"
     extra_args: "-c {{ remote_constraints }}"
