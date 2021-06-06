@@ -5,7 +5,7 @@
     cname: "{{ cname_prefix ~ '-hi' }}"
 - name: Registering container name
   set_fact:
-    cnames: "{{ cnames + [pname ~ '_' ~ cname] }}"
+    cnames: "{{ cnames + [pname ~ '-' ~ cname] }}"
     dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
 
 - name: Define service
