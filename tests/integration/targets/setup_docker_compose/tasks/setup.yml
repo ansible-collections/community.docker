@@ -32,8 +32,15 @@
       paths:
         - "{{ role_path }}/tasks"
 
-- name: Install docker-compose
-  pip:
-    state: present
-    name: "{{ docker_compose_pip_packages }}"
-    extra_args: "-c {{ remote_constraints }}"
+- block:
+  - name: Install docker-compose
+    pip:
+      state: present
+      name: "{{ docker_compose_pip_packages }}"
+      extra_args: "-c {{ remote_constraints }}"
+
+  - name: Declare docker-compose as existing
+    set_fact:
+      has_docker_compose: true
+
+  when: not skip_docker_compose

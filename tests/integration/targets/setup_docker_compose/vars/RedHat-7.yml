@@ -1,2 +1,2 @@
 ---
-docker_compose_packages: []
+skip_docker_compose: true

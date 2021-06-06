@@ -1,3 +1,2 @@
 ---
-docker_compose_packages:
-  - docker-ce-compose
+docker_compose_packages: []
