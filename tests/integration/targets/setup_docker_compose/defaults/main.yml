@@ -1,2 +1,4 @@
 ---
+docker_compose_packages:
+  - docker-compose
 docker_compose_pip_package: docker-compose

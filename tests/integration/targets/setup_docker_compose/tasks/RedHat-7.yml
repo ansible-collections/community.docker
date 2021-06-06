@@ -1,0 +1,5 @@
+---
+- name: Install docker
+  yum:
+    name: "{{ docker_compose_packages }}"
+    state: present
