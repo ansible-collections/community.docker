@@ -10,7 +10,7 @@
 
 - name: Registering image name
   set_fact:
-    inames: "{{ inames + [iname, test_image_base ~ ':latest', hello_world_image_base ~ ':latest', hello_world_image_base ~ ':newtag', hello_world_image_base ~ ':newtag2'] }}"
+    inames: "{{ inames + [iname, test_image_base ~ ':latest', test_image_base ~ ':other', hello_world_image_base ~ ':latest', hello_world_image_base ~ ':newtag', hello_world_image_base ~ ':newtag2'] }}"
 
 ####################################################################
 ## interact with test registry #####################################
@@ -200,17 +200,31 @@
 - name: repository (idempotent)
   docker_image:
     name: "{{ iname }}"
-    build:
-      path: "{{ output_dir }}/files"
-      pull: no
     repository: "{{ test_image_base }}"
-    source: build
+    source: local
   register: repository_2
+
+- name: repository, tag with ID
+  docker_image:
+    name: "{{ repository_1.image.Id }}"
+    repository: "{{ test_image_base }}:other"
+    source: local
+  register: repository_3
+
+- name: repository, tag with ID (idempotent)
+  docker_image:
+    name: "{{ repository_1.image.Id }}"
+    repository: "{{ test_image_base }}:other"
+    source: local
+    force_tag: true
+  register: repository_4
 
 - assert:
     that:
     - repository_1 is changed
     - repository_2 is not changed
+    - repository_3 is changed
+    - repository_4 is not changed
 
 - name: Get facts of image
   docker_image_info:

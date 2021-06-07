@@ -245,7 +245,7 @@
   docker_image:
     name: "{{ archive_image.image.Id }}"
     archive_path: "{{ output_dir }}/image_id.tar"
-    source: pull
+    source: local
   register: archive_image_id
 
 - name: Create invalid archive

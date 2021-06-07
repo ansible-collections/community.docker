@@ -11,12 +11,12 @@ DOCUMENTATION = '''
 ---
 module: docker_image
 
-short_description: Manage docker images.
+short_description: Manage docker images
 
 
 description:
-  - Build, load or pull an image, making the image available for creating containers. Also supports tagging an
-    image into a repository and archiving an image to a C(.tar) file.
+  - Build, load or pull an image, making the image available for creating containers. Also supports tagging
+    an image, pushing an image, and archiving an image to a C(.tar) file.
 
 options:
   source:
@@ -157,7 +157,8 @@ options:
     description:
       - "Image name. Name format will be one of: C(name), C(repository/name), C(registry_server:port/name).
         When pushing or pulling an image the name can optionally include the tag by appending C(:tag_name)."
-      - Note that image IDs (hashes) are only supported for I(state=absent), and for I(state=present) with I(source=load).
+      - Note that image IDs (hashes) are only supported for I(state=absent), for I(state=present) with I(source=load),
+        and for I(state=present) with I(source=local).
     type: str
     required: yes
   pull:
@@ -179,8 +180,10 @@ options:
     default: no
   repository:
     description:
-      - Full path to a repository. Use with state C(present) to tag the image into the repository. Expects
-        format I(repository:tag). If no tag is provided, will use the value of the C(tag) parameter or I(latest).
+      - Use with state C(present) to tag the image.
+      - Expects format C(repository:tag). If no tag is provided, will use the value of the I(tag) parameter or C(latest).
+      - If I(push=true), I(repository) must either include a registry, or will be assumed to belong to the default
+        registry (Docker Hub).
     type: str
   state:
     description:
@@ -321,7 +324,6 @@ stdout:
 
 import errno
 import os
-import re
 import traceback
 
 from distutils.version import LooseVersion
@@ -587,8 +589,8 @@ class ImageManager(DockerBaseClass):
                             changed = True
                     self.results['changed'] = changed
                 except Exception as exc:
-                    if re.search('unauthorized', str(exc)):
-                        if re.search('authentication required', str(exc)):
+                    if 'unauthorized' in str(exc):
+                        if 'authentication required' in str(exc):
                             self.fail("Error pushing image %s/%s:%s - %s. Try logging into %s first." %
                                       (registry, repo_name, tag, to_native(exc), registry))
                         else:
@@ -620,16 +622,16 @@ class ImageManager(DockerBaseClass):
         self.log("image %s was %s" % (repo, found))
 
         if not image or self.force_tag:
-            self.log("tagging %s:%s to %s:%s" % (name, tag, repo, repo_tag))
+            image_name = name
+            if not is_image_name_id(name) and tag and not name.endswith(':' + tag):
+                image_name = "%s:%s" % (name, tag)
+            self.log("tagging %s to %s:%s" % (image_name, repo, repo_tag))
             self.results['changed'] = True
-            self.results['actions'].append("Tagged image %s:%s to %s:%s" % (name, tag, repo, repo_tag))
+            self.results['actions'].append("Tagged image %s to %s:%s" % (image_name, repo, repo_tag))
             if not self.check_mode:
                 try:
                     # Finding the image does not always work, especially running a localhost registry. In those
                     # cases, if we don't set force=True, it errors.
-                    image_name = name
-                    if tag and not re.search(tag, name):
-                        image_name = "%s:%s" % (name, tag)
                     tag_status = self.client.tag(image_name, repo, tag=repo_tag, force=True)
                     if not tag_status:
                         raise Exception("Tag operation failed.")

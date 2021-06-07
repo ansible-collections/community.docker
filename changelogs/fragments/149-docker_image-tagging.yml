@@ -1,0 +1,2 @@
+minor_changes:
+- "docker_image - allow to tag images by ID (https://github.com/ansible-collections/community.docker/pull/149)."
