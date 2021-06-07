@@ -324,7 +324,6 @@ stdout:
 
 import errno
 import os
-import re
 import traceback
 
 from distutils.version import LooseVersion
