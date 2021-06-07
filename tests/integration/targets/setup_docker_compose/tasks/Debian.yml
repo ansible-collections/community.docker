@@ -1,0 +1,5 @@
+---
+- name: Install docker-compose as system package
+  apt:
+    name: "{{ docker_compose_packages }}"
+    state: present

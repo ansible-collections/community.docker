@@ -1,0 +1,6 @@
+---
+skip_docker_compose: false
+docker_compose_packages:
+  - docker-compose
+docker_compose_pip_packages:
+  - docker-compose

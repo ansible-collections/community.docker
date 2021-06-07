@@ -1,0 +1,8 @@
+---
+- name: Install docker-compose as system package
+  community.general.zypper:
+    name: "{{ docker_compose_packages }}"
+    force: yes
+    disable_gpg_check: yes
+    update_cache: yes
+  notify: cleanup docker

@@ -1,0 +1,6 @@
+---
+- name: Install docker-compose as system package
+  dnf:
+    name: "{{ docker_compose_packages }}"
+    state: present
+    enablerepo: docker-ce-test
