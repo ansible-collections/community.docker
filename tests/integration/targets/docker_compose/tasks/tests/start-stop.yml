@@ -16,6 +16,14 @@
         {{ cname }}:
           image: "{{ docker_test_image_alpine }}"
           command: '/bin/sh -c "sleep 10m"'
+          stop_grace_period: 1s
+    test_service_mod: |
+      version: '2'
+      services:
+        {{ cname }}:
+          image: "{{ docker_test_image_alpine }}"
+          command: '/bin/sh -c "sleep 15m"'
+          stop_grace_period: 1s
 
 ####################################################################
 ## Present #########################################################
@@ -51,12 +59,29 @@
   check_mode: yes
   register: present_4
 
+- name: Present (changed check)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service_mod | from_yaml }}"
+  check_mode: yes
+  register: present_5
+
+- name: Present (changed)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service_mod | from_yaml }}"
+  register: present_6
+
 - assert:
     that:
     - present_1 is changed
     - present_2 is changed
     - present_3 is not changed
     - present_4 is not changed
+    - present_5 is changed
+    - present_6 is changed
 
 ####################################################################
 ## Absent ##########################################################
@@ -66,7 +91,7 @@
   docker_compose:
     project_name: "{{ pname }}"
     state: absent
-    definition: "{{ test_service | from_yaml }}"
+    definition: "{{ test_service_mod | from_yaml }}"
   check_mode: yes
   register: absent_1
 
@@ -74,21 +99,21 @@
   docker_compose:
     project_name: "{{ pname }}"
     state: absent
-    definition: "{{ test_service | from_yaml }}"
+    definition: "{{ test_service_mod | from_yaml }}"
   register: absent_2
 
 - name: Absent (idempotent)
   docker_compose:
     project_name: "{{ pname }}"
     state: absent
-    definition: "{{ test_service | from_yaml }}"
+    definition: "{{ test_service_mod | from_yaml }}"
   register: absent_3
 
 - name: Absent (idempotent check)
   docker_compose:
     project_name: "{{ pname }}"
     state: absent
-    definition: "{{ test_service | from_yaml }}"
+    definition: "{{ test_service_mod | from_yaml }}"
   check_mode: yes
   register: absent_4
 
@@ -98,3 +123,107 @@
     - absent_2 is changed
     - absent_3 is not changed
     - absent_4 is not changed
+
+####################################################################
+## Stopping and starting ###########################################
+####################################################################
+
+- name: Present stopped (check)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+    stopped: true
+  check_mode: yes
+  register: present_1
+
+- name: Present stopped
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+    stopped: true
+  register: present_2
+
+- name: Present stopped (idempotent)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+    stopped: true
+  register: present_3
+
+- name: Present stopped (idempotent check)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+    stopped: true
+  check_mode: yes
+  register: present_4
+
+- name: Started (check)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+  check_mode: yes
+  register: started_1
+
+- name: Started
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+  register: started_2
+
+- name: Started (idempotent)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+  register: started_3
+
+- name: Started (idempotent check)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+  check_mode: yes
+  register: started_4
+
+- name: Stopped (check)
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+    stopped: true
+  check_mode: yes
+  register: stopped_1
+
+- name: Stopped
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    definition: "{{ test_service | from_yaml }}"
+    stopped: true
+  register: stopped_2
+
+- name: Cleanup
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: absent
+    definition: "{{ test_service | from_yaml }}"
+
+- assert:
+    that:
+    - present_1 is changed
+    - present_2 is changed
+    # - present_3 is not changed  -- FIXME! https://github.com/ansible-collections/community.docker/issues/142
+    # - present_4 is not changed  -- FIXME! https://github.com/ansible-collections/community.docker/issues/142
+    - started_1 is changed
+    - started_2 is changed
+    - started_3 is not changed
+    - started_4 is not changed
+    - stopped_1 is changed
+    - stopped_2 is changed
