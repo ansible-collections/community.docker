@@ -322,3 +322,12 @@ releases:
     - 1.6.1.yml
     - 143-tls_hostname-deprecation.yml
     release_date: '2021-05-17'
+  1.7.0:
+    changes:
+      minor_changes:
+      - docker_image - allow to tag images by ID (https://github.com/ansible-collections/community.docker/pull/149).
+      release_summary: Small feature and bugfix release.
+    fragments:
+    - 1.7.0.yml
+    - 149-docker_image-tagging.yml
+    release_date: '2021-06-08'

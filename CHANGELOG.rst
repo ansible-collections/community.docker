@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v1.7.0
+======
+
+Release Summary
+---------------
+
+Small feature and bugfix release.
+
+Minor Changes
+-------------
+
+- docker_image - allow to tag images by ID (https://github.com/ansible-collections/community.docker/pull/149).
+
 v1.6.1
 ======
 
