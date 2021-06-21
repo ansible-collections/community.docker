@@ -44,12 +44,22 @@ options:
               R(docker connection plugin,ansible_collections.community.docker.docker_connection),
               and C(docker-api) selects the
               R(docker_api connection plugin,ansible_collections.community.docker.docker_api_connection).
+            - When C(docker-api) is used, all Docker daemon configuration values are passed from the inventory plugin
+              to the connection plugin. This can be controlled with I(configure_docker_daemon).
         type: str
         default: docker-api
         choices:
             - ssh
             - docker-cli
             - docker-api
+
+    configure_docker_daemon:
+        description:
+            - Whether to pass all Docker daemon configuration from the inventory plugin to the connection plugin.
+            - Only used when I(connection_type=docker-api).
+        type: bool
+        default: true
+        version_added: 1.8.0
 
     verbose_output:
         description:
@@ -138,6 +148,7 @@ from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     RequestException,
+    DOCKER_COMMON_ARGS_VARS,
 )
 from ansible_collections.community.docker.plugins.plugin_utils.common import (
     AnsibleDockerClient,
@@ -179,6 +190,13 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         if add_legacy_groups:
             self.inventory.add_group('running')
             self.inventory.add_group('stopped')
+
+        extra_facts = {}
+        if self.get_option('configure_docker_daemon'):
+            for option_name, var_name in DOCKER_COMMON_ARGS_VARS.items():
+                value = self.get_option(option_name)
+                if value is not None:
+                    extra_facts[var_name] = value
 
         for container in containers:
             id = container.get('Id')
@@ -256,6 +274,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                     ansible_host=full_name,
                     ansible_connection='community.docker.docker_api',
                 ))
+                facts.update(extra_facts)
 
             full_facts.update(facts)
             for key, value in inspect.items():
