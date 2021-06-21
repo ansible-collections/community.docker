@@ -760,6 +760,10 @@ class ContainerManager(DockerBaseClass):
         for service in self.project.services:
             if not service_names or service.name in service_names:
                 plan = service.convergence_plan(strategy=converge)
+                if plan.action == 'start' and self.stopped:
+                    # In case the only action is starting, and the user requested
+                    # that the service should be stopped, ignore this service.
+                    continue
                 if plan.action != 'noop':
                     result['changed'] = True
                     result_action = dict(service=service.name)
