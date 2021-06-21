@@ -223,7 +223,7 @@ class DockerHostManager(DockerBaseClass):
             if self.client.module.params[docker_object]:
                 returned_name = docker_object
                 filter_name = docker_object + "_filters"
-                filters = clean_dict_booleans_for_docker_api(client.module.params.get(filter_name))
+                filters = clean_dict_booleans_for_docker_api(client.module.params.get(filter_name), True)
                 self.results[returned_name] = self.get_docker_items_list(docker_object, filters)
 
     def get_docker_host_info(self):

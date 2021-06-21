@@ -15,6 +15,7 @@ from distutils.version import LooseVersion
 
 
 from ansible.module_utils.basic import AnsibleModule, env_fallback, missing_required_lib
+from ansible.module_utils.common.collections import is_sequence
 from ansible.module_utils.common._collections_compat import Mapping, Sequence
 from ansible.module_utils.six import string_types
 from ansible.module_utils.six.moves.urllib.parse import urlparse
@@ -921,23 +922,27 @@ class DifferenceTracker(object):
         return result
 
 
-def clean_dict_booleans_for_docker_api(data):
+def clean_dict_booleans_for_docker_api(data, allow_sequences=False):
     '''
     Go doesn't like Python booleans 'True' or 'False', while Ansible is just
     fine with them in YAML. As such, they need to be converted in cases where
     we pass dictionaries to the Docker API (e.g. docker_network's
     driver_options and docker_prune's filters).
     '''
+    def sanitize_value(value):
+        if allow_sequences and is_sequence(value):
+            return type(value)(sanitize_value(v) for v in value)
+        elif value is True:
+            return 'true'
+        elif value is False:
+            return 'false'
+        else:
+            return str(value)
+
     result = dict()
     if data is not None:
         for k, v in data.items():
-            if v is True:
-                v = 'true'
-            elif v is False:
-                v = 'false'
-            else:
-                v = str(v)
-            result[str(k)] = v
+            result[str(k)] = sanitize_value(v)
     return result
 
 
