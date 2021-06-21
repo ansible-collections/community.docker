@@ -119,6 +119,7 @@ notes:
     # For plugins: allow to define common options with Ansible variables
 
     VAR_NAMES = r'''
+options:
     docker_host:
         vars:
             - name: ansible_docker_docker_host
