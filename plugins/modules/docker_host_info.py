@@ -126,6 +126,15 @@ EXAMPLES = '''
     disk_usage: yes
   register: result
 
+- name: Get info on docker host and list containers matching the filter
+  community.docker.docker_host_info:
+    containers: yes
+    containers_filters:
+      label:
+        - key1=value1
+        - key2=value2
+  register: result
+
 - ansible.builtin.debug:
     var: result.host_info
 
