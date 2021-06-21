@@ -285,6 +285,8 @@ options:
     description:
       - Dictionary of key,value pairs.
       - Values which might be parsed as numbers, booleans or other types by the YAML parser must be quoted (e.g. C("true")) in order to avoid data loss.
+      - Please note that if you are passing values in with Jinja2 templates, like C("{{ value }}"), you need to add C(| string) to avoid Ansible to
+        convert strings such as C("true") back to booleans. The correct way is to use C("{{ value | string }}").
     type: dict
   env_file:
     description:
