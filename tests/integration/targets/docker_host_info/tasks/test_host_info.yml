@@ -31,6 +31,9 @@
       image: "{{ docker_test_image_alpine }}"
       command: '/bin/sh -c "sleep 10m"'
       name: "{{ cname }}"
+      labels:
+        key1: value1
+        key2: value2
       state: started
     register: container_output
 
@@ -62,6 +65,44 @@
          - 'output.disk_usage is not defined'
          - 'output.containers[0].Image is string'
          - 'output.containers[0].ImageID is not defined'
+
+  - name: Get info on Docker host and list containers matching filters (single label)
+    docker_host_info:
+      containers: yes
+      containers_filters:
+        label: key1=value1
+    register: output
+
+  - name: assert container is returned when filters are matched (single label)
+    assert:
+      that: "{{ output.containers | length }} == 1"
+
+  - name: Get info on Docker host and list containers matching filters (multiple labels)
+    docker_host_info:
+      containers: yes
+      containers_filters:
+        label:
+          - key1=value1
+          - key2=value2
+    register: output
+
+  - name: assert container is returned when filters are matched (multiple labels)
+    assert:
+      that: "{{ output.containers | length }} == 1"
+
+  - name: Get info on Docker host and do not list containers which do not match filters
+    docker_host_info:
+      containers: yes
+      containers_filters:
+        label:
+          - key1=value1
+          - key2=value2
+          - key3=value3
+    register: output
+
+  - name: assert no container is returned when filters are not matched
+    assert:
+      that: "{{ output.containers | length }} == 0"
 
   - name: Get info on Docker host and list containers with verbose output
     docker_host_info:
