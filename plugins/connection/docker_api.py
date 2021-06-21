@@ -33,41 +33,9 @@ options:
             - name: ansible_host
             - name: ansible_docker_host
 
-    # The following are options from the docs fragment. We want to allow the user to
-    # specify them with Ansible variables.
-    docker_host:
-        vars:
-            - name: ansible_docker_docker_host
-    tls_hostname:
-        vars:
-            - name: ansible_docker_tls_hostname
-    api_version:
-        vars:
-            - name: ansible_docker_api_version
-    timeout:
-        vars:
-            - name: ansible_docker_timeout
-    ca_cert:
-        vars:
-            - name: ansible_docker_ca_cert
-    client_cert:
-        vars:
-            - name: ansible_docker_client_cert
-    client_key:
-        vars:
-            - name: ansible_docker_client_key
-    ssl_version:
-        vars:
-            - name: ansible_docker_ssl_version
-    tls:
-        vars:
-            - name: ansible_docker_tls
-    validate_certs:
-        vars:
-            - name: ansible_docker_validate_certs
-
 extends_documentation_fragment:
     - community.docker.docker
+    - community.docker.docker.var_names
     - community.docker.docker.docker_py_1_documentation
 '''
 
