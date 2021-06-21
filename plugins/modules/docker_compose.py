@@ -730,12 +730,12 @@ class ContainerManager(DockerBaseClass):
 
         if self.pull:
             pull_output = self.cmd_pull()
-            result['changed'] = pull_output['changed']
+            result['changed'] |= pull_output['changed']
             result['actions'] += pull_output['actions']
 
         if self.build:
             build_output = self.cmd_build()
-            result['changed'] = build_output['changed']
+            result['changed'] |= build_output['changed']
             result['actions'] += build_output['actions']
 
         if self.remove_orphans:
@@ -802,12 +802,12 @@ class ContainerManager(DockerBaseClass):
 
         if self.restarted:
             restart_output = self.cmd_restart(service_names)
-            result['changed'] = restart_output['changed']
+            result['changed'] |= restart_output['changed']
             result['actions'] += restart_output['actions']
 
         if self.scale:
             scale_output = self.cmd_scale()
-            result['changed'] = scale_output['changed']
+            result['changed'] |= scale_output['changed']
             result['actions'] += scale_output['actions']
 
         for service in self.project.services:
