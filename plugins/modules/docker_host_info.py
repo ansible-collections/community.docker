@@ -33,6 +33,8 @@ options:
     description:
       - A dictionary of filter values used for selecting containers to list.
       - "For example, C(until: 24h)."
+      - C(label) is a special case of filter which can be a string C(<key>) matching when a label is present, a string
+        C(<key>=<value>) matching when a label has a particular value, or a list of strings C(<key>)/C(<key>=<value).
       - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/container_prune/#filtering)
         for more information on possible filters.
     type: dict
@@ -45,6 +47,8 @@ options:
     description:
       - A dictionary of filter values used for selecting images to list.
       - "For example, C(dangling: true)."
+      - C(label) is a special case of filter which can be a string C(<key>) matching when a label is present, a string
+        C(<key>=<value>) matching when a label has a particular value, or a list of strings C(<key>)/C(<key>=<value).
       - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/image_prune/#filtering)
         for more information on possible filters.
     type: dict
@@ -56,6 +60,8 @@ options:
   networks_filters:
     description:
       - A dictionary of filter values used for selecting networks to list.
+      - C(label) is a special case of filter which can be a string C(<key>) matching when a label is present, a string
+        C(<key>=<value>) matching when a label has a particular value, or a list of strings C(<key>)/C(<key>=<value).
       - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/network_prune/#filtering)
         for more information on possible filters.
     type: dict
@@ -67,6 +73,8 @@ options:
   volumes_filters:
     description:
       - A dictionary of filter values used for selecting volumes to list.
+      - C(label) is a special case of filter which can be a string C(<key>) matching when a label is present, a string
+        C(<key>=<value>) matching when a label has a particular value, or a list of strings C(<key>)/C(<key>=<value).
       - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/volume_prune/#filtering)
         for more information on possible filters.
     type: dict
@@ -124,6 +132,15 @@ EXAMPLES = '''
 - name: Get info on docker host and used disk space
   community.docker.docker_host_info:
     disk_usage: yes
+  register: result
+
+- name: Get info on docker host and list containers matching the filter
+  community.docker.docker_host_info:
+    containers: yes
+    containers_filters:
+      label:
+        - key1=value1
+        - key2=value2
   register: result
 
 - ansible.builtin.debug:
@@ -223,7 +240,7 @@ class DockerHostManager(DockerBaseClass):
             if self.client.module.params[docker_object]:
                 returned_name = docker_object
                 filter_name = docker_object + "_filters"
-                filters = clean_dict_booleans_for_docker_api(client.module.params.get(filter_name))
+                filters = clean_dict_booleans_for_docker_api(client.module.params.get(filter_name), True)
                 self.results[returned_name] = self.get_docker_items_list(docker_object, filters)
 
     def get_docker_host_info(self):

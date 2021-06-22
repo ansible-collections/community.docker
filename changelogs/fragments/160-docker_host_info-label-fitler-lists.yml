@@ -1,0 +1,4 @@
+---
+minor_changes:
+  - docker_host_info - allow values for keys in ``containers_filters``, ``images_filters``, ``networks_filters``, and
+    ``volumes_filters`` to be passed as YAML lists (https://github.com/ansible-collections/community.docker/pull/160).
