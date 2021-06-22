@@ -116,6 +116,42 @@ notes:
     and use C($DOCKER_CONFIG/config.json) otherwise.
 '''
 
+    # For plugins: allow to define common options with Ansible variables
+
+    VAR_NAMES = r'''
+options:
+    docker_host:
+        vars:
+            - name: ansible_docker_docker_host
+    tls_hostname:
+        vars:
+            - name: ansible_docker_tls_hostname
+    api_version:
+        vars:
+            - name: ansible_docker_api_version
+    timeout:
+        vars:
+            - name: ansible_docker_timeout
+    ca_cert:
+        vars:
+            - name: ansible_docker_ca_cert
+    client_cert:
+        vars:
+            - name: ansible_docker_client_cert
+    client_key:
+        vars:
+            - name: ansible_docker_client_key
+    ssl_version:
+        vars:
+            - name: ansible_docker_ssl_version
+    tls:
+        vars:
+            - name: ansible_docker_tls
+    validate_certs:
+        vars:
+            - name: ansible_docker_validate_certs
+'''
+
     # Additional, more specific stuff for minimal Docker SDK for Python version < 2.0
 
     DOCKER_PY_1_DOCUMENTATION = r'''
