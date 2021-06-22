@@ -927,12 +927,12 @@ def clean_dict_booleans_for_docker_api(data, allow_sequences=False):
     Go doesn't like Python booleans 'True' or 'False', while Ansible is just
     fine with them in YAML. As such, they need to be converted in cases where
     we pass dictionaries to the Docker API (e.g. docker_network's
-    driver_options and docker_prune's filters).
+    driver_options and docker_prune's filters). When `allow_sequences=True`
+    YAML sequences (lists, tuples) are converted to [str] instead of str([...])
+    which is the expected format of filters which accept lists such as labels.
     '''
-    def sanitize_value(value):
-        if allow_sequences and is_sequence(value):
-            return type(value)(sanitize_value(v) for v in value)
-        elif value is True:
+    def sanitize(value):
+        if value is True:
             return 'true'
         elif value is False:
             return 'false'
@@ -942,7 +942,7 @@ def clean_dict_booleans_for_docker_api(data, allow_sequences=False):
     result = dict()
     if data is not None:
         for k, v in data.items():
-            result[str(k)] = sanitize_value(v)
+            result[str(k)] = [sanitize(e) for e in v] if allow_sequences and is_sequence(v) else sanitize(v)
     return result
 
 
