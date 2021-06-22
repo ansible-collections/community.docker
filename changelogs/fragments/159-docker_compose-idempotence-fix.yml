@@ -1,0 +1,2 @@
+bugfixes:
+- "docker_compose - fix idempotence bug when using ``stopped: true`` (https://github.com/ansible-collections/community.docker/issues/142, https://github.com/ansible-collections/community.docker/pull/159)."

@@ -219,8 +219,8 @@
     that:
     - present_1 is changed
     - present_2 is changed
-    # - present_3 is not changed  -- FIXME! https://github.com/ansible-collections/community.docker/issues/142
-    # - present_4 is not changed  -- FIXME! https://github.com/ansible-collections/community.docker/issues/142
+    - present_3 is not changed
+    - present_4 is not changed
     - started_1 is changed
     - started_2 is changed
     - started_3 is not changed
