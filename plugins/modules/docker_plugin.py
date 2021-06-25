@@ -37,6 +37,12 @@ options:
       - disable
     type: str
 
+  alias:
+    description:
+     - Local name for plugin.
+    type: str
+    version_added: 1.8.0
+
   plugin_options:
     description:
       - Dictionary of plugin settings.
@@ -91,7 +97,7 @@ EXAMPLES = '''
 
 - name: Install a plugin with options
   community.docker.docker_plugin:
-    name: weaveworks/net-plugin:latest_release
+    plugin_name: weaveworks/net-plugin:latest_release
     plugin_options:
       IPALLOC_RANGE: "10.32.0.0/12"
       WEAVE_PASSWORD: "PASSWORD"
@@ -104,11 +110,16 @@ plugin:
     returned: success
     type: dict
     sample: {}
+actions:
+    description:
+      - List of actions performed during task execution.
+    returned: when I(state!=absent)
+    type: list
 '''
 
 import traceback
 
-from ansible.module_utils._text import to_native
+from ansible.module_utils.common.text.converters import to_native
 
 try:
     from docker.errors import APIError, NotFound, DockerException
@@ -130,6 +141,7 @@ class TaskParameters(DockerBaseClass):
         super(TaskParameters, self).__init__()
         self.client = client
         self.plugin_name = None
+        self.alias = None
         self.plugin_options = None
         self.debug = None
         self.force_remove = None
@@ -156,14 +168,14 @@ class DockerPluginManager(object):
         self.dclient.api = client
 
         self.parameters = TaskParameters(client)
+        self.preferred_name = self.parameters.alias or self.parameters.plugin_name
         self.check_mode = self.client.check_mode
-        self.results = {
-            u'changed': False,
-            u'actions': []
-        }
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()
         self.diff_result = dict()
+
+        self.actions = []
+        self.changed = False
 
         self.existing_plugin = self.get_existing_plugin()
 
@@ -180,12 +192,11 @@ class DockerPluginManager(object):
         if self.diff or self.check_mode or self.parameters.debug:
             if self.diff:
                 self.diff_result['before'], self.diff_result['after'] = self.diff_tracker.get_before_after()
-            self.results['diff'] = self.diff_result
+            self.diff = self.diff_result
 
     def get_existing_plugin(self):
-        name = self.parameters.plugin_name
         try:
-            plugin = self.dclient.plugins.get(name)
+            plugin = self.dclient.plugins.get(self.preferred_name)
         except NotFound:
             return None
         except APIError as e:
@@ -225,14 +236,16 @@ class DockerPluginManager(object):
         if not self.existing_plugin:
             if not self.check_mode:
                 try:
-                    self.existing_plugin = self.dclient.plugins.install(self.parameters.plugin_name, None)
+                    self.existing_plugin = self.dclient.plugins.install(
+                        self.parameters.plugin_name, self.parameters.alias
+                    )
                     if self.parameters.plugin_options:
                         self.existing_plugin.configure(prepare_options(self.parameters.plugin_options))
                 except APIError as e:
                     self.client.fail(to_native(e))
 
-            self.results['actions'].append("Installed plugin %s" % self.parameters.plugin_name)
-            self.results['changed'] = True
+            self.actions.append("Installed plugin %s" % self.preferred_name)
+            self.changed = True
 
     def remove_plugin(self):
         force = self.parameters.force_remove
@@ -243,8 +256,8 @@ class DockerPluginManager(object):
                 except APIError as e:
                     self.client.fail(to_native(e))
 
-            self.results['actions'].append("Removed plugin %s" % self.parameters.plugin_name)
-            self.results['changed'] = True
+            self.actions.append("Removed plugin %s" % self.preferred_name)
+            self.changed = True
 
     def update_plugin(self):
         if self.existing_plugin:
@@ -255,10 +268,10 @@ class DockerPluginManager(object):
                         self.existing_plugin.configure(prepare_options(self.parameters.plugin_options))
                     except APIError as e:
                         self.client.fail(to_native(e))
-                self.results['actions'].append("Updated plugin %s settings" % self.parameters.plugin_name)
-                self.results['changed'] = True
+                self.actions.append("Updated plugin %s settings" % self.preferred_name)
+                self.changed = True
         else:
-            self.fail("Cannot update the plugin: Plugin does not exist")
+            self.client.fail("Cannot update the plugin: Plugin does not exist")
 
     def present(self):
         differences = DifferenceTracker()
@@ -276,7 +289,7 @@ class DockerPluginManager(object):
             self.diff_tracker.merge(differences)
 
         if not self.check_mode and not self.parameters.debug:
-            self.results.pop('actions')
+            self.actions = None
 
     def absent(self):
         self.remove_plugin()
@@ -290,8 +303,8 @@ class DockerPluginManager(object):
                         self.existing_plugin.enable(timeout)
                     except APIError as e:
                         self.client.fail(to_native(e))
-                self.results['actions'].append("Enabled plugin %s" % self.parameters.plugin_name)
-                self.results['changed'] = True
+                self.actions.append("Enabled plugin %s" % self.preferred_name)
+                self.changed = True
         else:
             self.install_plugin()
             if not self.check_mode:
@@ -299,8 +312,8 @@ class DockerPluginManager(object):
                     self.existing_plugin.enable(timeout)
                 except APIError as e:
                     self.client.fail(to_native(e))
-            self.results['actions'].append("Enabled plugin %s" % self.parameters.plugin_name)
-            self.results['changed'] = True
+            self.actions.append("Enabled plugin %s" % self.preferred_name)
+            self.changed = True
 
     def disable(self):
         if self.existing_plugin:
@@ -310,14 +323,25 @@ class DockerPluginManager(object):
                         self.existing_plugin.disable()
                     except APIError as e:
                         self.client.fail(to_native(e))
-                self.results['actions'].append("Disable plugin %s" % self.parameters.plugin_name)
-                self.results['changed'] = True
+                self.actions.append("Disable plugin %s" % self.preferred_name)
+                self.changed = True
         else:
-            self.fail("Plugin not found: Plugin does not exist.")
+            self.client.fail("Plugin not found: Plugin does not exist.")
+
+    @property
+    def result(self):
+        result = {
+            'actions': self.actions,
+            'changed': self.changed,
+            'diff': self.diff,
+            'plugin': self.client.inspect_plugin(self.preferred_name) if self.parameters.state != 'absent' else {}
+        }
+        return dict((k, v) for k, v in result.items() if v is not None)
 
 
 def main():
     argument_spec = dict(
+        alias=dict(type='str'),
         plugin_name=dict(type='str', required=True),
         state=dict(type='str', default='present', choices=['present', 'absent', 'enable', 'disable']),
         plugin_options=dict(type='dict', default={}),
@@ -334,7 +358,7 @@ def main():
 
     try:
         cm = DockerPluginManager(client)
-        client.module.exit_json(**cm.results)
+        client.module.exit_json(**cm.result)
     except DockerException as e:
         client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
