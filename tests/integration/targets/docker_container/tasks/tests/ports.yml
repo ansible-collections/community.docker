@@ -284,3 +284,59 @@
     - published_ports_2 is not changed
     - published_ports_3 is changed
     - published_ports_4 is failed
+
+####################################################################
+## publish_all_ports ###############################################
+####################################################################
+
+- name: publish_all_ports
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    publish_all_ports: true
+    published_ports:
+      - "9001:9001"
+      - "9010-9050:9010-9050"
+    force_kill: yes
+  register: publish_all_ports_1
+
+- name: publish_all_ports (idempotency)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    publish_all_ports: true
+    published_ports:
+      - "9001:9001"
+      - "9010-9050:9010-9050"
+    force_kill: yes
+  register: publish_all_ports_2
+
+- name: publish_all_ports true -> false
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    publish_all_ports: false
+    published_ports:
+      - "9001:9001"
+      - "9010-9050:9010-9050"
+    force_kill: yes
+  register: publish_all_ports_3
+
+- name: cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
+  diff: no
+
+- assert:
+    that:
+      - publish_all_ports_1 is changed
+      - publish_all_ports_2 is not changed
+      - publish_all_ports_3 is changed
