@@ -83,6 +83,19 @@
     force_kill: yes
   register: published_ports_5
 
+- name: published_ports -- all equivalence with publish_all_ports
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    exposed_ports:
+      - "9001"
+      - "9002"
+    publish_all_ports: true
+    force_kill: yes
+  register: published_ports_6
+
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
@@ -97,6 +110,7 @@
     - published_ports_3 is changed
     - published_ports_4 is not changed
     - published_ports_5 is changed
+    - published_ports_6 is not changed
 
 ####################################################################
 ## published_ports: port range #####################################
