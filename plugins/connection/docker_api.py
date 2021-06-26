@@ -46,7 +46,7 @@ import shutil
 import tarfile
 
 from ansible.errors import AnsibleFileNotFound, AnsibleConnectionFailure
-from ansible.module_utils._text import to_bytes, to_native, to_text
+from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
 from ansible.plugins.connection import ConnectionBase
 from ansible.utils.display import Display
 

@@ -160,7 +160,7 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
     compare_generic,
     RequestException,
 )
-from ansible.module_utils._text import to_native, to_bytes
+from ansible.module_utils.common.text.converters import to_native, to_bytes
 
 
 class SecretManager(DockerBaseClass):

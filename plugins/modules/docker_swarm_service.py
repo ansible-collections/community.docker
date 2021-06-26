@@ -933,7 +933,7 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
 
 from ansible.module_utils.basic import human_to_bytes
 from ansible.module_utils.six import string_types
-from ansible.module_utils._text import to_text, to_native
+from ansible.module_utils.common.text.converters import to_text, to_native
 
 try:
     from docker import types

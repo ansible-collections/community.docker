@@ -125,7 +125,7 @@ import os
 import re
 import traceback
 
-from ansible.module_utils._text import to_bytes, to_text, to_native
+from ansible.module_utils.common.text.converters import to_bytes, to_text, to_native
 
 try:
     from docker.errors import DockerException

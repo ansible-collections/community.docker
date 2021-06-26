@@ -485,7 +485,7 @@ except ImportError as dummy:
     HAS_COMPOSE_EXC = traceback.format_exc()
     DEFAULT_TIMEOUT = 10
 
-from ansible.module_utils._text import to_native
+from ansible.module_utils.common.text.converters import to_native
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
