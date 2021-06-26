@@ -1432,9 +1432,13 @@ class TaskParameters(DockerBaseClass):
                         self.fail("Failed to convert %s to bytes: %s" % (param_name, to_native(exc)))
 
         self.published_ports = self._parse_publish_ports()
+
         if self.published_ports == 'all':
-            self.publish_all_ports = True
-            self.published_ports = None
+            if not self.publish_all_ports:
+                self.publish_all_ports = True
+                self.published_ports = None
+            else:
+                self.fail('"all" is not a valid value for "published_ports" when "publish_all_ports" is "true"')
 
         self.ports = self._parse_exposed_ports(self.published_ports)
         self.log("expose ports:")
@@ -1756,10 +1760,9 @@ class TaskParameters(DockerBaseClass):
             if len(self.published_ports) > 1:
                 self.client.module.deprecate(
                     'Specifying "all" in published_ports together with port mappings is not properly '
-                    'supported by the module. The port mappings are currently ignored. Please specify '
-                    'only port mappings, or the value "all". The behavior for mixed usage will either '
-                    'be forbidden in version 2.0.0, or properly handled. In any case, the way you '
-                    'currently use the module will change in a breaking way',
+                    'supported by the module. The port mappings are currently ignored. Set publish_all_ports '
+                    'to "true" to randomly assign port mappings for those not specified by published_ports. '
+                    'The use of "all" in published_ports will be removed in version 2.0.0.',
                     collection_name='community.docker', version='2.0.0')
             return 'all'
 
