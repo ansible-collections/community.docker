@@ -668,7 +668,6 @@ options:
       - Publish all ports to the host.
       - Any specified port bindings from I(published_ports) will remain intact when C(true).
     type: bool
-    default: false
     version_added: 1.8.0
   published_ports:
     description:
@@ -1434,11 +1433,11 @@ class TaskParameters(DockerBaseClass):
         self.published_ports = self._parse_publish_ports()
 
         if self.published_ports == 'all':
-            if not self.publish_all_ports:
+            if self.publish_all_ports is None:
                 self.publish_all_ports = True
                 self.published_ports = None
             else:
-                self.fail('"all" is not a valid value for "published_ports" when "publish_all_ports" is "true"')
+                self.fail('"all" is not a valid value for "published_ports" when "publish_all_ports" is specified')
 
         self.ports = self._parse_exposed_ports(self.published_ports)
         self.log("expose ports:")
@@ -3567,7 +3566,7 @@ def main():
         pid_mode=dict(type='str'),
         pids_limit=dict(type='int'),
         privileged=dict(type='bool'),
-        publish_all_ports=dict(type='bool', default=False),
+        publish_all_ports=dict(type='bool'),
         published_ports=dict(type='list', elements='str', aliases=['ports']),
         pull=dict(type='bool', default=False),
         purge_networks=dict(type='bool', default=False),

@@ -303,20 +303,68 @@
 ## publish_all_ports ###############################################
 ####################################################################
 
-- name: publish_all_ports
+- name: publish_all_ports (true)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
     publish_all_ports: true
-    published_ports:
-      - "9001:9001"
-      - "9010-9050:9010-9050"
     force_kill: yes
   register: publish_all_ports_1
 
-- name: publish_all_ports (idempotency)
+- name: publish_all_ports (Idempotency)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    publish_all_ports: true
+    force_kill: yes
+  register: publish_all_ports_2
+
+- name: publish_all_ports (false)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    publish_all_ports: false
+    force_kill: yes
+  register: publish_all_ports_3
+
+- name: publish_all_ports (Idempotency 2)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    publish_all_ports: false
+    force_kill: yes
+  register: publish_all_ports_4
+
+- name: publish_all_ports (null)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    force_kill: yes
+  register: publish_all_ports_5
+
+- name: publish_all_ports (null with published_ports)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    published_ports:
+      - "9001:9001"
+      - "9010-9050:9010-9050"
+    force_kill: yes
+  register: publish_all_ports_6
+
+- name: publish_all_ports (null -> true with published_ports)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
@@ -327,9 +375,22 @@
       - "9001:9001"
       - "9010-9050:9010-9050"
     force_kill: yes
-  register: publish_all_ports_2
+  register: publish_all_ports_7
 
-- name: publish_all_ports true -> false
+- name: publish_all_ports (Idempotency with published_ports)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    publish_all_ports: true
+    published_ports:
+      - "9001:9001"
+      - "9010-9050:9010-9050"
+    force_kill: yes
+  register: publish_all_ports_8
+
+- name: publish_all_ports (true -> false with published_ports)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
@@ -340,7 +401,33 @@
       - "9001:9001"
       - "9010-9050:9010-9050"
     force_kill: yes
-  register: publish_all_ports_3
+  register: publish_all_ports_9
+
+- name: publish_all_ports (Idempotency2 with published_ports)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    publish_all_ports: false
+    published_ports:
+      - "9001:9001"
+      - "9010-9050:9010-9050"
+    force_kill: yes
+  register: publish_all_ports_10
+
+- name: publish_all_ports (false -> null with published_ports)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    publish_all_ports: false
+    published_ports:
+      - "9001:9001"
+      - "9010-9050:9010-9050"
+    force_kill: yes
+  register: publish_all_ports_11
 
 - name: cleanup
   docker_container:
@@ -354,3 +441,11 @@
       - publish_all_ports_1 is changed
       - publish_all_ports_2 is not changed
       - publish_all_ports_3 is changed
+      - publish_all_ports_4 is not changed
+      - publish_all_ports_5 is not changed
+      - publish_all_ports_6 is changed
+      - publish_all_ports_7 is changed
+      - publish_all_ports_8 is not changed
+      - publish_all_ports_9 is changed
+      - publish_all_ports_10 is not changed
+      - publish_all_ports_11 is not changed
