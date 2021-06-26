@@ -1189,7 +1189,7 @@ from time import sleep
 
 from ansible.module_utils.common.text.formatters import human_to_bytes
 from ansible.module_utils.six import string_types
-from ansible.module_utils._text import to_native, to_text
+from ansible.module_utils.common.text.converters import to_native, to_text
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,

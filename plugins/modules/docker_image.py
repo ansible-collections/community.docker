@@ -337,7 +337,7 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
     is_valid_tag,
     RequestException,
 )
-from ansible.module_utils._text import to_native
+from ansible.module_utils.common.text.converters import to_native
 
 if docker_version is not None:
     try:

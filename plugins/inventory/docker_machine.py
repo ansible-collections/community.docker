@@ -84,8 +84,8 @@ compose:
 '''
 
 from ansible.errors import AnsibleError
-from ansible.module_utils._text import to_native
-from ansible.module_utils._text import to_text
+from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.common.process import get_bin_path
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable, Cacheable
 from ansible.utils.display import Display
