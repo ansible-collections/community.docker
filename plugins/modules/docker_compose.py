@@ -144,8 +144,10 @@ options:
   timeout:
     description:
       - Timeout in seconds for container shutdown when attached or when containers are already running.
+      - By default C(compose) will use a C(10s) timeout unless C(default_grace_period) is defined for a
+        particular service in the I(project_src).
     type: int
-    default: 10
+    default: null
   use_ssh_client:
     description:
       - Currently ignored for this module, but might suddenly be supported later on.
@@ -476,14 +478,13 @@ try:
     from compose.cli.command import project_from_options
     from compose.service import NoSuchImageError
     from compose.cli.main import convergence_strategy_from_opts, build_action_from_opts, image_type_from_opt
-    from compose.const import DEFAULT_TIMEOUT, LABEL_SERVICE, LABEL_PROJECT, LABEL_ONE_OFF
+    from compose.const import LABEL_SERVICE, LABEL_PROJECT, LABEL_ONE_OFF
     HAS_COMPOSE = True
     HAS_COMPOSE_EXC = None
     MINIMUM_COMPOSE_VERSION = '1.7.0'
 except ImportError as dummy:
     HAS_COMPOSE = False
     HAS_COMPOSE_EXC = traceback.format_exc()
-    DEFAULT_TIMEOUT = 10
 
 from ansible.module_utils._text import to_native
 
@@ -1130,7 +1131,7 @@ def main():
         pull=dict(type='bool', default=False),
         nocache=dict(type='bool', default=False),
         debug=dict(type='bool', default=False),
-        timeout=dict(type='int', default=DEFAULT_TIMEOUT)
+        timeout=dict(type='int')
     )
 
     mutually_exclusive = [
