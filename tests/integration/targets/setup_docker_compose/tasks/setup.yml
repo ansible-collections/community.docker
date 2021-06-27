@@ -46,7 +46,7 @@
 
   - name: Declare docker-compose version
     set_fact:
-      docker_compose_version: "{{ docker_compose_version | default('0.0.0') }}"
+      docker_compose_version: "{{ docker_compose_version.stdout | default('0.0.0') }}"
 
   - name: Declare docker-compose as existing
     set_fact:

@@ -91,7 +91,7 @@
           - not profiles_outputs.results[5].services[cname_2][cname_2_name].state.running
           - profiles_outputs.results[6].services[cname_1][cname_1_name].state.running
           - profiles_outputs.results[6].services[cname_2][cname_2_name].state.running
-        vars:
-          cname_1_name: "{{ pname + '_' + cname_1 + '_1' }}"
-          cname_2_name: "{{ pname + '_' + cname_2 + '_1' }}"
-  when: docker_compose_version.stdout is version('1.28.0', '>=')
+      vars:
+        cname_1_name: "{{ pname + '_' + cname_1 + '_1' }}"
+        cname_2_name: "{{ pname + '_' + cname_2 + '_1' }}"
+  when: docker_compose_version is version('1.28.0', '>=')
