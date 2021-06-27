@@ -1761,7 +1761,7 @@ class TaskParameters(DockerBaseClass):
                     'Specifying "all" in published_ports together with port mappings is not properly '
                     'supported by the module. The port mappings are currently ignored. Set publish_all_ports '
                     'to "true" to randomly assign port mappings for those not specified by published_ports. '
-                    'The use of "all" in published_ports will be removed in version 2.0.0.',
+                    'The use of "all" in published_ports next to other values will be removed in version 2.0.0.',
                     collection_name='community.docker', version='2.0.0')
             return 'all'
 
