@@ -1,4 +1,4 @@
 ---
-bugfixes:
+breaking_changes:
   - docker_compose - fixed ``timeout`` defaulting behavior so that ``stop_grace_period``, if defined in the compose
-    file, will be used if no ``timeout`` is defined (https://github.com/ansible-collections/community.docker/pull/163).
+    file, will be used if `timeout`` is not specified (https://github.com/ansible-collections/community.docker/pull/163).
