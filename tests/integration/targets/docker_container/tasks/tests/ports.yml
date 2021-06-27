@@ -83,6 +83,19 @@
     force_kill: yes
   register: published_ports_5
 
+- name: published_ports -- all equivalence with publish_all_ports
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    exposed_ports:
+      - "9001"
+      - "9002"
+    publish_all_ports: true
+    force_kill: yes
+  register: published_ports_6
+
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
@@ -97,6 +110,7 @@
     - published_ports_3 is changed
     - published_ports_4 is not changed
     - published_ports_5 is changed
+    - published_ports_6 is not changed
 
 ####################################################################
 ## published_ports: port range #####################################
@@ -284,3 +298,84 @@
     - published_ports_2 is not changed
     - published_ports_3 is changed
     - published_ports_4 is failed
+
+####################################################################
+## publish_all_ports ###############################################
+####################################################################
+
+- set_fact:
+    publish_all_ports_test_cases:
+      - test_name: no_options
+        changed: true
+      - test_name: null_to_true
+        publish_all_ports_value: true
+        changed: true
+      - test_name: true_idempotency
+        publish_all_ports_value: true
+        changed: false
+      - test_name: true_to_null
+        changed: false
+      - test_name: null_to_true_2
+        publish_all_ports_value: true
+        changed: false
+      - test_name: true_to_false
+        publish_all_ports_value: false
+        changed: true
+      - test_name: false_idempotency
+        publish_all_ports_value: false
+        changed: false
+      - test_name: false_to_null
+        changed: false
+      - test_name: null_with_published_ports
+        published_ports_value: &ports
+          - "9001:9001"
+          - "9010-9050:9010-9050"
+        changed: true
+      - test_name: null_to_true_with_published_ports
+        publish_all_ports_value: true
+        published_ports_value: *ports
+        changed: true
+      - test_name: true_idempotency_with_published_ports
+        publish_all_ports_value: true
+        published_ports_value: *ports
+        changed: false
+      - test_name: true_to_null_with_published_ports
+        published_ports_value: *ports
+        changed: false
+      - test_name: null_to_true_2_with_published_ports
+        publish_all_ports_value: true
+        published_ports_value: *ports
+        changed: false
+      - test_name: true_to_false_with_published_ports
+        publish_all_ports_value: false
+        published_ports_value: *ports
+        changed: true
+      - test_name: false_idempotency_with_published_ports
+        publish_all_ports_value: false
+        published_ports_value: *ports
+        changed: false
+      - test_name: false_to_null_with_published_ports
+        published_ports_value: *ports
+        changed: false
+
+- name: publish_all_ports ({{ test_case.test_name }})
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    publish_all_ports: "{{ test_case.publish_all_ports_value | default(omit) }}"
+    published_ports: "{{ test_case.published_ports_value | default(omit) }}"
+    force_kill: yes
+  register: publish_all_ports
+  loop_control:
+    loop_var: test_case
+  loop: "{{ publish_all_ports_test_cases }}"
+
+- assert:
+    that:
+      - publish_all_ports.results[index].changed == test_case.changed
+  loop: "{{ publish_all_ports_test_cases }}"
+  loop_control:
+    index_var: index
+    loop_var: test_case

@@ -1,0 +1,4 @@
+---
+minor_changes:
+  - docker_container - added ``publish_all_ports`` option to publish all exposed ports to random ports except those
+    explicitly bound with ``published_ports`` (https://github.com/ansible-collections/community.docker/pull/162).

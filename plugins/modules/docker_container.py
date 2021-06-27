@@ -663,6 +663,12 @@ options:
       - If I(container_default_behavior) is set to C(compatiblity) (the default value), this
         option has a default of C(no).
     type: bool
+  publish_all_ports:
+    description:
+      - Publish all ports to the host.
+      - Any specified port bindings from I(published_ports) will remain intact when C(true).
+    type: bool
+    version_added: 1.8.0
   published_ports:
     description:
       - List of ports to publish from the container to the host.
@@ -677,7 +683,7 @@ options:
         is different from the C(docker) command line utility. Use the L(dig lookup,../lookup/dig.html)
         to resolve hostnames."
       - A value of C(all) will publish all exposed container ports to random host ports, ignoring
-        any other mappings.
+        any other mappings. Use I(publish_all_ports) instead as the use of C(all) will be deprecated in version 2.0.0.
       - If I(networks) parameter is provided, will inspect each network to see if there exists
         a bridge network with optional parameter C(com.docker.network.bridge.host_binding_ipv4).
         If such a network is found, then published ports where no host IP address is specified
@@ -1424,11 +1430,14 @@ class TaskParameters(DockerBaseClass):
                     except ValueError as exc:
                         self.fail("Failed to convert %s to bytes: %s" % (param_name, to_native(exc)))
 
-        self.publish_all_ports = False
         self.published_ports = self._parse_publish_ports()
+
         if self.published_ports == 'all':
-            self.publish_all_ports = True
-            self.published_ports = None
+            if self.publish_all_ports is None:
+                self.publish_all_ports = True
+                self.published_ports = None
+            else:
+                self.fail('"all" is not a valid value for "published_ports" when "publish_all_ports" is specified')
 
         self.ports = self._parse_exposed_ports(self.published_ports)
         self.log("expose ports:")
@@ -1750,10 +1759,9 @@ class TaskParameters(DockerBaseClass):
             if len(self.published_ports) > 1:
                 self.client.module.deprecate(
                     'Specifying "all" in published_ports together with port mappings is not properly '
-                    'supported by the module. The port mappings are currently ignored. Please specify '
-                    'only port mappings, or the value "all". The behavior for mixed usage will either '
-                    'be forbidden in version 2.0.0, or properly handled. In any case, the way you '
-                    'currently use the module will change in a breaking way',
+                    'supported by the module. The port mappings are currently ignored. Set publish_all_ports '
+                    'to "true" to randomly assign port mappings for those not specified by published_ports. '
+                    'The use of "all" in published_ports next to other values will be removed in version 2.0.0.',
                     collection_name='community.docker', version='2.0.0')
             return 'all'
 
@@ -3558,6 +3566,7 @@ def main():
         pid_mode=dict(type='str'),
         pids_limit=dict(type='int'),
         privileged=dict(type='bool'),
+        publish_all_ports=dict(type='bool'),
         published_ports=dict(type='list', elements='str', aliases=['ports']),
         pull=dict(type='bool', default=False),
         purge_networks=dict(type='bool', default=False),
