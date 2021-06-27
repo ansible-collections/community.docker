@@ -374,7 +374,8 @@
 
 - assert:
     that:
-      - publish_all_ports.results[index].changed == publish_all_ports_test_cases[index].changed
-  loop: "{{ range(0, publish_all_ports_test_cases | length) | list }}"
+      - publish_all_ports.results[index].changed == test_case.changed
+  loop: "{{ publish_all_ports_test_cases }}"
   loop_control:
-    loop_var: index
+    index_var: index
+    loop_var: test_case
