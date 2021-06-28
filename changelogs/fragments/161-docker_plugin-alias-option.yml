@@ -1,3 +1,0 @@
----
-minor_changes:
-  - docker_plugin - added ``alias`` option to specify local names for docker plugins (https://github.com/ansible-collections/community.docker/pull/161).
