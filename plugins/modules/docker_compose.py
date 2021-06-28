@@ -42,6 +42,14 @@ options:
       - Files are loaded and merged in the order given.
     type: list
     elements: path
+  profiles:
+    description:
+      - List of profiles to enable when starting services.
+      - Equivalent to C(docker-compose --profile).
+      - Requires C(docker-compose) version 1.28.0 or greater.
+    type: list
+    elements: str
+    version_added: 1.8.0
   state:
     description:
       - Desired state of the project.
@@ -632,6 +640,9 @@ class ContainerManager(DockerBaseClass):
         if self.files:
             self.options[u'--file'] = self.files
 
+        if self.profiles:
+            self.options[u'--profile'] = self.profiles
+
         if not HAS_COMPOSE:
             self.client.fail("Unable to load docker-compose. Try `pip install docker-compose`. Error: %s" %
                              to_native(HAS_COMPOSE_EXC))
@@ -1114,6 +1125,7 @@ def main():
         project_src=dict(type='path'),
         project_name=dict(type='str',),
         files=dict(type='list', elements='path'),
+        profiles=dict(type='list', elements='str'),
         state=dict(type='str', default='present', choices=['absent', 'present']),
         definition=dict(type='dict'),
         hostname_check=dict(type='bool', default=False),

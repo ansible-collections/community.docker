@@ -1,0 +1,4 @@
+---
+minor_changes:
+  - docker_compose - added ``profiles`` option to specify service profiles when starting services
+    (https://github.com/ansible-collections/community.docker/pull/167).

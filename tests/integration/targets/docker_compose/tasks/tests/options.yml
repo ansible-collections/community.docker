@@ -1,0 +1,97 @@
+---
+- name: Registering container name
+  set_fact:
+    pname: "{{ cname_prefix }}"
+    cname_1: "{{ cname_prefix ~ '1' }}"
+    cname_2: "{{ cname_prefix ~ '2' }}"
+
+####################################################################
+## Profiles ########################################################
+####################################################################
+
+- block:
+    - name: Define service
+      set_fact:
+        test_service: |
+          version: '2'
+          services:
+            {{ cname_1 }}:
+              image: "{{ docker_test_image_alpine }}"
+              command: '/bin/sh -c "sleep 10m"'
+              profiles:
+                - profile_1
+                - profile_all
+              stop_grace_period: 1s
+            {{ cname_2 }}:
+              image: "{{ docker_test_image_alpine }}"
+              command: '/bin/sh -c "sleep 10m"'
+              profiles:
+                - profile_2
+                - profile_all
+              stop_grace_period: 1s
+        test_cases:
+          - test_name: enable 1
+            profiles_value:
+              - profile_1
+          - test_name: stop all services
+            profiles_value:
+              - profile_1
+            stopped_value: true
+          - test_name: enable 2
+            profiles_value:
+              - profile_2
+          - test_name: stop all services
+            profiles_value:
+              - profile_2
+            stopped_value: true
+          - test_name: enable both
+            profiles_value:
+              - profile_1
+              - profile_2
+          - test_name: stop all services
+            profiles_value:
+              - profile_1
+              - profile_2
+            stopped_value: true
+          - test_name: enable all
+            profiles_value:
+              - profile_all
+
+    - name: Profiles ({{ test_case.test_name }})
+      docker_compose:
+        project_name: "{{ pname }}"
+        definition: "{{ test_service | from_yaml }}"
+        profiles: "{{ test_case.profiles_value }}"
+        stopped: "{{ test_case.stopped_value | default(omit) }}"
+        state: present
+      register: profiles_outputs
+      loop: "{{ test_cases }}"
+      loop_control:
+        loop_var: test_case
+
+    - name: Cleanup
+      docker_compose:
+        project_name: "{{ pname }}"
+        state: absent
+        definition: "{{ test_service | from_yaml }}"
+
+    - assert:
+        that:
+          - profiles_outputs.results[0].services[cname_1][cname_1_name].state.running
+          - profiles_outputs.results[0].services[cname_2] == {}
+          - not profiles_outputs.results[1].services[cname_1][cname_1_name].state.running
+          - profiles_outputs.results[1].services[cname_2] == {}
+          - not profiles_outputs.results[2].services[cname_1][cname_1_name].state.running
+          - profiles_outputs.results[2].services[cname_2][cname_2_name].state.running
+          - not profiles_outputs.results[3].services[cname_1][cname_1_name].state.running
+          - not profiles_outputs.results[3].services[cname_2][cname_2_name].state.running
+          - profiles_outputs.results[4].services[cname_1][cname_1_name].state.running
+          - profiles_outputs.results[4].services[cname_2][cname_2_name].state.running
+          - not profiles_outputs.results[5].services[cname_1][cname_1_name].state.running
+          - not profiles_outputs.results[5].services[cname_2][cname_2_name].state.running
+          - profiles_outputs.results[6].services[cname_1][cname_1_name].state.running
+          - profiles_outputs.results[6].services[cname_2][cname_2_name].state.running
+      vars:
+        cname_1_name: "{{ pname + '_' + cname_1 + '_1' }}"
+        cname_2_name: "{{ pname + '_' + cname_2 + '_1' }}"
+  when: docker_compose_version is version('1.28.0', '>=')
