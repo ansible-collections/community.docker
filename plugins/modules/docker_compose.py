@@ -56,11 +56,14 @@ options:
       - Specifying C(present) is the same as running C(docker-compose up) resp. C(docker-compose stop) (with I(stopped)) resp. C(docker-compose restart)
         (with I(restarted)).
       - Specifying C(absent) is the same as running C(docker-compose down).
+      - Specifying C(validated) is the same as running C(docker-compose config) which validates the provided compose
+        files and returns the contained configuration.
     type: str
     default: present
     choices:
       - absent
       - present
+      - validated
   services:
     description:
       - When I(state) is C(present) run C(docker-compose up) resp. C(docker-compose stop) (with I(stopped)) resp. C(docker-compose restart) (with I(restarted))
@@ -154,6 +157,11 @@ options:
       - Timeout in seconds for container shutdown when attached or when containers are already running.
     type: int
     default: 10
+  no_interpolate:
+    description:
+      - Do not interpolate environment variables in configuration when I(state=validated).
+    type: bool
+    version_added: 1.9.0
   use_ssh_client:
     description:
       - Currently ignored for this module, but might suddenly be supported later on.
@@ -455,6 +463,12 @@ actions:
                           description: the container's short ID
                           returned: always
                           type: str
+  config:
+    description:
+      - The resulting configuration from one or more compose files.
+      - Equivalent to the output of C(docker-compose config).
+    returned: when success and I(state=validated)
+    type: complex
 '''
 
 import os
@@ -481,10 +495,11 @@ except ImportError:
 
 try:
     from compose import __version__ as compose_version
-    from compose.cli.command import project_from_options
+    from compose.cli.command import project_from_options, get_config_from_options
     from compose.service import NoSuchImageError
     from compose.cli.main import convergence_strategy_from_opts, build_action_from_opts, image_type_from_opt
     from compose.const import DEFAULT_TIMEOUT, LABEL_SERVICE, LABEL_PROJECT, LABEL_ONE_OFF
+    from compose.config.serialize import serialize_config
     HAS_COMPOSE = True
     HAS_COMPOSE_EXC = None
     MINIMUM_COMPOSE_VERSION = '1.7.0'
@@ -691,8 +706,10 @@ class ContainerManager(DockerBaseClass):
             result = self.cmd_up()
         elif self.state == 'absent':
             result = self.cmd_down()
+        elif self.state == 'validated':
+            return self.validate_config()
 
-        if self.definition:
+        if self.definition and not self.state == 'validated':
             compose_file = os.path.join(self.project_src, "docker-compose.yml")
             self.log("removing %s" % compose_file)
             os.remove(compose_file)
@@ -1112,6 +1129,16 @@ class ContainerManager(DockerBaseClass):
                     result['actions'].append(service_res)
         return result
 
+    def validate_config(self):
+        return {
+            'changed': False,
+            'config': yaml.load(
+                serialize_config(
+                    get_config_from_options(self.project_src, self.options, {'--no-interpolate': self.no_interpolate})
+                )
+            )
+        }
+
     def parse_scale(self, service_name):
         try:
             return int(self.scale[service_name])
@@ -1126,7 +1153,7 @@ def main():
         project_name=dict(type='str',),
         files=dict(type='list', elements='path'),
         profiles=dict(type='list', elements='str'),
-        state=dict(type='str', default='present', choices=['absent', 'present']),
+        state=dict(type='str', default='present', choices=['absent', 'present', 'validated']),
         definition=dict(type='dict'),
         hostname_check=dict(type='bool', default=False),
         recreate=dict(type='str', default='smart', choices=['always', 'never', 'smart']),
@@ -1142,7 +1169,8 @@ def main():
         pull=dict(type='bool', default=False),
         nocache=dict(type='bool', default=False),
         debug=dict(type='bool', default=False),
-        timeout=dict(type='int', default=DEFAULT_TIMEOUT)
+        timeout=dict(type='int', default=DEFAULT_TIMEOUT),
+        no_interpolate=dict(type='bool')
     )
 
     mutually_exclusive = [

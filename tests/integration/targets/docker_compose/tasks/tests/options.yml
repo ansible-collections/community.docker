@@ -95,3 +95,49 @@
         cname_1_name: "{{ pname + '_' + cname_1 + '_1' }}"
         cname_2_name: "{{ pname + '_' + cname_2 + '_1' }}"
   when: docker_compose_version is version('1.28.0', '>=')
+
+####################################################################
+## no_interpolate ##################################################
+####################################################################
+
+- name: Define service
+  set_fact:
+    sleep_time: 10m
+    test_service: |
+      version: '2'
+      services:
+        {{ cname_1 }}:
+          image: "{{ docker_test_image_alpine }}"
+          command: '/bin/sh -c "sleep ${SLEEP_TIME}"'
+          stop_grace_period: 1s
+    test_cases:
+      - test_name: unspecified
+      - test_name: "false"
+        no_interpolate_value: false
+      - test_name: "true"
+        no_interpolate_value: true
+
+- name: no_interpolate tests
+  environment:
+    SLEEP_TIME: "{{ sleep_time }}"
+  docker_compose:
+    project_name: "{{ pname }}"
+    definition: "{{ test_service | from_yaml }}"
+    state: validated
+    no_interpolate: "{{ test_case.no_interpolate_value | default(omit) }}"
+  register: no_interpolate_outputs
+  loop_control:
+    loop_var: test_case
+  loop: "{{ test_cases }}"
+
+- name: Cleanup
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: absent
+    definition: "{{ test_service | from_yaml }}"
+
+- assert:
+    that:
+      - sleep_time in no_interpolate_outputs.results[0].config.services[cname_1].command
+      - sleep_time in no_interpolate_outputs.results[1].config.services[cname_1].command
+      - "'${SLEEP_TIME}' in no_interpolate_outputs.results[2].config.services[cname_1].command"

@@ -24,6 +24,13 @@
           image: "{{ docker_test_image_alpine }}"
           command: '/bin/sh -c "sleep 15m"'
           stop_grace_period: 1s
+    broken_service: |
+      version: '2'
+      services:
+        broken:
+      image
+        command:
+        stop_grace_period: 1s
 
 ####################################################################
 ## Present #########################################################
@@ -227,3 +234,28 @@
     - started_4 is not changed
     - stopped_1 is changed
     - stopped_2 is changed
+
+####################################################################
+## Validated  ######################################################
+####################################################################
+
+- name: Validated success
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: validated
+    definition: "{{ test_service | from_yaml }}"
+  register: validated_success
+
+- name: Validated failure
+  docker_compose:
+    project_name: "{{ pname }}"
+    state: validated
+    definition: "{{ broken_service | from_yaml }}"
+  ignore_errors: true
+  register: validated_failure
+
+- assert:
+    that:
+      - validated_success is success
+      - validated_success.config != {}
+      - validated_failure is failed
