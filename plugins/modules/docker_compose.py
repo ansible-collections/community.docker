@@ -465,11 +465,11 @@ actions:
                           returned: always
                           type: str
 config:
-description:
-  - The resulting configuration from one or more compose files.
-  - Equivalent to the output of C(docker-compose config).
-returned: when success and I(state=validated)
-type: complex
+  description:
+    - The resulting configuration from one or more compose files.
+    - Equivalent to the output of C(docker-compose config).
+  returned: when success and I(state=validated)
+  type: dict
 '''
 
 import os
