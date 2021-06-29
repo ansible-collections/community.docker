@@ -160,6 +160,7 @@ options:
   no_interpolate:
     description:
       - Do not interpolate environment variables in configuration when I(state=validated).
+      - Requires C(docker-compose) version 1.25.0 or greater.
     type: bool
     version_added: 1.9.0
   use_ssh_client:
@@ -463,12 +464,12 @@ actions:
                           description: the container's short ID
                           returned: always
                           type: str
-  config:
-    description:
-      - The resulting configuration from one or more compose files.
-      - Equivalent to the output of C(docker-compose config).
-    returned: when success and I(state=validated)
-    type: complex
+config:
+description:
+  - The resulting configuration from one or more compose files.
+  - Equivalent to the output of C(docker-compose config).
+returned: when success and I(state=validated)
+type: complex
 '''
 
 import os
@@ -1130,13 +1131,14 @@ class ContainerManager(DockerBaseClass):
         return result
 
     def validate_config(self):
+        if LooseVersion(compose_version) >= LooseVersion('1.25.0'):
+            config = get_config_from_options(self.project_src, self.options, {'--no-interpolate': self.no_interpolate})
+        else:
+            config = get_config_from_options(self.project_src, self.options)
+
         return {
             'changed': False,
-            'config': yaml.load(
-                serialize_config(
-                    get_config_from_options(self.project_src, self.options, {'--no-interpolate': self.no_interpolate})
-                )
-            )
+            'config': yaml.load(serialize_config(config))
         }
 
     def parse_scale(self, service_name):
