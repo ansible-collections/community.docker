@@ -981,7 +981,7 @@ EXAMPLES = '''
     image: ubuntu:14.04
     networks:
       - name: TestingNet
-        ipv4_address: "172.1.1.100"
+        ipv4_address: "172.16.1.100"
         aliases:
           - sleepyzz
         links:
@@ -999,11 +999,11 @@ EXAMPLES = '''
     name: sleepy
     networks:
       - name: TestingNet
-        ipv4_address: 172.1.1.18
+        ipv4_address: 172.16.1.18
         links:
           - sleeper
       - name: TestingNet2
-        ipv4_address: 172.1.10.20
+        ipv4_address: 172.16.10.20
 
 - name: Update network with aliases
   community.docker.docker_container:

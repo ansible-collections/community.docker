@@ -204,12 +204,12 @@ EXAMPLES = '''
   community.docker.docker_network:
     name: network_three
     ipam_config:
-      - subnet: 172.3.27.0/24
-        gateway: 172.3.27.2
-        iprange: 172.3.27.0/26
+      - subnet: 172.23.27.0/24
+        gateway: 172.23.27.2
+        iprange: 172.23.27.0/26
         aux_addresses:
-          host1: 172.3.27.3
-          host2: 172.3.27.4
+          host1: 172.23.27.3
+          host2: 172.23.27.4
 
 - name: Create a network with labels
   community.docker.docker_network:
@@ -230,7 +230,7 @@ EXAMPLES = '''
     name: network_ipv6_two
     enable_ipv6: yes
     ipam_config:
-      - subnet: 172.4.27.0/24
+      - subnet: 172.24.27.0/24
       - subnet: fdd1:ac8c:0557:7ce2::/64
 
 - name: Delete a network, disconnecting all containers
