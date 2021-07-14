@@ -22,7 +22,7 @@ DOCUMENTATION = '''
     options:
         host_volume_mount:
             description:
-                - Host volume mount to read and write host files through
+                - Host volume mount to read and write host files through.
             type: string
             default: /host
             vars:
@@ -45,23 +45,23 @@ DOCUMENTATION = '''
             ini:
                 - section: nsenter_connection
                   key: nsenter_pid
-    #     pipelining:
-    #         default: ANSIBLE_PIPELINING
-    #         description:
-    #             - Pipelining reduces the number of connection operations required to execute a module on the remote
-    #               server, by executing many Ansible modules without actual file transfers.
-    #             - This can result in a very significant performance improvement when enabled.
-    #             - However this can conflict with privilege escalation (become).
-    #               For example, when using sudo operations you must first disable 'requiretty' in the sudoers file for
-    #               the target hosts, which is why this feature is disabled by default.
-    #         env:
-    #             - name: ANSIBLE_PIPELINING
-    #         ini:
-    #             - section: defaults
-    #               key: pipelining
-    #         type: boolean
-    #         vars:
-    #             - name: ansible_pipelining
+        pipelining:
+            default: ANSIBLE_PIPELINING
+            description:
+                - Pipelining reduces the number of connection operations required to execute a module on the remote
+                  server, by executing many Ansible modules without actual file transfers.
+                - This can result in a very significant performance improvement when enabled.
+                - However this can conflict with privilege escalation (become).
+                  For example, when using sudo operations you must first disable 'requiretty' in the sudoers file for
+                  the target hosts, which is why this feature is disabled by default.
+            env:
+                - name: ANSIBLE_PIPELINING
+            ini:
+                - section: defaults
+                  key: pipelining
+            type: boolean
+            vars:
+                - name: ansible_pipelining
     notes:
         - The remote user is ignored; this plugin always runs as root.
         - "This plugin requires the Ansible controller container to be launched in the following way:"
