@@ -234,7 +234,7 @@ class Connection(ConnectionBase):
             rc, out, err = self.exec_command(cmd=["cat", in_path])
             display.vvv(u"FETCH {0} TO {1}".format(in_path, out_path), host=self._play_context.remote_addr)
             if rc != 0:
-                raise AnsibleError('Failed to fetch file `{0}`: {1}'.format(in_path, err))
+                raise AnsibleError("failed to transfer file to {0}: {1}".format(in_path, err))
             with open(to_bytes(out_path, errors='surrogate_or_strict'), 'wb') as out_file:
                 out_file.write(out)
         except IOError as e:
