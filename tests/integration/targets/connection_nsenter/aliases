@@ -1,0 +1,3 @@
+skip/docker  # this requires unfettered access to the container host
+destructive
+unsupported
