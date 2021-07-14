@@ -10,18 +10,20 @@ __metaclass__ = type
 DOCUMENTATION = '''
     name: nsenter
     short_description: execute on host running controller container
+    version_added: 1.9.0
     description:
         - This connection plugin allows Ansible, running in a privileged container, to execute tasks on the container
           host instead of in the container itself.
         - This is useful for running Ansible in a pull model, while still keeping the Ansible control node
           containerized.
         - It relies on having privileged access to run nsenter in the host's PID namespace, allowing it to enter the
-          namespace of PID 1.
+          namespaces of the provided PID (default PID 1, or init/systemd).
     author: Jeff Goldschrafe (@jgoldschrafe)
     options:
         host_volume_mount:
             description:
                 - Host volume mount to read and write host files through
+            type: string
             default: /host
             vars:
                 - name: ansible_host_volume_mount
@@ -34,7 +36,8 @@ DOCUMENTATION = '''
             description:
                 - PID to attach with using nsenter.
                 - The default should be fine unless you're attaching as a non-root user.
-            default: '1'
+            type: int
+            default: 1
             vars:
                 - name: ansible_nsenter_pid
             env:
@@ -42,30 +45,30 @@ DOCUMENTATION = '''
             ini:
                 - section: nsenter_connection
                   key: nsenter_pid
-        pipelining:
-            default: ANSIBLE_PIPELINING
-            description:
-                - Pipelining reduces the number of connection operations required to execute a module on the remote
-                  server, by executing many Ansible modules without actual file transfers.
-                - This can result in a very significant performance improvement when enabled.
-                - However this can conflict with privilege escalation (become).
-                  For example, when using sudo operations you must first disable 'requiretty' in the sudoers file for
-                  the target hosts, which is why this feature is disabled by default.
-            env:
-                - name: ANSIBLE_PIPELINING
-            ini:
-                - section: defaults
-                  key: pipelining
-            type: boolean
-            vars:
-                - name: ansible_pipelining
+    #     pipelining:
+    #         default: ANSIBLE_PIPELINING
+    #         description:
+    #             - Pipelining reduces the number of connection operations required to execute a module on the remote
+    #               server, by executing many Ansible modules without actual file transfers.
+    #             - This can result in a very significant performance improvement when enabled.
+    #             - However this can conflict with privilege escalation (become).
+    #               For example, when using sudo operations you must first disable 'requiretty' in the sudoers file for
+    #               the target hosts, which is why this feature is disabled by default.
+    #         env:
+    #             - name: ANSIBLE_PIPELINING
+    #         ini:
+    #             - section: defaults
+    #               key: pipelining
+    #         type: boolean
+    #         vars:
+    #             - name: ansible_pipelining
     notes:
         - The remote user is ignored; this plugin always runs as root.
-        - This plugin requires the container to be launched in the following way:
-            - The container image contains the C(nsenter) program
-            - C(/) on the host is mounted read-write to C(/host) in the container
-            - The container is launched in privileged mode
-            - The container is launched in the host's PID namespace using C(--pid host)
+        - "This plugin requires the Ansible controller container to be launched in the following way:"
+        - (1) The container image contains the nsenter program;
+        - (2) C(/) on the host is mounted read-write to I(host_volume_mount) in the container;
+        - (3) The container is launched in privileged mode;
+        - (4) The container is launched in the host's PID namespace (i.e. C(--pid host)).
 '''
 
 import os
@@ -133,7 +136,13 @@ class Connection(ConnectionBase):
             nsenter_cmd = "nsenter --all --preserve-credentials --target={0} -- ".format(self._nsenter_pid)
             cmd = to_bytes(nsenter_cmd + cmd)
         else:
-            nsenter_cmd = ["nsenter", "--all", "--preserve-credentials", "--target", self._nsenter_pid, "--"]
+            nsenter_cmd = [
+                "nsenter",
+                "--all",
+                "--preserve-credentials",
+                "--target=" + str(self._nsenter_pid),
+                "--",
+            ]
             cmd = map(to_bytes, nsenter_cmd + cmd)
 
         display.vvv(u"EXEC {0}".format(to_text(cmd)), host=self._play_context.remote_addr)
