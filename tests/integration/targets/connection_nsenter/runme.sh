@@ -56,7 +56,6 @@ docker run \
     --pid host \
     "${envs[@]}" \
     --volume "${COLLECTION_ROOT}:${COLLECTION_ROOT}" \
-    --volume /:/host \
     --workdir "$(pwd)" \
     "${IMAGE}" \
     ./runme-connection.sh "$@"

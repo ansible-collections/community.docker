@@ -20,18 +20,6 @@ DOCUMENTATION = '''
           namespaces of the provided PID (default PID 1, or init/systemd).
     author: Jeff Goldschrafe (@jgoldschrafe)
     options:
-        host_volume_mount:
-            description:
-                - Host volume mount to read and write host files through.
-            type: string
-            default: /host
-            vars:
-                - name: ansible_host_volume_mount
-            env:
-                - name: ANSIBLE_HOST_VOLUME_MOUNT
-            ini:
-                - section: nsenter_connection
-                  key: host_volume_mount
         nsenter_pid:
             description:
                 - PID to attach with using nsenter.
@@ -66,9 +54,8 @@ DOCUMENTATION = '''
         - The remote user is ignored; this plugin always runs as root.
         - "This plugin requires the Ansible controller container to be launched in the following way:"
         - (1) The container image contains the nsenter program;
-        - (2) C(/) on the host is mounted read-write to I(host_volume_mount) in the container;
-        - (3) The container is launched in privileged mode;
-        - (4) The container is launched in the host's PID namespace (i.e. C(--pid host)).
+        - (2) The container is launched in privileged mode;
+        - (3) The container is launched in the host's PID namespace (i.e. C(--pid host)).
 '''
 
 import os
@@ -99,11 +86,7 @@ class Connection(ConnectionBase):
     def __init__(self, *args, **kwargs):
         super(Connection, self).__init__(*args, **kwargs)
         self.cwd = None
-        self._host_volume_mount = self.get_option("host_volume_mount")
         self._nsenter_pid = self.get_option("nsenter_pid")
-
-        if not os.path.exists(self._host_volume_mount):
-            raise AnsibleError("nsenter: host volume mount does not exist: " + self._host_volume_mount)
 
     def _connect(self):
         # Because nsenter requires very high privileges, our remote user
@@ -143,7 +126,7 @@ class Connection(ConnectionBase):
                 "--target=" + str(self._nsenter_pid),
                 "--",
             ]
-            cmd = map(to_bytes, nsenter_cmd + cmd)
+            cmd = [to_bytes(arg) for arg in nsenter_cmd + cmd]
 
         display.vvv(u"EXEC {0}".format(to_text(cmd)), host=self._play_context.remote_addr)
         display.debug("opening command with Popen()")
@@ -163,7 +146,7 @@ class Connection(ConnectionBase):
         p = subprocess.Popen(
             cmd,
             shell=isinstance(cmd, (text_type, binary_type)),
-            executable=executable,
+            executable=executable if isinstance(cmd, (text_type, binary_type)) else None,
             cwd=self.cwd,
             stdin=stdin,
             stdout=subprocess.PIPE,
@@ -228,32 +211,35 @@ class Connection(ConnectionBase):
     def put_file(self, in_path, out_path):
         super(Connection, self).put_file(in_path, out_path)
 
-        # Rewrite out_path into host volume mount
         in_path = unfrackpath(in_path, basedir=self.cwd)
-        out_path = self._host_volume_mount + unfrackpath(out_path, basedir=self.cwd)
+        out_path = unfrackpath(out_path, basedir=self.cwd)
 
-        return self._transfer_file("fetch", in_path, out_path)
+        display.vvv(u"PUT {0} to {1}".format(in_path, out_path), host=self._play_context.remote_addr)
+        try:
+            with open(to_bytes(in_path, errors="surrogate_or_strict"), "rb") as in_file:
+                in_data = in_file.read()
+            rc, _, err = self.exec_command(cmd=["tee", out_path], in_data=in_data)
+            if rc != 0:
+                raise AnsibleError("failed to transfer file to {0}: {1}".format(out_path, err))
+        except IOError as e:
+            raise AnsibleError("failed to transfer file to {0}: {1}".format(out_path, to_native(e)))
 
     def fetch_file(self, in_path, out_path):
         super(Connection, self).fetch_file(in_path, out_path)
 
-        # Rewrite in_path into host volume mount
-        in_path = self._host_volume_mount + unfrackpath(in_path, basedir=self.cwd)
+        in_path = unfrackpath(in_path, basedir=self.cwd)
         out_path = unfrackpath(out_path, basedir=self.cwd)
 
-        return self._transfer_file("fetch", in_path, out_path)
+        try:
+            rc, out, err = self.exec_command(cmd=["cat", in_path])
+            display.vvv(u"FETCH {0} TO {1}".format(in_path, out_path), host=self._play_context.remote_addr)
+            if rc != 0:
+                raise AnsibleError('Failed to fetch file `{0}`: {1}'.format(in_path, err))
+            with open(to_bytes(out_path, errors='surrogate_or_strict'), 'wb') as out_file:
+                out_file.write(out)
+        except IOError as e:
+            raise AnsibleError("failed to transfer file to {0}: {1}".format(to_native(out_path), to_native(e)))
 
     def close(self):
         ''' terminate the connection; nothing to do here '''
         self._connected = False
-
-    def _transfer_file(self, action, in_path, out_path):
-        display.vvv(u"{0} {1} TO {2}".format(action.upper(), in_path, out_path), host=self._play_context.remote_addr)
-        if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
-            raise AnsibleFileNotFound("file or module does not exist: {0}".format(to_native(in_path)))
-        try:
-            shutil.copyfile(to_bytes(in_path, errors='surrogate_or_strict'), to_bytes(out_path, errors='surrogate_or_strict'))
-        except shutil.Error:
-            raise AnsibleError("failed to copy: {0} and {1} are the same".format(to_native(in_path), to_native(out_path)))
-        except IOError as e:
-            raise AnsibleError("failed to transfer file to {0}: {1}".format(to_native(out_path), to_native(e)))
