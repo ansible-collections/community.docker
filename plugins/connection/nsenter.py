@@ -218,7 +218,7 @@ class Connection(ConnectionBase):
         try:
             with open(to_bytes(in_path, errors="surrogate_or_strict"), "rb") as in_file:
                 in_data = in_file.read()
-            rc, _, err = self.exec_command(cmd=["tee", out_path], in_data=in_data)
+            rc, out, err = self.exec_command(cmd=["tee", out_path], in_data=in_data)
             if rc != 0:
                 raise AnsibleError("failed to transfer file to {0}: {1}".format(out_path, err))
         except IOError as e:
