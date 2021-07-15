@@ -36,6 +36,15 @@ options:
       - Provide a project name. If not provided, the project name is taken from the basename of I(project_src).
       - Required when I(definition) is provided.
     type: str
+  env_file:
+    description:
+      - By default environment files are loaded from a C(.env) file located directly under the I(project_src) directory.
+      - I(env_file) can be used to specify the path of a custom environment file instead.
+      - The path is relative to the I(project_src) directory.
+      - Note: C(docker-compose) versions C(<=1.28) load the C(.env) file from the current working directory of the
+        C(docker-compose) command rather than I(project_src).
+    type: path
+    version_added: 1.9.0
   files:
     description:
       - List of Compose file names relative to I(project_src). Overrides C(docker-compose.yml) or C(docker-compose.yaml).
@@ -637,6 +646,9 @@ class ContainerManager(DockerBaseClass):
         if self.project_name:
             self.options[u'--project-name'] = self.project_name
 
+        if self.env_file:
+            self.options[u'--env-file'] = self.env_file
+
         if self.files:
             self.options[u'--file'] = self.files
 
@@ -1124,6 +1136,7 @@ def main():
     argument_spec = dict(
         project_src=dict(type='path'),
         project_name=dict(type='str',),
+        env_file=dict(type='path'),
         files=dict(type='list', elements='path'),
         profiles=dict(type='list', elements='str'),
         state=dict(type='str', default='present', choices=['absent', 'present']),
