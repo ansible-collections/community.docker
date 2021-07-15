@@ -157,8 +157,8 @@
 
 - assert:
     that:
-      - env_sleep_cmd == env_file_outputs.results[0].services[cname_1][cname_1_name].cmd[-2:] | join(' ')
-      - new_env_sleep_cmd == env_file_outputs.results[1].services[cname_1][cname_1_name].cmd[-2:] | join(' ')
+      - "env_sleep_cmd is in (env_file_outputs.results[0].services[cname_1][cname_1_name].cmd | join(' '))"
+      - "new_env_sleep_cmd is in (env_file_outputs.results[1].services[cname_1][cname_1_name].cmd | join(' '))"
   vars:
     cname_1_name: "{{ pname + '_' + cname_1 + '_1' }}"
     cname_2_name: "{{ pname + '_' + cname_2 + '_1' }}"
