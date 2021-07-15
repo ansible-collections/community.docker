@@ -41,7 +41,8 @@ options:
       - By default environment files are loaded from a C(.env) file located directly under the I(project_src) directory.
       - I(env_file) can be used to specify the path of a custom environment file instead.
       - The path is relative to the I(project_src) directory.
-      - "Note: C(docker-compose) versions C(<=1.28) load the C(.env) file from the current working directory of the
+      - Requires C(docker-compose) version 1.25.0 or greater.
+      - "Note: C(docker-compose) versions C(<=1.28) load the env file from the current working directory of the
           C(docker-compose) command rather than I(project_src)."
     type: path
     version_added: 1.9.0
