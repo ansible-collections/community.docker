@@ -164,18 +164,14 @@
         cname_1_name: "{{ pname + '_' + cname_1 + '_1' }}"
         cname_2_name: "{{ pname + '_' + cname_2 + '_1' }}"
 
-    - name: Remove compose file
+    - name: Remove files
       ansible.builtin.file:
-        path: "{{ compose_file }}"
+        path: "{{ file_path }}"
         state: absent
-
-    - name: Remove .env file
-      ansible.builtin.file:
-        path: "{{ env_file }}"
-        state: absent
-
-    - name: Remove new.env file
-      ansible.builtin.file:
-        path: "{{ new_env_file }}"
-        state: absent
+      loop_control:
+        loop_var: file_path
+      loop:
+        - "{{ compose_file }}"
+        - "{{ env_file }}"
+        - "{{ new_env_file }}"
   when: docker_compose_version is version('1.25.0', '>=')
