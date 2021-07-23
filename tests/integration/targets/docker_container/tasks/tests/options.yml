@@ -615,7 +615,7 @@
   register: detach_auto_remove_cleanup
   diff: no
 
-- name: detach with cleanup and non-zero tsatus
+- name: detach with cleanup and non-zero status
   docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_alpine }}"
@@ -623,7 +623,7 @@
     detach: no
     cleanup: yes
   register: detach_cleanup_nonzero
-  ignore_errors: false
+  ignore_errors: true
 
 - assert:
     that:
