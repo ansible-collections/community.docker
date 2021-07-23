@@ -615,6 +615,16 @@
   register: detach_auto_remove_cleanup
   diff: no
 
+- name: detach with cleanup and non-zero tsatus
+  docker_container:
+    name: "{{ cname }}"
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "exit 42"'
+    detach: no
+    cleanup: yes
+  register: detach_cleanup_nonzero
+  ignore_errors: false
+
 - assert:
     that:
     # NOTE that 'Output' sometimes fails to contain the correct output
@@ -629,6 +639,10 @@
     - detach_cleanup.status == 0
     # - "'Hello from Docker!' in detach_cleanup.container.Output"
     - detach_cleanup_cleanup is not changed
+    - detach_cleanup_nonzero is failed
+    - detach_cleanup_nonzero.status == 42
+    - "'Output' in detach_cleanup_nonzero.container"
+    - "detach_cleanup_nonzero.container.Output == ''"
 - assert:
     that:
     - "'Cannot retrieve result as auto_remove is enabled' == detach_auto_remove.container.Output"
