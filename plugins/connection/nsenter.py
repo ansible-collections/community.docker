@@ -123,7 +123,7 @@ class Connection(ConnectionBase):
                 "nsenter",
                 "--all",
                 "--preserve-credentials",
-                "--target=" + str(self._nsenter_pid),
+                "--target={0}".format(self._nsenter_pid),
                 "--",
             ]
             cmd = [to_bytes(arg) for arg in nsenter_cmd + cmd]
