@@ -115,7 +115,7 @@ class Connection(ConnectionBase):
                                " Please verify if the executable exists and re-try." % executable)
 
         # Rewrite the provided command to prefix it with nsenter
-        if isinstance(cmd, (text_type, binary_type)):
+        if isinstance(cmd, string_types):
             nsenter_cmd = "nsenter --all --preserve-credentials --target={0} -- ".format(self._nsenter_pid)
             cmd = to_bytes(nsenter_cmd + cmd)
         else:
