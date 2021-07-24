@@ -68,7 +68,7 @@ import fcntl
 import ansible.constants as C
 from ansible.errors import AnsibleError, AnsibleFileNotFound
 from ansible.module_utils.compat import selectors
-from ansible.module_utils.six import string_types
+from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils._text import to_bytes, to_native, to_text
 from ansible.plugins.connection import ConnectionBase
 from ansible.utils.display import Display
@@ -116,7 +116,7 @@ class Connection(ConnectionBase):
                                " Please verify if the executable exists and re-try." % executable)
 
         # Rewrite the provided command to prefix it with nsenter
-        if isinstance(cmd, string_types):
+        if isinstance(cmd, (text_type, binary_type)):
             nsenter_cmd = "nsenter --all --preserve-credentials --target={0} -- ".format(self._nsenter_pid)
             cmd = to_bytes(nsenter_cmd) + to_bytes(cmd)
         else:
