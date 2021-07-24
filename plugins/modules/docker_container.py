@@ -1139,11 +1139,9 @@ RETURN = '''
 container:
     description:
       - Facts representing the current state of the container. Matches the docker inspection output.
-      - Before 2.3 this was C(ansible_docker_container) but was renamed in 2.3 to C(docker_container) due to
-        conflicts with the connection plugin.
-      - Empty if I(state) is C(absent)
-      - If I(detached) is C(false), will include C(Output) attribute containing any output from container run.
-    returned: always
+      - Empty if I(state) is C(absent).
+      - If I(detach=false), will include C(Output) attribute containing any output from container run.
+    returned: success; or when I(state=started) and I(detach=false), and when waiting for the container result did not fail
     type: dict
     sample: '{
         "AppArmorProfile": "",
@@ -1181,7 +1179,7 @@ status:
     description:
       - In case a container is started without detaching, this contains the exit code of the process in the container.
       - Before community.docker 1.1.0, this was only returned when non-zero.
-    returned: when I(state) is C(started) and I(detached) is C(false), and when waiting for the container result did not fail
+    returned: when I(state=started) and I(detach=false), and when waiting for the container result did not fail
     type: int
     sample: 0
 '''
@@ -3104,8 +3102,6 @@ class ContainerManager(DockerBaseClass):
                     else:
                         output = "Result logged using `%s` driver" % logging_driver
 
-                if status != 0:
-                    self.fail(output)
                 if self.parameters.cleanup:
                     self.container_remove(container_id, force=True)
                 insp = self._get_container(container_id)
@@ -3113,6 +3109,10 @@ class ContainerManager(DockerBaseClass):
                     insp.raw['Output'] = output
                 else:
                     insp.raw = dict(Output=output)
+                if status != 0:
+                    # Set `failed` to True and return output as msg
+                    self.results['failed'] = True
+                    self.results['msg'] = output
                 return insp
         return self._get_container(container_id)
 
