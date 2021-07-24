@@ -117,7 +117,7 @@ class Connection(ConnectionBase):
         # Rewrite the provided command to prefix it with nsenter
         if isinstance(cmd, string_types):
             nsenter_cmd = "nsenter --all --preserve-credentials --target={0} -- ".format(self._nsenter_pid)
-            cmd = to_bytes(nsenter_cmd + cmd)
+            cmd = to_bytes(nsenter_cmd) + to_bytes(cmd)
         else:
             nsenter_cmd = [
                 "nsenter",
