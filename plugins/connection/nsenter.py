@@ -80,7 +80,7 @@ class Connection(ConnectionBase):
     '''Connections to a container host using nsenter
     '''
 
-    transport = 'nsenter'
+    transport = 'community.docker.nsenter'
     has_pipelining = True
 
     def __init__(self, *args, **kwargs):
