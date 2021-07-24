@@ -52,10 +52,11 @@ DOCUMENTATION = '''
                 - name: ansible_pipelining
     notes:
         - The remote user is ignored; this plugin always runs as root.
-        - "This plugin requires the Ansible controller container to be launched in the following way:"
-        - (1) The container image contains the nsenter program;
-        - (2) The container is launched in privileged mode;
-        - (3) The container is launched in the host's PID namespace (i.e. C(--pid host)).
+        - >-
+            This plugin requires the Ansible controller container to be launched in the following way:
+            (1) The container image contains the nsenter program;
+            (2) The container is launched in privileged mode;
+            (3) The container is launched in the host's PID namespace (i.e. C(--pid host)).
 '''
 
 import os
