@@ -36,10 +36,10 @@ while IFS=$'\0' read -d '' -r line; do
 done < <(printenv -0)
 
 # Make sure the directory containing ansible_collections is in Ansible's search path
-if [ "${ANSIBLE_COLLECTIONS_PATHS}" == "" ]; then
-    envs+=(--env "ANSIBLE_COLLECTIONS_PATHS=${COLLECTIONS_PATH}")
-else
+if [ -v ANSIBLE_COLLECTIONS_PATHS ]; then
     envs+=(--env "ANSIBLE_COLLECTIONS_PATHS=${COLLECTIONS_PATH}:${ANSIBLE_COLLECTIONS_PATHS}")
+else
+    envs+=(--env "ANSIBLE_COLLECTIONS_PATHS=${COLLECTIONS_PATH}")
 fi
 
 # Test phase
