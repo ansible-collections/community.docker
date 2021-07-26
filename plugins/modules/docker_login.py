@@ -288,7 +288,7 @@ class LoginManager(DockerBaseClass):
         parameters = self.client.module.params
         self.check_mode = self.client.check_mode
 
-        self.registry_url = parameters.get('registry_url')
+        self.registry_url = parameters.get('registry_url') or 'https://index.docker.io/v1/'
         self.username = parameters.get('username')
         self.password = parameters.get('password')
         self.email = parameters.get('email')
