@@ -57,6 +57,7 @@ ansible_python_interpreter=${PYTHON}
 EOF
 
 echo "Run tests"
+set -x
 docker run \
     -it \
     --rm \
