@@ -5,7 +5,7 @@ set -euo pipefail
 [[ -n "${DEBUG:-}" || -n "${ANSIBLE_DEBUG:-}" ]] && set -x
 
 readonly IMAGE="quay.io/ansible/toolset:latest"
-readonly COLLECTION_ROOT="$(git rev-parse --show-toplevel)"
+readonly COLLECTION_ROOT="$(cd ../../../.. ; pwd)"
 readonly PYTHON="$(command -v python3 python | head -n1)"
 
 # Setup phase
