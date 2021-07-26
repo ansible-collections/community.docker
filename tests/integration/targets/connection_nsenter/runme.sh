@@ -6,6 +6,7 @@ set -euo pipefail
 
 readonly IMAGE="quay.io/ansible/toolset:latest"
 readonly COLLECTION_ROOT="$(cd ../../../.. ; pwd)"
+readonly COLLECTIONS_PATH="$(cd ../../../../../../.. ; pwd)"
 readonly PYTHON="$(command -v python3 python | head -n1)"
 
 # Setup phase
@@ -33,6 +34,13 @@ while IFS=$'\0' read -d '' -r line; do
         envs+=(--env "${key}=${value}")
     fi
 done < <(printenv -0)
+
+# Make sure the directory containing ansible_collections is in Ansible's search path
+if [ "${ANSIBLE_COLLECTIONS_PATHS}" == "" ]; then
+    envs+=(--env "ANSIBLE_COLLECTIONS_PATHS=${COLLECTIONS_PATH}")
+else
+    envs+=(--env "ANSIBLE_COLLECTIONS_PATHS=${COLLECTIONS_PATH}:${ANSIBLE_COLLECTIONS_PATHS}")
+fi
 
 # Test phase
 cat > test_connection.inventory << EOF
