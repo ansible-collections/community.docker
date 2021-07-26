@@ -5,8 +5,17 @@ set -euo pipefail
 [[ -n "${DEBUG:-}" || -n "${ANSIBLE_DEBUG:-}" ]] && set -x
 
 readonly IMAGE="quay.io/ansible/toolset:latest"
-readonly COLLECTION_ROOT="$(cd ../../../.. ; pwd)"
 readonly PYTHON="$(command -v python3 python | head -n1)"
+
+# Determine collection root
+COLLECTION_ROOT=./
+while true; do
+    if [ -e ${COLLECTION_ROOT}galaxy.yml ] || [ -e ${COLLECTION_ROOT}MANIFEST.json ]; then
+        break
+    fi
+    COLLECTION_ROOT="${COLLECTION_ROOT}../"
+done
+readonly COLLECTION_ROOT="$(cd ${COLLECTION_ROOT} ; pwd)"
 
 # Setup phase
 echo "Setup"
