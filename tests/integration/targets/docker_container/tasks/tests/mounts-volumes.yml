@@ -119,6 +119,30 @@
   register: mounts_6
   ignore_errors: yes
 
+- name: mounts (anonymous volume)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    mounts:
+      - target: /tmp
+        type: volume
+    force_kill: true
+  register: mounts_7
+
+- name: mounts (anonymous volume idempotency)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    mounts:
+      - target: /tmp
+        type: volume
+    force_kill: true
+  register: mounts_8
+
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
@@ -135,6 +159,8 @@
     - mounts_5 is changed
     - mounts_6 is failed
     - "'The mount point \"/x\" appears twice in the mounts option' == mounts_6.msg"
+    - mounts_7 is changed
+    - mounts_8 is not changed
   when: docker_py_version is version('2.6.0', '>=')
 - assert:
     that:
