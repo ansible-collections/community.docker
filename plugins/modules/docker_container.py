@@ -486,6 +486,7 @@ options:
       source:
         description:
           - Mount source (e.g. a volume name or a host path).
+          - If not supplied when I(type=volume) an anonymous volume will be created.
         type: str
       type:
         description:
@@ -2004,7 +2005,7 @@ class TaskParameters(DockerBaseClass):
             datatype = mount['type']
             mount_dict = dict(mount)
             # Sanity checks (so we don't wait for docker-py to barf on input)
-            if mount_dict.get('source') is None and datatype != 'tmpfs':
+            if mount_dict.get('source') is None and datatype not in ('tmpfs', 'volume'):
                 self.client.fail('source must be specified for mount "{0}" of type "{1}"'.format(target, datatype))
             mount_option_types = dict(
                 volume_driver='volume',
