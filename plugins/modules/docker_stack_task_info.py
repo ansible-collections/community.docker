@@ -64,7 +64,7 @@ def main():
         argument_spec={
             'name': dict(type='str', required=True)
         },
-        supports_check_mode=False
+        supports_check_mode=True
     )
 
     name = module.params['name']
