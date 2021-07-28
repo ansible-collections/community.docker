@@ -146,7 +146,8 @@ options:
     description:
       - Use with I(state) C(present) to stop all containers defined in the Compose file.
       - If I(services) is defined, only the containers listed there will be stopped.
-      - Requires C(docker-compose) version 1.17.0 or greater.
+      - Requires C(docker-compose) version 1.17.0 or greater for full support. For older versions, the services will
+        first be started and then stopped when the service is supposed to be created as stopped.
     type: bool
     default: no
   restarted:
