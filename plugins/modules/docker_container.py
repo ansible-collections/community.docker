@@ -103,6 +103,25 @@ options:
     choices:
       - compatibility
       - no_defaults
+  command_handling:
+    description:
+      - The default behavior for I(command) (when provided as a list) and I(entrypoint) is to
+        convert them to strings without considering shell quoting rules. (For comparing idempotency,
+        the resulting string is split considering shell quoting rules.)
+      - Also, setting I(command) to an empty list of string, and setting I(entrypoint) to an empty
+        list will be handled as if these options are not specified. This is different from idempotency
+        handling for other container-config related options.
+      - When this is set to C(compatiblity), which is the default until community.docker 2.0.0, the
+        current behavior will be kept.
+      - When this is set to C(correct), these options are converted to strings considering shell quoting
+        rules, and an empty value or empty list will be handled for idempotency checks, with the meaning
+        "use default value from image".
+      - In community.docker 2.0.0, the default will change to C(correct).
+    type: str
+    choices:
+      - compatibility
+      - correct
+    version_added: 1.9.0
   cpu_period:
     description:
       - Limit CPU CFS (Completely Fair Scheduler) period.
@@ -1186,6 +1205,7 @@ status:
 '''
 
 import os
+import pipes
 import re
 import shlex
 import traceback
@@ -1222,6 +1242,14 @@ try:
 except Exception:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
     pass
+
+
+def shell_join(parts):
+    if getattr(shlex, 'quote', None):
+        quote = shlex.quote
+    else:
+        quote = pipes.quote
+    return ' '.join([quote(part) for part in parts])
 
 
 REQUIRES_CONVERSION_TO_BYTES = [
@@ -1480,14 +1508,42 @@ class TaskParameters(DockerBaseClass):
             # Ensure the MAC address uses colons instead of hyphens for later comparison
             self.mac_address = self.mac_address.replace('-', ':')
 
-        if self.entrypoint:
-            # convert from list to str.
-            self.entrypoint = ' '.join([to_text(x, errors='surrogate_or_strict') for x in self.entrypoint])
+        if client.module.params['command_handling'] == 'correct':
+            if self.entrypoint is not None:
+                # convert from list to str.
+                self.entrypoint = shell_join([to_text(x, errors='surrogate_or_strict') for x in self.entrypoint])
 
-        if self.command:
-            # convert from list to str
-            if isinstance(self.command, list):
-                self.command = ' '.join([to_text(x, errors='surrogate_or_strict') for x in self.command])
+            if self.command is not None:
+                # convert from list to str
+                if isinstance(self.command, list):
+                    self.command = shell_join([to_text(x, errors='surrogate_or_strict') for x in self.command])
+        else:
+            will_change = False
+            if self.entrypoint:
+                # convert from list to str.
+                correct_entrypoint = shell_join([to_text(x, errors='surrogate_or_strict') for x in self.entrypoint])
+                self.entrypoint = ' '.join([to_text(x, errors='surrogate_or_strict') for x in self.entrypoint])
+                if correct_entrypoint != self.entrypoint:
+                    will_change = True
+            elif self.entrypoint is not None:
+                will_change = True
+
+            if self.command:
+                # convert from list to str
+                if isinstance(self.command, list):
+                    correct_command = shell_join([to_text(x, errors='surrogate_or_strict') for x in self.command])
+                    self.command = ' '.join([to_text(x, errors='surrogate_or_strict') for x in self.command])
+                    if correct_command != self.command:
+                        will_change = True
+            elif self.command is not None:
+                will_change = True
+
+            if will_change and client.module.params['command_handling'] is None:
+                self.module.deprecate(
+                    'The command_handling option will change its default value from "compatibility" to '
+                    '"correct" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
+                    version='2.0.0', collection_name='community.docker'
+                )
 
         self.mounts_opt, self.expected_mounts = self._process_mounts()
 
@@ -2545,8 +2601,18 @@ class Container(DockerBaseClass):
         return expected_devices
 
     def _get_expected_entrypoint(self):
-        if not self.parameters.entrypoint:
-            return None
+        if self.client.module.params['command_handling'] == 'correct':
+            if self.parameters.entrypoint is None:
+                return None
+        else:
+            if not self.parameters.entrypoint:
+                if self.parameters.entrypoint is not None and self.client.module.params['command_handling'] is None:
+                    self.module.deprecate(
+                        'The command_handling option will change its default value from "compatibility" to '
+                        '"correct" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
+                        version='2.0.0', collection_name='community.docker'
+                    )
+                return None
         return shlex.split(self.parameters.entrypoint)
 
     def _get_expected_ports(self):
@@ -2719,8 +2785,18 @@ class Container(DockerBaseClass):
 
     def _get_expected_cmd(self):
         self.log('_get_expected_cmd')
-        if not self.parameters.command:
-            return None
+        if self.client.module.params['command_handling'] == 'correct':
+            if self.parameters.command is None:
+                return None
+        else:
+            if not self.parameters.command:
+                if self.parameters.command is not None and self.client.module.params['command_handling'] is None:
+                    self.module.deprecate(
+                        'The command_handling option will change its default value from "compatibility" to '
+                        '"correct" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
+                        version='2.0.0', collection_name='community.docker'
+                    )
+                return None
         return shlex.split(self.parameters.command)
 
     def _convert_simple_dict_to_list(self, param_name, join_with=':'):
@@ -3247,7 +3323,7 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
     __NON_CONTAINER_PROPERTY_OPTIONS = tuple([
         'env_file', 'force_kill', 'keep_volumes', 'ignore_image', 'name', 'pull', 'purge_networks',
         'recreate', 'restart', 'state', 'networks', 'cleanup', 'kill_signal',
-        'output_logs', 'paused', 'removal_wait_timeout', 'default_host_ip',
+        'output_logs', 'paused', 'removal_wait_timeout', 'default_host_ip', 'command_handling',
     ] + list(DOCKER_COMMON_ARGS.keys()))
 
     def _parse_comparisons(self):
@@ -3468,6 +3544,7 @@ def main():
         command=dict(type='raw'),
         comparisons=dict(type='dict'),
         container_default_behavior=dict(type='str', choices=['compatibility', 'no_defaults']),
+        command_handling=dict(type='str', choices=['compatibility', 'correct']),
         cpu_period=dict(type='int'),
         cpu_quota=dict(type='int'),
         cpus=dict(type='float'),
