@@ -2607,15 +2607,8 @@ class Container(DockerBaseClass):
         return expected_devices
 
     def _get_expected_entrypoint(self):
-        if self.parameters.client.module.params['command_handling'] != 'correct':
-            if not self.parameters.entrypoint:
-                if self.parameters.entrypoint is not None and self.parameters.client.module.params['command_handling'] is None:
-                    self.parameters.client.module.deprecate(
-                        'The command_handling option will change its default value from "compatibility" to '
-                        '"correct" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
-                        version='2.0.0', collection_name='community.docker'
-                    )
-                return None
+        if self.parameters.client.module.params['command_handling'] != 'correct' and not self.parameters.entrypoint:
+            return None
         return self.parameters.entrypoint
 
     def _get_expected_ports(self):
@@ -2788,15 +2781,8 @@ class Container(DockerBaseClass):
 
     def _get_expected_cmd(self):
         self.log('_get_expected_cmd')
-        if self.parameters.client.module.params['command_handling'] != 'correct':
-            if not self.parameters.command:
-                if self.parameters.command is not None and self.parameters.client.module.params['command_handling'] is None:
-                    self.parameters.client.module.deprecate(
-                        'The command_handling option will change its default value from "compatibility" to '
-                        '"correct" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
-                        version='2.0.0', collection_name='community.docker'
-                    )
-                return None
+        if self.parameters.client.module.params['command_handling'] != 'correct' and not self.parameters.command:
+            return None
         return self.parameters.command
 
     def _convert_simple_dict_to_list(self, param_name, join_with=':'):
