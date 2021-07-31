@@ -114,8 +114,8 @@ options:
         handling for other container-config related options.
       - When this is set to C(compatiblity), which is the default until community.docker 2.0.0, the
         current behavior will be kept.
-      - When this is set to C(correct), these options are converted to strings considering shell quoting
-        rules, and an empty value or empty list will be handled for idempotency checks.
+      - When this is set to C(correct), these options are kept as lists, and an empty value or empty
+        list will be handled correctly for idempotency checks.
       - In community.docker 2.0.0, the default will change to C(correct).
     type: str
     choices:
@@ -1511,19 +1511,20 @@ class TaskParameters(DockerBaseClass):
 
         if client.module.params['command_handling'] == 'correct':
             if self.entrypoint is not None:
-                # convert from list to str.
-                self.entrypoint = shell_join([to_text(x, errors='surrogate_or_strict') for x in self.entrypoint])
+                self.entrypoint = [to_text(x, errors='surrogate_or_strict') for x in self.entrypoint]
 
             if self.command is not None:
-                # convert from list to str
-                if isinstance(self.command, list):
-                    self.command = shell_join([to_text(x, errors='surrogate_or_strict') for x in self.command])
+                if not isinstance(self.command, list):
+                    # convert from str to list
+                    self.command = shlex.split(to_text(self.command, errors='surrogate_or_strict'))
+                self.command = [to_text(x, errors='surrogate_or_strict') for x in self.command]
         else:
             will_change = False
             if self.entrypoint:
                 # convert from list to str.
-                correct_entrypoint = shell_join([to_text(x, errors='surrogate_or_strict') for x in self.entrypoint])
-                self.entrypoint = ' '.join([to_text(x, errors='surrogate_or_strict') for x in self.entrypoint])
+                correct_entrypoint = [to_text(x, errors='surrogate_or_strict') for x in self.entrypoint]
+                self.entrypoint = shlex.split(' '.join([to_text(x, errors='surrogate_or_strict') for x in self.entrypoint]))
+                self.entrypoint = [to_text(x, errors='surrogate_or_strict') for x in self.entrypoint]
                 if correct_entrypoint != self.entrypoint:
                     will_change = True
             elif self.entrypoint is not None:
@@ -1532,10 +1533,14 @@ class TaskParameters(DockerBaseClass):
             if self.command:
                 # convert from list to str
                 if isinstance(self.command, list):
-                    correct_command = shell_join([to_text(x, errors='surrogate_or_strict') for x in self.command])
-                    self.command = ' '.join([to_text(x, errors='surrogate_or_strict') for x in self.command])
+                    correct_command = [to_text(x, errors='surrogate_or_strict') for x in self.command]
+                    self.command = shlex.split(' '.join([to_text(x, errors='surrogate_or_strict') for x in self.command]))
+                    self.command = [to_text(x, errors='surrogate_or_strict') for x in self.command]
                     if correct_command != self.command:
                         will_change = True
+                else:
+                    self.command = shlex.split(to_text(self.command, errors='surrogate_or_strict'))
+                    self.command = [to_text(x, errors='surrogate_or_strict') for x in self.command]
             elif self.command is not None:
                 will_change = True
 
@@ -2602,10 +2607,7 @@ class Container(DockerBaseClass):
         return expected_devices
 
     def _get_expected_entrypoint(self):
-        if self.parameters.client.module.params['command_handling'] == 'correct':
-            if self.parameters.entrypoint is None:
-                return None
-        else:
+        if self.parameters.client.module.params['command_handling'] != 'correct':
             if not self.parameters.entrypoint:
                 if self.parameters.entrypoint is not None and self.parameters.client.module.params['command_handling'] is None:
                     self.parameters.client.module.deprecate(
@@ -2614,7 +2616,7 @@ class Container(DockerBaseClass):
                         version='2.0.0', collection_name='community.docker'
                     )
                 return None
-        return shlex.split(self.parameters.entrypoint)
+        return self.parameters.entrypoint
 
     def _get_expected_ports(self):
         if self.parameters.published_ports is None:
@@ -2786,10 +2788,7 @@ class Container(DockerBaseClass):
 
     def _get_expected_cmd(self):
         self.log('_get_expected_cmd')
-        if self.parameters.client.module.params['command_handling'] == 'correct':
-            if self.parameters.command is None:
-                return None
-        else:
+        if self.parameters.client.module.params['command_handling'] != 'correct':
             if not self.parameters.command:
                 if self.parameters.command is not None and self.parameters.client.module.params['command_handling'] is None:
                     self.parameters.client.module.deprecate(
@@ -2798,7 +2797,7 @@ class Container(DockerBaseClass):
                         version='2.0.0', collection_name='community.docker'
                     )
                 return None
-        return shlex.split(self.parameters.command)
+        return self.parameters.command
 
     def _convert_simple_dict_to_list(self, param_name, join_with=':'):
         if getattr(self.parameters, param_name, None) is None:
