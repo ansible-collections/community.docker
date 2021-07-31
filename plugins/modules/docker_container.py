@@ -2601,12 +2601,12 @@ class Container(DockerBaseClass):
         return expected_devices
 
     def _get_expected_entrypoint(self):
-        if self.client.module.params['command_handling'] == 'correct':
+        if self.module.params['command_handling'] == 'correct':
             if self.parameters.entrypoint is None:
                 return None
         else:
             if not self.parameters.entrypoint:
-                if self.parameters.entrypoint is not None and self.client.module.params['command_handling'] is None:
+                if self.parameters.entrypoint is not None and self.module.params['command_handling'] is None:
                     self.module.deprecate(
                         'The command_handling option will change its default value from "compatibility" to '
                         '"correct" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
@@ -2785,12 +2785,12 @@ class Container(DockerBaseClass):
 
     def _get_expected_cmd(self):
         self.log('_get_expected_cmd')
-        if self.client.module.params['command_handling'] == 'correct':
+        if self.module.params['command_handling'] == 'correct':
             if self.parameters.command is None:
                 return None
         else:
             if not self.parameters.command:
-                if self.parameters.command is not None and self.client.module.params['command_handling'] is None:
+                if self.parameters.command is not None and self.module.params['command_handling'] is None:
                     self.module.deprecate(
                         'The command_handling option will change its default value from "compatibility" to '
                         '"correct" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
