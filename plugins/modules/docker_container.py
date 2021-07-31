@@ -66,6 +66,7 @@ options:
     description:
       - Command to execute when the container starts. A command may be either a string or a list.
       - Prior to version 2.4, strings were split on commas.
+      - See I(command_handling) for differences in how strings and lists are handled.
     type: raw
   comparisons:
     description:
@@ -114,8 +115,7 @@ options:
       - When this is set to C(compatiblity), which is the default until community.docker 2.0.0, the
         current behavior will be kept.
       - When this is set to C(correct), these options are converted to strings considering shell quoting
-        rules, and an empty value or empty list will be handled for idempotency checks, with the meaning
-        "use default value from image".
+        rules, and an empty value or empty list will be handled for idempotency checks.
       - In community.docker 2.0.0, the default will change to C(correct).
     type: str
     choices:
@@ -315,6 +315,7 @@ options:
   entrypoint:
     description:
       - Command that overwrites the default C(ENTRYPOINT) of the image.
+      - See I(command_handling) for differences in how strings and lists are handled.
     type: list
     elements: str
   etc_hosts:
