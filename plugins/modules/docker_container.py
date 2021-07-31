@@ -1539,7 +1539,7 @@ class TaskParameters(DockerBaseClass):
                 will_change = True
 
             if will_change and client.module.params['command_handling'] is None:
-                self.module.deprecate(
+                client.module.deprecate(
                     'The command_handling option will change its default value from "compatibility" to '
                     '"correct" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
                     version='2.0.0', collection_name='community.docker'
@@ -2601,13 +2601,13 @@ class Container(DockerBaseClass):
         return expected_devices
 
     def _get_expected_entrypoint(self):
-        if self.module.params['command_handling'] == 'correct':
+        if self.parameters.client.module.params['command_handling'] == 'correct':
             if self.parameters.entrypoint is None:
                 return None
         else:
             if not self.parameters.entrypoint:
-                if self.parameters.entrypoint is not None and self.module.params['command_handling'] is None:
-                    self.module.deprecate(
+                if self.parameters.entrypoint is not None and self.parameters.client.module.params['command_handling'] is None:
+                    self.parameters.client.module.deprecate(
                         'The command_handling option will change its default value from "compatibility" to '
                         '"correct" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
                         version='2.0.0', collection_name='community.docker'
@@ -2785,13 +2785,13 @@ class Container(DockerBaseClass):
 
     def _get_expected_cmd(self):
         self.log('_get_expected_cmd')
-        if self.module.params['command_handling'] == 'correct':
+        if self.parameters.client.module.params['command_handling'] == 'correct':
             if self.parameters.command is None:
                 return None
         else:
             if not self.parameters.command:
-                if self.parameters.command is not None and self.module.params['command_handling'] is None:
-                    self.module.deprecate(
+                if self.parameters.command is not None and self.parameters.client.module.params['command_handling'] is None:
+                    self.parameters.client.module.deprecate(
                         'The command_handling option will change its default value from "compatibility" to '
                         '"correct" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
                         version='2.0.0', collection_name='community.docker'
