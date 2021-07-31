@@ -1,0 +1,4 @@
+---
+bugfixes:
+  - docker_compose - fixes task failures when bringing up services while using ``docker-compose <1.17.0``
+    (https://github.com/ansible-collections/community.docker/issues/180).

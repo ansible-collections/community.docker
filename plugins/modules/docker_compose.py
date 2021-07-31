@@ -146,6 +146,8 @@ options:
     description:
       - Use with I(state) C(present) to stop all containers defined in the Compose file.
       - If I(services) is defined, only the containers listed there will be stopped.
+      - Requires C(docker-compose) version 1.17.0 or greater for full support. For older versions, the services will
+        first be started and then stopped when the service is supposed to be created as stopped.
     type: bool
     default: no
   restarted:
@@ -807,15 +809,25 @@ class ContainerManager(DockerBaseClass):
                     with stderr_redirector(err_redir_name):
                         do_build = build_action_from_opts(up_options)
                         self.log('Setting do_build to %s' % do_build)
-                        self.project.up(
-                            service_names=service_names,
-                            start_deps=start_deps,
-                            strategy=converge,
-                            do_build=do_build,
-                            detached=detached,
-                            remove_orphans=self.remove_orphans,
-                            timeout=self.timeout,
-                            start=not self.stopped)
+                        up_kwargs = {
+                            'service_names': service_names,
+                            'start_deps': start_deps,
+                            'strategy': converge,
+                            'do_build': do_build,
+                            'detached': detached,
+                            'remove_orphans': self.remove_orphans,
+                            'timeout': self.timeout,
+                        }
+
+                        if LooseVersion(compose_version) >= LooseVersion('1.17.0'):
+                            up_kwargs['start'] = not self.stopped
+                        elif self.stopped:
+                            self.client.module.warn(
+                                "The 'stopped' option requires docker-compose version >= 1.17.0. " +
+                                "This task was run with docker-compose version %s." % compose_version
+                            )
+
+                        self.project.up(**up_kwargs)
             except Exception as exc:
                 fail_reason = get_failure_info(exc, out_redir_name, err_redir_name,
                                                msg_format="Error starting project %s")
