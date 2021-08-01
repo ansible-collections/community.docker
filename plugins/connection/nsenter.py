@@ -23,7 +23,7 @@ DOCUMENTATION = '''
         nsenter_pid:
             description:
                 - PID to attach with using nsenter.
-                - The default should be fine unless you're attaching as a non-root user.
+                - The default should be fine unless you are attaching as a non-root user.
             type: int
             default: 1
             vars:
