@@ -33,23 +33,6 @@ DOCUMENTATION = '''
             ini:
                 - section: nsenter_connection
                   key: nsenter_pid
-        pipelining:
-            default: ANSIBLE_PIPELINING
-            description:
-                - Pipelining reduces the number of connection operations required to execute a module on the remote
-                  server, by executing many Ansible modules without actual file transfers.
-                - This can result in a very significant performance improvement when enabled.
-                - However this can conflict with privilege escalation (become).
-                  For example, when using sudo operations you must first disable 'requiretty' in the sudoers file for
-                  the target hosts, which is why this feature is disabled by default.
-            env:
-                - name: ANSIBLE_PIPELINING
-            ini:
-                - section: defaults
-                  key: pipelining
-            type: boolean
-            vars:
-                - name: ansible_pipelining
     notes:
         - The remote user is ignored; this plugin always runs as root.
         - >-
@@ -82,7 +65,7 @@ class Connection(ConnectionBase):
     '''
 
     transport = 'community.docker.nsenter'
-    has_pipelining = True
+    has_pipelining = False
 
     def __init__(self, *args, **kwargs):
         super(Connection, self).__init__(*args, **kwargs)
@@ -134,7 +117,10 @@ class Connection(ConnectionBase):
 
         master = None
         stdin = subprocess.PIPE
-        if sudoable and self.become and self.become.expect_prompt() and not self.get_option('pipelining'):
+
+        # This plugin does not support pipelining. This diverges from the behavior of
+        # the core "local" connection plugin that this one derives from.
+        if sudoable and self.become and self.become.expect_prompt():
             # Create a pty if sudoable for privlege escalation that needs it.
             # Falls back to using a standard pipe if this fails, which may
             # cause the command to fail in certain situations where we are escalating
