@@ -16,7 +16,7 @@ DOCUMENTATION = '''
           host instead of in the container itself.
         - This is useful for running Ansible in a pull model, while still keeping the Ansible control node
           containerized.
-        - It relies on having privileged access to run nsenter in the host's PID namespace, allowing it to enter the
+        - It relies on having privileged access to run C(nsenter) in the host's PID namespace, allowing it to enter the
           namespaces of the provided PID (default PID 1, or init/systemd).
     author: Jeff Goldschrafe (@jgoldschrafe)
     options:
