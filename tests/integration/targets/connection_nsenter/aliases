@@ -1,0 +1,4 @@
+shippable/posix/group5
+skip/docker  # this requires unfettered access to the container host
+skip/rhel7.9  # nsenter does not work out of the box
+destructive
