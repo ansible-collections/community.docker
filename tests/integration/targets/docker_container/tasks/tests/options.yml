@@ -195,30 +195,58 @@
 ## command #########################################################
 ####################################################################
 
-- name: command
+# old
+
+- name: command (compatibility)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
+    command_handling: compatibility
     command: '/bin/sh -v -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
   register: command_1
 
-- name: command (idempotency)
+- name: command (compatibility, idempotency)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
+    command_handling: compatibility
     command: '/bin/sh -v -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
   register: command_2
 
-- name: command (less parameters)
+- name: command (compatibility, idempotency, list)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
+    command_handling: compatibility
+    command:
+      - /bin/sh
+      - '-v'
+      - '-c'
+      - '"sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+  register: command_3
+
+- name: command (compatibility, fewer parameters)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: compatibility
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
     force_kill: yes
-  register: command_3
+  register: command_4
+
+- name: command (compatibility, empty list)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: compatibility
+    command: []
+    name: "{{ cname }}"
+    state: started
+    force_kill: yes
+  register: command_5
 
 - name: cleanup
   docker_container:
@@ -231,7 +259,77 @@
     that:
     - command_1 is changed
     - command_2 is not changed
-    - command_3 is changed
+    - command_3 is not changed
+    - command_4 is changed
+    - command_5 is not changed
+
+# new
+
+- name: command (correct)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: correct
+    command: '/bin/sh -v -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+  register: command_1
+
+- name: command (correct, idempotency)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: correct
+    command: '/bin/sh -v -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+  register: command_2
+
+- name: command (correct, idempotency, list)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: correct
+    command:
+      - /bin/sh
+      - '-v'
+      - '-c'
+      - sleep 10m
+    name: "{{ cname }}"
+    state: started
+  register: command_3
+
+- name: command (correct, fewer parameters)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: correct
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    force_kill: yes
+  register: command_4
+
+- name: command (correct, empty list)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: correct
+    command: []
+    name: "{{ cname }}"
+    state: started
+    force_kill: yes
+  register: command_5
+
+- name: cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
+  diff: no
+
+- assert:
+    that:
+    - command_1 is changed
+    - command_2 is not changed
+    - command_3 is not changed
+    - command_4 is changed
+    - command_5 is changed
 
 ####################################################################
 ## cpu_period ######################################################
@@ -1235,9 +1333,12 @@
 ## entrypoint ######################################################
 ####################################################################
 
-- name: entrypoint
+# Old
+
+- name: entrypoint (compatibility)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
+    command_handling: compatibility
     entrypoint:
     - /bin/sh
     - "-v"
@@ -1247,9 +1348,10 @@
     state: started
   register: entrypoint_1
 
-- name: entrypoint (idempotency)
+- name: entrypoint (compatibility, idempotency)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
+    command_handling: compatibility
     entrypoint:
     - /bin/sh
     - "-v"
@@ -1259,9 +1361,10 @@
     state: started
   register: entrypoint_2
 
-- name: entrypoint (change order, should not be idempotent)
+- name: entrypoint (compatibility, change order, should not be idempotent)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
+    command_handling: compatibility
     entrypoint:
     - /bin/sh
     - "-c"
@@ -1272,9 +1375,10 @@
     force_kill: yes
   register: entrypoint_3
 
-- name: entrypoint (less parameters)
+- name: entrypoint (compatibility, fewer parameters)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
+    command_handling: compatibility
     entrypoint:
     - /bin/sh
     - "-c"
@@ -1284,9 +1388,10 @@
     force_kill: yes
   register: entrypoint_4
 
-- name: entrypoint (other parameters)
+- name: entrypoint (compatibility, other parameters)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
+    command_handling: compatibility
     entrypoint:
     - /bin/sh
     - "-c"
@@ -1295,6 +1400,16 @@
     state: started
     force_kill: yes
   register: entrypoint_5
+
+- name: entrypoint (compatibility, force empty)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: compatibility
+    entrypoint: []
+    name: "{{ cname }}"
+    state: started
+    force_kill: yes
+  register: entrypoint_6
 
 - name: cleanup
   docker_container:
@@ -1310,6 +1425,101 @@
     - entrypoint_3 is changed
     - entrypoint_4 is changed
     - entrypoint_5 is changed
+    - entrypoint_6 is not changed
+
+# New
+
+- name: entrypoint (correct)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: correct
+    entrypoint:
+    - /bin/sh
+    - "-v"
+    - "-c"
+    - "sleep 10m"
+    name: "{{ cname }}"
+    state: started
+  register: entrypoint_1
+
+- name: entrypoint (correct, idempotency)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: correct
+    entrypoint:
+    - /bin/sh
+    - "-v"
+    - "-c"
+    - "sleep 10m"
+    name: "{{ cname }}"
+    state: started
+  register: entrypoint_2
+
+- name: entrypoint (correct, change order, should not be idempotent)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: correct
+    entrypoint:
+    - /bin/sh
+    - "-c"
+    - "sleep 10m"
+    - "-v"
+    name: "{{ cname }}"
+    state: started
+    force_kill: yes
+  register: entrypoint_3
+
+- name: entrypoint (correct, fewer parameters)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: correct
+    entrypoint:
+    - /bin/sh
+    - "-c"
+    - "sleep 10m"
+    name: "{{ cname }}"
+    state: started
+    force_kill: yes
+  register: entrypoint_4
+
+- name: entrypoint (correct, other parameters)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: correct
+    entrypoint:
+    - /bin/sh
+    - "-c"
+    - "sleep 5m"
+    name: "{{ cname }}"
+    state: started
+    force_kill: yes
+  register: entrypoint_5
+
+- name: entrypoint (correct, force empty)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: correct
+    entrypoint: []
+    name: "{{ cname }}"
+    state: started
+    force_kill: yes
+  register: entrypoint_6
+
+- name: cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
+  diff: no
+
+- assert:
+    that:
+    - entrypoint_1 is changed
+    - entrypoint_2 is not changed
+    - entrypoint_3 is changed
+    - entrypoint_4 is changed
+    - entrypoint_5 is changed
+    - entrypoint_6 is changed
 
 ####################################################################
 ## env #############################################################
