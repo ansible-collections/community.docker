@@ -228,7 +228,7 @@
     state: started
   register: command_3
 
-- name: command (compatibility, less parameters)
+- name: command (compatibility, fewer parameters)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
@@ -1375,7 +1375,7 @@
     force_kill: yes
   register: entrypoint_3
 
-- name: entrypoint (compatibility, less parameters)
+- name: entrypoint (compatibility, fewer parameters)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
@@ -1469,7 +1469,7 @@
     force_kill: yes
   register: entrypoint_3
 
-- name: entrypoint (correct, less parameters)
+- name: entrypoint (correct, fewer parameters)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
