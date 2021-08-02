@@ -10,6 +10,7 @@ import os
 import platform
 import re
 import sys
+import traceback
 from datetime import timedelta
 from distutils.version import LooseVersion
 
@@ -25,6 +26,7 @@ HAS_DOCKER_PY = True
 HAS_DOCKER_PY_2 = False
 HAS_DOCKER_PY_3 = False
 HAS_DOCKER_ERROR = None
+HAS_DOCKER_TRACEBACK = None
 
 try:
     from requests.exceptions import SSLError
@@ -44,10 +46,11 @@ try:
 
 except ImportError as exc:
     HAS_DOCKER_ERROR = str(exc)
+    HAS_DOCKER_TRACEBACK = traceback.format_exc()
     HAS_DOCKER_PY = False
 
 
-# The next 2 imports ``docker.models`` and ``docker.ssladapter`` are used
+# The next two imports ``docker.models`` and ``docker.ssladapter`` are used
 # to ensure the user does not have both ``docker`` and ``docker-py`` modules
 # installed, as they utilize the same namespace are are incompatible
 try:
@@ -288,7 +291,7 @@ class AnsibleDockerClientBase(Client):
                                            "docker before 5.0.0 (Python 2.7) or docker-py (Python 2.6)")
                 msg = msg + ", for example via `pip install docker` (Python >= 3.6) or `pip install docker==4.4.4` (Python 2.7) " \
                     + "or `pip install docker-py` (Python 2.6). The error was: %s"
-            self.fail(msg % HAS_DOCKER_ERROR)
+            self.fail(msg % HAS_DOCKER_ERROR, exception=HAS_DOCKER_TRACEBACK)
 
         if self.docker_py_version < LooseVersion(min_docker_version):
             msg = "Error: Docker SDK for Python version is %s (%s's Python %s). Minimum version required is %s."

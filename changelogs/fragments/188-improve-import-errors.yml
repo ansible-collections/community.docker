@@ -1,0 +1,2 @@
+minor_changes:
+- "docker_* modules - include ``ImportError`` traceback when reporting that Docker SDK for Python could not be found (https://github.com/ansible-collections/community.docker/pull/188)."
