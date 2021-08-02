@@ -296,7 +296,7 @@
     state: started
   register: command_3
 
-- name: command (correct, less parameters)
+- name: command (correct, fewer parameters)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
