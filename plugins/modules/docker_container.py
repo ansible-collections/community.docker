@@ -112,11 +112,11 @@ options:
       - Also, setting I(command) to an empty list of string, and setting I(entrypoint) to an empty
         list will be handled as if these options are not specified. This is different from idempotency
         handling for other container-config related options.
-      - When this is set to C(compatiblity), which is the default until community.docker 2.0.0, the
+      - When this is set to C(compatiblity), which is the default until community.docker 3.0.0, the
         current behavior will be kept.
       - When this is set to C(correct), these options are kept as lists, and an empty value or empty
         list will be handled correctly for idempotency checks.
-      - In community.docker 2.0.0, the default will change to C(correct).
+      - In community.docker 3.0.0, the default will change to C(correct).
     type: str
     choices:
       - compatibility
@@ -1547,8 +1547,8 @@ class TaskParameters(DockerBaseClass):
             if will_change and client.module.params['command_handling'] is None:
                 client.module.deprecate(
                     'The command_handling option will change its default value from "compatibility" to '
-                    '"correct" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
-                    version='2.0.0', collection_name='community.docker'
+                    '"correct" in community.docker 3.0.0. To remove this warning, please specify an explicit value for it now',
+                    version='3.0.0', collection_name='community.docker'
                 )
 
         self.mounts_opt, self.expected_mounts = self._process_mounts()
