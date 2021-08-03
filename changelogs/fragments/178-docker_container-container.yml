@@ -1,2 +1,0 @@
-bugfixes:
-- "docker_container - make sure to also return ``container`` on ``detached=false`` when status code is non-zero (https://github.com/ansible-collections/community.docker/pull/178)."
