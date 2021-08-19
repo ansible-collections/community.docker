@@ -790,6 +790,8 @@ class ContainerManager(DockerBaseClass):
                     # In case the only action is starting, and the user requested
                     # that the service should be stopped, ignore this service.
                     continue
+                if not self._service_profile_enabled(service):
+                    continue
                 if plan.action != 'noop':
                     result['changed'] = True
                     result_action = dict(service=service.name)
@@ -1009,6 +1011,14 @@ class ContainerManager(DockerBaseClass):
                             )
                         ))
         return result
+
+    def _service_profile_enabled(self, service):
+        """Returns `True` if the service has no profiles defined or has a profile which is among
+           the profiles passed to the `docker compose up` command. Otherwise returns `False`.
+        """
+        if LooseVersion(compose_version) < LooseVersion('1.28.0'):
+            return True
+        return service.enabled_for_profiles(self.profiles or [])
 
     def cmd_down(self):
         result = dict(
