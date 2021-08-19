@@ -30,6 +30,7 @@
                 - profile_all
               stop_grace_period: 1s
         test_cases:
+          - test_name: no services enabled
           - test_name: enable 1
             profiles_value:
               - profile_1
@@ -77,20 +78,21 @@
 
     - assert:
         that:
-          - profiles_outputs.results[0].services[cname_1][cname_1_name].state.running
-          - profiles_outputs.results[0].services[cname_2] == {}
-          - not profiles_outputs.results[1].services[cname_1][cname_1_name].state.running
+          - profiles_outputs.results[0] is not changed
+          - profiles_outputs.results[1].services[cname_1][cname_1_name].state.running
           - profiles_outputs.results[1].services[cname_2] == {}
           - not profiles_outputs.results[2].services[cname_1][cname_1_name].state.running
-          - profiles_outputs.results[2].services[cname_2][cname_2_name].state.running
+          - profiles_outputs.results[2].services[cname_2] == {}
           - not profiles_outputs.results[3].services[cname_1][cname_1_name].state.running
-          - not profiles_outputs.results[3].services[cname_2][cname_2_name].state.running
-          - profiles_outputs.results[4].services[cname_1][cname_1_name].state.running
-          - profiles_outputs.results[4].services[cname_2][cname_2_name].state.running
-          - not profiles_outputs.results[5].services[cname_1][cname_1_name].state.running
-          - not profiles_outputs.results[5].services[cname_2][cname_2_name].state.running
-          - profiles_outputs.results[6].services[cname_1][cname_1_name].state.running
-          - profiles_outputs.results[6].services[cname_2][cname_2_name].state.running
+          - profiles_outputs.results[3].services[cname_2][cname_2_name].state.running
+          - not profiles_outputs.results[4].services[cname_1][cname_1_name].state.running
+          - not profiles_outputs.results[4].services[cname_2][cname_2_name].state.running
+          - profiles_outputs.results[5].services[cname_1][cname_1_name].state.running
+          - profiles_outputs.results[5].services[cname_2][cname_2_name].state.running
+          - not profiles_outputs.results[6].services[cname_1][cname_1_name].state.running
+          - not profiles_outputs.results[6].services[cname_2][cname_2_name].state.running
+          - profiles_outputs.results[7].services[cname_1][cname_1_name].state.running
+          - profiles_outputs.results[7].services[cname_2][cname_2_name].state.running
       vars:
         cname_1_name: "{{ pname + '_' + cname_1 + '_1' }}"
         cname_2_name: "{{ pname + '_' + cname_2 + '_1' }}"
