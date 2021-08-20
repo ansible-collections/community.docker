@@ -62,7 +62,7 @@
       docker_compose:
         project_name: "{{ pname }}"
         definition: "{{ test_service | from_yaml }}"
-        profiles: "{{ test_case.profiles_value }}"
+        profiles: "{{ test_case.profiles_value | default(omit) }}"
         stopped: "{{ test_case.stopped_value | default(omit) }}"
         state: present
       register: profiles_outputs
