@@ -138,6 +138,14 @@ keyed_groups:
   # Add Linux hosts to an os_linux group
   - prefix: os
     key: docker_platform
+
+# Example using SSH connection with an explicit fallback for when port 22 hasn't been
+# exported: use container name as ansible_ssh_host and 22 as ansible_ssh_port
+plugin: community.docker.docker_containers
+connection_type: ssh
+compose:
+  ansible_ssh_host: ansible_ssh_host | default(docker_name[1:], true)
+  ansible_ssh_port: ansible_ssh_port | default(22, true)
 '''
 
 import re
