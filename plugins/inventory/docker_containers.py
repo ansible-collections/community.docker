@@ -38,11 +38,11 @@ options:
     connection_type:
         description:
             - Which connection type to use the containers.
-            - Default is to use SSH (C(ssh)). For this, the options I(default_ip) and
-              I(private_ssh_port) are used.
+            - One way to connect to containers is to use SSH (C(ssh)). For this, the options I(default_ip) and
+              I(private_ssh_port) are used. This requires that a SSH daemon is running inside the containers.
             - Alternatively, C(docker-cli) selects the
               R(docker connection plugin,ansible_collections.community.docker.docker_connection),
-              and C(docker-api) selects the
+              and C(docker-api) (default) selects the
               R(docker_api connection plugin,ansible_collections.community.docker.docker_api_connection).
             - When C(docker-api) is used, all Docker daemon configuration values are passed from the inventory plugin
               to the connection plugin. This can be controlled with I(configure_docker_daemon).
