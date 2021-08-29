@@ -1,4 +1,0 @@
----
-bugfixes:
-  - docker_compose - fixed incorrect ``changed`` status for services with ``profiles`` defined, but none enabled
-    (https://github.com/ansible-collections/community.docker/pull/192).

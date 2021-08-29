@@ -407,3 +407,13 @@ releases:
         name: nsenter
         namespace: null
     release_date: '2021-08-03'
+  1.9.1:
+    changes:
+      bugfixes:
+      - docker_compose - fixed incorrect ``changed`` status for services with ``profiles``
+        defined, but none enabled (https://github.com/ansible-collections/community.docker/pull/192).
+      release_summary: Regular bugfix release.
+    fragments:
+    - 1.9.1.yml
+    - 192-docker_compose-profiles-idempotency-fix.yml
+    release_date: '2021-08-29'
