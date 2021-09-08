@@ -60,7 +60,7 @@ EOF
 echo "Run tests"
 set -x
 docker run \
-    -it \
+    -i \
     --rm \
     --privileged \
     --pid host \
