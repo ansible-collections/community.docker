@@ -17,12 +17,12 @@
   docker_network:
     name: "{{ nname_ipam_1 }}"
     ipam_config:
-      - subnet: 172.23.27.0/24
-        gateway: 172.23.27.2
-        iprange: 172.23.27.0/26
+      - subnet: 172.23.120.0/24
+        gateway: 172.23.120.2
+        iprange: 172.23.120.0/26
         aux_addresses:
-          host1: 172.23.27.3
-          host2: 172.23.27.4
+          host1: 172.23.120.3
+          host2: 172.23.120.4
   register: network
 
 - assert:
@@ -33,12 +33,12 @@
   docker_network:
     name: "{{ nname_ipam_1 }}"
     ipam_config:
-      - subnet: 172.23.27.0/24
-        gateway: 172.23.27.2
-        iprange: 172.23.27.0/26
+      - subnet: 172.23.120.0/24
+        gateway: 172.23.120.2
+        iprange: 172.23.120.0/26
         aux_addresses:
-          host1: 172.23.27.3
-          host2: 172.23.27.4
+          host1: 172.23.120.3
+          host2: 172.23.120.4
   register: network
 
 - assert:
@@ -49,11 +49,11 @@
   docker_network:
     name: "{{ nname_ipam_1 }}"
     ipam_config:
-      - subnet: 172.23.28.0/24
-        gateway: 172.23.28.2
-        iprange: 172.23.28.0/26
+      - subnet: 172.23.121.0/24
+        gateway: 172.23.121.2
+        iprange: 172.23.121.0/26
         aux_addresses:
-          host1: 172.23.28.3
+          host1: 172.23.121.3
   register: network
   diff: yes
 
@@ -70,7 +70,7 @@
   docker_network:
     name: "{{ nname_ipam_1 }}"
     ipam_config:
-      - subnet: 172.23.28.0/24
+      - subnet: 172.23.121.0/24
   register: network
 
 - assert:
