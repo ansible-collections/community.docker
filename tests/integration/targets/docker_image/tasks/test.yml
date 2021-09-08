@@ -12,13 +12,13 @@
 
 - name: Create files directory
   file:
-    path: '{{ output_dir }}/files'
+    path: '{{ remote_tmp_dir }}/files'
     state: directory
 
 - name: Template files
   template:
     src: '{{ item }}'
-    dest: '{{ output_dir }}/files/{{ item }}'
+    dest: '{{ remote_tmp_dir }}/files/{{ item }}'
   loop:
     - Dockerfile
     - EtcHostsDockerfile

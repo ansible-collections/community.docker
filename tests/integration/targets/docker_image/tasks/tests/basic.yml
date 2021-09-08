@@ -118,7 +118,7 @@
     source: build
     name: "{{ present_1.image.Id }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
     force_source: true
   register: fail_4
   ignore_errors: yes

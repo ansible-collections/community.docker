@@ -22,7 +22,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       args:
         TEST1: val1
         TEST2: val2
@@ -36,7 +36,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       args:
         TEST1: val1
         TEST2: val2
@@ -72,7 +72,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       container_limits:
         memory: 4000
       pull: no
@@ -84,7 +84,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       container_limits:
         memory: 7000000
         memswap: 8000000
@@ -117,7 +117,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       dockerfile: "MyDockerfile"
       pull: no
     source: build
@@ -149,7 +149,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       platform: linux
       pull: no
     source: build
@@ -160,7 +160,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       platform: linux
       pull: no
     source: build
@@ -193,7 +193,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       pull: no
     source: build
 
@@ -201,7 +201,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       dockerfile: "MyDockerfile"
       pull: no
     source: build
@@ -212,7 +212,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       dockerfile: "MyDockerfile"
       pull: no
     source: build
@@ -237,20 +237,20 @@
 - name: Archive image
   docker_image:
     name: "{{ docker_test_image_hello_world }}"
-    archive_path: "{{ output_dir }}/image.tar"
+    archive_path: "{{ remote_tmp_dir }}/image.tar"
     source: pull
   register: archive_image
 
 - name: Archive image by ID
   docker_image:
     name: "{{ archive_image.image.Id }}"
-    archive_path: "{{ output_dir }}/image_id.tar"
+    archive_path: "{{ remote_tmp_dir }}/image_id.tar"
     source: local
   register: archive_image_id
 
 - name: Create invalid archive
   copy:
-    dest: "{{ output_dir }}/image-invalid.tar"
+    dest: "{{ remote_tmp_dir }}/image-invalid.tar"
     content: "this is not a valid image"
 
 - name: remove image
@@ -262,21 +262,21 @@
 - name: load image (changed)
   docker_image:
     name: "{{ docker_test_image_hello_world }}"
-    load_path: "{{ output_dir }}/image.tar"
+    load_path: "{{ remote_tmp_dir }}/image.tar"
     source: load
   register: load_image
 
 - name: load image (idempotency)
   docker_image:
     name: "{{ docker_test_image_hello_world }}"
-    load_path: "{{ output_dir }}/image.tar"
+    load_path: "{{ remote_tmp_dir }}/image.tar"
     source: load
   register: load_image_1
 
 - name: load image (wrong name)
   docker_image:
     name: foo:bar
-    load_path: "{{ output_dir }}/image.tar"
+    load_path: "{{ remote_tmp_dir }}/image.tar"
     source: load
   register: load_image_2
   ignore_errors: true
@@ -284,7 +284,7 @@
 - name: load image (invalid image)
   docker_image:
     name: foo:bar
-    load_path: "{{ output_dir }}/image-invalid.tar"
+    load_path: "{{ remote_tmp_dir }}/image-invalid.tar"
     source: load
   register: load_image_3
   ignore_errors: true
@@ -292,7 +292,7 @@
 - name: load image (invalid image, old API version)
   docker_image:
     name: foo:bar
-    load_path: "{{ output_dir }}/image-invalid.tar"
+    load_path: "{{ remote_tmp_dir }}/image-invalid.tar"
     source: load
     api_version: "1.22"
   register: load_image_4
@@ -300,7 +300,7 @@
 - name: load image (ID, idempotency)
   docker_image:
     name: "{{ archive_image.image.Id }}"
-    load_path: "{{ output_dir }}/image_id.tar"
+    load_path: "{{ remote_tmp_dir }}/image_id.tar"
     source: load
   register: load_image_5
 
@@ -326,7 +326,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       pull: no
     source: build
   register: path_1
@@ -335,7 +335,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       pull: no
     source: build
   register: path_2
@@ -359,7 +359,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       dockerfile: "StagedDockerfile"
       target: first
       pull: no
@@ -385,7 +385,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       dockerfile: "EtcHostsDockerfile"
       pull: no
       etc_hosts:

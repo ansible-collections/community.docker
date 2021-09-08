@@ -1,3 +1,4 @@
 dependencies:
   #- setup_docker  -- done in setup.yml, to work around cleanup problems!
   - setup_openssl
+  - setup_remote_tmp_dir

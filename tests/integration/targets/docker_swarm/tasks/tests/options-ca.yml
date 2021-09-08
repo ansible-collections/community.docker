@@ -10,7 +10,7 @@
     loop_control:
       loop_var: key
     community.crypto.openssl_privatekey:
-      path: '{{ output_dir }}/ansible_{{ key }}.key'
+      path: '{{ remote_tmp_dir }}/ansible_{{ key }}.key'
       size: 2048
       mode: '0666'
   - name: Generate CSR
@@ -20,8 +20,8 @@
     loop_control:
       loop_var: key
     community.crypto.openssl_csr:
-      path: '{{ output_dir }}/ansible_{{ key }}.csr'
-      privatekey_path: '{{ output_dir }}/ansible_{{ key }}.key'
+      path: '{{ remote_tmp_dir }}/ansible_{{ key }}.csr'
+      privatekey_path: '{{ remote_tmp_dir }}/ansible_{{ key }}.key'
       basic_constraints:
       - CA:TRUE
       key_usage:
@@ -33,16 +33,30 @@
     loop_control:
       loop_var: key
     community.crypto.openssl_certificate:
-      path: '{{ output_dir }}/ansible_{{ key }}.pem'
-      privatekey_path: '{{ output_dir }}/ansible_{{ key }}.key'
-      csr_path: '{{ output_dir }}/ansible_{{ key }}.csr'
+      path: '{{ remote_tmp_dir }}/ansible_{{ key }}.pem'
+      privatekey_path: '{{ remote_tmp_dir }}/ansible_{{ key }}.key'
+      csr_path: '{{ remote_tmp_dir }}/ansible_{{ key }}.csr'
       provider: selfsigned
+  - name: Load certificates
+    slurp:
+      src: '{{ remote_tmp_dir }}/{{ item }}'
+    loop:
+      - ansible_key1.pem
+      - ansible_key2.pem
+    register: ansible_certificates
+  - name: Load certificate keys
+    slurp:
+      src: '{{ remote_tmp_dir }}/{{ item }}'
+    loop:
+      - ansible_key1.key
+      - ansible_key2.key
+    register: ansible_keys
   - name: signing_ca_cert and signing_ca_key (check mode)
     docker_swarm:
-      advertise_addr: '{{ansible_default_ipv4.address | default(''127.0.0.1'')}}'
+      advertise_addr: '{{ansible_default_ipv4.address | default("127.0.0.1")}}'
       state: present
-      signing_ca_cert: '{{ lookup(''file'', output_dir ~ ''/ansible_key1.pem'') }}'
-      signing_ca_key: '{{ lookup(''file'', output_dir ~ ''/ansible_key1.key'') }}'
+      signing_ca_cert: '{{ ansible_certificates.results[0].content | b64decode }}'
+      signing_ca_key: '{{ ansible_keys.results[0].content | b64decode }}'
       timeout: 120
     check_mode: true
     diff: true
@@ -50,18 +64,18 @@
     ignore_errors: true
   - name: signing_ca_cert and signing_ca_key
     docker_swarm:
-      advertise_addr: '{{ansible_default_ipv4.address | default(''127.0.0.1'')}}'
+      advertise_addr: '{{ansible_default_ipv4.address | default("127.0.0.1")}}'
       state: present
-      signing_ca_cert: '{{ lookup(''file'', output_dir ~ ''/ansible_key1.pem'') }}'
-      signing_ca_key: '{{ lookup(''file'', output_dir ~ ''/ansible_key1.key'') }}'
+      signing_ca_cert: '{{ ansible_certificates.results[0].content | b64decode }}'
+      signing_ca_key: '{{ ansible_keys.results[0].content | b64decode }}'
       timeout: 120
     diff: true
     register: output_2
     ignore_errors: true
   - name: Private key
-    debug: msg="{{ lookup('file', output_dir ~ '/ansible_key1.key') }}"
+    debug: msg="{{ ansible_keys.results[0].content | b64decode }}"
   - name: Cert
-    debug: msg="{{ lookup('file', output_dir ~ '/ansible_key1.pem') }}"
+    debug: msg="{{ ansible_certificates.results[0].content | b64decode }}"
   - docker_swarm_info: null
     register: output
     ignore_errors: true
@@ -69,8 +83,8 @@
   - name: signing_ca_cert and signing_ca_key (change, check mode)
     docker_swarm:
       state: present
-      signing_ca_cert: '{{ lookup(''file'', output_dir ~ ''/ansible_key2.pem'') }}'
-      signing_ca_key: '{{ lookup(''file'', output_dir ~ ''/ansible_key2.key'') }}'
+      signing_ca_cert: '{{ ansible_certificates.results[1].content | b64decode }}'
+      signing_ca_key: '{{ ansible_keys.results[1].content | b64decode }}'
       timeout: 120
     check_mode: true
     diff: true
@@ -79,8 +93,8 @@
   - name: signing_ca_cert and signing_ca_key (change)
     docker_swarm:
       state: present
-      signing_ca_cert: '{{ lookup(''file'', output_dir ~ ''/ansible_key2.pem'') }}'
-      signing_ca_key: '{{ lookup(''file'', output_dir ~ ''/ansible_key2.key'') }}'
+      signing_ca_cert: '{{ ansible_certificates.results[1].content | b64decode }}'
+      signing_ca_key: '{{ ansible_keys.results[1].content | b64decode }}'
       timeout: 120
     diff: true
     register: output_6
@@ -109,6 +123,6 @@
       that:
       - output_1 is failed
       - ('version is ' ~ docker_py_version ~ ' ') in output_1.msg
-      - '''Minimum version required is 2.6.0 '' in output_1.msg'
+      - '"Minimum version required is 2.6.0 " in output_1.msg'
     when: docker_py_version is version('2.6.0', '<')
   - include_tasks: cleanup.yml
