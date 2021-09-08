@@ -19,7 +19,7 @@
     - when:
         # When the integration tests are run inside a docker container, there
         # will be other containers.
-        - inventory_hostname.startswith('ansible-test-docker-inventory-container-')
+        - inventory_hostname.startswith('ansible-docker-test-docker-inventory-container-')
       block:
 
       - name: Run raw command

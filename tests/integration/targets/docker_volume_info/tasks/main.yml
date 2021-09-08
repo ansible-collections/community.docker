@@ -7,7 +7,7 @@
 - block:
   - name: Create random volume name
     set_fact:
-      cname: "{{ 'ansible-test-%0x' % ((2**32) | random) }}"
+      cname: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
 
   - name: Make sure volume is not there
     docker_volume:

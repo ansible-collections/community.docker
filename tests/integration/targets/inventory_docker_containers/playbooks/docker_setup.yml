@@ -18,5 +18,5 @@
         published_ports:
           - 22/tcp
       loop:
-        - name: ansible-test-docker-inventory-container-1
-        - name: ansible-test-docker-inventory-container-2
+        - name: ansible-docker-test-docker-inventory-container-1
+        - name: ansible-docker-test-docker-inventory-container-2
