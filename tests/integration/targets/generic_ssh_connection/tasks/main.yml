@@ -22,9 +22,17 @@
   command: ls -lah ~/.ssh
   ignore_errors: true
 
+- name: Recover home directory on remote
+  command: echo $HOME
+  register: remote_home
+
+- name: Print remote home directory
+  debug:
+    var: remote_home.stdout
+
 - name: Create SSH config
   copy:
-    dest: "{{ lookup('env', 'HOME') }}/.ssh/config"
+    dest: "{{ remote_home.stdout }}/.ssh/config"
     mode: '0600'
     content: |
       Host localhost

@@ -7,7 +7,7 @@
 # Create random name prefix (for containers, networks, ...)
 - name: Create random container name prefix
   set_fact:
-    cname_prefix: "{{ 'ansible-test-%0x' % ((2**32) | random) }}"
+    cname_prefix: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
     cnames: []
     dnetworks: []
 

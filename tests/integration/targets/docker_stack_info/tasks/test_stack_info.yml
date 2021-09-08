@@ -34,7 +34,7 @@
   - name: Template compose files
     template:
       src: "{{ item }}"
-      dest: "{{ output_dir }}/"
+      dest: "{{ remote_tmp_dir }}/"
     with_items:
     - stack_compose_base.yml
     - stack_compose_overrides.yml
@@ -49,7 +49,7 @@
       state: present
       name: test_stack
       compose:
-      - "{{ output_dir }}/stack_compose_base.yml"
+      - "{{ remote_tmp_dir }}/stack_compose_base.yml"
 
   - name: Assert test_stack changed on stack creation with compose file
     assert:

@@ -672,13 +672,21 @@
 ## env_files #######################################################
 ####################################################################
 
+- name: Copy env-files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ remote_tmp_dir }}/{{ item }}"
+  loop:
+    - env-file-1
+    - env-file-2
+
 - name: env_files
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     env_files:
-      - "{{ role_path }}/files/env-file-1"
+      - "{{ remote_tmp_dir }}/env-file-1"
   register: env_file_1
 
 - name: env_files (idempotency)
@@ -687,7 +695,7 @@
     image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     env_files:
-      - "{{ role_path }}/files/env-file-1"
+      - "{{ remote_tmp_dir }}/env-file-1"
   register: env_file_2
 
 - name: env_files (more items)
@@ -696,8 +704,8 @@
     image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     env_files:
-      - "{{ role_path }}/files/env-file-1"
-      - "{{ role_path }}/files/env-file-2"
+      - "{{ remote_tmp_dir }}/env-file-1"
+      - "{{ remote_tmp_dir }}/env-file-2"
   register: env_file_3
 
 - name: env_files (order)
@@ -706,8 +714,8 @@
     image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     env_files:
-      - "{{ role_path }}/files/env-file-2"
-      - "{{ role_path }}/files/env-file-1"
+      - "{{ remote_tmp_dir }}/env-file-2"
+      - "{{ remote_tmp_dir }}/env-file-1"
   register: env_file_4
 
 - name: env_files (multiple idempotency)
@@ -716,8 +724,8 @@
     image: "{{ docker_test_image_alpine }}"
     resolve_image: no
     env_files:
-      - "{{ role_path }}/files/env-file-2"
-      - "{{ role_path }}/files/env-file-1"
+      - "{{ remote_tmp_dir }}/env-file-2"
+      - "{{ remote_tmp_dir }}/env-file-1"
   register: env_file_5
 
 - name: env_files (empty)

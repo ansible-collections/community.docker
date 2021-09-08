@@ -16,8 +16,8 @@
           - groups.running | length >= 2
           - groups.stopped | length >= 0
           - groups['image_' ~ docker_test_image_alpine] | length == 2
-          - groups['ansible-test-docker-inventory-container-1'] | length == 1
-          - groups['ansible-test-docker-inventory-container-2'] | length == 1
+          - groups['ansible-docker-test-docker-inventory-container-1'] | length == 1
+          - groups['ansible-docker-test-docker-inventory-container-2'] | length == 1
           - groups['unix://var/run/docker.sock'] | length >= 2
           - groups | length >= 12
           # The four additional groups are IDs and short IDs of the containers.
@@ -42,4 +42,4 @@
       when:
         # When the integration tests are run inside a docker container, there
         # will be other containers.
-        - inventory_hostname.startswith('ansible-test-docker-inventory-container-')
+        - inventory_hostname.startswith('ansible-docker-test-docker-inventory-container-')

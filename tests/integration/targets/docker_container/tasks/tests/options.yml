@@ -1607,13 +1607,18 @@
 ## env_file #########################################################
 ####################################################################
 
+- name: Copy env-file
+  copy:
+    src: env-file
+    dest: "{{ remote_tmp_dir }}/env-file"
+
 - name: env_file
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
-    env_file: "{{ role_path }}/files/env-file"
+    env_file: "{{ remote_tmp_dir }}/env-file"
   register: env_file_1
 
 - name: env_file (idempotency)
@@ -1622,7 +1627,7 @@
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
-    env_file: "{{ role_path }}/files/env-file"
+    env_file: "{{ remote_tmp_dir }}/env-file"
   register: env_file_2
 
 - name: cleanup

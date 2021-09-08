@@ -18,7 +18,7 @@
     all_images: "{{ image_names + (images.results | map(attribute='image') | map(attribute='Id') | list) }}"
 
 - name: Create archives
-  command: docker save {{ item.images | join(' ') }} -o {{ output_dir }}/{{ item.file }}
+  command: docker save {{ item.images | join(' ') }} -o {{ remote_tmp_dir }}/{{ item.file }}
   loop:
     - file: archive-1.tar
       images: "{{ image_names }}"
@@ -72,7 +72,7 @@
 
 - name: Load all images (IDs)
   docker_image_load:
-    path: "{{ output_dir }}/archive-2.tar"
+    path: "{{ remote_tmp_dir }}/archive-2.tar"
   register: result
 
 - name: Print loaded image names
@@ -87,7 +87,7 @@
 
 - name: Load all images (IDs, should be same result)
   docker_image_load:
-    path: "{{ output_dir }}/archive-2.tar"
+    path: "{{ remote_tmp_dir }}/archive-2.tar"
   register: result_2
 
 - name: Print loaded image names
@@ -110,7 +110,7 @@
 
 - name: Load all images (mixed images and IDs)
   docker_image_load:
-    path: "{{ output_dir }}/archive-3.tar"
+    path: "{{ remote_tmp_dir }}/archive-3.tar"
   register: result
 
 - name: Print loading log
@@ -140,7 +140,7 @@
 
 - name: Load all images (same image twice)
   docker_image_load:
-    path: "{{ output_dir }}/archive-4.tar"
+    path: "{{ remote_tmp_dir }}/archive-4.tar"
   register: result
 
 - name: Print loaded image names
@@ -165,7 +165,7 @@
 
 - name: Load all images (single image by ID)
   docker_image_load:
-    path: "{{ output_dir }}/archive-5.tar"
+    path: "{{ remote_tmp_dir }}/archive-5.tar"
   register: result
 
 - name: Print loaded image names
@@ -200,7 +200,7 @@
 
 - name: Load all images (names)
   docker_image_load:
-    path: "{{ output_dir }}/archive-1.tar"
+    path: "{{ remote_tmp_dir }}/archive-1.tar"
   register: result
 
 - name: Print loaded image names

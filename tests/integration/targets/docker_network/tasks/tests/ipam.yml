@@ -17,12 +17,12 @@
   docker_network:
     name: "{{ nname_ipam_1 }}"
     ipam_config:
-      - subnet: 172.23.27.0/24
-        gateway: 172.23.27.2
-        iprange: 172.23.27.0/26
+      - subnet: 172.25.120.0/24
+        gateway: 172.25.120.2
+        iprange: 172.25.120.0/26
         aux_addresses:
-          host1: 172.23.27.3
-          host2: 172.23.27.4
+          host1: 172.25.120.3
+          host2: 172.25.120.4
   register: network
 
 - assert:
@@ -33,12 +33,12 @@
   docker_network:
     name: "{{ nname_ipam_1 }}"
     ipam_config:
-      - subnet: 172.23.27.0/24
-        gateway: 172.23.27.2
-        iprange: 172.23.27.0/26
+      - subnet: 172.25.120.0/24
+        gateway: 172.25.120.2
+        iprange: 172.25.120.0/26
         aux_addresses:
-          host1: 172.23.27.3
-          host2: 172.23.27.4
+          host1: 172.25.120.3
+          host2: 172.25.120.4
   register: network
 
 - assert:
@@ -49,11 +49,11 @@
   docker_network:
     name: "{{ nname_ipam_1 }}"
     ipam_config:
-      - subnet: 172.23.28.0/24
-        gateway: 172.23.28.2
-        iprange: 172.23.28.0/26
+      - subnet: 172.25.121.0/24
+        gateway: 172.25.121.2
+        iprange: 172.25.121.0/26
         aux_addresses:
-          host1: 172.23.28.3
+          host1: 172.25.121.3
   register: network
   diff: yes
 
@@ -70,7 +70,7 @@
   docker_network:
     name: "{{ nname_ipam_1 }}"
     ipam_config:
-      - subnet: 172.23.28.0/24
+      - subnet: 172.25.121.0/24
   register: network
 
 - assert:
@@ -151,7 +151,7 @@
     name: "{{ nname_ipam_3 }}"
     enable_ipv6: yes
     ipam_config:
-      - subnet: 172.24.27.0/24
+      - subnet: 172.26.120.0/24
       - subnet: fdd1:ac8c:0557:7ce2::/64
   register: network
 
@@ -165,7 +165,7 @@
     enable_ipv6: yes
     ipam_config:
       - subnet: fdd1:ac8c:0557:7ce2::/64
-      - subnet: 172.24.27.0/24
+      - subnet: 172.26.120.0/24
   register: network
 
 - assert:
@@ -177,7 +177,7 @@
     name: "{{ nname_ipam_3 }}"
     enable_ipv6: no
     ipam_config:
-      - subnet: 172.24.27.0/24
+      - subnet: 172.26.120.0/24
   register: network
   diff: yes
 
@@ -203,8 +203,8 @@
       driver_options:
         parent: "{{ ansible_default_ipv4.alias }}"
       ipam_config:
-        - subnet: 172.24.27.0/24
-        - subnet: 172.24.28.0/24
+        - subnet: 172.26.120.0/24
+        - subnet: 172.26.121.0/24
     register: network
 
   - assert:
@@ -218,8 +218,8 @@
       driver_options:
         parent: "{{ ansible_default_ipv4.alias }}"
       ipam_config:
-        - subnet: 172.24.28.0/24
-        - subnet: 172.24.27.0/24
+        - subnet: 172.26.121.0/24
+        - subnet: 172.26.120.0/24
     register: network
 
   - assert:
@@ -233,8 +233,8 @@
       driver_options:
         parent: "{{ ansible_default_ipv4.alias }}"
       ipam_config:
-        - subnet: 172.24.27.0/24
-        - subnet: 172.24.29.0/24
+        - subnet: 172.26.120.0/24
+        - subnet: 172.26.122.0/24
     register: network
     diff: yes
 
@@ -250,7 +250,7 @@
       driver_options:
         parent: "{{ ansible_default_ipv4.alias }}"
       ipam_config:
-        - subnet: 172.24.29.0/24
+        - subnet: 172.26.122.0/24
     register: network
 
   - assert:

@@ -7,7 +7,7 @@
 - block:
   - name: Create random network name
     set_fact:
-      nname: "{{ 'ansible-test-%0x' % ((2**32) | random) }}"
+      nname: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
 
   - name: Make sure network is not there
     docker_network:

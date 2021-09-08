@@ -2,7 +2,7 @@
 
 - name: Generate service base name
   set_fact:
-    service_base_name: "{{ 'ansible-test-%0x' % ((2**32) | random) }}"
+    service_base_name: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
 
 - name: Registering service names
   set_fact:

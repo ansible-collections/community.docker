@@ -105,10 +105,10 @@
 - block:
     - name: Define service and files
       set_fact:
-        compose_file: "{{ output_dir }}/docker-compose.yml"
-        env_file: "{{ output_dir }}/.env"
+        compose_file: "{{ remote_tmp_dir }}/docker-compose.yml"
+        env_file: "{{ remote_tmp_dir }}/.env"
         env_sleep_cmd: sleep 10m
-        new_env_file: "{{ output_dir }}/new.env"
+        new_env_file: "{{ remote_tmp_dir }}/new.env"
         new_env_sleep_cmd: sleep 20m
         test_service: |
           version: '2'
@@ -145,7 +145,7 @@
     - name: Env_file
       docker_compose:
         project_name: "{{ pname }}"
-        project_src: "{{ output_dir }}"
+        project_src: "{{ remote_tmp_dir }}"
         env_file: "{{ test_case.env_file | default(omit) }}"
       register: env_file_outputs
       loop: "{{ test_cases }}"

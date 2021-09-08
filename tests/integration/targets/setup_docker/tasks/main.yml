@@ -85,21 +85,21 @@
       # Cleanup docker daemon
       - command: 'docker ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %}'
 
-      - name: "Remove all ansible-test-* docker containers"
-        shell: 'docker ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %} | grep "^ansible-test-" | xargs -r docker rm -f'
+      - name: "Remove all ansible-docker-test-* docker containers"
+        shell: 'docker ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r docker rm -f'
         register: docker_containers
         retries: 3
         delay: 3
         until: docker_containers is success
         ignore_errors: yes
 
-      - name: "Remove all ansible-test-* docker volumes"
-        shell: 'docker volume ls --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-test-" | xargs -r docker volume rm -f'
+      - name: "Remove all ansible-docker-test-* docker volumes"
+        shell: 'docker volume ls --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r docker volume rm -f'
         register: docker_volumes
         ignore_errors: yes
 
-      - name: "Remove all ansible-test-* docker networks"
-        shell: 'docker network ls --no-trunc --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-test-" | xargs -r docker network rm'
+      - name: "Remove all ansible-docker-test-* docker networks"
+        shell: 'docker network ls --no-trunc --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r docker network rm'
         register: docker_networks
         ignore_errors: yes
 

@@ -9,8 +9,8 @@
         state: absent
         force_kill: yes
       loop:
-        - ansible-test-docker-inventory-container-1
-        - ansible-test-docker-inventory-container-2
+        - ansible-docker-test-docker-inventory-container-1
+        - ansible-docker-test-docker-inventory-container-2
 
     - name: remove docker pagkages
       action: "{{ ansible_facts.pkg_mgr }}"

@@ -14,9 +14,9 @@
 
 - name: Create random name prefix and test registry name
   set_fact:
-    docker_registry_container_name_registry: '{{ ''ansible-test-registry-%0x'' % ((2**32) | random) }}'
-    docker_registry_container_name_nginx: '{{ ''ansible-test-registry-frontend-%0x'' % ((2**32) | random) }}'
-    docker_registry_container_name_nginx2: '{{ ''ansible-test-registry-frontend2-%0x'' % ((2**32) | random) }}'
+    docker_registry_container_name_registry: '{{ ''ansible-docker-test-registry-%0x'' % ((2**32) | random) }}'
+    docker_registry_container_name_nginx: '{{ ''ansible-docker-test-registry-frontend-%0x'' % ((2**32) | random) }}'
+    docker_registry_container_name_nginx2: '{{ ''ansible-docker-test-registry-frontend2-%0x'' % ((2**32) | random) }}'
 
 - name: Create image and container list
   set_fact:

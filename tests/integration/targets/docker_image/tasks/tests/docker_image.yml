@@ -191,7 +191,7 @@
   docker_image:
     name: "{{ iname }}"
     build:
-      path: "{{ output_dir }}/files"
+      path: "{{ remote_tmp_dir }}/files"
       pull: no
     repository: "{{ test_image_base }}"
     source: build

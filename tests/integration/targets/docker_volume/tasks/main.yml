@@ -6,7 +6,7 @@
 
 - name: Create random name prefix
   set_fact:
-    name_prefix: "{{ 'ansible-test-%0x' % ((2**32) | random) }}"
+    name_prefix: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
     vnames: []
 
 - debug:
