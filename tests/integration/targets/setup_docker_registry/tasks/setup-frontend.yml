@@ -25,8 +25,16 @@
       }}
   register: nginx_container
 
+- name: Copy config files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ remote_temp_dir }}/{{ item }}"
+  loop:
+  - nginx.conf
+  - nginx.htpasswd
+
 - name: Copy static files into volume
-  command: docker cp {{ role_path }}/files/{{ item }} {{ docker_registry_container_name_frontend }}:/etc/nginx/{{ item }}
+  command: docker cp {{ remote_temp_dir }}/{{ item }} {{ docker_registry_container_name_frontend }}:/etc/nginx/{{ item }}
   loop:
   - nginx.conf
   - nginx.htpasswd
