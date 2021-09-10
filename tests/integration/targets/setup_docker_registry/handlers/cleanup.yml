@@ -50,6 +50,6 @@
   until: result is success
 
 - name: "Make sure all volumes are removed"
-  command: "docker rm -f {{ item }}"
+  command: "docker volume rm -f {{ item }}"
   with_items: "{{ docker_registry_setup_vnames }}"
   ignore_errors: yes
