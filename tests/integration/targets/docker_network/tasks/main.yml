@@ -12,7 +12,7 @@
 
 - name: Show inspection results for all docker networks
   debug:
-    var: all_networks
+    var: all_networks.networks
 
 - name: Create random name prefix
   set_fact:
