@@ -37,7 +37,7 @@
     assert:
       that:
          - 'output.failed'
-         - 'output.msg == "state is present but all of the following are missing: data"'
+         - 'output.msg == "state is present but any of the following are missing: data, data_src"'
 
   - name: Create config
     docker_config:
