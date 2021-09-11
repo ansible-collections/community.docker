@@ -91,6 +91,12 @@ EXAMPLES = '''
     data_is_b64: true
     state: present
 
+- name: Create config foo (from a file on the target machine)
+  community.docker.docker_config:
+    name: foo
+    data_src: /path/to/config/file
+    state: present
+
 - name: Change the config data
   community.docker.docker_config:
     name: foo

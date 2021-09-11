@@ -90,6 +90,12 @@ EXAMPLES = '''
     data_is_b64: true
     state: present
 
+- name: Create secret foo (from a file on the target machine)
+  community.docker.docker_secret:
+    name: foo
+    data_src: /path/to/secret/file
+    state: present
+
 - name: Change the secret data
   community.docker.docker_secret:
     name: foo
