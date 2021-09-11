@@ -80,6 +80,24 @@
       that:
          - not output.changed
 
+  - name: Write config into file
+    copy:
+      path: "{{ remote_tmp_dir }}/data"
+      content: |-
+        opensesame!
+
+  - name: Create config again (from file)
+    docker_config:
+      name: db_password
+      data_src: "{{ remote_tmp_dir }}/data"
+      state: present
+    register: output
+
+  - name: assert create config is idempotent
+    assert:
+      that:
+         - not output.changed
+
   - name: Create config again (base64)
     docker_config:
       name: db_password
