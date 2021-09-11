@@ -29,6 +29,7 @@
   copy:
     src: "{{ item }}"
     dest: "{{ remote_tmp_dir }}/{{ item }}"
+    mode: "0644"
   loop:
   - nginx.conf
   - nginx.htpasswd
