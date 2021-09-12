@@ -37,7 +37,7 @@
     assert:
       that:
          - 'output.failed'
-         - 'output.msg == "state is present but all of the following are missing: data"'
+         - 'output.msg == "state is present but any of the following are missing: data, data_src"'
 
   - name: Create config
     docker_config:
@@ -72,6 +72,24 @@
     docker_config:
       name: db_password
       data: opensesame!
+      state: present
+    register: output
+
+  - name: assert create config is idempotent
+    assert:
+      that:
+         - not output.changed
+
+  - name: Write config into file
+    copy:
+      dest: "{{ remote_tmp_dir }}/data"
+      content: |-
+        opensesame!
+
+  - name: Create config again (from file)
+    docker_config:
+      name: db_password
+      data_src: "{{ remote_tmp_dir }}/data"
       state: present
     register: output
 

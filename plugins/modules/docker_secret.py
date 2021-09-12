@@ -23,7 +23,8 @@ description:
 options:
   data:
     description:
-      - The value of the secret. Required when state is C(present).
+      - The value of the secret.
+      - Mutually exclusive with I(data_src). One of I(data) and I(data_src) is required if I(state=present).
     type: str
   data_is_b64:
     description:
@@ -33,6 +34,12 @@ options:
         be decoded by this option.
     type: bool
     default: no
+  data_src:
+    description:
+      - The file on the target from which to read the secret.
+      - Mutually exclusive with I(data). One of I(data) and I(data_src) is required if I(state=present).
+    type: path
+    version_added: 1.10.0
   labels:
     description:
       - "A map of key:value meta data, where both key and value are expected to be strings."
@@ -81,6 +88,12 @@ EXAMPLES = '''
     # file directly after reading it prevents this to happen.
     data: "{{ lookup('file', '/path/to/secret/file') | b64encode }}"
     data_is_b64: true
+    state: present
+
+- name: Create secret foo (from a file on the target machine)
+  community.docker.docker_secret:
+    name: foo
+    data_src: /path/to/secret/file
     state: present
 
 - name: Change the secret data
@@ -182,6 +195,13 @@ class SecretManager(DockerBaseClass):
                 self.data = base64.b64decode(self.data)
             else:
                 self.data = to_bytes(self.data)
+        data_src = parameters.get('data_src')
+        if data_src is not None:
+            try:
+                with open(data_src, 'rb') as f:
+                    self.data = f.read()
+            except Exception as exc:
+                self.client.fail('Error while reading {src}: {error}'.format(src=data_src, error=to_native(exc)))
         self.labels = parameters.get('labels')
         self.force = parameters.get('force')
         self.data_key = None
@@ -268,18 +288,24 @@ def main():
         state=dict(type='str', default='present', choices=['absent', 'present']),
         data=dict(type='str', no_log=True),
         data_is_b64=dict(type='bool', default=False),
+        data_src=dict(type='path'),
         labels=dict(type='dict'),
         force=dict(type='bool', default=False)
     )
 
     required_if = [
-        ('state', 'present', ['data'])
+        ('state', 'present', ['data', 'data_src'], True),
+    ]
+
+    mutually_exclusive = [
+        ('data', 'data_src'),
     ]
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
         required_if=required_if,
+        mutually_exclusive=mutually_exclusive,
         min_docker_version='2.1.0',
         min_docker_api_version='1.25',
     )
