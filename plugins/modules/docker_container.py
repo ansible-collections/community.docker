@@ -25,18 +25,12 @@ notes:
   - If the module needs to recreate the container, it will only use the options provided to the module to create the
     new container (except I(image)). Therefore, always specify *all* options relevant to the container.
   - When I(restart) is set to C(true), the module will only restart the container if no config changes are detected.
-    Please note that several options have default values; if the container to be restarted uses different values for
-    these options, it will be recreated instead. The options with default values which can cause this are I(auto_remove),
-    I(detach), I(init), I(interactive), I(memory), I(paused), I(privileged), I(read_only) and I(tty). This behavior
-    can be changed by setting I(container_default_behavior) to C(no_defaults), which will be the default value from
-    community.docker 2.0.0 on.
 
 options:
   auto_remove:
     description:
       - Enable auto-removal of the container on daemon side when the container's process exits.
-      - If I(container_default_behavior) is set to C(compatiblity) (the default value), this
-        option has a default of C(no).
+      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
     type: bool
   blkio_weight:
     description:
@@ -91,19 +85,18 @@ options:
     type: dict
   container_default_behavior:
     description:
-      - Various module options used to have default values. This causes problems with
-        containers which use different values for these options.
-      - The default value is C(compatibility), which will ensure that the default values
-        are used when the values are not explicitly specified by the user.
-      - From community.docker 2.0.0 on, the default value will switch to C(no_defaults). To avoid
-        deprecation warnings, please set I(container_default_behavior) to an explicit
-        value.
+      - In older versions of this module, various module options used to have default values.
+        This caused problems with containers which use different values for these options.
+      - The default value is now C(no_defaults). To restore the old behavior, set it to
+        C(compatibility), which will ensure that the default values are used when the values
+        are not explicitly specified by the user.
       - This affects the I(auto_remove), I(detach), I(init), I(interactive), I(memory),
         I(paused), I(privileged), I(read_only) and I(tty) options.
     type: str
     choices:
       - compatibility
       - no_defaults
+    default: no_defaults
   command_handling:
     description:
       - The default behavior for I(command) (when provided as a list) and I(entrypoint) is to
@@ -165,8 +158,7 @@ options:
     description:
       - Enable detached mode to leave the container running in background.
       - If disabled, the task will reflect the status of the container run (failed if the command failed).
-      - If I(container_default_behavior) is set to C(compatiblity) (the default value), this
-        option has a default of C(yes).
+      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(true).
     type: bool
   devices:
     description:
@@ -405,14 +397,12 @@ options:
     description:
       - Run an init inside the container that forwards signals and reaps processes.
       - This option requires Docker API >= 1.25.
-      - If I(container_default_behavior) is set to C(compatiblity) (the default value), this
-        option has a default of C(no).
+      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
     type: bool
   interactive:
     description:
       - Keep stdin open after a container is launched, even if not attached.
-      - If I(container_default_behavior) is set to C(compatiblity) (the default value), this
-        option has a default of C(no).
+      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
     type: bool
   ipc_mode:
     description:
@@ -468,8 +458,7 @@ options:
         Unit can be C(B) (byte), C(K) (kibibyte, 1024B), C(M) (mebibyte), C(G) (gibibyte),
         C(T) (tebibyte), or C(P) (pebibyte)."
       - Omitting the unit defaults to bytes.
-      - If I(container_default_behavior) is set to C(compatiblity) (the default value), this
-        option has a default of C("0").
+      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C("0").
     type: str
   memory_reservation:
     description:
@@ -664,8 +653,7 @@ options:
   paused:
     description:
       - Use with the started state to pause running processes inside the container.
-      - If I(container_default_behavior) is set to C(compatiblity) (the default value), this
-        option has a default of C(no).
+      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
     type: bool
   pid_mode:
     description:
@@ -681,8 +669,7 @@ options:
   privileged:
     description:
       - Give extended privileges to the container.
-      - If I(container_default_behavior) is set to C(compatiblity) (the default value), this
-        option has a default of C(no).
+      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
     type: bool
   publish_all_ports:
     description:
@@ -732,8 +719,7 @@ options:
   read_only:
     description:
       - Mount the container's root file system as read-only.
-      - If I(container_default_behavior) is set to C(compatiblity) (the default value), this
-        option has a default of C(no).
+      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
     type: bool
   recreate:
     description:
@@ -838,8 +824,7 @@ options:
   tty:
     description:
       - Allocate a pseudo-TTY.
-      - If I(container_default_behavior) is set to C(compatiblity) (the default value), this
-        option has a default of C(no).
+      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
     type: bool
   ulimits:
     description:
@@ -3495,13 +3480,6 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
         self._get_additional_minimal_versions()
         self._parse_comparisons()
 
-        if self.module.params['container_default_behavior'] is None:
-            self.module.params['container_default_behavior'] = 'compatibility'
-            self.module.deprecate(
-                'The container_default_behavior option will change its default value from "compatibility" to '
-                '"no_defaults" in community.docker 2.0.0. To remove this warning, please specify an explicit value for it now',
-                version='2.0.0', collection_name='community.docker'  # was Ansible 2.14 / community.general 3.0.0
-            )
         if self.module.params['container_default_behavior'] == 'compatibility':
             old_default_values = dict(
                 auto_remove=False,
@@ -3529,7 +3507,7 @@ def main():
         cleanup=dict(type='bool', default=False),
         command=dict(type='raw'),
         comparisons=dict(type='dict'),
-        container_default_behavior=dict(type='str', choices=['compatibility', 'no_defaults']),
+        container_default_behavior=dict(type='str', default='no_defaults', choices=['compatibility', 'no_defaults']),
         command_handling=dict(type='str', choices=['compatibility', 'correct']),
         cpu_period=dict(type='int'),
         cpu_quota=dict(type='int'),
