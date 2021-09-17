@@ -691,7 +691,8 @@ options:
         is different from the C(docker) command line utility. Use the L(dig lookup,../lookup/dig.html)
         to resolve hostnames."
       - A value of C(all) will publish all exposed container ports to random host ports, ignoring
-        any other mappings. Use I(publish_all_ports) instead as the use of C(all) will be deprecated in version 2.0.0.
+        any other mappings. This is deprecated since version 2.0.0 and will be disallowed in
+        community.docker 3.0.0. Use the I(publish_all_ports) option instead.
       - If I(networks) parameter is provided, will inspect each network to see if there exists
         a bridge network with optional parameter C(com.docker.network.bridge.host_binding_ipv4).
         If such a network is found, then published ports where no host IP address is specified
@@ -1803,12 +1804,13 @@ class TaskParameters(DockerBaseClass):
 
         if 'all' in self.published_ports:
             if len(self.published_ports) > 1:
-                self.client.module.deprecate(
-                    'Specifying "all" in published_ports together with port mappings is not properly '
-                    'supported by the module. The port mappings are currently ignored. Set publish_all_ports '
-                    'to "true" to randomly assign port mappings for those not specified by published_ports. '
-                    'The use of "all" in published_ports next to other values will be removed in version 2.0.0.',
-                    collection_name='community.docker', version='2.0.0')
+                self.client.module.fail_json(msg='"all" can no longer be specified in published_ports next to '
+                                                 'other values. Set publish_all_ports to "true" to randomly '
+                                                 'assign port mappings for those not specified by published_ports.')
+            self.client.module.deprecate(
+                'Specifying "all" in published_ports is deprecated. Set publish_all_ports to "true" instead '
+                'to randomly assign port mappings for those not specified by published_ports',
+                collection_name='community.docker', version='3.0.0')
             return 'all'
 
         default_ip = self.get_default_host_ip()
