@@ -13,7 +13,7 @@
     - name: Define service
       set_fact:
         test_service: |
-          version: '2'
+          version: '3'
           services:
             {{ cname_1 }}:
               image: "{{ docker_test_image_alpine }}"
@@ -111,7 +111,7 @@
         new_env_file: "{{ output_dir }}/new.env"
         new_env_sleep_cmd: sleep 20m
         test_service: |
-          version: '2'
+          version: '3'
           services:
             {{ cname_1 }}:
               image: "{{ docker_test_image_alpine }}"

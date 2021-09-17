@@ -18,7 +18,6 @@ author: "Chris Houseknecht (@chouseknecht)"
 
 description:
   - Uses Docker Compose to start, shutdown and scale services.
-  - Works with compose versions 1 and 2.
   - Configuration can be read from a C(docker-compose.yml) or C(docker-compose.yaml) file or inline using the I(definition) option.
   - See the examples for more details.
   - Supports check mode.

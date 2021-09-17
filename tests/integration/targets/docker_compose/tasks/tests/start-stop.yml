@@ -11,14 +11,14 @@
 - name: Define service
   set_fact:
     test_service: |
-      version: '2'
+      version: '3'
       services:
         {{ cname }}:
           image: "{{ docker_test_image_alpine }}"
           command: '/bin/sh -c "sleep 10m"'
           stop_grace_period: 1s
     test_service_mod: |
-      version: '2'
+      version: '3'
       services:
         {{ cname }}:
           image: "{{ docker_test_image_alpine }}"
