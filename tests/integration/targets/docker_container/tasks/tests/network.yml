@@ -465,6 +465,7 @@
       - name: "{{ nname_2 }}"
       networks_cli_compatible: yes
       comparisons:
+        network_mode: ignore  # otherwise we'd have to set network_mode to nname_1
         networks: ignore
     register: networks_2
 
@@ -502,6 +503,7 @@
       - name: "{{ nname_2 }}"
       networks_cli_compatible: yes
       comparisons:
+        network_mode: ignore  # otherwise we'd have to set network_mode to nname_1
         networks: allow_more_present
       force_kill: yes
     register: networks_5
