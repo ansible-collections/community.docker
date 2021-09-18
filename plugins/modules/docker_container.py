@@ -571,8 +571,8 @@ options:
   network_mode:
     description:
       - Connect the container to a network. Choices are C(bridge), C(host), C(none), C(container:<name|id>), C(<network_name>) or C(default).
-      - "*Note* that from community.docker 2.0.0 on, if I(networks_cli_compatible) is C(true) and I(networks) contains at least one network,
-         the default value for I(network_mode) will be the name of the first network in the I(networks) list. You can prevent this
+      - "Since community.docker 2.0.0, if I(networks_cli_compatible) is C(true) and I(networks) contains at least one network,
+         the default value for I(network_mode) is the name of the first network in the I(networks) list. You can prevent this
          by explicitly specifying a value for I(network_mode), like the default value C(default) which will be used by Docker if
          I(network_mode) is not specified."
     type: str
@@ -626,13 +626,6 @@ options:
          but the default network not attached. This module with I(networks: {name: other}) will
          create a container with both C(default) and C(other) attached. If I(purge_networks) is
          set to C(yes), the C(default) network will be removed afterwards."
-      - "*Note* that docker CLI also sets I(network_mode) to the name of the first network
-         added if C(--network) is specified. For more compatibility with docker CLI, you
-         explicitly have to set I(network_mode) to the name of the first network you're
-         adding. This behavior will change for community.docker 2.0.0: then I(network_mode) will
-         automatically be set to the first network name in I(networks) if I(network_mode)
-         is not specified, I(networks) has at least one entry and I(networks_cli_compatible)
-         is C(true)."
     type: bool
     default: true
   oom_killer:
@@ -3651,17 +3644,9 @@ def main():
         min_docker_api_version='1.20',
     )
     if client.module.params['networks_cli_compatible'] is True and client.module.params['networks'] and client.module.params['network_mode'] is None:
-        client.module.deprecate(
-            'Please note that the default value for `network_mode` will change from not specified '
-            '(which is equal to `default`) to the name of the first network in `networks` if '
-            '`networks` has at least one entry and `networks_cli_compatible` is `true`. You can '
-            'change the behavior now by explicitly setting `network_mode` to the name of the first '
-            'network in `networks`, and remove this warning by setting `network_mode` to `default`. '
-            'Please make sure that the value you set to `network_mode` equals the inspection result '
-            'for existing containers, otherwise the module will recreate them. You can find out the '
-            'correct value by running "docker inspect --format \'{{.HostConfig.NetworkMode}}\' <container_name>"',
-            version='2.0.0', collection_name='community.docker',  # was Ansible 2.14 / community.general 3.0.0
-        )
+        # Same behavior as Docker CLI: if networks are specified, use the name of the first network as the value for network_mode
+        # (assuming no explicit value is specified for network_mode)
+        client.module.params['network_mode'] = client.module.params['networks'][0]['name']
 
     try:
         cm = ContainerManager(client)
