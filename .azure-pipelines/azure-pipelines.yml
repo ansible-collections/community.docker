@@ -55,7 +55,7 @@ stages:
               test: 'devel/sanity/extra'
             - name: Units
               test: 'devel/units/1'
-  - stage: Ansible_2.12
+  - stage: Ansible_2_12
     displayName: Sanity & Units 2.12
     dependsOn: []
     jobs:
@@ -127,7 +127,7 @@ stages:
           groups:
             - 4
             - 5
-  - stage: Docker_2.12
+  - stage: Docker_2_12
     displayName: Docker 2.12
     dependsOn: []
     jobs:
@@ -217,7 +217,7 @@ stages:
             - 3
             - 4
             - 5
-  - stage: Remote_2.12
+  - stage: Remote_2_12
     displayName: Remote 2.12
     dependsOn: []
     jobs:
