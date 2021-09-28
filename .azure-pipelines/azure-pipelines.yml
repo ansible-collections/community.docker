@@ -19,6 +19,11 @@ schedules:
     branches:
       include:
         - main
+  - cron: 0 12 * * 0
+    displayName: Weekly (old stable branches)
+    always: true
+    branches:
+      include:
         - stable-*
 
 variables:
