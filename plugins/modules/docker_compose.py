@@ -17,7 +17,7 @@ short_description: Manage multi-container Docker applications with Docker Compos
 author: "Chris Houseknecht (@chouseknecht)"
 
 description:
-  - Uses Docker Compose to start, shutdown and scale services.
+  - Uses Docker Compose to start, shutdown and scale services. B(This module requires docker-compose < 2.0.0.)
   - Configuration can be read from a C(docker-compose.yml) or C(docker-compose.yaml) file or inline using the I(definition) option.
   - See the examples for more details.
   - Supports check mode.
@@ -176,7 +176,7 @@ extends_documentation_fragment:
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0 (use L(docker-py,https://pypi.org/project/docker-py/) for Python 2.6)"
-  - "docker-compose >= 1.7.0"
+  - "docker-compose >= 1.7.0, < 2.0.0"
   - "Docker API >= 1.20"
   - "PyYAML >= 3.11"
 '''
