@@ -40,11 +40,6 @@ options:
       - The plaintext password for the registry account.
       - Required when I(state) is C(present).
     type: str
-  email:
-    description:
-      - Does nothing, do not use.
-      - Will be removed in community.docker 2.0.0.
-    type: str
   reauthorize:
     description:
       - Refresh existing authentication found in the configuration file.
@@ -147,7 +142,6 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
     HAS_DOCKER_PY,
     DEFAULT_DOCKER_REGISTRY,
     DockerBaseClass,
-    EMAIL_REGEX,
     RequestException,
 )
 
@@ -291,7 +285,6 @@ class LoginManager(DockerBaseClass):
         self.registry_url = parameters.get('registry_url')
         self.username = parameters.get('username')
         self.password = parameters.get('password')
-        self.email = parameters.get('email')
         self.reauthorize = parameters.get('reauthorize')
         self.config_path = parameters.get('config_path')
         self.state = parameters.get('state')
@@ -318,17 +311,12 @@ class LoginManager(DockerBaseClass):
         :return: None
         '''
 
-        if self.email and not re.match(EMAIL_REGEX, self.email):
-            self.fail("Parameter error: the email address appears to be incorrect. Expecting it to match "
-                      "/%s/" % (EMAIL_REGEX))
-
         self.results['actions'].append("Logged into %s" % (self.registry_url))
         self.log("Log into %s with username %s" % (self.registry_url, self.username))
         try:
             response = self.client.login(
                 self.username,
                 password=self.password,
-                email=self.email,
                 registry=self.registry_url,
                 reauth=self.reauthorize,
                 dockercfg_path=self.config_path
@@ -346,7 +334,6 @@ class LoginManager(DockerBaseClass):
                     response = self.client.login(
                         self.username,
                         password=self.password,
-                        email=self.email,
                         registry=self.registry_url,
                         reauth=True,
                         dockercfg_path=self.config_path
@@ -446,8 +433,6 @@ def main():
         registry_url=dict(type='str', default=DEFAULT_DOCKER_REGISTRY, aliases=['registry', 'url']),
         username=dict(type='str'),
         password=dict(type='str', no_log=True),
-        # Was Ansible 2.14 / community.general 3.0.0:
-        email=dict(type='str', removed_in_version='2.0.0', removed_from_collection='community.docker'),
         reauthorize=dict(type='bool', default=False, aliases=['reauth']),
         state=dict(type='str', default='present', choices=['present', 'absent']),
         config_path=dict(type='path', default='~/.docker/config.json', aliases=['dockercfg_path']),
