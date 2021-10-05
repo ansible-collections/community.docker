@@ -150,6 +150,21 @@ releases:
         name: docker_containers
         namespace: null
     release_date: '2021-01-03'
+  1.10.0:
+    changes:
+      minor_changes:
+      - Add the modules docker_container_exec, docker_image_load and docker_plugin
+        to the ``docker`` module defaults group (https://github.com/ansible-collections/community.docker/pull/209).
+      - docker_config - add option ``data_src`` to read configuration data from target
+        (https://github.com/ansible-collections/community.docker/issues/64, https://github.com/ansible-collections/community.docker/pull/203).
+      - docker_secret - add option ``data_src`` to read secret data from target (https://github.com/ansible-collections/community.docker/issues/64,
+        https://github.com/ansible-collections/community.docker/pull/203).
+      release_summary: Regular feature and bugfix release.
+    fragments:
+    - 1.10.0.yml
+    - 203-docker_secret-config-data_src.yml
+    - 209-action-group.yml
+    release_date: '2021-10-05'
   1.2.0:
     changes:
       bugfixes:

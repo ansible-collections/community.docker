@@ -1,2 +1,0 @@
-minor_changes:
-- "Add the modules docker_container_exec, docker_image_load and docker_plugin to the ``docker`` module defaults group (https://github.com/ansible-collections/community.docker/pull/209)."

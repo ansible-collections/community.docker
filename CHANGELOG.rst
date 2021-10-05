@@ -5,6 +5,21 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v1.10.0
+=======
+
+Release Summary
+---------------
+
+Regular feature and bugfix release.
+
+Minor Changes
+-------------
+
+- Add the modules docker_container_exec, docker_image_load and docker_plugin to the ``docker`` module defaults group (https://github.com/ansible-collections/community.docker/pull/209).
+- docker_config - add option ``data_src`` to read configuration data from target (https://github.com/ansible-collections/community.docker/issues/64, https://github.com/ansible-collections/community.docker/pull/203).
+- docker_secret - add option ``data_src`` to read secret data from target (https://github.com/ansible-collections/community.docker/issues/64, https://github.com/ansible-collections/community.docker/pull/203).
+
 v1.9.1
 ======
 
