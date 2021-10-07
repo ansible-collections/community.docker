@@ -4,6 +4,13 @@
 # and should not be used as examples of how to write Ansible roles #
 ####################################################################
 
+- name: Gather facts on controller
+  setup:
+    gather_subset: '!all'
+  delegate_to: localhost
+  delegate_facts: true
+  run_once: true
+
 - name: Make sure ipaddress is available on controller
   pip:
     name: ipaddress
