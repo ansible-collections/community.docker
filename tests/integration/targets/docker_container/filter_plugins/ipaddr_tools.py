@@ -18,10 +18,10 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-from ansible_collections.community.crypto.plugins.module_utils.compat import ipaddress
-
 
 def _normalize_ipaddr(ipaddr):
+    # Import when needed, to allow installation of that module in the test setup
+    import ipaddress
     return ipaddress.ip_address(ipaddr).compressed
 
 
