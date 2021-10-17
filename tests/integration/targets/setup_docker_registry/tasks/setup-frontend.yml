@@ -60,7 +60,7 @@
       - DNS:test-registry.ansible.com
 
   - name: Create frontend certificate
-    community.crypto.openssl_certificate:
+    community.crypto.x509_certificate:
       path: '{{ remote_tmp_dir }}/cert.pem'
       csr_path: '{{ remote_tmp_dir }}/cert.csr'
       privatekey_path: '{{ remote_tmp_dir }}/cert.key'
