@@ -1,0 +1,1 @@
+release_summary: New major release with some deprecations removed and a breaking change in the ``docker_compose`` module regarding the ``timeout`` parameter.
