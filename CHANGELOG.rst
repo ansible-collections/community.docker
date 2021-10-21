@@ -5,6 +5,32 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v2.0.0
+======
+
+Release Summary
+---------------
+
+New major release with some deprecations removed and a breaking change in the ``docker_compose`` module regarding the ``timeout`` parameter.
+
+Breaking Changes / Porting Guide
+--------------------------------
+
+- docker_compose - fixed ``timeout`` defaulting behavior so that ``stop_grace_period``, if defined in the compose file, will be used if `timeout`` is not specified (https://github.com/ansible-collections/community.docker/pull/163).
+
+Deprecated Features
+-------------------
+
+- docker_container - using the special value ``all`` in ``published_ports`` has been deprecated. Use ``publish_all_ports=true`` instead (https://github.com/ansible-collections/community.docker/pull/210).
+
+Removed Features (previously deprecated)
+----------------------------------------
+
+- docker_container - the default value of ``container_default_behavior`` changed to ``no_defaults`` (https://github.com/ansible-collections/community.docker/pull/210).
+- docker_container - the default value of ``network_mode`` is now the name of the first network specified in ``networks`` if such are specified and ``networks_cli_compatible=true`` (https://github.com/ansible-collections/community.docker/pull/210).
+- docker_container - the special value ``all`` can no longer be used in ``published_ports`` next to other values. Please use ``publish_all_ports=true`` instead (https://github.com/ansible-collections/community.docker/pull/210).
+- docker_login - removed the ``email`` option (https://github.com/ansible-collections/community.docker/pull/210).
+
 v1.10.0
 =======
 
