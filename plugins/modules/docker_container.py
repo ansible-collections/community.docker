@@ -701,7 +701,7 @@ options:
         to the first port of the destination range, but to a free port in that range. This is the
         same behavior as for C(docker) command line utility.
       - "Bind addresses must be either IPv4 or IPv6 addresses. Hostnames are *not* allowed. This
-        is different from the C(docker) command line utility. Use the L(dig lookup,../lookup/dig.html)
+        is different from the C(docker) command line utility. Use the R(dig lookup,ansible_collections.community.general.dig_lookup)
         to resolve hostnames."
       - A value of C(all) will publish all exposed container ports to random host ports, ignoring
         any other mappings. Use I(publish_all_ports) instead as the use of C(all) will be deprecated in version 2.0.0.
