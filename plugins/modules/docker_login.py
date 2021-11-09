@@ -70,7 +70,7 @@ extends_documentation_fragment:
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0 (use L(docker-py,https://pypi.org/project/docker-py/) for Python 2.6)"
-  - "L(Python bindings for docker credentials store API) >= 0.2.1
+  - "Python bindings for docker credentials store API >= 0.2.1
     (use L(docker-pycreds,https://pypi.org/project/docker-pycreds/) when using Docker SDK for Python < 4.0.0)"
   - "Docker API >= 1.20"
 author:
