@@ -88,7 +88,7 @@ options:
     description:
       - When set to C(yes) and I(networks), I(volumes), I(images), I(containers) or I(disk_usage) is set to C(yes)
         then output will contain verbose information about objects matching the full output of API method.
-        For details see the documentation of your version of Docker API at L(https://docs.docker.com/engine/api/).
+        For details see the documentation of your version of Docker API at U(https://docs.docker.com/engine/api/).
       - The verbose output in this module contains only subset of information returned by I(_info) module
         for each type of the objects.
     type: bool
