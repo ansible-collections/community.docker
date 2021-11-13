@@ -5,6 +5,14 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v2.0.1
+======
+
+Release Summary
+---------------
+
+Maintenance release with some documentation fixes.
+
 v2.0.0
 ======
 

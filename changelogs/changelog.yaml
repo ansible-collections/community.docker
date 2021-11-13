@@ -457,3 +457,9 @@ releases:
     - 2.0.0.yml
     - 210-deprecations.yml
     release_date: '2021-10-21'
+  2.0.1:
+    changes:
+      release_summary: Maintenance release with some documentation fixes.
+    fragments:
+    - 2.0.1.yml
+    release_date: '2021-11-13'
