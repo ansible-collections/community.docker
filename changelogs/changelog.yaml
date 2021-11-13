@@ -165,6 +165,12 @@ releases:
     - 203-docker_secret-config-data_src.yml
     - 209-action-group.yml
     release_date: '2021-10-05'
+  1.10.1:
+    changes:
+      release_summary: Maintenance release with some documentation fixes.
+    fragments:
+    - 1.10.1.yml
+    release_date: '2021-11-13'
   1.2.0:
     changes:
       bugfixes:
