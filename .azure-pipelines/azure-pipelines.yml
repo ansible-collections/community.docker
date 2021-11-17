@@ -207,7 +207,7 @@ stages:
           testFormat: devel/rhel/{0}
           targets:
             - test: '7.9'
-            - test: '8.4'
+            - test: '8.5'
           groups:
             - 1
             - 2
