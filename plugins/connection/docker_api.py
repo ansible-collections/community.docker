@@ -164,7 +164,7 @@ class Connection(ConnectionBase):
             stderr=True,
             stdin=need_stdin,
             user=self._play_context.remote_user or '',
-            workdir=None,
+            # workdir=None,  - only works for Docker SDK for Python 3.0.0 and later
         ))
         exec_id = exec_data['Id']
 

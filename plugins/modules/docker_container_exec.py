@@ -163,8 +163,13 @@ def main():
         tty=dict(type='bool', default=False),
     )
 
+    option_minimal_versions = dict(
+        chdir=dict(docker_py_version='3.0.0'),
+    )
+
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
+        option_minimal_versions=option_minimal_versions,
         min_docker_api_version='1.20',
         mutually_exclusive=[('argv', 'command')],
         required_one_of=[('argv', 'command')],
@@ -190,6 +195,9 @@ def main():
         selectors = find_selectors(client.module)
 
     try:
+        kwargs = {}
+        if chdir is not None:
+            kwargs['workdir'] = chdir
         exec_data = client.exec_create(
             container,
             argv,
@@ -197,7 +205,7 @@ def main():
             stderr=True,
             stdin=bool(stdin),
             user=user or '',
-            workdir=chdir,
+            **kwargs
         )
         exec_id = exec_data['Id']
 
