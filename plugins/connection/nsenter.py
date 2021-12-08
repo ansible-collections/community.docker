@@ -101,16 +101,16 @@ class Connection(ConnectionBase):
 
         # Rewrite the provided command to prefix it with nsenter
         nsenter_cmd_parts = [
-                "nsenter",
-                "--ipc",
-                "--mount",
-                "--net",
-                "--pid",
-                "--uts",
-                "--preserve-credentials",
-                "--target={0}".format(self._nsenter_pid),
-                "--",
-            ]
+            "nsenter",
+            "--ipc",
+            "--mount",
+            "--net",
+            "--pid",
+            "--uts",
+            "--preserve-credentials",
+            "--target={0}".format(self._nsenter_pid),
+            "--",
+        ]
 
         if isinstance(cmd, (text_type, binary_type)):
             cmd_parts = nsenter_cmd_parts + [cmd]
