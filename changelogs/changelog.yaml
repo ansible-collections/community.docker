@@ -463,3 +463,26 @@ releases:
     fragments:
     - 2.0.1.yml
     release_date: '2021-11-13'
+  2.0.2:
+    changes:
+      bugfixes:
+      - docker_api connection plugin - avoid passing an unnecessary argument to a
+        Docker SDK for Python call that is only supported by version 3.0.0 or later
+        (https://github.com/ansible-collections/community.docker/pull/243).
+      - docker_container_exec - ``chdir`` is only supported since Docker SDK for Python
+        3.0.0. Make sure that this option can only use when 3.0.0 or later is installed,
+        and prevent passing this parameter on when ``chdir`` is not provided to this
+        module (https://github.com/ansible-collections/community.docker/pull/243,
+        https://github.com/ansible-collections/community.docker/issues/242).
+      - nsenter connection plugin - ensure the ``nsenter_pid`` option is retrieved
+        in ``_connect`` instead of ``__init__`` to prevent a crasher due to bad initialization
+        order (https://github.com/ansible-collections/community.docker/pull/249).
+      - nsenter connection plugin - replace the use of ``--all-namespaces`` with specific
+        namespaces to support compatibility with Busybox nsenter (used on, for example,
+        Alpine containers) (https://github.com/ansible-collections/community.docker/pull/249).
+      release_summary: Bugfix release.
+    fragments:
+    - 2.0.2.yml
+    - 243-docker_container_exec-chdir.yml
+    - 249-nsenter-fixes.yml
+    release_date: '2021-12-09'
