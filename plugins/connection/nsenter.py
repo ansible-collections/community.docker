@@ -70,9 +70,10 @@ class Connection(ConnectionBase):
     def __init__(self, *args, **kwargs):
         super(Connection, self).__init__(*args, **kwargs)
         self.cwd = None
-        self._nsenter_pid = self.get_option("nsenter_pid")
 
     def _connect(self):
+        self._nsenter_pid = self.get_option("nsenter_pid")
+
         # Because nsenter requires very high privileges, our remote user
         # is always assumed to be root.
         self._play_context.remote_user = "root"
@@ -99,18 +100,24 @@ class Connection(ConnectionBase):
                                " Please verify if the executable exists and re-try." % executable)
 
         # Rewrite the provided command to prefix it with nsenter
+        nsenter_cmd_parts = [
+            "nsenter",
+            "--ipc",
+            "--mount",
+            "--net",
+            "--pid",
+            "--uts",
+            "--preserve-credentials",
+            "--target={0}".format(self._nsenter_pid),
+            "--",
+        ]
+
         if isinstance(cmd, (text_type, binary_type)):
-            nsenter_cmd = "nsenter --all --preserve-credentials --target={0} -- ".format(self._nsenter_pid)
-            cmd = to_bytes(nsenter_cmd) + to_bytes(cmd)
+            cmd_parts = nsenter_cmd_parts + [cmd]
+            cmd = to_bytes(" ".join(cmd_parts))
         else:
-            nsenter_cmd = [
-                "nsenter",
-                "--all",
-                "--preserve-credentials",
-                "--target={0}".format(self._nsenter_pid),
-                "--",
-            ]
-            cmd = [to_bytes(arg) for arg in nsenter_cmd + cmd]
+            cmd_parts = nsenter_cmd_parts + cmd
+            cmd = [to_bytes(arg) for arg in cmd_parts]
 
         display.vvv(u"EXEC {0}".format(to_text(cmd)), host=self._play_context.remote_addr)
         display.debug("opening command with Popen()")
