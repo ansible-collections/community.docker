@@ -40,6 +40,14 @@ options:
     type: str
     description:
       - The directory to run the command in.
+  detach:
+    description:
+      - Whether to run the command synchronously (I(detach=false), default) or asynchronously (I(detach=true)).
+      - If set to C(true), I(stdin) cannot be provided, and the return values C(stdout), C(stderr) and
+        C(rc) are not returned.
+    type: bool
+    default: false
+    version_added: 2.1.0
   user:
     type: str
     description:
@@ -48,6 +56,7 @@ options:
     type: str
     description:
       - Set the stdin of the command directly to the specified value.
+      - Can only be used if I(detach=false).
   stdin_add_newline:
     type: bool
     default: true
@@ -107,20 +116,27 @@ EXAMPLES = '''
 RETURN = '''
 stdout:
     type: str
-    returned: success
+    returned: success and I(detach=false)
     description:
       - The standard output of the container command.
 stderr:
     type: str
-    returned: success
+    returned: success and I(detach=false)
     description:
       - The standard error output of the container command.
 rc:
     type: int
-    returned: success
+    returned: success and I(detach=false)
     sample: 0
     description:
       - The exit code of the command.
+exec_id:
+    type: str
+    returned: success and I(detach=true)
+    sample: 249d9e3075655baf705ed8f40488c5e9434049cf3431976f1bfdb73741c574c5
+    description:
+      - The execution ID of the command.
+    version_added: 2.1.0
 '''
 
 import shlex
@@ -156,6 +172,7 @@ def main():
         argv=dict(type='list', elements='str'),
         command=dict(type='str'),
         chdir=dict(type='str'),
+        detach=dict(type='bool', default=False),
         user=dict(type='str'),
         stdin=dict(type='str'),
         stdin_add_newline=dict(type='bool', default=True),
@@ -179,6 +196,7 @@ def main():
     argv = client.module.params['argv']
     command = client.module.params['command']
     chdir = client.module.params['chdir']
+    detach = client.module.params['detach']
     user = client.module.params['user']
     stdin = client.module.params['stdin']
     strip_empty_ends = client.module.params['strip_empty_ends']
@@ -187,11 +205,14 @@ def main():
     if command is not None:
         argv = shlex.split(command)
 
+    if detach and stdin is not None:
+        client.module.fail_json(msg='If detach=true, stdin cannot be provided.')
+
     if stdin is not None and client.module.params['stdin_add_newline']:
         stdin += '\n'
 
     selectors = None
-    if stdin:
+    if stdin and not detach:
         selectors = find_selectors(client.module)
 
     try:
@@ -209,45 +230,50 @@ def main():
         )
         exec_id = exec_data['Id']
 
-        if selectors:
-            exec_socket = client.exec_start(
-                exec_id,
-                tty=tty,
-                detach=False,
-                socket=True,
-            )
-            try:
-                with DockerSocketHandlerModule(exec_socket, client.module, selectors) as exec_socket_handler:
-                    if stdin:
-                        exec_socket_handler.write(to_bytes(stdin))
+        if detach:
+            client.exec_start(exec_id, tty=tty, detach=True)
+            client.module.exit_json(changed=True, exec_id=exec_id)
 
-                    stdout, stderr = exec_socket_handler.consume()
-            finally:
-                exec_socket.close()
         else:
-            stdout, stderr = client.exec_start(
-                exec_id,
-                tty=tty,
-                detach=False,
-                stream=False,
-                socket=False,
-                demux=True,
+            if selectors:
+                exec_socket = client.exec_start(
+                    exec_id,
+                    tty=tty,
+                    detach=False,
+                    socket=True,
+                )
+                try:
+                    with DockerSocketHandlerModule(exec_socket, client.module, selectors) as exec_socket_handler:
+                        if stdin:
+                            exec_socket_handler.write(to_bytes(stdin))
+
+                        stdout, stderr = exec_socket_handler.consume()
+                finally:
+                    exec_socket.close()
+            else:
+                stdout, stderr = client.exec_start(
+                    exec_id,
+                    tty=tty,
+                    detach=False,
+                    stream=False,
+                    socket=False,
+                    demux=True,
+                )
+
+            result = client.exec_inspect(exec_id)
+
+            stdout = to_text(stdout or b'')
+            stderr = to_text(stderr or b'')
+            if strip_empty_ends:
+                stdout = stdout.rstrip('\r\n')
+                stderr = stderr.rstrip('\r\n')
+
+            client.module.exit_json(
+                changed=True,
+                stdout=stdout,
+                stderr=stderr,
+                rc=result.get('ExitCode') or 0,
             )
-
-        result = client.exec_inspect(exec_id)
-
-        stdout = to_text(stdout or b'')
-        stderr = to_text(stderr or b'')
-        if strip_empty_ends:
-            stdout = stdout.rstrip('\r\n')
-            stderr = stderr.rstrip('\r\n')
-
-        client.module.exit_json(
-            changed=True,
-            stdout=stdout,
-            stderr=stderr,
-            rc=result.get('ExitCode') or 0,
-        )
     except NotFound:
         client.fail('Could not find container "{0}"'.format(container))
     except APIError as e:
