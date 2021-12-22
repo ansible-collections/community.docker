@@ -162,11 +162,33 @@
 
   - assert:
       that:
+        - result is changed
         - result.rc == 0
         - result.stdout == very_long_string ~ '\n' ~ very_long_string2
         - result.stdout_lines == [very_long_string, very_long_string2]
         - result.stderr == ''
         - result.stderr_lines == []
+        - "'exec_id' not in result"
+
+  - name: Execute in a present container (detached)
+    docker_container_exec:
+      container: "{{ cname }}"
+      argv:
+        - /bin/sh
+        - '-c'
+        - sleep 1m
+      detach: true
+    register: result
+
+  - debug: var=result
+
+  - assert:
+      that:
+        - result is changed
+        - "'rc' not in result"
+        - "'stdout' not in result"
+        - "'stderr' not in result"
+        - result.exec_id is string
 
   always:
   - name: Cleanup
