@@ -164,7 +164,7 @@ def main():
     )
 
     option_minimal_versions = dict(
-        chdir=dict(docker_py_version='3.0.0'),
+        chdir=dict(docker_py_version='3.0.0', docker_api_version='1.35'),
     )
 
     client = AnsibleDockerClient(
