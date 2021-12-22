@@ -215,7 +215,7 @@ def main():
     env = client.module.params['env']
 
     if env is not None:
-        for name, value in sorted(env.items()):
+        for name, value in list(env.items()):
             if not isinstance(value, string_types):
                 client.module.fail_json(
                     msg="Non-string value found for env option. Ambiguous env options must be "
