@@ -72,6 +72,14 @@ options:
     default: false
     description:
       - Whether to allocate a TTY.
+  env:
+    description:
+      - Dictionary of environment variables with their respective values to be passed to the command ran inside the container.
+      - Values which might be parsed as numbers, booleans or other types by the YAML parser must be quoted (for example C("true")) in order to avoid data loss.
+      - Please note that if you are passing values in with Jinja2 templates, like C("{{ value }}"), you need to add C(| string) to prevent Ansible to
+        convert strings such as C("true") back to booleans. The correct way is to use C("{{ value | string }}").
+    type: dict
+    version_added: 2.1.0
 
 extends_documentation_fragment:
   - community.docker.docker
@@ -143,6 +151,7 @@ import shlex
 import traceback
 
 from ansible.module_utils.common.text.converters import to_text, to_bytes, to_native
+from ansible.module_utils.six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
@@ -178,10 +187,12 @@ def main():
         stdin_add_newline=dict(type='bool', default=True),
         strip_empty_ends=dict(type='bool', default=True),
         tty=dict(type='bool', default=False),
+        env=dict(type='dict'),
     )
 
     option_minimal_versions = dict(
         chdir=dict(docker_py_version='3.0.0', docker_api_version='1.35'),
+        env=dict(docker_py_version='2.3.0', docker_api_version='1.25'),
     )
 
     client = AnsibleDockerClient(
@@ -201,6 +212,15 @@ def main():
     stdin = client.module.params['stdin']
     strip_empty_ends = client.module.params['strip_empty_ends']
     tty = client.module.params['tty']
+    env = client.module.params['env']
+
+    if env is not None:
+        for name, value in list(env.items()):
+            if not isinstance(value, string_types):
+                client.module.fail_json(
+                    msg="Non-string value found for env option. Ambiguous env options must be "
+                        "wrapped in quotes to avoid them being interpreted. Key: %s" % (name, ))
+            env[name] = to_text(value, errors='surrogate_or_strict')
 
     if command is not None:
         argv = shlex.split(command)
@@ -219,6 +239,8 @@ def main():
         kwargs = {}
         if chdir is not None:
             kwargs['workdir'] = chdir
+        if env is not None:
+            kwargs['environment'] = env
         exec_data = client.exec_create(
             container,
             argv,
