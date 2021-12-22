@@ -254,7 +254,7 @@ import traceback
 
 from ansible.module_utils.common.text.converters import to_native
 
-from ansible_collections.community.docker.plugins.module_utils.version import Version
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
@@ -268,7 +268,7 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
 try:
     from docker import utils
     from docker.errors import DockerException
-    if Version(docker_version) >= Version('2.0.0'):
+    if LooseVersion(docker_version) >= LooseVersion('2.0.0'):
         from docker.types import IPAMPool, IPAMConfig
 except Exception:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
@@ -502,7 +502,7 @@ class DockerNetworkManager(object):
             ipam_pools = []
             if self.parameters.ipam_config:
                 for ipam_pool in self.parameters.ipam_config:
-                    if Version(docker_version) >= Version('2.0.0'):
+                    if LooseVersion(docker_version) >= LooseVersion('2.0.0'):
                         ipam_pools.append(IPAMPool(**ipam_pool))
                     else:
                         ipam_pools.append(utils.create_ipam_pool(**ipam_pool))
@@ -512,7 +512,7 @@ class DockerNetworkManager(object):
                 # were specified. Leaving this parameter away can significantly speed up
                 # creation; on my machine creation with this option needs ~15 seconds,
                 # and without just a few seconds.
-                if Version(docker_version) >= Version('2.0.0'):
+                if LooseVersion(docker_version) >= LooseVersion('2.0.0'):
                     params['ipam'] = IPAMConfig(driver=self.parameters.ipam_driver,
                                                 pool_configs=ipam_pools,
                                                 options=self.parameters.ipam_driver_options)

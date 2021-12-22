@@ -56,7 +56,7 @@ from ansible.module_utils.common.text.converters import to_bytes, to_native, to_
 from ansible.plugins.connection import ConnectionBase, BUFSIZE
 from ansible.utils.display import Display
 
-from ansible_collections.community.docker.plugins.module_utils.version import Version
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 display = Display()
 
@@ -93,7 +93,7 @@ class Connection(ConnectionBase):
         docker_version = self._get_docker_version()
         if docker_version == u'dev':
             display.warning(u'Docker version number is "dev". Will assume latest version.')
-        if docker_version != u'dev' and Version(docker_version) < Version(u'1.3'):
+        if docker_version != u'dev' and LooseVersion(docker_version) < LooseVersion(u'1.3'):
             raise AnsibleError('docker connection type requires docker 1.3 or higher')
 
         # The remote user we will request from docker (if supported)
@@ -102,7 +102,7 @@ class Connection(ConnectionBase):
         self.actual_user = None
 
         if self._play_context.remote_user is not None:
-            if docker_version == u'dev' or Version(docker_version) >= Version(u'1.7'):
+            if docker_version == u'dev' or LooseVersion(docker_version) >= LooseVersion(u'1.7'):
                 # Support for specifying the exec user was added in docker 1.7
                 self.remote_user = self._play_context.remote_user
                 self.actual_user = self.remote_user

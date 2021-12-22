@@ -20,7 +20,7 @@ from ansible.module_utils.six import string_types
 from ansible.module_utils.six.moves.urllib.parse import urlparse
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE, BOOLEANS_FALSE
 
-from ansible_collections.community.docker.plugins.module_utils.version import Version
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 HAS_DOCKER_PY = True
 HAS_DOCKER_PY_2 = False
@@ -35,10 +35,10 @@ try:
     from docker.tls import TLSConfig
     from docker import auth
 
-    if Version(docker_version) >= Version('3.0.0'):
+    if LooseVersion(docker_version) >= LooseVersion('3.0.0'):
         HAS_DOCKER_PY_3 = True
         from docker import APIClient as Client
-    elif Version(docker_version) >= Version('2.0.0'):
+    elif LooseVersion(docker_version) >= LooseVersion('2.0.0'):
         HAS_DOCKER_PY_2 = True
         from docker import APIClient as Client
     else:
@@ -248,7 +248,7 @@ def get_connect_params(auth, fail_function):
         result['tls'] = _get_tls_config(**tls_config)
 
     if auth.get('use_ssh_client'):
-        if Version(docker_version) < Version('4.4.0'):
+        if LooseVersion(docker_version) < LooseVersion('4.4.0'):
             fail_function("use_ssh_client=True requires Docker SDK for Python 4.4.0 or newer")
         result['use_ssh_client'] = True
 
@@ -267,9 +267,9 @@ class AnsibleDockerClientBase(Client):
     def __init__(self, min_docker_version=None, min_docker_api_version=None):
         if min_docker_version is None:
             min_docker_version = MIN_DOCKER_VERSION
-        NEEDS_DOCKER_PY2 = (Version(min_docker_version) >= Version('2.0.0'))
+        NEEDS_DOCKER_PY2 = (LooseVersion(min_docker_version) >= LooseVersion('2.0.0'))
 
-        self.docker_py_version = Version(docker_version)
+        self.docker_py_version = LooseVersion(docker_version)
 
         if HAS_DOCKER_MODELS and HAS_DOCKER_SSLADAPTER:
             self.fail("Cannot have both the docker-py and docker python modules (old and new version of Docker "
@@ -292,13 +292,13 @@ class AnsibleDockerClientBase(Client):
                     + "or `pip install docker-py` (Python 2.6). The error was: %s"
             self.fail(msg % HAS_DOCKER_ERROR, exception=HAS_DOCKER_TRACEBACK)
 
-        if self.docker_py_version < Version(min_docker_version):
+        if self.docker_py_version < LooseVersion(min_docker_version):
             msg = "Error: Docker SDK for Python version is %s (%s's Python %s). Minimum version required is %s."
             if not NEEDS_DOCKER_PY2:
                 # The minimal required version is < 2.0 (and the current version as well).
                 # Advertise docker (instead of docker-py) for non-Python-2.6 users.
                 msg += DOCKERPYUPGRADE_RECOMMEND_DOCKER
-            elif docker_version < Version('2.0'):
+            elif docker_version < LooseVersion('2.0'):
                 msg += DOCKERPYUPGRADE_SWITCH_TO_DOCKER
             else:
                 msg += DOCKERPYUPGRADE_UPGRADE_DOCKER
@@ -314,9 +314,9 @@ class AnsibleDockerClientBase(Client):
         except Exception as exc:
             self.fail("Error connecting: %s" % exc)
 
-        self.docker_api_version = Version(self.docker_api_version_str)
+        self.docker_api_version = LooseVersion(self.docker_api_version_str)
         if min_docker_api_version is not None:
-            if self.docker_api_version < Version(min_docker_api_version):
+            if self.docker_api_version < LooseVersion(min_docker_api_version):
                 self.fail('Docker API version is %s. Minimum version required is %s.' % (self.docker_api_version_str, min_docker_api_version))
 
     def log(self, msg, pretty_print=False):
@@ -625,7 +625,7 @@ class AnsibleDockerClientBase(Client):
         Get image digest by directly calling the Docker API when running Docker SDK < 4.0.0
         since prior versions did not support accessing private repositories.
         '''
-        if self.docker_py_version < Version('4.0.0'):
+        if self.docker_py_version < LooseVersion('4.0.0'):
             registry = auth.resolve_repository_name(image)[0]
             header = auth.get_config_header(self, registry)
             if header:
@@ -706,9 +706,9 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
             support_docker_py = True
             support_docker_api = True
             if 'docker_py_version' in data:
-                support_docker_py = self.docker_py_version >= Version(data['docker_py_version'])
+                support_docker_py = self.docker_py_version >= LooseVersion(data['docker_py_version'])
             if 'docker_api_version' in data:
-                support_docker_api = self.docker_api_version >= Version(data['docker_api_version'])
+                support_docker_api = self.docker_api_version >= LooseVersion(data['docker_api_version'])
             data['supported'] = support_docker_py and support_docker_api
             # Fail if option is not supported but used
             if not data['supported']:
@@ -730,9 +730,9 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
                         msg = msg % (self.docker_api_version_str, data['docker_api_version'], usg)
                     elif not support_docker_py:
                         msg = "Docker SDK for Python version is %s (%s's Python %s). Minimum version required is %s to %s. "
-                        if Version(data['docker_py_version']) < Version('2.0.0'):
+                        if LooseVersion(data['docker_py_version']) < LooseVersion('2.0.0'):
                             msg += DOCKERPYUPGRADE_RECOMMEND_DOCKER
-                        elif self.docker_py_version < Version('2.0.0'):
+                        elif self.docker_py_version < LooseVersion('2.0.0'):
                             msg += DOCKERPYUPGRADE_SWITCH_TO_DOCKER
                         else:
                             msg += DOCKERPYUPGRADE_UPGRADE_DOCKER
