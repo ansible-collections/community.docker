@@ -476,7 +476,8 @@ import sys
 import tempfile
 import traceback
 from contextlib import contextmanager
-from distutils.version import LooseVersion
+
+from ansible_collections.community.docker.plugins.module_utils.version import Version
 
 try:
     import yaml
@@ -662,7 +663,7 @@ class ContainerManager(DockerBaseClass):
             self.client.fail("Unable to load docker-compose. Try `pip install docker-compose`. Error: %s" %
                              to_native(HAS_COMPOSE_EXC))
 
-        if LooseVersion(compose_version) < LooseVersion(MINIMUM_COMPOSE_VERSION):
+        if Version(compose_version) < Version(MINIMUM_COMPOSE_VERSION):
             self.client.fail("Found docker-compose version %s. Minimum required version is %s. "
                              "Upgrade docker-compose to a min version of %s." %
                              (compose_version, MINIMUM_COMPOSE_VERSION, MINIMUM_COMPOSE_VERSION))
@@ -821,7 +822,7 @@ class ContainerManager(DockerBaseClass):
                             'timeout': self.timeout,
                         }
 
-                        if LooseVersion(compose_version) >= LooseVersion('1.17.0'):
+                        if Version(compose_version) >= Version('1.17.0'):
                             up_kwargs['start'] = not self.stopped
                         elif self.stopped:
                             self.client.module.warn(
@@ -1016,7 +1017,7 @@ class ContainerManager(DockerBaseClass):
         """Returns `True` if the service has no profiles defined or has a profile which is among
            the profiles passed to the `docker compose up` command. Otherwise returns `False`.
         """
-        if LooseVersion(compose_version) < LooseVersion('1.28.0'):
+        if Version(compose_version) < Version('1.28.0'):
             return True
         return service.enabled_for_profiles(self.profiles or [])
 

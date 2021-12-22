@@ -186,7 +186,7 @@ except ImportError:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
     pass
 
-from distutils.version import LooseVersion
+from ansible_collections.community.docker.plugins.module_utils.version import Version
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
@@ -222,7 +222,7 @@ def main():
 
     # Version checks
     cache_min_version = '3.3.0'
-    if client.module.params['builder_cache'] and client.docker_py_version < LooseVersion(cache_min_version):
+    if client.module.params['builder_cache'] and client.docker_py_version < Version(cache_min_version):
         msg = "Error: Docker SDK for Python's version is %s. Minimum version required for builds option is %s. Use `pip install --upgrade docker` to upgrade."
         client.fail(msg % (docker_version, cache_min_version))
 

@@ -326,8 +326,6 @@ import errno
 import os
 import traceback
 
-from distutils.version import LooseVersion
-
 from ansible_collections.community.docker.plugins.module_utils.common import (
     clean_dict_booleans_for_docker_api,
     docker_version,
@@ -339,9 +337,11 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
 )
 from ansible.module_utils.common.text.converters import to_native
 
+from ansible_collections.community.docker.plugins.module_utils.version import Version
+
 if docker_version is not None:
     try:
-        if LooseVersion(docker_version) >= LooseVersion('2.0.0'):
+        if Version(docker_version) >= Version('2.0.0'):
             from docker.auth import resolve_repository_name
         else:
             from docker.auth.auth import resolve_repository_name
@@ -542,7 +542,7 @@ class ImageManager(DockerBaseClass):
 
             try:
                 with open(self.archive_path, 'wb') as fd:
-                    if self.client.docker_py_version >= LooseVersion('3.0.0'):
+                    if self.client.docker_py_version >= Version('3.0.0'):
                         for chunk in saved_image:
                             fd.write(chunk)
                     else:
@@ -672,7 +672,7 @@ class ImageManager(DockerBaseClass):
             dockerfile=self.dockerfile,
             decode=True,
         )
-        if self.client.docker_py_version < LooseVersion('3.0.0'):
+        if self.client.docker_py_version < Version('3.0.0'):
             params['stream'] = True
 
         if self.tag:
@@ -748,7 +748,7 @@ class ImageManager(DockerBaseClass):
                         self.log(line, pretty_print=True)
                         self._extract_output_line(line, load_output)
                 else:
-                    if LooseVersion(docker_version) < LooseVersion('2.5.0'):
+                    if Version(docker_version) < Version('2.5.0'):
                         self.client.module.warn(
                             'The installed version of the Docker SDK for Python does not return the loading results'
                             ' from the Docker daemon. Therefore, we cannot verify whether the expected image was'

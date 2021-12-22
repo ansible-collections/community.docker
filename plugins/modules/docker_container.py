@@ -1189,12 +1189,13 @@ import pipes
 import re
 import shlex
 import traceback
-from distutils.version import LooseVersion
 from time import sleep
 
 from ansible.module_utils.common.text.formatters import human_to_bytes
 from ansible.module_utils.six import string_types
 from ansible.module_utils.common.text.converters import to_native, to_text
+
+from ansible_collections.community.docker.plugins.module_utils.version import Version
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
@@ -1213,7 +1214,7 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
 try:
     from docker import utils
     from ansible_collections.community.docker.plugins.module_utils.common import docker_version
-    if LooseVersion(docker_version) >= LooseVersion('1.10.0'):
+    if Version(docker_version) >= Version('1.10.0'):
         from docker.types import Ulimit, LogConfig
         from docker import types as docker_types
     else:
@@ -1616,7 +1617,7 @@ class TaskParameters(DockerBaseClass):
             healthcheck='healthcheck',
         )
 
-        if self.client.docker_py_version < LooseVersion('3.0'):
+        if self.client.docker_py_version < Version('3.0'):
             # cpu_shares and volume_driver moved to create_host_config in > 3
             create_params['cpu_shares'] = 'cpu_shares'
             create_params['volume_driver'] = 'volume_driver'
@@ -1739,12 +1740,12 @@ class TaskParameters(DockerBaseClass):
             storage_opt='storage_opts',
         )
 
-        if self.client.docker_py_version >= LooseVersion('1.9') and self.client.docker_api_version >= LooseVersion('1.22'):
+        if self.client.docker_py_version >= Version('1.9') and self.client.docker_api_version >= Version('1.22'):
             # blkio_weight can always be updated, but can only be set on creation
             # when Docker SDK for Python and Docker API are new enough
             host_config_params['blkio_weight'] = 'blkio_weight'
 
-        if self.client.docker_py_version >= LooseVersion('3.0'):
+        if self.client.docker_py_version >= Version('3.0'):
             # cpu_shares and volume_driver moved to create_host_config in > 3
             host_config_params['cpu_shares'] = 'cpu_shares'
             host_config_params['volume_driver'] = 'volume_driver'
@@ -2366,7 +2367,7 @@ class Container(DockerBaseClass):
             # That's why it needs special handling here.
             config_mapping['stop_timeout'] = config.get('StopTimeout')
 
-        if self.parameters.client.docker_api_version < LooseVersion('1.22'):
+        if self.parameters.client.docker_api_version < Version('1.22'):
             # For docker API < 1.22, update_container() is not supported. Thus
             # we need to handle all limits which are usually handled by
             # update_container() as configuration changes which require a container
@@ -2442,7 +2443,7 @@ class Container(DockerBaseClass):
         '''
         if not self.container.get('HostConfig'):
             self.fail("limits_differ_from_container: Error parsing container properties. HostConfig missing.")
-        if self.parameters.client.docker_api_version < LooseVersion('1.22'):
+        if self.parameters.client.docker_api_version < Version('1.22'):
             # update_container() call not supported
             return False, []
 
@@ -3123,7 +3124,7 @@ class ContainerManager(DockerBaseClass):
                 self.fail("Error starting container %s: %s" % (container_id, to_native(exc)))
 
             if self.parameters.detach is False:
-                if self.client.docker_py_version >= LooseVersion('3.0'):
+                if self.client.docker_py_version >= Version('3.0'):
                     status = self.client.wait(container_id)['StatusCode']
                 else:
                     status = self.client.wait(container_id)
@@ -3402,10 +3403,10 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
         self.comparisons = comparisons
 
     def _get_additional_minimal_versions(self):
-        stop_timeout_supported = self.docker_api_version >= LooseVersion('1.25')
+        stop_timeout_supported = self.docker_api_version >= Version('1.25')
         stop_timeout_needed_for_update = self.module.params.get("stop_timeout") is not None and self.module.params.get('state') != 'absent'
         if stop_timeout_supported:
-            stop_timeout_supported = self.docker_py_version >= LooseVersion('2.1')
+            stop_timeout_supported = self.docker_py_version >= Version('2.1')
             if stop_timeout_needed_for_update and not stop_timeout_supported:
                 # We warn (instead of fail) since in older versions, stop_timeout was not used
                 # to update the container's configuration, but only when stopping a container.
@@ -3469,7 +3470,7 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
         )
 
         self.image_inspect_source = 'Config'
-        if self.docker_api_version < LooseVersion('1.21'):
+        if self.docker_api_version < Version('1.21'):
             self.image_inspect_source = 'ContainerConfig'
 
         self._get_additional_minimal_versions()

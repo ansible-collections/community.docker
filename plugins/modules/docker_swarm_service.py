@@ -919,7 +919,7 @@ import shlex
 import time
 import traceback
 
-from distutils.version import LooseVersion
+from ansible_collections.community.docker.plugins.module_utils.version import Version
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
@@ -1302,16 +1302,16 @@ class DockerService(DockerBaseClass):
     def can_update_networks(self):
         # Before Docker API 1.29 adding/removing networks was not supported
         return (
-            self.docker_api_version >= LooseVersion('1.29') and
-            self.docker_py_version >= LooseVersion('2.7')
+            self.docker_api_version >= Version('1.29') and
+            self.docker_py_version >= Version('2.7')
         )
 
     @property
     def can_use_task_template_networks(self):
         # In Docker API 1.25 attaching networks to TaskTemplate is preferred over Spec
         return (
-            self.docker_api_version >= LooseVersion('1.25') and
-            self.docker_py_version >= LooseVersion('2.7')
+            self.docker_api_version >= Version('1.25') and
+            self.docker_py_version >= Version('2.7')
         )
 
     @staticmethod
