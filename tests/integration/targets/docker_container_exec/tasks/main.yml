@@ -190,6 +190,29 @@
         - "'stderr' not in result"
         - result.exec_id is string
 
+  - when: docker_py_version is version('2.3.0', '>=') and docker_api_version is version('1.25', '>=')
+    block:
+    - name: Execute in a present container (environment variable)
+      docker_container_exec:
+        container: "{{ cname }}"
+        argv:
+          - /bin/sh
+          - '-c'
+          - 'echo "$FOO" ; echo $FOO > /dev/stderr'
+        env:
+          FOO: |-
+            bar
+            baz
+      register: result
+
+    - assert:
+        that:
+          - result.rc == 0
+          - result.stdout == 'bar\nbaz'
+          - result.stdout_lines == ['bar', 'baz']
+          - result.stderr == 'bar baz'
+          - result.stderr_lines == ['bar baz']
+
   always:
   - name: Cleanup
     docker_container:
