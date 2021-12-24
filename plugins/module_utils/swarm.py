@@ -16,10 +16,10 @@ except ImportError:
     pass
 
 from ansible.module_utils.common.text.converters import to_native
-from ansible_collections.community.docker.plugins.module_utils.common import (
-    AnsibleDockerClient,
-    LooseVersion,
-)
+
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
+
+from ansible_collections.community.docker.plugins.module_utils.common import AnsibleDockerClient
 
 
 class AnsibleDockerSwarmClient(AnsibleDockerClient):
