@@ -476,7 +476,8 @@ import sys
 import tempfile
 import traceback
 from contextlib import contextmanager
-from distutils.version import LooseVersion
+
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 try:
     import yaml

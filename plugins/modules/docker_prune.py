@@ -186,7 +186,7 @@ except ImportError:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
     pass
 
-from distutils.version import LooseVersion
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,

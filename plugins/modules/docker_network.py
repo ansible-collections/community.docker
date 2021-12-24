@@ -252,9 +252,9 @@ network:
 import re
 import traceback
 
-from distutils.version import LooseVersion
-
 from ansible.module_utils.common.text.converters import to_native
+
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
