@@ -41,7 +41,6 @@ DOCUMENTATION = '''
             - name: ansible_docker_host
 '''
 
-import distutils.spawn
 import fcntl
 import os
 import os.path
@@ -54,6 +53,7 @@ import ansible.constants as C
 from ansible.compat import selectors
 from ansible.errors import AnsibleError, AnsibleFileNotFound
 from ansible.module_utils.six.moves import shlex_quote
+from ansible.module_utils.common.process import get_bin_path
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
 from ansible.plugins.connection import ConnectionBase, BUFSIZE
 from ansible.utils.display import Display
@@ -86,8 +86,9 @@ class Connection(ConnectionBase):
         if 'docker_command' in kwargs:
             self.docker_cmd = kwargs['docker_command']
         else:
-            self.docker_cmd = distutils.spawn.find_executable('docker')
-            if not self.docker_cmd:
+            try:
+                self.docker_cmd = get_bin_path('docker')
+            except ValueError:
                 raise AnsibleError("docker command not found in PATH")
 
         docker_version = self._get_docker_version()
