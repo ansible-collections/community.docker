@@ -12,8 +12,6 @@ import re
 import sys
 import traceback
 from datetime import timedelta
-from distutils.version import LooseVersion
-
 
 from ansible.module_utils.basic import AnsibleModule, env_fallback, missing_required_lib
 from ansible.module_utils.common.collections import is_sequence
@@ -21,6 +19,8 @@ from ansible.module_utils.common._collections_compat import Mapping, Sequence
 from ansible.module_utils.six import string_types
 from ansible.module_utils.six.moves.urllib.parse import urlparse
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE, BOOLEANS_FALSE
+
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 HAS_DOCKER_PY = True
 HAS_DOCKER_PY_2 = False

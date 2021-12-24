@@ -919,7 +919,7 @@ import shlex
 import time
 import traceback
 
-from distutils.version import LooseVersion
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
