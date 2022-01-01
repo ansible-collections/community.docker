@@ -61,6 +61,7 @@ options:
       - Command to execute when the container starts. A command may be either a string or a list.
       - Prior to version 2.4, strings were split on commas.
       - See I(command_handling) for differences in how strings and lists are handled.
+      - Test.
     type: raw
   comparisons:
     description:

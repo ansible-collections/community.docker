@@ -45,6 +45,8 @@ Connecting to the Docker API
 
 You can connect to a local or remote API using parameters passed to each task or by setting environment variables. The order of precedence is command line parameters and then environment variables. If neither a command line option nor an environment variable is found, Ansible uses the default value  provided under `Parameters`_.
 
+Another test.
+
 
 Parameters
 ..........
