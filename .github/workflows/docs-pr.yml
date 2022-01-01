@@ -23,21 +23,21 @@ jobs:
       - name: PR comment
         uses: ansible-collections/community.hashi_vault/.github/actions/docs/ansible-docs-build-comment@main
         with:
-          body-includes: '##Docs Build'
+          body-includes: '## Docs Build'
           reactions: heart
           action: ${{ needs.build-docs.outputs.changed != 'true' && 'remove' || '' }}
           on-closed-body: |
-            ##Docs Build 📝
+            ## Docs Build 📝
 
             This PR is closed and any previously published docsite has been unpublished.
           on-merged-body: |
-            ##Docs Build 📝
+            ## Docs Build 📝
 
             Thank you for contribution!✨
 
             This PR has been merged and your docs changes will be incorporated when they are next published.
           body: |
-            ##Docs Build 📝
+            ## Docs Build 📝
 
             Thank you for contribution!✨
 
