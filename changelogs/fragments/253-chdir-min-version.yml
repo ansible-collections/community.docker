@@ -1,2 +1,0 @@
-bugfixes:
-  - "docker_container_exec - disallow using the ``chdir`` option for Docker API before 1.35 (https://github.com/ansible-collections/community.docker/pull/253)."

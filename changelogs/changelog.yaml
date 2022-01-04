@@ -486,3 +486,30 @@ releases:
     - 243-docker_container_exec-chdir.yml
     - 249-nsenter-fixes.yml
     release_date: '2021-12-09'
+  2.1.0:
+    changes:
+      bugfixes:
+      - Various modules and plugins - use vendored version of ``distutils.version``
+        included in ansible-core 2.12 if available. This avoids breakage when ``distutils``
+        is removed from the standard library of Python 3.12. Note that ansible-core
+        2.11, ansible-base 2.10 and Ansible 2.9 are right now not compatible with
+        Python 3.12, hence this fix does not target these ansible-core/-base/2.9 versions
+        (https://github.com/ansible-collections/community.docker/pull/258).
+      - docker connection plugin - replace deprecated ``distutils.spawn.find_executable``
+        with Ansible's ``get_bin_path`` to find the ``docker`` executable (https://github.com/ansible-collections/community.docker/pull/257).
+      - docker_container_exec - disallow using the ``chdir`` option for Docker API
+        before 1.35 (https://github.com/ansible-collections/community.docker/pull/253).
+      minor_changes:
+      - docker_container_exec - add ``detach`` parameter (https://github.com/ansible-collections/community.docker/issues/250,
+        https://github.com/ansible-collections/community.docker/pull/255).
+      - docker_container_exec - add ``env`` option (https://github.com/ansible-collections/community.docker/issues/248,
+        https://github.com/ansible-collections/community.docker/pull/254).
+      release_summary: Feature and bugfix release.
+    fragments:
+    - 2.1.0.yml
+    - 253-chdir-min-version.yml
+    - 254-docker_container_exec-env.yml
+    - 255-docker_container_exec-detach.yml
+    - 257-remove-distutils-spawn.yml
+    - 258-distutils.version.yml
+    release_date: '2022-01-04'

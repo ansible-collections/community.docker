@@ -1,2 +1,0 @@
-minor_changes:
-  - docker_container_exec - add ``env`` option (https://github.com/ansible-collections/community.docker/issues/248, https://github.com/ansible-collections/community.docker/pull/254).
