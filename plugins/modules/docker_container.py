@@ -38,7 +38,7 @@ options:
     type: int
   capabilities:
     description:
-      - List of capabilities to add to the container.
+      - List of capabilities to add to the container (equivalent to docker cap_add).
     type: list
     elements: str
   cap_drop:
