@@ -214,6 +214,18 @@ releases:
     - 257-remove-distutils-spawn.yml
     - 258-distutils.version.yml
     release_date: '2022-01-04'
+  1.10.4:
+    changes:
+      bugfixes:
+      - Fix unintended breaking change caused by `an earlier fix <https://github.com/ansible-collections/community.docker/pull/258>`_
+        by vendoring the deprecated Python standard library ``distutils.version``
+        until this collection stops supporting Ansible 2.9 and ansible-base 2.10 (https://github.com/ansible-collections/community.docker/issues/267,
+        https://github.com/ansible-collections/community.docker/pull/269).
+      release_summary: Emergency release to amend breaking change in previous release.
+    fragments:
+    - 1.10.4.yml
+    - 269-distutils-version-fix.yml
+    release_date: '2022-01-05'
   1.2.0:
     changes:
       bugfixes:
