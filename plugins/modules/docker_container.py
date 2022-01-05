@@ -39,6 +39,7 @@ options:
   capabilities:
     description:
       - List of capabilities to add to the container.
+      - This is equivalent to C(docker run --cap-add), or the docker-compose option C(cap_add).
     type: list
     elements: str
   cap_drop:
