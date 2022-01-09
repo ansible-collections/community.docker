@@ -15,7 +15,7 @@ DOCUMENTATION = '''
 module: docker_login
 short_description: Log into a Docker registry.
 description:
-    - Provides functionality similar to the "docker login" command.
+    - Provides functionality similar to the C(docker login) command.
     - Authenticate with a docker registry and add the credentials to your local Docker config file respectively the
       credentials store associated to the registry. Adding the credentials to the config files resp. the credential
       store allows future connections to the registry using tools such as Ansible's Docker modules, the Docker CLI

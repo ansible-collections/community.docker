@@ -13,7 +13,7 @@ module: docker_volume
 short_description: Manage Docker volumes
 description:
   - Create/remove Docker volumes.
-  - Performs largely the same function as the "docker volume" CLI subcommand.
+  - Performs largely the same function as the C(docker volume) CLI subcommand.
 options:
   volume_name:
     description:
@@ -32,7 +32,7 @@ options:
   driver_options:
     description:
       - "Dictionary of volume settings. Consult docker docs for valid options and values:
-        U(https://docs.docker.com/engine/reference/commandline/volume_create/#driver-specific-options)"
+        U(https://docs.docker.com/engine/reference/commandline/volume_create/#driver-specific-options)."
     type: dict
 
   labels:
@@ -43,8 +43,8 @@ options:
   recreate:
     description:
       - Controls when a volume will be recreated when I(state) is C(present). Please
-        note that recreating an existing volume will cause **any data in the existing volume
-        to be lost!** The volume will be deleted and a new volume with the same name will be
+        note that recreating an existing volume will cause B(any data in the existing volume
+        to be lost!) The volume will be deleted and a new volume with the same name will be
         created.
       - The value C(always) forces the volume to be always recreated.
       - The value C(never) makes sure the volume will not be recreated.

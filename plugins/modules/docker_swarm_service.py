@@ -103,7 +103,7 @@ options:
       - List or dictionary of the service environment variables.
       - If passed a list each items need to be in the format of C(KEY=VALUE).
       - If passed a dictionary values which might be parsed as numbers,
-        booleans or other types by the YAML parser must be quoted (e.g. C("true"))
+        booleans or other types by the YAML parser must be quoted (for example C("true"))
         in order to avoid data loss.
       - Corresponds to the C(--env) option of C(docker service create).
     type: raw
@@ -242,7 +242,7 @@ options:
     suboptions:
       source:
         description:
-          - Mount source (e.g. a volume name or a host path).
+          - Mount source (for example a volume name or a host path).
           - Must be specified if I(type) is not C(tmpfs).
         type: str
       target:
