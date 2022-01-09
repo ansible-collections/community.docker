@@ -22,6 +22,7 @@ description:
   - See the examples for more details.
   - Supports check mode.
   - This module was called C(docker_service) before Ansible 2.8. The usage did not change.
+  - Some minimal docs change.
 
 options:
   project_src:
