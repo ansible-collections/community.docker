@@ -11,7 +11,7 @@ jobs:
     permissions:
       contents: read
     name: Build Ansible Docs
-    uses: ansible-collections/community.hashi_vault/.github/workflows/_shared-docs-build-pr.yml@main
+    uses: ansible-community/github-docs-build/.github/workflows/_shared-docs-build-pr.yml@main
 
   comment:
     permissions:
@@ -21,7 +21,7 @@ jobs:
     name: PR comments
     steps:
       - name: PR comment
-        uses: ansible-collections/community.hashi_vault/.github/actions/docs/ansible-docs-build-comment@main
+        uses: ansible-community/github-docs-build/actions/ansible-docs-build-comment@main
         with:
           body-includes: '## Docs Build'
           reactions: heart
