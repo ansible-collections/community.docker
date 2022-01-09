@@ -8,6 +8,8 @@ This repo contains the `community.docker` Ansible Collection. The collection inc
 
 Please note that this collection does **not** support Windows targets. The connection plugins included in this collection support Windows targets on a best-effort basis, but we are not testing this in CI.
 
+...
+
 ## Tested with Ansible
 
 Tested with the current Ansible 2.9, ansible-base 2.10, ansible-core 2.11 and ansible-core 2.12 releases and the current development version of ansible-core. Ansible versions before 2.9.10 are not supported.
