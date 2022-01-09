@@ -19,11 +19,11 @@ description:
 
 
 notes:
-  - For most config changes, the container needs to be recreated, i.e. the existing container has to be destroyed and
+  - For most config changes, the container needs to be recreated. This means that the existing container has to be destroyed and
     a new one created. This can cause unexpected data loss and downtime. You can use the I(comparisons) option to
     prevent this.
   - If the module needs to recreate the container, it will only use the options provided to the module to create the
-    new container (except I(image)). Therefore, always specify *all* options relevant to the container.
+    new container (except I(image)). Therefore, always specify B(all) options relevant to the container.
   - When I(restart) is set to C(true), the module will only restart the container if no config changes are detected.
 
 options:
@@ -81,7 +81,7 @@ options:
         or restarted if the module option contains a key which isn't present in the
         container's option, or if the value of a key present differs.
       - The wildcard option C(*) can be used to set one of the default values C(strict)
-        or C(ignore) to *all* comparisons which are not explicitly set to other values.
+        or C(ignore) to I(all) comparisons which are not explicitly set to other values.
       - See the examples for details.
     type: dict
   container_default_behavior:
@@ -296,7 +296,7 @@ options:
   env:
     description:
       - Dictionary of key,value pairs.
-      - Values which might be parsed as numbers, booleans or other types by the YAML parser must be quoted (e.g. C("true")) in order to avoid data loss.
+      - Values which might be parsed as numbers, booleans or other types by the YAML parser must be quoted (for example C("true")) in order to avoid data loss.
       - Please note that if you are passing values in with Jinja2 templates, like C("{{ value }}"), you need to add C(| string) to prevent Ansible to
         convert strings such as C("true") back to booleans. The correct way is to use C("{{ value | string }}").
     type: dict
@@ -383,7 +383,7 @@ options:
         container to requested configuration. The evaluation includes the image version. If the image
         version in the registry does not match the container, the container will be recreated. You can
         stop this behavior by setting I(ignore_image) to C(True).
-      - "*Warning:* This option is ignored if C(image: ignore) or C(*: ignore) is specified in the
+      - "B(Warning:) This option is ignored if C(image: ignore) or C(*: ignore) is specified in the
         I(comparisons) option."
     type: bool
     default: no
@@ -451,7 +451,7 @@ options:
       - log_opt
   mac_address:
     description:
-      - Container MAC address (e.g. 92:d0:c6:0a:29:33).
+      - Container MAC address (for example, C(92:d0:c6:0a:29:33)).
     type: str
   memory:
     description:
@@ -495,7 +495,8 @@ options:
         required: true
       source:
         description:
-          - Mount source (e.g. a volume name or a host path).
+          - Mount source.
+          - For example, this can be a volume name or a host path.
           - If not supplied when I(type=volume) an anonymous volume will be created.
         type: str
       type:
@@ -619,7 +620,7 @@ options:
   networks_cli_compatible:
     description:
       - "If I(networks_cli_compatible) is set to C(yes) (default), this module will behave as
-         C(docker run --network) and will *not* add the default network if I(networks) is
+         C(docker run --network) and will B(not) add the default network if I(networks) is
          specified. If I(networks) is not specified, the default network will be attached."
       - "When I(networks_cli_compatible) is set to C(no) and networks are provided to the module
          via the I(networks) option, the module behaves differently than C(docker run --network):
@@ -681,7 +682,7 @@ options:
         Since community.general 0.2.0, if the source port range has length 1, the port will not be assigned
         to the first port of the destination range, but to a free port in that range. This is the
         same behavior as for C(docker) command line utility.
-      - "Bind addresses must be either IPv4 or IPv6 addresses. Hostnames are *not* allowed. This
+      - "Bind addresses must be either IPv4 or IPv6 addresses. Hostnames are B(not) allowed. This
         is different from the C(docker) command line utility. Use the R(dig lookup,ansible_collections.community.general.dig_lookup)
         to resolve hostnames."
       - A value of C(all) will publish all exposed container ports to random host ports, ignoring
@@ -701,7 +702,7 @@ options:
     description:
        - If true, always pull the latest version of an image. Otherwise, will only pull an image
          when missing.
-       - "*Note:* images are only pulled when specified by name. If the image is specified
+       - "B(Note:) images are only pulled when specified by name. If the image is specified
          as a image ID (hash), it cannot be pulled."
     type: bool
     default: no

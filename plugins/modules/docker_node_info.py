@@ -31,7 +31,7 @@ options:
     elements: str
   self:
     description:
-      - If C(true), queries the node (i.e. the docker daemon) the module communicates with.
+      - If C(true), queries the node (that is, the docker daemon) the module communicates with.
       - If C(true) then I(name) is ignored.
       - If C(false) then query depends on I(name) presence and value.
     type: bool

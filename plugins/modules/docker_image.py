@@ -28,7 +28,7 @@ options:
          be specified when this value is used."
       - "Use C(pull) to pull the image from a registry."
       - "Use C(local) to make sure that the image is already available on the local
-         docker daemon, i.e. do not try to build, pull or load the image."
+         docker daemon. This means that the module does not try to build, pull or load the image."
     type: str
     choices:
     - build
@@ -101,7 +101,8 @@ options:
             type: int
           memswap:
             description:
-              - Total memory (memory + swap), -1 to disable swap.
+              - Total memory (memory + swap).
+              - Use C(-1) to disable swap.
             type: int
           cpushares:
             description:
@@ -109,7 +110,8 @@ options:
             type: int
           cpusetcpus:
             description:
-              - CPUs in which to allow execution, e.g., "0-3", "0,1".
+              - CPUs in which to allow execution.
+              - For example, C(0-3) or C(0,1).
             type: str
       use_config_proxy:
         description:
