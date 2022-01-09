@@ -11,7 +11,7 @@ jobs:
     permissions:
       contents: read
     name: Build Ansible Docs
-    uses: ansible-community/github-docs-build/.github/workflows/_shared-docs-build-pr.yml@main
+    uses: felixfontein/github-docs-build/.github/workflows/_shared-docs-build-pr.yml@fix-merge
 
   comment:
     permissions:
