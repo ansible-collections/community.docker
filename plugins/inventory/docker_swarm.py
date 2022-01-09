@@ -38,7 +38,7 @@ DOCUMENTATION = '''
             required: true
             aliases: [ docker_url ]
         verbose_output:
-            description: Toggle to (not) include all available nodes metadata (e.g. C(Platform), C(Architecture), C(OS),
+            description: Toggle to (not) include all available nodes metadata (for example C(Platform), C(Architecture), C(OS),
                          C(EngineVersion))
             type: bool
             default: yes
@@ -132,14 +132,14 @@ plugin: community.docker.docker_swarm
 docker_host: tcp://my-docker-host:2375
 strict: False
 keyed_groups:
-  # add e.g. x86_64 hosts to an arch_x86_64 group
+  # add for example x86_64 hosts to an arch_x86_64 group
   - prefix: arch
     key: 'Description.Platform.Architecture'
-  # add e.g. linux hosts to an os_linux group
+  # add for example linux hosts to an os_linux group
   - prefix: os
     key: 'Description.Platform.OS'
   # create a group per node label
-  # e.g. a node labeled w/ "production" ends up in group "label_production"
+  # for exomple a node labeled w/ "production" ends up in group "label_production"
   # hint: labels containing special characters will be converted to safe names
   - key: 'Spec.Labels'
     prefix: label

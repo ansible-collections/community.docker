@@ -12,7 +12,7 @@ DOCUMENTATION = '''
 module: docker_volume_info
 short_description: Retrieve facts about Docker volumes
 description:
-  - Performs largely the same function as the "docker volume inspect" CLI subcommand.
+  - Performs largely the same function as the C(docker volume inspect) CLI subcommand.
 options:
   name:
     description:
