@@ -42,11 +42,14 @@ DOCUMENTATION = '''
                 - skip
             default: require
         running_required:
-            description: when true, hosts which Docker Machine indicates are in a state other than C(running) will be skipped.
+            description:
+                - When C(true), hosts which Docker Machine indicates are in a state other than C(running) will be skipped.
             type: bool
             default: yes
         verbose_output:
-            description: when true, include all available nodes metadata (for exmaple C(Image), C(Region), C(Size)) as a JSON object named C(docker_machine_node_attributes).
+            description:
+                - When C(true), include all available nodes metadata (for exmaple C(Image), C(Region), C(Size)) as a JSON object
+                  named C(docker_machine_node_attributes).
             type: bool
             default: yes
 '''
