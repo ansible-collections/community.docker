@@ -46,7 +46,7 @@ DOCUMENTATION = '''
             type: bool
             default: yes
         verbose_output:
-            description: when true, include all available nodes metadata (e.g. Image, Region, Size) as a JSON object named C(docker_machine_node_attributes).
+            description: when true, include all available nodes metadata (for exmaple C(Image), C(Region), C(Size)) as a JSON object named C(docker_machine_node_attributes).
             type: bool
             default: yes
 '''
@@ -56,7 +56,7 @@ EXAMPLES = '''
 plugin: community.docker.docker_machine
 
 # Example using constructed features to create a group per Docker Machine driver
-# (https://docs.docker.com/machine/drivers/), e.g.:
+# (https://docs.docker.com/machine/drivers/), for example:
 #   $ docker-machine create --driver digitalocean ... mymachine
 #   $ ansible-inventory -i ./path/to/docker-machine.yml --host=mymachine
 #   {

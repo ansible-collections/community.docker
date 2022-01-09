@@ -12,7 +12,7 @@ module: docker_network
 short_description: Manage Docker networks
 description:
   - Create/remove Docker networks and connect containers to them.
-  - Performs largely the same function as the "docker network" CLI subcommand.
+  - Performs largely the same function as the C(docker network) CLI subcommand.
 options:
   name:
     description:
@@ -155,7 +155,7 @@ notes:
     It does not try to reconnect containers, except the ones listed in (I(connected), and even for these, it does not consider specific
     connection options like fixed IP addresses or MAC addresses. If you need more control over how the containers are connected to the
     network, loop the M(community.docker.docker_container) module to loop over your containers to make sure they are connected properly.
-  - The module does not support Docker Swarm, i.e. it will not try to disconnect or reconnect services. If services are connected to the
+  - The module does not support Docker Swarm. This means that it will not try to disconnect or reconnect services. If services are connected to the
     network, deleting the network will fail. When network options are changed, the network has to be deleted and recreated, so this will
     fail as well.
 
