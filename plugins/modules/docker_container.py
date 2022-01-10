@@ -78,7 +78,7 @@ options:
         specified for lists or sets, the container will only be updated or restarted if
         the module option contains a value which is not present in the container's
         options. If the option is specified for a dict, the container will only be updated
-        or restarted if the module option contains a key which isn't present in the
+        or restarted if the module option contains a key which is not present in the
         container's option, or if the value of a key present differs.
       - The wildcard option C(*) can be used to set one of the default values C(strict)
         or C(ignore) to I(all) comparisons which are not explicitly set to other values.
@@ -1054,7 +1054,7 @@ EXAMPLES = '''
     volumes:
       - /tmp:/tmp
     comparisons:
-      image: ignore   # don't restart containers with older versions of the image
+      image: ignore   # do not restart containers with older versions of the image
       env: strict   # we want precisely this environment
       volumes: allow_more_present   # if there are more volumes, that's ok, as long as `/tmp:/tmp` is there
 
