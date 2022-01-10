@@ -139,7 +139,7 @@ keyed_groups:
   - prefix: os
     key: docker_platform
 
-# Example using SSH connection with an explicit fallback for when port 22 hasn't been
+# Example using SSH connection with an explicit fallback for when port 22 has not been
 # exported: use container name as ansible_ssh_host and 22 as ansible_ssh_port
 plugin: community.docker.docker_containers
 connection_type: ssh
