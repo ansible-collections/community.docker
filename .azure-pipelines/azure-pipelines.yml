@@ -168,8 +168,6 @@ stages:
         parameters:
           testFormat: 2.12/linux/{0}
           targets:
-            - name: CentOS 8
-              test: centos8
             - name: Fedora 34
               test: fedora34
             - name: Ubuntu 18.04
