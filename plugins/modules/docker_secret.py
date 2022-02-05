@@ -244,7 +244,10 @@ class SecretManager(DockerBaseClass):
             self.absent()
 
     def get_version(self, secret):
-        return int(secret.get('Spec', {}).get('Labels', {}).get('ansible_version', 0))
+        try:
+            return int(secret.get('Spec', {}).get('Labels', {}).get('ansible_version', 0))
+        except ValueError:
+            return 0
 
     def remove_old_versions(self):
         if not self.rolling_versions or self.versions_to_keep < 0:
