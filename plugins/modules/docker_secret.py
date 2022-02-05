@@ -253,7 +253,7 @@ class SecretManager(DockerBaseClass):
         if not self.rolling_versions or self.versions_to_keep < 0:
             return
         if not self.check_mode:
-            while len(self.secrets) >= max(self.versions_to_keep, 1):
+            while len(self.secrets) > max(self.versions_to_keep, 1):
                 self.remove_secret(self.secrets.pop(0))
 
     def get_secret(self):
@@ -292,6 +292,7 @@ class SecretManager(DockerBaseClass):
         try:
             if not self.check_mode:
                 secret_id = self.client.create_secret(self.name, self.data, labels=labels)
+                self.secrets += self.client.secrets(filters={'id': secret_id})
         except APIError as exc:
             self.client.fail("Error creating secret: %s" % to_native(exc))
 
