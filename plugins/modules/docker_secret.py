@@ -307,10 +307,11 @@ class SecretManager(DockerBaseClass):
     def present(self):
         ''' Handles state == 'present', creating or updating the secret '''
         if self.secrets:
-            self.results['secret_id'] = self.secrets[-1]['ID']
-            self.results['secret_name'] = self.secrets[-1]['Spec']['Name']
+            secret = self.secrets[-1]
+            self.results['secret_id'] = secret['ID']
+            self.results['secret_name'] = secret['Spec']['Name']
             data_changed = False
-            attrs = self.secrets[-1].get('Spec', {})
+            attrs = secret.get('Spec', {})
             if attrs.get('Labels', {}).get('ansible_key'):
                 if attrs['Labels']['ansible_key'] != self.data_key:
                     data_changed = True
@@ -319,7 +320,7 @@ class SecretManager(DockerBaseClass):
                     self.client.module.warn("'ansible_key' label not found. Secret will not be changed unless the force parameter is set to 'yes'")
             labels_changed = not compare_generic(self.labels, attrs.get('Labels'), 'allow_more_present', 'dict')
             if self.rolling_versions:
-                self.version = int(attrs.get('Labels', {}).get('ansible_version', 0))
+                self.version = self.get_version(secret)
             if data_changed or labels_changed or self.force:
                 # if something changed or force, delete and re-create the secret
                 if not self.rolling_versions:
