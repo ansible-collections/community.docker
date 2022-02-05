@@ -247,7 +247,7 @@ class SecretManager(DockerBaseClass):
         return int(secret.get('Spec', {}).get('Labels', {}).get('ansible_version', 0))
 
     def remove_old_versions(self):
-        if self.versions_to_keep < 0:
+        if not self.rolling_versions or self.versions_to_keep < 0:
             return
         if not self.check_mode:
             while len(self.secrets) >= max(self.versions_to_keep, 1):
