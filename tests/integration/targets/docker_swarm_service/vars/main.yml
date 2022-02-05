@@ -2,6 +2,8 @@
 
 service_expected_output:
   args: [sleep, '1800']
+  cap_add: null
+  cap_drop: null
   configs: null
   constraints: null
   container_labels: null
