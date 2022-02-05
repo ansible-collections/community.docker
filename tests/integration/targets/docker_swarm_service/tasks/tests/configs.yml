@@ -5,6 +5,7 @@
     service_name: "{{ name_prefix ~ '-configs' }}"
     config_name_1: "{{ name_prefix ~ '-configs-1' }}"
     config_name_2: "{{ name_prefix ~ '-configs-2' }}"
+    config_name_3: "{{ name_prefix ~ '-configs-3' }}"
 
 - name: Registering container name
   set_fact:
@@ -22,6 +23,14 @@
     data: "test"
     state: present
   register: "config_result_2"
+  when: docker_api_version is version('1.30', '>=') and docker_py_version is version('2.6.0', '>=')
+
+- docker_config:
+    name: "{{ config_name_3 }}"
+    data: "config3"
+    state: present
+    rolling_versions: true
+  register: "config_result_3"
   when: docker_api_version is version('1.30', '>=') and docker_py_version is version('2.6.0', '>=')
 
 ####################################################################
@@ -131,6 +140,40 @@
   register: configs_8
   ignore_errors: yes
 
+- name: rolling configs
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: no
+    command: '/bin/sh -v -c "sleep 10m"'
+    configs:
+      - config_name: "{{ config_name_3 }}_v1"
+        filename: "/run/configs/{{ config_name_3 }}.txt"
+  register: configs_9
+  ignore_errors: yes
+
+- name: update rolling config
+  docker_config:
+    name: "{{ config_name_3 }}"
+    data: "newconfig3"
+    state: "present"
+    rolling_versions: true
+  register: configs_10
+  when: docker_api_version is version('1.30', '>=') and docker_py_version is version('2.6.0', '>=')
+  ignore_errors: yes
+
+- name: rolling configs service update
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: no
+    command: '/bin/sh -v -c "sleep 10m"'
+    configs:
+      - config_name: "{{ config_name_3 }}_v2"
+        filename: "/run/configs/{{ config_name_3 }}.txt"
+  register: configs_11
+  ignore_errors: yes
+
 - name: cleanup
   docker_swarm_service:
     name: "{{ service_name }}"
@@ -147,6 +190,9 @@
     - configs_6 is not changed
     - configs_7 is changed
     - configs_8 is not changed
+    - configs_9 is changed
+    - configs_10 is not failed
+    - configs_11 is changed
   when: docker_api_version is version('1.30', '>=') and docker_py_version is version('2.6.0', '>=')
 
 - assert:
@@ -407,6 +453,7 @@
   loop:
     - "{{ config_name_1 }}"
     - "{{ config_name_2 }}"
+    - "{{ config_name_3 }}"
   loop_control:
     loop_var: config_name
   ignore_errors: yes
