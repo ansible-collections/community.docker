@@ -51,6 +51,18 @@ options:
       - If C(true), an existing secret will be replaced, even if it has not changed.
     type: bool
     default: no
+  rolling_versions:
+    description:
+      - If set to C(true), secrets are created with an increasing version number appended to their name.
+    type: bool
+    default: no
+  versions_to_keep:
+    description:
+      - When using I(rolling_versions), the number of old versions of the secret to keep.
+      - Extraneous old secrets are deleted after the new one is created.
+      - Set to -1 to keep everything or to 0 or 1 to keep only the current one.
+    type: int
+    default: 5
   name:
     description:
       - The name of the secret.
@@ -204,6 +216,11 @@ class SecretManager(DockerBaseClass):
                 self.client.fail('Error while reading {src}: {error}'.format(src=data_src, error=to_native(exc)))
         self.labels = parameters.get('labels')
         self.force = parameters.get('force')
+        self.rolling_versions = parameters.get('rolling_versions')
+        self.versions_to_keep = parameters.get('versions_to_keep')
+
+        if self.rolling_versions:
+            self.version = 0
         self.data_key = None
 
     def __call__(self):
@@ -290,7 +307,9 @@ def main():
         data_is_b64=dict(type='bool', default=False),
         data_src=dict(type='path'),
         labels=dict(type='dict'),
-        force=dict(type='bool', default=False)
+        force=dict(type='bool', default=False),
+        rolling_versions=dict(type='bool', default=False),
+        versions_to_keep=dict(type='int', default=5)
     )
 
     required_if = [
