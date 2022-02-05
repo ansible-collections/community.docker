@@ -352,7 +352,7 @@ def main():
         labels=dict(type='dict'),
         force=dict(type='bool', default=False),
         rolling_versions=dict(type='bool', default=False),
-        versions_to_keep=dict(type='int', default=5)
+        versions_to_keep=dict(type='int', default=5),
     )
 
     required_if = [
