@@ -54,15 +54,18 @@ options:
   rolling_versions:
     description:
       - If set to C(true), secrets are created with an increasing version number appended to their name.
+      - Adds a label containing the version number to the managed secrets with the name C(ansible_version).
     type: bool
-    default: no
+    default: false
+    version_added: 2.2.0
   versions_to_keep:
     description:
       - When using I(rolling_versions), the number of old versions of the secret to keep.
       - Extraneous old secrets are deleted after the new one is created.
-      - Set to -1 to keep everything or to 0 or 1 to keep only the current one.
+      - Set to C(-1) to keep everything or to C(0) or C(1) to keep only the current one.
     type: int
     default: 5
+    version_added: 2.2.0
   name:
     description:
       - The name of the secret.
@@ -173,6 +176,7 @@ secret_name:
   returned: success and I(state) is C(present)
   type: str
   sample: 'awesome_secret'
+  version_added: 2.2.0
 '''
 
 import base64
