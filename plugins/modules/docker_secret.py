@@ -282,7 +282,7 @@ class SecretManager(DockerBaseClass):
         if self.rolling_versions:
             self.version += 1
             labels['ansible_version'] = str(self.version)
-            self.name = self.name + '_v' + str(self.version)
+            self.name = '{name}_v{version}'.format(name=self.name, version=self.version)
         if self.labels:
             labels.update(self.labels)
 
