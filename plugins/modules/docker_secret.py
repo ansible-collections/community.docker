@@ -167,6 +167,12 @@ secret_id:
   returned: success and I(state) is C(present)
   type: str
   sample: 'hzehrmyjigmcp2gb6nlhmjqcv'
+secret_name:
+  description:
+    - The name of the created secret object.
+  returned: success and I(state) is C(present)
+  type: str
+  sample: 'awesome_secret'
 '''
 
 import base64
@@ -298,6 +304,7 @@ class SecretManager(DockerBaseClass):
         ''' Handles state == 'present', creating or updating the secret '''
         if self.secrets:
             self.results['secret_id'] = self.secrets[-1]['ID']
+            self.results['secret_name'] = self.secrets[-1]['Spec']['Name']
             data_changed = False
             attrs = self.secrets[-1].get('Spec', {})
             if attrs.get('Labels', {}).get('ansible_key'):
@@ -316,9 +323,11 @@ class SecretManager(DockerBaseClass):
                 secret_id = self.create_secret()
                 self.results['changed'] = True
                 self.results['secret_id'] = secret_id
+                self.results['secret_name'] = self.name
         else:
             self.results['changed'] = True
             self.results['secret_id'] = self.create_secret()
+            self.results['secret_name'] = self.name
 
     def absent(self):
         ''' Handles state == 'absent', removing the secret '''
@@ -361,7 +370,8 @@ def main():
     try:
         results = dict(
             changed=False,
-            secret_id=''
+            secret_id='',
+            secret_name=''
         )
 
         SecretManager(client, results)()
