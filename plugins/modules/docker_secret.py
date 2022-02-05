@@ -302,7 +302,7 @@ class SecretManager(DockerBaseClass):
             if not self.check_mode:
                 self.client.remove_secret(secret['ID'])
         except APIError as exc:
-            self.client.fail("Error removing secret %s: %s" % (self.name, to_native(exc)))
+            self.client.fail("Error removing secret %s: %s" % (secret['Spec']['Name'], to_native(exc)))
 
     def present(self):
         ''' Handles state == 'present', creating or updating the secret '''
