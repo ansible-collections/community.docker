@@ -222,13 +222,18 @@ class SecretManager(DockerBaseClass):
         if self.rolling_versions:
             self.version = 0
         self.data_key = None
+        self.secrets = []
 
     def __call__(self):
+        self.get_secret()
         if self.state == 'present':
             self.data_key = hashlib.sha224(self.data).hexdigest()
             self.present()
         elif self.state == 'absent':
             self.absent()
+
+    def get_version(self, secret):
+        return secret.get('Spec', {}).get('Labels', {}).get('version', 0)
 
     def get_secret(self):
         ''' Find an existing secret. '''
@@ -237,10 +242,17 @@ class SecretManager(DockerBaseClass):
         except APIError as exc:
             self.client.fail("Error accessing secret %s: %s" % (self.name, to_native(exc)))
 
-        for secret in secrets:
-            if secret['Spec']['Name'] == self.name:
-                return secret
-        return None
+        if self.rolling_versions:
+            self.secrets = [
+                secret
+                for secret in secrets
+                if secret['Spec']['Name'].startswith('{name}_v'.format(name=self.name))
+            ]
+            self.secrets.sort(key=self.get_version)
+        else:
+            self.secrets = [
+                secret for secret in secrets if secret['Spec']['Name'] == self.name
+            ]
 
     def create_secret(self):
         ''' Create a new secret '''
@@ -272,11 +284,10 @@ class SecretManager(DockerBaseClass):
 
     def present(self):
         ''' Handles state == 'present', creating or updating the secret '''
-        secret = self.get_secret()
-        if secret:
-            self.results['secret_id'] = secret['ID']
+        if self.secrets:
+            self.results['secret_id'] = self.secrets[-1]['ID']
             data_changed = False
-            attrs = secret.get('Spec', {})
+            attrs = self.secrets[-1].get('Spec', {})
             if attrs.get('Labels', {}).get('ansible_key'):
                 if attrs['Labels']['ansible_key'] != self.data_key:
                     data_changed = True
@@ -296,9 +307,9 @@ class SecretManager(DockerBaseClass):
 
     def absent(self):
         ''' Handles state == 'absent', removing the secret '''
-        secret = self.get_secret()
-        if secret:
-            self.remove_secret(secret)
+        if self.secrets:
+            for secret in self.secrets:
+                self.remove_secret(secret)
             self.results['changed'] = True
 
 
