@@ -263,6 +263,13 @@ class SecretManager(DockerBaseClass):
 
         return secret_id
 
+    def remove_secret(self, secret):
+        try:
+            if not self.check_mode:
+                self.client.remove_secret(secret['ID'])
+        except APIError as exc:
+            self.client.fail("Error removing secret %s: %s" % (self.name, to_native(exc)))
+
     def present(self):
         ''' Handles state == 'present', creating or updating the secret '''
         secret = self.get_secret()
@@ -291,11 +298,7 @@ class SecretManager(DockerBaseClass):
         ''' Handles state == 'absent', removing the secret '''
         secret = self.get_secret()
         if secret:
-            try:
-                if not self.check_mode:
-                    self.client.remove_secret(secret['ID'])
-            except APIError as exc:
-                self.client.fail("Error removing secret %s: %s" % (self.name, to_native(exc)))
+            self.remove_secret(secret)
             self.results['changed'] = True
 
 
