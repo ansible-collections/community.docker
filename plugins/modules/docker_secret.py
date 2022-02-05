@@ -229,11 +229,19 @@ class SecretManager(DockerBaseClass):
         if self.state == 'present':
             self.data_key = hashlib.sha224(self.data).hexdigest()
             self.present()
+            self.remove_old_versions()
         elif self.state == 'absent':
             self.absent()
 
     def get_version(self, secret):
         return secret.get('Spec', {}).get('Labels', {}).get('version', 0)
+
+    def remove_old_versions(self):
+        if self.versions_to_keep < 0:
+            return
+        if not self.check_mode:
+            while len(self.secrets) >= max(self.versions_to_keep, 1):
+                self.remove_secret(self.secrets.pop(0))
 
     def get_secret(self):
         ''' Find an existing secret. '''
@@ -297,7 +305,8 @@ class SecretManager(DockerBaseClass):
             labels_changed = not compare_generic(self.labels, attrs.get('Labels'), 'allow_more_present', 'dict')
             if data_changed or labels_changed or self.force:
                 # if something changed or force, delete and re-create the secret
-                self.absent()
+                if not self.rolling_versions:
+                    self.absent()
                 secret_id = self.create_secret()
                 self.results['changed'] = True
                 self.results['secret_id'] = secret_id
