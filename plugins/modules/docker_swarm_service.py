@@ -1797,9 +1797,9 @@ class DockerService(DockerBaseClass):
             force_update = True
         if self.init is not None and self.init != os.init:
             differences.add('init', parameter=self.init, active=os.init)
-        if self.cap_add is not None and self.cap_add != os.cap_add:
+        if has_list_changed(self.cap_add, os.cap_add):
             differences.add('cap_add', parameter=self.cap_add, active=os.cap_add)
-        if self.cap_drop is not None and self.cap_drop != os.cap_drop:
+        if has_list_changed(self.cap_drop, os.cap_drop):
             differences.add('cap_drop', parameter=self.cap_drop, active=os.cap_drop)
         return not differences.empty or force_update, differences, needs_rebuild, force_update
 
