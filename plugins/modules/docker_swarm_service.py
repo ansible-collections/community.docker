@@ -633,12 +633,14 @@ options:
       - Requires API version >= 1.41.
     type: list
     elements: str
+    version_added: 2.2.0
   cap_drop:
     description:
       - List of capabilities to drop from the container.
       - Requires API version >= 1.41.
     type: list
     elements: str
+    version_added: 2.2.0
 extends_documentation_fragment:
 - community.docker.docker
 - community.docker.docker.docker_py_2_documentation
