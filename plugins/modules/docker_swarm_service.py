@@ -669,6 +669,10 @@ swarm_service:
     "args": [
       "3600"
     ],
+    "cap_add": null,
+    "cap_drop": [
+      "ALL"
+    ],
     "command": [
       "sleep"
     ],
