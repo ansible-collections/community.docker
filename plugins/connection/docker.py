@@ -22,16 +22,6 @@ DOCUMENTATION = '''
           R(community.docker.docker_api,ansible_collections.community.docker.docker_api_connection)
           connection plugin.
     options:
-      remote_user:
-        description:
-            - The user to execute as inside the container
-        vars:
-            - name: ansible_user
-            - name: ansible_docker_user
-      docker_extra_args:
-        description:
-            - Extra arguments to pass to the docker command line
-        default: ''
       remote_addr:
         description:
             - The name of the container you want to access.
@@ -40,6 +30,31 @@ DOCUMENTATION = '''
             - name: inventory_hostname
             - name: ansible_host
             - name: ansible_docker_host
+      remote_user:
+        description:
+            - The user to execute as inside the container
+            - If docker is not configured to allow this, the one set by docker itself will be used
+        vars:
+            - name: ansible_user
+            - name: ansible_docker_user
+        ini:
+            - section: defaults
+              key: remote_user
+        env:
+            - name: ANSIBLE_REMOTE_USER
+        cli:
+            - name: user
+        keyword:
+            - name: remote_user
+      docker_extra_args:
+        description:
+            - Extra arguments to pass to the docker command line
+        default: ''
+        vars:
+            - name: ansible_docker_extra_args
+        ini:
+            - section: docker_connection
+              key: extra_cli_args
       container_timeout:
         default: 10
         description:
@@ -51,7 +66,7 @@ DOCUMENTATION = '''
             - key: timeout
               section: defaults
             - key: timeout
-              section: docker
+              section: docker_connection
         vars:
           - name: ansible_docker_timeout
         cli:
