@@ -37,8 +37,26 @@ DOCUMENTATION = '''
             - The name of the container you want to access.
         default: inventory_hostname
         vars:
+            - name: inventory_hostname
             - name: ansible_host
             - name: ansible_docker_host
+      container_timeout:
+        default: 10
+        description:
+            - It controls how long we can wait to access reading output from the container once execution started.
+        env:
+            - name: ANSIBLE_TIMEOUT
+            - name: ANSIBLE_DOCKER_TIMEOUT
+        ini:
+            - key: timeout
+              section: defaults
+            - key: timeout
+              section: docker
+        vars:
+          - name: ansible_docker_timeout
+        cli:
+          - name: timeout
+        type: integer
 '''
 
 import fcntl
@@ -47,7 +65,6 @@ import os.path
 import subprocess
 import re
 
-import ansible.constants as C
 from ansible.compat import selectors
 from ansible.errors import AnsibleError, AnsibleFileNotFound
 from ansible.module_utils.six.moves import shlex_quote
@@ -102,15 +119,15 @@ class Connection(ConnectionBase):
         # The actual user which will execute commands in docker (if known)
         self.actual_user = None
 
-        if self._play_context.remote_user is not None:
+        if self.get_option('remote_user') is not None:
             if docker_version == u'dev' or LooseVersion(docker_version) >= LooseVersion(u'1.7'):
                 # Support for specifying the exec user was added in docker 1.7
-                self.remote_user = self._play_context.remote_user
+                self.remote_user = self.get_option('remote_user')
                 self.actual_user = self.remote_user
             else:
                 self.actual_user = self._get_docker_remote_user()
 
-                if self.actual_user != self._play_context.remote_user:
+                if self.actual_user != self.get_option('remote_user'):
                     display.warning(u'docker {0} does not support remote_user, using container default: {1}'
                                     .format(docker_version, self.actual_user or u'?'))
         elif self._display.verbosity > 2:
@@ -127,8 +144,8 @@ class Connection(ConnectionBase):
 
     def _old_docker_version(self):
         cmd_args = []
-        if self._play_context.docker_extra_args:
-            cmd_args += self._play_context.docker_extra_args.split(' ')
+        if self.get_option('docker_extra_args'):
+            cmd_args += self.get_option('docker_extra_args').split(' ')
 
         old_version_subcommand = ['version']
 
@@ -141,8 +158,8 @@ class Connection(ConnectionBase):
     def _new_docker_version(self):
         # no result yet, must be newer Docker version
         cmd_args = []
-        if self._play_context.docker_extra_args:
-            cmd_args += self._play_context.docker_extra_args.split(' ')
+        if self.get_option('docker_extra_args'):
+            cmd_args += self.get_option('docker_extra_args').split(' ')
 
         new_version_subcommand = ['version', '--format', "'{{.Server.Version}}'"]
 
@@ -167,7 +184,7 @@ class Connection(ConnectionBase):
 
     def _get_docker_remote_user(self):
         """ Get the default user configured in the docker container """
-        p = subprocess.Popen([self.docker_cmd, 'inspect', '--format', '{{.Config.User}}', self._play_context.remote_addr],
+        p = subprocess.Popen([self.docker_cmd, 'inspect', '--format', '{{.Config.User}}', self.get_option('remote_addr')],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         out, err = p.communicate()
@@ -189,8 +206,8 @@ class Connection(ConnectionBase):
 
         local_cmd = [self.docker_cmd]
 
-        if self._play_context.docker_extra_args:
-            local_cmd += self._play_context.docker_extra_args.split(' ')
+        if self.get_option('docker_extra_args'):
+            local_cmd += self.get_option('docker_extra_args').split(' ')
 
         local_cmd += [b'exec']
 
@@ -198,7 +215,7 @@ class Connection(ConnectionBase):
             local_cmd += [b'-u', self.remote_user]
 
         # -i is needed to keep stdin open which allows pipelining to work
-        local_cmd += [b'-i', self._play_context.remote_addr] + cmd
+        local_cmd += [b'-i', self.get_option('remote_addr') + cmd]
 
         return local_cmd
 
@@ -207,7 +224,7 @@ class Connection(ConnectionBase):
         super(Connection, self)._connect()
         if not self._connected:
             display.vvv(u"ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
-                self.actual_user or u'?'), host=self._play_context.remote_addr
+                self.actual_user or u'?'), host=self.get_option('remote_addr')
             )
             self._connected = True
 
@@ -217,7 +234,7 @@ class Connection(ConnectionBase):
 
         local_cmd = self._build_exec_cmd([self._play_context.executable, '-c', cmd])
 
-        display.vvv(u"EXEC {0}".format(to_text(local_cmd)), host=self._play_context.remote_addr)
+        display.vvv(u"EXEC {0}".format(to_text(local_cmd)), host=self.get_option('remote_addr'))
         display.debug("opening command with Popen()")
 
         local_cmd = [to_bytes(i, errors='surrogate_or_strict') for i in local_cmd]
@@ -240,7 +257,7 @@ class Connection(ConnectionBase):
             become_output = b''
             try:
                 while not self.become.check_success(become_output) and not self.become.check_password_prompt(become_output):
-                    events = selector.select(self._play_context.timeout)
+                    events = selector.select(self.get_option('container_timeout'))
                     if not events:
                         stdout, stderr = p.communicate()
                         raise AnsibleError('timeout waiting for privilege escalation password prompt:\n' + to_native(become_output))
@@ -292,7 +309,7 @@ class Connection(ConnectionBase):
     def put_file(self, in_path, out_path):
         """ Transfer a file from local to docker container """
         super(Connection, self).put_file(in_path, out_path)
-        display.vvv("PUT %s TO %s" % (in_path, out_path), host=self._play_context.remote_addr)
+        display.vvv("PUT %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
 
         out_path = self._prefix_login_path(out_path)
         if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
@@ -325,14 +342,14 @@ class Connection(ConnectionBase):
     def fetch_file(self, in_path, out_path):
         """ Fetch a file from container to local. """
         super(Connection, self).fetch_file(in_path, out_path)
-        display.vvv("FETCH %s TO %s" % (in_path, out_path), host=self._play_context.remote_addr)
+        display.vvv("FETCH %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
 
         in_path = self._prefix_login_path(in_path)
         # out_path is the final file path, but docker takes a directory, not a
         # file path
         out_dir = os.path.dirname(out_path)
 
-        args = [self.docker_cmd, "cp", "%s:%s" % (self._play_context.remote_addr, in_path), out_dir]
+        args = [self.docker_cmd, "cp", "%s:%s" % (self.get_option('remote_addr'), in_path), out_dir]
         args = [to_bytes(i, errors='surrogate_or_strict') for i in args]
 
         p = subprocess.Popen(args, stdin=subprocess.PIPE,
