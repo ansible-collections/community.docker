@@ -34,7 +34,6 @@ DOCUMENTATION = '''
         description:
             - The user to execute as inside the container.
             - If docker is too old to allow this (< 1.7), the one set by docker itself will be used.
->>>>>>> 9ba1b62 (updated for backwards compat)
         vars:
             - name: ansible_user
             - name: ansible_docker_user
