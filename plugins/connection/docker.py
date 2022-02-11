@@ -32,8 +32,8 @@ DOCUMENTATION = '''
             - name: ansible_docker_host
       remote_user:
         description:
-            - The user to execute as inside the container
-            - If docker is not configured to allow this, the one set by docker itself will be used
+            - The user to execute as inside the container.
+            - If docker is not configured to allow this, the one set by docker itself will be used.
         vars:
             - name: ansible_user
             - name: ansible_docker_user
