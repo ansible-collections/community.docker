@@ -37,11 +37,11 @@ class TestDockerConnectionClass(unittest.TestCase):
             '[sudo via ansible, key=ouzmdnewuhucvuaabtjmweasarviygqq] password: '
         )
         self.in_stream = StringIO()
-        setattr(DockerConnection, '_load_name', 'community.docker.docker')
 
     def tearDown(self):
         pass
 
+    @mock.patch('ansible_collections.community.docker.plugins.connection.docker._load_name', 'community.docker.docker')
     @mock.patch('ansible_collections.community.docker.plugins.connection.docker.Connection._old_docker_version',
                 return_value=('false', 'garbage', '', 1))
     @mock.patch('ansible_collections.community.docker.plugins.connection.docker.Connection._new_docker_version',
@@ -50,6 +50,7 @@ class TestDockerConnectionClass(unittest.TestCase):
         self.assertRaisesRegexp(AnsibleError, '^docker connection type requires docker 1.3 or higher$',
                                 DockerConnection, self.play_context, self.in_stream, docker_command='/fake/docker')
 
+    @mock.patch('ansible_collections.community.docker.plugins.connection.docker._load_name', 'community.docker.docker')
     @mock.patch('ansible_collections.community.docker.plugins.connection.docker.Connection._old_docker_version',
                 return_value=('false', 'garbage', '', 1))
     @mock.patch('ansible_collections.community.docker.plugins.connection.docker.Connection._new_docker_version',
@@ -59,6 +60,7 @@ class TestDockerConnectionClass(unittest.TestCase):
                               DockerConnection)
 
     # old version and new version fail
+    @mock.patch('ansible_collections.community.docker.plugins.connection.docker._load_name', 'community.docker.docker')
     @mock.patch('ansible_collections.community.docker.plugins.connection.docker.Connection._old_docker_version',
                 return_value=('false', 'garbage', '', 1))
     @mock.patch('ansible_collections.community.docker.plugins.connection.docker.Connection._new_docker_version',
