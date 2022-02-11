@@ -37,6 +37,7 @@ class TestDockerConnectionClass(unittest.TestCase):
             '[sudo via ansible, key=ouzmdnewuhucvuaabtjmweasarviygqq] password: '
         )
         self.in_stream = StringIO()
+        setattr(DockerConnection, '_load_name', 'community.docker.docker')
 
     def tearDown(self):
         pass
