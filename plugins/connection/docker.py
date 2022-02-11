@@ -123,12 +123,13 @@ class Connection(ConnectionBase):
             except ValueError:
                 raise AnsibleError("docker command not found in PATH")
 
-        docker_version = self._get_docker_version()
-        if docker_version == u'dev':
+        self.docker_version = self._get_docker_version()
+        if self.docker_version == u'dev':
             display.warning(u'Docker version number is "dev". Will assume latest version.')
-        if docker_version != u'dev' and LooseVersion(docker_version) < LooseVersion(u'1.3'):
+        if self.docker_version != u'dev' and LooseVersion(self.docker_version) < LooseVersion(u'1.3'):
             raise AnsibleError('docker connection type requires docker 1.3 or higher')
 
+        # The remote user
         self._set_conn_data()
 
     @staticmethod
@@ -218,19 +219,18 @@ class Connection(ConnectionBase):
         # docker arguments
         self._docker_args = []
         if self.get_option('docker_extra_args'):
-            cmd_args += self.get_option('docker_extra_args').split(' ')
-        elif self._play_context.get('docker_extra_args').
-            cmd_args += self._play_context.get('docker_extra_args').split(' ')
+            self._docker_args += self.get_option('docker_extra_args').split(' ')
+        elif self._play_context.get('docker_extra_args'):
+            self._docker_args += self._play_context.get('docker_extra_args').split(' ')
 
-        # The remote user
         self.remote_user = self.get_option('remote_user')
-        if remote_user is None and self._play_context.remote_user is not None:
+        if self.remote_user is None and self._play_context.remote_user is not None:
             self.remote_user = self._play_context.remote_user
         # The actual user which will execute commands in docker (if known)
         self.actual_user = None
 
         if self.remote_user is not None:
-            if docker_version == u'dev' or LooseVersion(docker_version) >= LooseVersion(u'1.7'):
+            if self.docker_version == u'dev' or LooseVersion(self.docker_version) >= LooseVersion(u'1.7'):
                 # Support for specifying the exec user was added in docker 1.7
                 self.actual_user = self.remote_user
             else:
@@ -238,7 +238,7 @@ class Connection(ConnectionBase):
                 self.actual_user = self._get_docker_remote_user()
                 if self.actual_user != self.get_option('remote_user'):
                     display.warning(u'docker {0} does not support remote_user, using container default: {1}'
-                                    .format(docker_version, self.actual_user or u'?'))
+                                    .format(self.docker_version, self.actual_user or u'?'))
         elif self._display.verbosity > 2:
             # Since we're not setting the actual_user, look it up so we have it for logging later
             # Only do this if display verbosity is high enough that we'll need the value
@@ -257,8 +257,6 @@ class Connection(ConnectionBase):
             display.vvv(u"ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
                 self.actual_user or u'?'), host=self.get_option('remote_addr')
             )
-
-
             self._connected = True
 
     def exec_command(self, cmd, in_data=None, sudoable=False):
