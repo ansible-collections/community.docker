@@ -526,9 +526,16 @@ class AnsibleDockerClientBase(Client):
                     self.log("Check for docker.io image: %s" % lookup)
                     images = self._image_lookup(lookup, tag)
                 if not images:
-                    # Last case: if docker.io wasn't there, it can be that
-                    # the image wasn't found either (#15586)
+                    # Last case for some Docker versions: if docker.io wasn't there,
+                    # it can be that the image wasn't found either
+                    # (https://github.com/ansible/ansible/pull/15586)
                     lookup = "%s/%s" % (registry, repo_name)
+                    self.log("Check for docker.io image: %s" % lookup)
+                    images = self._image_lookup(lookup, tag)
+                if not images and '/' not in repo_name:
+                    # This seems to be happening with podman-docker
+                    # (https://github.com/ansible-collections/community.docker/issues/291)
+                    lookup = "%s/library/%s" % (registry, repo_name)
                     self.log("Check for docker.io image: %s" % lookup)
                     images = self._image_lookup(lookup, tag)
 
