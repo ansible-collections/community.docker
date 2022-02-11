@@ -33,7 +33,8 @@ DOCUMENTATION = '''
       remote_user:
         description:
             - The user to execute as inside the container.
-            - If docker is not configured to allow this, the one set by docker itself will be used.
+            - If docker is too old to allow this (< 1.7), the one set by docker itself will be used.
+>>>>>>> 9ba1b62 (updated for backwards compat)
         vars:
             - name: ansible_user
             - name: ansible_docker_user
@@ -129,27 +130,7 @@ class Connection(ConnectionBase):
         if docker_version != u'dev' and LooseVersion(docker_version) < LooseVersion(u'1.3'):
             raise AnsibleError('docker connection type requires docker 1.3 or higher')
 
-        # The remote user we will request from docker (if supported)
-        self.remote_user = None
-        # The actual user which will execute commands in docker (if known)
-        self.actual_user = None
-
-        if self.get_option('remote_user') is not None:
-            if docker_version == u'dev' or LooseVersion(docker_version) >= LooseVersion(u'1.7'):
-                # Support for specifying the exec user was added in docker 1.7
-                self.remote_user = self.get_option('remote_user')
-                self.actual_user = self.remote_user
-            else:
-                self.actual_user = self._get_docker_remote_user()
-
-                if self.actual_user != self.get_option('remote_user'):
-                    display.warning(u'docker {0} does not support remote_user, using container default: {1}'
-                                    .format(docker_version, self.actual_user or u'?'))
-        elif self._display.verbosity > 2:
-            # Since we're not setting the actual_user, look it up so we have it for logging later
-            # Only do this if display verbosity is high enough that we'll need the value
-            # This saves overhead from calling into docker when we don't need to
-            self.actual_user = self._get_docker_remote_user()
+        self._set_conn_data()
 
     @staticmethod
     def _sanitize_version(version):
@@ -158,9 +139,7 @@ class Connection(ConnectionBase):
         return version
 
     def _old_docker_version(self):
-        cmd_args = []
-        if self.get_option('docker_extra_args'):
-            cmd_args += self.get_option('docker_extra_args').split(' ')
+        cmd_args = self._docker_args
 
         old_version_subcommand = ['version']
 
@@ -172,9 +151,7 @@ class Connection(ConnectionBase):
 
     def _new_docker_version(self):
         # no result yet, must be newer Docker version
-        cmd_args = []
-        if self.get_option('docker_extra_args'):
-            cmd_args += self.get_option('docker_extra_args').split(' ')
+        cmd_args = self._docker_args
 
         new_version_subcommand = ['version', '--format', "'{{.Server.Version}}'"]
 
@@ -234,6 +211,46 @@ class Connection(ConnectionBase):
 
         return local_cmd
 
+    def _set_conn_data(self):
+
+        ''' initialize for the connection, cannot do only in init since all data is not ready at that point '''
+
+        # TODO: this is mostly for backwards compatibility, play_context is used as fallback for older versions
+        # docker arguments
+        self._docker_args = []
+        if self.get_option('docker_extra_args'):
+            cmd_args += self.get_option('docker_extra_args').split(' ')
+        elif self._play_context.get('docker_extra_args').
+            cmd_args += self._play_context.get('docker_extra_args').split(' ')
+
+        # The remote user
+        self.remote_user = self.get_option('remote_user')
+        if remote_user is None and self._play_context.remote_user is not None:
+            self.remote_user = self._play_context.remote_user
+        # The actual user which will execute commands in docker (if known)
+        self.actual_user = None
+
+        if self.remote_user is not None:
+            if docker_version == u'dev' or LooseVersion(docker_version) >= LooseVersion(u'1.7'):
+                # Support for specifying the exec user was added in docker 1.7
+                self.actual_user = self.remote_user
+            else:
+                self.remote_user = None
+                self.actual_user = self._get_docker_remote_user()
+                if self.actual_user != self.get_option('remote_user'):
+                    display.warning(u'docker {0} does not support remote_user, using container default: {1}'
+                                    .format(docker_version, self.actual_user or u'?'))
+        elif self._display.verbosity > 2:
+            # Since we're not setting the actual_user, look it up so we have it for logging later
+            # Only do this if display verbosity is high enough that we'll need the value
+            # This saves overhead from calling into docker when we don't need to
+            self.actual_user = self._get_docker_remote_user()
+
+        # timeout, use unless default and pc is different, backwards compat
+        self.timeout = self.get_option('container_timeout')
+        if self.timeout == 10 and self.timeout != self._play_context.timeout:
+            self.timeout = self._play_context.timeout
+
     def _connect(self, port=None):
         """ Connect to the container. Nothing to do """
         super(Connection, self)._connect()
@@ -241,10 +258,15 @@ class Connection(ConnectionBase):
             display.vvv(u"ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
                 self.actual_user or u'?'), host=self.get_option('remote_addr')
             )
+
+
             self._connected = True
 
     def exec_command(self, cmd, in_data=None, sudoable=False):
         """ Run a command on the docker host """
+
+        self._set_conn_data()
+
         super(Connection, self).exec_command(cmd, in_data=in_data, sudoable=sudoable)
 
         local_cmd = self._build_exec_cmd([self._play_context.executable, '-c', cmd])
@@ -272,7 +294,7 @@ class Connection(ConnectionBase):
             become_output = b''
             try:
                 while not self.become.check_success(become_output) and not self.become.check_password_prompt(become_output):
-                    events = selector.select(self.get_option('container_timeout'))
+                    events = selector.select(self.timeout)
                     if not events:
                         stdout, stderr = p.communicate()
                         raise AnsibleError('timeout waiting for privilege escalation password prompt:\n' + to_native(become_output))
@@ -323,6 +345,7 @@ class Connection(ConnectionBase):
 
     def put_file(self, in_path, out_path):
         """ Transfer a file from local to docker container """
+        self._set_conn_data()
         super(Connection, self).put_file(in_path, out_path)
         display.vvv("PUT %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
 
@@ -356,6 +379,7 @@ class Connection(ConnectionBase):
 
     def fetch_file(self, in_path, out_path):
         """ Fetch a file from container to local. """
+        self._set_conn_data()
         super(Connection, self).fetch_file(in_path, out_path)
         display.vvv("FETCH %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
 
