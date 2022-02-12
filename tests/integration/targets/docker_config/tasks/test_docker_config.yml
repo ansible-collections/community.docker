@@ -150,6 +150,82 @@
       that:
         - not output.changed
 
+# Rolling update
+
+  - name: Create rolling config
+    docker_config:
+      name: rolling_password
+      data: opensesame!
+      rolling_versions: true
+      state: present
+    register: original_output
+
+  - name: Create variable config_id
+    set_fact:
+      config_id: "{{ original_output.config_id }}"
+
+  - name: Inspect config
+    command: "docker config inspect {{ config_id }}"
+    register: inspect
+    ignore_errors: yes
+
+  - debug: var=inspect
+
+  - name: assert config creation succeeded
+    assert:
+      that:
+         - "'rolling_password' in inspect.stdout"
+         - "'ansible_key' in inspect.stdout"
+         - "'ansible_version' in inspect.stdout"
+         - original_output.config_name == 'rolling_password_v1'
+    when: inspect is not failed
+  - assert:
+      that:
+         - "'is too new. Maximum supported API version is' in inspect.stderr"
+    when: inspect is failed
+
+  - name: Create config again
+    docker_config:
+      name: rolling_password
+      data: newpassword!
+      rolling_versions: true
+      state: present
+    register: new_output
+
+  - name: assert that new version is created
+    assert:
+      that:
+         - new_output.changed
+         - new_output.config_id != original_output.config_id
+         - new_output.config_name != original_output.config_name
+         - new_output.config_name == 'rolling_password_v2'
+
+  - name: Remove rolling configs
+    docker_config:
+      name: rolling_password
+      rolling_versions: true
+      state: absent
+
+  - name: Check that config is removed
+    command: "docker config inspect {{ original_output.config_id }}"
+    register: output
+    ignore_errors: yes
+
+  - name: assert config was removed
+    assert:
+      that:
+        - output.failed
+
+  - name: Check that config is removed
+    command: "docker config inspect {{ new_output.config_id }}"
+    register: output
+    ignore_errors: yes
+
+  - name: assert config was removed
+    assert:
+      that:
+        - output.failed
+
   always:
   - name: Remove a Swarm cluster
     docker_swarm:

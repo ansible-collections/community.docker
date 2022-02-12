@@ -51,6 +51,21 @@ options:
       - If C(true), an existing config will be replaced, even if it has not been changed.
     type: bool
     default: no
+  rolling_versions:
+    description:
+      - If set to C(true), configs are created with an increasing version number appended to their name.
+      - Adds a label containing the version number to the managed configs with the name C(ansible_version).
+    type: bool
+    default: false
+    version_added: 2.2.0
+  versions_to_keep:
+    description:
+      - When using I(rolling_versions), the number of old versions of the config to keep.
+      - Extraneous old configs are deleted after the new one is created.
+      - Set to C(-1) to keep everything or to C(0) or C(1) to keep only the current one.
+    type: int
+    default: 5
+    version_added: 2.2.0
   name:
     description:
       - The name of the config.
@@ -156,6 +171,13 @@ config_id:
   returned: success and I(state) is C(present)
   type: str
   sample: 'hzehrmyjigmcp2gb6nlhmjqcv'
+config_name:
+  description:
+    - The name of the created config object.
+  returned: success and I(state) is C(present)
+  type: str
+  sample: 'awesome_config'
+  version_added: 2.2.0
 '''
 
 import base64
@@ -205,14 +227,35 @@ class ConfigManager(DockerBaseClass):
                 self.client.fail('Error while reading {src}: {error}'.format(src=data_src, error=to_native(exc)))
         self.labels = parameters.get('labels')
         self.force = parameters.get('force')
+        self.rolling_versions = parameters.get('rolling_versions')
+        self.versions_to_keep = parameters.get('versions_to_keep')
+
+        if self.rolling_versions:
+            self.version = 0
         self.data_key = None
+        self.configs = []
 
     def __call__(self):
+        self.get_config()
         if self.state == 'present':
             self.data_key = hashlib.sha224(self.data).hexdigest()
             self.present()
+            self.remove_old_versions()
         elif self.state == 'absent':
             self.absent()
+
+    def get_version(self, config):
+        try:
+            return int(config.get('Spec', {}).get('Labels', {}).get('ansible_version', 0))
+        except ValueError:
+            return 0
+
+    def remove_old_versions(self):
+        if not self.rolling_versions or self.versions_to_keep < 0:
+            return
+        if not self.check_mode:
+            while len(self.configs) > max(self.versions_to_keep, 1):
+                self.remove_config(self.configs.pop(0))
 
     def get_config(self):
         ''' Find an existing config. '''
@@ -221,10 +264,17 @@ class ConfigManager(DockerBaseClass):
         except APIError as exc:
             self.client.fail("Error accessing config %s: %s" % (self.name, to_native(exc)))
 
-        for config in configs:
-            if config['Spec']['Name'] == self.name:
-                return config
-        return None
+        if self.rolling_versions:
+            self.configs = [
+                config
+                for config in configs
+                if config['Spec']['Name'].startswith('{name}_v'.format(name=self.name))
+            ]
+            self.configs.sort(key=self.get_version)
+        else:
+            self.configs = [
+                config for config in configs if config['Spec']['Name'] == self.name
+            ]
 
     def create_config(self):
         ''' Create a new config '''
@@ -233,12 +283,17 @@ class ConfigManager(DockerBaseClass):
         labels = {
             'ansible_key': self.data_key
         }
+        if self.rolling_versions:
+            self.version += 1
+            labels['ansible_version'] = str(self.version)
+            self.name = '{name}_v{version}'.format(name=self.name, version=self.version)
         if self.labels:
             labels.update(self.labels)
 
         try:
             if not self.check_mode:
                 config_id = self.client.create_config(self.name, self.data, labels=labels)
+                self.configs += self.client.configs(filters={'id': config_id})
         except APIError as exc:
             self.client.fail("Error creating config: %s" % to_native(exc))
 
@@ -247,36 +302,48 @@ class ConfigManager(DockerBaseClass):
 
         return config_id
 
+    def remove_config(self, config):
+        try:
+            if not self.check_mode:
+                self.client.remove_config(config['ID'])
+        except APIError as exc:
+            self.client.fail("Error removing config %s: %s" % (config['Spec']['Name'], to_native(exc)))
+
     def present(self):
         ''' Handles state == 'present', creating or updating the config '''
-        config = self.get_config()
-        if config:
+        if self.configs:
+            config = self.configs[-1]
             self.results['config_id'] = config['ID']
+            self.results['config_name'] = config['Spec']['Name']
             data_changed = False
             attrs = config.get('Spec', {})
             if attrs.get('Labels', {}).get('ansible_key'):
                 if attrs['Labels']['ansible_key'] != self.data_key:
                     data_changed = True
+            else:
+                if not self.force:
+                    self.client.module.warn("'ansible_key' label not found. Config will not be changed unless the force parameter is set to 'yes'")
             labels_changed = not compare_generic(self.labels, attrs.get('Labels'), 'allow_more_present', 'dict')
+            if self.rolling_versions:
+                self.version = self.get_version(config)
             if data_changed or labels_changed or self.force:
                 # if something changed or force, delete and re-create the config
-                self.absent()
+                if not self.rolling_versions:
+                    self.absent()
                 config_id = self.create_config()
                 self.results['changed'] = True
                 self.results['config_id'] = config_id
+                self.results['config_name'] = self.name
         else:
             self.results['changed'] = True
             self.results['config_id'] = self.create_config()
+            self.results['config_name'] = self.name
 
     def absent(self):
         ''' Handles state == 'absent', removing the config '''
-        config = self.get_config()
-        if config:
-            try:
-                if not self.check_mode:
-                    self.client.remove_config(config['ID'])
-            except APIError as exc:
-                self.client.fail("Error removing config %s: %s" % (self.name, to_native(exc)))
+        if self.configs:
+            for config in self.configs:
+                self.remove_config(config)
             self.results['changed'] = True
 
 
@@ -288,7 +355,9 @@ def main():
         data_is_b64=dict(type='bool', default=False),
         data_src=dict(type='path'),
         labels=dict(type='dict'),
-        force=dict(type='bool', default=False)
+        force=dict(type='bool', default=False),
+        rolling_versions=dict(type='bool', default=False),
+        versions_to_keep=dict(type='int', default=5),
     )
 
     required_if = [
