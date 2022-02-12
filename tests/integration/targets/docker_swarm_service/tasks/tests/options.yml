@@ -1920,3 +1920,80 @@
     - init_1 is failed
     - "('version is ' ~ docker_api_version ~'. Minimum version required is 1.37') in hosts_1.msg"
   when: docker_api_version is version('1.37', '<')
+
+####################################################################
+## cap_drop, capabilities ##########################################
+####################################################################
+
+- name: capabilities, cap_drop
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: no
+    init: true
+    cap_add:
+    - sys_time
+    cap_drop:
+    - all
+  register: capabilities_1
+  ignore_errors: yes
+
+- name: capabilities, cap_drop (idempotency)
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: no
+    init: true
+    cap_add:
+    - sys_time
+    cap_drop:
+    - all
+  register: capabilities_2
+  ignore_errors: yes
+
+- name: capabilities, cap_drop (less)
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: no
+    init: true
+    cap_add: []
+    cap_drop:
+    - all
+  register: capabilities_3
+  ignore_errors: yes
+
+- name: capabilities, cap_drop (changed)
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: no
+    init: true
+    cap_add:
+    - setgid
+    cap_drop:
+    - all
+  register: capabilities_4
+  ignore_errors: yes
+
+- name: cleanup
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    state: absent
+  diff: no
+
+- assert:
+    that:
+    - capabilities_1 is changed
+    - capabilities_2 is not changed
+    - capabilities_3 is not changed
+    - capabilities_4 is changed
+  when: docker_api_version is version('1.41', '>=') and docker_py_version is version('5.0.3', '>=')
+
+- assert:
+    that:
+    - capabilities_1 is failed
+    - >
+      (('version is ' ~ docker_py_version ~ ' ') in capabilities_1.msg and 'Minimum version required is 5.0.3 ' in capabilities_1.msg)
+      or (('Docker API version is ' ~ docker_api_version ~ '. ') in capabilities_1.msg and 'Minimum version required is 1.41 ' in capabilities_1.msg)
+  when: docker_api_version is version('1.41', '<') or docker_py_version is version('5.0.3', '<')

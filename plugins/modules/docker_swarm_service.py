@@ -627,6 +627,20 @@ options:
       - Path to the working directory.
       - Corresponds to the C(--workdir) option of C(docker service create).
     type: str
+  cap_add:
+    description:
+      - List of capabilities to add to the container.
+      - Requires API version >= 1.41.
+    type: list
+    elements: str
+    version_added: 2.2.0
+  cap_drop:
+    description:
+      - List of capabilities to drop from the container.
+      - Requires API version >= 1.41.
+    type: list
+    elements: str
+    version_added: 2.2.0
 extends_documentation_fragment:
 - community.docker.docker
 - community.docker.docker.docker_py_2_documentation
@@ -654,6 +668,10 @@ swarm_service:
   sample: '{
     "args": [
       "3600"
+    ],
+    "cap_add": null,
+    "cap_drop": [
+      "ALL"
     ],
     "command": [
       "sleep"
@@ -1240,6 +1258,8 @@ class DockerService(DockerBaseClass):
         self.update_order = None
         self.working_dir = None
         self.init = None
+        self.cap_add = None
+        self.cap_drop = None
 
         self.docker_api_version = docker_api_version
         self.docker_py_version = docker_py_version
@@ -1296,6 +1316,8 @@ class DockerService(DockerBaseClass):
             'user': self.user,
             'working_dir': self.working_dir,
             'init': self.init,
+            'cap_add': self.cap_add,
+            'cap_drop': self.cap_drop,
         }
 
     @property
@@ -1525,6 +1547,8 @@ class DockerService(DockerBaseClass):
         s.working_dir = ap['working_dir']
         s.read_only = ap['read_only']
         s.init = ap['init']
+        s.cap_add = ap['cap_add']
+        s.cap_drop = ap['cap_drop']
 
         s.networks = get_docker_networks(ap['networks'], network_ids)
 
@@ -1773,6 +1797,10 @@ class DockerService(DockerBaseClass):
             force_update = True
         if self.init is not None and self.init != os.init:
             differences.add('init', parameter=self.init, active=os.init)
+        if has_list_changed(self.cap_add, os.cap_add):
+            differences.add('cap_add', parameter=self.cap_add, active=os.cap_add)
+        if has_list_changed(self.cap_drop, os.cap_drop):
+            differences.add('cap_drop', parameter=self.cap_drop, active=os.cap_drop)
         return not differences.empty or force_update, differences, needs_rebuild, force_update
 
     def has_healthcheck_changed(self, old_publish):
@@ -1938,6 +1966,10 @@ class DockerService(DockerBaseClass):
             container_spec_args['configs'] = configs
         if self.init is not None:
             container_spec_args['init'] = self.init
+        if self.cap_add is not None:
+            container_spec_args['cap_add'] = self.cap_add
+        if self.cap_drop is not None:
+            container_spec_args['cap_drop'] = self.cap_drop
 
         return types.ContainerSpec(self.image, **container_spec_args)
 
@@ -2131,6 +2163,8 @@ class DockerServiceManager(object):
         ds.stop_signal = task_template_data['ContainerSpec'].get('StopSignal')
         ds.working_dir = task_template_data['ContainerSpec'].get('Dir')
         ds.read_only = task_template_data['ContainerSpec'].get('ReadOnly')
+        ds.cap_add = task_template_data['ContainerSpec'].get('CapabilityAdd')
+        ds.cap_drop = task_template_data['ContainerSpec'].get('CapabilityDrop')
 
         healthcheck_data = task_template_data['ContainerSpec'].get('Healthcheck')
         if healthcheck_data:
@@ -2694,6 +2728,8 @@ def main():
         user=dict(type='str'),
         working_dir=dict(type='str'),
         init=dict(type='bool'),
+        cap_add=dict(type='list', elements='str'),
+        cap_drop=dict(type='list', elements='str'),
     )
 
     option_minimal_versions = dict(
@@ -2715,6 +2751,8 @@ def main():
         resolve_image=dict(docker_api_version='1.30', docker_py_version='3.2.0'),
         rollback_config=dict(docker_py_version='3.5.0', docker_api_version='1.28'),
         init=dict(docker_py_version='4.0.0', docker_api_version='1.37'),
+        cap_add=dict(docker_py_version='5.0.3', docker_api_version='1.41'),
+        cap_drop=dict(docker_py_version='5.0.3', docker_api_version='1.41'),
         # specials
         publish_mode=dict(
             docker_py_version='3.0.0',
