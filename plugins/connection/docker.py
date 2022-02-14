@@ -71,6 +71,7 @@ DOCUMENTATION = '''
               version_added: 2.2.0
         vars:
           - name: ansible_docker_timeout
+            version_added: 2.2.0
         cli:
           - name: timeout
         type: integer
