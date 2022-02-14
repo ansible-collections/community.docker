@@ -32,7 +32,6 @@ cleanup() {
     echo "Shutdown"
     ANSIBLE_ROLES_PATH=.. ansible-playbook shutdown.yml
     echo "Done"
-    exit 0
 }
 
 trap cleanup INT TERM EXIT
