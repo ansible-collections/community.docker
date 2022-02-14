@@ -48,7 +48,7 @@ DOCUMENTATION = '''
             - name: remote_user
       docker_extra_args:
         description:
-            - Extra arguments to pass to the docker command line
+            - Extra arguments to pass to the docker command line.
         default: ''
         vars:
             - name: ansible_docker_extra_args
