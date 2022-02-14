@@ -68,6 +68,7 @@ DOCUMENTATION = '''
               section: defaults
             - key: timeout
               section: docker_connection
+              version_added: 2.2.0
         vars:
           - name: ansible_docker_timeout
         cli:
