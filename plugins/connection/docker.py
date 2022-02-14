@@ -33,7 +33,7 @@ DOCUMENTATION = '''
       remote_user:
         description:
             - The user to execute as inside the container.
-            - If docker is too old to allow this (< 1.7), the one set by docker itself will be used.
+            - If Docker is too old to allow this (< 1.7), the one set by Docker itself will be used.
         vars:
             - name: ansible_user
             - name: ansible_docker_user
