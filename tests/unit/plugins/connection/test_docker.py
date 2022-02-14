@@ -27,6 +27,7 @@ from ansible_collections.community.docker.tests.unit.compat import unittest
 from ansible.errors import AnsibleError
 from ansible.playbook.play_context import PlayContext
 from ansible_collections.community.docker.plugins.connection.docker import Connection as DockerConnection
+from ansible.plugins.loader import connection_loader
 
 
 class TestDockerConnectionClass(unittest.TestCase):
@@ -37,7 +38,7 @@ class TestDockerConnectionClass(unittest.TestCase):
             '[sudo via ansible, key=ouzmdnewuhucvuaabtjmweasarviygqq] password: '
         )
         self.in_stream = StringIO()
-        setattr(DockerConnection, '_load_name', 'community.docker.docker')
+        dc = connection_loader.get('community.docker.docker', self.play_context, self.in_stream)
 
     def tearDown(self):
         pass

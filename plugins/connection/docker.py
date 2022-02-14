@@ -201,8 +201,8 @@ class Connection(ConnectionBase):
 
         local_cmd = [self.docker_cmd]
 
-        if self.get_option('docker_extra_args'):
-            local_cmd += self.get_option('docker_extra_args').split(' ')
+        if self._docker_args:
+            local_cmd += self._docker_args
 
         local_cmd += [b'exec']
 
