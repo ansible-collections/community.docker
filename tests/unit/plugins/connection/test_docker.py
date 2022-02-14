@@ -27,7 +27,6 @@ from ansible_collections.community.docker.tests.unit.compat import unittest
 from ansible.errors import AnsibleError
 from ansible.playbook.play_context import PlayContext
 from ansible_collections.community.docker.plugins.connection.docker import Connection as DockerConnection
-rom ansible_collections.community.docker.plugins.connection import docker as docker_plugin
 
 
 class TestDockerConnectionClass(unittest.TestCase):
