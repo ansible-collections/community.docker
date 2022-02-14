@@ -114,6 +114,8 @@ class Connection(ConnectionBase):
         # configured to be connected to by root and they are not running as
         # root.
 
+        self._docker_args = []
+
         # Windows uses Powershell modules
         if getattr(self._shell, "_IS_WINDOWS", False):
             self.module_implementation_preferences = ('.ps1', '.exe', '')
@@ -220,7 +222,6 @@ class Connection(ConnectionBase):
 
         # TODO: this is mostly for backwards compatibility, play_context is used as fallback for older versions
         # docker arguments
-        self._docker_args = []
         if self.get_option('docker_extra_args'):
             self._docker_args += self.get_option('docker_extra_args').split(' ')
         elif self._play_context.get('docker_extra_args'):
