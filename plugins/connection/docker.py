@@ -58,7 +58,7 @@ DOCUMENTATION = '''
       container_timeout:
         default: 10
         description:
-            - It controls how long we can wait to access reading output from the container once execution started.
+            - Controls how long we can wait to access reading output from the container once execution started.
         env:
             - name: ANSIBLE_TIMEOUT
             - name: ANSIBLE_DOCKER_TIMEOUT
