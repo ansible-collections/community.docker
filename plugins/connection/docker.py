@@ -62,6 +62,7 @@ DOCUMENTATION = '''
         env:
             - name: ANSIBLE_TIMEOUT
             - name: ANSIBLE_DOCKER_TIMEOUT
+              version_added: 2.2.0
         ini:
             - key: timeout
               section: defaults
