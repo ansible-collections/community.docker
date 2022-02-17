@@ -1,5 +1,5 @@
 ---
 - name: Install docker-compose as system package
-  apt:
+  pacman:
     name: "{{ docker_compose_packages }}"
     state: present
