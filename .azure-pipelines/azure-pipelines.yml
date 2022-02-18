@@ -46,6 +46,7 @@ resources:
 pool: Standard
 
 stages:
+
 ### Sanity & units
   - stage: Ansible_devel
     displayName: Sanity & Units devel
@@ -104,6 +105,7 @@ stages:
               test: '2.9/sanity/1'
             - name: Units
               test: '2.9/units/1'
+
 ### Docker
   - stage: Docker_devel
     displayName: Docker devel
@@ -196,6 +198,26 @@ stages:
           groups:
             - 4
             - 5
+
+### Community Docker
+  - stage: Docker_community_devel
+    displayName: Docker (community images) devel
+    dependsOn: []
+    jobs:
+      - template: templates/matrix.yml
+        parameters:
+          testFormat: devel/linux-community/{0}
+          targets:
+            - name: Debian Bullseye
+              test: debian-bullseye/3.9
+            - name: ArchLinux
+              test: archlinux/3.10
+            - name: CentOS Stream 8
+              test: centos-stream8/3.8
+          groups:
+            - 4
+            - 5
+
 ### Remote
   - stage: Remote_devel
     displayName: Remote devel
@@ -297,5 +319,6 @@ stages:
       - Docker_2_11
       - Docker_2_10
       - Docker_2_9
+      - Docker_community_devel
     jobs:
       - template: templates/coverage.yml

@@ -1,0 +1,6 @@
+---
+- name: Install docker
+  community.general.pacman:
+    name: docker
+    update_cache: yes
+  notify: cleanup docker
