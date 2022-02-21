@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v1.10.5
+=======
+
+Release Summary
+---------------
+
+Regular bugfix release.
+
+Bugfixes
+--------
+
+- docker_container, docker_image - adjust image finding code to pecularities of ``podman-docker``'s API emulation when Docker short names like ``redis`` are used (https://github.com/ansible-collections/community.docker/issues/292).
+
 v1.10.4
 =======
 
