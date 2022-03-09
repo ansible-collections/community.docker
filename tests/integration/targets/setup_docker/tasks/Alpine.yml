@@ -1,0 +1,6 @@
+---
+- name: Install docker
+  apk:
+    name: docker
+    update_cache: yes
+  notify: cleanup docker
