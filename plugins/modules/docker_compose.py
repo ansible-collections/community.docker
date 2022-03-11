@@ -587,8 +587,8 @@ def attempt_extract_errors(exc_str, stdout, stderr):
         msg = 'unknown cause'
 
     return {
-        'warnings': [w.encode('utf-8') for w in warnings],
-        'errors': [e.encode('utf-8') for e in errors],
+        'warnings': [to_native(w) for w in warnings],
+        'errors': [to_native(e) for e in errors],
         'msg': msg,
         'module_stderr': ''.join(stderr),
         'module_stdout': ''.join(stdout)
