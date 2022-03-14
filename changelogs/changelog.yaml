@@ -237,6 +237,16 @@ releases:
     - 1.10.5.yml
     - 292-docker-podman-compatibility.yml
     release_date: '2022-02-21'
+  1.10.6:
+    changes:
+      bugfixes:
+      - docker_compose - fix Python 3 type error when extracting warnings or errors
+        from docker-compose's output (https://github.com/ansible-collections/community.docker/pull/305).
+      release_summary: Regular bugfix release.
+    fragments:
+    - 1.10.6.yml
+    - 305-docker_compose-errors-warnings.yml
+    release_date: '2022-03-14'
   1.2.0:
     changes:
       bugfixes:
