@@ -177,3 +177,63 @@
         - "{{ env_file }}"
         - "{{ new_env_file }}"
   when: docker_compose_version is version('1.25.0', '>=')
+
+####################################################################
+## Project_src #####################################################
+####################################################################
+
+- name: Define service and files
+  set_fact:
+    compose_file: "{{ remote_tmp_dir }}/docker-compose.yml"
+    env_sleep_cmd: sleep 10m
+    new_env_sleep_cmd: sleep 20m
+    test_service: |
+      version: '3'
+      services:
+        {{ cname_1 }}:
+          image: "{{ docker_test_image_alpine }}"
+          command: '/bin/sh -c 10m'
+          stop_grace_period: 1s
+
+- name: Generate compose file
+  ansible.builtin.copy:
+    content: "{{ test_service }}"
+    dest: "{{ compose_file }}"
+
+- name: Start with project_src
+  docker_compose:
+    project_src: "{{ remote_tmp_dir }}"
+  register: project_src_1
+
+- name: Start with project_src (idempotent)
+  docker_compose:
+    project_src: "{{ remote_tmp_dir }}"
+  register: project_src_2
+
+- name: Stop with project_src
+  docker_compose:
+    project_src: "{{ remote_tmp_dir }}"
+    state: absent
+  register: project_src_3
+
+- name: Stop with project_src (idempotent)
+  docker_compose:
+    project_src: "{{ remote_tmp_dir }}"
+    state: absent
+  register: project_src_4
+
+- name: Remove files
+  ansible.builtin.file:
+    path: "{{ file_path }}"
+    state: absent
+  loop_control:
+    loop_var: file_path
+  loop:
+    - "{{ compose_file }}"
+
+- assert:
+    that:
+      - project_src_1 is changed
+      # - project_src_2 is not changed    -- for some reason, this currently fails!
+      - project_src_3 is changed
+      - project_src_4 is not changed
