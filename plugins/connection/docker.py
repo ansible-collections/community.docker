@@ -212,7 +212,7 @@ class Connection(ConnectionBase):
             local_cmd += [b'-u', self.remote_user]
 
         # -i is needed to keep stdin open which allows pipelining to work
-        local_cmd += [b'-i', self.get_option('remote_addr') + cmd]
+        local_cmd += [b'-i', self.get_option('remote_addr')] + cmd
 
         return local_cmd
 
@@ -224,8 +224,8 @@ class Connection(ConnectionBase):
         # docker arguments
         if self.get_option('docker_extra_args'):
             self._docker_args += self.get_option('docker_extra_args').split(' ')
-        elif self._play_context.get('docker_extra_args'):
-            self._docker_args += self._play_context.get('docker_extra_args').split(' ')
+        elif self._play_context.docker_extra_args:
+            self._docker_args += self._play_context.docker_extra_args.split(' ')
 
         self.remote_user = self.get_option('remote_user')
         if self.remote_user is None and self._play_context.remote_user is not None:
