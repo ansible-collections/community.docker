@@ -115,6 +115,7 @@ class Connection(ConnectionBase):
         # root.
 
         self._docker_args = []
+        self._container_user_cache = {}
 
         # Windows uses Powershell modules
         if getattr(self._shell, "_IS_WINDOWS", False):
@@ -178,7 +179,10 @@ class Connection(ConnectionBase):
 
     def _get_docker_remote_user(self):
         """ Get the default user configured in the docker container """
-        p = subprocess.Popen([self.docker_cmd, 'inspect', '--format', '{{.Config.User}}', self.get_option('remote_addr')],
+        container = self.get_option('remote_addr')
+        if container in self._container_user_cache:
+            return self._container_user_cache[container]
+        p = subprocess.Popen([self.docker_cmd, 'inspect', '--format', '{{.Config.User}}', container],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         out, err = p.communicate()
@@ -186,10 +190,13 @@ class Connection(ConnectionBase):
 
         if p.returncode != 0:
             display.warning(u'unable to retrieve default user from docker container: %s %s' % (out, to_text(err)))
+            self._container_user_cache[container] = None
             return None
 
         # The default exec user is root, unless it was changed in the Dockerfile with USER
-        return out.strip() or u'root'
+        user = out.strip() or u'root'
+        self._container_user_cache[container] = user
+        return user
 
     def _build_exec_cmd(self, cmd):
         """ Build the local docker exec command to run cmd on remote_host
