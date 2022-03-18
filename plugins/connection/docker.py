@@ -134,9 +134,6 @@ class Connection(ConnectionBase):
         if self.docker_version != u'dev' and LooseVersion(self.docker_version) < LooseVersion(u'1.3'):
             raise AnsibleError('docker connection type requires docker 1.3 or higher')
 
-        # The remote user
-        self._set_conn_data()
-
     @staticmethod
     def _sanitize_version(version):
         version = re.sub(u'[^0-9a-zA-Z.]', u'', version)
@@ -222,10 +219,10 @@ class Connection(ConnectionBase):
 
         # TODO: this is mostly for backwards compatibility, play_context is used as fallback for older versions
         # docker arguments
-        if self.get_option('docker_extra_args'):
-            self._docker_args += self.get_option('docker_extra_args').split(' ')
-        elif self._play_context.docker_extra_args:
-            self._docker_args += self._play_context.docker_extra_args.split(' ')
+        self._docker_args.clear()
+        extra_args = self.get_option('docker_extra_args') or self._play_context.docker_extra_args
+        if extra_args:
+            self._docker_args += extra_args.split(' ')
 
         self.remote_user = self.get_option('remote_user')
         if self.remote_user is None and self._play_context.remote_user is not None:
