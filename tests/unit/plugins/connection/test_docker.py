@@ -38,7 +38,16 @@ class TestDockerConnectionClass(unittest.TestCase):
             '[sudo via ansible, key=ouzmdnewuhucvuaabtjmweasarviygqq] password: '
         )
         self.in_stream = StringIO()
-        dc = connection_loader.get('community.docker.docker', self.play_context, self.in_stream)
+        self.mock_get_bin_path = mock.patch(
+            'ansible_collections.community.docker.plugins.connection.docker.get_bin_path', return_value='docker')
+        self.mock_get_bin_path.start()
+        with mock.patch(
+                'ansible_collections.community.docker.plugins.connection.docker.Connection._old_docker_version',
+                return_value=('false', 'garbage', '', 1)):
+            with mock.patch(
+                    'ansible_collections.community.docker.plugins.connection.docker.Connection._new_docker_version',
+                    return_value=(['docker', 'version'], '20.10.0', '', 0)):
+                dc = connection_loader.get('community.docker.docker', self.play_context, self.in_stream)
 
     def tearDown(self):
         pass
