@@ -226,7 +226,7 @@ class Connection(ConnectionBase):
 
         # TODO: this is mostly for backwards compatibility, play_context is used as fallback for older versions
         # docker arguments
-        self._docker_args.clear()
+        del self._docker_args[:]
         extra_args = self.get_option('docker_extra_args') or self._play_context.docker_extra_args
         if extra_args:
             self._docker_args += extra_args.split(' ')
