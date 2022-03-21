@@ -240,7 +240,7 @@ class Connection(ConnectionBase):
         if self.timeout == 10 and self.timeout != self._play_context.timeout:
             self.timeout = self._play_context.timeout
 
-    def _get_actual_user():
+    def _get_actual_user(self):
         if self.remote_user is not None:
             # An explicit user is provided
             if self.docker_version == u'dev' or LooseVersion(self.docker_version) >= LooseVersion(u'1.7'):
