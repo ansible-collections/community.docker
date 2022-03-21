@@ -262,6 +262,7 @@ class Connection(ConnectionBase):
         """ Connect to the container. Nothing to do """
         super(Connection, self)._connect()
         if not self._connected:
+            self._set_conn_data()
             display.vvv(u"ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
                 self.actual_user or u'?'), host=self.get_option('remote_addr')
             )
