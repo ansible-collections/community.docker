@@ -61,17 +61,9 @@ DOCUMENTATION = '''
             - Controls how long we can wait to access reading output from the container once execution started.
         env:
             - name: ANSIBLE_TIMEOUT
-            - name: ANSIBLE_DOCKER_TIMEOUT
-              version_added: 2.2.0
         ini:
             - key: timeout
               section: defaults
-            - key: timeout
-              section: docker_connection
-              version_added: 2.2.0
-        vars:
-          - name: ansible_docker_timeout
-            version_added: 2.2.0
         cli:
           - name: timeout
         type: integer
