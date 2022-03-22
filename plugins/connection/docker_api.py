@@ -24,14 +24,44 @@ options:
         vars:
             - name: ansible_user
             - name: ansible_docker_user
+        ini:
+            - section: defaults
+              key: remote_user
+        env:
+            - name: ANSIBLE_REMOTE_USER
+        cli:
+            - name: user
+        keyword:
+            - name: remote_user
     remote_addr:
         type: str
         description:
             - The name of the container you want to access.
         default: inventory_hostname
         vars:
+            - name: inventory_hostname
             - name: ansible_host
             - name: ansible_docker_host
+    container_timeout:
+        default: 10
+        description:
+            - Controls how long we can wait to access reading output from the container once execution started.
+        env:
+            - name: ANSIBLE_TIMEOUT
+            - name: ANSIBLE_DOCKER_TIMEOUT
+              version_added: 2.2.0
+        ini:
+            - key: timeout
+              section: defaults
+            - key: timeout
+              section: docker_connection
+              version_added: 2.2.0
+        vars:
+            - name: ansible_docker_timeout
+              version_added: 2.2.0
+        cli:
+            - name: timeout
+        type: integer
 
 extends_documentation_fragment:
     - community.docker.docker
@@ -79,28 +109,28 @@ class Connection(ConnectionBase):
     transport = 'community.docker.docker_api'
     has_pipelining = True
 
-    def _call_client(self, play_context, callable, not_found_can_be_resource=False):
+    def _call_client(self, callable, not_found_can_be_resource=False):
         try:
             return callable()
         except NotFound as e:
             if not_found_can_be_resource:
-                raise AnsibleConnectionFailure('Could not find container "{1}" or resource in it ({0})'.format(e, play_context.remote_addr))
+                raise AnsibleConnectionFailure('Could not find container "{1}" or resource in it ({0})'.format(e, self.get_option('remote_addr')))
             else:
-                raise AnsibleConnectionFailure('Could not find container "{1}" ({0})'.format(e, play_context.remote_addr))
+                raise AnsibleConnectionFailure('Could not find container "{1}" ({0})'.format(e, self.get_option('remote_addr')))
         except APIError as e:
             if e.response and e.response.status_code == 409:
-                raise AnsibleConnectionFailure('The container "{1}" has been paused ({0})'.format(e, play_context.remote_addr))
+                raise AnsibleConnectionFailure('The container "{1}" has been paused ({0})'.format(e, self.get_option('remote_addr')))
             self.client.fail(
-                'An unexpected docker error occurred for container "{1}": {0}'.format(e, play_context.remote_addr)
+                'An unexpected docker error occurred for container "{1}": {0}'.format(e, self.get_option('remote_addr'))
             )
         except DockerException as e:
             self.client.fail(
-                'An unexpected docker error occurred for container "{1}": {0}'.format(e, play_context.remote_addr)
+                'An unexpected docker error occurred for container "{1}": {0}'.format(e, self.get_option('remote_addr'))
             )
         except RequestException as e:
             self.client.fail(
                 'An unexpected requests error occurred for container "{1}" when docker-py tried to talk to the docker daemon: {0}'
-                .format(e, play_context.remote_addr)
+                .format(e, self.get_option('remote_addr'))
             )
 
     def __init__(self, play_context, new_stdin, *args, **kwargs):
@@ -113,14 +143,15 @@ class Connection(ConnectionBase):
         if getattr(self._shell, "_IS_WINDOWS", False):
             self.module_implementation_preferences = ('.ps1', '.exe', '')
 
-        self.actual_user = play_context.remote_user
+        self.actual_user = None
 
     def _connect(self, port=None):
         """ Connect to the container. Nothing to do """
         super(Connection, self)._connect()
         if not self._connected:
+            self.actual_user = self.get_option('remote_user')
             display.vvv(u"ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
-                self.actual_user or u'?'), host=self._play_context.remote_addr
+                self.actual_user or u'?'), host=self.get_option('remote_addr')
             )
             if self.client is None:
                 self.client = AnsibleDockerClient(self, min_docker_version=MIN_DOCKER_PY, min_docker_api_version=MIN_DOCKER_API)
@@ -131,7 +162,7 @@ class Connection(ConnectionBase):
                 # Only do this if display verbosity is high enough that we'll need the value
                 # This saves overhead from calling into docker when we don't need to
                 display.vvv(u"Trying to determine actual user")
-                result = self._call_client(self._play_context, lambda: self.client.inspect_container(self._play_context.remote_addr))
+                result = self._call_client(lambda: self.client.inspect_container(self.get_option('remote_addr')))
                 if result.get('Config'):
                     self.actual_user = result['Config'].get('User')
                     if self.actual_user is not None:
@@ -152,30 +183,30 @@ class Connection(ConnectionBase):
                 ', with stdin ({0} bytes)'.format(len(in_data)) if in_data is not None else '',
                 ', with become prompt' if do_become else '',
             ),
-            host=self._play_context.remote_addr
+            host=self.get_option('remote_addr')
         )
 
         need_stdin = True if (in_data is not None) or do_become else False
 
-        exec_data = self._call_client(self._play_context, lambda: self.client.exec_create(
-            self._play_context.remote_addr,
+        exec_data = self._call_client(lambda: self.client.exec_create(
+            self.get_option('remote_addr'),
             command,
             stdout=True,
             stderr=True,
             stdin=need_stdin,
-            user=self._play_context.remote_user or '',
+            user=self.get_option('remote_user') or '',
             # workdir=None,  - only works for Docker SDK for Python 3.0.0 and later
         ))
         exec_id = exec_data['Id']
 
         if need_stdin:
-            exec_socket = self._call_client(self._play_context, lambda: self.client.exec_start(
+            exec_socket = self._call_client(lambda: self.client.exec_start(
                 exec_id,
                 detach=False,
                 socket=True,
             ))
             try:
-                with DockerSocketHandler(display, exec_socket, container=self._play_context.remote_addr) as exec_socket_handler:
+                with DockerSocketHandler(display, exec_socket, container=self.get_option('remote_addr')) as exec_socket_handler:
                     if do_become:
                         become_output = [b'']
 
@@ -185,7 +216,7 @@ class Connection(ConnectionBase):
                         exec_socket_handler.set_block_done_callback(append_become_output)
 
                         while not self.become.check_success(become_output[0]) and not self.become.check_password_prompt(become_output[0]):
-                            if not exec_socket_handler.select(self._play_context.timeout):
+                            if not exec_socket_handler.select(self.get_option('container_timeout')):
                                 stdout, stderr = exec_socket_handler.consume()
                                 raise AnsibleConnectionFailure('timeout waiting for privilege escalation password prompt:\n' + to_native(become_output[0]))
 
@@ -203,7 +234,7 @@ class Connection(ConnectionBase):
             finally:
                 exec_socket.close()
         else:
-            stdout, stderr = self._call_client(self._play_context, lambda: self.client.exec_start(
+            stdout, stderr = self._call_client(lambda: self.client.exec_start(
                 exec_id,
                 detach=False,
                 stream=False,
@@ -211,7 +242,7 @@ class Connection(ConnectionBase):
                 demux=True,
             ))
 
-        result = self._call_client(self._play_context, lambda: self.client.exec_inspect(exec_id))
+        result = self._call_client(lambda: self.client.exec_inspect(exec_id))
 
         return result.get('ExitCode') or 0, stdout or b'', stderr or b''
 
@@ -236,7 +267,7 @@ class Connection(ConnectionBase):
     def put_file(self, in_path, out_path):
         """ Transfer a file from local to docker container """
         super(Connection, self).put_file(in_path, out_path)
-        display.vvv("PUT %s TO %s" % (in_path, out_path), host=self._play_context.remote_addr)
+        display.vvv("PUT %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
 
         out_path = self._prefix_login_path(out_path)
         if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
@@ -250,12 +281,12 @@ class Connection(ConnectionBase):
                 self.ids[self.actual_user] = int(user_id), int(group_id)
                 display.vvvv(
                     'PUT: Determined uid={0} and gid={1} for user "{2}"'.format(user_id, group_id, self.actual_user),
-                    host=self._play_context.remote_addr
+                    host=self.get_option('remote_addr')
                 )
             except Exception as e:
                 raise AnsibleConnectionFailure(
                     'Error while determining user and group ID of current user in container "{1}": {0}\nGot value: {2!r}'
-                    .format(e, self._play_context.remote_addr, ids)
+                    .format(e, self.get_option('remote_addr'), ids)
                 )
 
         b_in_path = to_bytes(in_path, errors='surrogate_or_strict')
@@ -282,8 +313,8 @@ class Connection(ConnectionBase):
                 tar.addfile(tarinfo, fileobj=f)
         data = bio.getvalue()
 
-        ok = self._call_client(self._play_context, lambda: self.client.put_archive(
-            self._play_context.remote_addr,
+        ok = self._call_client(lambda: self.client.put_archive(
+            self.get_option('remote_addr'),
             out_dir,
             data,  # can also be file object for streaming; this is only clear from the
                    # implementation of put_archive(), which uses requests's put().
@@ -293,13 +324,13 @@ class Connection(ConnectionBase):
         if not ok:
             raise AnsibleConnectionFailure(
                 'Unknown error while creating file "{0}" in container "{1}".'
-                .format(out_path, self._play_context.remote_addr)
+                .format(out_path, self.get_option('remote_addr'))
             )
 
     def fetch_file(self, in_path, out_path):
         """ Fetch a file from container to local. """
         super(Connection, self).fetch_file(in_path, out_path)
-        display.vvv("FETCH %s TO %s" % (in_path, out_path), host=self._play_context.remote_addr)
+        display.vvv("FETCH %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
 
         in_path = self._prefix_login_path(in_path)
         b_out_path = to_bytes(out_path, errors='surrogate_or_strict')
@@ -311,9 +342,9 @@ class Connection(ConnectionBase):
                 raise AnsibleConnectionFailure('Found infinite symbolic link loop when trying to fetch "{0}"'.format(in_path))
             considered_in_paths.add(in_path)
 
-            display.vvvv('FETCH: Fetching "%s"' % in_path, host=self._play_context.remote_addr)
-            stream, stats = self._call_client(self._play_context, lambda: self.client.get_archive(
-                self._play_context.remote_addr,
+            display.vvvv('FETCH: Fetching "%s"' % in_path, host=self.get_option('remote_addr'))
+            stream, stats = self._call_client(lambda: self.client.get_archive(
+                self.get_option('remote_addr'),
                 in_path,
             ), not_found_can_be_resource=True)
 
@@ -344,7 +375,7 @@ class Connection(ConnectionBase):
                 # If the only member was a file, it's already extracted. If it is a symlink, process it now.
                 if symlink_member is not None:
                     in_path = os.path.join(os.path.split(in_path)[0], symlink_member.linkname)
-                    display.vvvv('FETCH: Following symbolic link to "%s"' % in_path, host=self._play_context.remote_addr)
+                    display.vvvv('FETCH: Following symbolic link to "%s"' % in_path, host=self.get_option('remote_addr'))
                     continue
                 return
 
