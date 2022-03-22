@@ -383,3 +383,6 @@ class Connection(ConnectionBase):
         """ Terminate the connection. Nothing to do for Docker"""
         super(Connection, self).close()
         self._connected = False
+
+    def reset(self):
+        self.ids.clear()

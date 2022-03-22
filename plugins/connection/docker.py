@@ -435,3 +435,7 @@ class Connection(ConnectionBase):
         """ Terminate the connection. Nothing to do for Docker"""
         super(Connection, self).close()
         self._connected = False
+
+    def reset(self):
+        # Clear container user cache
+        self._container_user_cache = {}
