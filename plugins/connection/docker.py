@@ -234,37 +234,41 @@ class Connection(ConnectionBase):
         self.remote_user = self.get_option('remote_user')
         if self.remote_user is None and self._play_context.remote_user is not None:
             self.remote_user = self._play_context.remote_user
-        # The actual user which will execute commands in docker (if known)
-        self.actual_user = None
-
-        if self.remote_user is not None:
-            if self.docker_version == u'dev' or LooseVersion(self.docker_version) >= LooseVersion(u'1.7'):
-                # Support for specifying the exec user was added in docker 1.7
-                self.actual_user = self.remote_user
-            else:
-                self.remote_user = None
-                self.actual_user = self._get_docker_remote_user()
-                if self.actual_user != self.get_option('remote_user'):
-                    display.warning(u'docker {0} does not support remote_user, using container default: {1}'
-                                    .format(self.docker_version, self.actual_user or u'?'))
-        elif self._display.verbosity > 2:
-            # Since we're not setting the actual_user, look it up so we have it for logging later
-            # Only do this if display verbosity is high enough that we'll need the value
-            # This saves overhead from calling into docker when we don't need to
-            self.actual_user = self._get_docker_remote_user()
 
         # timeout, use unless default and pc is different, backwards compat
         self.timeout = self.get_option('container_timeout')
         if self.timeout == 10 and self.timeout != self._play_context.timeout:
             self.timeout = self._play_context.timeout
 
+    def _get_actual_user(self):
+        if self.remote_user is not None:
+            # An explicit user is provided
+            if self.docker_version == u'dev' or LooseVersion(self.docker_version) >= LooseVersion(u'1.7'):
+                # Support for specifying the exec user was added in docker 1.7
+                return self.remote_user
+            else:
+                self.remote_user = None
+                actual_user = self._get_docker_remote_user()
+                if actual_user != self.get_option('remote_user'):
+                    display.warning(u'docker {0} does not support remote_user, using container default: {1}'
+                                    .format(self.docker_version, self.actual_user or u'?'))
+                return actual_user
+        elif self._display.verbosity > 2:
+            # Since we're not setting the actual_user, look it up so we have it for logging later
+            # Only do this if display verbosity is high enough that we'll need the value
+            # This saves overhead from calling into docker when we don't need to.
+            return self._get_docker_remote_user()
+        else:
+            return None
+
     def _connect(self, port=None):
         """ Connect to the container. Nothing to do """
         super(Connection, self)._connect()
         if not self._connected:
             self._set_conn_data()
+            actual_user = self._get_actual_user()
             display.vvv(u"ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
-                self.actual_user or u'?'), host=self.get_option('remote_addr')
+                actual_user or u'?'), host=self.get_option('remote_addr')
             )
             self._connected = True
 
