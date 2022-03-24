@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker connection plugin - fix option handling to be compatible with ansible-core 2.13 (https://github.com/ansible-collections/community.docker/pull/313, https://github.com/ansible-collections/community.docker/issues/307)."
