@@ -446,7 +446,7 @@ options:
     description:
       - Dictionary of options specific to the chosen I(log_driver).
       - See U(https://docs.docker.com/engine/admin/logging/overview/) for details.
-      - I(log_driver) needs to be specified for I(log_options) to take effect, even if using the default json-file driver.
+      - I(log_driver) needs to be specified for I(log_options) to take effect, even if using the default C(json-file) driver.
     type: dict
     aliases:
       - log_opt
