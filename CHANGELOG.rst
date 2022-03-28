@@ -5,6 +5,20 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v1.10.7
+=======
+
+Release Summary
+---------------
+
+Regular bugfix release.
+
+Bugfixes
+--------
+
+- docker connection plugin - fix option handling to be compatible with ansible-core 2.13 (https://github.com/ansible-collections/community.docker/pull/313, https://github.com/ansible-collections/community.docker/issues/307).
+- docker_api connection plugin - fix option handling to be compatible with ansible-core 2.13 (https://github.com/ansible-collections/community.docker/pull/315).
+
 v1.10.6
 =======
 

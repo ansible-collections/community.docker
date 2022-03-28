@@ -247,6 +247,19 @@ releases:
     - 1.10.6.yml
     - 305-docker_compose-errors-warnings.yml
     release_date: '2022-03-14'
+  1.10.7:
+    changes:
+      bugfixes:
+      - docker connection plugin - fix option handling to be compatible with ansible-core
+        2.13 (https://github.com/ansible-collections/community.docker/pull/313, https://github.com/ansible-collections/community.docker/issues/307).
+      - docker_api connection plugin - fix option handling to be compatible with ansible-core
+        2.13 (https://github.com/ansible-collections/community.docker/pull/315).
+      release_summary: Regular bugfix release.
+    fragments:
+    - 1.10.7.yml
+    - 297-docker-connection-config.yml
+    - 308-docker_api-connection-config.yml
+    release_date: '2022-03-28'
   1.2.0:
     changes:
       bugfixes:
