@@ -47,19 +47,19 @@ pool: Standard
 
 stages:
 ### Sanity & units
-  - stage: Ansible_devel
-    displayName: Sanity & Units devel
+  - stage: Ansible_2_13
+    displayName: Sanity & Units 2.13
     dependsOn: []
     jobs:
       - template: templates/matrix.yml
         parameters:
           targets:
             - name: Sanity
-              test: 'devel/sanity/1'
-            - name: Sanity Extra # Only on devel
-              test: 'devel/sanity/extra'
+              test: '2.13/sanity/1'
+            - name: Sanity Extra # Only on 2.13
+              test: '2.13/sanity/extra'
             - name: Units
-              test: 'devel/units/1'
+              test: '2.13/units/1'
   - stage: Ansible_2_12
     displayName: Sanity & Units 2.12
     dependsOn: []
@@ -105,13 +105,13 @@ stages:
             - name: Units
               test: '2.9/units/1'
 ### Docker
-  - stage: Docker_devel
-    displayName: Docker devel
+  - stage: Docker_2_13
+    displayName: Docker 2.13
     dependsOn: []
     jobs:
       - template: templates/matrix.yml
         parameters:
-          testFormat: devel/linux/{0}
+          testFormat: 2.13/linux/{0}
           targets:
             - name: CentOS 7
               test: centos7
@@ -197,14 +197,14 @@ stages:
             - 4
             - 5
 ### Remote
-  - stage: Remote_devel
-    displayName: Remote devel
+  - stage: Remote_2_13
+    displayName: Remote 2.13
     dependsOn: []
     jobs:
       - template: templates/matrix.yml
         parameters:
           nameFormat: RHEL {0}
-          testFormat: devel/rhel/{0}
+          testFormat: 2.13/rhel/{0}
           targets:
             - test: '7.9'
             - test: '8.5'
@@ -282,17 +282,17 @@ stages:
   - stage: Summary
     condition: succeededOrFailed()
     dependsOn:
-      - Ansible_devel
+      - Ansible_2_13
       - Ansible_2_12
       - Ansible_2_11
       - Ansible_2_10
       - Ansible_2_9
-      - Remote_devel
+      - Remote_2_13
       - Remote_2_12
       - Remote_2_11
       - Remote_2_10
       - Remote_2_9
-      - Docker_devel
+      - Docker_2_13
       - Docker_2_12
       - Docker_2_11
       - Docker_2_10
