@@ -1,2 +1,0 @@
-minor_changes:
-  - "docker connection plugin - simplify ``actual_user`` handling code (https://github.com/ansible-collections/community.docker/pull/311)."
