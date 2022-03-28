@@ -10,7 +10,7 @@ Please note that this collection does **not** support Windows targets. The conne
 
 ## Tested with Ansible
 
-Tested with the current Ansible 2.9, ansible-base 2.10, ansible-core 2.11 and ansible-core 2.12 releases and the current development version of ansible-core. Ansible versions before 2.9.10 are not supported.
+Tested with the current Ansible 2.9, ansible-base 2.10, ansible-core 2.11, ansible-core 2.12 and ansible-core 2.13 releases and the current development version of ansible-core. Ansible versions before 2.9.10 are not supported.
 
 ## External requirements
 
