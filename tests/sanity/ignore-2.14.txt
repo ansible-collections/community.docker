@@ -1,0 +1,2 @@
+.azure-pipelines/scripts/publish-codecov.py replace-urlopen
+plugins/modules/docker_container.py use-argspec-type-path # uses colon-separated paths, can't use type=path
