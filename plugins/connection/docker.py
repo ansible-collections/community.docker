@@ -116,6 +116,7 @@ class Connection(ConnectionBase):
 
         self._docker_args = []
         self._container_user_cache = {}
+        self.docker_version = None
 
         # Windows uses Powershell modules
         if getattr(self._shell, "_IS_WINDOWS", False):
@@ -128,12 +129,6 @@ class Connection(ConnectionBase):
                 self.docker_cmd = get_bin_path('docker')
             except ValueError:
                 raise AnsibleError("docker command not found in PATH")
-
-        self.docker_version = self._get_docker_version()
-        if self.docker_version == u'dev':
-            display.warning(u'Docker version number is "dev". Will assume latest version.')
-        if self.docker_version != u'dev' and LooseVersion(self.docker_version) < LooseVersion(u'1.3'):
-            raise AnsibleError('docker connection type requires docker 1.3 or higher')
 
     @staticmethod
     def _sanitize_version(version):
@@ -223,6 +218,13 @@ class Connection(ConnectionBase):
     def _set_conn_data(self):
 
         ''' initialize for the connection, cannot do only in init since all data is not ready at that point '''
+
+        if self.docker_version is None:
+            self.docker_version = self._get_docker_version()
+            if self.docker_version == u'dev':
+                display.warning(u'Docker version number is "dev". Will assume latest version.')
+            if self.docker_version != u'dev' and LooseVersion(self.docker_version) < LooseVersion(u'1.3'):
+                raise AnsibleError('docker connection type requires docker 1.3 or higher')
 
         # TODO: this is mostly for backwards compatibility, play_context is used as fallback for older versions
         # docker arguments
