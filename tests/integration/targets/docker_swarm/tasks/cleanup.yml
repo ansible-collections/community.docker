@@ -14,8 +14,6 @@
 
     - name: CLEANUP | Clear out /var/lib/docker
       shell: rm -rf  /var/lib/docker/*
-      args:
-        warn: no
 
     - name: CLEANUP | Start docker daemon
       service:
