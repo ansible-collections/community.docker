@@ -15,7 +15,7 @@ function join {
 }
 
 # Ensure we can write other collections to this dir
-sudo chown "$(whoami)" "${PWD}/../../"
+sudo chown -R "$(whoami)" "${PWD}/../../../"
 
 test="$(join / "${args[@]:1}")"
 
