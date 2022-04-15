@@ -5,7 +5,7 @@
     - name: Find all roles
       find:
         paths:
-          - "{{ playbook_dir ~ '/roles/' }}"
+          - "{{ (playbook_dir | default('.')) ~ '/roles' }}"
         file_type: directory
         depth: 1
       register: result
