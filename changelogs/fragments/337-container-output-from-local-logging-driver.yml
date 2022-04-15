@@ -1,0 +1,2 @@
+minor_changes:
+  - "docker_container - support returning Docker container log output when using Docker's ``local`` logging driver, an optimized local logging driver introduced in Docker 18.09 (https://github.com/ansible-collections/community.docker/pull/337)."
