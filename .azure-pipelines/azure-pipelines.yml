@@ -337,22 +337,6 @@ stages:
             - 3
             - 4
 
-### Execution Environments
-  - stage: EE
-    displayName: Execution Environments
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          nameFormat: EE with ansible-runner {0} image
-          testFormat: 'devel/ee/{0}'
-          targets:
-            # The following are tags for the quay.io/ansible/ansible-runner image
-            - test: devel
-            - test: stable-2.12-latest
-            - test: stable-2.11-latest
-            - test: stable-2.9-latest
-
   ## Finally
 
   - stage: Summary
@@ -377,6 +361,5 @@ stages:
       - Docker_2_10
       - Docker_2_9
       - Docker_community_devel
-      - EE
     jobs:
       - template: templates/coverage.yml
