@@ -1,0 +1,2 @@
+---
+# Currently the docker_stack* modules are not supported in the EE since we'd need to install the Docker CLI client

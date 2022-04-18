@@ -1,0 +1,34 @@
+---
+# Create random name prefix (for containers, networks, ...)
+- name: Create random container name prefix
+  set_fact:
+    cname_prefix: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
+
+- name: Create project and container names
+  set_fact:
+    pname: "{{ cname_prefix }}"
+    cname: "{{ cname_prefix }}-hi"
+
+- name: Define service
+  set_fact:
+    test_service: |
+      version: '3'
+      services:
+        {{ cname }}:
+          image: "{{ docker_test_image_alpine }}"
+          command: '/bin/sh -c "sleep 10m"'
+          stop_grace_period: 1s
+
+- name: Present
+  community.docker.docker_compose:
+    project_name: "{{ pname }}"
+    state: present
+    remove_orphans: true
+    definition: "{{ test_service | from_yaml }}"
+
+- name: Absent
+  community.docker.docker_compose:
+    project_name: "{{ pname }}"
+    state: absent
+    remove_orphans: true
+    definition: "{{ test_service | from_yaml }}"

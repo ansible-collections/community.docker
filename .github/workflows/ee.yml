@@ -1,0 +1,114 @@
+---
+name: execution environment
+on:
+  # Run CI against all pushes (direct commits, also merged PRs), Pull Requests
+  push:
+    branches:
+      - main
+      - stable-*
+  pull_request:
+  # Run CI once per day (at 04:30 UTC)
+  # This ensures that even if there haven't been commits that we are still testing against latest version of ansible-builder
+  schedule:
+    - cron: '30 4 * * *'
+
+env:
+  NAMESPACE: community
+  COLLECTION_NAME: docker
+
+jobs:
+  build:
+    name: Build and test EE (Ⓐ${{ matrix.runner_tag }})
+    strategy:
+      matrix:
+        runner_tag:
+          - devel
+          - stable-2.12-latest
+          - stable-2.11-latest
+          - stable-2.9-latest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          path: ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+
+      - name: Install ansible-builder and ansible-navigator
+        run: pip install ansible-builder ansible-navigator
+
+      - name: Verify requirements
+        run: ansible-builder introspect --sanitize .
+
+      - name: Make sure galaxy.yml has version entry
+        run: >-
+          python -c
+          'import yaml ;
+          f = open("galaxy.yml", "rb") ;
+          data = yaml.safe_load(f) ;
+          f.close() ;
+          data["version"] = data.get("version") or "0.0.1" ;
+          f = open("galaxy.yml", "wb") ;
+          f.write(yaml.dump(data).encode("utf-8")) ;
+          f.close() ;
+          '
+        working-directory: ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+
+      - name: Build collection
+        run: |
+          ansible-galaxy collection build --output-path ../../../
+        working-directory: ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+
+      - name: Create files for building execution environment
+        run: |
+          COLLECTION_FILENAME="$(ls "${{ env.NAMESPACE }}-${{ env.COLLECTION_NAME }}"-*.tar.gz)"
+
+          # EE config
+          cat > execution-environment.yml <<EOF
+          ---
+          version: 1
+          build_arg_defaults:
+            EE_BASE_IMAGE: 'quay.io/ansible/ansible-runner:${{ matrix.runner_tag }}'
+          dependencies:
+            galaxy: requirements.yml
+          EOF
+          echo "::group::execution-environment.yml"
+          cat execution-environment.yml
+          echo "::endgroup::"
+
+          # Requirements
+          cat > requirements.yml <<EOF
+          ---
+          collections:
+            - name: ${COLLECTION_FILENAME}
+              type: file
+          EOF
+          echo "::group::requirements.yml"
+          cat requirements.yml
+          echo "::endgroup::"
+
+      - name: Build image based on ${{ matrix.runner_tag }}
+        run: |
+          mkdir -p context/_build/
+          cp "${{ env.NAMESPACE }}-${{ env.COLLECTION_NAME }}"-*.tar.gz context/_build/
+          ansible-builder build -v 3 -t test-ee:latest --container-runtime=docker
+
+      - name: Make /var/run/docker.sock accessible by everyone
+        run: sudo chmod a+rw /var/run/docker.sock
+
+      - name: Run basic tests
+        run: >
+          ansible-navigator run
+          --mode stdout
+          --pull-policy never
+          --set-environment-variable ANSIBLE_PRIVATE_ROLE_VARS=true
+          --container-engine docker
+          --container-options=-v --container-options=/var/run/docker.sock:/var/run/docker.sock
+          --execution-environment-image test-ee:latest
+          -v
+          all.yml
+        working-directory: ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}/tests/ee

@@ -50,12 +50,15 @@ ansible_facts:
             description:
               - The detected container environment.
               - Contains an empty string if no container was detected.
-              - Otherwise, will be one of C(docker) or C(azure_pipelines).
+              - Otherwise, will be one of C(docker), C(azure_pipelines), or C(github_actions).
+              - C(github_actions) is supported since community.docker 2.4.0.
             returned: always
             type: str
-            # choices:
-            #   - docker
-            #   - azure_pipelines
+            choices:
+              - ''
+              - docker
+              - azure_pipelines
+              - github_actions
 '''
 
 import os
@@ -88,6 +91,10 @@ def main():
         if cgroup_path == '/azpl_job':
             container_id = cgroup_name
             container_type = 'azure_pipelines'
+
+        if cgroup_path == '/actions_job':
+            container_id = cgroup_name
+            container_type = 'github_actions'
 
     module.exit_json(ansible_facts=dict(
         ansible_module_running_in_container=container_id != '',

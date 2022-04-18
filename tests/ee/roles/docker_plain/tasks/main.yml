@@ -1,0 +1,28 @@
+---
+# Create random name prefix (for containers, networks, ...)
+- name: Create random container name prefix
+  set_fact:
+    cname_prefix: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
+
+- name: Make sure image is absent
+  community.docker.docker_image:
+    name: "{{ docker_test_image_alpine }}"
+    state: absent
+
+- name: Make sure image is pulled
+  community.docker.docker_image:
+    name: "{{ docker_test_image_alpine }}"
+    source: pull
+
+- name: Start container
+  community.docker.docker_container:
+    name: "{{ cname_prefix }}-1"
+    image: "{{ docker_test_image_alpine }}"
+    state: started
+
+- name: Remove container
+  community.docker.docker_container:
+    name: "{{ cname_prefix }}-1"
+    state: absent
+    stop_timeout: 1
+    force_kill: yes

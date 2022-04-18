@@ -1,0 +1,28 @@
+---
+- name: Retrieve information on current container
+  community.docker.current_container_facts:
+  register: result
+
+# The following two tasks are useful if we ever have to debug why this fails.
+
+- name: Print all Ansible facts
+  debug:
+    var: ansible_facts
+
+- name: Read some files
+  slurp:
+    src: "{{ item }}"
+  loop:
+    - /proc/self/cpuset
+    - /proc/1/cgroup
+    - /proc/1/environ
+
+- name: Print facts returned by module
+  debug:
+    var: result.ansible_facts
+
+- name: Validate results
+  assert:
+    that:
+      - ansible_module_running_in_container
+      - ansible_module_container_type != ''
