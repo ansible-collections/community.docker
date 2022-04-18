@@ -95,7 +95,7 @@ jobs:
         run: |
           mkdir -p context/_build/
           cp "${{ env.NAMESPACE }}-${{ env.COLLECTION_NAME }}"-*.tar.gz context/_build/
-          ansible-builder build -v 3 -t test-ee:latest --container-runtime=podman
+          ansible-builder build -v 3 -t test-ee:latest --container-runtime=docker
 
       - name: Run basic tests
         run: >
@@ -103,6 +103,7 @@ jobs:
           --mode stdout
           --pull-policy never
           --set-environment-variable ANSIBLE_PRIVATE_ROLE_VARS=true
+          --container-engine docker
           --container-options=-v --container-options=/var/run/docker.sock:/var/run/docker.sock
           --execution-environment-image test-ee:latest
           -v

@@ -7,9 +7,8 @@
   debug:
     var: result.ansible_facts
 
-# FIXME: For some reason, the module doesn't detect that it is running inside a container?!
-#- name: Validate results
-#  assert:
-#    that:
-#      - ansible_module_running_in_container
-#      - ansible_module_container_type != ''
+- name: Validate results
+  assert:
+    that:
+      - ansible_module_running_in_container
+      - ansible_module_container_type != ''
