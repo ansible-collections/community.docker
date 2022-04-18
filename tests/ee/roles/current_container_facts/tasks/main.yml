@@ -3,6 +3,8 @@
   community.docker.current_container_facts:
   register: result
 
+# The following two tasks are useful if we ever have to debug why this fails.
+
 - name: Print all Ansible facts
   debug:
     var: ansible_facts

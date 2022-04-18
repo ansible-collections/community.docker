@@ -1,2 +1,3 @@
 minor_changes:
   - "Prepare collection for inclusion in an Execution Environment by declaring its dependencies. The ``docker_stack*`` modules are not supported (https://github.com/ansible-collections/community.docker/pull/336)."
+  - "current_container_facts - add detection for GitHub Actions (https://github.com/ansible-collections/community.docker/pull/336)."
