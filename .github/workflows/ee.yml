@@ -97,6 +97,9 @@ jobs:
           cp "${{ env.NAMESPACE }}-${{ env.COLLECTION_NAME }}"-*.tar.gz context/_build/
           ansible-builder build -v 3 -t test-ee:latest --container-runtime=docker
 
+      - name: Make /var/run/docker.sock accessible by everyone
+        run: sudo chmod a+rw /var/run/docker.sock
+
       - name: Run basic tests
         run: >
           ansible-navigator run
