@@ -80,7 +80,6 @@ DOCUMENTATION = '''
 import fcntl
 import os
 import os.path
-import shlex
 import subprocess
 import re
 
@@ -222,7 +221,7 @@ class Connection(ConnectionBase):
         del self._docker_args[:]
         extra_args = self.get_option('docker_extra_args') or getattr(self._play_context, 'docker_extra_args', '')
         if extra_args:
-            self._docker_args = shlex.split(extra_args)
+            self._docker_args += extra_args.split(' ')
 
     def _set_conn_data(self):
 
