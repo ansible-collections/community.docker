@@ -24,7 +24,7 @@ options:
     description:
       - The name of the container to inspect.
       - When identifying an existing container name may be a name or a long or short container ID.
-      - Foo. Bar. Baz.
+      - Foo.
     type: str
     required: yes
 extends_documentation_fragment:
