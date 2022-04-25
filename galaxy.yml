@@ -2,7 +2,7 @@
 
 namespace: community
 name: docker
-version: 1.10.8
+version: 1.10.9
 readme: README.md
 authors:
   - Ansible Docker Working Group
