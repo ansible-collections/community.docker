@@ -260,6 +260,18 @@ releases:
     - 297-docker-connection-config.yml
     - 308-docker_api-connection-config.yml
     release_date: '2022-03-28'
+  1.10.8:
+    changes:
+      bugfixes:
+      - docker connection plugin - make sure that ``docker_extra_args`` is used for
+        querying the Docker version. Also ensures that the Docker version is only
+        queried when needed. This is currently the case if a remote user is specified
+        (https://github.com/ansible-collections/community.docker/issues/325, https://github.com/ansible-collections/community.docker/pull/327).
+      release_summary: Regular bugfix release.
+    fragments:
+    - 1.10.8.yml
+    - 327-connection-fix.yml
+    release_date: '2022-04-25'
   1.2.0:
     changes:
       bugfixes:
