@@ -108,6 +108,7 @@ class Connection(ConnectionBase):
 
         self._docker_args = []
         self._container_user_cache = {}
+        self._version = None
 
         # Windows uses Powershell modules
         if getattr(self._shell, "_IS_WINDOWS", False):
@@ -120,12 +121,6 @@ class Connection(ConnectionBase):
                 self.docker_cmd = get_bin_path('docker')
             except ValueError:
                 raise AnsibleError("docker command not found in PATH")
-
-        self.docker_version = self._get_docker_version()
-        if self.docker_version == u'dev':
-            display.warning(u'Docker version number is "dev". Will assume latest version.')
-        if self.docker_version != u'dev' and LooseVersion(self.docker_version) < LooseVersion(u'1.3'):
-            raise AnsibleError('docker connection type requires docker 1.3 or higher')
 
     @staticmethod
     def _sanitize_version(version):
@@ -212,16 +207,19 @@ class Connection(ConnectionBase):
 
         return local_cmd
 
+    def _set_docker_args(self):
+        # TODO: this is mostly for backwards compatibility, play_context is used as fallback for older versions
+        # docker arguments
+        del self._docker_args[:]
+        extra_args = self.get_option('docker_extra_args') or getattr(self._play_context, 'docker_extra_args', '')
+        if extra_args:
+            self._docker_args += extra_args.split(' ')
+
     def _set_conn_data(self):
 
         ''' initialize for the connection, cannot do only in init since all data is not ready at that point '''
 
-        # TODO: this is mostly for backwards compatibility, play_context is used as fallback for older versions
-        # docker arguments
-        del self._docker_args[:]
-        extra_args = self.get_option('docker_extra_args') or self._play_context.docker_extra_args
-        if extra_args:
-            self._docker_args += extra_args.split(' ')
+        self._set_docker_args()
 
         self.remote_user = self.get_option('remote_user')
         if self.remote_user is None and self._play_context.remote_user is not None:
@@ -249,6 +247,19 @@ class Connection(ConnectionBase):
         self.timeout = self.get_option('container_timeout')
         if self.timeout == 10 and self.timeout != self._play_context.timeout:
             self.timeout = self._play_context.timeout
+
+    @property
+    def docker_version(self):
+
+        if not self._version:
+            self._set_docker_args()
+
+            self._version = self._get_docker_version()
+            if self._version == u'dev':
+                display.warning(u'Docker version number is "dev". Will assume latest version.')
+            if self._version != u'dev' and LooseVersion(self._version) < LooseVersion(u'1.3'):
+                raise AnsibleError('docker connection type requires docker 1.3 or higher')
+        return self._version
 
     def _connect(self, port=None):
         """ Connect to the container. Nothing to do """
@@ -365,8 +376,7 @@ class Connection(ConnectionBase):
             args = self._build_exec_cmd([self._play_context.executable, "-c", "dd of=%s bs=%s%s" % (out_path, BUFSIZE, count)])
             args = [to_bytes(i, errors='surrogate_or_strict') for i in args]
             try:
-                p = subprocess.Popen(args, stdin=in_file,
-                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                p = subprocess.Popen(args, stdin=in_file, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             except OSError:
                 raise AnsibleError("docker connection requires dd command in the container to put files")
             stdout, stderr = p.communicate()
