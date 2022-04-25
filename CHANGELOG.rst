@@ -5,6 +5,26 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v2.4.0
+======
+
+Release Summary
+---------------
+
+Regular feature and bugfix release.
+
+Minor Changes
+-------------
+
+- Prepare collection for inclusion in an Execution Environment by declaring its dependencies. The ``docker_stack*`` modules are not supported (https://github.com/ansible-collections/community.docker/pull/336).
+- current_container_facts - add detection for GitHub Actions (https://github.com/ansible-collections/community.docker/pull/336).
+- docker_container - support returning Docker container log output when using Docker's ``local`` logging driver, an optimized local logging driver introduced in Docker 18.09 (https://github.com/ansible-collections/community.docker/pull/337).
+
+Bugfixes
+--------
+
+- docker connection plugin - make sure that ``docker_extra_args`` is used for querying the Docker version. Also ensures that the Docker version is only queried when needed. This is currently the case if a remote user is specified (https://github.com/ansible-collections/community.docker/issues/325, https://github.com/ansible-collections/community.docker/pull/327).
+
 v2.3.0
 ======
 
