@@ -79,6 +79,12 @@ options:
     choices:
       - absent
       - present
+  template_driver:
+    description:
+      - TODO
+    type: str
+    choices:
+      - golang
 
 extends_documentation_fragment:
 - community.docker.docker
@@ -229,6 +235,13 @@ class ConfigManager(DockerBaseClass):
         self.force = parameters.get('force')
         self.rolling_versions = parameters.get('rolling_versions')
         self.versions_to_keep = parameters.get('versions_to_keep')
+        template_driver = parameters.get('template_driver')
+        if template_driver:
+            self.templating = {
+                'name': template_driver
+            }
+        else:
+            self.templating = None
 
         if self.rolling_versions:
             self.version = 0
@@ -292,7 +305,8 @@ class ConfigManager(DockerBaseClass):
 
         try:
             if not self.check_mode:
-                config_id = self.client.create_config(self.name, self.data, labels=labels)
+                config_id = self.client.create_config(self.name, self.data,
+                    labels=labels, templating=self.templating)
                 self.configs += self.client.configs(filters={'id': config_id})
         except APIError as exc:
             self.client.fail("Error creating config: %s" % to_native(exc))
@@ -358,6 +372,7 @@ def main():
         force=dict(type='bool', default=False),
         rolling_versions=dict(type='bool', default=False),
         versions_to_keep=dict(type='int', default=5),
+        template_driver=dict(type='str', choices=['golang']),
     )
 
     required_if = [
