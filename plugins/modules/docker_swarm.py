@@ -180,7 +180,7 @@ options:
       - Address or interface to use for data path traffic.
       - This can either be an address in the form C(192.168.1.1), or an interface,
           like C(eth0).
-      - Only used when swarm is initialised or joined. Because of this it's not
+      - Only used when swarm is initialised or joined. Because of this it is not
         considered for idempotency checking.
     type: str
     version_added: 2.5.0
