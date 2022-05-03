@@ -98,6 +98,7 @@ requirements:
 author:
   - Chris Houseknecht (@chouseknecht)
   - John Hu (@ushuz)
+  - Sasha Jenner (@sashajenner)
 '''
 
 EXAMPLES = '''
