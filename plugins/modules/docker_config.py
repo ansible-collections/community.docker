@@ -81,7 +81,7 @@ options:
       - present
   template_driver:
     description:
-      - TODO
+      - Set to C(golang) to use a Golang template file in I(data).
     type: str
     choices:
       - golang
