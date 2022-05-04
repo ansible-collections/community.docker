@@ -661,7 +661,7 @@ def main():
         ),
         default_addr_pool=dict(docker_py_version='4.0.0', docker_api_version='1.39'),
         subnet_size=dict(docker_py_version='4.0.0', docker_api_version='1.39'),
-        data_path_addr=dict(docker_py_version='4.0.0', docker_api_version='1.31'),
+        data_path_addr=dict(docker_py_version='4.0.0', docker_api_version='1.30'),
     )
 
     client = AnsibleDockerSwarmClient(
