@@ -81,10 +81,11 @@ options:
       - present
   template_driver:
     description:
-      - Set to C(golang) to use a Golang template file in I(data).
+      - Set to C(golang) to use a Go template in I(data) or a Go template file in I(data_src).
     type: str
     choices:
       - golang
+    version_added: 2.5.0
 
 extends_documentation_fragment:
 - community.docker.docker
@@ -98,7 +99,6 @@ requirements:
 author:
   - Chris Houseknecht (@chouseknecht)
   - John Hu (@ushuz)
-  - Sasha Jenner (@sashajenner)
 '''
 
 EXAMPLES = '''
@@ -306,8 +306,11 @@ class ConfigManager(DockerBaseClass):
 
         try:
             if not self.check_mode:
-                config_id = self.client.create_config(self.name, self.data,
-                    labels=labels, templating=self.templating)
+                # only use templating argument when self.templating is defined
+                kwargs = {}
+                if self.templating:
+                    kwargs['templating'] = self.templating
+                config_id = self.client.create_config(self.name, self.data, labels=labels, **kwargs)
                 self.configs += self.client.configs(filters={'id': config_id})
         except APIError as exc:
             self.client.fail("Error creating config: %s" % to_native(exc))
@@ -384,6 +387,10 @@ def main():
         ('data', 'data_src'),
     ]
 
+    option_minimal_versions = dict(
+        template_driver=dict(docker_py_version='5.0.3', docker_api_version='1.37'),
+    )
+
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
@@ -391,6 +398,7 @@ def main():
         mutually_exclusive=mutually_exclusive,
         min_docker_version='2.6.0',
         min_docker_api_version='1.30',
+        option_minimal_versions=option_minimal_versions,
     )
 
     try:
