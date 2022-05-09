@@ -1,0 +1,2 @@
+minor_changes:
+  - docker_swarm - adds ``data_path_addr`` parameter during swarm initialization or when joining (https://github.com/ansible-collections/community.docker/issues/339).
