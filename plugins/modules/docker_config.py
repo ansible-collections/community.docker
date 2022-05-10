@@ -295,7 +295,8 @@ class ConfigManager(DockerBaseClass):
         config_id = None
         # We can't see the data after creation, so adding a label we can use for idempotency check
         labels = {
-            'ansible_key': self.data_key
+            'ansible_key': self.data_key,
+            'templating': self.templating,
         }
         if self.rolling_versions:
             self.version += 1
@@ -309,7 +310,7 @@ class ConfigManager(DockerBaseClass):
                 # only use templating argument when self.templating is defined
                 kwargs = {}
                 if self.templating:
-                    kwargs['templating'] = self.templating
+                    kwargs['templating'] = { 'name': 'golang' }
                 config_id = self.client.create_config(self.name, self.data, labels=labels, **kwargs)
                 self.configs += self.client.configs(filters={'id': config_id})
         except APIError as exc:
@@ -376,7 +377,7 @@ def main():
         force=dict(type='bool', default=False),
         rolling_versions=dict(type='bool', default=False),
         versions_to_keep=dict(type='int', default=5),
-        template_driver=dict(type='str', choices=['golang']),
+        template_driver=dict(type='str', choices=['golang', 'golang_again']),
     )
 
     required_if = [
