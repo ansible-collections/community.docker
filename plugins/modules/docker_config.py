@@ -295,13 +295,14 @@ class ConfigManager(DockerBaseClass):
         config_id = None
         # We can't see the data after creation, so adding a label we can use for idempotency check
         labels = {
-            'ansible_key': self.data_key,
-            'templating': self.templating,
+            'ansible_key': self.data_key
         }
         if self.rolling_versions:
             self.version += 1
             labels['ansible_version'] = str(self.version)
             self.name = '{name}_v{version}'.format(name=self.name, version=self.version)
+        if self.templating:
+            labels['template_driver'] = self.templating['name']
         if self.labels:
             labels.update(self.labels)
 
