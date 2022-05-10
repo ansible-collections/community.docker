@@ -331,6 +331,7 @@ class ConfigManager(DockerBaseClass):
             self.results['config_id'] = config['ID']
             self.results['config_name'] = config['Spec']['Name']
             data_changed = False
+            template_driver_changed = False
             attrs = config.get('Spec', {})
             if attrs.get('Labels', {}).get('ansible_key'):
                 if attrs['Labels']['ansible_key'] != self.data_key:
@@ -338,7 +339,8 @@ class ConfigManager(DockerBaseClass):
             else:
                 if not self.force:
                     self.client.module.warn("'ansible_key' label not found. Config will not be changed unless the force parameter is set to 'yes'")
-            template_driver_changed = attrs['Labels']['template_driver'] != self.template_driver
+            if attrs['Labels']['template_driver'] != self.template_driver:
+                template_driver_changed = True
             labels_changed = not compare_generic(self.labels, attrs.get('Labels'), 'allow_more_present', 'dict')
             if self.rolling_versions:
                 self.version = self.get_version(config)
