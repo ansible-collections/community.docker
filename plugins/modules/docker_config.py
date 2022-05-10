@@ -236,13 +236,7 @@ class ConfigManager(DockerBaseClass):
         self.force = parameters.get('force')
         self.rolling_versions = parameters.get('rolling_versions')
         self.versions_to_keep = parameters.get('versions_to_keep')
-        template_driver = parameters.get('template_driver')
-        if template_driver:
-            self.templating = {
-                'name': template_driver
-            }
-        else:
-            self.templating = None
+        self.template_driver = parameters.get('template_driver')
 
         if self.rolling_versions:
             self.version = 0
@@ -295,22 +289,21 @@ class ConfigManager(DockerBaseClass):
         config_id = None
         # We can't see the data after creation, so adding a label we can use for idempotency check
         labels = {
-            'ansible_key': self.data_key
+            'ansible_key': self.data_key,
+            'template_driver': self.template_driver,
         }
         if self.rolling_versions:
             self.version += 1
             labels['ansible_version'] = str(self.version)
             self.name = '{name}_v{version}'.format(name=self.name, version=self.version)
-        if self.templating:
-            labels['template_driver'] = self.templating['name']
         if self.labels:
             labels.update(self.labels)
 
         try:
             if not self.check_mode:
-                # only use templating argument when self.templating is defined
+                # only use templating argument when self.template_driver is defined
                 kwargs = {}
-                if self.templating:
+                if self.template_driver:
                     kwargs['templating'] = { 'name': 'golang' }
                 config_id = self.client.create_config(self.name, self.data, labels=labels, **kwargs)
                 self.configs += self.client.configs(filters={'id': config_id})
@@ -343,10 +336,11 @@ class ConfigManager(DockerBaseClass):
             else:
                 if not self.force:
                     self.client.module.warn("'ansible_key' label not found. Config will not be changed unless the force parameter is set to 'yes'")
+            template_driver_changed = attrs['Labels']['template_driver'] != self.template_driver
             labels_changed = not compare_generic(self.labels, attrs.get('Labels'), 'allow_more_present', 'dict')
             if self.rolling_versions:
                 self.version = self.get_version(config)
-            if data_changed or labels_changed or self.force:
+            if data_changed or template_driver_changed or labels_changed or self.force:
                 # if something changed or force, delete and re-create the config
                 if not self.rolling_versions:
                     self.absent()
