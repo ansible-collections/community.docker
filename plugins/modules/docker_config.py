@@ -304,7 +304,9 @@ class ConfigManager(DockerBaseClass):
                 # only use templating argument when self.template_driver is defined
                 kwargs = {}
                 if self.template_driver:
-                    kwargs['templating'] = { 'name': 'golang' }
+                    kwargs['templating'] = {
+                        'name': self.template_driver
+                    }
                 config_id = self.client.create_config(self.name, self.data, labels=labels, **kwargs)
                 self.configs += self.client.configs(filters={'id': config_id})
         except APIError as exc:
@@ -372,7 +374,7 @@ def main():
         force=dict(type='bool', default=False),
         rolling_versions=dict(type='bool', default=False),
         versions_to_keep=dict(type='int', default=5),
-        template_driver=dict(type='str', choices=['golang', 'golang_again']),
+        template_driver=dict(type='str', choices=['golang']),
     )
 
     required_if = [
