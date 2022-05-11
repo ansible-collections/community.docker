@@ -11,7 +11,7 @@
 
   - name: Create a Swarm cluster
     docker_swarm:
-      name: raw_eggplant
+      name: default
       state: present
       advertise_addr: "{{ansible_default_ipv4.address}}"
 
@@ -297,7 +297,7 @@
       that:
          - "'db_password' in inspect.stdout"
          - "'ansible_key' in inspect.stdout"
-         - "'\"Data\": \"raw_eggplant\"' in inspect.stdout"
+         - "'\"Data\": \"default\"' in inspect.stdout"
          - "'Templating' in inspect.stdout"
          - "'\"Name\": \"golang\"' in inspect.stdout"
     when: inspect is not failed
