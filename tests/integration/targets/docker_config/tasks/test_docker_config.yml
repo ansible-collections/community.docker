@@ -276,6 +276,7 @@
       that:
          - not output.changed
 
+  # data is the docker swarm's name
   - name: Update config with template data
     docker_config:
       name: db_password
