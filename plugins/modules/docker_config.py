@@ -289,8 +289,7 @@ class ConfigManager(DockerBaseClass):
         config_id = None
         # We can't see the data after creation, so adding a label we can use for idempotency check
         labels = {
-            'ansible_key': self.data_key,
-            'template_driver': self.template_driver,
+            'ansible_key': self.data_key
         }
         if self.rolling_versions:
             self.version += 1
@@ -339,7 +338,12 @@ class ConfigManager(DockerBaseClass):
             else:
                 if not self.force:
                     self.client.module.warn("'ansible_key' label not found. Config will not be changed unless the force parameter is set to 'yes'")
-            if attrs['Labels']['template_driver'] != self.template_driver:
+            # template_driver has changed if it was set in the previous config
+            # and now it differs, or if it wasn't set but now it is.
+            if attrs.get('Templating', {}).get('Name'):
+                if attrs['Templating']['Name'] != self.template_driver:
+                    template_driver_changed = True
+            elif self.template_driver:
                 template_driver_changed = True
             labels_changed = not compare_generic(self.labels, attrs.get('Labels'), 'allow_more_present', 'dict')
             if self.rolling_versions:
