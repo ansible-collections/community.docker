@@ -11,6 +11,7 @@
 
   - name: Create a Swarm cluster
     docker_swarm:
+      name: raw_eggplant
       state: present
       advertise_addr: "{{ansible_default_ipv4.address}}"
 
@@ -218,6 +219,99 @@
 
   - name: Check that config is removed
     command: "docker config inspect {{ new_output.config_id }}"
+    register: output
+    ignore_errors: yes
+
+  - name: assert config was removed
+    assert:
+      that:
+        - output.failed
+
+# template_driver tests
+
+  - name: Create regular config
+    docker_config:
+      name: db_password
+      data: opensesame!
+      state: present
+
+  - name: Update config with template_driver
+    docker_config:
+      name: db_password
+      data: opensesame!
+      template_driver: golang
+      state: present
+    register: output
+
+  - name: assert config was updated
+    assert:
+      that:
+         - output.changed
+
+  - name: Invalid template_driver
+    docker_config:
+      name: db_password
+      data: opensesame!
+      template_driver: "not a template driver"
+      state: present
+    ignore_errors: yes
+    register: output
+
+  - name: assert failure when called with invalid template_driver
+    assert:
+      that:
+         - 'output.failed'
+         - 'output.msg == "value of template_driver must be one of: golang, got: not a template driver"'
+
+  - name: Create config again
+    docker_config:
+      name: db_password
+      data: opensesame!
+      template_driver: golang
+      state: present
+    register: output
+
+  - name: assert create config is idempotent
+    assert:
+      that:
+         - not output.changed
+
+  - name: Update config with template data
+    docker_config:
+      name: db_password
+      data: "{{ '{{' }} .Service.Name {{ '}}' }}"
+      template_driver: golang
+      state: present
+    register: output
+
+  - name: Inspect config
+    command: "docker config inspect {{ output.config_id }}"
+    register: inspect
+    ignore_errors: yes
+
+  - debug: var=inspect
+
+  - name: assert config creation succeeded
+    assert:
+      that:
+         - "'db_password' in inspect.stdout"
+         - "'ansible_key' in inspect.stdout"
+         - "'\"Data\": \"raw_eggplant\"' in inspect.stdout"
+         - "'Templating' in inspect.stdout"
+         - "'\"Name\": \"golang\"' in inspect.stdout"
+    when: inspect is not failed
+  - assert:
+      that:
+         - "'is too new. Maximum supported API version is' in inspect.stderr"
+    when: inspect is failed
+
+  - name: Remove config
+    docker_config:
+      name: db_password
+      state: absent
+
+  - name: Check that config is removed
+    command: "docker config inspect {{ output.config_id }}"
     register: output
     ignore_errors: yes
 
