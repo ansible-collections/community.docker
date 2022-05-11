@@ -79,6 +79,13 @@ options:
     choices:
       - absent
       - present
+  template_driver:
+    description:
+      - Set to C(golang) to use a Go template in I(data) or a Go template file in I(data_src).
+    type: str
+    choices:
+      - golang
+    version_added: 2.5.0
 
 extends_documentation_fragment:
 - community.docker.docker
@@ -229,6 +236,7 @@ class ConfigManager(DockerBaseClass):
         self.force = parameters.get('force')
         self.rolling_versions = parameters.get('rolling_versions')
         self.versions_to_keep = parameters.get('versions_to_keep')
+        self.template_driver = parameters.get('template_driver')
 
         if self.rolling_versions:
             self.version = 0
@@ -292,7 +300,13 @@ class ConfigManager(DockerBaseClass):
 
         try:
             if not self.check_mode:
-                config_id = self.client.create_config(self.name, self.data, labels=labels)
+                # only use templating argument when self.template_driver is defined
+                kwargs = {}
+                if self.template_driver:
+                    kwargs['templating'] = {
+                        'name': self.template_driver
+                    }
+                config_id = self.client.create_config(self.name, self.data, labels=labels, **kwargs)
                 self.configs += self.client.configs(filters={'id': config_id})
         except APIError as exc:
             self.client.fail("Error creating config: %s" % to_native(exc))
@@ -316,6 +330,7 @@ class ConfigManager(DockerBaseClass):
             self.results['config_id'] = config['ID']
             self.results['config_name'] = config['Spec']['Name']
             data_changed = False
+            template_driver_changed = False
             attrs = config.get('Spec', {})
             if attrs.get('Labels', {}).get('ansible_key'):
                 if attrs['Labels']['ansible_key'] != self.data_key:
@@ -323,10 +338,17 @@ class ConfigManager(DockerBaseClass):
             else:
                 if not self.force:
                     self.client.module.warn("'ansible_key' label not found. Config will not be changed unless the force parameter is set to 'yes'")
+            # template_driver has changed if it was set in the previous config
+            # and now it differs, or if it wasn't set but now it is.
+            if attrs.get('Templating', {}).get('Name'):
+                if attrs['Templating']['Name'] != self.template_driver:
+                    template_driver_changed = True
+            elif self.template_driver:
+                template_driver_changed = True
             labels_changed = not compare_generic(self.labels, attrs.get('Labels'), 'allow_more_present', 'dict')
             if self.rolling_versions:
                 self.version = self.get_version(config)
-            if data_changed or labels_changed or self.force:
+            if data_changed or template_driver_changed or labels_changed or self.force:
                 # if something changed or force, delete and re-create the config
                 if not self.rolling_versions:
                     self.absent()
@@ -358,6 +380,7 @@ def main():
         force=dict(type='bool', default=False),
         rolling_versions=dict(type='bool', default=False),
         versions_to_keep=dict(type='int', default=5),
+        template_driver=dict(type='str', choices=['golang']),
     )
 
     required_if = [
@@ -368,6 +391,10 @@ def main():
         ('data', 'data_src'),
     ]
 
+    option_minimal_versions = dict(
+        template_driver=dict(docker_py_version='5.0.3', docker_api_version='1.37'),
+    )
+
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
@@ -375,6 +402,7 @@ def main():
         mutually_exclusive=mutually_exclusive,
         min_docker_version='2.6.0',
         min_docker_api_version='1.30',
+        option_minimal_versions=option_minimal_versions,
     )
 
     try:
