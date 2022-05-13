@@ -9,9 +9,15 @@ platform="${args[0]}"
 version="${args[1]}"
 target="shippable/posix/"
 
+force_python=""
+
 if [ "${#args[@]}" -gt 3 ]; then
     if [ "${args[2]}" == "pypi-latest" ]; then
         echo 'force_docker_sdk_for_python_pypi: true' >> tests/integration/interation_config.yml
+        if [ "${platform}" == "rhel" ] && [[ "${version}" =~ ^8\. ]]; then
+            # Use Python 3.8 on RHEL 8.x - TODO: this might be no longer necessary for high enough minor version! Check!
+            force_python="--python 3.8"
+        fi
     else
         echo "Invalid Docker SDK for Python version: '${args[2]}'"
         exit 254
@@ -24,10 +30,10 @@ fi
 stage="${S:-prod}"
 provider="${P:-default}"
 
-if [ "${platform}" == "rhel" ] && [[ "${version}" =~ ^8 ]]; then
+if [ "${platform}" == "rhel" ] && [[ "${version}" =~ ^8\. ]]; then
     echo "pynacl >= 1.4.0, < 1.5.0; python_version == '3.6'" >> tests/utils/constraints.txt
 fi
 
 # shellcheck disable=SC2086
 ansible-test integration --color -v --retry-on-error "${target}" ${COVERAGE:+"$COVERAGE"} ${CHANGED:+"$CHANGED"} ${UNSTABLE:+"$UNSTABLE"} \
-    --remote "${platform}/${version}" --remote-terminate always --remote-stage "${stage}" --remote-provider "${provider}"
+    --remote "${platform}/${version}" --remote-terminate always --remote-stage "${stage}" --remote-provider "${provider}" ${force_python}
