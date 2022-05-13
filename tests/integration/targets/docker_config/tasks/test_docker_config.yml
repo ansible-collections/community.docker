@@ -246,7 +246,7 @@
   - name: assert config was updated
     assert:
       that:
-         - output.changed
+         - output is changed
 
   - name: Invalid template_driver
     docker_config:
@@ -274,7 +274,7 @@
   - name: assert create config is idempotent
     assert:
       that:
-         - not output.changed
+         - output is not changed
 
   # data is the docker swarm's name
   - name: Update config with template data
@@ -288,7 +288,6 @@
   - name: Inspect config
     command: "docker config inspect {{ output.config_id }}"
     register: inspect
-    ignore_errors: yes
 
   - debug: var=inspect
 
