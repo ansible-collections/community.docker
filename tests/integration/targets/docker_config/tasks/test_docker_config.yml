@@ -123,7 +123,7 @@
   - name: Assert config was updated
     assert:
       that:
-         - output is not changed
+         - output is changed
          - output.config_id != config_id
 
   - name: Remove config
@@ -198,7 +198,7 @@
   - name: Assert that new version is created
     assert:
       that:
-         - new_output is not changed
+         - new_output is changed
          - new_output.config_id != original_output.config_id
          - new_output.config_name != original_output.config_name
          - new_output.config_name == 'rolling_password_v2'
