@@ -229,96 +229,96 @@
 
 # template_driver tests
 
-  - name: Create regular config
-    docker_config:
-      name: db_password
-      data: opensesame!
-      state: present
+  - when: docker_py_version is version('5.0.3', '>=') and docker_api_version is version('1.37', '>=')
+    block:
 
-  - name: Update config with template_driver
-    docker_config:
-      name: db_password
-      data: opensesame!
-      template_driver: golang
-      state: present
-    register: output
+    - name: Create regular config
+      docker_config:
+        name: db_password
+        data: opensesame!
+        state: present
 
-  - name: assert config was updated
-    assert:
-      that:
-         - output is changed
+    - name: Update config with template_driver
+      docker_config:
+        name: db_password
+        data: opensesame!
+        template_driver: golang
+        state: present
+      register: output
 
-  - name: Invalid template_driver
-    docker_config:
-      name: db_password
-      data: opensesame!
-      template_driver: "not a template driver"
-      state: present
-    ignore_errors: yes
-    register: output
+    - name: Assert config was updated
+      assert:
+        that:
+           - output is changed
 
-  - name: assert failure when called with invalid template_driver
-    assert:
-      that:
-         - 'output.failed'
-         - 'output.msg == "value of template_driver must be one of: golang, got: not a template driver"'
+    - name: Invalid template_driver
+      docker_config:
+        name: db_password
+        data: opensesame!
+        template_driver: "not a template driver"
+        state: present
+      ignore_errors: yes
+      register: output
 
-  - name: Create config again
-    docker_config:
-      name: db_password
-      data: opensesame!
-      template_driver: golang
-      state: present
-    register: output
+    - name: Assert failure when called with invalid template_driver
+      assert:
+        that:
+           - 'output.failed'
+           - 'output.msg == "value of template_driver must be one of: golang, got: not a template driver"'
 
-  - name: assert create config is idempotent
-    assert:
-      that:
-         - output is not changed
+    - name: Create config again
+      docker_config:
+        name: db_password
+        data: opensesame!
+        template_driver: golang
+        state: present
+      register: output
 
-  # data is the docker swarm's name
-  - name: Update config with template data
-    docker_config:
-      name: db_password
-      data: "{{ '{{' }} .Service.Name {{ '}}' }}"
-      template_driver: golang
-      state: present
-    register: output
+    - name: Assert create config is idempotent
+      assert:
+        that:
+           - output is not changed
 
-  - name: Inspect config
-    command: "docker config inspect {{ output.config_id }}"
-    register: inspect
+    # data is the docker swarm's name
+    - name: Update config with template data
+      docker_config:
+        name: db_password
+        data: "{{ '{{' }} .Service.Name {{ '}}' }}"
+        template_driver: golang
+        state: present
+      register: output
 
-  - debug: var=inspect
+    - name: Inspect config
+      command: "docker config inspect {{ output.config_id }}"
+      register: inspect
 
-  - name: assert config creation succeeded
-    assert:
-      that:
-         - "'db_password' in inspect.stdout"
-         - "'ansible_key' in inspect.stdout"
-         - "'\"Data\": \"default\"' in inspect.stdout"
-         - "'Templating' in inspect.stdout"
-         - "'\"Name\": \"golang\"' in inspect.stdout"
-    when: inspect is not failed
-  - assert:
-      that:
-         - "'is too new. Maximum supported API version is' in inspect.stderr"
-    when: inspect is failed
+    - name: Show inspection result
+      debug:
+        var: inspect
 
-  - name: Remove config
-    docker_config:
-      name: db_password
-      state: absent
+    - name: assert config creation succeeded
+      assert:
+        that:
+           - "'db_password' in inspect.stdout"
+           - "'ansible_key' in inspect.stdout"
+           - "'\"Data\": \"default\"' in inspect.stdout"
+           - "'Templating' in inspect.stdout"
+           - "'\"Name\": \"golang\"' in inspect.stdout"
 
-  - name: Check that config is removed
-    command: "docker config inspect {{ output.config_id }}"
-    register: output
-    ignore_errors: yes
+    - name: Remove config
+      docker_config:
+        name: db_password
+        state: absent
 
-  - name: assert config was removed
-    assert:
-      that:
-        - output.failed
+    - name: Check that config is removed
+      command: "docker config inspect {{ output.config_id }}"
+      register: output
+      ignore_errors: yes
+
+    - name: Assert config was removed
+      assert:
+        that:
+          - output.failed
 
   always:
   - name: Remove a Swarm cluster
