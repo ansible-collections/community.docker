@@ -303,7 +303,8 @@
         that:
            - "'db_password' in inspect.stdout"
            - "'ansible_key' in inspect.stdout"
-           - "'\"Data\": \"default\"' in inspect.stdout"
+           # According to the API docs, 'Data' is "Base64-url-safe-encoded (RFC 4648) config data."
+           - "'\"Data\": \"e3sgLlNlcnZpY2UuTmFtZSB9fQ==\"' in inspect.stdout"
            - "'Templating' in inspect.stdout"
            - "'\"Name\": \"golang\"' in inspect.stdout"
 
