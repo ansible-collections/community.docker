@@ -251,7 +251,7 @@ stages:
           testFormat: devel/rhel/{0}
           targets:
             - test: '7.9'
-            - test: '8.5'
+            - test: '8.5/pypi-latest'
           groups:
             - 1
             - 2

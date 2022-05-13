@@ -7,11 +7,18 @@ IFS='/:' read -ra args <<< "$1"
 
 platform="${args[0]}"
 version="${args[1]}"
+target="shippable/posix/"
 
-if [ "${#args[@]}" -gt 2 ]; then
+if [ "${#args[@]}" -gt 3 ]; then
+    if [ "${args[2]}" == "pypi-latest" ]; then
+        echo 'force_docker_sdk_for_python_pypi: true' >> tests/integration/interation_config.yml
+    else
+        echo "Invalid Docker SDK for Python version: '${args[2]}'"
+        exit 254
+    fi
+    target="shippable/posix/group${args[3]}/"
+elif [ "${#args[@]}" -gt 2 ]; then
     target="shippable/posix/group${args[2]}/"
-else
-    target="shippable/posix/"
 fi
 
 stage="${S:-prod}"

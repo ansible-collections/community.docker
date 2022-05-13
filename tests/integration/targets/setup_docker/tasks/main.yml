@@ -50,11 +50,11 @@
         docker_pip_package_limit: '<4.3.0'
       when: (docker_api_version_stdout.stdout | default('0.0')) is version('1.39', '<')
 
-    - name: Install Python requirements
+    - name: Install/upgrade Python requirements
       pip:
-        state: present
         name: "{{ [docker_pip_package ~ docker_pip_package_limit] + docker_pip_extra_packages }}"
         extra_args: "-c {{ remote_constraints }}"
+        state: "{{ 'latest' if force_docker_sdk_for_python_pypi | default(false) else 'present' }}"
       notify: cleanup docker
 
     # Detect docker CLI, API and docker-py versions
