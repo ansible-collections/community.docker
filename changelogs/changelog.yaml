@@ -622,3 +622,12 @@ releases:
     - 344-adds-data-path-addr.yml
     - 345-docker_config-template-driver.yml
     release_date: '2022-05-14'
+  2.5.1:
+    changes:
+      bugfixes:
+      - Include ``PSF-license.txt`` file for ``plugins/module_utils/_version.py``.
+      release_summary: Maintenance release.
+    fragments:
+    - 2.5.1.yml
+    - psf-license.yml
+    release_date: '2022-05-16'
