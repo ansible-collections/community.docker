@@ -272,6 +272,15 @@ releases:
     - 1.10.8.yml
     - 327-connection-fix.yml
     release_date: '2022-04-25'
+  1.10.9:
+    changes:
+      bugfixes:
+      - Include ``PSF-license.txt`` file for ``plugins/module_utils/_version.py``.
+      release_summary: Maintenance release.
+    fragments:
+    - 1.10.9.yml
+    - psf-license.yml
+    release_date: '2022-05-16'
   1.2.0:
     changes:
       bugfixes:
