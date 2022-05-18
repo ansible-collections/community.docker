@@ -1209,7 +1209,6 @@ status:
 '''
 
 import os
-import pipes
 import re
 import shlex
 import traceback
@@ -1247,14 +1246,6 @@ try:
 except Exception:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
     pass
-
-
-def shell_join(parts):
-    if getattr(shlex, 'quote', None):
-        quote = shlex.quote
-    else:
-        quote = pipes.quote
-    return ' '.join([quote(part) for part in parts])
 
 
 REQUIRES_CONVERSION_TO_BYTES = [
