@@ -1962,6 +1962,7 @@
     - all
   register: capabilities_3
   ignore_errors: yes
+  diff: true
 
 - name: capabilities, cap_drop (changed)
   docker_swarm_service:
