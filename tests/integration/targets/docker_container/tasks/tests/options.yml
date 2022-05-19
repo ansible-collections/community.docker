@@ -2306,7 +2306,9 @@
     - kernel_memory_1 is changed
     - kernel_memory_2 is not changed
     - kernel_memory_3 is changed
-  when: kernel_memory_1 is not failed or 'kernel memory accounting disabled in this runc build' not in kernel_memory_1.msg
+  when:
+    - kernel_memory_1 is not failed or 'kernel memory accounting disabled in this runc build' not in kernel_memory_1.msg
+    - "'Docker warning: Specifying a kernel memory limit is deprecated and will be removed in a future release.' not in kernel_memory_1.warnings"
 
 ####################################################################
 ## kill_signal #####################################################
