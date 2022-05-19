@@ -2848,6 +2848,7 @@ avoid such warnings, please quote the value.' in log_options_2.warnings"
     - memory_swappiness_1 is changed
     - memory_swappiness_2 is not changed
     - memory_swappiness_3 is changed
+  when: "'Docker warning: Your kernel does not support memory swappiness capabilities or the cgroup is not mounted. Memory swappiness discarded.' not in memory_swappiness_1.warnings"
 
 ####################################################################
 ## oom_killer ######################################################
