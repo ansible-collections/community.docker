@@ -187,10 +187,10 @@ def update_tls_hostname(result, old_behavior=False, deprecate_function=None, use
             result['tls_hostname'] = DEFAULT_TLS_HOSTNAME
             if uses_tls and deprecate_function is not None:
                 deprecate_function(
-                    'The default value "localhost" for tls_hostname is deprecated and will be removed in community.docker 2.0.0.'
+                    'The default value "localhost" for tls_hostname is deprecated and will be removed in community.docker 3.0.0.'
                     ' From then on, docker_host will be used to compute tls_hostname. If you want to keep using "localhost",'
                     ' please set that value explicitly.',
-                    version='2.0.0', collection_name='community.docker')
+                    version='3.0.0', collection_name='community.docker')
             return
 
         # get default machine name from the url
