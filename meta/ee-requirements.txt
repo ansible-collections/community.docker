@@ -1,2 +1,3 @@
 docker
-docker-compose
+# do not add docker-compose python package as a depedency as the module
+# is unmaintained and it is now a go project and called by docker directly.
