@@ -88,7 +88,7 @@
 - assert:
     that:
     - blkio_weight_1 is changed
-    - "blkio_weight_2 is not changed or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in blkio_weight_2.warnings"
+    - "blkio_weight_2 is not changed or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (blkio_weight_2.warnings | default([]))"
     - blkio_weight_3 is changed
 
 ####################################################################
@@ -2308,7 +2308,7 @@
     - kernel_memory_3 is changed
   when:
     - kernel_memory_1 is not failed or 'kernel memory accounting disabled in this runc build' not in kernel_memory_1.msg
-    - "'Docker warning: Specifying a kernel memory limit is deprecated and will be removed in a future release.' not in kernel_memory_1.warnings"
+    - "'Docker warning: Specifying a kernel memory limit is deprecated and will be removed in a future release.' not in (kernel_memory_1.warnings | default([]))"
 
 ####################################################################
 ## kill_signal #####################################################
@@ -2571,7 +2571,7 @@
     - log_options_1 is changed
     - log_options_2 is not changed
     - "'Non-string value found for log_options option \\'max-file\\'. The value is automatically converted to \\'5\\'. If this is not correct, or you want to
-avoid such warnings, please quote the value.' in log_options_2.warnings"
+avoid such warnings, please quote the value.' in (log_options_2.warnings | default([]))"
     - log_options_3 is not changed
     - log_options_4 is changed
 
@@ -2848,7 +2848,7 @@ avoid such warnings, please quote the value.' in log_options_2.warnings"
     - memory_swappiness_1 is changed
     - memory_swappiness_2 is not changed
     - memory_swappiness_3 is changed
-  when: "'Docker warning: Your kernel does not support memory swappiness capabilities or the cgroup is not mounted. Memory swappiness discarded.' not in memory_swappiness_1.warnings"
+  when: "'Docker warning: Your kernel does not support memory swappiness capabilities or the cgroup is not mounted. Memory swappiness discarded.' not in (memory_swappiness_1.warnings | default([]))"
 
 ####################################################################
 ## oom_killer ######################################################
@@ -2894,6 +2894,7 @@ avoid such warnings, please quote the value.' in log_options_2.warnings"
     - oom_killer_1 is changed
     - oom_killer_2 is not changed
     - oom_killer_3 is changed
+  when: "'Docker warning: Your kernel does not support OomKillDisable. OomKillDisable discarded.' not in (oom_killer_1.warnings | default([]))"
 
 ####################################################################
 ## oom_score_adj ###################################################
@@ -2939,6 +2940,7 @@ avoid such warnings, please quote the value.' in log_options_2.warnings"
     - oom_score_adj_1 is changed
     - oom_score_adj_2 is not changed
     - oom_score_adj_3 is changed
+  when: "'Docker warning: Your kernel does not support OomScoreAdj. OomScoreAdj discarded.' not in (oom_score_adj_1.warnings | default([]))"
 
 ####################################################################
 ## output_logs #####################################################
