@@ -394,6 +394,20 @@ options:
       - Can also be an image ID. If this is the case, the image is assumed to be available locally.
         The I(pull) option is ignored for this case.
     type: str
+  image_label_mismatch:
+    description:
+      - How to handle labels inherited from the image that are not set explicitly.
+      - When C(ignore), labels that are present in the image but not specified in ansible will be
+        ignored. This is useful to avoid having to specify the image labels in ansible while keeping
+        labels I(comparisons) C(strict).
+        When C(fail), if there are labels present in the image which aren't set from ansible, the
+        module will fail. This prevents introducing unexpected labels from the base image.
+      - "B(Warning:) This option is ignored unless C(labels: strict) or C(*: strict) is specified in
+        the I(comparisons option."
+    type: str
+    choices:
+      - 'ignore'
+      - 'fail'
   init:
     description:
       - Run an init inside the container that forwards signals and reaps processes.
@@ -2186,6 +2200,7 @@ class Container(DockerBaseClass):
         self.parameters_map['expected_env'] = 'env'
         self.parameters_map['expected_entrypoint'] = 'entrypoint'
         self.parameters_map['expected_binds'] = 'volumes'
+        self.parameters_map['expected_labels'] = 'labels'
         self.parameters_map['expected_cmd'] = 'command'
         self.parameters_map['expected_devices'] = 'devices'
         self.parameters_map['expected_healthcheck'] = 'healthcheck'
@@ -2257,6 +2272,7 @@ class Container(DockerBaseClass):
         self.parameters.expected_exposed = self._get_expected_exposed(image)
         self.parameters.expected_volumes = self._get_expected_volumes(image)
         self.parameters.expected_binds = self._get_expected_binds(image)
+        self.parameters.expected_labels = self._get_expected_labels(image)
         self.parameters.expected_ulimits = self._get_expected_ulimits(self.parameters.ulimits)
         self.parameters.expected_sysctls = self._get_expected_sysctls(self.parameters.sysctls)
         self.parameters.expected_etc_hosts = self._convert_simple_dict_to_list('etc_hosts')
@@ -2310,7 +2326,7 @@ class Container(DockerBaseClass):
             expected_exposed=expected_exposed,
             groups=host_config.get('GroupAdd'),
             ipc_mode=host_config.get("IpcMode"),
-            labels=config.get('Labels'),
+            expected_labels=config.get('Labels'),
             expected_links=host_config.get('Links'),
             mac_address=config.get('MacAddress', network.get('MacAddress')),
             memory_swappiness=host_config.get('MemorySwappiness'),
@@ -2411,6 +2427,19 @@ class Container(DockerBaseClass):
                         # requested strict comparison for healthcheck, the comparison will fail. That's why we ignore the
                         # expected_healthcheck comparison in this case.
                         continue
+
+                    if key == 'expected_labels' and self.parameters.image_label_mismatch == 'fail':
+                        # If there are labels from the base image that should be removed and
+                        # base_image_mismatch is fail we want raise an error.
+                        image_labels = self._get_image_labels(image)
+                        would_remove_labels = []
+                        for label in image_labels.keys():
+                            if label not in self.parameters.labels:
+                                # Format label for error message
+                                would_remove_labels.append(repr(label))
+                        if would_remove_labels:
+                            msg = "Some labels should be removed but are present in the base image. You can set image_label_mismatch to 'ignore' to ignore this error. Labels: {0}"
+                            self.fail(msg.format(', '.join(would_remove_labels)))
 
                     # no match. record the differences
                     p = getattr(self.parameters, key)
@@ -2649,6 +2678,26 @@ class Container(DockerBaseClass):
         self.log("expected_binds:")
         self.log(result, pretty_print=True)
         return result
+
+    def _get_expected_labels(self, image):
+        if self.parameters.image_label_mismatch == 'ignore':
+            expected_labels = self._get_image_labels(image)
+        else:
+            expected_labels = {}
+        if self.parameters.labels:
+            expected_labels.update(self.parameters.labels)
+        return expected_labels
+
+    def _get_image_labels(self, image):
+        if not image:
+            return {}
+
+        # Can't use get('Labels', {}) because 'Labels' may be present and be None
+        labels = image[self.parameters.client.image_inspect_source].get('Labels')
+        if labels is None:
+            return {}
+        else:
+            return dict(labels)
 
     def _get_expected_device_requests(self):
         if self.parameters.device_requests is None:
@@ -3561,6 +3610,7 @@ def main():
         hostname=dict(type='str'),
         ignore_image=dict(type='bool', default=False),
         image=dict(type='str'),
+        image_label_mismatch=dict(type='str', choices=['ignore', 'fail'], default='ignore'),
         init=dict(type='bool'),
         interactive=dict(type='bool'),
         ipc_mode=dict(type='str'),

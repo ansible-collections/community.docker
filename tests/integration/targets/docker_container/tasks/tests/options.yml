@@ -2195,8 +2195,166 @@
     - image_change is changed
 
 ####################################################################
-## ipc_mode ########################################################
+## image_label_mismatch ############################################
 ####################################################################
+
+- name: Registering image name
+  set_fact:
+    iname_labels: "{{ cname_prefix ~ '-labels' }}"
+- name: Registering image name
+  set_fact:
+    inames: "{{ inames + [iname_labels] }}"
+- name: build image with labels
+  command:
+    cmd: "docker build --label img_label=base --tag {{ iname_labels }} -"
+    stdin: "FROM {{ docker_test_image_alpine }}"
+
+- name: image_label_mismatch
+  docker_container:
+    image: "{{ iname_labels }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+  register: image_label_mismatch_1
+
+- name: image_label_mismatch (ignore,unmanaged labels)
+  docker_container:
+    image: "{{ iname_labels }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    image_label_mismatch: ignore
+    state: started
+  register: image_label_mismatch_2
+
+- name: image_label_mismatch (ignore,missing img label)
+  docker_container:
+    image: "{{ iname_labels }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    image_label_mismatch: ignore
+    labels: {}
+    state: started
+  register: image_label_mismatch_3
+
+- name: image_label_mismatch (ignore,match img label)
+  docker_container:
+    image: "{{ iname_labels }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    image_label_mismatch: ignore
+    labels:
+      img_label: base
+    state: started
+  register: image_label_mismatch_4
+
+- name: image_label_mismatch (ignore,mismatched img label)
+  docker_container:
+    image: "{{ iname_labels }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    image_label_mismatch: ignore
+    labels:
+      img_label: override
+    state: started
+  register: image_label_mismatch_5
+
+- name: image_label_mismatch (ignore,remove img label)
+  docker_container:
+    image: "{{ iname_labels }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    image_label_mismatch: ignore
+    labels: {}
+    state: started
+  register: image_label_mismatch_6
+
+- name: image_label_mismatch (fail,unmanaged labels)
+  docker_container:
+    image: "{{ iname_labels }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    image_label_mismatch: fail
+    state: started
+  register: image_label_mismatch_7
+
+- name: image_label_mismatch (fail,non-strict,missing img label)
+  docker_container:
+    image: "{{ iname_labels }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    image_label_mismatch: fail
+    labels: {}
+    state: started
+  register: image_label_mismatch_8
+
+- name: image_label_mismatch (fail,strict,missing img label)
+  docker_container:
+    image: "{{ iname_labels }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    image_label_mismatch: fail
+    comparisons:
+      labels: strict
+    labels: {}
+    state: started
+  ignore_errors: yes
+  register: image_label_mismatch_9
+
+- name: image_label_mismatch (fail,match img label)
+  docker_container:
+    image: "{{ iname_labels }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    image_label_mismatch: fail
+    labels:
+      img_label: base
+    state: started
+  register: image_label_mismatch_10
+
+- name: image_label_mismatch (fail,mismatched img label)
+  docker_container:
+    image: "{{ iname_labels }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    image_label_mismatch: fail
+    labels:
+      img_label: override
+    state: started
+  register: image_label_mismatch_11
+
+- name: cleanup container
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
+  diff: no
+
+- name: cleanup image
+  docker_image:
+    name: "{{ iname_labels }}"
+    state: absent
+  diff: no
+
+- assert:
+    that:
+    - image_label_mismatch_1 is changed
+    - image_label_mismatch_1.container.Config.Labels.img_label == "base"
+    - image_label_mismatch_2 is not changed
+    - image_label_mismatch_3 is not changed
+    - image_label_mismatch_4 is not changed
+    - image_label_mismatch_5 is changed
+    - image_label_mismatch_5.container.Config.Labels.img_label == "override"
+    - image_label_mismatch_6 is changed
+    - image_label_mismatch_6.container.Config.Labels.img_label == "base"
+    - image_label_mismatch_7 is not changed
+    - image_label_mismatch_8 is not changed
+    - image_label_mismatch_9 is failed
+    - image_label_mismatch_10 is not changed
+    - image_label_mismatch_11 is changed
+
+###################################################################
+# ipc_mode ########################################################
+###################################################################
 
 - name: start helpers
   docker_container:
