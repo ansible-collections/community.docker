@@ -119,13 +119,22 @@
     force_kill: yes
   register: digest_2
 
+- name: Create container with {{ docker_test_image_digest_base }} image via old digest (idempotent, pull)
+  docker_container:
+    image: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
+    name: "{{ cname }}"
+    pull: yes
+    state: present
+    force_kill: yes
+  register: digest_3
+
 - name: Update container with {{ docker_test_image_digest_base }} image via new digest
   docker_container:
     image: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v2 }}"
     name: "{{ cname }}"
     state: present
     force_kill: yes
-  register: digest_3
+  register: digest_4
 
 - name: Cleanup
   docker_container:
@@ -138,4 +147,5 @@
     that:
       - digest_1 is changed
       - digest_2 is not changed
-      - digest_3 is changed
+      - digest_3 is not changed
+      - digest_4 is changed

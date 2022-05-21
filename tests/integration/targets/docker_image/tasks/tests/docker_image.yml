@@ -101,6 +101,19 @@
     - facts_2.images | length == 0
     - facts_3.images | length == 1
 
+- name: Pull image from test registry (with digest)
+  docker_image:
+    name: "{{ hello_world_image_base }}@{{ facts_3.images[0].RepoDigests[0] }}"
+    state: present
+    source: pull
+    force_source: true
+  register: pull_digest
+
+- name: Make sure that changed is still false
+  assert:
+    that:
+      - pull_digest is not changed
+
 - name: Tag different image with new tag
   docker_image:
     name: "{{ docker_test_image_alpine_different }}"
