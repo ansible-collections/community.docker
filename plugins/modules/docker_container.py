@@ -657,7 +657,7 @@ options:
   output_logs:
     description:
       - If set to true, output of the container command will be printed.
-      - Only effective when I(log_driver) is set to C(json-file) or C(journald).
+      - Only effective when I(log_driver) is set to C(json-file), C(journald), or C(local).
     type: bool
     default: no
   paused:
@@ -1202,7 +1202,6 @@ status:
 '''
 
 import os
-import pipes
 import re
 import shlex
 import traceback
@@ -1240,14 +1239,6 @@ try:
 except Exception:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
     pass
-
-
-def shell_join(parts):
-    if getattr(shlex, 'quote', None):
-        quote = shlex.quote
-    else:
-        quote = pipes.quote
-    return ' '.join([quote(part) for part in parts])
 
 
 REQUIRES_CONVERSION_TO_BYTES = [
@@ -3191,7 +3182,7 @@ class ContainerManager(DockerBaseClass):
                     config = self.client.inspect_container(container_id)
                     logging_driver = config['HostConfig']['LogConfig']['Type']
 
-                    if logging_driver in ('json-file', 'journald'):
+                    if logging_driver in ('json-file', 'journald', 'local'):
                         output = self.client.logs(container_id, stdout=True, stderr=True, stream=False, timestamps=False)
                         if self.parameters.output_logs:
                             self._output_logs(msg=output)

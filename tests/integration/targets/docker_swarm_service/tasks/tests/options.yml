@@ -1950,6 +1950,7 @@
     - all
   register: capabilities_2
   ignore_errors: yes
+  diff: true
 
 - name: capabilities, cap_drop (less)
   docker_swarm_service:
@@ -1962,6 +1963,7 @@
     - all
   register: capabilities_3
   ignore_errors: yes
+  diff: true
 
 - name: capabilities, cap_drop (changed)
   docker_swarm_service:
@@ -1975,6 +1977,7 @@
     - all
   register: capabilities_4
   ignore_errors: yes
+  diff: true
 
 - name: cleanup
   docker_swarm_service:
@@ -1986,7 +1989,7 @@
     that:
     - capabilities_1 is changed
     - capabilities_2 is not changed
-    - capabilities_3 is not changed
+    - capabilities_3 is changed
     - capabilities_4 is changed
   when: docker_api_version is version('1.41', '>=') and docker_py_version is version('5.0.3', '>=')
 
