@@ -4,7 +4,7 @@ set -euo pipefail
 
 [[ -n "${DEBUG:-}" || -n "${ANSIBLE_DEBUG:-}" ]] && set -x
 
-readonly IMAGE="quay.io/ansible/python-base:latest"
+readonly IMAGE="quay.io/ansible/ansible-runner:devel"
 readonly PYTHON="$(command -v python3 python | head -n1)"
 
 # Determine collection root
