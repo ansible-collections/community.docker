@@ -2349,6 +2349,7 @@
     - image_label_mismatch_7 is not changed
     - image_label_mismatch_8 is not changed
     - image_label_mismatch_9 is failed
+    - image_label_mismatch_9.msg == "Some labels should be removed but are present in the base image. You can set image_label_mismatch to 'ignore' to ignore this error. Labels: \"img_Label\""
     - image_label_mismatch_10 is not changed
     - image_label_mismatch_11 is changed
 
