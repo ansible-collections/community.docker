@@ -2432,7 +2432,7 @@ class Container(DockerBaseClass):
                                 would_remove_labels.append(label)
                         if would_remove_labels:
                             msg = ("Some labels should be removed but are present in the base image. You can set image_label_mismatch to 'ignore' to ignore"
-                                    "this error. Labels: {0}")
+                                   "this error. Labels: {0}")
                             self.fail(msg.format(', '.join(['"%s"' % label for label in would_remove_labels])))
 
                     # no match. record the differences
