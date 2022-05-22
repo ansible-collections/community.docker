@@ -397,17 +397,19 @@ options:
   image_label_mismatch:
     description:
       - How to handle labels inherited from the image that are not set explicitly.
-      - When C(ignore), labels that are present in the image but not specified in ansible will be
-        ignored. This is useful to avoid having to specify the image labels in ansible while keeping
+      - When C(ignore), labels that are present in the image but not specified in I(labels) will be
+        ignored. This is useful to avoid having to specify the image labels in I(labels) while keeping
         labels I(comparisons) C(strict).
-        When C(fail), if there are labels present in the image which aren't set from ansible, the
+      - When C(fail), if there are labels present in the image which are not set from I(labels), the
         module will fail. This prevents introducing unexpected labels from the base image.
       - "B(Warning:) This option is ignored unless C(labels: strict) or C(*: strict) is specified in
-        the I(comparisons option."
+        the I(comparisons) option."
     type: str
     choices:
       - 'ignore'
       - 'fail'
+    default: ignore
+    version_added: 2.6.0
   init:
     description:
       - Run an init inside the container that forwards signals and reaps processes.
@@ -2419,18 +2421,18 @@ class Container(DockerBaseClass):
                         # expected_healthcheck comparison in this case.
                         continue
 
-                    if key == 'expected_labels' and self.parameters.image_label_mismatch == 'fail':
+                    if key == 'expected_labels' and compare == 'strict' and self.parameters.image_label_mismatch == 'fail':
                         # If there are labels from the base image that should be removed and
                         # base_image_mismatch is fail we want raise an error.
                         image_labels = self._get_image_labels(image)
                         would_remove_labels = []
-                        for label in image_labels.keys():
+                        for label in image_labels:
                             if label not in self.parameters.labels:
                                 # Format label for error message
-                                would_remove_labels.append(repr(label))
+                                would_remove_labels.append(label)
                         if would_remove_labels:
                             msg = "Some labels should be removed but are present in the base image. You can set image_label_mismatch to 'ignore' to ignore this error. Labels: {0}"
-                            self.fail(msg.format(', '.join(would_remove_labels)))
+                            self.fail(msg.format(', '.join(['"%s"' % label for label in would_remove_labels])))
 
                     # no match. record the differences
                     p = getattr(self.parameters, key)
@@ -2671,12 +2673,13 @@ class Container(DockerBaseClass):
         return result
 
     def _get_expected_labels(self, image):
+        if self.parameters.labels is None:
+            return None
         if self.parameters.image_label_mismatch == 'ignore':
-            expected_labels = self._get_image_labels(image)
+            expected_labels = dict(self._get_image_labels(image))
         else:
             expected_labels = {}
-        if self.parameters.labels:
-            expected_labels.update(self.parameters.labels)
+        expected_labels.update(self.parameters.labels)
         return expected_labels
 
     def _get_image_labels(self, image):
@@ -2684,11 +2687,7 @@ class Container(DockerBaseClass):
             return {}
 
         # Can't use get('Labels', {}) because 'Labels' may be present and be None
-        labels = image[self.parameters.client.image_inspect_source].get('Labels')
-        if labels is None:
-            return {}
-        else:
-            return dict(labels)
+        return image[self.parameters.client.image_inspect_source].get('Labels') or {}
 
     def _get_expected_device_requests(self):
         if self.parameters.device_requests is None:
