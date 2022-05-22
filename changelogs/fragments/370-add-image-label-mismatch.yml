@@ -1,0 +1,2 @@
+minor_changes:
+- "docker_container - added ``image_label_mismatch`` parameter"
