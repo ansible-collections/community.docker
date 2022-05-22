@@ -1855,6 +1855,9 @@ class TaskParameters(DockerBaseClass):
                         port_binds = [(ipaddr, port) for port in parse_port_range(parts[1], self.client)]
                 else:
                     port_binds = len(container_ports) * [(ipaddr,)]
+            else:
+                self.fail(('Invalid port description "%s" - expected 1 to 3 colon-separated parts, but got %d. '
+                           'Maybe you forgot to use square brackets ([...]) around an IPv6 address?') % (port, p_len))
 
             for bind, container_port in zip(port_binds, container_ports):
                 idx = '{0}/{1}'.format(container_port, protocol) if protocol else container_port
