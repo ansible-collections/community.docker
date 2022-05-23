@@ -2183,6 +2183,7 @@ class Container(DockerBaseClass):
         self.parameters.expected_env = None
         self.parameters.expected_device_requests = None
         self.parameters_map = dict()
+        self.parameters_map['expected_labels'] = 'labels'
         self.parameters_map['expected_links'] = 'links'
         self.parameters_map['expected_ports'] = 'expected_ports'
         self.parameters_map['expected_exposed'] = 'exposed_ports'
