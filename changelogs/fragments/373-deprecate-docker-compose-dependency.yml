@@ -1,0 +1,5 @@
+deprecated_features:
+  - "The dependency on docker-compose for Execution Environments is deprecated and will be removed in community.docker 3.0.0.
+     The `Python docker-compose library <https://pypi.org/project/docker-compose/>`__ is unmaintained and can cause dependency
+     issues. You can manually still install it in an Execution Environment when needed
+     (https://github.com/ansible-collections/community.docker/pull/373)."
