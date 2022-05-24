@@ -1,2 +1,0 @@
-bugfixes:
-  - "docker_container - remove unused code that will cause problems with Python 3.13 (https://github.com/ansible-collections/community.docker/pull/354)."
