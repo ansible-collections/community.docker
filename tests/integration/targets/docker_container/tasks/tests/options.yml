@@ -2256,6 +2256,7 @@
     labels:
       img_label: override
     state: started
+    force_kill: yes
   register: image_label_mismatch_5
 
 - name: image_label_mismatch (ignore,remove img label)
@@ -2266,6 +2267,7 @@
     image_label_mismatch: ignore
     labels: {}
     state: started
+    force_kill: yes
   register: image_label_mismatch_6
 
 - name: image_label_mismatch (fail,unmanaged labels)
@@ -2320,6 +2322,7 @@
     labels:
       img_label: override
     state: started
+    force_kill: yes
   register: image_label_mismatch_11
 
 - name: cleanup container

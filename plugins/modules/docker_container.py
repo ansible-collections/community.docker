@@ -2422,7 +2422,7 @@ class Container(DockerBaseClass):
                         # expected_healthcheck comparison in this case.
                         continue
 
-                    if key == 'expected_labels' and compare == 'strict' and self.parameters.image_label_mismatch == 'fail':
+                    if key == 'expected_labels' and compare['comparison'] == 'strict' and self.parameters.image_label_mismatch == 'fail':
                         # If there are labels from the base image that should be removed and
                         # base_image_mismatch is fail we want raise an error.
                         image_labels = self._get_image_labels(image)
