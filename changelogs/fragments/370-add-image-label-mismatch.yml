@@ -1,2 +1,0 @@
-minor_changes:
-- "docker_container - added ``image_label_mismatch`` parameter (https://github.com/ansible-collections/community.docker/issues/314, https://github.com/ansible-collections/community.docker/pull/370)."

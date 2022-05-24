@@ -5,6 +5,33 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v2.6.0
+======
+
+Release Summary
+---------------
+
+Bugfix and feature release.
+
+Minor Changes
+-------------
+
+- docker_container - added ``image_label_mismatch`` parameter (https://github.com/ansible-collections/community.docker/issues/314, https://github.com/ansible-collections/community.docker/pull/370).
+
+Deprecated Features
+-------------------
+
+- Support for Ansible 2.9 and ansible-base 2.10 is deprecated, and will be removed in the next major release (community.docker 3.0.0). Some modules might still work with these versions afterwards, but we will no longer keep compatibility code that was needed to support them (https://github.com/ansible-collections/community.docker/pull/361).
+- The dependency on docker-compose for Execution Environments is deprecated and will be removed in community.docker 3.0.0. The `Python docker-compose library <https://pypi.org/project/docker-compose/>`__ is unmaintained and can cause dependency issues. You can manually still install it in an Execution Environment when needed (https://github.com/ansible-collections/community.docker/pull/373).
+- Various modules - the default of ``tls_hostname`` that was supposed to be removed in community.docker 2.0.0 will now be removed in version 3.0.0 (https://github.com/ansible-collections/community.docker/pull/362).
+- docker_stack - the return values ``out`` and ``err`` that were supposed to be removed in community.docker 2.0.0 will now be removed in version 3.0.0 (https://github.com/ansible-collections/community.docker/pull/362).
+
+Bugfixes
+--------
+
+- docker_container - fail with a meaningful message instead of crashing if a port is specified with more than three colon-separated parts (https://github.com/ansible-collections/community.docker/pull/367, https://github.com/ansible-collections/community.docker/issues/365).
+- docker_container - remove unused code that will cause problems with Python 3.13 (https://github.com/ansible-collections/community.docker/pull/354).
+
 v2.5.1
 ======
 

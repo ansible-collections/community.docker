@@ -631,3 +631,39 @@ releases:
     - 2.5.1.yml
     - psf-license.yml
     release_date: '2022-05-16'
+  2.6.0:
+    changes:
+      bugfixes:
+      - docker_container - fail with a meaningful message instead of crashing if a
+        port is specified with more than three colon-separated parts (https://github.com/ansible-collections/community.docker/pull/367,
+        https://github.com/ansible-collections/community.docker/issues/365).
+      - docker_container - remove unused code that will cause problems with Python
+        3.13 (https://github.com/ansible-collections/community.docker/pull/354).
+      deprecated_features:
+      - Support for Ansible 2.9 and ansible-base 2.10 is deprecated, and will be removed
+        in the next major release (community.docker 3.0.0). Some modules might still
+        work with these versions afterwards, but we will no longer keep compatibility
+        code that was needed to support them (https://github.com/ansible-collections/community.docker/pull/361).
+      - The dependency on docker-compose for Execution Environments is deprecated
+        and will be removed in community.docker 3.0.0. The `Python docker-compose
+        library <https://pypi.org/project/docker-compose/>`__ is unmaintained and
+        can cause dependency issues. You can manually still install it in an Execution
+        Environment when needed (https://github.com/ansible-collections/community.docker/pull/373).
+      - Various modules - the default of ``tls_hostname`` that was supposed to be
+        removed in community.docker 2.0.0 will now be removed in version 3.0.0 (https://github.com/ansible-collections/community.docker/pull/362).
+      - docker_stack - the return values ``out`` and ``err`` that were supposed to
+        be removed in community.docker 2.0.0 will now be removed in version 3.0.0
+        (https://github.com/ansible-collections/community.docker/pull/362).
+      minor_changes:
+      - docker_container - added ``image_label_mismatch`` parameter (https://github.com/ansible-collections/community.docker/issues/314,
+        https://github.com/ansible-collections/community.docker/pull/370).
+      release_summary: Bugfix and feature release.
+    fragments:
+    - 2.6.0.yml
+    - 354-remove-dead-code.yml
+    - 362-deprecations.yml
+    - 367-docker_container-ports-validation.yml
+    - 370-add-image-label-mismatch.yml
+    - 373-deprecate-docker-compose-dependency.yml
+    - deprecate-ansible-2.9-2.10.yml
+    release_date: '2022-05-24'
