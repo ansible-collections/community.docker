@@ -212,7 +212,7 @@ EXAMPLES = '''
         var: output
 
     - ansible.builtin.assert:
-        that: "not output.changed "
+        that: not output.changed
 
     - name: Stop all services
       community.docker.docker_compose:
