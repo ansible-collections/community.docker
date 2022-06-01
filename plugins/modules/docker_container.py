@@ -30,7 +30,7 @@ options:
   auto_remove:
     description:
       - Enable auto-removal of the container on daemon side when the container's process exits.
-      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
+      - If I(container_default_behavior) is set to C(compatibility), this option has a default of C(false).
     type: bool
   blkio_weight:
     description:
@@ -106,7 +106,7 @@ options:
       - Also, setting I(command) to an empty list of string, and setting I(entrypoint) to an empty
         list will be handled as if these options are not specified. This is different from idempotency
         handling for other container-config related options.
-      - When this is set to C(compatiblity), which is the default until community.docker 3.0.0, the
+      - When this is set to C(compatibility), which is the default until community.docker 3.0.0, the
         current behavior will be kept.
       - When this is set to C(correct), these options are kept as lists, and an empty value or empty
         list will be handled correctly for idempotency checks.
@@ -159,7 +159,7 @@ options:
     description:
       - Enable detached mode to leave the container running in background.
       - If disabled, the task will reflect the status of the container run (failed if the command failed).
-      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(true).
+      - If I(container_default_behavior) is set to C(compatibility), this option has a default of C(true).
     type: bool
   devices:
     description:
@@ -414,12 +414,12 @@ options:
     description:
       - Run an init inside the container that forwards signals and reaps processes.
       - This option requires Docker API >= 1.25.
-      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
+      - If I(container_default_behavior) is set to C(compatibility), this option has a default of C(false).
     type: bool
   interactive:
     description:
       - Keep stdin open after a container is launched, even if not attached.
-      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
+      - If I(container_default_behavior) is set to C(compatibility), this option has a default of C(false).
     type: bool
   ipc_mode:
     description:
@@ -476,7 +476,7 @@ options:
         Unit can be C(B) (byte), C(K) (kibibyte, 1024B), C(M) (mebibyte), C(G) (gibibyte),
         C(T) (tebibyte), or C(P) (pebibyte)."
       - Omitting the unit defaults to bytes.
-      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C("0").
+      - If I(container_default_behavior) is set to C(compatibility), this option has a default of C("0").
     type: str
   memory_reservation:
     description:
@@ -665,7 +665,7 @@ options:
   paused:
     description:
       - Use with the started state to pause running processes inside the container.
-      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
+      - If I(container_default_behavior) is set to C(compatibility), this option has a default of C(false).
     type: bool
   pid_mode:
     description:
@@ -681,7 +681,7 @@ options:
   privileged:
     description:
       - Give extended privileges to the container.
-      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
+      - If I(container_default_behavior) is set to C(compatibility), this option has a default of C(false).
     type: bool
   publish_all_ports:
     description:
@@ -732,7 +732,7 @@ options:
   read_only:
     description:
       - Mount the container's root file system as read-only.
-      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
+      - If I(container_default_behavior) is set to C(compatibility), this option has a default of C(false).
     type: bool
   recreate:
     description:
@@ -837,7 +837,7 @@ options:
   tty:
     description:
       - Allocate a pseudo-TTY.
-      - If I(container_default_behavior) is set to C(compatiblity), this option has a default of C(false).
+      - If I(container_default_behavior) is set to C(compatibility), this option has a default of C(false).
     type: bool
   ulimits:
     description:
