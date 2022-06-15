@@ -1,0 +1,2 @@
+minor_changes:
+  - "Move additional license files (at the moment, only ``PSF-license.txt``) to ``licenses/``."
