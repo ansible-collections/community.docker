@@ -24,7 +24,8 @@ from .._import_helper import Session as _Session
 from ..constants import (DEFAULT_NUM_POOLS, DEFAULT_NUM_POOLS_SSH,
                          DEFAULT_MAX_POOL_SIZE, DEFAULT_TIMEOUT_SECONDS,
                          DEFAULT_USER_AGENT, IS_WINDOWS_PLATFORM,
-                         MINIMUM_DOCKER_API_VERSION, STREAM_HEADER_SIZE_BYTES)
+                         MINIMUM_DOCKER_API_VERSION, STREAM_HEADER_SIZE_BYTES,
+                         DEFAULT_DATA_CHUNK_SIZE)
 from ..errors import (DockerException, InvalidVersion, TLSParameterError, MissingRequirementException,
                       create_api_error_from_http_exception)
 from ..tls import TLSConfig
@@ -155,7 +156,7 @@ class APIClient(
             self.mount('http+docker://', self._custom_adapter)
             self.base_url = 'http+docker://localnpipe'
         elif base_url.startswith('ssh://'):
-            if PARAMIKO_IMPORT_ERROR is not None:
+            if PARAMIKO_IMPORT_ERROR is not None and not use_ssh_client:
                 raise MissingRequirementException(
                     'Install paramiko package to enable ssh:// support',
                     'paramiko',
@@ -485,3 +486,66 @@ class APIClient(
         self._auth_configs = auth.load_config(
             dockercfg_path, credstore_env=self.credstore_env
         )
+
+    def get_binary(self, pathfmt, *args, **kwargs):
+        return self._result(self._get(self._url(pathfmt, *args, versioned_api=True), **kwargs), binary=True)
+
+    def get_json(self, pathfmt, *args, **kwargs):
+        return self._result(self._get(self._url(pathfmt, *args, versioned_api=True), **kwargs), json=True)
+
+    def get_text(self, pathfmt, *args, **kwargs):
+        return self._result(self._get(self._url(pathfmt, *args, versioned_api=True), **kwargs))
+
+    def get_raw_stream(self, pathfmt, *args, **kwargs):
+        chunk_size = kwargs.pop('chunk_size', DEFAULT_DATA_CHUNK_SIZE)
+        res = self._get(self._url(pathfmt, *args, versioned_api=True), stream=True, **kwargs)
+        self._raise_for_status(res)
+        return self._stream_raw_result(res, chunk_size, False)
+
+    def delete_call(self, pathfmt, *args, **kwargs):
+        self._raise_for_status(self._delete(self._url(pathfmt, *args, versioned_api=True), **kwargs))
+
+    def post_json(self, pathfmt, *args, **kwargs):
+        data = kwargs.pop('data', None)
+        self._raise_for_status(self._post_json(self._url(pathfmt, *args, versioned_api=True), data, **kwargs))
+
+    def post_json_to_binary(self, pathfmt, *args, **kwargs):
+        data = kwargs.pop('data', None)
+        return self._result(self._post_json(self._url(pathfmt, *args, versioned_api=True), data, **kwargs), binary=True)
+
+    def post_json_to_json(self, pathfmt, *args, **kwargs):
+        data = kwargs.pop('data', None)
+        return self._result(self._post_json(self._url(pathfmt, *args, versioned_api=True), data, **kwargs), json=True)
+
+    def post_json_to_text(self, pathfmt, *args, **kwargs):
+        data = kwargs.pop('data', None)
+
+    def post_json_to_stream_socket(self, pathfmt, *args, **kwargs):
+        data = kwargs.pop('data', None)
+        headers = (kwargs.pop('headers', None) or {}).copy()
+        headers.update({
+            'Connection': 'Upgrade',
+            'Upgrade': 'tcp',
+        })
+        return self._get_raw_response_socket(
+            self._post_json(self._url(pathfmt, *args, versioned_api=True), data, headers=headers, stream=True, **kwargs))
+
+    def post_json_to_stream(self, pathfmt, *args, **kwargs):
+        data = kwargs.pop('data', None)
+        headers = (kwargs.pop('headers', None) or {}).copy()
+        headers.update({
+            'Connection': 'Upgrade',
+            'Upgrade': 'tcp',
+        })
+        stream = kwargs.pop('stream', False)
+        demux = kwargs.pop('demux', False)
+        tty = kwargs.pop('tty', False)
+        return self._read_from_socket(
+            self._post_json(self._url(pathfmt, *args, versioned_api=True), data, headers=headers, stream=True, **kwargs),
+            stream,
+            tty=tty,
+            demux=demux
+        )
+
+    def post_to_json(self, pathfmt, *args, **kwargs):
+        return self._result(self._post(self._url(pathfmt, *args, versioned_api=True), **kwargs), json=True)
