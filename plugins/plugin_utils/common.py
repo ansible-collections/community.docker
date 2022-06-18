@@ -10,6 +10,9 @@ from ansible.utils.display import Display
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClientBase,
+)
+
+from ansible_collections.community.docker.plugins.module_utils.util import (
     DOCKER_COMMON_ARGS,
 )
 

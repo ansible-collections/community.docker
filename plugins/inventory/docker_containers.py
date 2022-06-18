@@ -156,6 +156,8 @@ from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     RequestException,
+)
+from ansible_collections.community.docker.plugins.module_utils.util import (
     DOCKER_COMMON_ARGS_VARS,
 )
 from ansible_collections.community.docker.plugins.plugin_utils.common import (
