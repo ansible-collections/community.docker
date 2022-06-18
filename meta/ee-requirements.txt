@@ -1,2 +1,11 @@
 docker
 docker-compose
+requests
+paramiko
+
+# We assume that EEs are not based on Windows, and have Python >= 3.5.
+# (ansible-builder does not support conditionals, it will simply add
+# the following unconditionally to the requirements)
+#
+# pywin32 ; sys_platform == 'win32'
+# backports.ssl-match-hostname ; python_version < '3.5'
