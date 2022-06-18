@@ -1,0 +1,8 @@
+major_changes:
+  - "The collection now contains vendored code from the Docker SDK for Python to talk to the Docker daemon.
+     Modules and plugins using this code no longer need the Docker SDK for Python installed on the machine
+     the module resp. plugin is running on
+     (https://github.com/ansible-collections/community.docker/pull/387)."
+  - "docker_host_info - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed,
+     and depending on the features used has some more requirements. If the Docker SDK for Python is installed,
+     these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/387)."
