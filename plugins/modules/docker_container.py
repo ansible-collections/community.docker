@@ -1217,6 +1217,9 @@ from ansible_collections.community.docker.plugins.module_utils.version import Lo
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
+    RequestException,
+)
+from ansible_collections.community.docker.plugins.module_utils.util import (
     DifferenceTracker,
     DockerBaseClass,
     compare_generic,
@@ -1226,7 +1229,6 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
     omit_none_from_dict,
     parse_healthcheck,
     DOCKER_COMMON_ARGS,
-    RequestException,
 )
 
 try:

@@ -203,12 +203,12 @@ disk_usage:
 
 import traceback
 
+from ansible.module_utils.common.text.converters import to_native
+
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
-    DockerBaseClass,
     RequestException,
 )
-from ansible.module_utils.common.text.converters import to_native
 
 try:
     from docker.errors import DockerException, APIError
@@ -216,7 +216,10 @@ except ImportError:
     # Missing Docker SDK for Python handled in ansible.module_utils.docker.common
     pass
 
-from ansible_collections.community.docker.plugins.module_utils.common import clean_dict_booleans_for_docker_api
+from ansible_collections.community.docker.plugins.module_utils.util import (
+    DockerBaseClass,
+    clean_dict_booleans_for_docker_api,
+)
 
 
 class DockerHostManager(DockerBaseClass):

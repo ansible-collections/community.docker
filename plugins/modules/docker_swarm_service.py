@@ -941,12 +941,14 @@ from ansible_collections.community.docker.plugins.module_utils.version import Lo
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
+    RequestException,
+)
+from ansible_collections.community.docker.plugins.module_utils.util import (
     DifferenceTracker,
     DockerBaseClass,
     convert_duration_to_nanosecond,
     parse_healthcheck,
     clean_dict_booleans_for_docker_api,
-    RequestException,
 )
 
 from ansible.module_utils.basic import human_to_bytes

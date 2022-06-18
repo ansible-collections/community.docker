@@ -329,13 +329,15 @@ import os
 import traceback
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
-    clean_dict_booleans_for_docker_api,
-    docker_version,
     AnsibleDockerClient,
+    RequestException,
+    docker_version,
+)
+from ansible_collections.community.docker.plugins.module_utils.util import (
+    clean_dict_booleans_for_docker_api,
     DockerBaseClass,
     is_image_name_id,
     is_valid_tag,
-    RequestException,
 )
 from ansible.module_utils.common.text.converters import to_native
 
