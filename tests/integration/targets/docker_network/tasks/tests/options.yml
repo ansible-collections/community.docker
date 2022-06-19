@@ -144,9 +144,6 @@
       state: absent
       force: yes
 
-  # Requirements for docker_swarm
-  when: docker_py_version is version('2.6.0', '>=')
-
 ####################################################################
 ## attachable ######################################################
 ####################################################################
@@ -183,13 +180,6 @@
     - attachable_1 is changed
     - attachable_2 is not changed
     - attachable_3 is changed
-  when: docker_py_version is version('2.0.0', '>=')
-- assert:
-    that:
-    - attachable_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in attachable_1.msg"
-    - "'Minimum version required is 2.0.0 ' in attachable_1.msg"
-  when: docker_py_version is version('2.0.0', '<')
 
 ####################################################################
 ## labels ##########################################################
