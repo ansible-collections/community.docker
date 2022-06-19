@@ -21,11 +21,16 @@ import tempfile
 import threading
 import time
 import unittest
+import sys
 
 from ansible.module_utils import six
 
 import pytest
 import requests
+
+if sys.version_info < (2, 7):
+    pytestmark = pytest.mark.skip('Python 2.6 is not supported')
+
 from ansible_collections.community.docker.plugins.module_utils._api import constants, errors
 from ansible_collections.community.docker.plugins.module_utils._api.api.client import APIClient
 from ansible_collections.community.docker.plugins.module_utils._api.constants import DEFAULT_DOCKER_API_VERSION

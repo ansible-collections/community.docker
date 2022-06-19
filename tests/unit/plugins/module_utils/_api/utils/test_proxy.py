@@ -10,8 +10,15 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 import unittest
+import sys
+
+import pytest
+
+if sys.version_info < (2, 7):
+    pytestmark = pytest.mark.skip('Python 2.6 is not supported')
 
 from ansible_collections.community.docker.plugins.module_utils._api.utils.proxy import ProxyConfig
+
 
 HTTP = 'http://test:80'
 HTTPS = 'https://test:443'
@@ -73,7 +80,7 @@ class ProxyConfigTest(unittest.TestCase):
         # Proxy config is non null, env is None.
         self.assertSetEqual(
             set(CONFIG.inject_proxy_environment(None)),
-            {'{k}={v}'.format(k=k, v=v) for k, v in ENV.items()})
+            set('{k}={v}'.format(k=k, v=v) for k, v in ENV.items()))
 
         # Proxy config is null, env is None.
         self.assertIsNone(ProxyConfig().inject_proxy_environment(None), None)

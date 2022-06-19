@@ -17,11 +17,16 @@ import random
 import shutil
 import tempfile
 import unittest
+import sys
+
+import pytest
+
+if sys.version_info < (2, 7):
+    pytestmark = pytest.mark.skip('Python 2.6 is not supported')
 
 from ansible_collections.community.docker.plugins.module_utils._api import auth, errors
 from ansible_collections.community.docker.plugins.module_utils._api.credentials.errors import CredentialsNotFound
 from ansible_collections.community.docker.plugins.module_utils._api.credentials.store import Store
-import pytest
 
 try:
     from unittest import mock

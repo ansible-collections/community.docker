@@ -14,6 +14,12 @@ import unittest
 import shutil
 import tempfile
 import json
+import sys
+
+import pytest
+
+if sys.version_info < (2, 7):
+    pytestmark = pytest.mark.skip('Python 2.6 is not supported')
 
 from pytest import mark, fixture
 
