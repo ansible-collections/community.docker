@@ -496,6 +496,11 @@ class UnixSocketStreamTest(unittest.TestCase):
             ]
 
 
+@pytest.mark.skip(
+    'This test requires starting a networking server and tries to access it. '
+    'This does not work with network separation with Docker-based unit tests, '
+    'but it does work with podman-based unit tests.'
+)
 class TCPSocketStreamTest(unittest.TestCase):
     stdout_data = b'''
     Now, those children out there, they're jumping through the
