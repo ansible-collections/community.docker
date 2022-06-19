@@ -68,15 +68,13 @@ options:
       - present
 
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
+- community.docker.docker.api_documentation
 
 
 author:
   - Alex Grönholm (@agronholm)
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"
   - "Docker API >= 1.25"
 '''
 
@@ -110,14 +108,9 @@ volume:
 import traceback
 
 from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.six import iteritems, text_type
 
-try:
-    from docker.errors import DockerException, APIError
-except ImportError:
-    # missing Docker SDK for Python handled in ansible.module_utils.docker.common
-    pass
-
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
@@ -125,7 +118,11 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     DifferenceTracker,
 )
-from ansible.module_utils.six import iteritems, text_type
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    APIError,
+    DockerException,
+    NotFound,
+)
 
 
 class TaskParameters(DockerBaseClass):
@@ -173,7 +170,7 @@ class DockerVolumeManager(object):
 
     def get_existing_volume(self):
         try:
-            volumes = self.client.volumes()
+            volumes = self.client.get_json('/volumes')
         except APIError as e:
             self.client.fail(to_native(e))
 
@@ -221,16 +218,15 @@ class DockerVolumeManager(object):
         if not self.existing_volume:
             if not self.check_mode:
                 try:
-                    params = dict(
-                        driver=self.parameters.driver,
-                        driver_opts=self.parameters.driver_options,
-                    )
-
+                    data = {
+                        'Name': self.parameters.volume_name,
+                        'Driver': self.parameters.driver,
+                        'DriverOpts': self.parameters.driver_options,
+                    }
                     if self.parameters.labels is not None:
-                        params['labels'] = self.parameters.labels
-
-                    resp = self.client.create_volume(self.parameters.volume_name, **params)
-                    self.existing_volume = self.client.inspect_volume(resp['Name'])
+                        data['Labels'] = self.parameters.labels
+                    resp = self.client.post_json_to_json('/volumes/create', data=data)
+                    self.existing_volume = self.client.get_json('/volumes/{0}', resp['Name'])
                 except APIError as e:
                     self.client.fail(to_native(e))
 
@@ -241,7 +237,7 @@ class DockerVolumeManager(object):
         if self.existing_volume:
             if not self.check_mode:
                 try:
-                    self.client.remove_volume(self.parameters.volume_name)
+                    self.client.delete_call('/volumes/{0}', self.parameters.volume_name)
                 except APIError as e:
                     self.client.fail(to_native(e))
 
@@ -286,16 +282,10 @@ def main():
         debug=dict(type='bool', default=False)
     )
 
-    option_minimal_versions = dict(
-        labels=dict(docker_py_version='1.10.0'),
-    )
-
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        min_docker_version='1.10.0',
         # "The docker server >= 1.9.0"
-        option_minimal_versions=option_minimal_versions,
     )
 
     try:
