@@ -190,28 +190,26 @@
         - "'stderr' not in result"
         - result.exec_id is string
 
-  - when: docker_py_version is version('2.3.0', '>=')
-    block:
-    - name: Execute in a present container (environment variable)
-      docker_container_exec:
-        container: "{{ cname }}"
-        argv:
-          - /bin/sh
-          - '-c'
-          - 'echo "$FOO" ; echo $FOO > /dev/stderr'
-        env:
-          FOO: |-
-            bar
-            baz
-      register: result
+  - name: Execute in a present container (environment variable)
+    docker_container_exec:
+      container: "{{ cname }}"
+      argv:
+        - /bin/sh
+        - '-c'
+        - 'echo "$FOO" ; echo $FOO > /dev/stderr'
+      env:
+        FOO: |-
+          bar
+          baz
+    register: result
 
-    - assert:
-        that:
-          - result.rc == 0
-          - result.stdout == 'bar\nbaz'
-          - result.stdout_lines == ['bar', 'baz']
-          - result.stderr == 'bar baz'
-          - result.stderr_lines == ['bar baz']
+  - assert:
+      that:
+        - result.rc == 0
+        - result.stdout == 'bar\nbaz'
+        - result.stdout_lines == ['bar', 'baz']
+        - result.stderr == 'bar baz'
+        - result.stderr_lines == ['bar baz']
 
   always:
   - name: Cleanup
@@ -220,7 +218,7 @@
       state: absent
       force_kill: yes
 
-  when: docker_py_version is version('1.8.0', '>=') and docker_api_version is version('1.25', '>=')
+  when: docker_api_version is version('1.25', '>=')
 
 - fail: msg="Too old docker / docker-py version to run docker_container_exec tests!"
-  when: not(docker_py_version is version('1.8.0', '>=') and docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)
+  when: not(docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)
