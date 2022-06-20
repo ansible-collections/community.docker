@@ -176,9 +176,11 @@ except ImportError:
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
+    RequestException,
+)
+from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     is_image_name_id,
-    RequestException,
 )
 
 

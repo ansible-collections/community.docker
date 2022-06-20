@@ -118,10 +118,12 @@ except ImportError:
     pass
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
-    DockerBaseClass,
     AnsibleDockerClient,
-    DifferenceTracker,
     RequestException,
+)
+from ansible_collections.community.docker.plugins.module_utils.util import (
+    DockerBaseClass,
+    DifferenceTracker,
 )
 from ansible.module_utils.six import iteritems, text_type
 

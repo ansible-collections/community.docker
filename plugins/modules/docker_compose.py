@@ -510,8 +510,11 @@ from ansible.module_utils.common.text.converters import to_native
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
-    DockerBaseClass,
     RequestException,
+)
+
+from ansible_collections.community.docker.plugins.module_utils.util import (
+    DockerBaseClass,
 )
 
 

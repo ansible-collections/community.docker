@@ -202,10 +202,10 @@ except ImportError:
 from ansible.module_utils.common.text.converters import to_native
 
 from ansible_collections.community.docker.plugins.module_utils.swarm import AnsibleDockerSwarmClient
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.common import RequestException
+from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     clean_dict_booleans_for_docker_api,
-    RequestException,
 )
 
 

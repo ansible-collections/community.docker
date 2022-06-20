@@ -199,9 +199,11 @@ except ImportError:
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
+    RequestException,
+)
+from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     compare_generic,
-    RequestException,
 )
 from ansible.module_utils.common.text.converters import to_native, to_bytes
 

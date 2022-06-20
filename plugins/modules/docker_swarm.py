@@ -291,8 +291,10 @@ except ImportError:
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     DockerBaseClass,
-    DifferenceTracker,
     RequestException,
+)
+from ansible_collections.community.docker.plugins.module_utils.util import (
+    DifferenceTracker,
 )
 
 from ansible_collections.community.docker.plugins.module_utils.swarm import AnsibleDockerSwarmClient

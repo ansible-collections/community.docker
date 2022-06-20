@@ -258,11 +258,13 @@ from ansible_collections.community.docker.plugins.module_utils.version import Lo
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
-    DockerBaseClass,
+    RequestException,
     docker_version,
+)
+from ansible_collections.community.docker.plugins.module_utils.util import (
+    DockerBaseClass,
     DifferenceTracker,
     clean_dict_booleans_for_docker_api,
-    RequestException,
 )
 
 try:

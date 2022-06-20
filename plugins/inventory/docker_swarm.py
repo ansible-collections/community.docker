@@ -147,7 +147,8 @@ keyed_groups:
 
 from ansible.errors import AnsibleError
 from ansible.module_utils.common.text.converters import to_native
-from ansible_collections.community.docker.plugins.module_utils.common import update_tls_hostname, get_connect_params
+from ansible_collections.community.docker.plugins.module_utils.common import get_connect_params
+from ansible_collections.community.docker.plugins.module_utils.util import update_tls_hostname
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
 from ansible.parsing.utils.addresses import parse_address
 

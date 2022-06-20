@@ -138,11 +138,13 @@ except ImportError:
     pass
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
-    AnsibleDockerClient,
     HAS_DOCKER_PY,
+    AnsibleDockerClient,
+    RequestException,
+)
+from ansible_collections.community.docker.plugins.module_utils.util import (
     DEFAULT_DOCKER_REGISTRY,
     DockerBaseClass,
-    RequestException,
 )
 
 NEEDS_DOCKER_PYCREDS = False

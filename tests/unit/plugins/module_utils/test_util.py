@@ -3,7 +3,7 @@ __metaclass__ = type
 
 import pytest
 
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.util import (
     compare_dict_allow_more_present,
     compare_generic,
     convert_duration_to_nanosecond,
