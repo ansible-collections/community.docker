@@ -309,7 +309,7 @@ class AnsibleDockerClientBase(Client):
 
         try:
             super(AnsibleDockerClientBase, self).__init__(**self._connect_params)
-            self.docker_api_version_str = self.version()['ApiVersion']
+            self.docker_api_version_str = self.api_version
         except APIError as exc:
             self.fail("Docker API error: %s" % exc)
         except Exception as exc:
