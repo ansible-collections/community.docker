@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 # (c) 2014, Toshio Kuratomi <tkuratomi@ansible.com>
 #
 # This file is part of Ansible

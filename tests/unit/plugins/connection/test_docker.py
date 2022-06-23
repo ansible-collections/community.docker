@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 # (c) 2020 Red Hat, Inc.
 #
 # This file is part of Ansible

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 # (c) 2020, Felix Fontein <felix@fontein.de>
 #
 # This file is part of Ansible
