@@ -1,4 +1,7 @@
 #!/usr/bin/python
+
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 #
 # (c) 2020 Matt Clay <mclay@redhat.com>
 # (c) 2020 Felix Fontein <felix@fontein.de>

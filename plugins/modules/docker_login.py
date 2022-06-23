@@ -1,4 +1,7 @@
 #!/usr/bin/python
+
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 #
 # (c) 2016 Olaf Kilian <olaf.kilian@symanex.com>
 #          Chris Houseknecht, <house@redhat.com>

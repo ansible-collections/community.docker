@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 # (c) 2021 Jeff Goldschrafe <jeff@holyhandgrenade.org>
 # Based on Ansible local connection plugin by:
 # (c) 2012 Michael DeHaan <michael.dehaan@gmail.com>
