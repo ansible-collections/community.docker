@@ -10,6 +10,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 import json
+import logging
 import struct
 from functools import partial
 
@@ -40,6 +41,9 @@ from ..utils.proxy import ProxyConfig
 from ..utils.socket import consume_socket_output, demux_adaptor, frames_iter
 
 from .daemon import DaemonApiMixin
+
+
+log = logging.getLogger(__name__)
 
 
 class APIClient(
@@ -487,6 +491,39 @@ class APIClient(
             dockercfg_path, credstore_env=self.credstore_env
         )
 
+    def _set_auth_headers(self, headers):
+        log.debug('Looking for auth config')
+
+        # If we don't have any auth data so far, try reloading the config
+        # file one more time in case anything showed up in there.
+        if not self._auth_configs or self._auth_configs.is_empty:
+            log.debug("No auth config in memory - loading from filesystem")
+            self._auth_configs = auth.load_config(
+                credstore_env=self.credstore_env
+            )
+
+        # Send the full auth configuration (if any exists), since the build
+        # could use any (or all) of the registries.
+        if self._auth_configs:
+            auth_data = self._auth_configs.get_all_credentials()
+
+            # See https://github.com/docker/docker-py/issues/1683
+            if (auth.INDEX_URL not in auth_data and
+                    auth.INDEX_NAME in auth_data):
+                auth_data[auth.INDEX_URL] = auth_data.get(auth.INDEX_NAME, {})
+
+            log.debug(
+                'Sending auth config (%s)',
+                ', '.join(repr(k) for k in auth_data.keys())
+            )
+
+            if auth_data:
+                headers['X-Registry-Config'] = auth.encode_header(
+                    auth_data
+                )
+        else:
+            log.debug('No auth config found')
+
     def get_binary(self, pathfmt, *args, **kwargs):
         return self._result(self._get(self._url(pathfmt, *args, versioned_api=True), **kwargs), binary=True)
 
@@ -504,6 +541,9 @@ class APIClient(
 
     def delete_call(self, pathfmt, *args, **kwargs):
         self._raise_for_status(self._delete(self._url(pathfmt, *args, versioned_api=True), **kwargs))
+
+    def delete_json(self, pathfmt, *args, **kwargs):
+        return self._result(self._delete(self._url(pathfmt, *args, versioned_api=True), **kwargs), json=True)
 
     def post_json(self, pathfmt, *args, **kwargs):
         data = kwargs.pop('data', None)

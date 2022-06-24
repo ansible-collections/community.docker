@@ -11,14 +11,15 @@ __metaclass__ = type
 
 import io
 import os
+import random
 import re
 import tarfile
 import tempfile
 
 from ansible.module_utils.six import PY3
 
-from .fnmatch import fnmatch
-from ..constants import IS_WINDOWS_PLATFORM
+from . import fnmatch
+from ..constants import IS_WINDOWS_PLATFORM, WINDOWS_LONGPATH_PREFIX
 
 
 _SEP = re.compile('/|\\\\') if IS_WINDOWS_PLATFORM else re.compile('/')
@@ -264,4 +265,37 @@ class Pattern(object):
         return split
 
     def match(self, filepath):
-        return fnmatch(normalize_slashes(filepath), self.cleaned_pattern)
+        return fnmatch.fnmatch(normalize_slashes(filepath), self.cleaned_pattern)
+
+
+def process_dockerfile(dockerfile, path):
+    if not dockerfile:
+        return (None, None)
+
+    abs_dockerfile = dockerfile
+    if not os.path.isabs(dockerfile):
+        abs_dockerfile = os.path.join(path, dockerfile)
+        if IS_WINDOWS_PLATFORM and path.startswith(
+                WINDOWS_LONGPATH_PREFIX):
+            abs_dockerfile = '{0}{1}'.format(
+                WINDOWS_LONGPATH_PREFIX,
+                os.path.normpath(
+                    abs_dockerfile[len(WINDOWS_LONGPATH_PREFIX):]
+                )
+            )
+    if (os.path.splitdrive(path)[0] != os.path.splitdrive(abs_dockerfile)[0] or
+            os.path.relpath(abs_dockerfile, path).startswith('..')):
+        # Dockerfile not in context - read data to insert into tar later
+        with open(abs_dockerfile) as df:
+            return (
+                '.dockerfile.{random:x}'.format(random=random.getrandbits(160)),
+                df.read()
+            )
+
+    # Dockerfile is inside the context - return path relative to context root
+    if dockerfile == abs_dockerfile:
+        # Only calculate relpath if necessary to avoid errors
+        # on Windows client -> Linux Docker
+        # see https://github.com/docker/compose/issues/5969
+        dockerfile = os.path.relpath(abs_dockerfile, path)
+    return (dockerfile, None)
