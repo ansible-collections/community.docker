@@ -117,7 +117,6 @@ options:
           - If set to C(yes) and a proxy configuration is specified in the docker client configuration
             (by default C($HOME/.docker/config.json)), the corresponding environment variables will
             be set in the container being built.
-          - Needs Docker SDK for Python >= 3.7.0.
         type: bool
       target:
         description:

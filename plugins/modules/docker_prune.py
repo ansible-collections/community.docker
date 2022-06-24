@@ -68,20 +68,17 @@ options:
   builder_cache:
     description:
       - Whether to prune the builder cache.
-      - Requires version 3.3.0 of the Docker SDK for Python or newer.
     type: bool
     default: no
 
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_2_documentation
+  - community.docker.docker.api_documentation
 
 
 author:
   - "Felix Fontein (@felixfontein)"
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.1.0"
   - "Docker API >= 1.25"
 '''
 
@@ -180,24 +177,15 @@ import traceback
 
 from ansible.module_utils.common.text.converters import to_native
 
-try:
-    from docker.errors import DockerException
-except ImportError:
-    # missing Docker SDK for Python handled in ansible.module_utils.docker.common
-    pass
-
-from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
-
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
 
-try:
-    from ansible_collections.community.docker.plugins.module_utils.common import docker_version, clean_dict_booleans_for_docker_api
-except Exception as dummy:
-    # missing Docker SDK for Python handled in ansible.module_utils.docker.common
-    pass
+from ansible_collections.community.docker.plugins.module_utils.util import clean_dict_booleans_for_docker_api
+
+from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import convert_filters
 
 
 def main():
@@ -216,43 +204,40 @@ def main():
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         # supports_check_mode=True,
-        min_docker_version='2.1.0',
     )
-
-    # Version checks
-    cache_min_version = '3.3.0'
-    if client.module.params['builder_cache'] and client.docker_py_version < LooseVersion(cache_min_version):
-        msg = "Error: Docker SDK for Python's version is %s. Minimum version required for builds option is %s. Use `pip install --upgrade docker` to upgrade."
-        client.fail(msg % (docker_version, cache_min_version))
 
     try:
         result = dict()
 
         if client.module.params['containers']:
             filters = clean_dict_booleans_for_docker_api(client.module.params.get('containers_filters'))
-            res = client.prune_containers(filters=filters)
+            params = {'filters': convert_filters(filters)}
+            res = client.post_to_json('/containers/prune', params=params)
             result['containers'] = res.get('ContainersDeleted') or []
             result['containers_space_reclaimed'] = res['SpaceReclaimed']
 
         if client.module.params['images']:
             filters = clean_dict_booleans_for_docker_api(client.module.params.get('images_filters'))
-            res = client.prune_images(filters=filters)
+            params = {'filters': convert_filters(filters)}
+            res = client.post_to_json('/images/prune', params=params)
             result['images'] = res.get('ImagesDeleted') or []
             result['images_space_reclaimed'] = res['SpaceReclaimed']
 
         if client.module.params['networks']:
             filters = clean_dict_booleans_for_docker_api(client.module.params.get('networks_filters'))
-            res = client.prune_networks(filters=filters)
+            params = {'filters': convert_filters(filters)}
+            res = client.post_to_json('/networks/prune', params=params)
             result['networks'] = res.get('NetworksDeleted') or []
 
         if client.module.params['volumes']:
             filters = clean_dict_booleans_for_docker_api(client.module.params.get('volumes_filters'))
-            res = client.prune_volumes(filters=filters)
+            params = {'filters': convert_filters(filters)}
+            res = client.post_to_json('/volumes/prune', params=params)
             result['volumes'] = res.get('VolumesDeleted') or []
             result['volumes_space_reclaimed'] = res['SpaceReclaimed']
 
         if client.module.params['builder_cache']:
-            res = client.prune_builds()
+            res = client.post_to_json('/build/prune')
             result['builder_cache_space_reclaimed'] = res['SpaceReclaimed']
 
         client.module.exit_json(**result)
