@@ -1,0 +1,6 @@
+deprecated_features:
+  - "Support for Docker API version 1.20 has been deprecated and will be removed in community.docker 3.0.0.
+     Support for it was dropped from Docker SDK for Python already in 2018 for version 3.0.0. This affects
+     the modules ``docker_container``, ``docker_container_exec``, ``docker_container_info``, ``docker_compose``,
+     ``docker_login``, ``docker_image``, and ``docker_image_info``, whose minimally supported API version
+     is 1.20 (https://github.com/ansible-collections/community.docker/pull/396)."
