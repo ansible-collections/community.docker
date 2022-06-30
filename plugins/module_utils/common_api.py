@@ -34,7 +34,10 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
     TLSParameterError,
 )
 from ansible_collections.community.docker.plugins.module_utils._api.tls import TLSConfig
-from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import convert_filters
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
+    convert_filters,
+    parse_repository_tag,
+)
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DEFAULT_DOCKER_HOST,
@@ -416,6 +419,49 @@ class AnsibleDockerClientBase(Client):
             return None
         except Exception as exc:
             self.fail("Error inspecting image ID %s - %s" % (image_id, str(exc)))
+
+    def pull_image(self, name, tag="latest", platform=None):
+        '''
+        Pull an image
+        '''
+        self.log("Pulling image %s:%s" % (name, tag))
+        old_tag = self.find_image(name, tag)
+        try:
+            repository, image_tag = parse_repository_tag(name)
+            registry, repo_name = auth.resolve_repository_name(repository)
+            params = {
+                'tag': tag or image_tag or 'latest',
+                'fromImage': repository,
+            }
+            if platform is not None:
+                params['platform'] = platform
+
+            headers = {}
+            header = auth.get_config_header(self, registry)
+            if header:
+                headers['X-Registry-Auth'] = header
+
+            response = self._post(
+                self._url('/images/create'), params=params, headers=headers,
+                stream=True, timeout=None
+            )
+            self._raise_for_status(response)
+            for line in self._stream_helper(response, decode=True):
+                self.log(line, pretty_print=True)
+                if line.get('error'):
+                    if line.get('errorDetail'):
+                        error_detail = line.get('errorDetail')
+                        self.fail("Error pulling %s - code: %s message: %s" % (name,
+                                                                               error_detail.get('code'),
+                                                                               error_detail.get('message')))
+                    else:
+                        self.fail("Error pulling %s - %s" % (name, line.get('error')))
+        except Exception as exc:
+            self.fail("Error pulling image %s:%s - %s" % (name, tag, str(exc)))
+
+        new_tag = self.find_image(name, tag)
+
+        return new_tag, old_tag == new_tag
 
 
 class AnsibleDockerClient(AnsibleDockerClientBase):
