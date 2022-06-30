@@ -6,7 +6,3 @@ deprecated_features:
      ``docker_network_info``, ``docker_node_info``, ``docker_swarm_info``, ``docker_swarm_service``, ``docker_swarm_service_info``,
      ``docker_volume_info``, and ``docker_volume``, whose minimally supported API version
      is between 1.20 and 1.24 (https://github.com/ansible-collections/community.docker/pull/396)."
-
-
-
-
