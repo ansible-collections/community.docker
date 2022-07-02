@@ -414,7 +414,6 @@ options:
   init:
     description:
       - Run an init inside the container that forwards signals and reaps processes.
-      - This option requires Docker API >= 1.25.
       - If I(container_default_behavior) is set to C(compatibility), this option has a default of C(false).
     type: bool
   interactive:
@@ -899,8 +898,8 @@ author:
   - "Felix Fontein (@felixfontein)"
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0 (use L(docker-py,https://pypi.org/project/docker-py/) for Python 2.6)"
-  - "Docker API >= 1.20"
+  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
+  - "Docker API >= 1.25"
 '''
 
 EXAMPLES = '''
@@ -1726,7 +1725,7 @@ class TaskParameters(DockerBaseClass):
             storage_opt='storage_opts',
         )
 
-        if self.client.docker_py_version >= LooseVersion('1.9') and self.client.docker_api_version >= LooseVersion('1.22'):
+        if self.client.docker_py_version >= LooseVersion('1.9'):
             # blkio_weight can always be updated, but can only be set on creation
             # when Docker SDK for Python and Docker API are new enough
             host_config_params['blkio_weight'] = 'blkio_weight'
@@ -2030,7 +2029,7 @@ class TaskParameters(DockerBaseClass):
             target = mount['target']
             datatype = mount['type']
             mount_dict = dict(mount)
-            # Sanity checks (so we don't wait for docker-py to barf on input)
+            # Sanity checks (so we don't wait for Docker SDK for Python to barf on input)
             if mount_dict.get('source') is None and datatype not in ('tmpfs', 'volume'):
                 self.client.fail('source must be specified for mount "{0}" of type "{1}"'.format(target, datatype))
             mount_option_types = dict(
@@ -2353,31 +2352,6 @@ class Container(DockerBaseClass):
             # That's why it needs special handling here.
             config_mapping['stop_timeout'] = config.get('StopTimeout')
 
-        if self.parameters.client.docker_api_version < LooseVersion('1.22'):
-            # For docker API < 1.22, update_container() is not supported. Thus
-            # we need to handle all limits which are usually handled by
-            # update_container() as configuration changes which require a container
-            # restart.
-            restart_policy = host_config.get('RestartPolicy', dict())
-
-            # Options which don't make sense without their accompanying option
-            if self.parameters.restart_policy:
-                config_mapping['restart_retries'] = restart_policy.get('MaximumRetryCount')
-
-            config_mapping.update(dict(
-                blkio_weight=host_config.get('BlkioWeight'),
-                cpu_period=host_config.get('CpuPeriod'),
-                cpu_quota=host_config.get('CpuQuota'),
-                cpu_shares=host_config.get('CpuShares'),
-                cpuset_cpus=host_config.get('CpusetCpus'),
-                cpuset_mems=host_config.get('CpusetMems'),
-                kernel_memory=host_config.get("KernelMemory"),
-                memory=host_config.get('Memory'),
-                memory_reservation=host_config.get('MemoryReservation'),
-                memory_swap=host_config.get('MemorySwap'),
-                restart_policy=restart_policy.get('Name')
-            ))
-
         differences = DifferenceTracker()
         for key, value in config_mapping.items():
             minimal_version = self.parameters.client.option_minimal_versions.get(key, {})
@@ -2443,9 +2417,6 @@ class Container(DockerBaseClass):
         '''
         if not self.container.get('HostConfig'):
             self.fail("limits_differ_from_container: Error parsing container properties. HostConfig missing.")
-        if self.parameters.client.docker_api_version < LooseVersion('1.22'):
-            # update_container() call not supported
-            return False, []
 
         host_config = self.container['HostConfig']
 
@@ -2626,7 +2597,7 @@ class Container(DockerBaseClass):
         self.log('_get_expected_binds')
         image_vols = []
         if image:
-            image_vols = self._get_image_binds(image[self.parameters.client.image_inspect_source].get('Volumes'))
+            image_vols = self._get_image_binds(image['Config'].get('Volumes'))
         param_vols = []
         if self.parameters.volumes:
             for vol in self.parameters.volumes:
@@ -2662,7 +2633,7 @@ class Container(DockerBaseClass):
             return {}
 
         # Can't use get('Labels', {}) because 'Labels' may be present and be None
-        return image[self.parameters.client.image_inspect_source].get('Labels') or {}
+        return image['Config'].get('Labels') or {}
 
     def _get_expected_device_requests(self):
         if self.parameters.device_requests is None:
@@ -2707,8 +2678,8 @@ class Container(DockerBaseClass):
     def _get_expected_volumes(self, image):
         self.log('_get_expected_volumes')
         expected_vols = dict()
-        if image and image[self.parameters.client.image_inspect_source].get('Volumes'):
-            expected_vols.update(image[self.parameters.client.image_inspect_source].get('Volumes'))
+        if image and image['Config'].get('Volumes'):
+            expected_vols.update(image['Config'].get('Volumes'))
 
         if self.parameters.volumes:
             for vol in self.parameters.volumes:
@@ -2731,8 +2702,8 @@ class Container(DockerBaseClass):
     def _get_expected_env(self, image):
         self.log('_get_expected_env')
         expected_env = dict()
-        if image and image[self.parameters.client.image_inspect_source].get('Env'):
-            for env_var in image[self.parameters.client.image_inspect_source]['Env']:
+        if image and image['Config'].get('Env'):
+            for env_var in image['Config']['Env']:
                 parts = env_var.split('=', 1)
                 expected_env[parts[0]] = parts[1]
         if self.parameters.env:
@@ -2746,7 +2717,7 @@ class Container(DockerBaseClass):
         self.log('_get_expected_exposed')
         image_ports = []
         if image:
-            image_exposed_ports = image[self.parameters.client.image_inspect_source].get('ExposedPorts') or {}
+            image_exposed_ports = image['Config'].get('ExposedPorts') or {}
             image_ports = [self._normalize_port(p) for p in image_exposed_ports.keys()]
         param_ports = []
         if self.parameters.ports:
@@ -3420,22 +3391,14 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
         self.comparisons = comparisons
 
     def _get_additional_minimal_versions(self):
-        stop_timeout_supported = self.docker_api_version >= LooseVersion('1.25')
         stop_timeout_needed_for_update = self.module.params.get("stop_timeout") is not None and self.module.params.get('state') != 'absent'
-        if stop_timeout_supported:
-            stop_timeout_supported = self.docker_py_version >= LooseVersion('2.1')
-            if stop_timeout_needed_for_update and not stop_timeout_supported:
-                # We warn (instead of fail) since in older versions, stop_timeout was not used
-                # to update the container's configuration, but only when stopping a container.
-                self.module.warn("Docker SDK for Python's version is %s. Minimum version required is 2.1 to update "
-                                 "the container's stop_timeout configuration. "
-                                 "If you use the 'docker-py' module, you have to switch to the 'docker' Python package." % (docker_version,))
-        else:
-            if stop_timeout_needed_for_update and not stop_timeout_supported:
-                # We warn (instead of fail) since in older versions, stop_timeout was not used
-                # to update the container's configuration, but only when stopping a container.
-                self.module.warn("Docker API version is %s. Minimum version required is 1.25 to set or "
-                                 "update the container's stop_timeout configuration." % (self.docker_api_version_str,))
+        stop_timeout_supported = self.docker_py_version >= LooseVersion('2.1')
+        if stop_timeout_needed_for_update and not stop_timeout_supported:
+            # We warn (instead of fail) since in older versions, stop_timeout was not used
+            # to update the container's configuration, but only when stopping a container.
+            self.module.warn("Docker SDK for Python's version is %s. Minimum version required is 2.1 to update "
+                             "the container's stop_timeout configuration. "
+                             "If you use the 'docker-py' module, you have to switch to the 'docker' Python package." % (docker_version,))
         self.option_minimal_versions['stop_timeout']['supported'] = stop_timeout_supported
 
     def __init__(self, **kwargs):
@@ -3447,34 +3410,25 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
             volume_binds=dict(),
             name=dict(),
             # normal options
-            device_read_bps=dict(docker_py_version='1.9.0', docker_api_version='1.22'),
-            device_read_iops=dict(docker_py_version='1.9.0', docker_api_version='1.22'),
-            device_write_bps=dict(docker_py_version='1.9.0', docker_api_version='1.22'),
-            device_write_iops=dict(docker_py_version='1.9.0', docker_api_version='1.22'),
+            device_read_bps=dict(docker_py_version='1.9.0'),
+            device_read_iops=dict(docker_py_version='1.9.0'),
+            device_write_bps=dict(docker_py_version='1.9.0'),
+            device_write_iops=dict(docker_py_version='1.9.0'),
             device_requests=dict(docker_py_version='4.3.0', docker_api_version='1.40'),
-            dns_opts=dict(docker_api_version='1.21', docker_py_version='1.10.0'),
-            ipc_mode=dict(docker_api_version='1.25'),
-            mac_address=dict(docker_api_version='1.25'),
-            oom_score_adj=dict(docker_api_version='1.22'),
-            shm_size=dict(docker_api_version='1.22'),
-            stop_signal=dict(docker_api_version='1.21'),
-            tmpfs=dict(docker_api_version='1.22'),
-            volume_driver=dict(docker_api_version='1.21'),
-            memory_reservation=dict(docker_api_version='1.21'),
-            kernel_memory=dict(docker_api_version='1.21'),
-            auto_remove=dict(docker_py_version='2.1.0', docker_api_version='1.25'),
-            healthcheck=dict(docker_py_version='2.0.0', docker_api_version='1.24'),
-            init=dict(docker_py_version='2.2.0', docker_api_version='1.25'),
-            runtime=dict(docker_py_version='2.4.0', docker_api_version='1.25'),
-            sysctls=dict(docker_py_version='1.10.0', docker_api_version='1.24'),
-            userns_mode=dict(docker_py_version='1.10.0', docker_api_version='1.23'),
-            uts=dict(docker_py_version='3.5.0', docker_api_version='1.25'),
-            pids_limit=dict(docker_py_version='1.10.0', docker_api_version='1.23'),
-            mounts=dict(docker_py_version='2.6.0', docker_api_version='1.25'),
-            cpus=dict(docker_py_version='2.3.0', docker_api_version='1.25'),
-            storage_opts=dict(docker_py_version='2.1.0', docker_api_version='1.24'),
+            dns_opts=dict(docker_py_version='1.10.0'),
+            auto_remove=dict(docker_py_version='2.1.0'),
+            healthcheck=dict(docker_py_version='2.0.0'),
+            init=dict(docker_py_version='2.2.0'),
+            runtime=dict(docker_py_version='2.4.0'),
+            sysctls=dict(docker_py_version='1.10.0'),
+            userns_mode=dict(docker_py_version='1.10.0'),
+            uts=dict(docker_py_version='3.5.0'),
+            pids_limit=dict(docker_py_version='1.10.0'),
+            mounts=dict(docker_py_version='2.6.0'),
+            cpus=dict(docker_py_version='2.3.0'),
+            storage_opts=dict(docker_py_version='2.1.0'),
             # specials
-            ipvX_address_supported=dict(docker_py_version='1.9.0', docker_api_version='1.22',
+            ipvX_address_supported=dict(docker_py_version='1.9.0',
                                         detect_usage=detect_ipvX_address_usage,
                                         usage_msg='ipv4_address or ipv6_address in networks'),
             stop_timeout=dict(),  # see _get_additional_minimal_versions()
@@ -3485,10 +3439,6 @@ class AnsibleDockerClientContainer(AnsibleDockerClient):
             option_minimal_versions_ignore_params=self.__NON_CONTAINER_PROPERTY_OPTIONS,
             **kwargs
         )
-
-        self.image_inspect_source = 'Config'
-        if self.docker_api_version < LooseVersion('1.21'):
-            self.image_inspect_source = 'ContainerConfig'
 
         self._get_additional_minimal_versions()
         self._parse_comparisons()
@@ -3660,7 +3610,6 @@ def main():
         argument_spec=argument_spec,
         required_if=required_if,
         supports_check_mode=True,
-        min_docker_api_version='1.20',
     )
     if client.module.params['networks_cli_compatible'] is True and client.module.params['networks'] and client.module.params['network_mode'] is None:
         # Same behavior as Docker CLI: if networks are specified, use the name of the first network as the value for network_mode
@@ -3674,7 +3623,7 @@ def main():
         client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 

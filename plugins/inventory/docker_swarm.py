@@ -75,7 +75,7 @@ DOCUMENTATION = '''
         api_version:
             description:
                 - The version of the Docker API running on the Docker Host.
-                - Defaults to the latest version of the API supported by docker-py.
+                - Defaults to the latest version of the API supported by Docker SDK for Python.
             type: str
             aliases: [ docker_api_version ]
         timeout:

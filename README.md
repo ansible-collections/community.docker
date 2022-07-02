@@ -10,19 +10,15 @@ Please note that this collection does **not** support Windows targets. The conne
 
 ## Tested with Ansible
 
-Tested with the current Ansible 2.9, ansible-base 2.10, ansible-core 2.11, ansible-core 2.12 and ansible-core 2.13 releases and the current development version of ansible-core. Ansible versions before 2.9.10 are not supported.
+Tested with the current ansible-core 2.11, ansible-core 2.12, and ansible-core 2.13 releases, and the current development version of ansible-core. Ansible/ansible-base versions before 2.11.0 are not supported.
 
-Please note that support for Ansible 2.9 and ansible-base 2.10 has been deprecated and will be dropped from community.docker 3.0.0 on.
-
-This collection does not work with ansible-core before 2.12 (this includes ansible-base and Ansible 2.9) on Python 2.12+.
+Please note that Ansible 2.9 and ansible-base 2.10 are no longer supported. If you need to use them, use community.docker 2.x.y. Also note that this collection does not work with ansible-core 2.11 (this includes ansible-base and Ansible 2.9) on Python 2.12+.
 
 ## External requirements
 
-Most modules and plugins require the [Docker SDK for Python](https://pypi.org/project/docker/). For Python 2.6 support, use [the deprecated docker-py library](https://pypi.org/project/docker-py/) instead.
+Most modules and plugins require the [Docker SDK for Python](https://pypi.org/project/docker/) and Python 2.7 or newer. Python 2.6 is no longer supported; use community.docker 2.x.y if you need to use Python 2.6.
 
-Please note that Python 2.6 support has been deprecated and will be dropped from community.docker 3.0.0 on.
-
-Both libraries cannot be installed at the same time. If you accidentally did install them simultaneously, you have to uninstall *both* before re-installing one of them.
+If you have Docker SDK for Python < 2.0.0 installed ([docker-py](https://pypi.org/project/docker-py/)), you can still use it, though we recommend to uninstall it and then install [docker](https://pypi.org/project/docker/), the Docker SDK for Python >= 2.0.0. Note that both libraries cannot be installed at the same time. If you accidentally did install them simultaneously, you have to uninstall *both* before re-installing one of them.
 
 ## Included content
 

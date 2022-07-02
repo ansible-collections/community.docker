@@ -1,0 +1,5 @@
+removed_features:
+  - Support for Ansible 2.9 and ansible-base 2.10 has been removed. If you need support for Ansible 2.9 or ansible-base 2.10, please use community.docker 2.x.y (https://github.com/ansible-collections/community.docker/pull/400).
+  - Execution Environments built with community.docker no longer include docker-compose < 2.0.0. If you need to use it with the ``docker_compose`` module, please install that requirement manually (https://github.com/ansible-collections/community.docker/pull/400).
+  - Support for Python 2.6 has been removed. If you need support for Python 2.6, please use community.docker 2.x.y (https://github.com/ansible-collections/community.docker/pull/400).
+  - Support for Docker API versions 1.20 to 1.24 has been removed. If you need support for these API versions, please use community.docker 2.x.y (https://github.com/ansible-collections/community.docker/pull/400).

@@ -189,7 +189,7 @@ extends_documentation_fragment:
 - community.docker.docker.docker_py_1_documentation
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0 (use L(docker-py,https://pypi.org/project/docker-py/) for Python 2.6)"
+  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"
   - Docker API >= 1.25
 author:
   - Thierry Bouvet (@tbouvet)
@@ -671,7 +671,6 @@ def main():
         supports_check_mode=True,
         required_if=required_if,
         min_docker_version='1.10.0',
-        min_docker_api_version='1.25',
         option_minimal_versions=option_minimal_versions,
     )
 
@@ -688,7 +687,7 @@ def main():
         client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 

@@ -139,7 +139,7 @@ class DockerSocketHandlerBase(object):
 
     def select(self, timeout=None, _internal_recursion=False):
         if not _internal_recursion and self._paramiko_read_workaround and len(self._write_buffer) > 0:
-            # When the SSH transport is used, docker-py internally uses Paramiko, whose
+            # When the SSH transport is used, Docker SDK for Python internally uses Paramiko, whose
             # Channel object supports select(), but only for reading
             # (https://github.com/paramiko/paramiko/issues/695).
             if self._sock.send_ready():
@@ -208,25 +208,3 @@ class DockerSocketHandlerBase(object):
 class DockerSocketHandlerModule(DockerSocketHandlerBase):
     def __init__(self, sock, module, selectors):
         super(DockerSocketHandlerModule, self).__init__(sock, selectors, module.debug)
-
-
-def find_selectors(module):
-    try:
-        # ansible-base 2.10+ has selectors a compat version of selectors, which a bundled fallback:
-        from ansible.module_utils.compat import selectors
-        return selectors
-    except ImportError:
-        pass
-    try:
-        # Python 3.4+
-        import selectors
-        return selectors
-    except ImportError:
-        pass
-    try:
-        # backport package installed in the system
-        import selectors2
-        return selectors2
-    except ImportError:
-        pass
-    module.fail_json(msg=missing_required_lib('selectors2', reason='for handling stdin'))

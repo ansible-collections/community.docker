@@ -375,7 +375,6 @@ def main():
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,
         min_docker_version='2.1.0',
-        min_docker_api_version='1.25',
     )
 
     try:
@@ -391,7 +390,7 @@ def main():
         client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 

@@ -129,7 +129,7 @@ class Connection(ConnectionBase):
             )
         except RequestException as e:
             self.client.fail(
-                'An unexpected requests error occurred for container "{1}" when docker-py tried to talk to the docker daemon: {0}'
+                'An unexpected requests error occurred for container "{1}" when Docker SDK for Python tried to talk to the docker daemon: {0}'
                 .format(e, self.get_option('remote_addr'))
             )
 
@@ -298,8 +298,8 @@ class Connection(ConnectionBase):
         bio = io.BytesIO()
         with tarfile.open(fileobj=bio, mode='w|', dereference=True, encoding='utf-8') as tar:
             # Note that without both name (bytes) and arcname (unicode), this either fails for
-            # Python 2.6/2.7, Python 3.5/3.6, or Python 3.7+. Only when passing both (in this
-            # form) it works with Python 2.6, 2.7, 3.5, 3.6, and 3.7 up to 3.9.
+            # Python 2.7, Python 3.5/3.6, or Python 3.7+. Only when passing both (in this
+            # form) it works with Python 2.7, 3.5, 3.6, and 3.7 up to 3.11
             tarinfo = tar.gettarinfo(b_in_path, arcname=to_text(out_file))
             user_id, group_id = self.ids[self.actual_user]
             tarinfo.uid = user_id

@@ -90,8 +90,8 @@ author:
   - "Felix Fontein (@felixfontein)"
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0 (use L(docker-py,https://pypi.org/project/docker-py/) for Python 2.6)"
-  - "Docker API >= 1.20"
+  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
+  - "Docker API >= 1.25"
 '''
 
 EXAMPLES = '''
@@ -151,6 +151,7 @@ import shlex
 import traceback
 
 from ansible.module_utils.common.text.converters import to_text, to_bytes, to_native
+from ansible.module_utils.compat import selectors
 from ansible.module_utils.six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
@@ -164,7 +165,6 @@ from ansible_collections.community.docker.plugins.module_utils.socket_helper imp
 )
 
 from ansible_collections.community.docker.plugins.module_utils.socket_handler import (
-    find_selectors,
     DockerSocketHandlerModule,
 )
 
@@ -192,13 +192,12 @@ def main():
 
     option_minimal_versions = dict(
         chdir=dict(docker_py_version='3.0.0', docker_api_version='1.35'),
-        env=dict(docker_py_version='2.3.0', docker_api_version='1.25'),
+        env=dict(docker_py_version='2.3.0'),
     )
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         option_minimal_versions=option_minimal_versions,
-        min_docker_api_version='1.20',
         mutually_exclusive=[('argv', 'command')],
         required_one_of=[('argv', 'command')],
     )
@@ -231,10 +230,6 @@ def main():
     if stdin is not None and client.module.params['stdin_add_newline']:
         stdin += '\n'
 
-    selectors = None
-    if stdin and not detach:
-        selectors = find_selectors(client.module)
-
     try:
         kwargs = {}
         if chdir is not None:
@@ -257,7 +252,7 @@ def main():
             client.module.exit_json(changed=True, exec_id=exec_id)
 
         else:
-            if selectors:
+            if stdin and not detach:
                 exec_socket = client.exec_start(
                     exec_id,
                     tty=tty,
@@ -306,7 +301,7 @@ def main():
         client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 
