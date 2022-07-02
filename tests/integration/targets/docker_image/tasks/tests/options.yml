@@ -289,20 +289,12 @@
   register: load_image_3
   ignore_errors: true
 
-- name: load image (invalid image, old API version)
-  docker_image:
-    name: foo:bar
-    load_path: "{{ remote_tmp_dir }}/image-invalid.tar"
-    source: load
-    api_version: "1.22"
-  register: load_image_4
-
 - name: load image (ID, idempotency)
   docker_image:
     name: "{{ archive_image.image.Id }}"
     load_path: "{{ remote_tmp_dir }}/image_id.tar"
     source: load
-  register: load_image_5
+  register: load_image_4
 
 - assert:
     that:
@@ -314,9 +306,7 @@
       "The archive did not contain image 'foo:bar'. Instead, found '" ~ docker_test_image_hello_world ~ "'." == load_image_2.msg
     - load_image_3 is failed
     - '"Detected no loaded images. Archive potentially corrupt?" == load_image_3.msg'
-    - load_image_4 is changed
-    - "'The API version of your Docker daemon is < 1.23, which does not return the image loading result from the Docker daemon. Therefore, we cannot verify whether the expected image was loaded, whether multiple images where loaded, or whether the load actually succeeded. You should consider upgrading your Docker daemon.' in load_image_4.warnings"
-    - load_image_5 is not changed
+    - load_image_4 is not changed
 
 ####################################################################
 ## build.path ######################################################

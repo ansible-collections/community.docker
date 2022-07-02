@@ -183,12 +183,12 @@
       - update_max_failure_ratio_1 is changed
       - update_max_failure_ratio_2 is not changed
       - update_max_failure_ratio_3 is changed
-  when: docker_api_version is version('1.25', '>=') and docker_py_version is version('2.1.0', '>=')
+  when: docker_py_version is version('2.1.0', '>=')
 - assert:
     that:
     - update_max_failure_ratio_1 is failed
     - "'Minimum version required' in update_max_failure_ratio_1.msg"
-  when: docker_api_version is version('1.25', '<') or docker_py_version is version('2.1.0', '<')
+  when: docker_py_version is version('2.1.0', '<')
 
 ###################################################################
 # update_config.monitor ###########################################
@@ -238,12 +238,12 @@
       - update_monitor_1 is changed
       - update_monitor_2 is not changed
       - update_monitor_3 is changed
-  when: docker_api_version is version('1.25', '>=') and docker_py_version is version('2.1.0', '>=')
+  when: docker_py_version is version('2.1.0', '>=')
 - assert:
     that:
     - update_monitor_1 is failed
     - "'Minimum version required' in update_monitor_1.msg"
-  when: docker_api_version is version('1.25', '<') or docker_py_version is version('2.1.0', '<')
+  when: docker_py_version is version('2.1.0', '<')
 
 ###################################################################
 # update_config.order #############################################

@@ -36,7 +36,7 @@ notes:
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.5.0"
-  - "Docker API >= 1.23"
+  - "Docker API >= 1.25"
 
 author:
   - Felix Fontein (@felixfontein)
@@ -169,7 +169,6 @@ def main():
         ),
         supports_check_mode=False,
         min_docker_version='2.5.0',
-        min_docker_api_version='1.23',
     )
 
     try:

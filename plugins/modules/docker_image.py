@@ -88,7 +88,6 @@ options:
         description:
           - Provide a dictionary of C(key:value) build arguments that map to Dockerfile ARG directive.
           - Docker expects the value to be a string. For convenience any non-string values will be converted to strings.
-          - Requires Docker API >= 1.21.
         type: dict
       container_limits:
         description:
@@ -214,7 +213,7 @@ extends_documentation_fragment:
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
-  - "Docker API >= 1.20"
+  - "Docker API >= 1.25"
 
 author:
   - Pavel Antonov (@softzilla)
@@ -880,8 +879,8 @@ def main():
         return client.module.params['pull'] and client.module.params['pull'].get('platform') is not None
 
     option_minimal_versions = dict()
-    option_minimal_versions["build.cache_from"] = dict(docker_py_version='2.1.0', docker_api_version='1.25', detect_usage=detect_build_cache_from)
-    option_minimal_versions["build.network"] = dict(docker_py_version='2.4.0', docker_api_version='1.25', detect_usage=detect_build_network)
+    option_minimal_versions["build.cache_from"] = dict(docker_py_version='2.1.0', detect_usage=detect_build_cache_from)
+    option_minimal_versions["build.network"] = dict(docker_py_version='2.4.0', detect_usage=detect_build_network)
     option_minimal_versions["build.target"] = dict(docker_py_version='2.4.0', detect_usage=detect_build_target)
     option_minimal_versions["build.use_config_proxy"] = dict(docker_py_version='3.7.0', detect_usage=detect_use_config_proxy)
     option_minimal_versions["build.etc_hosts"] = dict(docker_py_version='2.6.0', docker_api_version='1.27', detect_usage=detect_etc_hosts)
@@ -893,7 +892,6 @@ def main():
         required_if=required_if,
         supports_check_mode=True,
         min_docker_version='1.8.0',
-        min_docker_api_version='1.20',
         option_minimal_versions=option_minimal_versions,
     )
 

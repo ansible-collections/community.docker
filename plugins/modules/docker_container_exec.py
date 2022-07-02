@@ -91,7 +91,7 @@ author:
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
-  - "Docker API >= 1.20"
+  - "Docker API >= 1.25"
 '''
 
 EXAMPLES = '''
@@ -192,13 +192,12 @@ def main():
 
     option_minimal_versions = dict(
         chdir=dict(docker_py_version='3.0.0', docker_api_version='1.35'),
-        env=dict(docker_py_version='2.3.0', docker_api_version='1.25'),
+        env=dict(docker_py_version='2.3.0'),
     )
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         option_minimal_versions=option_minimal_versions,
-        min_docker_api_version='1.20',
         mutually_exclusive=[('argv', 'command')],
         required_one_of=[('argv', 'command')],
     )

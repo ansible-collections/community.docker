@@ -375,7 +375,6 @@ def main():
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,
         min_docker_version='2.1.0',
-        min_docker_api_version='1.25',
     )
 
     try:

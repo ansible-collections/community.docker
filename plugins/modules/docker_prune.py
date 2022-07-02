@@ -216,7 +216,6 @@ def main():
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         # supports_check_mode=True,
-        min_docker_api_version='1.25',
         min_docker_version='2.1.0',
     )
 

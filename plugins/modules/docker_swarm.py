@@ -671,7 +671,6 @@ def main():
         supports_check_mode=True,
         required_if=required_if,
         min_docker_version='1.10.0',
-        min_docker_api_version='1.25',
         option_minimal_versions=option_minimal_versions,
     )
 

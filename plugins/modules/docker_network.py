@@ -166,7 +166,7 @@ author:
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"
-  - "The docker server >= 1.10.0"
+  - "Docker API >= 1.25"
 '''
 
 EXAMPLES = '''
@@ -650,7 +650,6 @@ def main():
     option_minimal_versions = dict(
         scope=dict(docker_py_version='2.6.0', docker_api_version='1.30'),
         attachable=dict(docker_py_version='2.0.0', docker_api_version='1.26'),
-        labels=dict(docker_api_version='1.23'),
         ipam_driver_options=dict(docker_py_version='2.0.0'),
     )
 
@@ -658,7 +657,6 @@ def main():
         argument_spec=argument_spec,
         supports_check_mode=True,
         min_docker_version='1.10.0',
-        min_docker_api_version='1.22',
         # "The docker server >= 1.10.0"
         option_minimal_versions=option_minimal_versions,
     )

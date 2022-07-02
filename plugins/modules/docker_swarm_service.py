@@ -72,28 +72,24 @@ options:
     description:
       - List of custom DNS servers.
       - Corresponds to the C(--dns) option of C(docker service create).
-      - Requires API version >= 1.25.
     type: list
     elements: str
   dns_search:
     description:
       - List of custom DNS search domains.
       - Corresponds to the C(--dns-search) option of C(docker service create).
-      - Requires API version >= 1.25.
     type: list
     elements: str
   dns_options:
     description:
       - List of custom DNS options.
       - Corresponds to the C(--dns-option) option of C(docker service create).
-      - Requires API version >= 1.25.
     type: list
     elements: str
   endpoint_mode:
     description:
       - Service endpoint mode.
       - Corresponds to the C(--endpoint-mode) option of C(docker service create).
-      - Requires API version >= 1.25.
     type: str
     choices:
       - vip
@@ -119,14 +115,12 @@ options:
     description:
       - Force update even if no changes require it.
       - Corresponds to the C(--force) option of C(docker service update).
-      - Requires API version >= 1.25.
     type: bool
     default: no
   groups:
     description:
       - List of additional group names and/or IDs that the container process will run as.
       - Corresponds to the C(--group) option of C(docker service update).
-      - Requires API version >= 1.25.
     type: list
     elements: str
   healthcheck:
@@ -136,7 +130,6 @@ options:
         for details on how healthchecks work.
       - "I(interval), I(timeout) and I(start_period) are specified as durations. They accept duration as a string in a format
         that look like: C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
-      - Requires API version >= 1.25.
     type: dict
     suboptions:
       test:
@@ -164,14 +157,12 @@ options:
     description:
       - Container hostname.
       - Corresponds to the C(--hostname) option of C(docker service create).
-      - Requires API version >= 1.25.
     type: str
   hosts:
     description:
       - Dict of host-to-IP mappings, where each host name is a key in the dictionary.
         Each host name will be added to the container's /etc/hosts file.
       - Corresponds to the C(--host) option of C(docker service create).
-      - Requires API version >= 1.25.
     type: dict
   image:
     description:
@@ -357,7 +348,6 @@ options:
     description:
       - List of dictionaries describing the service published ports.
       - Corresponds to the C(--publish) option of C(docker service create).
-      - Requires API version >= 1.25.
     type: list
     elements: dict
     suboptions:
@@ -510,7 +500,6 @@ options:
     description:
       - List of dictionaries describing the service secrets.
       - Corresponds to the C(--secret) option of C(docker service create).
-      - Requires API version >= 1.25.
     type: list
     elements: dict
     suboptions:
@@ -566,7 +555,6 @@ options:
     description:
       - Allocate a pseudo-TTY.
       - Corresponds to the C(--tty) option of C(docker service create).
-      - Requires API version >= 1.25.
     type: bool
   update_config:
     description:
@@ -600,13 +588,11 @@ options:
           - "Accepts a string in a format that look like:
             C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
           - Corresponds to the C(--update-monitor) option of C(docker service create).
-          - Requires API version >= 1.25.
         type: str
       max_failure_ratio:
         description:
           - Fraction of tasks that may fail during an update before the failure action is invoked.
           - Corresponds to the C(--update-max-failure-ratio) option of C(docker service create).
-          - Requires API version >= 1.25.
         type: float
       order:
         description:
@@ -647,7 +633,7 @@ extends_documentation_fragment:
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.0.2"
-  - "Docker API >= 1.24"
+  - "Docker API >= 1.25"
 notes:
   - "Images will only resolve to the latest digest when using Docker API >= 1.30 and Docker SDK for Python >= 3.2.0.
      When using older versions use C(force_update: true) to trigger the swarm to resolve a new image."
@@ -1333,10 +1319,7 @@ class DockerService(DockerBaseClass):
     @property
     def can_use_task_template_networks(self):
         # In Docker API 1.25 attaching networks to TaskTemplate is preferred over Spec
-        return (
-            self.docker_api_version >= LooseVersion('1.25') and
-            self.docker_py_version >= LooseVersion('2.7')
-        )
+        return self.docker_py_version >= LooseVersion('2.7')
 
     @staticmethod
     def get_restart_config_from_ansible_params(params):
@@ -2735,20 +2718,20 @@ def main():
     )
 
     option_minimal_versions = dict(
-        dns=dict(docker_py_version='2.6.0', docker_api_version='1.25'),
-        dns_options=dict(docker_py_version='2.6.0', docker_api_version='1.25'),
-        dns_search=dict(docker_py_version='2.6.0', docker_api_version='1.25'),
-        endpoint_mode=dict(docker_py_version='3.0.0', docker_api_version='1.25'),
-        force_update=dict(docker_py_version='2.1.0', docker_api_version='1.25'),
-        healthcheck=dict(docker_py_version='2.6.0', docker_api_version='1.25'),
-        hostname=dict(docker_py_version='2.2.0', docker_api_version='1.25'),
-        hosts=dict(docker_py_version='2.6.0', docker_api_version='1.25'),
-        groups=dict(docker_py_version='2.6.0', docker_api_version='1.25'),
-        tty=dict(docker_py_version='2.4.0', docker_api_version='1.25'),
-        secrets=dict(docker_py_version='2.4.0', docker_api_version='1.25'),
+        dns=dict(docker_py_version='2.6.0'),
+        dns_options=dict(docker_py_version='2.6.0'),
+        dns_search=dict(docker_py_version='2.6.0'),
+        endpoint_mode=dict(docker_py_version='3.0.0'),
+        force_update=dict(docker_py_version='2.1.0'),
+        healthcheck=dict(docker_py_version='2.6.0'),
+        hostname=dict(docker_py_version='2.2.0'),
+        hosts=dict(docker_py_version='2.6.0'),
+        groups=dict(docker_py_version='2.6.0'),
+        tty=dict(docker_py_version='2.4.0'),
+        secrets=dict(docker_py_version='2.4.0'),
         configs=dict(docker_py_version='2.6.0', docker_api_version='1.30'),
         stop_signal=dict(docker_py_version='2.6.0', docker_api_version='1.28'),
-        publish=dict(docker_py_version='3.0.0', docker_api_version='1.25'),
+        publish=dict(docker_py_version='3.0.0'),
         read_only=dict(docker_py_version='2.6.0', docker_api_version='1.28'),
         resolve_image=dict(docker_api_version='1.30', docker_py_version='3.2.0'),
         rollback_config=dict(docker_py_version='3.5.0', docker_api_version='1.28'),
@@ -2758,7 +2741,6 @@ def main():
         # specials
         publish_mode=dict(
             docker_py_version='3.0.0',
-            docker_api_version='1.25',
             detect_usage=_detect_publish_mode_usage,
             usage_msg='set publish.mode'
         ),
@@ -2770,7 +2752,6 @@ def main():
         ),
         update_config_max_failure_ratio=dict(
             docker_py_version='2.1.0',
-            docker_api_version='1.25',
             detect_usage=lambda c: (c.module.params['update_config'] or {}).get(
                 'max_failure_ratio'
             ) is not None,
@@ -2784,7 +2765,6 @@ def main():
         ),
         update_config_monitor=dict(
             docker_py_version='2.1.0',
-            docker_api_version='1.25',
             detect_usage=lambda c: (c.module.params['update_config'] or {}).get(
                 'monitor'
             ) is not None,
@@ -2843,7 +2823,6 @@ def main():
         required_if=required_if,
         supports_check_mode=True,
         min_docker_version='2.0.2',
-        min_docker_api_version='1.24',
         option_minimal_versions=option_minimal_versions,
     )
 

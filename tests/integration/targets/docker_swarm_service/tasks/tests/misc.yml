@@ -110,4 +110,4 @@
         that:
           - output is success
           - output is changed
-  when: docker_api_version is version('1.24', '>=') and docker_py_version is version('3.0.0', '>=')
+  when: docker_api_version is version('1.25', '>=') and docker_py_version is version('3.0.0', '>=')

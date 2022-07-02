@@ -229,9 +229,9 @@ class AnsibleDockerClientBase(Client):
             self.fail("Error connecting: %s" % exc)
 
         self.docker_api_version = LooseVersion(self.docker_api_version_str)
-        if min_docker_api_version is not None:
-            if self.docker_api_version < LooseVersion(min_docker_api_version):
-                self.fail('Docker API version is %s. Minimum version required is %s.' % (self.docker_api_version_str, min_docker_api_version))
+        min_docker_api_version = min_docker_api_version or '1.25'
+        if self.docker_api_version < LooseVersion(min_docker_api_version):
+            self.fail('Docker API version is %s. Minimum version required is %s.' % (self.docker_api_version_str, min_docker_api_version))
 
     def log(self, msg, pretty_print=False):
         pass

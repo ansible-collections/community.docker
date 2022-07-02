@@ -103,7 +103,7 @@ author:
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"
-  - "Docker API >= 1.21"
+  - "Docker API >= 1.25"
 '''
 
 EXAMPLES = '''
@@ -338,7 +338,6 @@ def main():
         argument_spec=argument_spec,
         supports_check_mode=True,
         min_docker_version='1.10.0',
-        min_docker_api_version='1.21',
         option_minimal_versions=option_minimal_versions,
         fail_results=dict(
             can_talk_to_docker=False,

@@ -84,7 +84,7 @@ extends_documentation_fragment:
 
 requirements:
     - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"
-    - "Docker API >= 1.24"
+    - "Docker API >= 1.25"
 '''
 
 EXAMPLES = '''
@@ -347,14 +347,13 @@ def main():
         verbose_output=dict(type='bool', default=False),
     )
     option_minimal_versions = dict(
-        unlock_key=dict(docker_py_version='2.7.0', docker_api_version='1.25'),
+        unlock_key=dict(docker_py_version='2.7.0'),
     )
 
     client = AnsibleDockerSwarmClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
         min_docker_version='1.10.0',
-        min_docker_api_version='1.24',
         option_minimal_versions=option_minimal_versions,
         fail_results=dict(
             can_talk_to_docker=False,

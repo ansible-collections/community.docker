@@ -72,7 +72,7 @@ requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
   - "Python bindings for docker credentials store API >= 0.2.1
     (use L(docker-pycreds,https://pypi.org/project/docker-pycreds/) when using Docker SDK for Python < 4.0.0)"
-  - "Docker API >= 1.20"
+  - "Docker API >= 1.25"
 author:
   - Olaf Kilian (@olsaki) <olaf.kilian@symanex.com>
   - Chris Houseknecht (@chouseknecht)
@@ -448,7 +448,6 @@ def main():
         argument_spec=argument_spec,
         supports_check_mode=True,
         required_if=required_if,
-        min_docker_api_version='1.20',
     )
 
     try:
