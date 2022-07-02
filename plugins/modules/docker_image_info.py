@@ -36,12 +36,10 @@ options:
     elements: str
 
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
+- community.docker.docker.api_documentation
 
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
   - "Docker API >= 1.25"
 
 author:
@@ -167,14 +165,7 @@ import traceback
 
 from ansible.module_utils.common.text.converters import to_native
 
-try:
-    from docker import utils
-    from docker.errors import DockerException, NotFound
-except ImportError:
-    # missing Docker SDK for Python handled in ansible.module_utils.docker.common
-    pass
-
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
@@ -182,6 +173,8 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     is_image_name_id,
 )
+from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException, NotFound
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import parse_repository_tag
 
 
 class ImageManager(DockerBaseClass):
@@ -221,7 +214,7 @@ class ImageManager(DockerBaseClass):
                 self.log('Fetching image %s (ID)' % (name))
                 image = self.client.find_image_by_id(name, accept_missing_image=True)
             else:
-                repository, tag = utils.parse_repository_tag(name)
+                repository, tag = parse_repository_tag(name)
                 if not tag:
                     tag = 'latest'
                 self.log('Fetching image %s:%s' % (repository, tag))
@@ -232,12 +225,16 @@ class ImageManager(DockerBaseClass):
 
     def get_all_images(self):
         results = []
-        images = self.client.images()
+        params = {
+            'only_ids': 0,
+            'all': 0,
+        }
+        images = self.client.get_json("/images/json", params=params)
         for image in images:
             try:
-                inspection = self.client.inspect_image(image['Id'])
+                inspection = self.client.get_json('/images/{0}/json', image['Id'])
             except NotFound:
-                pass
+                inspection = None
             except Exception as exc:
                 self.fail("Error inspecting image %s - %s" % (image['Id'], to_native(exc)))
             results.append(inspection)
