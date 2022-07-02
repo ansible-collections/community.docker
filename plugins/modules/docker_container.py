@@ -106,16 +106,17 @@ options:
       - Also, setting I(command) to an empty list of string, and setting I(entrypoint) to an empty
         list will be handled as if these options are not specified. This is different from idempotency
         handling for other container-config related options.
-      - When this is set to C(compatibility), which is the default until community.docker 3.0.0, the
+      - When this is set to C(compatibility), which was the default until community.docker 3.0.0, the
         current behavior will be kept.
       - When this is set to C(correct), these options are kept as lists, and an empty value or empty
-        list will be handled correctly for idempotency checks.
-      - In community.docker 3.0.0, the default will change to C(correct).
+        list will be handled correctly for idempotency checks. This has been the default since
+        community.docker 3.0.0.
     type: str
     choices:
       - compatibility
       - correct
     version_added: 1.9.0
+    default: correct
   cpu_period:
     description:
       - Limit CPU CFS (Completely Fair Scheduler) period.
@@ -702,15 +703,14 @@ options:
       - "Bind addresses must be either IPv4 or IPv6 addresses. Hostnames are B(not) allowed. This
         is different from the C(docker) command line utility. Use the R(dig lookup,ansible_collections.community.general.dig_lookup)
         to resolve hostnames."
-      - A value of C(all) will publish all exposed container ports to random host ports, ignoring
-        any other mappings. This is deprecated since version 2.0.0 and will be disallowed in
-        community.docker 3.0.0. Use the I(publish_all_ports) option instead.
       - If I(networks) parameter is provided, will inspect each network to see if there exists
         a bridge network with optional parameter C(com.docker.network.bridge.host_binding_ipv4).
         If such a network is found, then published ports where no host IP address is specified
         will be bound to the host IP pointed to by C(com.docker.network.bridge.host_binding_ipv4).
         Note that the first bridge network with a C(com.docker.network.bridge.host_binding_ipv4)
         value encountered in the list of I(networks) is the one that will be used.
+      - The value C(all) was allowed in earlier versions of this module. Support for it was removed in
+        community.docker 3.0.0. Use the I(publish_all_ports) option instead.
     type: list
     elements: str
     aliases:
@@ -1452,13 +1452,6 @@ class TaskParameters(DockerBaseClass):
 
         self.published_ports = self._parse_publish_ports()
 
-        if self.published_ports == 'all':
-            if self.publish_all_ports is None:
-                self.publish_all_ports = True
-                self.published_ports = None
-            else:
-                self.fail('"all" is not a valid value for "published_ports" when "publish_all_ports" is specified')
-
         self.ports = self._parse_exposed_ports(self.published_ports)
         self.log("expose ports:")
         self.log(self.ports, pretty_print=True)
@@ -1511,37 +1504,18 @@ class TaskParameters(DockerBaseClass):
                     self.command = shlex.split(to_text(self.command, errors='surrogate_or_strict'))
                 self.command = [to_text(x, errors='surrogate_or_strict') for x in self.command]
         else:
-            will_change = False
             if self.entrypoint:
                 # convert from list to str.
-                correct_entrypoint = [to_text(x, errors='surrogate_or_strict') for x in self.entrypoint]
                 self.entrypoint = shlex.split(' '.join([to_text(x, errors='surrogate_or_strict') for x in self.entrypoint]))
                 self.entrypoint = [to_text(x, errors='surrogate_or_strict') for x in self.entrypoint]
-                if correct_entrypoint != self.entrypoint:
-                    will_change = True
-            elif self.entrypoint is not None:
-                will_change = True
 
             if self.command:
                 # convert from list to str
                 if isinstance(self.command, list):
-                    correct_command = [to_text(x, errors='surrogate_or_strict') for x in self.command]
-                    self.command = shlex.split(' '.join([to_text(x, errors='surrogate_or_strict') for x in self.command]))
-                    self.command = [to_text(x, errors='surrogate_or_strict') for x in self.command]
-                    if correct_command != self.command:
-                        will_change = True
+                    self.command = ' '.join([to_text(x, errors='surrogate_or_strict') for x in self.command])
                 else:
-                    self.command = shlex.split(to_text(self.command, errors='surrogate_or_strict'))
-                    self.command = [to_text(x, errors='surrogate_or_strict') for x in self.command]
-            elif self.command is not None:
-                will_change = True
-
-            if will_change and client.module.params['command_handling'] is None:
-                client.module.deprecate(
-                    'The command_handling option will change its default value from "compatibility" to '
-                    '"correct" in community.docker 3.0.0. To remove this warning, please specify an explicit value for it now',
-                    version='3.0.0', collection_name='community.docker'
-                )
+                    self.command = to_text(self.command, errors='surrogate_or_strict')
+                self.command = [to_text(x, errors='surrogate_or_strict') for x in shlex.split(self.command)]
 
         self.mounts_opt, self.expected_mounts = self._process_mounts()
 
@@ -1809,15 +1783,9 @@ class TaskParameters(DockerBaseClass):
             return None
 
         if 'all' in self.published_ports:
-            if len(self.published_ports) > 1:
-                self.client.module.fail_json(msg='"all" can no longer be specified in published_ports next to '
-                                                 'other values. Set publish_all_ports to "true" to randomly '
-                                                 'assign port mappings for those not specified by published_ports.')
-            self.client.module.deprecate(
-                'Specifying "all" in published_ports is deprecated. Set publish_all_ports to "true" instead '
-                'to randomly assign port mappings for those not specified by published_ports',
-                collection_name='community.docker', version='3.0.0')
-            return 'all'
+            self.client.module.fail_json(
+                msg='Specifying "all" in published_ports is no longer allowed. Set publish_all_ports to "true" instead '
+                    'to randomly assign port mappings for those not specified by published_ports.')
 
         default_ip = self.get_default_host_ip()
 
@@ -3553,7 +3521,7 @@ def main():
         command=dict(type='raw'),
         comparisons=dict(type='dict'),
         container_default_behavior=dict(type='str', default='no_defaults', choices=['compatibility', 'no_defaults']),
-        command_handling=dict(type='str', choices=['compatibility', 'correct']),
+        command_handling=dict(type='str', choices=['compatibility', 'correct'], default='correct'),
         cpu_period=dict(type='int'),
         cpu_quota=dict(type='int'),
         cpus=dict(type='float'),
