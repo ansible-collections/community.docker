@@ -107,9 +107,22 @@ class DockerBaseClass(object):
 
 def update_tls_hostname(result, old_behavior=False, deprecate_function=None, uses_tls=True):
     if result['tls_hostname'] is None:
+        if old_behavior:
+            result['tls_hostname'] = DEFAULT_TLS_HOSTNAME
+            if uses_tls and deprecate_function is not None:
+                deprecate_function(
+                    'The default value "localhost" for tls_hostname is deprecated and will be removed in community.docker 3.0.0.'
+                    ' From then on, docker_host will be used to compute tls_hostname. If you want to keep using "localhost",'
+                    ' please set that value explicitly.',
+                    version='3.0.0', collection_name='community.docker')
+            return
+
         # get default machine name from the url
         parsed_url = urlparse(result['docker_host'])
-        result['tls_hostname'] = parsed_url.netloc.rsplit(':', 1)[0]
+        if ':' in parsed_url.netloc:
+            result['tls_hostname'] = parsed_url.netloc[:parsed_url.netloc.rindex(':')]
+        else:
+            result['tls_hostname'] = parsed_url
 
 
 def compare_dict_allow_more_present(av, bv):

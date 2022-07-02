@@ -76,6 +76,9 @@ options:
 requirements:
   - jsondiff
   - pyyaml
+
+notes:
+  - Return values I(out) and I(err) have been deprecated and will be removed in community.docker 3.0.0. Use I(stdout) and I(stderr) instead.
 '''
 
 RETURN = '''
@@ -257,6 +260,7 @@ def main():
         if rc != 0:
             module.fail_json(msg="docker stack up deploy command failed",
                              rc=rc,
+                             out=out, err=err,  # Deprecated
                              stdout=out, stderr=err)
 
         before_after_differences = json_diff(before_stack_services,
@@ -290,10 +294,12 @@ def main():
             if rc != 0:
                 module.fail_json(msg="'docker stack down' command failed",
                                  rc=rc,
+                                 out=out, err=err,  # Deprecated
                                  stdout=out, stderr=err)
             else:
                 module.exit_json(changed=True,
                                  msg=out, rc=rc,
+                                 err=err,  # Deprecated
                                  stdout=out, stderr=err)
         module.exit_json(changed=False)
 

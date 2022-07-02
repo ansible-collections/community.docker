@@ -323,7 +323,10 @@ class AnsibleDockerClientBase(Client):
             use_ssh_client=self._get_value('use_ssh_client', params['use_ssh_client'], None, False),
         )
 
-        update_tls_hostname(result)
+        def depr(*args, **kwargs):
+            self.deprecate(*args, **kwargs)
+
+        update_tls_hostname(result, old_behavior=True, deprecate_function=depr, uses_tls=is_using_tls(result))
 
         return result
 
