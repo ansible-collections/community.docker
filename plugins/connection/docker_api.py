@@ -12,7 +12,7 @@ short_description: Run tasks in docker containers
 version_added: 1.1.0
 description:
     - Run commands or put/fetch files to an existing docker container.
-    - Uses Docker SDK for Python to interact directly with the Docker daemon instead of
+    - Uses the Requests library to interact directly with the Docker daemon instead of
       using the Docker CLI. Use the
       R(community.docker.docker,ansible_collections.community.docker.docker_connection)
       connection plugin if you want to use the Docker CLI.
@@ -64,9 +64,8 @@ options:
         type: integer
 
 extends_documentation_fragment:
-    - community.docker.docker
+    - community.docker.docker.api_documentation
     - community.docker.docker.var_names
-    - community.docker.docker.docker_py_1_documentation
 '''
 
 import io
@@ -80,23 +79,19 @@ from ansible.module_utils.common.text.converters import to_bytes, to_native, to_
 from ansible.plugins.connection import ConnectionBase
 from ansible.utils.display import Display
 
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     RequestException,
 )
 from ansible_collections.community.docker.plugins.plugin_utils.socket_handler import (
     DockerSocketHandler,
 )
-from ansible_collections.community.docker.plugins.plugin_utils.common import (
+from ansible_collections.community.docker.plugins.plugin_utils.common_api import (
     AnsibleDockerClient,
 )
 
-try:
-    from docker.errors import DockerException, APIError, NotFound
-except Exception:
-    # missing Docker SDK for Python handled in ansible_collections.community.docker.plugins.module_utils.common
-    pass
+from ansible_collections.community.docker.plugins.module_utils._api.constants import DEFAULT_DATA_CHUNK_SIZE
+from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException, NotFound
 
-MIN_DOCKER_PY = '1.7.0'
 MIN_DOCKER_API = None
 
 
@@ -154,7 +149,7 @@ class Connection(ConnectionBase):
                 self.actual_user or u'?'), host=self.get_option('remote_addr')
             )
             if self.client is None:
-                self.client = AnsibleDockerClient(self, min_docker_version=MIN_DOCKER_PY, min_docker_api_version=MIN_DOCKER_API)
+                self.client = AnsibleDockerClient(self, min_docker_api_version=MIN_DOCKER_API)
             self._connected = True
 
             if self.actual_user is None and display.verbosity > 2:
@@ -162,7 +157,7 @@ class Connection(ConnectionBase):
                 # Only do this if display verbosity is high enough that we'll need the value
                 # This saves overhead from calling into docker when we don't need to
                 display.vvv(u"Trying to determine actual user")
-                result = self._call_client(lambda: self.client.inspect_container(self.get_option('remote_addr')))
+                result = self._call_client(lambda: self.client.get_json('/containers/{0}/json', self.get_option('remote_addr')))
                 if result.get('Config'):
                     self.actual_user = result['Config'].get('User')
                     if self.actual_user is not None:
@@ -188,23 +183,29 @@ class Connection(ConnectionBase):
 
         need_stdin = True if (in_data is not None) or do_become else False
 
-        exec_data = self._call_client(lambda: self.client.exec_create(
-            self.get_option('remote_addr'),
-            command,
-            stdout=True,
-            stderr=True,
-            stdin=need_stdin,
-            user=self.get_option('remote_user') or '',
-            # workdir=None,  - only works for Docker SDK for Python 3.0.0 and later
-        ))
+        data = {
+            'Container': self.get_option('remote_addr'),
+            'User': self.get_option('remote_user') or '',
+            'Privileged': False,
+            'Tty': False,
+            'AttachStdin': need_stdin,
+            'AttachStdout': True,
+            'AttachStderr': True,
+            'Cmd': command,
+        }
+
+        if 'detachKeys' in self.client._general_configs:
+            data['detachKeys'] = self.client._general_configs['detachKeys']
+
+        exec_data = self._call_client(lambda: self.client.post_json_to_json('/containers/{0}/exec', self.get_option('remote_addr'), data=data))
         exec_id = exec_data['Id']
 
+        data = {
+            'Tty': False,
+            'Detach': False
+        }
         if need_stdin:
-            exec_socket = self._call_client(lambda: self.client.exec_start(
-                exec_id,
-                detach=False,
-                socket=True,
-            ))
+            exec_socket = self._call_client(lambda: self.client.post_json_to_stream_socket('/exec/{0}/start', exec_id, data=data))
             try:
                 with DockerSocketHandler(display, exec_socket, container=self.get_option('remote_addr')) as exec_socket_handler:
                     if do_become:
@@ -234,15 +235,10 @@ class Connection(ConnectionBase):
             finally:
                 exec_socket.close()
         else:
-            stdout, stderr = self._call_client(lambda: self.client.exec_start(
-                exec_id,
-                detach=False,
-                stream=False,
-                socket=False,
-                demux=True,
-            ))
+            stdout, stderr = self._call_client(lambda: self.client.post_json_to_stream(
+                '/exec/{0}/start', exec_id, stream=False, demux=True, tty=False, data=data))
 
-        result = self._call_client(lambda: self.client.exec_inspect(exec_id))
+        result = self._call_client(lambda: self.client.get_json('/exec/{0}/json', exec_id))
 
         return result.get('ExitCode') or 0, stdout or b'', stderr or b''
 
@@ -263,6 +259,15 @@ class Connection(ConnectionBase):
             if not remote_path.startswith(os.path.sep):
                 remote_path = os.path.join(os.path.sep, remote_path)
             return os.path.normpath(remote_path)
+
+    def _put_archive(self, container, path, data):
+        # data can also be file object for streaming. This is because _put uses requests's put().
+        # See https://2.python-requests.org/en/master/user/advanced/#streaming-uploads
+        # WARNING: might not work with all transports!
+        url = self.client._url('/containers/{0}/archive', container)
+        res = self.client._put(url, params={'path': path}, data=data)
+        self.client._raise_for_status(res)
+        return res.status_code == 200
 
     def put_file(self, in_path, out_path):
         """ Transfer a file from local to docker container """
@@ -313,14 +318,14 @@ class Connection(ConnectionBase):
                 tar.addfile(tarinfo, fileobj=f)
         data = bio.getvalue()
 
-        ok = self._call_client(lambda: self.client.put_archive(
-            self.get_option('remote_addr'),
-            out_dir,
-            data,  # can also be file object for streaming; this is only clear from the
-                   # implementation of put_archive(), which uses requests's put().
-                   # See https://2.python-requests.org/en/master/user/advanced/#streaming-uploads
-                   # WARNING: might not work with all transports!
-        ), not_found_can_be_resource=True)
+        ok = self._call_client(
+            lambda: self._put_archive(
+                self.get_option('remote_addr'),
+                out_dir,
+                data,
+            ),
+            not_found_can_be_resource=True,
+        )
         if not ok:
             raise AnsibleConnectionFailure(
                 'Unknown error while creating file "{0}" in container "{1}".'
@@ -343,10 +348,14 @@ class Connection(ConnectionBase):
             considered_in_paths.add(in_path)
 
             display.vvvv('FETCH: Fetching "%s"' % in_path, host=self.get_option('remote_addr'))
-            stream, stats = self._call_client(lambda: self.client.get_archive(
-                self.get_option('remote_addr'),
-                in_path,
-            ), not_found_can_be_resource=True)
+            stream = self._call_client(
+                lambda: self.client.get_raw_stream(
+                    '/containers/{0}/archive', self.get_option('remote_addr'),
+                    params={'path': in_path},
+                    headers={'Accept-Encoding': 'identity'},
+                ),
+                not_found_can_be_resource=True,
+            )
 
             # TODO: stream tar file instead of downloading it into a BytesIO
 
