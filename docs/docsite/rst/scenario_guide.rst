@@ -29,15 +29,7 @@ For Python 2.7, you need to use a version between 2.0.0 and 4.4.4 since the Pyth
 
     $ pip install 'docker==4.4.4'
 
-For Python 2.6, you need a version before 2.0.0. For these versions, the SDK was called ``docker-py``, so you need to install it as follows:
-
-.. code-block:: bash
-
-    $ pip install 'docker-py>=1.10.0'
-
-Please install only one of ``docker`` or ``docker-py``. Installing both will result in a broken installation. If this happens, Ansible will detect it and inform you about it. If that happens, you must uninstall both and reinstall the correct version.
-
-If in doubt, always install ``docker`` and never ``docker-py``.
+Note that the Docker SDK for Python was called ``docker-py`` on PyPi before version 2.0.0. Please avoid installing this really old version, and make sure to not install both ``docker`` and ``docker-py``. Installing both will result in a broken installation. If this happens, Ansible will detect it and inform you about it. If that happens, you must uninstall both and reinstall the correct version. If in doubt, always install ``docker`` and never ``docker-py``.
 
 
 Connecting to the Docker API
@@ -94,7 +86,7 @@ For plugins, they have to be set for the environment Ansible itself runs in. For
 
     DOCKER_API_VERSION
         The version of the Docker API running on the Docker Host. Defaults to the latest version of the API supported
-        by docker-py.
+        by Docker SDK for Python.
 
     DOCKER_TIMEOUT
         The maximum amount of time in seconds to wait on a response from the API.

@@ -16,11 +16,9 @@ Please note that Ansible 2.9 and ansible-base 2.10 are no longer supported. If y
 
 ## External requirements
 
-Most modules and plugins require the [Docker SDK for Python](https://pypi.org/project/docker/). For Python 2.6 support, use [the deprecated docker-py library](https://pypi.org/project/docker-py/) instead.
+Most modules and plugins require the [Docker SDK for Python](https://pypi.org/project/docker/) and Python 2.7 or newer. Python 2.6 is no longer supported; use community.docker 2.x.y if you need to use Python 2.6.
 
-Please note that Python 2.6 support has been deprecated and will be dropped from community.docker 3.0.0 on.
-
-Both libraries cannot be installed at the same time. If you accidentally did install them simultaneously, you have to uninstall *both* before re-installing one of them.
+If you have Docker SDK for Python < 2.0.0 installed ([docker-py](https://pypi.org/project/docker-py/)), you can still use it, though we recommend to uninstall it and then install [docker](https://pypi.org/project/docker/), the Docker SDK for Python >= 2.0.0. Note that both libraries cannot be installed at the same time. If you accidentally did install them simultaneously, you have to uninstall *both* before re-installing one of them.
 
 ## Included content
 

@@ -139,7 +139,7 @@ class DockerSocketHandlerBase(object):
 
     def select(self, timeout=None, _internal_recursion=False):
         if not _internal_recursion and self._paramiko_read_workaround and len(self._write_buffer) > 0:
-            # When the SSH transport is used, docker-py internally uses Paramiko, whose
+            # When the SSH transport is used, Docker SDK for Python internally uses Paramiko, whose
             # Channel object supports select(), but only for reading
             # (https://github.com/paramiko/paramiko/issues/695).
             if self._sock.send_ready():

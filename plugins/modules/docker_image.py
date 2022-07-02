@@ -213,7 +213,7 @@ extends_documentation_fragment:
 
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0 (use L(docker-py,https://pypi.org/project/docker-py/) for Python 2.6)"
+  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
   - "Docker API >= 1.20"
 
 author:
@@ -695,7 +695,7 @@ class ImageManager(DockerBaseClass):
             params['extra_hosts'] = self.extra_hosts
         if self.use_config_proxy:
             params['use_config_proxy'] = self.use_config_proxy
-            # Due to a bug in docker-py, it will crash if
+            # Due to a bug in Docker SDK for Python, it will crash if
             # use_config_proxy is True and buildargs is None
             if 'buildargs' not in params:
                 params['buildargs'] = {}
@@ -917,7 +917,7 @@ def main():
         client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 

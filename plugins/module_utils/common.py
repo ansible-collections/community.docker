@@ -71,8 +71,8 @@ except ImportError:
 try:
     from requests.exceptions import RequestException
 except ImportError:
-    # Either docker-py is no longer using requests, or docker-py isn't around either,
-    # or docker-py's dependency requests is missing. In any case, define an exception
+    # Either Docker SDK for Python is no longer using requests, or Docker SDK for Python isn't around either,
+    # or Docker SDK for Python's dependency requests is missing. In any case, define an exception
     # class RequestException so that our code doesn't break.
     class RequestException(Exception):
         pass
@@ -180,9 +180,7 @@ def get_connect_params(auth, fail_function):
 
 DOCKERPYUPGRADE_SWITCH_TO_DOCKER = "Try `pip uninstall docker-py` followed by `pip install docker`."
 DOCKERPYUPGRADE_UPGRADE_DOCKER = "Use `pip install --upgrade docker` to upgrade."
-DOCKERPYUPGRADE_RECOMMEND_DOCKER = ("Use `pip install --upgrade docker-py` to upgrade. "
-                                    "Hint: if you do not need Python 2.6 support, try "
-                                    "`pip uninstall docker-py` instead, followed by `pip install docker`.")
+DOCKERPYUPGRADE_RECOMMEND_DOCKER = "Use `pip install --upgrade docker-py` to upgrade."
 
 
 class AnsibleDockerClientBase(Client):
@@ -197,28 +195,22 @@ class AnsibleDockerClientBase(Client):
             self.fail("Cannot have both the docker-py and docker python modules (old and new version of Docker "
                       "SDK for Python) installed together as they use the same namespace and cause a corrupt "
                       "installation. Please uninstall both packages, and re-install only the docker-py or docker "
-                      "python module (for %s's Python %s). It is recommended to install the docker module if no "
-                      "support for Python 2.6 is required. Please note that simply uninstalling one of the modules "
-                      "can leave the other module in a broken state." % (platform.node(), sys.executable))
+                      "python module (for %s's Python %s). It is recommended to install the docker module. Please "
+                      "note that simply uninstalling one of the modules can leave the other module in a broken "
+                      "state." % (platform.node(), sys.executable))
 
         if not HAS_DOCKER_PY:
-            if NEEDS_DOCKER_PY2:
-                msg = missing_required_lib("Docker SDK for Python: docker above 5.0.0 (Python >= 3.6) or "
-                                           "docker before 5.0.0 (Python 2.7)")
-                msg = msg + ", for example via `pip install docker` (Python >= 3.6) or " \
-                    + "`pip install docker==4.4.4` (Python 2.7). The error was: %s"
-            else:
-                msg = missing_required_lib("Docker SDK for Python: docker above 5.0.0 (Python >= 3.6) or "
-                                           "docker before 5.0.0 (Python 2.7) or docker-py (Python 2.6)")
-                msg = msg + ", for example via `pip install docker` (Python >= 3.6) or `pip install docker==4.4.4` (Python 2.7) " \
-                    + "or `pip install docker-py` (Python 2.6). The error was: %s"
+            msg = missing_required_lib("Docker SDK for Python: docker>=5.0.0 (Python >= 3.6) or "
+                                       "docker<5.0.0 (Python 2.7)")
+            msg = msg + ", for example via `pip install docker` (Python >= 3.6) or " \
+                + "`pip install docker==4.4.4` (Python 2.7). The error was: %s"
             self.fail(msg % HAS_DOCKER_ERROR, exception=HAS_DOCKER_TRACEBACK)
 
         if self.docker_py_version < LooseVersion(min_docker_version):
             msg = "Error: Docker SDK for Python version is %s (%s's Python %s). Minimum version required is %s."
             if not NEEDS_DOCKER_PY2:
                 # The minimal required version is < 2.0 (and the current version as well).
-                # Advertise docker (instead of docker-py) for non-Python-2.6 users.
+                # Advertise docker (instead of docker-py).
                 msg += DOCKERPYUPGRADE_RECOMMEND_DOCKER
             elif docker_version < LooseVersion('2.0'):
                 msg += DOCKERPYUPGRADE_SWITCH_TO_DOCKER

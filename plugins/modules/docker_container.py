@@ -899,7 +899,7 @@ author:
   - "Felix Fontein (@felixfontein)"
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0 (use L(docker-py,https://pypi.org/project/docker-py/) for Python 2.6)"
+  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
   - "Docker API >= 1.20"
 '''
 
@@ -2030,7 +2030,7 @@ class TaskParameters(DockerBaseClass):
             target = mount['target']
             datatype = mount['type']
             mount_dict = dict(mount)
-            # Sanity checks (so we don't wait for docker-py to barf on input)
+            # Sanity checks (so we don't wait for Docker SDK for Python to barf on input)
             if mount_dict.get('source') is None and datatype not in ('tmpfs', 'volume'):
                 self.client.fail('source must be specified for mount "{0}" of type "{1}"'.format(target, datatype))
             mount_option_types = dict(
@@ -3674,7 +3674,7 @@ def main():
         client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 

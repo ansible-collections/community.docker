@@ -344,5 +344,5 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             )
         except RequestException as e:
             raise AnsibleError(
-                'An unexpected requests error occurred when docker-py tried to talk to the docker daemon: {0}'.format(e)
+                'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(e)
             )
