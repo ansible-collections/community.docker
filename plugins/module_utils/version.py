@@ -9,9 +9,15 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-# Once we drop support for Ansible 2.9, ansible-base 2.10, and ansible-core 2.11, we can
-# remove the _version.py file, and replace the following import by
-#
-#     from ansible.module_utils.compat.version import LooseVersion
+# Once we drop support for ansible-core 2.11, we can remove the try/except.
 
-from ._version import LooseVersion
+from ansible.module_utils.six import raise_from
+
+try:
+    from ansible.module_utils.compat.version import LooseVersion, StrictVersion
+except ImportError:
+    try:
+        from distutils.version import LooseVersion, StrictVersion
+    except ImportError as exc:
+        msg = 'To use this plugin or module with ansible-core 2.11, you need to use Python < 3.12 with distutils.version present'
+        raise_from(ImportError(msg), exc)

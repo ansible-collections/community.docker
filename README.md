@@ -14,6 +14,8 @@ Tested with the current Ansible 2.9, ansible-base 2.10, ansible-core 2.11, ansib
 
 Please note that support for Ansible 2.9 and ansible-base 2.10 has been deprecated and will be dropped from community.docker 3.0.0 on.
 
+This collection does not work with ansible-core before 2.12 (this includes ansible-base and Ansible 2.9) on Python 2.12+.
+
 ## External requirements
 
 Most modules and plugins require the [Docker SDK for Python](https://pypi.org/project/docker/). For Python 2.6 support, use [the deprecated docker-py library](https://pypi.org/project/docker-py/) instead.
