@@ -1,2 +1,0 @@
-minor_changes:
-  - "Move common utility functions from the ``common`` module_util to a new module_util called ``util``. This should not have any user-visible effect (https://github.com/ansible-collections/community.docker/pull/390)."

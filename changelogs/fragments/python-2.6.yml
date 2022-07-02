@@ -1,4 +1,0 @@
-deprecated_features:
-  - "Support for Python 2.6 is deprecated and will be removed in the next major release (community.docker 3.0.0).
-     Some modules might still work with Python 2.6, but we will no longer try to ensure compatibility
-     (https://github.com/ansible-collections/community.docker/pull/388)."

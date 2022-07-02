@@ -1,8 +1,0 @@
-deprecated_features:
-  - "Support for Docker API version 1.20 to 1.24 has been deprecated and will be removed in community.docker 3.0.0.
-     The first Docker version supporting API version 1.25 was Docker 1.13, released in January 2017.
-     This affects the modules ``docker_container``, ``docker_container_exec``, ``docker_container_info``, ``docker_compose``,
-     ``docker_login``, ``docker_image``, ``docker_image_info``, ``docker_image_load``, ``docker_host_info``, ``docker_network``,
-     ``docker_network_info``, ``docker_node_info``, ``docker_swarm_info``, ``docker_swarm_service``, ``docker_swarm_service_info``,
-     ``docker_volume_info``, and ``docker_volume``, whose minimally supported API version
-     is between 1.20 and 1.24 (https://github.com/ansible-collections/community.docker/pull/396)."
