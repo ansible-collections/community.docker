@@ -1,0 +1,2 @@
+removed_features:
+  - Support for Ansible 2.9 and ansible-base 2.10 has been removed (https://github.com/ansible-collections/community.docker/pull/400).
