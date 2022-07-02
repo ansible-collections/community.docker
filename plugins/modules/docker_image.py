@@ -117,7 +117,6 @@ options:
           - If set to C(yes) and a proxy configuration is specified in the docker client configuration
             (by default C($HOME/.docker/config.json)), the corresponding environment variables will
             be set in the container being built.
-          - Needs Docker SDK for Python >= 3.7.0.
         type: bool
       target:
         description:
@@ -207,12 +206,10 @@ options:
     default: latest
 
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
+  - community.docker.docker.api_documentation
 
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
   - "Docker API >= 1.25"
 
 author:
@@ -324,13 +321,15 @@ stdout:
 '''
 
 import errno
+import json
 import os
 import traceback
 
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible.module_utils.common.text.converters import to_native
+
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
-    docker_version,
 )
 from ansible_collections.community.docker.plugins.module_utils.util import (
     clean_dict_booleans_for_docker_api,
@@ -338,21 +337,25 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     is_image_name_id,
     is_valid_tag,
 )
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
-if docker_version is not None:
-    try:
-        if LooseVersion(docker_version) >= LooseVersion('2.0.0'):
-            from docker.auth import resolve_repository_name
-        else:
-            from docker.auth.auth import resolve_repository_name
-        from docker.utils.utils import parse_repository_tag
-        from docker.errors import DockerException, NotFound
-    except ImportError:
-        # missing Docker SDK for Python handled in module_utils.docker.common
-        pass
+from ansible_collections.community.docker.plugins.module_utils._api.auth import (
+    get_config_header,
+    resolve_repository_name,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.constants import (
+    DEFAULT_DATA_CHUNK_SIZE,
+    CONTAINER_LIMITS_KEYS,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException, NotFound
+from ansible_collections.community.docker.plugins.module_utils._api.utils.build import (
+    process_dockerfile,
+    tar,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
+    format_extra_hosts,
+    parse_repository_tag,
+)
 
 
 class ImageManager(DockerBaseClass):
@@ -501,7 +504,7 @@ class ImageManager(DockerBaseClass):
         if image:
             if not self.check_mode:
                 try:
-                    self.client.remove_image(name, force=self.force_absent)
+                    self.client.delete_json('/images/{0}', name, params={'force': self.force_absent})
                 except NotFound:
                     # If the image vanished while we were trying to remove it, don't fail
                     pass
@@ -539,18 +542,18 @@ class ImageManager(DockerBaseClass):
         if not self.check_mode:
             self.log("Getting archive of image %s" % image_name)
             try:
-                saved_image = self.client.get_image(image_name)
+                saved_image = self.client._stream_raw_result(
+                    self.client._get(self.client._url('/images/{0}/get', image_name), stream=True),
+                    DEFAULT_DATA_CHUNK_SIZE,
+                    False,
+                )
             except Exception as exc:
                 self.fail("Error getting image %s - %s" % (image_name, to_native(exc)))
 
             try:
                 with open(self.archive_path, 'wb') as fd:
-                    if self.client.docker_py_version >= LooseVersion('3.0.0'):
-                        for chunk in saved_image:
-                            fd.write(chunk)
-                    else:
-                        for chunk in saved_image.stream(2048, decode_content=False):
-                            fd.write(chunk)
+                    for chunk in saved_image:
+                        fd.write(chunk)
             except Exception as exc:
                 self.fail("Error writing image archive %s - %s" % (self.archive_path, to_native(exc)))
 
@@ -583,7 +586,24 @@ class ImageManager(DockerBaseClass):
                 status = None
                 try:
                     changed = False
-                    for line in self.client.push(repository, tag=tag, stream=True, decode=True):
+
+                    push_repository, push_tag = repository, tag
+                    if not push_tag:
+                        push_repository, push_tag = parse_repository_tag(push_repository)
+                    push_registry, dummy = resolve_repository_name(push_repository)
+                    headers = {}
+                    header = get_config_header(self.client, push_registry)
+                    if header:
+                        headers['X-Registry-Auth'] = header
+                    response = self.client._post_json(
+                        self.client._url("/images/{0}/push", push_repository),
+                        data=None,
+                        headers=headers,
+                        stream=True,
+                        params={'tag': push_tag},
+                    )
+                    self.client._raise_for_status(response)
+                    for line in self.client._stream_helper(response, decode=True):
                         self.log(line, pretty_print=True)
                         if line.get('errorDetail'):
                             raise Exception(line['errorDetail']['message'])
@@ -635,8 +655,14 @@ class ImageManager(DockerBaseClass):
                 try:
                     # Finding the image does not always work, especially running a localhost registry. In those
                     # cases, if we don't set force=True, it errors.
-                    tag_status = self.client.tag(image_name, repo, tag=repo_tag, force=True)
-                    if not tag_status:
+                    params = {
+                        'tag': repo_tag,
+                        'repo': repo,
+                        'force': True,
+                    }
+                    res = self.client._post(self.client._url('/images/{0}/tag', image_name), params=params)
+                    self.client._raise_for_status(res)
+                    if res.status_code != 201:
                         raise Exception("Tag operation failed.")
                 except Exception as exc:
                     self.fail("Error: failed to tag image - %s" % to_native(exc))
@@ -664,47 +690,88 @@ class ImageManager(DockerBaseClass):
 
         :return: image dict
         '''
-        params = dict(
-            path=self.build_path,
-            tag=self.name,
-            rm=self.rm,
-            nocache=self.nocache,
-            timeout=self.http_timeout,
-            pull=self.pull,
-            forcerm=self.rm,
-            dockerfile=self.dockerfile,
-            decode=True,
-        )
-        if self.client.docker_py_version < LooseVersion('3.0.0'):
-            params['stream'] = True
-
-        if self.tag:
-            params['tag'] = "%s:%s" % (self.name, self.tag)
-        if self.container_limits:
-            params['container_limits'] = self.container_limits
+        remote = context = None
+        headers = {}
+        buildargs = {}
         if self.buildargs:
             for key, value in self.buildargs.items():
                 self.buildargs[key] = to_native(value)
-            params['buildargs'] = self.buildargs
-        if self.cache_from:
-            params['cache_from'] = self.cache_from
-        if self.network:
-            params['network_mode'] = self.network
-        if self.extra_hosts:
-            params['extra_hosts'] = self.extra_hosts
+
+        container_limits = self.container_limits or {}
+        for key in container_limits.keys():
+            if key not in CONTAINER_LIMITS_KEYS:
+                raise DockerException('Invalid container_limits key {key}'.format(key=key))
+
+        dockerfile = self.dockerfile
+        if self.build_path.startswith(('http://', 'https://', 'git://', 'github.com/', 'git@')):
+            remote = self.build_path
+        elif not os.path.isdir(self.build_path):
+            raise TypeError("You must specify a directory to build in path")
+        else:
+            dockerignore = os.path.join(self.build_path, '.dockerignore')
+            exclude = None
+            if os.path.exists(dockerignore):
+                with open(dockerignore) as f:
+                    exclude = list(filter(
+                        lambda x: x != '' and x[0] != '#',
+                        [line.strip() for line in f.read().splitlines()]
+                    ))
+            dockerfile = process_dockerfile(dockerfile, self.build_path)
+            context = tar(self.build_path, exclude=exclude, dockerfile=dockerfile, gzip=False)
+
+        params = {
+            't': "%s:%s" % (self.name, self.tag) if self.tag else self.name,
+            'remote': remote,
+            'q': False,
+            'nocache': self.nocache,
+            'rm': self.rm,
+            'forcerm': self.rm,
+            'pull': self.pull,
+            'dockerfile': dockerfile,
+        }
+        params.update(container_limits)
+
         if self.use_config_proxy:
-            params['use_config_proxy'] = self.use_config_proxy
-            # Due to a bug in Docker SDK for Python, it will crash if
-            # use_config_proxy is True and buildargs is None
-            if 'buildargs' not in params:
-                params['buildargs'] = {}
+            proxy_args = self.client._proxy_configs.get_environment()
+            for k, v in proxy_args.items():
+                buildargs.setdefault(k, v)
+        if buildargs:
+            params.update({'buildargs': json.dumps(buildargs)})
+
+        if self.cache_from:
+            params.update({'cachefrom': json.dumps(self.cache_from)})
+
         if self.target:
-            params['target'] = self.target
+            params.update({'target': self.target})
+
+        if self.network:
+            params.update({'networkmode': self.network})
+
+        if self.extra_hosts is not None:
+            params.update({'extrahosts': format_extra_hosts(self.extra_hosts)})
+
         if self.build_platform is not None:
             params['platform'] = self.build_platform
 
+        if context is not None:
+            headers['Content-Type'] = 'application/tar'
+
+        self.client._set_auth_headers(headers)
+
+        response = self.client._post(
+            self.client._url('/build'),
+            data=context,
+            params=params,
+            headers=headers,
+            stream=True,
+            timeout=self.http_timeout,
+        )
+
+        if context is not None:
+            context.close()
+
         build_output = []
-        for line in self.client.build(**params):
+        for line in self.client._stream_helper(response, decode=True):
             # line = json.loads(line)
             self.log(line, pretty_print=True)
             self._extract_output_line(line, build_output)
@@ -722,8 +789,10 @@ class ImageManager(DockerBaseClass):
                     self.fail("Error building %s - message: %s, logs: %s" % (
                         self.name, line.get('error'), build_output))
 
-        return {"stdout": "\n".join(build_output),
-                "image": self.client.find_image(name=self.name, tag=self.tag)}
+        return {
+            "stdout": "\n".join(build_output),
+            "image": self.client.find_image(name=self.name, tag=self.tag),
+        }
 
     def load_image(self):
         '''
@@ -738,34 +807,20 @@ class ImageManager(DockerBaseClass):
             self.log("Opening image %s" % self.load_path)
             with open(self.load_path, 'rb') as image_tar:
                 self.log("Loading image from %s" % self.load_path)
-                output = self.client.load_image(image_tar)
-                if output is not None:
-                    # Old versions of Docker SDK of Python (before version 2.5.0) do not return anything.
-                    # (See https://github.com/docker/docker-py/commit/7139e2d8f1ea82340417add02090bfaf7794f159)
-                    # Note that before that commit, something else than None was returned, but that was also
-                    # only introduced in a commit that first appeared in 2.5.0 (see
-                    # https://github.com/docker/docker-py/commit/9e793806ff79559c3bc591d8c52a3bbe3cdb7350).
-                    # So the above check works for every released version of Docker SDK for Python.
+                res = self.client._post(self.client._url("/images/load"), data=image_tar, stream=True)
+                if LooseVersion(self.client.api_version) >= LooseVersion('1.23'):
                     has_output = True
-                    for line in output:
+                    for line in self.client._stream_helper(res, decode=True):
                         self.log(line, pretty_print=True)
                         self._extract_output_line(line, load_output)
                 else:
-                    if LooseVersion(docker_version) < LooseVersion('2.5.0'):
-                        self.client.module.warn(
-                            'The installed version of the Docker SDK for Python does not return the loading results'
-                            ' from the Docker daemon. Therefore, we cannot verify whether the expected image was'
-                            ' loaded, whether multiple images where loaded, or whether the load actually succeeded.'
-                            ' If you are not stuck with Python 2.6, *please* upgrade to a version newer than 2.5.0'
-                            ' (2.5.0 was released in August 2017).'
-                        )
-                    else:
-                        self.client.module.warn(
-                            'The API version of your Docker daemon is < 1.23, which does not return the image'
-                            ' loading result from the Docker daemon. Therefore, we cannot verify whether the'
-                            ' expected image was loaded, whether multiple images where loaded, or whether the load'
-                            ' actually succeeded. You should consider upgrading your Docker daemon.'
-                        )
+                    self.client._raise_for_status(res)
+                    self.client.module.warn(
+                        'The API version of your Docker daemon is < 1.23, which does not return the image'
+                        ' loading result from the Docker daemon. Therefore, we cannot verify whether the'
+                        ' expected image was loaded, whether multiple images where loaded, or whether the load'
+                        ' actually succeeded. You should consider upgrading your Docker daemon.'
+                    )
         except EnvironmentError as exc:
             if exc.errno == errno.ENOENT:
                 self.client.fail("Error opening image %s - %s" % (self.load_path, to_native(exc)))
@@ -857,18 +912,6 @@ def main():
         ('source', 'load', ['load_path']),
     ]
 
-    def detect_build_cache_from(client):
-        return client.module.params['build'] and client.module.params['build'].get('cache_from') is not None
-
-    def detect_build_network(client):
-        return client.module.params['build'] and client.module.params['build'].get('network') is not None
-
-    def detect_build_target(client):
-        return client.module.params['build'] and client.module.params['build'].get('target') is not None
-
-    def detect_use_config_proxy(client):
-        return client.module.params['build'] and client.module.params['build'].get('use_config_proxy') is not None
-
     def detect_etc_hosts(client):
         return client.module.params['build'] and bool(client.module.params['build'].get('etc_hosts'))
 
@@ -879,19 +922,14 @@ def main():
         return client.module.params['pull'] and client.module.params['pull'].get('platform') is not None
 
     option_minimal_versions = dict()
-    option_minimal_versions["build.cache_from"] = dict(docker_py_version='2.1.0', detect_usage=detect_build_cache_from)
-    option_minimal_versions["build.network"] = dict(docker_py_version='2.4.0', detect_usage=detect_build_network)
-    option_minimal_versions["build.target"] = dict(docker_py_version='2.4.0', detect_usage=detect_build_target)
-    option_minimal_versions["build.use_config_proxy"] = dict(docker_py_version='3.7.0', detect_usage=detect_use_config_proxy)
-    option_minimal_versions["build.etc_hosts"] = dict(docker_py_version='2.6.0', docker_api_version='1.27', detect_usage=detect_etc_hosts)
-    option_minimal_versions["build.platform"] = dict(docker_py_version='3.0.0', docker_api_version='1.32', detect_usage=detect_build_platform)
-    option_minimal_versions["pull.platform"] = dict(docker_py_version='3.0.0', docker_api_version='1.32', detect_usage=detect_pull_platform)
+    option_minimal_versions["build.etc_hosts"] = dict(docker_api_version='1.27', detect_usage=detect_etc_hosts)
+    option_minimal_versions["build.platform"] = dict(docker_api_version='1.32', detect_usage=detect_build_platform)
+    option_minimal_versions["pull.platform"] = dict(docker_api_version='1.32', detect_usage=detect_pull_platform)
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         required_if=required_if,
         supports_check_mode=True,
-        min_docker_version='1.8.0',
         option_minimal_versions=option_minimal_versions,
     )
 
