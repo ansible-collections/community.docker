@@ -151,6 +151,7 @@ import shlex
 import traceback
 
 from ansible.module_utils.common.text.converters import to_text, to_bytes, to_native
+from ansible.module_utils.compat import selectors
 from ansible.module_utils.six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.common import (
@@ -164,7 +165,6 @@ from ansible_collections.community.docker.plugins.module_utils.socket_helper imp
 )
 
 from ansible_collections.community.docker.plugins.module_utils.socket_handler import (
-    find_selectors,
     DockerSocketHandlerModule,
 )
 
@@ -230,10 +230,6 @@ def main():
 
     if stdin is not None and client.module.params['stdin_add_newline']:
         stdin += '\n'
-
-    selectors = None
-    if stdin and not detach:
-        selectors = find_selectors(client.module)
 
     try:
         kwargs = {}
