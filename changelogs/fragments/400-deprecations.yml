@@ -1,2 +1,3 @@
 removed_features:
   - Support for Ansible 2.9 and ansible-base 2.10 has been removed (https://github.com/ansible-collections/community.docker/pull/400).
+  - Execution Environments built with community.docker no longer include docker-compose < 2.0.0. If you need to use it with the ``docker_compose`` module, please install that requirement manually (https://github.com/ansible-collections/community.docker/pull/400).
