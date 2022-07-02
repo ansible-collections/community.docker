@@ -32,7 +32,7 @@
       images: yes
       networks: yes
       volumes: yes
-      builder_cache: "{{ docker_py_version is version('3.3.0', '>=') }}"
+      builder_cache: yes
     register: result
 
   # Analyze result
@@ -50,8 +50,7 @@
       - volume.volume.Name in result.volumes
       - "'volumes_space_reclaimed' in result"
       # builder_cache
-      - "'builder_cache_space_reclaimed' in result or docker_py_version is version('3.3.0', '<')"
-      - "'builder_cache_space_reclaimed' not in result or docker_py_version is version('3.3.0', '>=')"
+      - "'builder_cache_space_reclaimed' in result"
 
   # Test with filters
   - docker_prune:
@@ -62,7 +61,7 @@
 
   - debug: var=result
 
-  when: docker_py_version is version('2.1.0', '>=') and docker_api_version is version('1.25', '>=')
+  when: docker_api_version is version('1.25', '>=')
 
 - fail: msg="Too old docker / docker-py version to run docker_prune tests!"
-  when: not(docker_py_version is version('2.1.0', '>=') and docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)
+  when: not(docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)

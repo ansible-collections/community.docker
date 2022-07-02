@@ -1,0 +1,4 @@
+major_changes:
+  - "docker_prune - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed,
+     and depending on the features used has some more requirements. If the Docker SDK for Python is installed,
+     these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/410)."
