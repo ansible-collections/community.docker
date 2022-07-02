@@ -252,7 +252,7 @@ def main():
             client.module.exit_json(changed=True, exec_id=exec_id)
 
         else:
-            if selectors:
+            if stdin and not detach:
                 exec_socket = client.exec_start(
                     exec_id,
                     tty=tty,
