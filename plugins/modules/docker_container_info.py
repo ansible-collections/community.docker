@@ -27,8 +27,7 @@ options:
     type: str
     required: yes
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
+- community.docker.docker.api_documentation
 
 
 author:
@@ -106,16 +105,11 @@ import traceback
 
 from ansible.module_utils.common.text.converters import to_native
 
-try:
-    from docker.errors import DockerException
-except ImportError:
-    # missing Docker SDK for Python handled in ansible.module_utils.docker.common
-    pass
-
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
+from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
 
 
 def main():
