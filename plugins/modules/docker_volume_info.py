@@ -112,10 +112,10 @@ def main():
             volume=volume,
         )
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 
