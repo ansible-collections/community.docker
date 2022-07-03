@@ -10,7 +10,15 @@ import os
 import os.path
 import socket as pysocket
 
-from ansible.module_utils.six import PY3
+from ansible.module_utils.six import PY2
+
+
+def make_file_unblocking(file):
+    fcntl.fcntl(file.fileno(), fcntl.F_SETFL, fcntl.fcntl(file.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK)
+
+
+def make_file_blocking(file):
+    fcntl.fcntl(file.fileno(), fcntl.F_SETFL, fcntl.fcntl(file.fileno(), fcntl.F_GETFL) & ~os.O_NONBLOCK)
 
 
 def make_unblocking(sock):
@@ -19,7 +27,7 @@ def make_unblocking(sock):
     elif hasattr(sock, 'setblocking'):
         sock.setblocking(0)
     else:
-        fcntl.fcntl(sock.fileno(), fcntl.F_SETFL, fcntl.fcntl(sock.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK)
+        make_file_unblocking(sock)
 
 
 def _empty_writer(msg):
@@ -36,7 +44,7 @@ def shutdown_writing(sock, log=_empty_writer):
             # probably: "TypeError: shutdown() takes 1 positional argument but 2 were given"
             log('Shutting down for writing not possible; trying shutdown instead: {0}'.format(e))
             sock.shutdown()
-    elif PY3 and isinstance(sock, getattr(pysocket, 'SocketIO')):
+    elif not PY2 and isinstance(sock, getattr(pysocket, 'SocketIO')):
         sock._sock.shutdown(pysocket.SHUT_WR)
     else:
         log('No idea how to signal end of writing')

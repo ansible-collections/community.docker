@@ -1,0 +1,2 @@
+minor_changes:
+  - "socker_handler and socket_helper module utils - improve Python forward compatibilty, create helper functions for file blocking/unblocking (https://github.com/ansible-collections/community.docker/pull/415)."
