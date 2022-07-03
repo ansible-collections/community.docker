@@ -341,7 +341,7 @@ def _preprocess_links(module, api_version, value):
 OPTIONS = [
     OptionGroup()
     .add_option('auto_remove', type='bool')
-    .add_docker_api(DockerAPIEngine.host_config_value('AutoRemove', min_docker_api='1.25')),
+    .add_docker_api(DockerAPIEngine.host_config_value('AutoRemove')),
 
     OptionGroup()
     .add_option('blkio_weight', type='int')
@@ -389,7 +389,7 @@ OPTIONS = [
 
     OptionGroup()
     .add_option('cpus', type='int', ansible_type='float')
-    .add_docker_api(DockerAPIEngine.host_config_value('NanoCpus', min_docker_api='1.25', preprocess_value=_preprocess_cpus)),
+    .add_docker_api(DockerAPIEngine.host_config_value('NanoCpus', preprocess_value=_preprocess_cpus)),
 
     OptionGroup()
     .add_option('devices', type='set', elements='str')
@@ -400,28 +400,28 @@ OPTIONS = [
         path=dict(required=True, type='str'),
         rate=dict(required=True, type='str'),
     ))
-    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceReadBps', min_docker_api='1.22', preprocess_value=partial(_preprocess_rate_bps, name='device_read_bps'))),
+    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceReadBps', preprocess_value=partial(_preprocess_rate_bps, name='device_read_bps'))),
 
     OptionGroup()
     .add_option('device_write_bps', type='set', elements='dict', ansible_suboptions=dict(
         path=dict(required=True, type='str'),
         rate=dict(required=True, type='str'),
     ))
-    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceWriteBps', min_docker_api='1.22', preprocess_value=partial(_preprocess_rate_bps, name='device_write_bps'))),
+    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceWriteBps', preprocess_value=partial(_preprocess_rate_bps, name='device_write_bps'))),
 
     OptionGroup()
     .add_option('device_read_iops', type='set', elements='dict', ansible_suboptions=dict(
         path=dict(required=True, type='str'),
         rate=dict(required=True, type='int'),
     ))
-    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceReadIOps', min_docker_api='1.22', preprocess_value=partial(_preprocess_rate_iops, name='device_read_iops'))),
+    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceReadIOps', preprocess_value=partial(_preprocess_rate_iops, name='device_read_iops'))),
 
     OptionGroup()
     .add_option('device_write_iops', type='set', elements='dict', ansible_suboptions=dict(
         path=dict(required=True, type='str'),
         rate=dict(required=True, type='int'),
     ))
-    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceWriteIOps', min_docker_api='1.22', preprocess_value=partial(_preprocess_rate_iops, name='device_write_iops'))),
+    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceWriteIOps', preprocess_value=partial(_preprocess_rate_iops, name='device_write_iops'))),
 
     OptionGroup()
     .add_option('device_requests', type='set', elements='dict', ansible_suboptions=dict(
@@ -439,7 +439,7 @@ OPTIONS = [
 
     OptionGroup()
     .add_option('dns_opts', type='set', elements='str')
-    .add_docker_api(DockerAPIEngine.host_config_value('DnsOptions', min_docker_api='1.21')),
+    .add_docker_api(DockerAPIEngine.host_config_value('DnsOptions'),
 
     OptionGroup()
     .add_option('dns_search_domains', type='list', elements='str')
@@ -465,7 +465,7 @@ OPTIONS = [
         start_period=dict(type='str'),
         retries=dict(type='int'),
     ))
-    .add_docker_api(DockerAPIEngine.config_value('GroupAdd', min_docker_api='1.24', preprocess_value=_preprocess_healthcheck, postprocess_for_get=_postprocess_healthcheck_get_value)),
+    .add_docker_api(DockerAPIEngine.config_value('GroupAdd', preprocess_value=_preprocess_healthcheck, postprocess_for_get=_postprocess_healthcheck_get_value)),
 
     OptionGroup()
     .add_option('hostname', type='str')
@@ -473,7 +473,7 @@ OPTIONS = [
 
     OptionGroup()
     .add_option('init', type='bool')
-    .add_docker_api(DockerAPIEngine.host_config_value('Init', min_docker_api='1.25')),
+    .add_docker_api(DockerAPIEngine.host_config_value('Init')),
 
     OptionGroup()
     .add_option('interactive', type='bool')
@@ -481,7 +481,7 @@ OPTIONS = [
 
     OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='kernel_memory'))
     .add_option('kernel_memory', type='int', ansible_type='str')
-    .add_docker_api(DockerAPIEngine.host_config_value('KernelMemory', min_docker_api='1.21')),
+    .add_docker_api(DockerAPIEngine.host_config_value('KernelMemory')),
 
     OptionGroup()
     .add_option('links', type='set', elements='list', ansible_elements='str')
@@ -493,7 +493,7 @@ OPTIONS = [
 
     OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='memory_reservation'))
     .add_option('memory_reservation', type='int', ansible_type='str')
-    .add_docker_api(DockerAPIEngine.host_config_value('MemoryReservation', min_docker_api='1.21')),
+    .add_docker_api(DockerAPIEngine.host_config_value('MemoryReservation')),
 
     OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='memory_swap', unlimited_value=-1))
     .add_option('memory_swap', type='int', ansible_type='str')
@@ -539,7 +539,6 @@ OPTIONS = [
 #        mac_address=config.get('MacAddress', network.get('MacAddress')),
 #
 #         mac_address=dict(type='str'),
-#             mac_address=dict(docker_api_version='1.25'),
 
 # REQUIRES_CONVERSION_TO_BYTES = [
 #    'shm_size'
@@ -604,34 +603,6 @@ OPTIONS = [
 #         volumes=dict(type='list', elements='str'),
 #         volumes_from=dict(type='list', elements='str'),
 #         working_dir=dict(type='str'),
-#
-#             # normal options
-#             ipc_mode=dict(docker_api_version='1.25'),
-#             oom_score_adj=dict(docker_api_version='1.22'),
-#             shm_size=dict(docker_api_version='1.22'),
-#             stop_signal=dict(docker_api_version='1.21'),
-#             tmpfs=dict(docker_api_version='1.22'),
-#             volume_driver=dict(docker_api_version='1.21'),
-#             runtime=dict(docker_py_version='2.4.0', docker_api_version='1.25'),
-#             sysctls=dict(docker_py_version='1.10.0', docker_api_version='1.24'),
-#             userns_mode=dict(docker_py_version='1.10.0', docker_api_version='1.23'),
-#             uts=dict(docker_py_version='3.5.0', docker_api_version='1.25'),
-#             pids_limit=dict(docker_py_version='1.10.0', docker_api_version='1.23'),
-#             mounts=dict(docker_py_version='2.6.0', docker_api_version='1.25'),
-#             storage_opts=dict(docker_py_version='2.1.0', docker_api_version='1.24'),
-#             # specials
-#             ipvX_address_supported=dict(docker_py_version='1.9.0', docker_api_version='1.22',
-#                                         detect_usage=detect_ipvX_address_usage,
-#                                         usage_msg='ipv4_address or ipv6_address in networks'),
-#         stop_timeout_supported = self.docker_api_version >= LooseVersion('1.25')
-#         stop_timeout_needed_for_update = self.module.params.get("stop_timeout") is not None and self.module.params.get('state') != 'absent'
-#         if not stop_timeout_supported:
-#             if stop_timeout_needed_for_update and not stop_timeout_supported:
-#                 # We warn (instead of fail) since in older versions, stop_timeout was not used
-#                 # to update the container's configuration, but only when stopping a container.
-#                 self.module.warn("Docker API version is %s. Minimum version required is 1.25 to set or "
-#                                  "update the container's stop_timeout configuration." % (self.docker_api_version_str,))
-#         self.option_minimal_versions['stop_timeout']['supported'] = stop_timeout_supported
 #
 #         explicit_types = dict(
 #             env='set',
