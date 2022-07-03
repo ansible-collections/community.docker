@@ -12,8 +12,8 @@ short_description: Run tasks in docker containers
 version_added: 1.1.0
 description:
     - Run commands or put/fetch files to an existing docker container.
-    - Uses the Requests library to interact directly with the Docker daemon instead of
-      using the Docker CLI. Use the
+    - Uses the L(requests library,https://pypi.org/project/requests/) to interact
+      directly with the Docker daemon instead of using the Docker CLI. Use the
       R(community.docker.docker,ansible_collections.community.docker.docker_connection)
       connection plugin if you want to use the Docker CLI.
 options:
