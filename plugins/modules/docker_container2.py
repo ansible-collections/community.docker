@@ -1260,6 +1260,7 @@ def main():
         keep_volumes=dict(type='bool', default=True),
         kill_signal=dict(type='str'),
         name=dict(type='str', required=True),
+        networks_cli_compatible=dict(type='bool', default=True),
         pull=dict(type='bool', default=False),
         recreate=dict(type='bool', default=False),
         restart=dict(type='bool', default=False),
@@ -1275,7 +1276,12 @@ def main():
     ]
     required_by = {}
 
+    option_minimal_versions = {}
+
     for options in OPTIONS:
+        if not options.supports_engine('docker_api'):
+            continue
+
         mutually_exclusive.extend(options.ansible_mutually_exclusive)
         required_together.extend(options.ansible_required_together)
         required_one_of.extend(options.ansible_required_one_of)
@@ -1283,13 +1289,19 @@ def main():
         required_by.update(options.ansible_required_by)
         argument_spec.update(options.argument_spec)
 
-    client = AnsibleDockerClientContainer(
+        engine = options.get_engine('docker_api')
+        if engine.min_docker_api is not None:
+            for option in options.options:
+                option_minimal_versions[option.name] = {'docker_api_version': engine.min_docker_api}
+
+    client = AnsibleDockerClient(
         argument_spec=argument_spec,
         mutually_exclusive=mutually_exclusive,
         required_together=required_together,
         required_one_of=required_one_of,
         required_if=required_if,
         required_by=required_by,
+        option_minimal_versions=option_minimal_versions,
         supports_check_mode=True,
     )
     if client.module.params['networks_cli_compatible'] is True and client.module.params['networks'] and client.module.params['network_mode'] is None:

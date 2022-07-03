@@ -18,7 +18,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
 def _get_ansible_type(type):
     if type == 'set':
         return 'list'
-    if type not in ('list', 'dict', 'int', 'float', 'str'):
+    if type not in ('list', 'dict', 'bool', 'int', 'float', 'str'):
         raise Exception('Invalid type "%s"' % (type, ))
     return type
 
@@ -78,7 +78,7 @@ class OptionGroup(object):
         self.ansible_required_together = ansible_required_together or []
         self.ansible_required_one_of = ansible_required_one_of or []
         self.ansible_required_if = ansible_required_if or []
-        self.ansible_required_by = ansible_required_by of {}
+        self.ansible_required_by = ansible_required_by or {}
         self.argument_spec = {}
 
     def add_option(self, *args, **kwargs):
@@ -91,10 +91,16 @@ class OptionGroup(object):
             ansible_option['elements'] = option.ansible_elements
         if option.ansible_suboptions is not None:
             ansible_option['options'] = option.ansible_suboptions
-        if options.ansible_aliases:
+        if option.ansible_aliases:
             ansible_option['aliases'] = option.ansible_aliases
         self.argument_spec[option.name] = ansible_option
         return self
+
+    def supports_engine(self, engine_name):
+        return engine_name in self.engines
+
+    def get_engine(self, engine_name):
+        return self.engines[engine_name]
 
     def add_docker_api(self, docker_api):
         self.engines['docker_api'] = docker_api
@@ -175,7 +181,7 @@ class DockerAPIEngine(object):
                 value = values[options[0].name]
                 if preprocess_for_set:
                     value = preprocess_for_set(module, api_version, value)
-                data[update_paramete] = value
+                data[update_parameter] = value
 
         return cls(get_value=get_value, preprocess_value=preprocess_value_, set_value=set_value, min_docker_api=min_docker_api, update_value=update_value)
 
@@ -228,7 +234,7 @@ class DockerAPIEngine(object):
                 value = values[options[0].name]
                 if preprocess_for_set:
                     value = preprocess_for_set(module, api_version, value)
-                data[update_paramete] = value
+                data[update_parameter] = value
 
         return cls(get_value=get_value, preprocess_value=preprocess_value_, set_value=set_value, min_docker_api=min_docker_api, update_value=update_value)
 
@@ -344,7 +350,7 @@ def _preprocess_etc_hosts(module, api_version, value):
         return value
     results = []
     for key, value in value.items():
-        results.append("%s%s%s" % (key, ':', value))
+        results.append('%s%s%s' % (key, ':', value))
     return results
 
 
@@ -380,9 +386,9 @@ def _preprocess_convert_to_bytes(module, values, name, unlimited_value=None):
             value = unlimited_value
         else:
             value = human_to_bytes(value)
-        values[name] = 
+        values[name] = value
     except ValueError as exc:
-        self.fail("Failed to convert %s to bytes: %s" % (name, to_native(exc)))
+        module.fail_json(msg='Failed to convert %s to bytes: %s' % (name, to_native(exc)))
 
 
 def _preprocess_links(module, api_version, value):
@@ -396,7 +402,7 @@ def _preprocess_links(module, api_version, value):
             link, alias = parsed_link
         else:
             link, alias = parsed_link[0], parsed_link[0]
-        result.append("/%s:/%s/%s" % (link, module.params['name'], alias))
+        result.append('/%s:/%s/%s' % (link, module.params['name'], alias))
 
     return result
 
@@ -502,7 +508,7 @@ OPTIONS = [
 
     OptionGroup()
     .add_option('dns_opts', type='set', elements='str')
-    .add_docker_api(DockerAPIEngine.host_config_value('DnsOptions'),
+    .add_docker_api(DockerAPIEngine.host_config_value('DnsOptions')),
 
     OptionGroup()
     .add_option('dns_search_domains', type='list', elements='str')
@@ -548,7 +554,7 @@ OPTIONS = [
 
     OptionGroup()
     .add_option('links', type='set', elements='list', ansible_elements='str')
-    .add_docker_api(DockerAPIEngine.config_value('Links', preprocess_values=_preprocess_links)),
+    .add_docker_api(DockerAPIEngine.config_value('Links', preprocess_value=_preprocess_links)),
 
     OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='memory'))
     .add_option('memory', type='int', ansible_type='str')
@@ -616,7 +622,6 @@ OPTIONS = [
 #             aliases=dict(type='list', elements='str'),
 #             links=dict(type='list', elements='str'),
 #         )),
-#         networks_cli_compatible=dict(type='bool', default=True),
 #         oom_killer=dict(type='bool'),
 #         oom_score_adj=dict(type='int'),
 #         output_logs=dict(type='bool', default=False),
