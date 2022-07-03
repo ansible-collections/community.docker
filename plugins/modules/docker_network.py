@@ -514,7 +514,7 @@ class DockerNetworkManager(object):
 
             if self.parameters.ipam_driver or self.parameters.ipam_driver_options or ipam_pools:
                 # Only add IPAM if a driver was specified or if IPAM parameters were
-                # specified. Leaving this parameter away can significantly speed up
+                # specified. Leaving this parameter out can significantly speed up
                 # creation; on my machine creation with this option needs ~15 seconds,
                 # and without just a few seconds.
                 data['IPAM'] = {
