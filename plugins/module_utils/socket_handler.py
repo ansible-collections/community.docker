@@ -10,7 +10,7 @@ import os.path
 import socket as pysocket
 
 from ansible.module_utils.basic import missing_required_lib
-from ansible.module_utils.six import PY3
+from ansible.module_utils.six import PY2
 
 try:
     from docker.utils import socket as docker_socket
@@ -89,7 +89,7 @@ class DockerSocketHandlerBase(object):
                     return
                 else:
                     raise
-        elif PY3 and isinstance(self._sock, getattr(pysocket, 'SocketIO')):
+        elif not PY2 and isinstance(self._sock, getattr(pysocket, 'SocketIO')):
             data = self._sock.read()
         else:
             data = os.read(self._sock.fileno())
