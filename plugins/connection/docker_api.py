@@ -116,15 +116,15 @@ class Connection(ConnectionBase):
             if e.response and e.response.status_code == 409:
                 raise AnsibleConnectionFailure('The container "{1}" has been paused ({0})'.format(e, self.get_option('remote_addr')))
             self.client.fail(
-                'An unexpected docker error occurred for container "{1}": {0}'.format(e, self.get_option('remote_addr'))
+                'An unexpected Docker error occurred for container "{1}": {0}'.format(e, self.get_option('remote_addr'))
             )
         except DockerException as e:
             self.client.fail(
-                'An unexpected docker error occurred for container "{1}": {0}'.format(e, self.get_option('remote_addr'))
+                'An unexpected Docker error occurred for container "{1}": {0}'.format(e, self.get_option('remote_addr'))
             )
         except RequestException as e:
             self.client.fail(
-                'An unexpected requests error occurred for container "{1}" when Docker SDK for Python tried to talk to the docker daemon: {0}'
+                'An unexpected requests error occurred for container "{1}" when trying to talk to the Docker daemon: {0}'
                 .format(e, self.get_option('remote_addr'))
             )
 
