@@ -24,7 +24,16 @@ def _get_ansible_type(type):
 
 
 class Option(object):
-    def __init__(self, name, type, ansible_type=None, elements=None, ansible_elements=None, ansible_suboptions=None, ansible_aliases=None):
+    def __init__(
+        self,
+        name,
+        type,
+        ansible_type=None,
+        elements=None,
+        ansible_elements=None,
+        ansible_suboptions=None,
+        ansible_aliases=None,
+    ):
         self.name = name
         self.type = type
         self.ansible_type = ansible_type or _get_ansible_type(type)
@@ -50,16 +59,41 @@ class Option(object):
 
 
 class OptionGroup(object):
-    def __init__(self, preprocess=None):
+    def __init__(
+        self,
+        preprocess=None,
+        ansible_mutually_exclusive=None,
+        ansible_required_together=None,
+        ansible_required_one_of=None,
+        ansible_required_if=None,
+        ansible_required_by=None,
+    ):
         if preprocess is None:
             def preprocess(module, values):
                 return values
         self.preprocess = preprocess
         self.options = []
         self.engines = {}
+        self.ansible_mutually_exclusive = ansible_mutually_exclusive or []
+        self.ansible_required_together = ansible_required_together or []
+        self.ansible_required_one_of = ansible_required_one_of or []
+        self.ansible_required_if = ansible_required_if or []
+        self.ansible_required_by = ansible_required_by of {}
+        self.argument_spec = {}
 
     def add_option(self, *args, **kwargs):
-        self.options.append(Option(*args, **kwargs))
+        option = Option(*args, **kwargs)
+        self.options.append(option)
+        ansible_option = {
+            'type': option.ansible_type,
+        }
+        if option.ansible_elements is not None:
+            ansible_option['elements'] = option.ansible_elements
+        if option.ansible_suboptions is not None:
+            ansible_option['options'] = option.ansible_suboptions
+        if options.ansible_aliases:
+            ansible_option['aliases'] = option.ansible_aliases
+        self.argument_spec[option.name] = ansible_option
         return self
 
     def add_docker_api(self, docker_api):
@@ -70,8 +104,21 @@ class OptionGroup(object):
 _SENTRY = object()
 
 
-def DockerAPIEngine(object):
-    def __init__(self, get_value, preprocess_value, set_value=None, update_value=None, can_set_value=None, can_update_value=None, min_docker_api=None):
+class DockerAPIEngineDriver(object):
+    pass
+
+
+class DockerAPIEngine(object):
+    def __init__(
+        self,
+        get_value,
+        preprocess_value,
+        set_value=None,
+        update_value=None,
+        can_set_value=None,
+        can_update_value=None,
+        min_docker_api=None,
+    ):
         self.min_docker_api = min_docker_api
         self.min_docker_api_obj = None if min_docker_api is None else LooseVersion(min_docker_api)
         self.get_value = get_value
@@ -82,7 +129,15 @@ def DockerAPIEngine(object):
         self.can_update_value = can_update_value or (lambda api_version: update_value is not None)
 
     @classmethod
-    def config_value(cls, host_config_name, postprocess_for_get=None, preprocess_for_set=None, min_docker_api=None, preprocess_value=None, update_parameter=None):
+    def config_value(
+        cls,
+        host_config_name,
+        postprocess_for_get=None,
+        preprocess_for_set=None,
+        min_docker_api=None,
+        preprocess_value=None,
+        update_parameter=None,
+    ):
         def preprocess_value_(module, api_version, options, values):
             if len(options) != 1:
                 raise AssertionError('config_value can only be used for a single option')
@@ -125,7 +180,15 @@ def DockerAPIEngine(object):
         return cls(get_value=get_value, preprocess_value=preprocess_value_, set_value=set_value, min_docker_api=min_docker_api, update_value=update_value)
 
     @classmethod
-    def host_config_value(cls, host_config_name, postprocess_for_get=None, preprocess_for_set=None, min_docker_api=None, preprocess_value=None, update_parameter=None):
+    def host_config_value(
+        cls,
+        host_config_name,
+        postprocess_for_get=None,
+        preprocess_for_set=None,
+        min_docker_api=None,
+        preprocess_value=None,
+        update_parameter=None,
+    ):
         def preprocess_value_(module, api_version, options, values):
             if len(options) != 1:
                 raise AssertionError('host_config_value can only be used for a single option')
@@ -504,20 +567,6 @@ OPTIONS = [
     .add_docker_api(DockerAPIEngine.host_config_value('MemorySwappiness')),
 ]
 
-# Regular module options:
-#         cleanup=dict(type='bool', default=False),
-#         comparisons=dict(type='dict'),
-#         container_default_behavior=dict(type='str', default='no_defaults', choices=['compatibility', 'no_defaults']),
-#         command_handling=dict(type='str', choices=['compatibility', 'correct']),
-#         default_host_ip=dict(type='str'),
-#         force_kill=dict(type='bool', default=False, aliases=['forcekill']),
-#         ignore_image=dict(type='bool', default=False),
-#         image=dict(type='str'),
-#         image_label_mismatch=dict(type='str', choices=['ignore', 'fail'], default='ignore'),
-#         keep_volumes=dict(type='bool', default=True),
-#         kill_signal=dict(type='str'),
-#         name=dict(type='str', required=True),
-
 # Options / option groups that are more complex:
 #         detach=dict(type='bool'),
 #         env=dict(type='dict'),
@@ -527,7 +576,7 @@ OPTIONS = [
 #         labels=dict(type='dict'),
 
 
-#    OptionGroup()
+#    OptionGroup(ansible_required_by={'log_options': ['log_driver']})
 #    .add_option('log_driver', type='str')
 #    .add_option('log_options', type='dict', ansible_aliases=['log_opt'])
 #    .add_docker_api(...)
@@ -577,19 +626,14 @@ OPTIONS = [
 #         privileged=dict(type='bool'),
 #         publish_all_ports=dict(type='bool'),
 #         published_ports=dict(type='list', elements='str', aliases=['ports']),
-#         pull=dict(type='bool', default=False),
 #         purge_networks=dict(type='bool', default=False),
 #         read_only=dict(type='bool'),
-#         recreate=dict(type='bool', default=False),
 #         removal_wait_timeout=dict(type='float'),
-#         restart=dict(type='bool', default=False),
 #         restart_policy=dict(type='str', choices=['no', 'on-failure', 'always', 'unless-stopped']),
 #         restart_retries=dict(type='int'),
 #         runtime=dict(type='str'),
 #         security_opts=dict(type='list', elements='str'),
 #         shm_size=dict(type='str'),
-#         state=dict(type='str', default='started', choices=['absent', 'present', 'started', 'stopped']),
-#         stop_signal=dict(type='str'),
 #         stop_timeout=dict(type='int'),
 #         storage_opts=dict(type='dict'),
 #         sysctls=dict(type='dict'),

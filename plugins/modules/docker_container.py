@@ -11,10 +11,10 @@ DOCUMENTATION = '''
 ---
 module: docker_container
 
-short_description: manage docker containers
+short_description: manage Docker containers
 
 description:
-  - Manage the life cycle of docker containers.
+  - Manage the life cycle of Docker containers.
   - Supports check mode. Run with C(--check) and C(--diff) to view config difference and list of actions to be taken.
 
 
