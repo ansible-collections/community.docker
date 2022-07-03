@@ -82,7 +82,7 @@ def DockerAPIEngine(object):
         self.can_update_value = can_update_value or (lambda api_version: update_value is not None)
 
     @classmethod
-    def config_value(cls, host_config_name, postprocess_for_get=None, preprocess_for_set=None, min_docker_api=None, preprocess_value=None):
+    def config_value(cls, host_config_name, postprocess_for_get=None, preprocess_for_set=None, min_docker_api=None, preprocess_value=None, update_parameter=None):
         def preprocess_value_(module, api_version, options, values):
             if len(options) != 1:
                 raise AssertionError('config_value can only be used for a single option')
@@ -110,10 +110,22 @@ def DockerAPIEngine(object):
                 value = preprocess_for_set(module, api_version, value)
             data[host_config_name] = value
 
-        return cls(get_value=get_value, preprocess_value=preprocess_value_, set_value=set_value, min_docker_api=min_docker_api)
+        update_value = None
+        if update_parameter:
+            def update_value(module, data, api_version, options, values):
+                if len(options) != 1:
+                    raise AssertionError('update_parameter can only be used for a single option')
+                if options[0].name not in values:
+                    return
+                value = values[options[0].name]
+                if preprocess_for_set:
+                    value = preprocess_for_set(module, api_version, value)
+                data[update_paramete] = value
+
+        return cls(get_value=get_value, preprocess_value=preprocess_value_, set_value=set_value, min_docker_api=min_docker_api, update_value=update_value)
 
     @classmethod
-    def host_config_value(cls, host_config_name, postprocess_for_get=None, preprocess_for_set=None, min_docker_api=None, preprocess_value=None):
+    def host_config_value(cls, host_config_name, postprocess_for_get=None, preprocess_for_set=None, min_docker_api=None, preprocess_value=None, update_parameter=None):
         def preprocess_value_(module, api_version, options, values):
             if len(options) != 1:
                 raise AssertionError('host_config_value can only be used for a single option')
@@ -143,7 +155,19 @@ def DockerAPIEngine(object):
                 value = preprocess_for_set(module, api_version, value)
             data['HostConfig'][host_config_name] = value
 
-        return cls(get_value=get_value, preprocess_value=preprocess_value_, set_value=set_value, min_docker_api=min_docker_api)
+        update_value = None
+        if update_parameter:
+            def update_value(module, data, api_version, options, values):
+                if len(options) != 1:
+                    raise AssertionError('update_parameter can only be used for a single option')
+                if options[0].name not in values:
+                    return
+                value = values[options[0].name]
+                if preprocess_for_set:
+                    value = preprocess_for_set(module, api_version, value)
+                data[update_paramete] = value
+
+        return cls(get_value=get_value, preprocess_value=preprocess_value_, set_value=set_value, min_docker_api=min_docker_api, update_value=update_value)
 
 
 def _preprocess_command(module, api_version, value):
@@ -320,6 +344,10 @@ OPTIONS = [
     .add_docker_api(DockerAPIEngine.host_config_value('AutoRemove', min_docker_api='1.25')),
 
     OptionGroup()
+    .add_option('blkio_weight', type='int')
+    .add_docker_api(DockerAPIEngine.config_value('BlkioWeight')),
+
+    OptionGroup()
     .add_option('capabilities', type='set', elements='str')
     .add_docker_api(DockerAPIEngine.host_config_value('CapAdd')),
 
@@ -334,6 +362,26 @@ OPTIONS = [
     OptionGroup()
     .add_option('command', type='list', elements='str', ansible_type='raw')
     .add_docker_api(DockerAPIEngine.config_value('Cmd', preprocess_value=_preprocess_command)),
+
+    OptionGroup()
+    .add_option('cpu_period', type='int')
+    .add_docker_api(DockerAPIEngine.config_value('CpuPeriod')),
+
+    OptionGroup()
+    .add_option('cpu_quota', type='int')
+    .add_docker_api(DockerAPIEngine.config_value('CpuQuota')),
+
+    OptionGroup()
+    .add_option('cpuset_cpus', type='str')
+    .add_docker_api(DockerAPIEngine.config_value('CpuShares')),
+
+    OptionGroup()
+    .add_option('cpuset_mems', type='str')
+    .add_docker_api(DockerAPIEngine.config_value('CpusetCpus')),
+
+    OptionGroup()
+    .add_option('cpu_shares', type='int')
+    .add_docker_api(DockerAPIEngine.config_value('CpusetMems')),
 
     OptionGroup()
     .add_option('entrypoint', type='list', elements='str')
@@ -431,9 +479,25 @@ OPTIONS = [
     .add_option('interactive', type='bool')
     .add_docker_api(DockerAPIEngine.config_value('OpenStdin')),
 
+    OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='kernel_memory'))
+    .add_option('kernel_memory', type='int', ansible_type='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('KernelMemory', min_docker_api='1.21')),
+
     OptionGroup()
     .add_option('links', type='set', elements='list', ansible_elements='str')
     .add_docker_api(DockerAPIEngine.config_value('Links', preprocess_values=_preprocess_links)),
+
+    OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='memory'))
+    .add_option('memory', type='int', ansible_type='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('Memory')),
+
+    OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='memory_reservation'))
+    .add_option('memory_reservation', type='int', ansible_type='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('MemoryReservation', min_docker_api='1.21')),
+
+    OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='memory_swap', unlimited_value=-1))
+    .add_option('memory_swap', type='int', ansible_type='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('MemorySwap')),
 
     OptionGroup()
     .add_option('memory_swappiness', type='int')
@@ -453,31 +517,6 @@ OPTIONS = [
 #         keep_volumes=dict(type='bool', default=True),
 #         kill_signal=dict(type='str'),
 #         name=dict(type='str', required=True),
-
-# Options that can be updated:
-#         blkio_weight=dict(type='int'),
-#         cpu_period=dict(type='int'),
-#         cpu_quota=dict(type='int'),
-#         cpuset_cpus=dict(type='str'),
-#         cpuset_mems=dict(type='str'),
-#         cpu_shares=dict(type='int'),
-
-#    OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='kernel_memory'))
-#    .add_option('kernel_memory', type='int', ansible_type='str')
-#    .add_docker_api(DockerAPIEngine.host_config_value('KernelMemory', min_docker_api='1.21')),
-
-
-#    OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='memory'))
-#    .add_option('memory', type='int', ansible_type='str')
-#    .add_docker_api(DockerAPIEngine.host_config_value('Memory')),
-
-#    OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='memory_reservation'))
-#    .add_option('memory_reservation', type='int', ansible_type='str')
-#    .add_docker_api(DockerAPIEngine.host_config_value('MemoryReservation', min_docker_api='1.21')),
-
-#    OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='memory_swap', unlimited_value=-1))
-#    .add_option('memory_swap', type='int', ansible_type='str')
-#    .add_docker_api(DockerAPIEngine.host_config_value('MemorySwap')),
 
 # Options / option groups that are more complex:
 #         detach=dict(type='bool'),
