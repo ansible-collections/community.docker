@@ -94,15 +94,13 @@ options:
     type: bool
     default: no
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
+- community.docker.docker.api_documentation
 
 
 author:
   - Piotr Wojciechowski (@WojciechowskiPiotr)
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"
   - "Docker API >= 1.25"
 '''
 
@@ -205,21 +203,17 @@ import traceback
 
 from ansible.module_utils.common.text.converters import to_native
 
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-
-try:
-    from docker.errors import DockerException, APIError
-except ImportError:
-    # Missing Docker SDK for Python handled in ansible.module_utils.docker.common
-    pass
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     clean_dict_booleans_for_docker_api,
 )
+from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException, APIError
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import convert_filters
 
 
 class DockerHostManager(DockerBaseClass):
@@ -275,25 +269,37 @@ class DockerHostManager(DockerBaseClass):
             filter_arg['filters'] = filters
         try:
             if docker_object == 'containers':
-                items = self.client.containers(**filter_arg)
+                params = {
+                    'limit': -1,
+                    'all': 0,
+                    'size': 0,
+                    'trunc_cmd': 0,
+                    'filters': convert_filters(filters) if filters else None,
+                }
+                items = self.client.get_json("/containers/json", params=params)
             elif docker_object == 'networks':
-                items = self.client.networks(**filter_arg)
+                params = {
+                    'filters': convert_filters(filters or {})
+                }
+                items = self.client.get_json("/networks", params=params)
             elif docker_object == 'images':
-                items = self.client.images(**filter_arg)
+                params = {
+                    'only_ids': 0,
+                    'all': 0,
+                    'filters': convert_filters(filters) if filters else None,
+                }
+                items = self.client.get_json("/images/json", params=params)
             elif docker_object == 'volumes':
-                items = self.client.volumes(**filter_arg)
+                params = {
+                    'filters': convert_filters(filters) if filters else None,
+                }
+                items = self.client.get_json('/volumes', params=params)
+                items = items['Volumes']
         except APIError as exc:
-            self.client.fail("Error inspecting docker host for object '%s': %s" %
-                             (docker_object, to_native(exc)))
+            self.client.fail("Error inspecting docker host for object '%s': %s" % (docker_object, to_native(exc)))
 
         if self.verbose_output:
-            if docker_object != 'volumes':
-                return items
-            else:
-                return items['Volumes']
-
-        if docker_object == 'volumes':
-            items = items['Volumes']
+            return items
 
         for item in items:
             item_record = dict()
@@ -329,16 +335,9 @@ def main():
         verbose_output=dict(type='bool', default=False),
     )
 
-    option_minimal_versions = dict(
-        network_filters=dict(docker_py_version='2.0.2'),
-        disk_usage=dict(docker_py_version='2.2.0'),
-    )
-
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        min_docker_version='1.10.0',
-        option_minimal_versions=option_minimal_versions,
         fail_results=dict(
             can_talk_to_docker=False,
         ),
@@ -353,10 +352,10 @@ def main():
         DockerHostManager(client, results)
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 
