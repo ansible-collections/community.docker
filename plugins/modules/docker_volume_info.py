@@ -23,15 +23,14 @@ options:
       - volume_name
 
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
+- community.docker.docker.api_documentation
 
 
 author:
   - Felix Fontein (@felixfontein)
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
+  - "Docker API >= 1.25"
 '''
 
 EXAMPLES = '''
@@ -78,21 +77,16 @@ import traceback
 
 from ansible.module_utils.common.text.converters import to_native
 
-try:
-    from docker.errors import DockerException, NotFound
-except ImportError:
-    # missing Docker SDK for Python handled in ansible.module_utils.docker.common
-    pass
-
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
+from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException, NotFound
 
 
 def get_existing_volume(client, volume_name):
     try:
-        return client.inspect_volume(volume_name)
+        return client.get_json('/volumes/{0}', volume_name)
     except NotFound as dummy:
         return None
     except Exception as exc:
@@ -107,7 +101,6 @@ def main():
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        min_docker_version='1.8.0',
     )
 
     try:
@@ -119,10 +112,10 @@ def main():
             volume=volume,
         )
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 
