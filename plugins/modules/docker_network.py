@@ -146,8 +146,7 @@ options:
     type: bool
 
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
+- community.docker.docker.api_documentation
 
 
 notes:
@@ -165,7 +164,6 @@ author:
   - "Dave Bendit (@DBendit)"
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"
   - "Docker API >= 1.25"
 '''
 
@@ -254,27 +252,16 @@ import traceback
 
 from ansible.module_utils.common.text.converters import to_native
 
-from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
-
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
-    docker_version,
 )
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     DifferenceTracker,
     clean_dict_booleans_for_docker_api,
 )
-
-try:
-    from docker import utils
-    from docker.errors import DockerException
-    if LooseVersion(docker_version) >= LooseVersion('2.0.0'):
-        from docker.types import IPAMPool, IPAMConfig
-except Exception:
-    # missing Docker SDK for Python handled in ansible.module_utils.docker.common
-    pass
+from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
 
 
 class TaskParameters(DockerBaseClass):
@@ -496,45 +483,48 @@ class DockerNetworkManager(object):
 
     def create_network(self):
         if not self.existing_network:
-            params = dict(
-                driver=self.parameters.driver,
-                options=self.parameters.driver_options,
-            )
+            data = {
+                'Name': self.parameters.name,
+                'Driver': self.parameters.driver,
+                'Options': self.parameters.driver_options,
+                'IPAM': None,
+                'CheckDuplicate': None,
+            }
+
+            if self.parameters.enable_ipv6:
+                data['EnableIPv6'] = True
+            if self.parameters.internal:
+                data['Internal'] = True
+            if self.parameters.scope is not None:
+                data['Scope'] = self.parameters.scope
+            if self.parameters.attachable is not None:
+                data['Attachable'] = self.parameters.attachable
+            if self.parameters.labels is not None:
+                data["Labels"] = self.parameters.labels
 
             ipam_pools = []
             if self.parameters.ipam_config:
                 for ipam_pool in self.parameters.ipam_config:
-                    if LooseVersion(docker_version) >= LooseVersion('2.0.0'):
-                        ipam_pools.append(IPAMPool(**ipam_pool))
-                    else:
-                        ipam_pools.append(utils.create_ipam_pool(**ipam_pool))
+                    ipam_pools.append({
+                        'Subnet': ipam_pool['subnet'],
+                        'IPRange': ipam_pool['iprange'],
+                        'Gateway': ipam_pool['gateway'],
+                        'AuxiliaryAddresses': ipam_pool['aux_addresses'],
+                    })
 
             if self.parameters.ipam_driver or self.parameters.ipam_driver_options or ipam_pools:
-                # Only add ipam parameter if a driver was specified or if IPAM parameters
-                # were specified. Leaving this parameter away can significantly speed up
+                # Only add IPAM if a driver was specified or if IPAM parameters were
+                # specified. Leaving this parameter out can significantly speed up
                 # creation; on my machine creation with this option needs ~15 seconds,
                 # and without just a few seconds.
-                if LooseVersion(docker_version) >= LooseVersion('2.0.0'):
-                    params['ipam'] = IPAMConfig(driver=self.parameters.ipam_driver,
-                                                pool_configs=ipam_pools,
-                                                options=self.parameters.ipam_driver_options)
-                else:
-                    params['ipam'] = utils.create_ipam_config(driver=self.parameters.ipam_driver,
-                                                              pool_configs=ipam_pools)
-
-            if self.parameters.enable_ipv6 is not None:
-                params['enable_ipv6'] = self.parameters.enable_ipv6
-            if self.parameters.internal is not None:
-                params['internal'] = self.parameters.internal
-            if self.parameters.scope is not None:
-                params['scope'] = self.parameters.scope
-            if self.parameters.attachable is not None:
-                params['attachable'] = self.parameters.attachable
-            if self.parameters.labels:
-                params['labels'] = self.parameters.labels
+                data['IPAM'] = {
+                    'Driver': self.parameters.ipam_driver,
+                    'Config': ipam_pools or [],
+                    'Options': self.parameters.ipam_driver_options,
+                }
 
             if not self.check_mode:
-                resp = self.client.create_network(self.parameters.name, **params)
+                resp = self.client.post_json_to_json('/networks/create', data=data)
                 self.client.report_warnings(resp, ['Warning'])
                 self.existing_network = self.client.get_network(network_id=resp['Id'])
             self.results['actions'].append("Created network %s with driver %s" % (self.parameters.name, self.parameters.driver))
@@ -544,7 +534,7 @@ class DockerNetworkManager(object):
         if self.existing_network:
             self.disconnect_all_containers()
             if not self.check_mode:
-                self.client.remove_network(self.parameters.name)
+                self.client.delete_call('/networks/{0}', self.parameters.name)
             self.results['actions'].append("Removed network %s" % (self.parameters.name,))
             self.results['changed'] = True
 
@@ -557,12 +547,14 @@ class DockerNetworkManager(object):
         for name in self.parameters.connected:
             if not self.is_container_connected(name):
                 if not self.check_mode:
-                    self.client.connect_container_to_network(name, self.parameters.name)
+                    data = {
+                        "Container": name,
+                        "EndpointConfig": None,
+                    }
+                    self.client.post_json('/networks/{0}/connect', self.parameters.name, data=data)
                 self.results['actions'].append("Connected container %s" % (name,))
                 self.results['changed'] = True
-                self.diff_tracker.add('connected.{0}'.format(name),
-                                      parameter=True,
-                                      active=False)
+                self.diff_tracker.add('connected.{0}'.format(name), parameter=True, active=False)
 
     def disconnect_missing(self):
         if not self.existing_network:
@@ -584,7 +576,8 @@ class DockerNetworkManager(object):
 
     def disconnect_container(self, container_name):
         if not self.check_mode:
-            self.client.disconnect_container_from_network(container_name, self.parameters.name)
+            data = {"Container": container_name}
+            self.client.post_json('/networks/{0}/disconnect', self.parameters.name, data=data)
         self.results['actions'].append("Disconnected container %s" % (container_name,))
         self.results['changed'] = True
         self.diff_tracker.add('connected.{0}'.format(container_name),
@@ -648,15 +641,13 @@ def main():
     )
 
     option_minimal_versions = dict(
-        scope=dict(docker_py_version='2.6.0', docker_api_version='1.30'),
-        attachable=dict(docker_py_version='2.0.0', docker_api_version='1.26'),
-        ipam_driver_options=dict(docker_py_version='2.0.0'),
+        scope=dict(docker_api_version='1.30'),
+        attachable=dict(docker_api_version='1.26'),
     )
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        min_docker_version='1.10.0',
         # "The docker server >= 1.10.0"
         option_minimal_versions=option_minimal_versions,
     )
@@ -665,10 +656,10 @@ def main():
         cm = DockerNetworkManager(client)
         client.module.exit_json(**cm.results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 
