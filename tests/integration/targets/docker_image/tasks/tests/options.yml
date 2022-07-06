@@ -56,13 +56,6 @@
     that:
     - buildargs_1 is changed
     - buildargs_2 is not failed and buildargs_2 is not changed
-  when: docker_py_version is version('1.6.0', '>=')
-
-- assert:
-    that:
-    - buildargs_1 is failed
-    - buildargs_2 is failed
-  when: docker_py_version is version('1.6.0', '<')
 
 ####################################################################
 ## build.container_limits ##########################################
@@ -177,13 +170,6 @@
     that:
     - platform_1 is changed
     - platform_2 is not failed and platform_2 is not changed
-  when: docker_py_version is version('3.0.0', '>=')
-
-- assert:
-    that:
-    - platform_1 is failed
-    - platform_2 is failed
-  when: docker_py_version is version('3.0.0', '<')
 
 ####################################################################
 ## force ###########################################################
