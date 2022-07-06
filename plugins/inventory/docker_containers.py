@@ -17,12 +17,9 @@ short_description: Ansible dynamic inventory plugin for Docker containers.
 version_added: 1.1.0
 author:
     - Felix Fontein (@felixfontein)
-requirements:
-    - L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0
 extends_documentation_fragment:
     - ansible.builtin.constructed
-    - community.docker.docker
-    - community.docker.docker.docker_py_1_documentation
+    - community.docker.docker.api_documentation
 description:
     - Reads inventories from the Docker API.
     - Uses a YAML configuration file that ends with C(docker.[yml|yaml]).
@@ -154,23 +151,18 @@ from ansible.errors import AnsibleError
 from ansible.module_utils.common.text.converters import to_native
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
 
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     RequestException,
 )
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DOCKER_COMMON_ARGS_VARS,
 )
-from ansible_collections.community.docker.plugins.plugin_utils.common import (
+from ansible_collections.community.docker.plugins.plugin_utils.common_api import (
     AnsibleDockerClient,
 )
 
-try:
-    from docker.errors import DockerException, APIError
-except Exception:
-    # missing Docker SDK for Python handled in ansible_collections.community.docker.plugins.module_utils.common
-    pass
+from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException
 
-MIN_DOCKER_PY = '1.7.0'
 MIN_DOCKER_API = None
 
 
@@ -193,7 +185,15 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         add_legacy_groups = self.get_option('add_legacy_groups')
 
         try:
-            containers = client.containers(all=True)
+            params = {
+                'limit': -1,
+                'all': 1,
+                'size': 0,
+                'trunc_cmd': 0,
+                'since': None,
+                'before': None,
+            }
+            containers = client.get_json('/containers/json', params=params)
         except APIError as exc:
             raise AnsibleError("Error listing containers: %s" % to_native(exc))
 
@@ -227,7 +227,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             full_facts = dict()
 
             try:
-                inspect = client.inspect_container(id)
+                inspect = client.get_json('/containers/{0}/json', id)
             except APIError as exc:
                 raise AnsibleError("Error inspecting container %s - %s" % (name, str(exc)))
 
@@ -261,7 +261,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 # Figure out ssh IP and Port
                 try:
                     # Lookup the public facing port Nat'ed to ssh port.
-                    port = client.port(container, ssh_port)[0]
+                    network_settings = inspect.get('NetworkSettings') or {}
+                    port_settings = network_settings.get('Ports') or {}
+                    port = port_settings.get('%d/tcp' % (ssh_port, ))[0]
                 except (IndexError, AttributeError, TypeError):
                     port = dict()
 
@@ -330,7 +332,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             path.endswith(('docker.yaml', 'docker.yml')))
 
     def _create_client(self):
-        return AnsibleDockerClient(self, min_docker_version=MIN_DOCKER_PY, min_docker_api_version=MIN_DOCKER_API)
+        return AnsibleDockerClient(self, min_docker_api_version=MIN_DOCKER_API)
 
     def parse(self, inventory, loader, path, cache=True):
         super(InventoryModule, self).parse(inventory, loader, path, cache)
@@ -340,9 +342,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             self._populate(client)
         except DockerException as e:
             raise AnsibleError(
-                'An unexpected docker error occurred: {0}'.format(e)
+                'An unexpected Docker error occurred: {0}'.format(e)
             )
         except RequestException as e:
             raise AnsibleError(
-                'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(e)
+                'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(e)
             )
