@@ -82,15 +82,13 @@ options:
     version_added: 2.1.0
 
 extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_1_documentation
+  - community.docker.docker.api_documentation
 notes:
   - Does not support C(check_mode).
 author:
   - "Felix Fontein (@felixfontein)"
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
   - "Docker API >= 1.25"
 '''
 
@@ -154,7 +152,7 @@ from ansible.module_utils.common.text.converters import to_text, to_bytes, to_na
 from ansible.module_utils.compat import selectors
 from ansible.module_utils.six import string_types
 
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
@@ -168,11 +166,12 @@ from ansible_collections.community.docker.plugins.module_utils.socket_handler im
     DockerSocketHandlerModule,
 )
 
-try:
-    from docker.errors import DockerException, APIError, NotFound
-except Exception:
-    # missing Docker SDK for Python handled in ansible.module_utils.docker.common
-    pass
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    APIError,
+    DockerException,
+    NotFound,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import format_environment
 
 
 def main():
@@ -191,8 +190,7 @@ def main():
     )
 
     option_minimal_versions = dict(
-        chdir=dict(docker_py_version='3.0.0', docker_api_version='1.35'),
-        env=dict(docker_py_version='2.3.0'),
+        chdir=dict(docker_api_version='1.35'),
     )
 
     client = AnsibleDockerClient(
@@ -231,34 +229,31 @@ def main():
         stdin += '\n'
 
     try:
-        kwargs = {}
-        if chdir is not None:
-            kwargs['workdir'] = chdir
-        if env is not None:
-            kwargs['environment'] = env
-        exec_data = client.exec_create(
-            container,
-            argv,
-            stdout=True,
-            stderr=True,
-            stdin=bool(stdin),
-            user=user or '',
-            **kwargs
-        )
+        data = {
+            'Container': container,
+            'User': user or '',
+            'Privileged': False,
+            'Tty': False,
+            'AttachStdin': bool(stdin),
+            'AttachStdout': True,
+            'AttachStderr': True,
+            'Cmd': argv,
+            'Env': format_environment(env) if env is not None else None,
+        }
+        exec_data = client.post_json_to_json('/containers/{0}/exec', container, data=data)
         exec_id = exec_data['Id']
 
+        data = {
+            'Tty': tty,
+            'Detach': detach,
+        }
         if detach:
-            client.exec_start(exec_id, tty=tty, detach=True)
+            client.post_json_to_text('/exec/{0}/start', exec_id, data=data)
             client.module.exit_json(changed=True, exec_id=exec_id)
 
         else:
             if stdin and not detach:
-                exec_socket = client.exec_start(
-                    exec_id,
-                    tty=tty,
-                    detach=False,
-                    socket=True,
-                )
+                exec_socket = client.post_json_to_stream_socket('/exec/{0}/start', exec_id, data=data)
                 try:
                     with DockerSocketHandlerModule(exec_socket, client.module, selectors) as exec_socket_handler:
                         if stdin:
@@ -268,16 +263,9 @@ def main():
                 finally:
                     exec_socket.close()
             else:
-                stdout, stderr = client.exec_start(
-                    exec_id,
-                    tty=tty,
-                    detach=False,
-                    stream=False,
-                    socket=False,
-                    demux=True,
-                )
+                stdout, stderr = client.post_json_to_stream('/exec/{0}/start', exec_id, data=data, stream=False, tty=tty, demux=True)
 
-            result = client.exec_inspect(exec_id)
+            result = client.get_json('/exec/{0}/json', exec_id)
 
             stdout = to_text(stdout or b'')
             stderr = to_text(stderr or b'')
@@ -296,12 +284,12 @@ def main():
     except APIError as e:
         if e.response and e.response.status_code == 409:
             client.fail('The container "{0}" has been paused ({1})'.format(container, to_native(e)))
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 
