@@ -65,13 +65,9 @@ options:
     choices: ['present', 'absent']
 
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
+  - community.docker.docker.api_documentation
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
-  - "Python bindings for docker credentials store API >= 0.2.1
-    (use L(docker-pycreds,https://pypi.org/project/docker-pycreds/) when using Docker SDK for Python < 4.0.0)"
   - "Docker API >= 1.25"
 author:
   - Olaf Kilian (@olsaki) <olaf.kilian@symanex.com>
@@ -106,7 +102,7 @@ EXAMPLES = '''
 RETURN = '''
 login_results:
     description: Results from the login.
-    returned: when state='present'
+    returned: when I(state=present)
     type: dict
     sample: {
         "serveraddress": "localhost:5000",
@@ -117,28 +113,11 @@ login_results:
 import base64
 import json
 import os
-import re
 import traceback
 
 from ansible.module_utils.common.text.converters import to_bytes, to_text, to_native
 
-try:
-    from docker.errors import DockerException
-    from docker import auth
-
-    # Earlier versions of docker/docker-py put decode_auth
-    # in docker.auth.auth instead of docker.auth
-    if hasattr(auth, 'decode_auth'):
-        from docker.auth import decode_auth
-    else:
-        from docker.auth.auth import decode_auth
-
-except ImportError:
-    # missing Docker SDK for Python handled in ansible.module_utils.docker.common
-    pass
-
-from ansible_collections.community.docker.plugins.module_utils.common import (
-    HAS_DOCKER_PY,
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
@@ -147,32 +126,11 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
 )
 
-NEEDS_DOCKER_PYCREDS = False
-
-# Early versions of docker/docker-py rely on docker-pycreds for
-# the credential store api.
-if HAS_DOCKER_PY:
-    try:
-        from docker.credentials.errors import StoreError, CredentialsNotFound
-        from docker.credentials import Store
-    except ImportError:
-        try:
-            from dockerpycreds.errors import StoreError, CredentialsNotFound
-            from dockerpycreds.store import Store
-        except ImportError as exc:
-            HAS_DOCKER_ERROR = str(exc)
-            NEEDS_DOCKER_PYCREDS = True
-
-
-if NEEDS_DOCKER_PYCREDS:
-    # docker-pycreds missing, so we need to create some place holder classes
-    # to allow instantiation.
-
-    class StoreError(Exception):
-        pass
-
-    class CredentialsNotFound(Exception):
-        pass
+from ansible_collections.community.docker.plugins.module_utils._api import auth
+from ansible_collections.community.docker.plugins.module_utils._api.auth import decode_auth
+from ansible_collections.community.docker.plugins.module_utils._api.credentials.errors import CredentialsNotFound
+from ansible_collections.community.docker.plugins.module_utils._api.credentials.store import Store
+from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
 
 
 class DockerFileStore(object):
@@ -305,6 +263,35 @@ class LoginManager(DockerBaseClass):
     def fail(self, msg):
         self.client.fail(msg)
 
+    def _login(self, reauth):
+        if self.config_path and os.path.exists(self.config_path):
+            self.client._auth_configs = auth.load_config(
+                self.config_path, credstore_env=self.client.credstore_env
+            )
+        elif not self.client._auth_configs or self.client._auth_configs.is_empty:
+            self.client._auth_configs = auth.load_config(
+                credstore_env=self.client.credstore_env
+            )
+
+        authcfg = self.client._auth_configs.resolve_authconfig(self.registry_url)
+        # If we found an existing auth config for this registry and username
+        # combination, we can return it immediately unless reauth is requested.
+        if authcfg and authcfg.get('username', None) == self.username \
+                and not reauth:
+            return authcfg
+
+        req_data = {
+            'username': self.username,
+            'password': self.password,
+            'email': None,
+            'serveraddress': self.registry_url,
+        }
+
+        response = self.client._post_json(self.client._url('/auth'), data=req_data)
+        if response.status_code == 200:
+            self.client._auth_configs.add_auth(self.registry_url or auth.INDEX_NAME, req_data)
+        return self.client._result(response, json=True)
+
     def login(self):
         '''
         Log into the registry with provided username/password. On success update the config
@@ -316,13 +303,7 @@ class LoginManager(DockerBaseClass):
         self.results['actions'].append("Logged into %s" % (self.registry_url))
         self.log("Log into %s with username %s" % (self.registry_url, self.username))
         try:
-            response = self.client.login(
-                self.username,
-                password=self.password,
-                registry=self.registry_url,
-                reauth=self.reauthorize,
-                dockercfg_path=self.config_path
-            )
+            response = self._login(self.reauthorize)
         except Exception as exc:
             self.fail("Logging into %s for user %s failed - %s" % (self.registry_url, self.username, to_native(exc)))
 
@@ -333,13 +314,7 @@ class LoginManager(DockerBaseClass):
             # reauthorize, still do it.
             if not self.reauthorize and response['password'] != self.password:
                 try:
-                    response = self.client.login(
-                        self.username,
-                        password=self.password,
-                        registry=self.registry_url,
-                        reauth=True,
-                        dockercfg_path=self.config_path
-                    )
+                    response = self._login(True)
                 except Exception as exc:
                     self.fail("Logging into %s for user %s failed - %s" % (self.registry_url, self.username, to_native(exc)))
             response.pop('password', None)
@@ -358,7 +333,7 @@ class LoginManager(DockerBaseClass):
         store = self.get_credential_store_instance(self.registry_url, self.config_path)
 
         try:
-            current = store.get(self.registry_url)
+            store.get(self.registry_url)
         except CredentialsNotFound:
             # get raises an exception on not found.
             self.log("Credentials for %s not present, doing nothing." % (self.registry_url))
@@ -405,20 +380,11 @@ class LoginManager(DockerBaseClass):
         :rtype: Union[docker.credentials.Store, NoneType]
         '''
 
-        # Older versions of docker-py don't have this feature.
-        try:
-            credstore_env = self.client.credstore_env
-        except AttributeError:
-            credstore_env = None
+        credstore_env = self.client.credstore_env
 
         config = auth.load_config(config_path=dockercfg_path)
 
-        if hasattr(auth, 'get_credential_store'):
-            store_name = auth.get_credential_store(config, registry)
-        elif 'credsStore' in config:
-            store_name = config['credsStore']
-        else:
-            store_name = None
+        store_name = auth.get_credential_store(config, registry)
 
         # Make sure that there is a credential helper before trying to instantiate a
         # Store object.
@@ -464,10 +430,10 @@ def main():
             del results['actions']
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 
