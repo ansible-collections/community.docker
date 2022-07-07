@@ -1,1 +1,0 @@
-release_summary: First alpha prerelease of community.docker 3.0.0. This version has several breaking changes and features rewrites of several modules to directly use the API using ``requests``, instead of using the Docker SDK for Python.

@@ -1,5 +1,0 @@
-major_changes:
-  - "The collection now contains vendored code from the Docker SDK for Python to talk to the Docker daemon.
-     Modules and plugins using this code no longer need the Docker SDK for Python installed on the machine
-     the module or plugin is running on
-     (https://github.com/ansible-collections/community.docker/pull/398)."
