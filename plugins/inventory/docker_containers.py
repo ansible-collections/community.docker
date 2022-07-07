@@ -13,7 +13,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 name: docker_containers
-short_description: Ansible dynamic inventory plugin for Docker containers.
+short_description: Ansible dynamic inventory plugin for Docker containers
 version_added: 1.1.0
 author:
     - Felix Fontein (@felixfontein)
