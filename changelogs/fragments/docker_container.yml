@@ -1,0 +1,9 @@
+major_changes:
+  - "docker_container - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed,
+     and depending on the features used has some more requirements. If the Docker SDK for Python is installed,
+     these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/...)."
+  - "docker_container - the module was completely rewritten from scratch (https://github.com/ansible-collections/community.docker/pull/...)."
+breaking_changes:
+  - "docker_container - ``publish_all_ports`` is no longer ignored in ``comparisons`` (https://github.com/ansible-collections/community.docker/pull/...)."
+  - "docker_container - ``log_options`` can no longer be specified when ``log_driver`` is not specified (https://github.com/ansible-collections/community.docker/pull/...)."
+  - "docker_container - ``restart_retries`` can no longer be specified when ``restart_policy`` is not specified (https://github.com/ansible-collections/community.docker/pull/...)."

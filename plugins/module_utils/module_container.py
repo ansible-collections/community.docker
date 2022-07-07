@@ -28,11 +28,13 @@ class Option(object):
         self,
         name,
         type,
+        owner,
         ansible_type=None,
         elements=None,
         ansible_elements=None,
         ansible_suboptions=None,
         ansible_aliases=None,
+        ansible_choices=None,
     ):
         self.name = name
         self.type = type
@@ -55,7 +57,8 @@ class Option(object):
         if ansible_suboptions is None and needs_suboptions:
             raise Exception('suboptions required for Ansible lists with dicts, or Ansible dicts')
         self.ansible_suboptions = ansible_suboptions if needs_suboptions else None
-        self.ansible_aliases = ansible_aliases
+        self.ansible_aliases = ansible_aliases or []
+        self.ansible_choices = ansible_choices
 
 
 class OptionGroup(object):
@@ -82,7 +85,7 @@ class OptionGroup(object):
         self.argument_spec = {}
 
     def add_option(self, *args, **kwargs):
-        option = Option(*args, **kwargs)
+        option = Option(*args, owner=self, **kwargs)
         self.options.append(option)
         ansible_option = {
             'type': option.ansible_type,
@@ -93,6 +96,8 @@ class OptionGroup(object):
             ansible_option['options'] = option.ansible_suboptions
         if option.ansible_aliases:
             ansible_option['aliases'] = option.ansible_aliases
+        if option.ansible_choices is not None:
+            ansible_option['choices'] = option.ansible_choices
         self.argument_spec[option.name] = ansible_option
         return self
 
@@ -587,6 +592,11 @@ OPTIONS = [
 #    .add_option('log_options', type='dict', ansible_aliases=['log_opt'])
 #    .add_docker_api(...)
 
+#    OptionGroup(ansible_required_by={'restart_retries': ['restart_policy']})
+#    .add_option('restart_policy', type='str', ansible_choices=['no', 'on-failure', 'always', 'unless-stopped'])
+#    .add_option('restart_retries', type='int')
+#    .add_docker_api(...)
+
 #        if self.mac_address:
 #            # Ensure the MAC address uses colons instead of hyphens for later comparison
 #            self.mac_address = self.mac_address.replace('-', ':')
@@ -615,27 +625,14 @@ OPTIONS = [
 #             tmpfs_mode=dict(type='str'),
 #         )),
 #         network_mode=dict(type='str'),
-#         networks=dict(type='list', elements='dict', options=dict(
-#             name=dict(type='str', required=True),
-#             ipv4_address=dict(type='str'),
-#             ipv6_address=dict(type='str'),
-#             aliases=dict(type='list', elements='str'),
-#             links=dict(type='list', elements='str'),
-#         )),
 #         oom_killer=dict(type='bool'),
 #         oom_score_adj=dict(type='int'),
-#         output_logs=dict(type='bool', default=False),
-#         paused=dict(type='bool'),
 #         pid_mode=dict(type='str'),
 #         pids_limit=dict(type='int'),
 #         privileged=dict(type='bool'),
 #         publish_all_ports=dict(type='bool'),
 #         published_ports=dict(type='list', elements='str', aliases=['ports']),
-#         purge_networks=dict(type='bool', default=False),
 #         read_only=dict(type='bool'),
-#         removal_wait_timeout=dict(type='float'),
-#         restart_policy=dict(type='str', choices=['no', 'on-failure', 'always', 'unless-stopped']),
-#         restart_retries=dict(type='int'),
 #         runtime=dict(type='str'),
 #         security_opts=dict(type='list', elements='str'),
 #         shm_size=dict(type='str'),
@@ -656,7 +653,6 @@ OPTIONS = [
 #         explicit_types = dict(
 #             env='set',
 #             mounts='set(dict)',
-#             networks='set(dict)',
 #             ulimits='set(dict)',
 #         )
 #

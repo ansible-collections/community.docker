@@ -670,8 +670,6 @@ options:
   pid_mode:
     description:
       - Set the PID namespace mode for the container.
-      - Note that Docker SDK for Python < 2.0 only supports C(host). Newer versions of the
-        Docker SDK for Python (docker) allow all values supported by the Docker daemon.
     type: str
   pids_limit:
     description:
@@ -898,7 +896,6 @@ author:
   - "Felix Fontein (@felixfontein)"
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
   - "Docker API >= 1.25"
 '''
 
@@ -1218,6 +1215,10 @@ from ansible_collections.community.docker.plugins.module_utils.common_api import
     AnsibleDockerClient,
     RequestException,
 )
+from ansible_collections.community.docker.plugins.module_utils.module_container import (
+    DockerAPIEngineDriver,
+    OPTIONS,
+)
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DifferenceTracker,
     DockerBaseClass,
@@ -1229,21 +1230,849 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     parse_healthcheck,
     DOCKER_COMMON_ARGS,
 )
-from ansible_collections.community.docker.plugins.module_utils.module_container import (
-    DockerAPIEngineDriver,
-    OPTIONS,
-)
+
+from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException, NotFound
+
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import parse_repository_tag, normalize_links
 
 
-class ContainerManager(object):
-    def __init__(self, client, options):
+class Container(DockerBaseClass):
+    def __init__(self, container):
+        super(Container, self).__init__()
+        self.raw = container
+        self.Id = None
+        self.Image = None
+        self.container = container
+        if container:
+            self.Id = container['Id']
+            self.Image = container['Image']
+        self.log(self.container, pretty_print=True)
+
+    @property
+    def exists(self):
+        return True if self.container else False
+
+    @property
+    def removing(self):
+        if self.container and self.container.get('State'):
+            return self.container['State'].get('Status') == 'removing'
+        return False
+
+    @property
+    def running(self):
+        if self.container and self.container.get('State'):
+            if self.container['State'].get('Running') and not self.container['State'].get('Ghost', False):
+                return True
+        return False
+
+    @property
+    def paused(self):
+        if self.container and self.container.get('State'):
+            return self.container['State'].get('Paused', False)
+        return False
+
+
+class ContainerManager(DockerBaseClass):
+    def __init__(self, client, active_options):
         self.client = client
-        self.options = options
-        self.results = {}
+        self.options = active_options
+        self.all_options = {}
+        for options in active_options:
+            for option in options.options:
+                self.all_options[option.name] = option
+        self.module = client.module
+        self.comparisons = {}
+        self._parse_comparisons()
+        self._update_params()
+
+        self.check_mode = self.client.check_mode
+        self.results = {'changed': False, 'actions': []}
+        self.diff = {}
+        self.diff_tracker = DifferenceTracker()
+        self.facts = {}
+
+    def _update_params(self):
+        if self.module.params['networks_cli_compatible'] is True and self.module.params['networks'] and self.module.params['network_mode'] is None:
+            # Same behavior as Docker CLI: if networks are specified, use the name of the first network as the value for network_mode
+            # (assuming no explicit value is specified for network_mode)
+            self.module.params['network_mode'] = self.module.params['networks'][0]['name']
+        if self.module.params['container_default_behavior'] == 'compatibility':
+            old_default_values = dict(
+                auto_remove=False,
+                detach=True,
+                init=False,
+                interactive=False,
+                memory='0',
+                paused=False,
+                privileged=False,
+                read_only=False,
+                tty=False,
+            )
+            for param, value in old_default_values.items():
+                if self.module.params[param] is None:
+                    self.module.params[param] = value
+
+    def _parse_comparisons(self):
+        # Create default values for comparisons
+        self.comparisons['image'] = {
+            'type': 'value',
+            'comparison': 'strict',
+            'name': 'image',
+        }
+        self.comparisons['networks'] = {
+            'type': 'set(dict)',
+            'comparison': 'allow_more_present',
+            'name': 'networks',
+        }
+        default_comparison_values = dict(
+            stop_timeout='ignore',
+        )
+        comp_aliases = {}
+        for option_name, option in self.all_options.items():
+            # Keep track of all aliases
+            comp_aliases[option_name] = option_name
+            for alias in option.ansible_aliases:
+                comp_aliases[alias] = option_name
+            # Determine datatype
+            datatype = option.type
+            if datatype == 'set' and option.elements == 'dict':
+                datatype = 'set(dict)'
+            elif datatype not in ('set', 'list', 'dict'):
+                datatype = 'value'
+            # Determine comparison
+            if option in default_comparison_values:
+                comparison = default_comparison_values[option]
+            elif datatype in ('list', 'value'):
+                comparison = 'strict'
+            else:
+                comparison = 'allow_more_present'
+            self.comparisons[option_name] = {
+                'type': datatype,
+                'comparison': comparison,
+                'name': option_name,
+            }
+        # Collect all module options
+        all_module_options = set(comp_aliases)
+        for option, data in self.module.argument_spec.items():
+            all_module_options.add(option)
+            if 'aliases' in data:
+                for alias in data['aliases']:
+                    all_module_options.add(alias)
+        # Process legacy ignore options
+        if self.module.params['ignore_image']:
+            self.comparisons['image']['comparison'] = 'ignore'
+        if self.module.params['purge_networks']:
+            self.comparisons['networks']['comparison'] = 'strict'
+        # Process comparsions specified by user
+        if self.module.params.get('comparisons'):
+            # If '*' appears in comparisons, process it first
+            if '*' in self.module.params['comparisons']:
+                value = self.module.params['comparisons']['*']
+                if value not in ('strict', 'ignore'):
+                    self.fail("The wildcard can only be used with comparison modes 'strict' and 'ignore'!")
+                for option, v in self.comparisons.items():
+                    if option == 'networks':
+                        # `networks` is special: only update if
+                        # some value is actually specified
+                        if self.module.params['networks'] is None:
+                            continue
+                    v['comparison'] = value
+            # Now process all other comparisons.
+            comp_aliases_used = {}
+            for key, value in self.module.params['comparisons'].items():
+                if key == '*':
+                    continue
+                # Find main key
+                key_main = comp_aliases.get(key)
+                if key_main is None:
+                    if key_main in all_module_options:
+                        self.fail("The module option '%s' cannot be specified in the comparisons dict, "
+                                  "since it does not correspond to container's state!" % key)
+                    if key not in self.comparisons:
+                        self.fail("Unknown module option '%s' in comparisons dict!" % key)
+                    key_main = key
+                if key_main in comp_aliases_used:
+                    self.fail("Both '%s' and '%s' (aliases of %s) are specified in comparisons dict!" % (key, comp_aliases_used[key_main], key_main))
+                comp_aliases_used[key_main] = key
+                # Check value and update accordingly
+                if value in ('strict', 'ignore'):
+                    self.comparisons[key_main]['comparison'] = value
+                elif value == 'allow_more_present':
+                    if self.comparisons[key_main]['type'] == 'value':
+                        self.fail("Option '%s' is a value and not a set/list/dict, so its comparison cannot be %s" % (key, value))
+                    self.comparisons[key_main]['comparison'] = value
+                else:
+                    self.fail("Unknown comparison mode '%s'!" % value)
+        # Check legacy values
+        if self.module.params['ignore_image'] and self.comparisons['image']['comparison'] != 'ignore':
+            self.module.warn('The ignore_image option has been overridden by the comparisons option!')
+        if self.module.params['purge_networks'] and self.comparisons['networks']['comparison'] != 'strict':
+            self.module.warn('The purge_networks option has been overridden by the comparisons option!')
+
+    def fail(self, *args, **kwargs):
+        self.client.fail(*args, **kwargs)
 
     def run(self):
-        # TODO
-        pass
+        state = self.module.params['state']
+        if state in ('stopped', 'started', 'present'):
+            self.present(state)
+        elif state == 'absent':
+            self.absent()
+
+        if not self.check_mode and not self.module.params['debug']:
+            self.results.pop('actions')
+
+        if self.module._diff or self.module.params['debug']:
+            self.diff['before'], self.diff['after'] = self.diff_tracker.get_before_after()
+            self.results['diff'] = self.diff
+
+        if self.facts:
+            self.results['container'] = self.facts
+
+    def wait_for_state(self, container_id, complete_states=None, wait_states=None, accept_removal=False, max_wait=None):
+        delay = 1.0
+        total_wait = 0
+        while True:
+            # Inspect container
+            result = self.client.get_container_by_id(container_id)
+            if result is None:
+                if accept_removal:
+                    return
+                msg = 'Encontered vanished container while waiting for container "{0}"'
+                self.fail(msg.format(container_id))
+            # Check container state
+            state = result.get('State', {}).get('Status')
+            if complete_states is not None and state in complete_states:
+                return
+            if wait_states is not None and state not in wait_states:
+                msg = 'Encontered unexpected state "{1}" while waiting for container "{0}"'
+                self.fail(msg.format(container_id, state))
+            # Wait
+            if max_wait is not None:
+                if total_wait > max_wait:
+                    msg = 'Timeout of {1} seconds exceeded while waiting for container "{0}"'
+                    self.fail(msg.format(container_id, max_wait))
+                if total_wait + delay > max_wait:
+                    delay = max_wait - total_wait
+            sleep(delay)
+            total_wait += delay
+            # Exponential backoff, but never wait longer than 10 seconds
+            # (1.1**24 < 10, 1.1**25 > 10, so it will take 25 iterations
+            #  until the maximal 10 seconds delay is reached. By then, the
+            #  code will have slept for ~1.5 minutes.)
+            delay = min(delay * 1.1, 10)
+
+    def present(self, state):
+        container = self._get_container(self.module.params['name'])
+        was_running = container.running
+        was_paused = container.paused
+        container_created = False
+
+        # If the image parameter was passed then we need to deal with the image
+        # version comparison. Otherwise we handle this depending on whether
+        # the container already runs or not; in the former case, in case the
+        # container needs to be restarted, we use the existing container's
+        # image ID.
+        image = self._get_image()
+        self.log(image, pretty_print=True)
+        if not container.exists or container.removing:
+            # New container
+            if container.removing:
+                self.log('Found container in removal phase')
+            else:
+                self.log('No container found')
+            if not self.module.params['image']:
+                self.fail('Cannot create container when image is not specified!')
+            self.diff_tracker.add('exists', parameter=True, active=False)
+            if container.removing and not self.check_mode:
+                # Wait for container to be removed before trying to create it
+                self.wait_for_state(
+                    container.Id, wait_states=['removing'], accept_removal=True, max_wait=self.module.params['removal_wait_timeout'])
+            new_container = self.container_create(self.module.params['image'])
+            if new_container:
+                container = new_container
+            container_created = True
+        else:
+            # Existing container
+            different, differences = self.has_different_configuration(container, image)
+            image_different = False
+            if self.comparisons['image']['comparison'] == 'strict':
+                image_different = self._image_is_different(image, container)
+            if image_different or different or self.module.params['recreate']:
+                self.diff_tracker.merge(differences)
+                self.diff['differences'] = differences.get_legacy_docker_container_diffs()
+                if image_different:
+                    self.diff['image_different'] = True
+                self.log("differences")
+                self.log(differences.get_legacy_docker_container_diffs(), pretty_print=True)
+                image_to_use = self.module.params['image']
+                if not image_to_use and container and container.Image:
+                    image_to_use = container.Image
+                if not image_to_use:
+                    self.fail('Cannot recreate container when image is not specified or cannot be extracted from current container!')
+                if container.running:
+                    self.container_stop(container.Id)
+                self.container_remove(container.Id)
+                if not self.check_mode:
+                    self.wait_for_state(
+                        container.Id, wait_states=['removing'], accept_removal=True, max_wait=self.module.params['removal_wait_timeout'])
+                new_container = self.container_create(image_to_use)
+                if new_container:
+                    container = new_container
+                container_created = True
+
+        if container and container.exists:
+            container = self.update_limits(container)
+            container = self.update_networks(container, container_created)
+
+            if state == 'started' and not container.running:
+                self.diff_tracker.add('running', parameter=True, active=was_running)
+                container = self.container_start(container.Id)
+            elif state == 'started' and self.module.params['restart']:
+                self.diff_tracker.add('running', parameter=True, active=was_running)
+                self.diff_tracker.add('restarted', parameter=True, active=False)
+                container = self.container_restart(container.Id)
+            elif state == 'stopped' and container.running:
+                self.diff_tracker.add('running', parameter=False, active=was_running)
+                self.container_stop(container.Id)
+                container = self._get_container(container.Id)
+
+            if state == 'started' and self.module.params['paused'] is not None and container.paused != self.module.params['paused']:
+                self.diff_tracker.add('paused', parameter=self.module.params['paused'], active=was_paused)
+                if not self.check_mode:
+                    try:
+                        if self.module.params['paused']:
+                            self.client.post_call('/containers/{0}/pause', container.Id)
+                        else:
+                            self.client.post_call('/containers/{0}/unpause', container.Id)
+                    except Exception as exc:
+                        self.fail("Error %s container %s: %s" % (
+                            "pausing" if self.module.params['paused'] else "unpausing", container.Id, to_native(exc)
+                        ))
+                    container = self._get_container(container.Id)
+                self.results['changed'] = True
+                self.results['actions'].append(dict(set_paused=self.module.params['paused']))
+
+        self.facts = container.raw
+
+    def absent(self):
+        container = self._get_container(self.module.params['name'])
+        if container.exists:
+            if container.running:
+                self.diff_tracker.add('running', parameter=False, active=True)
+                self.container_stop(container.Id)
+            self.diff_tracker.add('exists', parameter=False, active=True)
+            self.container_remove(container.Id)
+
+    def _output_logs(self, msg):
+        self.client.module.log(msg=msg)
+
+    def _get_container(self, container):
+        '''
+        Expects container ID or Name. Returns a container object
+        '''
+        return Container(self.client.get_container(container))
+
+    def _get_image(self):
+        image_parameter = self.module.params['image']
+        if not image_parameter:
+            self.log('No image specified')
+            return None
+        if is_image_name_id(image_parameter):
+            image = self.client.find_image_by_id(image_parameter)
+        else:
+            repository, tag = parse_repository_tag(image_parameter)
+            if not tag:
+                tag = "latest"
+            image = self.client.find_image(repository, tag)
+            if not image or self.module.params['pull']:
+                if not self.check_mode:
+                    self.log("Pull the image.")
+                    image, alreadyToLatest = self.client.pull_image(repository, tag)
+                    if alreadyToLatest:
+                        self.results['changed'] = False
+                    else:
+                        self.results['changed'] = True
+                        self.results['actions'].append(dict(pulled_image="%s:%s" % (repository, tag)))
+                elif not image:
+                    # If the image isn't there, claim we'll pull.
+                    # (Implicitly: if the image is there, claim it already was latest.)
+                    self.results['changed'] = True
+                    self.results['actions'].append(dict(pulled_image="%s:%s" % (repository, tag)))
+
+        self.log("image")
+        self.log(image, pretty_print=True)
+        return image
+
+    def _image_is_different(self, image, container):
+        if image and image.get('Id'):
+            if container and container.Image:
+                if image.get('Id') != container.Image:
+                    self.diff_tracker.add('image', parameter=image.get('Id'), active=container.Image)
+                    return True
+        return False
+
+    def _compose_create_parameters(self, image):
+        params = {
+            'Image': image,
+        }
+        for options in self.options:
+            engine = options.get_engine('docker_api')
+            if engine.can_set_value(self.client.docker_api_version):
+                values = {}
+                for option in options.options:
+                    if self.module.params[option.name] is not None:
+                        values[option.name] = self.module.params[option.name]
+                engine.set_value(self.module, params, self.client.docker_api_version, options.options, values)
+        return params
+
+    def has_different_configuration(self, container, image):
+        differences = DifferenceTracker()
+        for options in self.options:
+            engine = options.get_engine('docker_api')
+            container_values = engine.get_value(self.module, container.raw, self.client.docker_api_version, options.options)
+            for option in options.options:
+                if self.module.params[option.name] is not None:
+                    param_value = self.module.params[option.name]
+                    container_value = container_values.get(option.name)
+                    compare = self.comparisons[option.name]
+                    match = compare_generic(param_value, container_value, compare['comparison'], compare['type'])
+
+                    if not match:
+                        # TODO
+                        # if option.option == 'healthcheck' and config_mapping['disable_healthcheck'] and self.parameters.disable_healthcheck:
+                        #     # If the healthcheck is disabled (both in parameters and for the current container), and the user
+                        #     # requested strict comparison for healthcheck, the comparison will fail. That's why we ignore the
+                        #     # expected_healthcheck comparison in this case.
+                        #     continue
+
+                        if option.option == 'labels' and compare['comparison'] == 'strict' and self.module.params['image_label_mismatch'] == 'fail':
+                            # If there are labels from the base image that should be removed and
+                            # base_image_mismatch is fail we want raise an error.
+                            image_labels = self._get_image_labels(image)
+                            would_remove_labels = []
+                            for label in image_labels:
+                                if label not in self.module.params['labels']:
+                                    # Format label for error message
+                                    would_remove_labels.append(label)
+                            if would_remove_labels:
+                                msg = ("Some labels should be removed but are present in the base image. You can set image_label_mismatch to 'ignore' to ignore"
+                                       " this error. Labels: {0}")
+                                self.fail(msg.format(', '.join(['"%s"' % label for label in would_remove_labels])))
+
+                        # no match. record the differences
+                        p = param_value
+                        c = container_value
+                        if compare['type'] == 'set':
+                            # Since the order does not matter, sort so that the diff output is better.
+                            if p is not None:
+                                p = sorted(p)
+                            if c is not None:
+                                c = sorted(c)
+                        elif compare['type'] == 'set(dict)':
+                            # Since the order does not matter, sort so that the diff output is better.
+                            if option.option == 'expected_mounts':
+                                # For selected values, use one entry as key
+                                def sort_key_fn(x):
+                                    return x['target']
+                            else:
+                                # We sort the list of dictionaries by using the sorted items of a dict as its key.
+                                def sort_key_fn(x):
+                                    return sorted((a, to_text(b, errors='surrogate_or_strict')) for a, b in x.items())
+                            if p is not None:
+                                p = sorted(p, key=sort_key_fn)
+                            if c is not None:
+                                c = sorted(c, key=sort_key_fn)
+                        differences.add(option.option, parameter=p, active=c)
+
+        has_differences = not differences.empty
+        return has_differences, differences
+
+    def has_different_resource_limits(self, container):
+        '''
+        Diff parameters and container resource limits
+        '''
+        differences = DifferenceTracker()
+        for options in self.options:
+            engine = options.get_engine('docker_api')
+            if not engine.can_update_value(self.client.docker_api_version):
+                continue
+            container_values = engine.get_value(self.module, container.raw, self.client.docker_api_version, options.options)
+            for option in options.options:
+                if self.module.params[option.name] is not None:
+                    param_value = self.module.params[option.name]
+                    container_value = container_values.get(option.name)
+                    compare = self.comparisons[option.name]
+                    match = compare_generic(param_value, container_value, compare['comparison'], compare['type'])
+
+                    if not match:
+                        # no match. record the differences
+                        differences.add(option.option, parameter=param_value, active=container_value)
+        different = not differences.empty
+        return different, differences
+
+    def _compose_update_parameters(self):
+        result = {}
+        for options in self.options:
+            engine = options.get_engine('docker_api')
+            if not engine.can_update_value(self.client.docker_api_version):
+                continue
+            values = {}
+            for option in options.options:
+                if self.module.params[option.option] is not None:
+                    values[option.option] = self.module.params[option.option]
+            engine.update_value(self.module, result, self.client.docker_api_version, options.options, values)
+        return result
+
+    def update_limits(self, container):
+        limits_differ, different_limits = self.has_different_resource_limits(container)
+        if limits_differ:
+            self.log("limit differences:")
+            self.log(different_limits.get_legacy_docker_container_diffs(), pretty_print=True)
+            self.diff_tracker.merge(different_limits)
+        if limits_differ and not self.check_mode:
+            self.container_update(container.Id, self._compose_update_parameters())
+            return self._get_container(container.Id)
+        return container
+
+    def has_network_differences(self, container):
+        '''
+        Check if the container is connected to requested networks with expected options: links, aliases, ipv4, ipv6
+        '''
+        different = False
+        differences = []
+
+        if not self.module.params['networks']:
+            return different, differences
+
+        if not container.container.get('NetworkSettings'):
+            self.fail("has_missing_networks: Error parsing container properties. NetworkSettings missing.")
+
+        connected_networks = container.container['NetworkSettings']['Networks']
+        for network in self.module.params['networks']:
+            network_info = connected_networks.get(network['name'])
+            if network_info is None:
+                different = True
+                differences.append(dict(
+                    parameter=network,
+                    container=None
+                ))
+            else:
+                diff = False
+                network_info_ipam = network_info.get('IPAMConfig') or {}
+                if network.get('ipv4_address') and network['ipv4_address'] != network_info_ipam.get('IPv4Address'):
+                    diff = True
+                if network.get('ipv6_address') and network['ipv6_address'] != network_info_ipam.get('IPv6Address'):
+                    diff = True
+                if network.get('aliases'):
+                    if not compare_generic(network['aliases'], network_info.get('Aliases'), 'allow_more_present', 'set'):
+                        diff = True
+                if network.get('links'):
+                    expected_links = []
+                    for link, alias in network['links']:
+                        expected_links.append("%s:%s" % (link, alias))
+                    if not compare_generic(expected_links, network_info.get('Links'), 'allow_more_present', 'set'):
+                        diff = True
+                if diff:
+                    different = True
+                    differences.append(dict(
+                        parameter=network,
+                        container=dict(
+                            name=network['name'],
+                            ipv4_address=network_info_ipam.get('IPv4Address'),
+                            ipv6_address=network_info_ipam.get('IPv6Address'),
+                            aliases=network_info.get('Aliases'),
+                            links=network_info.get('Links')
+                        )
+                    ))
+        return different, differences
+
+    def has_extra_networks(self, container):
+        '''
+        Check if the container is connected to non-requested networks
+        '''
+        extra_networks = []
+        extra = False
+
+        if not container.container.get('NetworkSettings'):
+            self.fail("has_extra_networks: Error parsing container properties. NetworkSettings missing.")
+
+        connected_networks = container.container['NetworkSettings'].get('Networks')
+        if connected_networks:
+            for network, network_config in connected_networks.items():
+                keep = False
+                if self.module.params['networks']:
+                    for expected_network in self.module.params['networks']:
+                        if expected_network['name'] == network:
+                            keep = True
+                if not keep:
+                    extra = True
+                    extra_networks.append(dict(name=network, id=network_config['NetworkID']))
+        return extra, extra_networks
+
+    def update_networks(self, container, container_created):
+        updated_container = container
+        if self.comparisons['networks']['comparison'] != 'ignore' or container_created:
+            has_network_differences, network_differences = self.has_network_differences(container)
+            if has_network_differences:
+                if self.diff.get('differences'):
+                    self.diff['differences'].append(dict(network_differences=network_differences))
+                else:
+                    self.diff['differences'] = [dict(network_differences=network_differences)]
+                for netdiff in network_differences:
+                    self.diff_tracker.add(
+                        'network.{0}'.format(netdiff['parameter']['name']),
+                        parameter=netdiff['parameter'],
+                        active=netdiff['container']
+                    )
+                self.results['changed'] = True
+                updated_container = self._add_networks(container, network_differences)
+
+        if (self.comparisons['networks']['comparison'] == 'strict' and self.module.params['networks'] is not None) or self.module.params['purge_networks']:
+            has_extra_networks, extra_networks = self.has_extra_networks(container)
+            if has_extra_networks:
+                if self.diff.get('differences'):
+                    self.diff['differences'].append(dict(purge_networks=extra_networks))
+                else:
+                    self.diff['differences'] = [dict(purge_networks=extra_networks)]
+                for extra_network in extra_networks:
+                    self.diff_tracker.add(
+                        'network.{0}'.format(extra_network['name']),
+                        active=extra_network
+                    )
+                self.results['changed'] = True
+                updated_container = self._purge_networks(container, extra_networks)
+        return updated_container
+
+    def _add_networks(self, container, differences):
+        for diff in differences:
+            # remove the container from the network, if connected
+            if diff.get('container'):
+                self.results['actions'].append(dict(removed_from_network=diff['parameter']['name']))
+                if not self.check_mode:
+                    try:
+                        self.client.post_json('/networks/{0}/disconnect', diff['parameter']['id'], data={'Container': container.Id})
+                    except Exception as exc:
+                        self.fail("Error disconnecting container from network %s - %s" % (diff['parameter']['name'],
+                                                                                          to_native(exc)))
+            # connect to the network
+            params = dict()
+            for para, dest_para in {'ipv4_address': 'IPv4Address', 'ipv6_address': 'IPv6Address', 'links': 'Links', 'aliases': 'Aliases'}.items():
+                if diff['parameter'].get(para):
+                    value = diff['parameter'][para]
+                    if para == 'links':
+                        value = normalize_links(value)
+                    params[dest_para] = value
+            self.results['actions'].append(dict(added_to_network=diff['parameter']['name'], network_parameters=params))
+            if not self.check_mode:
+                try:
+                    self.log("Connecting container to network %s" % diff['parameter']['id'])
+                    self.log(params, pretty_print=True)
+                    data = {
+                        'Container': container.Id,
+                        'EndpointConfig': params,
+                    }
+                    self.client.post_json('/networks/{0}/connect', diff['parameter']['id'], data=data)
+                except Exception as exc:
+                    self.fail("Error connecting container to network %s - %s" % (diff['parameter']['name'], to_native(exc)))
+        return self._get_container(container.Id)
+
+    def _purge_networks(self, container, networks):
+        for network in networks:
+            self.results['actions'].append(dict(removed_from_network=network['name']))
+            if not self.check_mode:
+                try:
+                    self.client.post_json('/networks/{0}/disconnect', network['name'], data={'Container': container.Id})
+                except Exception as exc:
+                    self.fail("Error disconnecting container from network %s - %s" % (network['name'],
+                                                                                      to_native(exc)))
+        return self._get_container(container.Id)
+
+    def container_create(self, image):
+        create_parameters = self._compose_create_parameters(image)
+        self.log("create container")
+        self.log("image: %s parameters:" % image)
+        self.log(create_parameters, pretty_print=True)
+        self.results['actions'].append(dict(created="Created container", create_parameters=create_parameters))
+        self.results['changed'] = True
+        new_container = None
+        if not self.check_mode:
+            try:
+                params = {'name': self.module.params['name']}
+                new_container = self.client.post_json_to_json('/containers/create', data=create_parameters, params=params)
+                self.client.report_warnings(new_container)
+            except Exception as exc:
+                self.fail("Error creating container: %s" % to_native(exc))
+            return self._get_container(new_container['Id'])
+        return new_container
+
+    def container_start(self, container_id):
+        self.log("start container %s" % (container_id))
+        self.results['actions'].append(dict(started=container_id))
+        self.results['changed'] = True
+        if not self.check_mode:
+            try:
+                self.client.post_json('/containers/{0}/start', container_id)
+            except Exception as exc:
+                self.fail("Error starting container %s: %s" % (container_id, to_native(exc)))
+
+            if self.module.params['detach'] is False:
+                status = self.client.post_json_as_json('/containers/{0}/wait', container_id)['StatusCode']
+                self.client.fail_results['status'] = status
+                self.results['status'] = status
+
+                if self.module.params['auto_remove']:
+                    output = "Cannot retrieve result as auto_remove is enabled"
+                    if self.module.params['output_logs']:
+                        self.client.module.warn('Cannot output_logs if auto_remove is enabled!')
+                else:
+                    config = self.client.get_json('/containers/{0}/json', container_id)
+                    logging_driver = config['HostConfig']['LogConfig']['Type']
+
+                    if logging_driver in ('json-file', 'journald', 'local'):
+                        params = {
+                            'stderr': 1,
+                            'stdout': 1,
+                            'timestamps': 0,
+                            'follow': 0,
+                            'tail': 'all',
+                        }
+                        res = self.client._get(self.client._url('/containers/{0}/logs', container_id), params=params)
+                        output = self.client._get_result_tty(False, res, config['Config']['Tty'])
+                        if self.module.params['output_logs']:
+                            self._output_logs(msg=output)
+                    else:
+                        output = "Result logged using `%s` driver" % logging_driver
+
+                if self.module.params['cleanup']:
+                    self.container_remove(container_id, force=True)
+                insp = self._get_container(container_id)
+                if insp.raw:
+                    insp.raw['Output'] = output
+                else:
+                    insp.raw = dict(Output=output)
+                if status != 0:
+                    # Set `failed` to True and return output as msg
+                    self.results['failed'] = True
+                    self.results['msg'] = output
+                return insp
+        return self._get_container(container_id)
+
+    def container_remove(self, container_id, link=False, force=False):
+        volume_state = (not self.module.params['keep_volumes'])
+        self.log("remove container container:%s v:%s link:%s force%s" % (container_id, volume_state, link, force))
+        self.results['actions'].append(dict(removed=container_id, volume_state=volume_state, link=link, force=force))
+        self.results['changed'] = True
+        if not self.check_mode:
+            count = 0
+            while True:
+                try:
+                    params = {'v': volume_state, 'link': link, 'force': force}
+                    self.client.delete_call('"/containers/{0}', container_id, params=params)
+                except NotFound as dummy:
+                    pass
+                except APIError as exc:
+                    if 'Unpause the container before stopping or killing' in exc.explanation:
+                        # New docker daemon versions do not allow containers to be removed
+                        # if they are paused. Make sure we don't end up in an infinite loop.
+                        if count == 3:
+                            self.fail("Error removing container %s (tried to unpause three times): %s" % (container_id, to_native(exc)))
+                        count += 1
+                        # Unpause
+                        try:
+                            self.client.post_call('/containers/{0}/unpause', container_id)
+                        except Exception as exc2:
+                            self.fail("Error unpausing container %s for removal: %s" % (container_id, to_native(exc2)))
+                        # Now try again
+                        continue
+                    if 'removal of container ' in exc.explanation and ' is already in progress' in exc.explanation:
+                        pass
+                    else:
+                        self.fail("Error removing container %s: %s" % (container_id, to_native(exc)))
+                except Exception as exc:
+                    self.fail("Error removing container %s: %s" % (container_id, to_native(exc)))
+                # We only loop when explicitly requested by 'continue'
+                break
+
+    def container_update(self, container_id, update_parameters):
+        if update_parameters:
+            self.log("update container %s" % (container_id))
+            self.log(update_parameters, pretty_print=True)
+            self.results['actions'].append(dict(updated=container_id, update_parameters=update_parameters))
+            self.results['changed'] = True
+            if not self.check_mode and callable(getattr(self.client, 'update_container')):
+                try:
+                    result = self.client.post_json_to_json('/containers/{0}/update', container_id, data=update_parameters)
+                    self.client.report_warnings(result)
+                except Exception as exc:
+                    self.fail("Error updating container %s: %s" % (container_id, to_native(exc)))
+        return self._get_container(container_id)
+
+    def container_kill(self, container_id):
+        self.results['actions'].append(dict(killed=container_id, signal=self.module.params['kill_signal']))
+        self.results['changed'] = True
+        if not self.check_mode:
+            try:
+                params = {}
+                if self.module.params['kill_signal'] is not None:
+                    params['signal'] = int(self.module.params['kill_signal'])
+                self.client.post_call('/containers/{0}/kill', container_id, params=params)
+            except Exception as exc:
+                self.fail("Error killing container %s: %s" % (container_id, to_native(exc)))
+
+    def container_restart(self, container_id):
+        self.results['actions'].append(dict(restarted=container_id, timeout=self.module.params['stop_timeout']))
+        self.results['changed'] = True
+        if not self.check_mode:
+            try:
+                timeout = self.module.params['stop_timeout'] or 10
+                client_timeout = self.client.timeout
+                if client_timeout is not None:
+                    client_timeout += timeout
+                self.client.post('/containers/{0}/restart', container_id, params={'t': timeout}, timeout=client_timeout)
+            except Exception as exc:
+                self.fail("Error restarting container %s: %s" % (container_id, to_native(exc)))
+        return self._get_container(container_id)
+
+    def container_stop(self, container_id):
+        if self.module.params['force_kill']:
+            self.container_kill(container_id)
+            return
+        self.results['actions'].append(dict(stopped=container_id, timeout=self.module.params['stop_timeout']))
+        self.results['changed'] = True
+        if not self.check_mode:
+            count = 0
+            while True:
+                try:
+                    timeout = self.module.params['stop_timeout']
+                    if timeout:
+                        params = {'t': timeout}
+                    else:
+                        params = {}
+                        timeout = 10
+                    client_timeout = self.client.timeout
+                    if client_timeout is not None:
+                        client_timeout += timeout
+                    self.client.post('/containers/{0}/stop', container_id, params=params, timeout=client_timeout)
+                except APIError as exc:
+                    if 'Unpause the container before stopping or killing' in exc.explanation:
+                        # New docker daemon versions do not allow containers to be removed
+                        # if they are paused. Make sure we don't end up in an infinite loop.
+                        if count == 3:
+                            self.fail("Error removing container %s (tried to unpause three times): %s" % (container_id, to_native(exc)))
+                        count += 1
+                        # Unpause
+                        try:
+                            self.client.post_call('/containers/{0}/unpause', container_id)
+                        except Exception as exc2:
+                            self.fail("Error unpausing container %s for removal: %s" % (container_id, to_native(exc2)))
+                        # Now try again
+                        continue
+                    self.fail("Error stopping container %s: %s" % (container_id, to_native(exc)))
+                except Exception as exc:
+                    self.fail("Error stopping container %s: %s" % (container_id, to_native(exc)))
+                # We only loop when explicitly requested by 'continue'
+                break
 
 
 def main():
@@ -1260,9 +2089,20 @@ def main():
         keep_volumes=dict(type='bool', default=True),
         kill_signal=dict(type='str'),
         name=dict(type='str', required=True),
+        networks=dict(type='list', elements='dict', options=dict(
+            name=dict(type='str', required=True),
+            ipv4_address=dict(type='str'),
+            ipv6_address=dict(type='str'),
+            aliases=dict(type='list', elements='str'),
+            links=dict(type='list', elements='str'),
+        )),
         networks_cli_compatible=dict(type='bool', default=True),
+        output_logs=dict(type='bool', default=False),
+        paused=dict(type='bool'),
         pull=dict(type='bool', default=False),
+        purge_networks=dict(type='bool', default=False),
         recreate=dict(type='bool', default=False),
+        removal_wait_timeout=dict(type='float'),
         restart=dict(type='bool', default=False),
         state=dict(type='str', default='started', choices=['absent', 'present', 'started', 'stopped']),
         stop_signal=dict(type='str'),
@@ -1278,6 +2118,7 @@ def main():
 
     option_minimal_versions = {}
 
+    active_options = []
     for options in OPTIONS:
         if not options.supports_engine('docker_api'):
             continue
@@ -1294,6 +2135,8 @@ def main():
             for option in options.options:
                 option_minimal_versions[option.name] = {'docker_api_version': engine.min_docker_api}
 
+        active_options.append(options)
+
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         mutually_exclusive=mutually_exclusive,
@@ -1304,13 +2147,9 @@ def main():
         option_minimal_versions=option_minimal_versions,
         supports_check_mode=True,
     )
-    if client.module.params['networks_cli_compatible'] is True and client.module.params['networks'] and client.module.params['network_mode'] is None:
-        # Same behavior as Docker CLI: if networks are specified, use the name of the first network as the value for network_mode
-        # (assuming no explicit value is specified for network_mode)
-        client.module.params['network_mode'] = client.module.params['networks'][0]['name']
 
     try:
-        cm = ContainerManager(client, OPTIONS)
+        cm = ContainerManager(client, active_options)
         cm.run()
         client.module.exit_json(**sanitize_result(cm.results))
     except DockerException as e:
