@@ -14,7 +14,9 @@
   shell: curl -fsSL https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg >key && apt-key add key
 
 - name: Add Docker repo
-  shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
+    state: present
 
 - block:
   - name: Prevent service restart
