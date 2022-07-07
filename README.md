@@ -16,9 +16,17 @@ Please note that Ansible 2.9 and ansible-base 2.10 are no longer supported. If y
 
 ## External requirements
 
-Most modules and plugins require the [Docker SDK for Python](https://pypi.org/project/docker/) and Python 2.7 or newer. Python 2.6 is no longer supported; use community.docker 2.x.y if you need to use Python 2.6.
+Some modules and plugins require the Docker CLI programs or other external programs, some require the [Docker SDK for Python](https://pypi.org/project/docker/), and some use [requests](https://pypi.org/project/requests/) to directly talk to the Docker daemon's API. All modules and plugins require Python 2.7 or newer. Python 2.6 is no longer supported; use community.docker 2.x.y if you need to use Python 2.6.
 
-If you have Docker SDK for Python < 2.0.0 installed ([docker-py](https://pypi.org/project/docker-py/)), you can still use it, though we recommend to uninstall it and then install [docker](https://pypi.org/project/docker/), the Docker SDK for Python >= 2.0.0. Note that both libraries cannot be installed at the same time. If you accidentally did install them simultaneously, you have to uninstall *both* before re-installing one of them.
+Installing the Docker SDK for Python also installs the requirements for the modules and plugins that use `requests`. If you do not want to install the SDK but install directly the required Python libraries, you need the following ones:
+
+- [requests](https://pypi.org/project/requests/);
+- [pywin32](https://pypi.org/project/pywin32/) when using named pipes on Windows with the Windows 32 API;
+- [paramiko](https://pypi.org/project/paramiko/) when using SSH to connect to the Docker daemon with `use_ssh_client=false`;
+- [pyOpenSSL](https://pypi.org/project/pyOpenSSL/) when using TLS to connect to the Docker daemon;
+- [backports.ssl_match_hostname](https://pypi.org/project/backports.ssl_match_hostname/) when using TLS to connect to the Docker daemon on Python 2.
+
+If you have Docker SDK for Python < 2.0.0 installed ([docker-py](https://pypi.org/project/docker-py/)), you can still use it for modules that support it, though we recommend to uninstall it and then install [docker](https://pypi.org/project/docker/), the Docker SDK for Python >= 2.0.0. Note that both libraries cannot be installed at the same time. If you accidentally did install them simultaneously, you have to uninstall *both* before re-installing one of them.
 
 ## Included content
 
