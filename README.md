@@ -16,9 +16,9 @@ Please note that Ansible 2.9 and ansible-base 2.10 are no longer supported. If y
 
 ## External requirements
 
-Some modules and plugins require the Docker CLI programs or other external programs, some require the [Docker SDK for Python](https://pypi.org/project/docker/), and some use [requests](https://pypi.org/project/requests/) to directly talk to the Docker daemon's API. All modules and plugins require Python 2.7 or newer. Python 2.6 is no longer supported; use community.docker 2.x.y if you need to use Python 2.6.
+Some modules and plugins require Docker CLI, or other external, programs. Some require the [Docker SDK for Python](https://pypi.org/project/docker/) and some use [requests](https://pypi.org/project/requests/) to directly communicate with the Docker daemon API. All modules and plugins require Python 2.7 or later. Python 2.6 is no longer supported; use community.docker 2.x.y if you need to use Python 2.6.
 
-Installing the Docker SDK for Python also installs the requirements for the modules and plugins that use `requests`. If you do not want to install the SDK but install directly the required Python libraries, you need the following ones:
+Installing the Docker SDK for Python also installs the requirements for the modules and plugins that use `requests`. If you want to directly install the Python libraries instead of the SDK, you need the following ones:
 
 - [requests](https://pypi.org/project/requests/);
 - [pywin32](https://pypi.org/project/pywin32/) when using named pipes on Windows with the Windows 32 API;
