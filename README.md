@@ -23,8 +23,11 @@ If you have Docker SDK for Python < 2.0.0 installed ([docker-py](https://pypi.or
 ## Included content
 
 * Connection plugins:
-  - community.docker.docker: use Docker containers as remotes
+  - community.docker.docker: use Docker containers as remotes using the Docker CLI program
+  - community.docker.docker_api: use Docker containers as remotes using the Docker API
+  - community.docker.nsenter: execute commands on the host running the controller container
 * Inventory plugins:
+  - community.docker.docker_containers: dynamic inventory plugin for Docker containers
   - community.docker.docker_machine: collect Docker machines as inventory
   - community.docker.docker_swarm: collect Docker Swarm nodes as inventory
 * Modules:
