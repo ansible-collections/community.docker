@@ -384,7 +384,7 @@ def _postprocess_healthcheck_get_value(module, api_version, value, sentry):
 
 def _preprocess_convert_to_bytes(module, values, name, unlimited_value=None):
     if name not in values:
-        return
+        return values
     try:
         value = values[name]
         if unlimited_value is not None and value == 'unlimited':
@@ -392,6 +392,7 @@ def _preprocess_convert_to_bytes(module, values, name, unlimited_value=None):
         else:
             value = human_to_bytes(value)
         values[name] = value
+        return values
     except ValueError as exc:
         module.fail_json(msg='Failed to convert %s to bytes: %s' % (name, to_native(exc)))
 
