@@ -1218,6 +1218,7 @@ from ansible_collections.community.docker.plugins.module_utils.common_api import
 from ansible_collections.community.docker.plugins.module_utils.module_container import (
     DockerAPIEngineDriver,
     OPTIONS,
+    Option,
 )
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DifferenceTracker,
@@ -1273,14 +1274,12 @@ class Container(DockerBaseClass):
 
 
 class ContainerManager(DockerBaseClass):
-    def __init__(self, client, active_options):
+    def __init__(self, module, client, active_options):
         self.client = client
         self.options = active_options
-        self.all_options = {}
-        for options in active_options:
-            for option in options.options:
-                self.all_options[option.name] = option
-        self.module = client.module
+        self.all_options = self._collect_all_options(active_options)
+        self.module = module
+        self.check_mode = self.module.check_mode
         self.param_cleanup = self.module.params['cleanup']
         self.param_container_default_behavior = self.module.params['container_default_behavior']
         self.param_debug = self.module.params['debug']
@@ -1299,25 +1298,93 @@ class ContainerManager(DockerBaseClass):
         self.param_removal_wait_timeout = self.module.params['removal_wait_timeout']
         self.param_restart = self.module.params['restart']
         self.param_state = self.module.params['state']
-        self.comparisons = {}
         self._parse_comparisons()
         self._update_params()
-        self.check_mode = self.client.check_mode
+        self.parameters = self._collect_params(active_options)
         self.results = {'changed': False, 'actions': []}
         self.diff = {}
         self.diff_tracker = DifferenceTracker()
         self.facts = {}
 
-        self.parameters = []
+    def _collect_all_options(self, active_options):
+        all_options = {}
         for options in active_options:
-            values = {}
-            engine = options.get_engine('docker_api')
             for option in options.options:
-                if self.module.params[option.name] is not None:
-                    values[option.name] = self.module.params[option.name]
-            values = options.preprocess(self.module, values)
-            engine.preprocess_value(self.module, self.client.docker_api_version, options.options, values)
-            self.parameters.append((options, values))
+                all_options[option.name] = option
+        for option in [
+            Option('image', 'str', None),
+            Option('networks', 'set', None, elements='dict', ansible_suboptions={}),
+        ]:
+            all_options[option.name] = option
+        return all_options
+
+    def _collect_all_module_params(self):
+        all_module_options = set()
+        for option, data in self.module.argument_spec.items():
+            all_module_options.add(option)
+            if 'aliases' in data:
+                for alias in data['aliases']:
+                    all_module_options.add(alias)
+        return all_module_options
+
+    def _parse_comparisons(self):
+        # Keep track of all module params and all option aliases
+        all_module_options = self._collect_all_module_params()
+        comp_aliases = {}
+        for option_name, option in self.all_options.items():
+            comp_aliases[option_name] = option_name
+            for alias in option.ansible_aliases:
+                comp_aliases[alias] = option_name
+        # Process legacy ignore options
+        if self.module.params['ignore_image']:
+            self.all_options['image'].comparison = 'ignore'
+        if self.param_purge_networks:
+            self.all_options['networks'].comparison = 'strict'
+        # Process comparsions specified by user
+        if self.module.params.get('comparisons'):
+            # If '*' appears in comparisons, process it first
+            if '*' in self.module.params['comparisons']:
+                value = self.module.params['comparisons']['*']
+                if value not in ('strict', 'ignore'):
+                    self.fail("The wildcard can only be used with comparison modes 'strict' and 'ignore'!")
+                for option in self.all_options.values():
+                    if option.name == 'networks':
+                        # `networks` is special: only update if
+                        # some value is actually specified
+                        if self.module.params['networks'] is None:
+                            continue
+                    option.comparison = value
+            # Now process all other comparisons.
+            comp_aliases_used = {}
+            for key, value in self.module.params['comparisons'].items():
+                if key == '*':
+                    continue
+                # Find main key
+                key_main = comp_aliases.get(key)
+                if key_main is None:
+                    if key_main in all_module_options:
+                        self.fail("The module option '%s' cannot be specified in the comparisons dict, "
+                                  "since it does not correspond to container's state!" % key)
+                    if key not in self.all_options:
+                        self.fail("Unknown module option '%s' in comparisons dict!" % key)
+                    key_main = key
+                if key_main in comp_aliases_used:
+                    self.fail("Both '%s' and '%s' (aliases of %s) are specified in comparisons dict!" % (key, comp_aliases_used[key_main], key_main))
+                comp_aliases_used[key_main] = key
+                # Check value and update accordingly
+                if value in ('strict', 'ignore'):
+                    self.all_options[key_main].comparison = value
+                elif value == 'allow_more_present':
+                    if self.all_options[key_main].comparison_type == 'value':
+                        self.fail("Option '%s' is a value and not a set/list/dict, so its comparison cannot be %s" % (key, value))
+                    self.all_options[key_main].comparison = value
+                else:
+                    self.fail("Unknown comparison mode '%s'!" % value)
+        # Check legacy values
+        if self.module.params['ignore_image'] and self.all_options['image'].comparison != 'ignore':
+            self.module.warn('The ignore_image option has been overridden by the comparisons option!')
+        if self.param_purge_networks and self.all_options['networks'].comparison != 'strict':
+            self.module.warn('The purge_networks option has been overridden by the comparisons option!')
 
     def _update_params(self):
         if self.param_networks_cli_compatible is True and self.module.params['networks'] and self.module.params['network_mode'] is None:
@@ -1340,102 +1407,18 @@ class ContainerManager(DockerBaseClass):
                 if self.module.params[param] is None:
                     self.module.params[param] = value
 
-    def _parse_comparisons(self):
-        # Create default values for comparisons
-        self.comparisons['image'] = {
-            'type': 'value',
-            'comparison': 'strict',
-            'name': 'image',
-        }
-        self.comparisons['networks'] = {
-            'type': 'set(dict)',
-            'comparison': 'allow_more_present',
-            'name': 'networks',
-        }
-        default_comparison_values = dict(
-            stop_timeout='ignore',
-        )
-        comp_aliases = {}
-        for option_name, option in self.all_options.items():
-            # Keep track of all aliases
-            comp_aliases[option_name] = option_name
-            for alias in option.ansible_aliases:
-                comp_aliases[alias] = option_name
-            # Determine datatype
-            datatype = option.type
-            if datatype == 'set' and option.elements == 'dict':
-                datatype = 'set(dict)'
-            elif datatype not in ('set', 'list', 'dict'):
-                datatype = 'value'
-            # Determine comparison
-            if option in default_comparison_values:
-                comparison = default_comparison_values[option]
-            elif datatype in ('list', 'value'):
-                comparison = 'strict'
-            else:
-                comparison = 'allow_more_present'
-            self.comparisons[option_name] = {
-                'type': datatype,
-                'comparison': comparison,
-                'name': option_name,
-            }
-        # Collect all module options
-        all_module_options = set(comp_aliases)
-        for option, data in self.module.argument_spec.items():
-            all_module_options.add(option)
-            if 'aliases' in data:
-                for alias in data['aliases']:
-                    all_module_options.add(alias)
-        # Process legacy ignore options
-        if self.module.params['ignore_image']:
-            self.comparisons['image']['comparison'] = 'ignore'
-        if self.param_purge_networks:
-            self.comparisons['networks']['comparison'] = 'strict'
-        # Process comparsions specified by user
-        if self.module.params.get('comparisons'):
-            # If '*' appears in comparisons, process it first
-            if '*' in self.module.params['comparisons']:
-                value = self.module.params['comparisons']['*']
-                if value not in ('strict', 'ignore'):
-                    self.fail("The wildcard can only be used with comparison modes 'strict' and 'ignore'!")
-                for option, v in self.comparisons.items():
-                    if option == 'networks':
-                        # `networks` is special: only update if
-                        # some value is actually specified
-                        if self.module.params['networks'] is None:
-                            continue
-                    v['comparison'] = value
-            # Now process all other comparisons.
-            comp_aliases_used = {}
-            for key, value in self.module.params['comparisons'].items():
-                if key == '*':
-                    continue
-                # Find main key
-                key_main = comp_aliases.get(key)
-                if key_main is None:
-                    if key_main in all_module_options:
-                        self.fail("The module option '%s' cannot be specified in the comparisons dict, "
-                                  "since it does not correspond to container's state!" % key)
-                    if key not in self.comparisons:
-                        self.fail("Unknown module option '%s' in comparisons dict!" % key)
-                    key_main = key
-                if key_main in comp_aliases_used:
-                    self.fail("Both '%s' and '%s' (aliases of %s) are specified in comparisons dict!" % (key, comp_aliases_used[key_main], key_main))
-                comp_aliases_used[key_main] = key
-                # Check value and update accordingly
-                if value in ('strict', 'ignore'):
-                    self.comparisons[key_main]['comparison'] = value
-                elif value == 'allow_more_present':
-                    if self.comparisons[key_main]['type'] == 'value':
-                        self.fail("Option '%s' is a value and not a set/list/dict, so its comparison cannot be %s" % (key, value))
-                    self.comparisons[key_main]['comparison'] = value
-                else:
-                    self.fail("Unknown comparison mode '%s'!" % value)
-        # Check legacy values
-        if self.module.params['ignore_image'] and self.comparisons['image']['comparison'] != 'ignore':
-            self.module.warn('The ignore_image option has been overridden by the comparisons option!')
-        if self.param_purge_networks and self.comparisons['networks']['comparison'] != 'strict':
-            self.module.warn('The purge_networks option has been overridden by the comparisons option!')
+    def _collect_params(self, active_options):
+        parameters = []
+        for options in active_options:
+            values = {}
+            engine = options.get_engine('docker_api')
+            for option in options.options:
+                if self.module.params[option.name] is not None:
+                    values[option.name] = self.module.params[option.name]
+            values = options.preprocess(self.module, values)
+            engine.preprocess_value(self.module, self.client.docker_api_version, options.options, values)
+            parameters.append((options, values))
+        return parameters
 
     def fail(self, *args, **kwargs):
         self.client.fail(*args, **kwargs)
@@ -1523,7 +1506,7 @@ class ContainerManager(DockerBaseClass):
             # Existing container
             different, differences = self.has_different_configuration(container, image)
             image_different = False
-            if self.comparisons['image']['comparison'] == 'strict':
+            if self.all_options['image'].comparison == 'strict':
                 image_different = self._image_is_different(image, container)
             if image_different or different or self.param_recreate:
                 self.diff_tracker.merge(differences)
@@ -1592,7 +1575,7 @@ class ContainerManager(DockerBaseClass):
             self.container_remove(container.Id)
 
     def _output_logs(self, msg):
-        self.client.module.log(msg=msg)
+        self.module.log(msg=msg)
 
     def _get_container(self, container):
         '''
@@ -1658,8 +1641,7 @@ class ContainerManager(DockerBaseClass):
                 if option.name in param_values:
                     param_value = param_values[option.name]
                     container_value = container_values.get(option.name)
-                    compare = self.comparisons[option.name]
-                    match = compare_generic(param_value, container_value, compare['comparison'], compare['type'])
+                    match = compare_generic(param_value, container_value, option.comparison, option.comparison_type)
 
                     if not match:
                         # TODO
@@ -1725,8 +1707,7 @@ class ContainerManager(DockerBaseClass):
                 if option.name in param_values:
                     param_value = param_values[option.name]
                     container_value = container_values.get(option.name)
-                    compare = self.comparisons[option.name]
-                    match = compare_generic(param_value, container_value, compare['comparison'], compare['type'])
+                    match = compare_generic(param_value, container_value, option.comparison, option.comparison_type)
 
                     if not match:
                         # no match. record the differences
@@ -1831,7 +1812,7 @@ class ContainerManager(DockerBaseClass):
 
     def update_networks(self, container, container_created):
         updated_container = container
-        if self.comparisons['networks']['comparison'] != 'ignore' or container_created:
+        if self.all_options['networks'].comparison != 'ignore' or container_created:
             has_network_differences, network_differences = self.has_network_differences(container)
             if has_network_differences:
                 if self.diff.get('differences'):
@@ -1847,7 +1828,7 @@ class ContainerManager(DockerBaseClass):
                 self.results['changed'] = True
                 updated_container = self._add_networks(container, network_differences)
 
-        if (self.comparisons['networks']['comparison'] == 'strict' and self.module.params['networks'] is not None) or self.param_purge_networks:
+        if (self.all_options['networks'].comparison == 'strict' and self.module.params['networks'] is not None) or self.param_purge_networks:
             has_extra_networks, extra_networks = self.has_extra_networks(container)
             if has_extra_networks:
                 if self.diff.get('differences'):
@@ -1943,7 +1924,7 @@ class ContainerManager(DockerBaseClass):
                 if self.module.params['auto_remove']:
                     output = "Cannot retrieve result as auto_remove is enabled"
                     if self.param_output_logs:
-                        self.client.module.warn('Cannot output_logs if auto_remove is enabled!')
+                        self.module.warn('Cannot output_logs if auto_remove is enabled!')
                 else:
                     config = self.client.get_json('/containers/{0}/json', container_id)
                     logging_driver = config['HostConfig']['LogConfig']['Type']
@@ -1987,7 +1968,7 @@ class ContainerManager(DockerBaseClass):
             while True:
                 try:
                     params = {'v': volume_state, 'link': link, 'force': force}
-                    self.client.delete_call('"/containers/{0}', container_id, params=params)
+                    self.client.delete_call('/containers/{0}', container_id, params=params)
                 except NotFound as dummy:
                     pass
                 except APIError as exc:
@@ -2168,7 +2149,7 @@ def main():
     )
 
     try:
-        cm = ContainerManager(client, active_options)
+        cm = ContainerManager(client.module, client, active_options)
         cm.run()
         client.module.exit_json(**sanitize_result(cm.results))
     except DockerException as e:

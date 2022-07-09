@@ -35,6 +35,7 @@ class Option(object):
         ansible_suboptions=None,
         ansible_aliases=None,
         ansible_choices=None,
+        default_comparison=None,
     ):
         self.name = name
         self.type = type
@@ -59,6 +60,18 @@ class Option(object):
         self.ansible_suboptions = ansible_suboptions if needs_suboptions else None
         self.ansible_aliases = ansible_aliases or []
         self.ansible_choices = ansible_choices
+        comparison_type = self.type
+        if comparison_type == 'set' and self.elements == 'dict':
+            comparison_type = 'set(dict)'
+        elif comparison_type not in ('set', 'list', 'dict'):
+            comparison_type = 'value'
+        self.comparison_type = comparison_type
+        if default_comparison is not None:
+            self.comparison = default_comparison
+        elif comparison_type in ('list', 'value'):
+            self.comparison = 'strict'
+        else:
+            self.comparison = 'allow_more_present'
 
 
 class OptionGroup(object):
@@ -637,7 +650,7 @@ OPTIONS = [
 #         runtime=dict(type='str'),
 #         security_opts=dict(type='list', elements='str'),
 #         shm_size=dict(type='str'),
-#         stop_timeout=dict(type='int'),
+#         stop_timeout=dict(type='int'), default_comparison='ignore'
 #         storage_opts=dict(type='dict'),
 #         sysctls=dict(type='dict'),
 #         tmpfs=dict(type='list', elements='str'),
