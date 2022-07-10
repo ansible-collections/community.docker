@@ -2,16 +2,21 @@
 # Copyright 2016 Red Hat | Ansible
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+import os
+import re
 import shlex
 
 from functools import partial
 
 from ansible.module_utils.common.text.converters import to_native, to_text
 from ansible.module_utils.common.text.formatters import human_to_bytes
+from ansible.module_utils.six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
+    clean_dict_booleans_for_docker_api,
+    omit_none_from_dict,
     parse_healthcheck,
 )
 
@@ -456,7 +461,9 @@ def _preprocess_env(module, values):
     formatted_env = []
     for key, value in final_env:
         formatted_env.append('%s=%s' % (key, value))
-    return formatted_env
+    return {
+        'env': formatted_env,
+    }
 
 
 def _get_expected_env_value(module, client, api_version, image, value, sentry):
@@ -686,7 +693,7 @@ def _preprocess_ulimits(module, values):
     if 'ulimits' not in values:
         return values
     result = []
-    for value in values['ulimits']:
+    for limit in values['ulimits']:
         limits = dict()
         pieces = limit.split(':')
         if len(pieces) >= 2:
@@ -695,7 +702,7 @@ def _preprocess_ulimits(module, values):
             limits['Hard'] = int(pieces[1])
         if len(pieces) == 3:
             limits['Hard'] = int(pieces[2])
-        results.append(limits)
+        result.append(limits)
     return {
         'ulimits': result,
     }
@@ -727,7 +734,7 @@ def _preprocess_mounts(module, values):
                 module.fail_json(msg='source must be specified for mount "{0}" of type "{1}"'.format(target, mount_type))
             for option, req_mount_type in _MOUNT_OPTION_TYPES.items():
                 if mount[option] is not None and mount_type != req_mount_type:
-                    self.client.fail('{0} cannot be specified for mount "{1}" of type "{2}" (needs type "{3}")'.format(option, target, mount_type, req_mount_type))
+                    module.fail_json(msg='{0} cannot be specified for mount "{1}" of type "{2}" (needs type "{3}")'.format(option, target, mount_type, req_mount_type))
 
             # Streamline options
             volume_options = mount_dict.pop('volume_options')
@@ -760,13 +767,13 @@ def _preprocess_mounts(module, values):
                         module.fail_json(msg='Found invalid volumes mode: {0}'.format(mode))
                     if re.match(r'[.~]', host):
                         host = os.path.abspath(os.path.expanduser(host))
-                    f(container, 'volumes')
+                    check_collision(container, 'volumes')
                     new_vols.append("%s:%s:%s" % (host, container, mode))
                     continue
                 elif len(parts) == 2:
                     if not is_volume_permissions(parts[1]) and re.match(r'[.~]', parts[0]):
                         host = os.path.abspath(os.path.expanduser(parts[0]))
-                        f(parts[1], 'volumes')
+                        check_collision(parts[1], 'volumes')
                         new_vols.append("%s:%s:rw" % (host, parts[1]))
                         continue
             check_collision(vol.split(':', 1)[0], 'volumes')
@@ -947,6 +954,75 @@ def _set_values_mounts(module, data, api_version, options, values):
         data['HostConfig']['Binds'] = values['volume_binds']
 
 
+def _preprocess_log(module, values):
+    result = {}
+    if 'log_driver' not in values:
+        return result
+    result['log_driver'] = values['log_driver']
+    if 'log_options' in values:
+        options = {}
+        for k, v in values['log_options'].items():
+            if not isinstance(v, string_types):
+                module.warn(
+                    "Non-string value found for log_options option '%s'. The value is automatically converted to '%s'. "
+                    "If this is not correct, or you want to avoid such warnings, please quote the value." % (
+                        k, to_text(v, errors='surrogate_or_strict'))
+                )
+            v = to_text(v, errors='surrogate_or_strict')
+            options[k] = v
+        result['log_options'] = options
+    return result
+
+
+def _get_values_log(module, container, api_version, options):
+    log_config = container['HostConfig'].get('LogConfig') or {}
+    return {
+        'log_driver': log_config.get('Type'),
+        'log_options': log_config.get('Config'),
+    }
+
+
+def _set_values_log(module, data, api_version, options, values):
+    if 'log_driver' not in values:
+        return
+    log_config = {
+        'Type': values['log_driver'],
+        'Config': values.get('log_options') or {},
+    }
+    if 'HostConfig' not in data:
+        data['HostConfig'] = {}
+    data['HostConfig']['LogConfig'] = log_config
+
+
+def _get_values_restart(module, container, api_version, options):
+    restart_policy = container['HostConfig'].get('RestartPolicy') or {}
+    return {
+        'restart_policy': restart_policy.get('Name'),
+        'restart_retries': restart_policy.get('MaximumRetryCount'),
+    }
+
+
+def _set_values_restart(module, data, api_version, options, values):
+    if 'restart_policy' not in values:
+        return
+    restart_policy = {
+        'Name': values['restart_policy'],
+        'MaximumRetryCount': values.get('restart_retries'),
+    }
+    if 'HostConfig' not in data:
+        data['HostConfig'] = {}
+    data['HostConfig']['RestartPolicy'] = restart_policy
+
+
+def _update_value_restart(module, data, api_version, options, values):
+    if 'restart_policy' not in values:
+        return
+    data['RestartPolicy'] = {
+        'Name': values['restart_policy'],
+        'MaximumRetryCount': values.get('restart_retries'),
+    }
+
+
 def _preprocess_container_names(module, client, api_version, value):
     if value is None or not value.startswith('container:'):
         return value
@@ -1125,6 +1201,14 @@ OPTIONS = [
     .add_option('links', type='set', elements='list', ansible_elements='str')
     .add_docker_api(DockerAPIEngine.config_value('Links', preprocess_value=_preprocess_links)),
 
+    OptionGroup(preprocess=_preprocess_log, ansible_required_by={'log_options': ['log_driver']})
+    .add_option('log_driver', type='str')
+    .add_option('log_options', type='dict', ansible_aliases=['log_opt'], needs_no_suboptions=True)
+    .add_docker_api(DockerAPIEngine(
+        get_value=_get_values_log,
+        set_value=_set_values_log,
+    )),
+
     OptionGroup(preprocess=_preprocess_mac_address)
     .add_option('mac_address', type='str')
     .add_docker_api(DockerAPIEngine.config_value('MacAddress')),
@@ -1176,6 +1260,16 @@ OPTIONS = [
     OptionGroup()
     .add_option('read_only', type='bool')
     .add_docker_api(DockerAPIEngine.host_config_value('ReadonlyRootfs')),
+
+    OptionGroup(ansible_required_by={'restart_retries': ['restart_policy']})
+    .add_option('restart_policy', type='str', ansible_choices=['no', 'on-failure', 'always', 'unless-stopped'])
+    .add_option('restart_retries', type='int')
+    .add_docker_api(..., )
+    .add_docker_api(DockerAPIEngine(
+        get_value=_get_values_restart,
+        set_value=_set_values_restart,
+        update_value=_update_value_restart,
+    )),
 
     OptionGroup()
     .add_option('runtime', type='str')
@@ -1252,23 +1346,12 @@ OPTIONS = [
     .add_option('volume_binds', type='set', elements='str', not_an_ansible_option=True, copy_comparison_from='volumes')
     .add_docker_api(DockerAPIEngine(
         get_value=_get_values_mounts,
-        get_expected_values=_get_expected_values_mounts,
         set_value=_set_values_mounts,
     )),
 ]
+
 
 # Options / option groups that are more complex:
 #         exposed_ports=dict(type='list', elements='str', aliases=['exposed', 'expose']),
 #         publish_all_ports=dict(type='bool'),
 #         published_ports=dict(type='list', elements='str', aliases=['ports']),
-
-#    OptionGroup(ansible_required_by={'log_options': ['log_driver']})
-#    .add_option('log_driver', type='str')
-#    .add_option('log_options', type='dict', ansible_aliases=['log_opt'])
-#    .add_docker_api(...)
-
-#    OptionGroup(ansible_required_by={'restart_retries': ['restart_policy']})
-#    .add_option('restart_policy', type='str', ansible_choices=['no', 'on-failure', 'always', 'unless-stopped'])
-#    .add_option('restart_retries', type='int')
-#    .add_docker_api(..., )
-#   ---------------- only for policy: update_parameter='RestartPolicy'
