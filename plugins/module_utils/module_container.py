@@ -52,6 +52,8 @@ class Option(object):
         needs_no_suboptions=False,
         default_comparison=None,
         not_a_container_option=False,
+        not_an_ansible_option=False,
+        copy_comparison_from=None,
     ):
         self.name = name
         self.type = type
@@ -68,10 +70,10 @@ class Option(object):
             raise Exception('Ansible elements required for Ansible lists')
         self.elements = elements if needs_elements else None
         self.ansible_elements = (ansible_elements or _get_ansible_type(elements)) if needs_ansible_elements else None
-        needs_suboptions = (self.type in ('list', 'set') and elements == 'dict') or (self.type == 'dict')
+        needs_suboptions = (self.ansible_type == 'list' and self.ansible_elements == 'dict') or (self.ansible_type == 'dict')
         if ansible_suboptions is not None and not needs_suboptions:
             raise Exception('suboptions only allowed for Ansible lists with dicts, or Ansible dicts')
-        if ansible_suboptions is None and needs_suboptions and not needs_no_suboptions:
+        if ansible_suboptions is None and needs_suboptions and not needs_no_suboptions and not not_an_ansible_option:
             raise Exception('suboptions required for Ansible lists with dicts, or Ansible dicts')
         self.ansible_suboptions = ansible_suboptions if needs_suboptions else None
         self.ansible_aliases = ansible_aliases or []
@@ -89,6 +91,8 @@ class Option(object):
         else:
             self.comparison = 'allow_more_present'
         self.not_a_container_option = not_a_container_option
+        self.not_an_ansible_option = not_an_ansible_option
+        self.copy_comparison_from = copy_comparison_from
 
 
 class OptionGroup(object):
@@ -118,18 +122,19 @@ class OptionGroup(object):
         option = Option(*args, owner=self, **kwargs)
         if not option.not_a_container_option:
             self.options.append(option)
-        ansible_option = {
-            'type': option.ansible_type,
-        }
-        if option.ansible_elements is not None:
-            ansible_option['elements'] = option.ansible_elements
-        if option.ansible_suboptions is not None:
-            ansible_option['options'] = option.ansible_suboptions
-        if option.ansible_aliases:
-            ansible_option['aliases'] = option.ansible_aliases
-        if option.ansible_choices is not None:
-            ansible_option['choices'] = option.ansible_choices
-        self.argument_spec[option.name] = ansible_option
+        if not option.not_an_ansible_option:
+            ansible_option = {
+                'type': option.ansible_type,
+            }
+            if option.ansible_elements is not None:
+                ansible_option['elements'] = option.ansible_elements
+            if option.ansible_suboptions is not None:
+                ansible_option['options'] = option.ansible_suboptions
+            if option.ansible_aliases:
+                ansible_option['aliases'] = option.ansible_aliases
+            if option.ansible_choices is not None:
+                ansible_option['choices'] = option.ansible_choices
+            self.argument_spec[option.name] = ansible_option
         return self
 
     def supports_engine(self, engine_name):
@@ -696,6 +701,252 @@ def _preprocess_ulimits(module, values):
     }
 
 
+def _preprocess_mounts(module, values):
+    last = dict()
+
+    def check_collision(t, name):
+        if t in last:
+            if name == last[t]:
+                module.fail_json(msg='The mount point "{0}" appears twice in the {1} option'.format(t, name))
+            else:
+                module.fail_json(msg='The mount point "{0}" appears both in the {1} and {2} option'.format(t, name, last[t]))
+        last[t] = name
+
+    if 'mounts' in values:
+        mounts = []
+        for mount in values['mounts']:
+            target = mount['target']
+            mount_type = mount['type']
+
+            check_collision(target, 'mounts')
+
+            mount_dict = dict(mount)
+
+            # Sanity checks
+            if mount['source'] is None and mount_type not in ('tmpfs', 'volume'):
+                module.fail_json(msg='source must be specified for mount "{0}" of type "{1}"'.format(target, mount_type))
+            for option, req_mount_type in _MOUNT_OPTION_TYPES.items():
+                if mount[option] is not None and mount_type != req_mount_type:
+                    self.client.fail('{0} cannot be specified for mount "{1}" of type "{2}" (needs type "{3}")'.format(option, target, mount_type, req_mount_type))
+
+            # Streamline options
+            volume_options = mount_dict.pop('volume_options')
+            if mount_dict['volume_driver'] and volume_options:
+                mount_dict['volume_options'] = clean_dict_booleans_for_docker_api(volume_options)
+            if mount_dict['labels']:
+                mount_dict['labels'] = clean_dict_booleans_for_docker_api(mount_dict['labels'])
+            if mount_dict['tmpfs_size'] is not None:
+                try:
+                    mount_dict['tmpfs_size'] = human_to_bytes(mount_dict['tmpfs_size'])
+                except ValueError as exc:
+                    module.fail_json(msg='Failed to convert tmpfs_size of mount "{0}" to bytes: {1}'.format(target, to_native(exc)))
+            if mount_dict['tmpfs_mode'] is not None:
+                try:
+                    mount_dict['tmpfs_mode'] = int(mount_dict['tmpfs_mode'], 8)
+                except Exception as dummy:
+                    module.fail_json(msg='tmp_fs mode of mount "{0}" is not an octal string!'.format(target))
+
+            # Add result to list
+            mounts.append(omit_none_from_dict(mount_dict))
+        values['mounts'] = mounts
+    if 'volumes' in values:
+        new_vols = []
+        for vol in values['volumes']:
+            if ':' in vol:
+                parts = vol.split(':')
+                if len(parts) == 3:
+                    host, container, mode = parts
+                    if not is_volume_permissions(mode):
+                        module.fail_json(msg='Found invalid volumes mode: {0}'.format(mode))
+                    if re.match(r'[.~]', host):
+                        host = os.path.abspath(os.path.expanduser(host))
+                    f(container, 'volumes')
+                    new_vols.append("%s:%s:%s" % (host, container, mode))
+                    continue
+                elif len(parts) == 2:
+                    if not is_volume_permissions(parts[1]) and re.match(r'[.~]', parts[0]):
+                        host = os.path.abspath(os.path.expanduser(parts[0]))
+                        f(parts[1], 'volumes')
+                        new_vols.append("%s:%s:rw" % (host, parts[1]))
+                        continue
+            check_collision(vol.split(':', 1)[0], 'volumes')
+            new_vols.append(vol)
+        values['volumes'] = new_vols
+        new_binds = []
+        for vol in new_vols:
+            host = None
+            if ':' in vol:
+                parts = vol.split(':')
+                if len(parts) == 3:
+                    host, container, mode = parts
+                    if not is_volume_permissions(mode):
+                        module.fail_json(msg='Found invalid volumes mode: {0}'.format(mode))
+                elif len(parts) == 2:
+                    if not is_volume_permissions(parts[1]):
+                        host, container, mode = (parts + ['rw'])
+            if host is not None:
+                new_binds.append('%s:%s:%s' % (host, container, mode))
+        values['volume_binds'] = new_binds
+    return values
+
+
+def _get_values_mounts(module, container, api_version, options):
+    volumes = container['Config'].get('Volumes')
+    binds = container['HostConfig'].get('Binds')
+    # According to https://github.com/moby/moby/, support for HostConfig.Mounts
+    # has been included at least since v17.03.0-ce, which has API version 1.26.
+    # The previous tag, v1.9.1, has API version 1.21 and does not have
+    # HostConfig.Mounts. I have no idea what about API 1.25...
+    mounts = container['HostConfig'].get('Mounts')
+    if mounts is not None:
+        result = []
+        empty_dict = {}
+        for mount in mounts:
+            result.append({
+                'type': mount.get('Type'),
+                'source': mount.get('Source'),
+                'target': mount.get('Target'),
+                'read_only': mount.get('ReadOnly', False),  # golang's omitempty for bool returns None for False
+                'consistency': mount.get('Consistency'),
+                'propagation': mount.get('BindOptions', empty_dict).get('Propagation'),
+                'no_copy': mount.get('VolumeOptions', empty_dict).get('NoCopy', False),
+                'labels': mount.get('VolumeOptions', empty_dict).get('Labels', empty_dict),
+                'volume_driver': mount.get('VolumeOptions', empty_dict).get('DriverConfig', empty_dict).get('Name'),
+                'volume_options': mount.get('VolumeOptions', empty_dict).get('DriverConfig', empty_dict).get('Options', empty_dict),
+                'tmpfs_size': mount.get('TmpfsOptions', empty_dict).get('SizeBytes'),
+                'tmpfs_mode': mount.get('TmpfsOptions', empty_dict).get('Mode'),
+            })
+        mounts = result
+    result = {}
+    if volumes is not None:
+        result['volumes'] = volumes
+    if binds is not None:
+        result['volume_binds'] = binds
+    if mounts is not None:
+        result['mounts'] = mounts
+    return result
+
+
+def _get_bind_from_dict(volume_dict):
+    results = []
+    if volume_dict:
+        for host_path, config in volume_dict.items():
+            if isinstance(config, dict) and config.get('bind'):
+                container_path = config.get('bind')
+                mode = config.get('mode', 'rw')
+                results.append("%s:%s:%s" % (host_path, container_path, mode))
+    return results
+
+
+def _get_image_binds(volumes):
+    '''
+    Convert array of binds to array of strings with format host_path:container_path:mode
+
+    :param volumes: array of bind dicts
+    :return: array of strings
+    '''
+    results = []
+    if isinstance(volumes, dict):
+        results += _get_bind_from_dict(volumes)
+    elif isinstance(volumes, list):
+        for vol in volumes:
+            results += _get_bind_from_dict(vol)
+    return results
+
+
+def _get_expected_values_mounts(module, client, api_version, options, image, values):
+    expected_values = {}
+
+    # binds
+    if 'mounts' in values:
+        expected_values['mounts'] = values['mounts']
+
+    # volumes
+    expected_vols = dict()
+    if image and image['Config'].get('Volumes'):
+        expected_vols.update(image['Config'].get('Volumes'))
+    if 'volumes' in values:
+        for vol in values['volumes']:
+            # We only expect anonymous volumes to show up in the list
+            if ':' in vol:
+                parts = vol.split(':')
+                if len(parts) == 3:
+                    continue
+                if len(parts) == 2:
+                    if not is_volume_permissions(parts[1]):
+                        continue
+            expected_vols[vol] = dict()
+    if expected_vols:
+        expected_values['volumes'] = expected_vols
+
+    # binds
+    image_vols = []
+    if image:
+        image_vols = _get_image_binds(image['Config'].get('Volumes'))
+    param_vols = []
+    if 'volume_binds' in values:
+        param_vols = values['volume_binds']
+    expected_values['volume_binds'] = list(set(image_vols + param_vols))
+
+    return expected_values
+
+
+def _set_values_mounts(module, data, api_version, options, values):
+    if 'mounts' in values:
+        if 'HostConfig' not in data:
+            data['HostConfig'] = {}
+        mounts = []
+        for mount in values['mounts']:
+            mount_type = mount.get('type')
+            mount_res = {
+                'Target': mount.get('target'),
+                'Source': mount.get('source'),
+                'Type': mount_type,
+                'ReadOnly': mount.get('read_only'),
+            }
+            if 'consistency' in mount:
+                mount_res['Consistency'] = mount['consistency']
+            if mount_type == 'bind':
+                if 'propagation' in mount:
+                    mount_res['BindOptions'] = {
+                        'Propagation': mount['propagation'],
+                    }
+            if mount_type == 'volume':
+                volume_opts = {}
+                if mount.get('no_copy'):
+                    volume_opts['NoCopy'] = True
+                if mount.get('labels'):
+                    volume_opts['Labels'] = mount.get('labels')
+                if mount.get('volume_driver'):
+                    driver_config = {
+                        'Name': mount.get('volume_driver'),
+                    }
+                    if mount.get('volume_options'):
+                        driver_config['Options'] = mount.get('volume_options')
+                    volume_opts['DriverConfig'] = driver_config
+                if volume_opts:
+                    mount_res['VolumeOptions'] = volume_opts
+            if mount_type == 'tmpfs':
+                tmpfs_opts = {}
+                if mount.get('tmpfs_mode'):
+                    tmpfs_opts['Mode'] = mount.get('tmpfs_mode')
+                if mount.get('tmpfs_size'):
+                    tmpfs_opts['SizeBytes'] = mount.get('tmpfs_size')
+                if mount.get('tmpfs_opts'):
+                    mount_res['TmpfsOptions'] = mount.get('tmpfs_opts')
+            mounts.append(mount_res)
+        data['HostConfig']['Mounts'] = mounts
+    if 'volumes' in values:
+        volumes = {}
+        for volume in values['volumes']:
+            volumes[volume] = {}
+        data['Volumes'] = volumes
+    if 'volume_binds' in values:
+        if 'HostConfig' not in data:
+            data['HostConfig'] = {}
+        data['HostConfig']['Binds'] = values['volume_binds']
+
+
 def _preprocess_container_names(module, client, api_version, value):
     if value is None or not value.startswith('container:'):
         return value
@@ -828,12 +1079,12 @@ OPTIONS = [
     .add_docker_api(DockerAPIEngine.config_value('Domainname')),
 
     OptionGroup(preprocess=_preprocess_env)
-    .add_option('env', type='set', ansible_type='dict', elements='str')
+    .add_option('env', type='set', ansible_type='dict', elements='str', needs_no_suboptions=True)
     .add_option('env_file', type='set', ansible_type='path', elements='str', not_a_container_option=True)
     .add_docker_api(DockerAPIEngine.config_value('Env', get_expected_value=_get_expected_env_value)),
 
     OptionGroup()
-    .add_option('etc_hosts', type='set', ansible_type='dict', elements='str')
+    .add_option('etc_hosts', type='set', ansible_type='dict', elements='str', needs_no_suboptions=True)
     .add_docker_api(DockerAPIEngine.host_config_value('ExtraHosts', preprocess_value=_preprocess_etc_hosts)),
 
     OptionGroup()
@@ -981,6 +1232,29 @@ OPTIONS = [
     OptionGroup()
     .add_option('working_dir', type='str')
     .add_docker_api(DockerAPIEngine.config_value('WorkingDir')),
+
+    OptionGroup(preprocess=_preprocess_mounts)
+    .add_option('mounts', type='set', elements='dict', ansible_suboptions=dict(
+        target=dict(type='str', required=True),
+        source=dict(type='str'),
+        type=dict(type='str', choices=['bind', 'volume', 'tmpfs', 'npipe'], default='volume'),
+        read_only=dict(type='bool'),
+        consistency=dict(type='str', choices=['default', 'consistent', 'cached', 'delegated']),
+        propagation=dict(type='str', choices=['private', 'rprivate', 'shared', 'rshared', 'slave', 'rslave']),
+        no_copy=dict(type='bool'),
+        labels=dict(type='dict'),
+        volume_driver=dict(type='str'),
+        volume_options=dict(type='dict'),
+        tmpfs_size=dict(type='str'),
+        tmpfs_mode=dict(type='str'),
+    ))
+    .add_option('volumes', type='set', elements='str')
+    .add_option('volume_binds', type='set', elements='str', not_an_ansible_option=True, copy_comparison_from='volumes')
+    .add_docker_api(DockerAPIEngine(
+        get_value=_get_values_mounts,
+        get_expected_values=_get_expected_values_mounts,
+        set_value=_set_values_mounts,
+    )),
 ]
 
 # Options / option groups that are more complex:
@@ -998,28 +1272,3 @@ OPTIONS = [
 #    .add_option('restart_retries', type='int')
 #    .add_docker_api(..., )
 #   ---------------- only for policy: update_parameter='RestartPolicy'
-
-# Options to convert / triage:
-#         mounts=dict(type='list', elements='dict', options=dict(
-#             target=dict(type='str', required=True),
-#             source=dict(type='str'),
-#             type=dict(type='str', choices=['bind', 'volume', 'tmpfs', 'npipe'], default='volume'),
-#             read_only=dict(type='bool'),
-#             consistency=dict(type='str', choices=['default', 'consistent', 'cached', 'delegated']),
-#             propagation=dict(type='str', choices=['private', 'rprivate', 'shared', 'rshared', 'slave', 'rslave']),
-#             no_copy=dict(type='bool'),
-#             labels=dict(type='dict'),
-#             volume_driver=dict(type='str'),
-#             volume_options=dict(type='dict'),
-#             tmpfs_size=dict(type='str'),
-#             tmpfs_mode=dict(type='str'),
-#         )),
-#         sysctls=dict(type='dict'),
-#         tmpfs=dict(type='list', elements='str'),
-#         ulimits=dict(type='list', elements='str'),
-#         volumes=dict(type='list', elements='str'),
-#
-#         explicit_types = dict(
-#             mounts='set(dict)',
-#             ulimits='set(dict)',
-#         )

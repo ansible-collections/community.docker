@@ -1332,6 +1332,8 @@ class ContainerManager(DockerBaseClass):
         all_module_options = self._collect_all_module_params()
         comp_aliases = {}
         for option_name, option in self.all_options.items():
+            if option.not_an_ansible_option:
+                continue
             comp_aliases[option_name] = option_name
             for alias in option.ansible_aliases:
                 comp_aliases[alias] = option_name
@@ -1365,7 +1367,7 @@ class ContainerManager(DockerBaseClass):
                     if key_main in all_module_options:
                         self.fail("The module option '%s' cannot be specified in the comparisons dict, "
                                   "since it does not correspond to container's state!" % key)
-                    if key not in self.all_options:
+                    if key not in self.all_options or self.all_options[key].not_an_ansible_option:
                         self.fail("Unknown module option '%s' in comparisons dict!" % key)
                     key_main = key
                 if key_main in comp_aliases_used:
@@ -1380,6 +1382,10 @@ class ContainerManager(DockerBaseClass):
                     self.all_options[key_main].comparison = value
                 else:
                     self.fail("Unknown comparison mode '%s'!" % value)
+        # Copy values
+        for option in self.all_options.values():
+            if option.copy_comparison_from is not None:
+                option.comparison = self.all_options[option.copy_comparison_from].comparison
         # Check legacy values
         if self.module.params['ignore_image'] and self.all_options['image'].comparison != 'ignore':
             self.module.warn('The ignore_image option has been overridden by the comparisons option!')
@@ -1413,7 +1419,7 @@ class ContainerManager(DockerBaseClass):
             values = {}
             engine = options.get_engine('docker_api')
             for option in options.options:
-                if self.module.params[option.name] is not None:
+                if not option.not_an_ansible_option and self.module.params[option.name] is not None:
                     values[option.name] = self.module.params[option.name]
             values = options.preprocess(self.module, values)
             engine.preprocess_value(self.module, self.client, self.client.docker_api_version, options.options, values)
@@ -2123,7 +2129,8 @@ def main():
         engine = options.get_engine('docker_api')
         if engine.min_docker_api is not None:
             for option in options.options:
-                option_minimal_versions[option.name] = {'docker_api_version': engine.min_docker_api}
+                if not option.not_an_ansible_option:
+                    option_minimal_versions[option.name] = {'docker_api_version': engine.min_docker_api}
 
         active_options.append(options)
 
