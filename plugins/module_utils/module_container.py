@@ -784,6 +784,78 @@ OPTIONS = [
     OptionGroup()
     .add_option('stop_timeout', type='int', default_comparison='ignore')
     .add_docker_api(DockerAPIEngine.config_value('StopTimeout')),
+
+    OptionGroup()
+    .add_option('network_mode', type='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('NetworkMode', preprocess_value=_preprocess_container_names)),
+
+    OptionGroup()
+    .add_option('oom_killer', type='bool')
+    .add_docker_api(DockerAPIEngine.host_config_value('OomKillDisable')),
+
+    OptionGroup()
+    .add_option('oom_score_adj', type='int')
+    .add_docker_api(DockerAPIEngine.host_config_value('OomScoreAdj')),
+
+    OptionGroup()
+    .add_option('pid_mode', type='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('PidMode', preprocess_value=_preprocess_container_names)),
+
+    OptionGroup()
+    .add_option('pids_limit', type='int')
+    .add_docker_api(DockerAPIEngine.host_config_value('PidsLimit')),
+
+    OptionGroup()
+    .add_option('privileged', type='bool')
+    .add_docker_api(DockerAPIEngine.host_config_value('Privileged')),
+
+    OptionGroup()
+    .add_option('read_only', type='bool')
+    .add_docker_api(DockerAPIEngine.host_config_value('ReadonlyRootfs')),
+
+    OptionGroup()
+    .add_option('runtime', type='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('Runtime')),
+
+    OptionGroup()
+    .add_option('security_opts', type='set', elements='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('SecurityOpt')),
+
+    OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='shm_size'))
+    .add_option('shm_size', type='int', ansible_type='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('ShmSize')),
+
+    OptionGroup()
+    .add_option('storage_opts', type='dict', needs_no_suboptions=True)
+    .add_docker_api(DockerAPIEngine.host_config_value('StorageOpt')),
+
+    OptionGroup()
+    .add_option('tty', type='bool')
+    .add_docker_api(DockerAPIEngine.config_value('Tty')),
+
+    OptionGroup()
+    .add_option('user', type='str')
+    .add_docker_api(DockerAPIEngine.config_value('User')),
+
+    OptionGroup()
+    .add_option('userns_mode', type='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('UsernsMode')),
+
+    OptionGroup()
+    .add_option('uts', type='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('UTSMode')),
+
+    OptionGroup()
+    .add_option('volume_driver', type='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('VolumeDriver')),
+
+    OptionGroup()
+    .add_option('volumes_from', type='set', elements='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('VolumesFrom')),
+
+    OptionGroup()
+    .add_option('working_dir', type='str')
+    .add_docker_api(DockerAPIEngine.config_value('WorkingDir')),
 ]
 
 # Options / option groups that are more complex:
@@ -802,10 +874,6 @@ OPTIONS = [
 #    .add_docker_api(..., )
 #   ---------------- only for policy: update_parameter='RestartPolicy'
 
-# REQUIRES_CONVERSION_TO_BYTES = [
-#    'shm_size'
-# ]
-
 # Options to convert / triage:
 #         mounts=dict(type='list', elements='dict', options=dict(
 #             target=dict(type='str', required=True),
@@ -821,31 +889,12 @@ OPTIONS = [
 #             tmpfs_size=dict(type='str'),
 #             tmpfs_mode=dict(type='str'),
 #         )),
-#         network_mode=dict(type='str'),
-#         oom_killer=dict(type='bool'),
-#         oom_score_adj=dict(type='int'),
-#         pid_mode=dict(type='str'),
-#         pids_limit=dict(type='int'),
-#         privileged=dict(type='bool'),
-#         read_only=dict(type='bool'),
-#         runtime=dict(type='str'),
-#         security_opts=dict(type='list', elements='str'),
-#         shm_size=dict(type='str'),
-#         storage_opts=dict(type='dict'),
 #         sysctls=dict(type='dict'),
 #         tmpfs=dict(type='list', elements='str'),
-#         tty=dict(type='bool'),
 #         ulimits=dict(type='list', elements='str'),
-#         user=dict(type='str'),
-#         userns_mode=dict(type='str'),
-#         uts=dict(type='str'),
-#         volume_driver=dict(type='str'),
 #         volumes=dict(type='list', elements='str'),
-#         volumes_from=dict(type='list', elements='str'),
-#         working_dir=dict(type='str'),
 #
 #         explicit_types = dict(
-#             env='set',
 #             mounts='set(dict)',
 #             ulimits='set(dict)',
 #         )
