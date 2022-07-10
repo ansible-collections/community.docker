@@ -2010,7 +2010,7 @@ class ContainerManager(DockerBaseClass):
             self.log(update_parameters, pretty_print=True)
             self.results['actions'].append(dict(updated=container_id, update_parameters=update_parameters))
             self.results['changed'] = True
-            if not self.check_mode and callable(getattr(self.client, 'update_container')):
+            if not self.check_mode:
                 try:
                     result = self.client.post_json_to_json('/containers/{0}/update', container_id, data=update_parameters)
                     self.client.report_warnings(result)

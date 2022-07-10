@@ -1261,7 +1261,7 @@ OPTIONS = [
 
     OptionGroup()
     .add_option('blkio_weight', type='int')
-    .add_docker_api(DockerAPIEngine.config_value('BlkioWeight', update_parameter='BlkioWeight')),
+    .add_docker_api(DockerAPIEngine.host_config_value('BlkioWeight', update_parameter='BlkioWeight')),
 
     OptionGroup()
     .add_option('capabilities', type='set', elements='str')
