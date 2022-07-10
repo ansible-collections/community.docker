@@ -1282,6 +1282,7 @@ class ContainerManager(DockerBaseClass):
         self.check_mode = self.module.check_mode
         self.param_cleanup = self.module.params['cleanup']
         self.param_container_default_behavior = self.module.params['container_default_behavior']
+        self.param_default_host_ip = self.module.params['default_host_ip']
         self.param_debug = self.module.params['debug']
         self.param_force_kill = self.module.params['force_kill']
         self.param_image = self.module.params['image']
@@ -1305,6 +1306,19 @@ class ContainerManager(DockerBaseClass):
         self.diff = {}
         self.diff_tracker = DifferenceTracker()
         self.facts = {}
+        if self.param_default_host_ip:
+            valid_ip = False
+            if re.match(r'^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$', self.param_default_host_ip):
+                valid_ip = True
+            if re.match(r'^\[[0-9a-fA-F:]+\]$', self.param_default_host_ip):
+                valid_ip = True
+            if re.match(r'^[0-9a-fA-F:]+$', self.param_default_host_ip):
+                self.param_default_host_ip = '[{0}]'.format(self.param_default_host_ip)
+                valid_ip = True
+            if not valid_ip:
+                self.fail('The value of default_host_ip must be an empty string, an IPv4 address, '
+                          'or an IPv6 address. Got "{0}" instead.'.format(self.param_default_host_ip))
+
 
     def _collect_all_options(self, active_options):
         all_options = {}
