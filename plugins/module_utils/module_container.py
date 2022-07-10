@@ -14,6 +14,8 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     parse_healthcheck,
 )
 
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import parse_env_file
+
 
 def _get_ansible_type(type):
     if type == 'set':
@@ -35,7 +37,9 @@ class Option(object):
         ansible_suboptions=None,
         ansible_aliases=None,
         ansible_choices=None,
+        needs_no_suboptions=False,
         default_comparison=None,
+        not_a_container_option=False,
     ):
         self.name = name
         self.type = type
@@ -55,7 +59,7 @@ class Option(object):
         needs_suboptions = (self.type in ('list', 'set') and elements == 'dict') or (self.type == 'dict')
         if ansible_suboptions is not None and not needs_suboptions:
             raise Exception('suboptions only allowed for Ansible lists with dicts, or Ansible dicts')
-        if ansible_suboptions is None and needs_suboptions:
+        if ansible_suboptions is None and needs_suboptions and not needs_no_suboptions:
             raise Exception('suboptions required for Ansible lists with dicts, or Ansible dicts')
         self.ansible_suboptions = ansible_suboptions if needs_suboptions else None
         self.ansible_aliases = ansible_aliases or []
@@ -72,6 +76,7 @@ class Option(object):
             self.comparison = 'strict'
         else:
             self.comparison = 'allow_more_present'
+        self.not_a_container_option = not_a_container_option
 
 
 class OptionGroup(object):
@@ -99,7 +104,8 @@ class OptionGroup(object):
 
     def add_option(self, *args, **kwargs):
         option = Option(*args, owner=self, **kwargs)
-        self.options.append(option)
+        if not option.not_a_container_option:
+            self.options.append(option)
         ansible_option = {
             'type': option.ansible_type,
         }
@@ -136,7 +142,9 @@ class DockerAPIEngine(object):
     def __init__(
         self,
         get_value,
-        preprocess_value,
+        preprocess_value=None,
+        get_expected_values=None,
+        ignore_mismatching_result=None,
         set_value=None,
         update_value=None,
         can_set_value=None,
@@ -147,7 +155,9 @@ class DockerAPIEngine(object):
         self.min_docker_api_obj = None if min_docker_api is None else LooseVersion(min_docker_api)
         self.get_value = get_value
         self.set_value = set_value
-        self.preprocess_value = preprocess_value
+        self.get_expected_values = get_expected_values or (lambda module, client, api_version, options, image, values: values)
+        self.ignore_mismatching_result = ignore_mismatching_result or (lambda module, client, api_version, option, image, container_value, expected_value: False)
+        self.preprocess_value = preprocess_value or (lambda module, client, api_version, options, values: values)
         self.update_value = update_value
         self.can_set_value = can_set_value or (lambda api_version: set_value is not None)
         self.can_update_value = can_update_value or (lambda api_version: update_value is not None)
@@ -155,29 +165,42 @@ class DockerAPIEngine(object):
     @classmethod
     def config_value(
         cls,
-        host_config_name,
+        config_name,
         postprocess_for_get=None,
         preprocess_for_set=None,
+        get_expected_value=None,
+        ignore_mismatching_result=None,
         min_docker_api=None,
         preprocess_value=None,
         update_parameter=None,
     ):
-        def preprocess_value_(module, api_version, options, values):
+        def preprocess_value_(module, client, api_version, options, values):
             if len(options) != 1:
                 raise AssertionError('config_value can only be used for a single option')
             if preprocess_value is not None and options[0].name in values:
-                values[options[0].name] = preprocess_value(module, api_version, values[options[0].name])
+                values[options[0].name] = preprocess_value(module, client, api_version, values[options[0].name])
             return values
 
         def get_value(module, container, api_version, options):
             if len(options) != 1:
                 raise AssertionError('config_value can only be used for a single option')
-            value = container.get(host_config_name, _SENTRY)
+            value = container['Config'].get(config_name, _SENTRY)
             if postprocess_for_get:
                 value = postprocess_for_get(module, api_version, value, _SENTRY)
             if value is _SENTRY:
                 return {}
             return {options[0].name: value}
+
+        get_expected_values_ = None
+        if get_expected_value:
+            def get_expected_values_(module, client, api_version, options, image, values):
+                if len(options) != 1:
+                    raise AssertionError('host_config_value can only be used for a single option')
+                value = values.get(options[0].name, _SENTRY)
+                value = get_expected_value(module, client, api_version, image, value, _SENTRY)
+                if value is _SENTRY:
+                    return values
+                return {options[0].name: value}
 
         def set_value(module, data, api_version, options, values):
             if len(options) != 1:
@@ -187,7 +210,7 @@ class DockerAPIEngine(object):
             value = values[options[0].name]
             if preprocess_for_set:
                 value = preprocess_for_set(module, api_version, value)
-            data[host_config_name] = value
+            data[config_name] = value
 
         update_value = None
         if update_parameter:
@@ -201,7 +224,15 @@ class DockerAPIEngine(object):
                     value = preprocess_for_set(module, api_version, value)
                 data[update_parameter] = value
 
-        return cls(get_value=get_value, preprocess_value=preprocess_value_, set_value=set_value, min_docker_api=min_docker_api, update_value=update_value)
+        return cls(
+            get_value=get_value,
+            preprocess_value=preprocess_value_,
+            get_expected_values=get_expected_values_,
+            ignore_mismatching_result=ignore_mismatching_result,
+            set_value=set_value,
+            min_docker_api=min_docker_api,
+            update_value=update_value,
+        )
 
     @classmethod
     def host_config_value(
@@ -209,15 +240,17 @@ class DockerAPIEngine(object):
         host_config_name,
         postprocess_for_get=None,
         preprocess_for_set=None,
+        get_expected_value=None,
+        ignore_mismatching_result=None,
         min_docker_api=None,
         preprocess_value=None,
         update_parameter=None,
     ):
-        def preprocess_value_(module, api_version, options, values):
+        def preprocess_value_(module, client, api_version, options, values):
             if len(options) != 1:
                 raise AssertionError('host_config_value can only be used for a single option')
             if preprocess_value is not None and options[0].name in values:
-                values[options[0].name] = preprocess_value(module, api_version, values[options[0].name])
+                values[options[0].name] = preprocess_value(module, client, api_version, values[options[0].name])
             return values
 
         def get_value(module, container, api_version, options):
@@ -229,6 +262,17 @@ class DockerAPIEngine(object):
             if value is _SENTRY:
                 return {}
             return {options[0].name: value}
+
+        get_expected_values_ = None
+        if get_expected_value:
+            def get_expected_values_(module, client, api_version, options, image, values):
+                if len(options) != 1:
+                    raise AssertionError('host_config_value can only be used for a single option')
+                value = values.get(options[0].name, _SENTRY)
+                value = get_expected_value(module, client, api_version, image, value, _SENTRY)
+                if value is _SENTRY:
+                    return values
+                return {options[0].name: value}
 
         def set_value(module, data, api_version, options, values):
             if len(options) != 1:
@@ -254,10 +298,44 @@ class DockerAPIEngine(object):
                     value = preprocess_for_set(module, api_version, value)
                 data[update_parameter] = value
 
-        return cls(get_value=get_value, preprocess_value=preprocess_value_, set_value=set_value, min_docker_api=min_docker_api, update_value=update_value)
+        return cls(
+            get_value=get_value,
+            preprocess_value=preprocess_value_,
+            get_expected_values=get_expected_values_,
+            ignore_mismatching_result=ignore_mismatching_result,
+            set_value=set_value,
+            min_docker_api=min_docker_api,
+            update_value=update_value,
+        )
 
 
-def _preprocess_command(module, api_version, value):
+def _get_value_detach_interactive(module, container, api_version, options):
+    attach_stdin = container.get('AttachStdin')
+    attach_stderr = container.get('AttachStderr')
+    attach_stdout = container.get('AttachStdout')
+    return {
+        'interactive': bool(attach_stdin),
+        'detach': not (attach_stderr and attach_stdout),
+    }
+
+
+def _set_value_detach_interactive(module, data, api_version, options, values):
+    interactive = values.get('interactive')
+    detach = values.get('detach')
+
+    data['AttachStdout'] = False
+    data['AttachStderr'] = False
+    data['AttachStdin'] = False
+    data['StdinOnce'] = False
+    if not detach:
+        data['AttachStdout'] = True
+        data['AttachStderr'] = True
+        if interactive:
+            data['AttachStdin'] = True
+            data['StdinOnce'] = True
+
+
+def _preprocess_command(module, client, api_version, value):
     if module.params['command_handling'] == 'correct':
         if value is not None:
             if not isinstance(value, list):
@@ -286,13 +364,49 @@ def _preprocess_entrypoint(module, api_version, value):
     return value
 
 
-def _preprocess_cpus(module, api_version, value):
+def _preprocess_env(module, values):
+    if not values:
+        return {}
+    final_env = {}
+    if 'env_file' in values:
+        parsed_env_file = parse_env_file(values['env_file'])
+        for name, value in parsed_env_file.items():
+            final_env[name] = to_text(value, errors='surrogate_or_strict')
+    if 'env' in values:
+        for name, value in values['env'].items():
+            if not isinstance(value, string_types):
+                module.fail_json(msg='Non-string value found for env option. Ambiguous env options must be '
+                                     'wrapped in quotes to avoid them being interpreted. Key: %s' % (name, ))
+            final_env[name] = to_text(value, errors='surrogate_or_strict')
+    formatted_env = []
+    for key, value in final_env:
+        formatted_env.append('%s=%s' % (key, value))
+    return formatted_env
+
+
+def _get_expected_env_value(module, client, api_version, image, value, sentry):
+    expected_env = {}
+    if image and image['Config'].get('Env'):
+        for env_var in image['Config']['Env']:
+            parts = env_var.split('=', 1)
+            expected_env[parts[0]] = parts[1]
+    if value and value is not sentry:
+        for env_var in value:
+            parts = env_var.split('=', 1)
+            expected_env[parts[0]] = parts[1]
+    param_env = []
+    for key, env_value in expected_env.items():
+        param_env.append("%s=%s" % (key, env_value))
+    return param_env
+
+
+def _preprocess_cpus(module, client, api_version, value):
     if value is not None:
         value = int(round(value * 1E9))
     return value
 
 
-def _preprocess_devices(module, api_version, value):
+def _preprocess_devices(module, client, api_version, value):
     if not value:
         return value
     expected_devices = []
@@ -324,7 +438,7 @@ def _preprocess_devices(module, api_version, value):
     return expected_devices
 
 
-def _preprocess_rate_bps(module, api_version, value, name):
+def _preprocess_rate_bps(module, client, api_version, value):
     if not value:
         return value
     devices = []
@@ -336,7 +450,7 @@ def _preprocess_rate_bps(module, api_version, value, name):
     return devices
 
 
-def _preprocess_rate_iops(module, api_version, value, name):
+def _preprocess_rate_iops(module, client, api_version, value):
     if not value:
         return value
     devices = []
@@ -348,7 +462,7 @@ def _preprocess_rate_iops(module, api_version, value, name):
     return devices
 
 
-def _preprocess_device_requests(module, api_version, value):
+def _preprocess_device_requests(module, client, api_version, value):
     if not value:
         return value
     device_requests = []
@@ -363,7 +477,7 @@ def _preprocess_device_requests(module, api_version, value):
     return device_requests
 
 
-def _preprocess_etc_hosts(module, api_version, value):
+def _preprocess_etc_hosts(module, client, api_version, value):
     if value is None:
         return value
     results = []
@@ -372,7 +486,7 @@ def _preprocess_etc_hosts(module, api_version, value):
     return results
 
 
-def _preprocess_healthcheck(module, api_version, value):
+def _preprocess_healthcheck(module, client, api_version, value):
     if value is None:
         return value
     healthcheck, disable_healthcheck = parse_healthcheck(value)
@@ -410,7 +524,25 @@ def _preprocess_convert_to_bytes(module, values, name, unlimited_value=None):
         module.fail_json(msg='Failed to convert %s to bytes: %s' % (name, to_native(exc)))
 
 
-def _preprocess_links(module, api_version, value):
+def _get_image_labels(image):
+    if not image:
+        return {}
+
+    # Can't use get('Labels', {}) because 'Labels' may be present and be None
+    return image['Config'].get('Labels') or {}
+
+
+def _get_expected_labels_value(module, client, api_version, image, value, sentry):
+    if value is sentry:
+        return sentry
+    expected_labels = {}
+    if module.params['image_label_mismatch'] == 'ignore':
+        expected_labels.update(dict(_get_image_labels(image)))
+    expected_labels.update(value)
+    return expected_labels
+
+
+def _preprocess_links(module, client, api_version, value):
     if value is None:
         return None
 
@@ -426,6 +558,46 @@ def _preprocess_links(module, api_version, value):
     return result
 
 
+def _ignore_mismatching_label_result(module, client, api_version, option, image, container_value, expected_value):
+    if option.comparison == 'strict' and module.params['image_label_mismatch'] == 'fail':
+        # If there are labels from the base image that should be removed and
+        # base_image_mismatch is fail we want raise an error.
+        image_labels = _get_image_labels(image)
+        would_remove_labels = []
+        for label in image_labels:
+            if label not in module.params['labels'] or {}:
+                # Format label for error message
+                would_remove_labels.append('"%s"' % (label, ))
+        if would_remove_labels:
+            msg = ("Some labels should be removed but are present in the base image. You can set image_label_mismatch to 'ignore' to ignore"
+                   " this error. Labels: {0}")
+            module.fail_json(msg=msg.format(', '.join(would_remove_labels)))
+    return False
+
+
+def _preprocess_mac_address(module, values):
+    if 'mac_address' not in values:
+        return values
+    return {
+        'mac_address': values['mac_address'].replace('-', ':'),
+    }
+
+
+def _preprocess_container_names(module, client, api_version, value):
+    if value is None or not value.startswith('container:'):
+        return value
+    container_name = value[len('container:'):]
+    # Try to inspect container to see whether this is an ID or a
+    # name (and in the latter case, retrieve it's ID)
+    container = client.get_container(container_name)
+    if container is None:
+        # If we can't find the container, issue a warning and continue with
+        # what the user specified.
+        module.warn('Cannot find a container with name or ID "{0}"'.format(container_name))
+        return value
+    return 'container:{0}'.format(container['Id'])
+
+
 OPTIONS = [
     OptionGroup()
     .add_option('auto_remove', type='bool')
@@ -433,7 +605,7 @@ OPTIONS = [
 
     OptionGroup()
     .add_option('blkio_weight', type='int')
-    .add_docker_api(DockerAPIEngine.config_value('BlkioWeight')),
+    .add_docker_api(DockerAPIEngine.config_value('BlkioWeight', update_parameter='BlkioWeight')),
 
     OptionGroup()
     .add_option('capabilities', type='set', elements='str')
@@ -453,23 +625,23 @@ OPTIONS = [
 
     OptionGroup()
     .add_option('cpu_period', type='int')
-    .add_docker_api(DockerAPIEngine.config_value('CpuPeriod')),
+    .add_docker_api(DockerAPIEngine.config_value('CpuPeriod', update_parameter='CpuPeriod')),
 
     OptionGroup()
     .add_option('cpu_quota', type='int')
-    .add_docker_api(DockerAPIEngine.config_value('CpuQuota')),
+    .add_docker_api(DockerAPIEngine.config_value('CpuQuota', update_parameter='CpuQuota')),
 
     OptionGroup()
     .add_option('cpuset_cpus', type='str')
-    .add_docker_api(DockerAPIEngine.config_value('CpuShares')),
+    .add_docker_api(DockerAPIEngine.config_value('CpuShares', update_parameter='CpuShares')),
 
     OptionGroup()
     .add_option('cpuset_mems', type='str')
-    .add_docker_api(DockerAPIEngine.config_value('CpusetCpus')),
+    .add_docker_api(DockerAPIEngine.config_value('CpusetCpus', update_parameter='CpusetCpus')),
 
     OptionGroup()
     .add_option('cpu_shares', type='int')
-    .add_docker_api(DockerAPIEngine.config_value('CpusetMems')),
+    .add_docker_api(DockerAPIEngine.config_value('CpusetMems', update_parameter='CpusetMems')),
 
     OptionGroup()
     .add_option('entrypoint', type='list', elements='str')
@@ -480,6 +652,11 @@ OPTIONS = [
     .add_docker_api(DockerAPIEngine.host_config_value('NanoCpus', preprocess_value=_preprocess_cpus)),
 
     OptionGroup()
+    .add_option('detach', type='bool')
+    .add_option('interactive', type='bool')
+    .add_docker_api(DockerAPIEngine(get_value=_get_value_detach_interactive, set_value=_set_value_detach_interactive)),
+
+    OptionGroup()
     .add_option('devices', type='set', elements='str')
     .add_docker_api(DockerAPIEngine.host_config_value('Devices', preprocess_value=_preprocess_devices)),
 
@@ -488,28 +665,28 @@ OPTIONS = [
         path=dict(required=True, type='str'),
         rate=dict(required=True, type='str'),
     ))
-    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceReadBps', preprocess_value=partial(_preprocess_rate_bps, name='device_read_bps'))),
+    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceReadBps', preprocess_value=_preprocess_rate_bps)),
 
     OptionGroup()
     .add_option('device_write_bps', type='set', elements='dict', ansible_suboptions=dict(
         path=dict(required=True, type='str'),
         rate=dict(required=True, type='str'),
     ))
-    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceWriteBps', preprocess_value=partial(_preprocess_rate_bps, name='device_write_bps'))),
+    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceWriteBps', preprocess_value=_preprocess_rate_bps)),
 
     OptionGroup()
     .add_option('device_read_iops', type='set', elements='dict', ansible_suboptions=dict(
         path=dict(required=True, type='str'),
         rate=dict(required=True, type='int'),
     ))
-    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceReadIOps', preprocess_value=partial(_preprocess_rate_iops, name='device_read_iops'))),
+    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceReadIOps', preprocess_value=_preprocess_rate_iops)),
 
     OptionGroup()
     .add_option('device_write_iops', type='set', elements='dict', ansible_suboptions=dict(
         path=dict(required=True, type='str'),
         rate=dict(required=True, type='int'),
     ))
-    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceWriteIOps', preprocess_value=partial(_preprocess_rate_iops, name='device_write_iops'))),
+    .add_docker_api(DockerAPIEngine.host_config_value('BlkioDeviceWriteIOps', preprocess_value=_preprocess_rate_iops)),
 
     OptionGroup()
     .add_option('device_requests', type='set', elements='dict', ansible_suboptions=dict(
@@ -536,6 +713,11 @@ OPTIONS = [
     OptionGroup()
     .add_option('domainname', type='str')
     .add_docker_api(DockerAPIEngine.config_value('Domainname')),
+
+    OptionGroup(preprocess=_preprocess_env)
+    .add_option('env', type='set', ansible_type='dict', elements='str')
+    .add_option('env_file', type='set', ansible_type='path', elements='str', not_a_container_option=True)
+    .add_docker_api(DockerAPIEngine.config_value('Env', get_expected_value=_get_expected_env_value)),
 
     OptionGroup()
     .add_option('etc_hosts', type='set', ansible_type='dict', elements='str')
@@ -564,42 +746,50 @@ OPTIONS = [
     .add_docker_api(DockerAPIEngine.host_config_value('Init')),
 
     OptionGroup()
-    .add_option('interactive', type='bool')
-    .add_docker_api(DockerAPIEngine.config_value('OpenStdin')),
+    .add_option('ipc_mode', type='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('IpcMode', preprocess_value=_preprocess_container_names)),
 
     OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='kernel_memory'))
     .add_option('kernel_memory', type='int', ansible_type='str')
-    .add_docker_api(DockerAPIEngine.host_config_value('KernelMemory')),
+    .add_docker_api(DockerAPIEngine.host_config_value('KernelMemory', update_parameter='KernelMemory')),
+
+    OptionGroup()
+    .add_option('labels', type='dict', needs_no_suboptions=True)
+    .add_docker_api(DockerAPIEngine.config_value('Labels', get_expected_value=_get_expected_labels_value, ignore_mismatching_result=_ignore_mismatching_label_result)),
 
     OptionGroup()
     .add_option('links', type='set', elements='list', ansible_elements='str')
     .add_docker_api(DockerAPIEngine.config_value('Links', preprocess_value=_preprocess_links)),
 
+    OptionGroup(preprocess=_preprocess_mac_address)
+    .add_option('mac_address', type='str')
+    .add_docker_api(DockerAPIEngine.config_value('MacAddress')),
+
     OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='memory'))
     .add_option('memory', type='int', ansible_type='str')
-    .add_docker_api(DockerAPIEngine.host_config_value('Memory')),
+    .add_docker_api(DockerAPIEngine.host_config_value('Memory', update_parameter='Memory')),
 
     OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='memory_reservation'))
     .add_option('memory_reservation', type='int', ansible_type='str')
-    .add_docker_api(DockerAPIEngine.host_config_value('MemoryReservation')),
+    .add_docker_api(DockerAPIEngine.host_config_value('MemoryReservation', update_parameter='MemoryReservation')),
 
     OptionGroup(preprocess=partial(_preprocess_convert_to_bytes, name='memory_swap', unlimited_value=-1))
     .add_option('memory_swap', type='int', ansible_type='str')
-    .add_docker_api(DockerAPIEngine.host_config_value('MemorySwap')),
+    .add_docker_api(DockerAPIEngine.host_config_value('MemorySwap', update_parameter='MemorySwap')),
 
     OptionGroup()
     .add_option('memory_swappiness', type='int')
     .add_docker_api(DockerAPIEngine.host_config_value('MemorySwappiness')),
+
+    OptionGroup()
+    .add_option('stop_timeout', type='int', default_comparison='ignore')
+    .add_docker_api(DockerAPIEngine.config_value('StopTimeout')),
 ]
 
 # Options / option groups that are more complex:
-#         detach=dict(type='bool'),
-#         env=dict(type='dict'),
-#         env_file=dict(type='path'),
 #         exposed_ports=dict(type='list', elements='str', aliases=['exposed', 'expose']),
-#         ipc_mode=dict(type='str'),
-#         labels=dict(type='dict'),
-
+#         publish_all_ports=dict(type='bool'),
+#         published_ports=dict(type='list', elements='str', aliases=['ports']),
 
 #    OptionGroup(ansible_required_by={'log_options': ['log_driver']})
 #    .add_option('log_driver', type='str')
@@ -609,15 +799,8 @@ OPTIONS = [
 #    OptionGroup(ansible_required_by={'restart_retries': ['restart_policy']})
 #    .add_option('restart_policy', type='str', ansible_choices=['no', 'on-failure', 'always', 'unless-stopped'])
 #    .add_option('restart_retries', type='int')
-#    .add_docker_api(...)
-
-#        if self.mac_address:
-#            # Ensure the MAC address uses colons instead of hyphens for later comparison
-#            self.mac_address = self.mac_address.replace('-', ':')
-#
-#        mac_address=config.get('MacAddress', network.get('MacAddress')),
-#
-#         mac_address=dict(type='str'),
+#    .add_docker_api(..., )
+#   ---------------- only for policy: update_parameter='RestartPolicy'
 
 # REQUIRES_CONVERSION_TO_BYTES = [
 #    'shm_size'
@@ -644,13 +827,10 @@ OPTIONS = [
 #         pid_mode=dict(type='str'),
 #         pids_limit=dict(type='int'),
 #         privileged=dict(type='bool'),
-#         publish_all_ports=dict(type='bool'),
-#         published_ports=dict(type='list', elements='str', aliases=['ports']),
 #         read_only=dict(type='bool'),
 #         runtime=dict(type='str'),
 #         security_opts=dict(type='list', elements='str'),
 #         shm_size=dict(type='str'),
-#         stop_timeout=dict(type='int'), default_comparison='ignore'
 #         storage_opts=dict(type='dict'),
 #         sysctls=dict(type='dict'),
 #         tmpfs=dict(type='list', elements='str'),
@@ -669,7 +849,3 @@ OPTIONS = [
 #             mounts='set(dict)',
 #             ulimits='set(dict)',
 #         )
-#
-#         default_values = dict(
-#             stop_timeout='ignore',
-#         }

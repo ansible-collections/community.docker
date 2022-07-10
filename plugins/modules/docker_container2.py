@@ -1416,7 +1416,7 @@ class ContainerManager(DockerBaseClass):
                 if self.module.params[option.name] is not None:
                     values[option.name] = self.module.params[option.name]
             values = options.preprocess(self.module, values)
-            engine.preprocess_value(self.module, self.client.docker_api_version, options.options, values)
+            engine.preprocess_value(self.module, self.client, self.client.docker_api_version, options.options, values)
             parameters.append((options, values))
         return parameters
 
@@ -1532,7 +1532,7 @@ class ContainerManager(DockerBaseClass):
                 container_created = True
 
         if container and container.exists:
-            container = self.update_limits(container)
+            container = self.update_limits(container, image)
             container = self.update_networks(container, container_created)
 
             if state == 'started' and not container.running:
@@ -1637,13 +1637,16 @@ class ContainerManager(DockerBaseClass):
         for options, param_values in self.parameters:
             engine = options.get_engine('docker_api')
             container_values = engine.get_value(self.module, container.raw, self.client.docker_api_version, options.options)
+            expected_values = engine.get_expected_values(self.module, self.client, self.client.docker_api_version, options.options, image, param_values.copy())
             for option in options.options:
-                if option.name in param_values:
-                    param_value = param_values[option.name]
+                if option.name in expected_values:
+                    param_value = expected_values[option.name]
                     container_value = container_values.get(option.name)
                     match = compare_generic(param_value, container_value, option.comparison, option.comparison_type)
 
                     if not match:
+                        if engine.ignore_mismatching_result(self.module, self.client, self.client.docker_api_version, option, image, container_value, param_value):
+                            continue
                         # TODO
                         # if option.name == 'healthcheck' and config_mapping['disable_healthcheck'] and self.parameters.disable_healthcheck:
                         #     # If the healthcheck is disabled (both in parameters and for the current container), and the user
@@ -1651,30 +1654,16 @@ class ContainerManager(DockerBaseClass):
                         #     # expected_healthcheck comparison in this case.
                         #     continue
 
-                        if option.name == 'labels' and compare['comparison'] == 'strict' and self.param_image_label_mismatch == 'fail':
-                            # If there are labels from the base image that should be removed and
-                            # base_image_mismatch is fail we want raise an error.
-                            image_labels = self._get_image_labels(image)
-                            would_remove_labels = []
-                            for label in image_labels:
-                                if label not in self.module.params['labels']:
-                                    # Format label for error message
-                                    would_remove_labels.append(label)
-                            if would_remove_labels:
-                                msg = ("Some labels should be removed but are present in the base image. You can set image_label_mismatch to 'ignore' to ignore"
-                                       " this error. Labels: {0}")
-                                self.fail(msg.format(', '.join(['"%s"' % label for label in would_remove_labels])))
-
                         # no match. record the differences
                         p = param_value
                         c = container_value
-                        if compare['type'] == 'set':
+                        if option.comparison_type == 'set':
                             # Since the order does not matter, sort so that the diff output is better.
                             if p is not None:
                                 p = sorted(p)
                             if c is not None:
                                 c = sorted(c)
-                        elif compare['type'] == 'set(dict)':
+                        elif option.comparison_type == 'set(dict)':
                             # Since the order does not matter, sort so that the diff output is better.
                             if option.name == 'expected_mounts':
                                 # For selected values, use one entry as key
@@ -1693,7 +1682,7 @@ class ContainerManager(DockerBaseClass):
         has_differences = not differences.empty
         return has_differences, differences
 
-    def has_different_resource_limits(self, container):
+    def has_different_resource_limits(self, container, image):
         '''
         Diff parameters and container resource limits
         '''
@@ -1703,9 +1692,10 @@ class ContainerManager(DockerBaseClass):
             if not engine.can_update_value(self.client.docker_api_version):
                 continue
             container_values = engine.get_value(self.module, container.raw, self.client.docker_api_version, options.options)
+            expected_values = engine.get_expected_values(self.module, self.client, self.client.docker_api_version, options.options, image, param_values.copy())
             for option in options.options:
-                if option.name in param_values:
-                    param_value = param_values[option.name]
+                if option.name in expected_values:
+                    param_value = expected_values[option.name]
                     container_value = container_values.get(option.name)
                     match = compare_generic(param_value, container_value, option.comparison, option.comparison_type)
 
@@ -1724,8 +1714,8 @@ class ContainerManager(DockerBaseClass):
             engine.update_value(self.module, result, self.client.docker_api_version, options.options, values)
         return result
 
-    def update_limits(self, container):
-        limits_differ, different_limits = self.has_different_resource_limits(container)
+    def update_limits(self, container, image):
+        limits_differ, different_limits = self.has_different_resource_limits(container, image)
         if limits_differ:
             self.log("limit differences:")
             self.log(different_limits.get_legacy_docker_container_diffs(), pretty_print=True)
@@ -2029,7 +2019,7 @@ class ContainerManager(DockerBaseClass):
                 client_timeout = self.client.timeout
                 if client_timeout is not None:
                     client_timeout += timeout
-                self.client.post('/containers/{0}/restart', container_id, params={'t': timeout}, timeout=client_timeout)
+                self.client.post_call('/containers/{0}/restart', container_id, params={'t': timeout}, timeout=client_timeout)
             except Exception as exc:
                 self.fail("Error restarting container %s: %s" % (container_id, to_native(exc)))
         return self._get_container(container_id)
@@ -2053,7 +2043,7 @@ class ContainerManager(DockerBaseClass):
                     client_timeout = self.client.timeout
                     if client_timeout is not None:
                         client_timeout += timeout
-                    self.client.post('/containers/{0}/stop', container_id, params=params, timeout=client_timeout)
+                    self.client.post_call('/containers/{0}/stop', container_id, params=params, timeout=client_timeout)
                 except APIError as exc:
                     if 'Unpause the container before stopping or killing' in exc.explanation:
                         # New docker daemon versions do not allow containers to be removed
