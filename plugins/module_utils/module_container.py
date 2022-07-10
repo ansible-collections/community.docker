@@ -1202,7 +1202,16 @@ def _get_expected_values_ports(module, client, api_version, options, image, valu
 
 def _set_values_ports(module, data, api_version, options, values):
     if 'ports' in values:
-        data['ExposedPorts'] = values['ports']
+        exposed_ports = {}
+        for port_definition in values['ports']:
+            port = port_definition
+            proto = 'tcp'
+            if isinstance(port_definition, tuple):
+                if len(port_definition) == 2:
+                    proto = port_definition[1]
+                port = port_definition[0]
+            exposed_ports['%s/%s' % (port, proto)] = {}
+        data['ExposedPorts'] = exposed_ports
     if 'published_ports' in values:
         if 'HostConfig' not in data:
             data['HostConfig'] = {}
