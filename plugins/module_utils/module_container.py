@@ -1,4 +1,5 @@
 # Copyright (c) 2022 Felix Fontein <felix@fontein.de>
+# Copyright 2016 Red Hat | Ansible
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 import shlex
@@ -23,6 +24,17 @@ def _get_ansible_type(type):
     if type not in ('list', 'dict', 'bool', 'int', 'float', 'str'):
         raise Exception('Invalid type "%s"' % (type, ))
     return type
+
+
+_MOUNT_OPTION_TYPES = dict(
+    volume_driver='volume',
+    volume_options='volume',
+    propagation='bind',
+    no_copy='volume',
+    labels='volume',
+    tmpfs_size='tmpfs',
+    tmpfs_mode='tmpfs',
+)
 
 
 class Option(object):
@@ -309,6 +321,64 @@ class DockerAPIEngine(object):
         )
 
 
+def is_volume_permissions(mode):
+    for part in mode.split(','):
+        if part not in ('rw', 'ro', 'z', 'Z', 'consistent', 'delegated', 'cached', 'rprivate', 'private', 'rshared', 'shared', 'rslave', 'slave', 'nocopy'):
+            return False
+    return True
+
+
+def parse_port_range(range_or_port, client):
+    '''
+    Parses a string containing either a single port or a range of ports.
+
+    Returns a list of integers for each port in the list.
+    '''
+    if '-' in range_or_port:
+        try:
+            start, end = [int(port) for port in range_or_port.split('-')]
+        except Exception:
+            client.fail('Invalid port range: "{0}"'.format(range_or_port))
+        if end < start:
+            client.fail('Invalid port range: "{0}"'.format(range_or_port))
+        return list(range(start, end + 1))
+    else:
+        try:
+            return [int(range_or_port)]
+        except Exception:
+            client.fail('Invalid port: "{0}"'.format(range_or_port))
+
+
+def split_colon_ipv6(text, client):
+    '''
+    Split string by ':', while keeping IPv6 addresses in square brackets in one component.
+    '''
+    if '[' not in text:
+        return text.split(':')
+    start = 0
+    result = []
+    while start < len(text):
+        i = text.find('[', start)
+        if i < 0:
+            result.extend(text[start:].split(':'))
+            break
+        j = text.find(']', i)
+        if j < 0:
+            client.fail('Cannot find closing "]" in input "{0}" for opening "[" at index {1}!'.format(text, i + 1))
+        result.extend(text[start:i].split(':'))
+        k = text.find(':', j)
+        if k < 0:
+            result[-1] += text[i:]
+            start = len(text)
+        else:
+            result[-1] += text[i:k]
+            if k == len(text):
+                result.append('')
+                break
+            start = k + 1
+    return result
+
+
 def _get_value_detach_interactive(module, container, api_version, options):
     attach_stdin = container.get('AttachStdin')
     attach_stderr = container.get('AttachStderr')
@@ -583,6 +653,49 @@ def _preprocess_mac_address(module, values):
     }
 
 
+def _get_expected_sysctls_value(module, client, api_version, image, value, sentry):
+    if value is sentry:
+        return value
+    result = {}
+    for key, sysctl_value in value:
+        result[key] = to_text(sysctl_value, errors='surrogate_or_strict')
+    return result
+
+
+def _preprocess_tmpfs(module, values):
+    if 'tmpfs' not in values:
+        return values
+    result = {}
+    for tmpfs_spec in values['tmpfs']:
+        split_spec = tmpfs_spec.split(":", 1)
+        if len(split_spec) > 1:
+            result[split_spec[0]] = split_spec[1]
+        else:
+            result[split_spec[0]] = ""
+    return {
+        'tmpfs': result
+    }
+
+
+def _preprocess_ulimits(module, values):
+    if 'ulimits' not in values:
+        return values
+    result = []
+    for value in values['ulimits']:
+        limits = dict()
+        pieces = limit.split(':')
+        if len(pieces) >= 2:
+            limits['Name'] = pieces[0]
+            limits['Soft'] = int(pieces[1])
+            limits['Hard'] = int(pieces[1])
+        if len(pieces) == 3:
+            limits['Hard'] = int(pieces[2])
+        results.append(limits)
+    return {
+        'ulimits': result,
+    }
+
+
 def _preprocess_container_names(module, client, api_version, value):
     if value is None or not value.startswith('container:'):
         return value
@@ -830,8 +943,20 @@ OPTIONS = [
     .add_docker_api(DockerAPIEngine.host_config_value('StorageOpt')),
 
     OptionGroup()
+    .add_option('sysctls', type='dict', needs_no_suboptions=True)
+    .add_docker_api(DockerAPIEngine.host_config_value('Sysctls', get_expected_value=_get_expected_sysctls_value)),
+
+    OptionGroup(preprocess=_preprocess_tmpfs)
+    .add_option('tmpfs', type='dict', ansible_type='list', ansible_elements='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('Tmpfs')),
+
+    OptionGroup()
     .add_option('tty', type='bool')
     .add_docker_api(DockerAPIEngine.config_value('Tty')),
+
+    OptionGroup(preprocess=_preprocess_ulimits)
+    .add_option('ulimits', type='set', elements='dict', ansible_elements='str')
+    .add_docker_api(DockerAPIEngine.host_config_value('Ulimits')),
 
     OptionGroup()
     .add_option('user', type='str')
