@@ -206,7 +206,11 @@ class DockerAPIEngine(object):
             if len(options) != 1:
                 raise AssertionError('config_value can only be used for a single option')
             if preprocess_value is not None and options[0].name in values:
-                values[options[0].name] = preprocess_value(module, client, api_version, values[options[0].name])
+                value = preprocess_value(module, client, api_version, values[options[0].name])
+                if value is None:
+                    del values[options[0].name]
+                else:
+                    values[options[0].name] = value
             return values
 
         def get_value(module, container, api_version, options):
@@ -278,7 +282,11 @@ class DockerAPIEngine(object):
             if len(options) != 1:
                 raise AssertionError('host_config_value can only be used for a single option')
             if preprocess_value is not None and options[0].name in values:
-                values[options[0].name] = preprocess_value(module, client, api_version, values[options[0].name])
+                value = preprocess_value(module, client, api_version, values[options[0].name])
+                if value is None:
+                    del values[options[0].name]
+                else:
+                    values[options[0].name] = value
             return values
 
         def get_value(module, container, api_version, options):
@@ -444,7 +452,10 @@ def _set_value_detach_interactive(module, data, api_version, options, values):
             data['StdinOnce'] = True
 
 
-def _preprocess_command(module, client, api_version, value):
+def _preprocess_command(module, values):
+    if 'command' not in values:
+        return values
+    value = values['command']
     if module.params['command_handling'] == 'correct':
         if value is not None:
             if not isinstance(value, list):
@@ -459,10 +470,17 @@ def _preprocess_command(module, client, api_version, value):
         else:
             value = shlex.split(to_text(value, errors='surrogate_or_strict'))
             value = [to_text(x, errors='surrogate_or_strict') for x in value]
-    return value
+    else:
+        return {}
+    return {
+        'command': value,
+    }
 
 
-def _preprocess_entrypoint(module, api_version, value):
+def _preprocess_entrypoint(module, values):
+    if 'entrypoint' not in values:
+        return values
+    value = values['entrypoint']
     if module.params['command_handling'] == 'correct':
         if value is not None:
             value = [to_text(x, errors='surrogate_or_strict') for x in value]
@@ -470,7 +488,11 @@ def _preprocess_entrypoint(module, api_version, value):
         # convert from list to str.
         value = shlex.split(' '.join([to_text(x, errors='surrogate_or_strict') for x in value]))
         value = [to_text(x, errors='surrogate_or_strict') for x in value]
-    return value
+    else:
+        return {}
+    return {
+        'entrypoint': value,
+    }
 
 
 def _preprocess_env(module, values):
@@ -1275,9 +1297,9 @@ OPTIONS = [
     .add_option('cgroup_parent', type='str')
     .add_docker_api(DockerAPIEngine.host_config_value('CgroupParent')),
 
-    OptionGroup()
+    OptionGroup(preprocess=_preprocess_command)
     .add_option('command', type='list', elements='str', ansible_type='raw')
-    .add_docker_api(DockerAPIEngine.config_value('Cmd', preprocess_value=_preprocess_command)),
+    .add_docker_api(DockerAPIEngine.config_value('Cmd')),
 
     OptionGroup()
     .add_option('cpu_period', type='int')
@@ -1299,9 +1321,9 @@ OPTIONS = [
     .add_option('cpu_shares', type='int')
     .add_docker_api(DockerAPIEngine.config_value('CpusetMems', update_parameter='CpusetMems')),
 
-    OptionGroup()
+    OptionGroup(preprocess=_preprocess_entrypoint)
     .add_option('entrypoint', type='list', elements='str')
-    .add_docker_api(DockerAPIEngine.config_value('Entrypoint', preprocess_value=_preprocess_command)),
+    .add_docker_api(DockerAPIEngine.config_value('Entrypoint')),
 
     OptionGroup()
     .add_option('cpus', type='int', ansible_type='float')
