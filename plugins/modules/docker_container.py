@@ -1200,14 +1200,10 @@ status:
 '''
 
 import re
-import traceback
 from time import sleep
 
 from ansible.module_utils.common.text.converters import to_native, to_text
 
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
-    RequestException,
-)
 from ansible_collections.community.docker.plugins.module_utils.module_container import (
     DockerAPIEngineDriver,
 )
@@ -1218,8 +1214,6 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     is_image_name_id,
     sanitize_result,
 )
-
-from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
 
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import parse_repository_tag
 
@@ -1463,7 +1457,7 @@ class ContainerManager(DockerBaseClass):
                 if not option.not_an_ansible_option and self.module.params[option.name] is not None:
                     values[option.name] = self.module.params[option.name]
             values = options.preprocess(self.module, values)
-            engine.preprocess_value(self.module, self.client, self.client.docker_api_version, options.options, values)
+            engine.preprocess_value(self.module, self.client, self.engine_driver.get_api_version(self.client), options.options, values)
             parameters.append((options, values))
         return parameters
 
@@ -1623,14 +1617,15 @@ class ContainerManager(DockerBaseClass):
         params = {}
         for options, values in self.parameters:
             engine = options.get_engine(self.engine_driver.name)
-            if engine.can_set_value(self.client.docker_api_version):
-                engine.set_value(self.module, params, self.client.docker_api_version, options.options, values)
+            if engine.can_set_value(self.engine_driver.get_api_version(self.client)):
+                engine.set_value(self.module, params, self.engine_driver.get_api_version(self.client), options.options, values)
         params['Image'] = image
         return params
 
     def _record_differences(self, differences, options, param_values, engine, container, image):
-        container_values = engine.get_value(self.module, container.raw, self.client.docker_api_version, options.options)
-        expected_values = engine.get_expected_values(self.module, self.client, self.client.docker_api_version, options.options, image, param_values.copy())
+        container_values = engine.get_value(self.module, container.raw, self.engine_driver.get_api_version(self.client), options.options)
+        expected_values = engine.get_expected_values(
+            self.module, self.client, self.engine_driver.get_api_version(self.client), options.options, image, param_values.copy())
         for option in options.options:
             if option.name in expected_values:
                 param_value = expected_values[option.name]
@@ -1639,7 +1634,7 @@ class ContainerManager(DockerBaseClass):
 
                 if not match:
                     # No match.
-                    if engine.ignore_mismatching_result(self.module, self.client, self.client.docker_api_version,
+                    if engine.ignore_mismatching_result(self.module, self.client, self.engine_driver.get_api_version(self.client),
                                                         option, image, container_value, param_value):
                         # Ignore the result
                         continue
@@ -1681,7 +1676,7 @@ class ContainerManager(DockerBaseClass):
         differences = DifferenceTracker()
         for options, param_values in self.parameters:
             engine = options.get_engine(self.engine_driver.name)
-            if not engine.can_update_value(self.client.docker_api_version):
+            if not engine.can_update_value(self.engine_driver.get_api_version(self.client)):
                 continue
             self._record_differences(differences, options, param_values, engine, container, image)
         has_differences = not differences.empty
@@ -1691,9 +1686,9 @@ class ContainerManager(DockerBaseClass):
         result = {}
         for options, values in self.parameters:
             engine = options.get_engine(self.engine_driver.name)
-            if not engine.can_update_value(self.client.docker_api_version):
+            if not engine.can_update_value(self.engine_driver.get_api_version(self.client)):
                 continue
-            engine.update_value(self.module, result, self.client.docker_api_version, options.options, values)
+            engine.update_value(self.module, result, self.engine_driver.get_api_version(self.client), options.options, values)
         return result
 
     def update_limits(self, container, image):
@@ -1992,16 +1987,12 @@ def main():
         ],
     )
 
-    try:
+    def execute():
         cm = ContainerManager(module, engine_driver, client, active_options)
         cm.run()
-        client.module.exit_json(**sanitize_result(cm.results))
-    except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
-    except RequestException as e:
-        client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
-            exception=traceback.format_exc())
+        module.exit_json(**sanitize_result(cm.results))
+
+    engine_driver.run(execute, client)
 
 
 if __name__ == '__main__':

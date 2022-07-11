@@ -10,6 +10,7 @@ import json
 import os
 import re
 import shlex
+import traceback
 
 from functools import partial
 
@@ -30,7 +31,11 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
-from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, NotFound
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    APIError,
+    DockerException,
+    NotFound,
+)
 
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
     convert_port_bindings,
@@ -222,6 +227,10 @@ class EngineDriver(object):
         pass
 
     @abc.abstractmethod
+    def get_api_version(self, client):
+        pass
+
+    @abc.abstractmethod
     def get_container_id(self, container):
         pass
 
@@ -313,6 +322,10 @@ class EngineDriver(object):
     def remove_container(self, client, container_id, remove_volumes=False, link=False, force=False):
         pass
 
+    @abc.abstractmethod
+    def run(self, runner, client):
+        pass
+
 
 class DockerAPIEngineDriver(EngineDriver):
     name = 'docker_api'
@@ -358,6 +371,9 @@ class DockerAPIEngineDriver(EngineDriver):
         )
 
         return client.module, active_options, client
+
+    def get_api_version(self, client):
+        return client.docker_api_version
 
     def get_container_id(self, container):
         return container['Id']
@@ -532,6 +548,16 @@ class DockerAPIEngineDriver(EngineDriver):
                 raise
             # We only loop when explicitly requested by 'continue'
             break
+
+    def run(self, runner, client):
+        try:
+            runner()
+        except DockerException as e:
+            client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        except RequestException as e:
+            client.fail(
+                'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+                exception=traceback.format_exc())
 
 
 class DockerAPIEngine(Engine):
@@ -786,8 +812,8 @@ def _get_default_host_ip(module, client):
         if network_data.get('name'):
             network = client.get_network(network_data['name'])
             if network is None:
-                module.fail_json(
-                    msg="Cannot inspect the network '{0}' to determine the default IP".format(network_data['name']),
+                client.fail(
+                    "Cannot inspect the network '{0}' to determine the default IP".format(network_data['name']),
                 )
             if network.get('Driver') == 'bridge' and network.get('Options', {}).get('com.docker.network.bridge.host_binding_ipv4'):
                 ip = network['Options']['com.docker.network.bridge.host_binding_ipv4']
@@ -1075,7 +1101,7 @@ def _ignore_mismatching_label_result(module, client, api_version, option, image,
         if would_remove_labels:
             msg = ("Some labels should be removed but are present in the base image. You can set image_label_mismatch to 'ignore' to ignore"
                    " this error. Labels: {0}")
-            module.fail_json(msg=msg.format(', '.join(would_remove_labels)))
+            client.fail(msg.format(', '.join(would_remove_labels)))
     return False
 
 
@@ -1119,7 +1145,7 @@ def _preprocess_network_values(module, client, api_version, options, values):
         for network in values['networks']:
             network['id'] = _get_network_id(module, client, network['name'])
             if not network['id']:
-                module.fail_json(msg="Parameter error: network named %s could not be found. Does it exist?" % (network['name'], ))
+                client.fail("Parameter error: network named %s could not be found. Does it exist?" % (network['name'], ))
 
     if 'network_mode' in values:
         values['network_mode'] = _preprocess_container_names(module, client, api_version, values['network_mode'])
@@ -1137,7 +1163,7 @@ def _get_network_id(module, client, network_name):
                 break
         return network_id
     except Exception as exc:
-        module.fail_json(msg="Error getting network id for %s - %s" % (network_name, to_native(exc)))
+        client.fail("Error getting network id for %s - %s" % (network_name, to_native(exc)))
 
 
 def _get_values_network(module, container, api_version, options):
