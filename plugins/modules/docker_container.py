@@ -1927,7 +1927,7 @@ class ContainerManager(DockerBaseClass):
                 self.fail("Error starting container %s: %s" % (container_id, to_native(exc)))
 
             if self.module.params['detach'] is False:
-                status = self.client.post_json_as_json('/containers/{0}/wait', container_id)['StatusCode']
+                status = self.client.post_json_to_json('/containers/{0}/wait', container_id)['StatusCode']
                 self.client.fail_results['status'] = status
                 self.results['status'] = status
 
@@ -2090,7 +2090,7 @@ def main():
         cleanup=dict(type='bool', default=False),
         comparisons=dict(type='dict'),
         container_default_behavior=dict(type='str', default='no_defaults', choices=['compatibility', 'no_defaults']),
-        command_handling=dict(type='str', choices=['compatibility', 'correct']),
+        command_handling=dict(type='str', choices=['compatibility', 'correct'], default='correct'),
         default_host_ip=dict(type='str'),
         force_kill=dict(type='bool', default=False, aliases=['forcekill']),
         ignore_image=dict(type='bool', default=False),

@@ -510,7 +510,7 @@ def _preprocess_env(module, values):
                                      'wrapped in quotes to avoid them being interpreted. Key: %s' % (name, ))
             final_env[name] = to_text(value, errors='surrogate_or_strict')
     formatted_env = []
-    for key, value in final_env:
+    for key, value in final_env.items():
         formatted_env.append('%s=%s' % (key, value))
     return {
         'env': formatted_env,
@@ -697,8 +697,9 @@ def _ignore_mismatching_label_result(module, client, api_version, option, image,
         # base_image_mismatch is fail we want raise an error.
         image_labels = _get_image_labels(image)
         would_remove_labels = []
+        labels_param = module.params['labels'] or {}
         for label in image_labels:
-            if label not in module.params['labels'] or {}:
+            if label not in labels_param:
                 # Format label for error message
                 would_remove_labels.append('"%s"' % (label, ))
         if would_remove_labels:
@@ -1303,23 +1304,23 @@ OPTIONS = [
 
     OptionGroup()
     .add_option('cpu_period', type='int')
-    .add_docker_api(DockerAPIEngine.config_value('CpuPeriod', update_parameter='CpuPeriod')),
+    .add_docker_api(DockerAPIEngine.host_config_value('CpuPeriod', update_parameter='CpuPeriod')),
 
     OptionGroup()
     .add_option('cpu_quota', type='int')
-    .add_docker_api(DockerAPIEngine.config_value('CpuQuota', update_parameter='CpuQuota')),
+    .add_docker_api(DockerAPIEngine.host_config_value('CpuQuota', update_parameter='CpuQuota')),
 
     OptionGroup()
     .add_option('cpuset_cpus', type='str')
-    .add_docker_api(DockerAPIEngine.config_value('CpuShares', update_parameter='CpuShares')),
+    .add_docker_api(DockerAPIEngine.host_config_value('CpusetCpus', update_parameter='CpusetCpus')),
 
     OptionGroup()
     .add_option('cpuset_mems', type='str')
-    .add_docker_api(DockerAPIEngine.config_value('CpusetCpus', update_parameter='CpusetCpus')),
+    .add_docker_api(DockerAPIEngine.host_config_value('CpusetMems', update_parameter='CpusetMems')),
 
     OptionGroup()
     .add_option('cpu_shares', type='int')
-    .add_docker_api(DockerAPIEngine.config_value('CpusetMems', update_parameter='CpusetMems')),
+    .add_docker_api(DockerAPIEngine.host_config_value('CpuShares', update_parameter='CpuShares')),
 
     OptionGroup(preprocess=_preprocess_entrypoint)
     .add_option('entrypoint', type='list', elements='str')
@@ -1335,7 +1336,7 @@ OPTIONS = [
     .add_docker_api(DockerAPIEngine(get_value=_get_value_detach_interactive, set_value=_set_value_detach_interactive)),
 
     OptionGroup()
-    .add_option('devices', type='set', elements='str')
+    .add_option('devices', type='set', elements='dict', ansible_elements='str')
     .add_docker_api(DockerAPIEngine.host_config_value('Devices', preprocess_value=_preprocess_devices)),
 
     OptionGroup()
