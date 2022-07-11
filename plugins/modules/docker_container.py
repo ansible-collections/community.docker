@@ -1301,7 +1301,6 @@ class ContainerManager(DockerBaseClass):
         self.param_state = self.module.params['state']
         self._parse_comparisons()
         self._update_params()
-        self.parameters = self._collect_params(active_options)
         self.results = {'changed': False, 'actions': []}
         self.diff = {}
         self.diff_tracker = DifferenceTracker()
@@ -1318,7 +1317,6 @@ class ContainerManager(DockerBaseClass):
             if not valid_ip:
                 self.fail('The value of default_host_ip must be an empty string, an IPv4 address, '
                           'or an IPv6 address. Got "{0}" instead.'.format(self.param_default_host_ip))
-
 
     def _collect_all_options(self, active_options):
         all_options = {}
@@ -1427,19 +1425,6 @@ class ContainerManager(DockerBaseClass):
                 if self.module.params[param] is None:
                     self.module.params[param] = value
 
-    def _collect_params(self, active_options):
-        parameters = []
-        for options in active_options:
-            values = {}
-            engine = options.get_engine('docker_api')
-            for option in options.options:
-                if not option.not_an_ansible_option and self.module.params[option.name] is not None:
-                    values[option.name] = self.module.params[option.name]
-            values = options.preprocess(self.module, values)
-            engine.preprocess_value(self.module, self.client, self.client.docker_api_version, options.options, values)
-            parameters.append((options, values))
-        return parameters
-
     def fail(self, *args, **kwargs):
         self.client.fail(*args, **kwargs)
 
@@ -1492,7 +1477,21 @@ class ContainerManager(DockerBaseClass):
             #  code will have slept for ~1.5 minutes.)
             delay = min(delay * 1.1, 10)
 
+    def _collect_params(self, active_options):
+        parameters = []
+        for options in active_options:
+            values = {}
+            engine = options.get_engine('docker_api')
+            for option in options.options:
+                if not option.not_an_ansible_option and self.module.params[option.name] is not None:
+                    values[option.name] = self.module.params[option.name]
+            values = options.preprocess(self.module, values)
+            engine.preprocess_value(self.module, self.client, self.client.docker_api_version, options.options, values)
+            parameters.append((options, values))
+        return parameters
+
     def present(self, state):
+        self.parameters = self._collect_params(self.options)
         container = self._get_container(self.param_name)
         was_running = container.running
         was_paused = container.paused
@@ -1665,7 +1664,8 @@ class ContainerManager(DockerBaseClass):
                     match = compare_generic(param_value, container_value, option.comparison, option.comparison_type)
 
                     if not match:
-                        if engine.ignore_mismatching_result(self.module, self.client, self.client.docker_api_version, option, image, container_value, param_value):
+                        if engine.ignore_mismatching_result(self.module, self.client, self.client.docker_api_version,
+                                                            option, image, container_value, param_value):
                             continue
                         # TODO
                         # if option.name == 'healthcheck' and config_mapping['disable_healthcheck'] and self.parameters.disable_healthcheck:
@@ -1866,18 +1866,24 @@ class ContainerManager(DockerBaseClass):
                         self.fail("Error disconnecting container from network %s - %s" % (diff['parameter']['name'],
                                                                                           to_native(exc)))
             # connect to the network
-            params = dict()
-            for para, dest_para in {'ipv4_address': 'IPv4Address', 'ipv6_address': 'IPv6Address', 'links': 'Links', 'aliases': 'Aliases'}.items():
-                if diff['parameter'].get(para):
-                    value = diff['parameter'][para]
-                    if para == 'links':
-                        value = normalize_links(value)
-                    params[dest_para] = value
-            self.results['actions'].append(dict(added_to_network=diff['parameter']['name'], network_parameters=params))
+            self.results['actions'].append(dict(added_to_network=diff['parameter']['name'], network_parameters=diff['parameter']))
             if not self.check_mode:
                 try:
                     self.log("Connecting container to network %s" % diff['parameter']['id'])
-                    self.log(params, pretty_print=True)
+                    self.log(diff['parameter'], pretty_print=True)
+                    params = {}
+                    for para, dest_para in {'ipv4_address': 'IPv4Address', 'ipv6_address': 'IPv6Address', 'links': 'Links', 'aliases': 'Aliases'}.items():
+                        if diff['parameter'].get(para):
+                            value = diff['parameter'][para]
+                            if para == 'links':
+                                value = normalize_links(value)
+                            params[dest_para] = value
+                    ipam_config = {}
+                    for param in ('IPv4Address', 'IPv6Address'):
+                        if param in params:
+                            ipam_config[param] = params.pop(param)
+                    if ipam_config:
+                        params['IPAMConfig'] = ipam_config
                     data = {
                         'Container': container.Id,
                         'EndpointConfig': params,
@@ -2099,13 +2105,6 @@ def main():
         keep_volumes=dict(type='bool', default=True),
         kill_signal=dict(type='str'),
         name=dict(type='str', required=True),
-        networks=dict(type='list', elements='dict', options=dict(
-            name=dict(type='str', required=True),
-            ipv4_address=dict(type='str'),
-            ipv6_address=dict(type='str'),
-            aliases=dict(type='list', elements='str'),
-            links=dict(type='list', elements='str'),
-        )),
         networks_cli_compatible=dict(type='bool', default=True),
         output_logs=dict(type='bool', default=False),
         paused=dict(type='bool'),
@@ -2115,7 +2114,6 @@ def main():
         removal_wait_timeout=dict(type='float'),
         restart=dict(type='bool', default=False),
         state=dict(type='str', default='started', choices=['absent', 'present', 'started', 'stopped']),
-        stop_signal=dict(type='str'),
     )
 
     mutually_exclusive = []

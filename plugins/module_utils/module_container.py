@@ -2,6 +2,7 @@
 # Copyright 2016 Red Hat | Ansible
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+import json
 import os
 import re
 import shlex
@@ -184,7 +185,8 @@ class DockerAPIEngine(object):
         self.get_value = get_value
         self.set_value = set_value
         self.get_expected_values = get_expected_values or (lambda module, client, api_version, options, image, values: values)
-        self.ignore_mismatching_result = ignore_mismatching_result or (lambda module, client, api_version, option, image, container_value, expected_value: False)
+        self.ignore_mismatching_result = ignore_mismatching_result or \
+            (lambda module, client, api_version, option, image, container_value, expected_value: False)
         self.preprocess_value = preprocess_value or (lambda module, client, api_version, options, values: values)
         self.update_value = update_value
         self.can_set_value = can_set_value or (lambda api_version: set_value is not None)
@@ -427,9 +429,9 @@ def _get_default_host_ip(module, client):
 
 
 def _get_value_detach_interactive(module, container, api_version, options):
-    attach_stdin = container.get('AttachStdin')
-    attach_stderr = container.get('AttachStderr')
-    attach_stdout = container.get('AttachStdout')
+    attach_stdin = container['Config'].get('OpenStdin')
+    attach_stderr = container['Config'].get('AttachStderr')
+    attach_stdout = container['Config'].get('AttachStdout')
     return {
         'interactive': bool(attach_stdin),
         'detach': not (attach_stderr and attach_stdout),
@@ -444,6 +446,7 @@ def _set_value_detach_interactive(module, data, api_version, options, values):
     data['AttachStderr'] = False
     data['AttachStdin'] = False
     data['StdinOnce'] = False
+    data['OpenStdin'] = interactive
     if not detach:
         data['AttachStdout'] = True
         data['AttachStderr'] = True
@@ -627,13 +630,13 @@ def _preprocess_healthcheck(module, client, api_version, value):
         healthcheck = {'test': ['NONE']}
     if not healthcheck:
         return None
-    return {
+    return omit_none_from_dict({
         'Test': healthcheck.get('test'),
         'Interval': healthcheck.get('interval'),
         'Timeout': healthcheck.get('timeout'),
         'StartPeriod': healthcheck.get('start_period'),
         'Retries': healthcheck.get('retries'),
-    }
+    })
 
 
 def _postprocess_healthcheck_get_value(module, api_version, value, sentry):
@@ -647,7 +650,7 @@ def _preprocess_convert_to_bytes(module, values, name, unlimited_value=None):
         return values
     try:
         value = values[name]
-        if unlimited_value is not None and value == 'unlimited':
+        if unlimited_value is not None and value in ('unlimited', str(unlimited_value)):
             value = unlimited_value
         else:
             value = human_to_bytes(value)
@@ -717,13 +720,80 @@ def _preprocess_mac_address(module, values):
     }
 
 
-def _get_expected_sysctls_value(module, client, api_version, image, value, sentry):
-    if value is sentry:
-        return value
-    result = {}
-    for key, sysctl_value in value:
-        result[key] = to_text(sysctl_value, errors='surrogate_or_strict')
-    return result
+def _preprocess_networks(module, values):
+    if module.params['networks_cli_compatible'] is True and values.get('networks') and 'network_mode' not in values:
+        # Same behavior as Docker CLI: if networks are specified, use the name of the first network as the value for network_mode
+        # (assuming no explicit value is specified for network_mode)
+        values['network_mode'] = values['networks'][0]['name']
+
+    if 'networks' in values:
+        for network in values['networks']:
+            if network['links']:
+                parsed_links = []
+                for link in network['links']:
+                    parsed_link = link.split(':', 1)
+                    if len(parsed_link) == 1:
+                        parsed_link = (link, link)
+                    parsed_links.append(tuple(parsed_link))
+                network['links'] = parsed_links
+
+    return values
+
+
+def _ignore_mismatching_network_result(module, client, api_version, option, image, container_value, expected_value):
+    # 'networks' is handled out-of-band
+    if option.name == 'networks':
+        return True
+    return False
+
+
+def _preprocess_network_values(module, client, api_version, options, values):
+    if 'networks' in values:
+        for network in values['networks']:
+            network['id'] = _get_network_id(module, client, network['name'])
+            if not network['id']:
+                module.fail_json(msg="Parameter error: network named %s could not be found. Does it exist?" % (network['name'], ))
+
+    if 'network_mode' in values:
+        values['network_mode'] = _preprocess_container_names(module, client, api_version, values['network_mode'])
+
+    return values
+
+
+def _get_network_id(module, client, network_name):
+    try:
+        network_id = None
+        params = {'filters': json.dumps({'name': [network_name]})}
+        for network in client.get_json('/networks', params=params):
+            if network['Name'] == network_name:
+                network_id = network['Id']
+                break
+        return network_id
+    except Exception as exc:
+        module.fail_json(msg="Error getting network id for %s - %s" % (network_name, to_native(exc)))
+
+
+def _get_values_network(module, container, api_version, options):
+    value = container['HostConfig'].get('NetworkMode', _SENTRY)
+    if value is _SENTRY:
+        return {}
+    return {'network_mode': value}
+
+
+def _set_values_network(module, data, api_version, options, values):
+    if 'network_mode' not in values:
+        return
+    if 'HostConfig' not in data:
+        data['HostConfig'] = {}
+    value = values['network_mode']
+    data['HostConfig']['NetworkMode'] = value
+
+
+def _preprocess_sysctls(module, values):
+    if 'sysctls' in values:
+        for key, value in values['sysctls'].items():
+            values['sysctls'][key] = to_text(value, errors='surrogate_or_strict')
+    return values
 
 
 def _preprocess_tmpfs(module, values):
@@ -786,7 +856,9 @@ def _preprocess_mounts(module, values):
                 module.fail_json(msg='source must be specified for mount "{0}" of type "{1}"'.format(target, mount_type))
             for option, req_mount_type in _MOUNT_OPTION_TYPES.items():
                 if mount[option] is not None and mount_type != req_mount_type:
-                    module.fail_json(msg='{0} cannot be specified for mount "{1}" of type "{2}" (needs type "{3}")'.format(option, target, mount_type, req_mount_type))
+                    module.fail_json(
+                        msg='{0} cannot be specified for mount "{1}" of type "{2}" (needs type "{3}")'.format(option, target, mount_type, req_mount_type)
+                    )
 
             # Streamline options
             volume_options = mount_dict.pop('volume_options')
@@ -811,8 +883,8 @@ def _preprocess_mounts(module, values):
     if 'volumes' in values:
         new_vols = []
         for vol in values['volumes']:
+            parts = vol.split(':')
             if ':' in vol:
-                parts = vol.split(':')
                 if len(parts) == 3:
                     host, container, mode = parts
                     if not _is_volume_permissions(mode):
@@ -828,7 +900,7 @@ def _preprocess_mounts(module, values):
                         check_collision(parts[1], 'volumes')
                         new_vols.append("%s:%s:rw" % (host, parts[1]))
                         continue
-            check_collision(vol.split(':', 1)[0], 'volumes')
+            check_collision(parts[min(1, len(parts) - 1)], 'volumes')
             new_vols.append(vol)
         values['volumes'] = new_vols
         new_binds = []
@@ -934,7 +1006,7 @@ def _get_expected_values_mounts(module, client, api_version, options, image, val
                 if len(parts) == 2:
                     if not _is_volume_permissions(parts[1]):
                         continue
-            expected_vols[vol] = dict()
+            expected_vols[vol] = {}
     if expected_vols:
         expected_values['volumes'] = expected_vols
 
@@ -998,6 +1070,14 @@ def _set_values_mounts(module, data, api_version, options, values):
     if 'volumes' in values:
         volumes = {}
         for volume in values['volumes']:
+            # Only pass anonymous volumes to create container
+            if ':' in volume:
+                parts = volume.split(':')
+                if len(parts) == 3:
+                    continue
+                if len(parts) == 2:
+                    if not _is_volume_permissions(parts[1]):
+                        continue
             volumes[volume] = {}
         data['Volumes'] = volumes
     if 'volume_binds' in values:
@@ -1404,7 +1484,7 @@ OPTIONS = [
 
     OptionGroup()
     .add_option('groups', type='set', elements='str')
-    .add_docker_api(DockerAPIEngine.config_value('GroupAdd')),
+    .add_docker_api(DockerAPIEngine.host_config_value('GroupAdd')),
 
     OptionGroup()
     .add_option('healthcheck', type='dict', ansible_suboptions=dict(
@@ -1414,7 +1494,7 @@ OPTIONS = [
         start_period=dict(type='str'),
         retries=dict(type='int'),
     ))
-    .add_docker_api(DockerAPIEngine.config_value('GroupAdd', preprocess_value=_preprocess_healthcheck, postprocess_for_get=_postprocess_healthcheck_get_value)),
+    .add_docker_api(DockerAPIEngine.config_value('Healthcheck', preprocess_value=_preprocess_healthcheck, postprocess_for_get=_postprocess_healthcheck_get_value)),
 
     OptionGroup()
     .add_option('hostname', type='str')
@@ -1434,11 +1514,12 @@ OPTIONS = [
 
     OptionGroup()
     .add_option('labels', type='dict', needs_no_suboptions=True)
-    .add_docker_api(DockerAPIEngine.config_value('Labels', get_expected_value=_get_expected_labels_value, ignore_mismatching_result=_ignore_mismatching_label_result)),
+    .add_docker_api(DockerAPIEngine.config_value(
+        'Labels', get_expected_value=_get_expected_labels_value, ignore_mismatching_result=_ignore_mismatching_label_result)),
 
     OptionGroup()
     .add_option('links', type='set', elements='list', ansible_elements='str')
-    .add_docker_api(DockerAPIEngine.config_value('Links', preprocess_value=_preprocess_links)),
+    .add_docker_api(DockerAPIEngine.host_config_value('Links', preprocess_value=_preprocess_links)),
 
     OptionGroup(preprocess=_preprocess_log, ansible_required_by={'log_options': ['log_driver']})
     .add_option('log_driver', type='str')
@@ -1472,9 +1553,21 @@ OPTIONS = [
     .add_option('stop_timeout', type='int', default_comparison='ignore')
     .add_docker_api(DockerAPIEngine.config_value('StopTimeout')),
 
-    OptionGroup()
+    OptionGroup(preprocess=_preprocess_networks)
     .add_option('network_mode', type='str')
-    .add_docker_api(DockerAPIEngine.host_config_value('NetworkMode', preprocess_value=_preprocess_container_names)),
+    .add_option('networks', type='set', elements='dict', ansible_suboptions=dict(
+        name=dict(type='str', required=True),
+        ipv4_address=dict(type='str'),
+        ipv6_address=dict(type='str'),
+        aliases=dict(type='list', elements='str'),
+        links=dict(type='list', elements='str'),
+    ))
+    .add_docker_api(DockerAPIEngine(
+        preprocess_value=_preprocess_network_values,
+        get_value=_get_values_network,
+        set_value=_set_values_network,
+        ignore_mismatching_result=_ignore_mismatching_network_result,
+    )),
 
     OptionGroup()
     .add_option('oom_killer', type='bool')
@@ -1503,7 +1596,6 @@ OPTIONS = [
     OptionGroup(ansible_required_by={'restart_retries': ['restart_policy']})
     .add_option('restart_policy', type='str', ansible_choices=['no', 'on-failure', 'always', 'unless-stopped'])
     .add_option('restart_retries', type='int')
-    .add_docker_api(..., )
     .add_docker_api(DockerAPIEngine(
         get_value=_get_values_restart,
         set_value=_set_values_restart,
@@ -1523,12 +1615,16 @@ OPTIONS = [
     .add_docker_api(DockerAPIEngine.host_config_value('ShmSize')),
 
     OptionGroup()
+    .add_option('stop_signal', type='str')
+    .add_docker_api(DockerAPIEngine.config_value('StopSignal')),
+
+    OptionGroup()
     .add_option('storage_opts', type='dict', needs_no_suboptions=True)
     .add_docker_api(DockerAPIEngine.host_config_value('StorageOpt')),
 
-    OptionGroup()
+    OptionGroup(preprocess=_preprocess_sysctls)
     .add_option('sysctls', type='dict', needs_no_suboptions=True)
-    .add_docker_api(DockerAPIEngine.host_config_value('Sysctls', get_expected_value=_get_expected_sysctls_value)),
+    .add_docker_api(DockerAPIEngine.host_config_value('Sysctls')),
 
     OptionGroup(preprocess=_preprocess_tmpfs)
     .add_option('tmpfs', type='dict', ansible_type='list', ansible_elements='str')
@@ -1592,7 +1688,7 @@ OPTIONS = [
     OptionGroup(preprocess=_preprocess_ports)
     .add_option('exposed_ports', type='set', elements='str', ansible_aliases=['exposed', 'expose'])
     .add_option('publish_all_ports', type='bool')
-    .add_option('published_ports', type='set', elements='str', ansible_aliases=['ports'])
+    .add_option('published_ports', type='dict', ansible_type='list', ansible_elements='str', ansible_aliases=['ports'])
     .add_option('ports', type='set', elements='str', not_an_ansible_option=True, default_comparison='ignore')
     .add_docker_api(DockerAPIEngine(
         get_value=_get_values_ports,
