@@ -1199,24 +1199,17 @@ status:
     sample: 0
 '''
 
-import os
 import re
-import shlex
 import traceback
 from time import sleep
 
-from ansible.module_utils.common.text.formatters import human_to_bytes
 from ansible.module_utils.common.text.converters import to_native, to_text
-from ansible.module_utils.six import string_types
-
-from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     RequestException,
 )
 from ansible_collections.community.docker.plugins.module_utils.module_container import (
     DockerAPIEngineDriver,
-    Option,
 )
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DifferenceTracker,
@@ -1224,27 +1217,24 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     compare_generic,
     is_image_name_id,
     sanitize_result,
-    clean_dict_booleans_for_docker_api,
-    omit_none_from_dict,
-    parse_healthcheck,
-    DOCKER_COMMON_ARGS,
 )
 
-from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException, NotFound
+from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
 
-from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import parse_repository_tag, normalize_links
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import parse_repository_tag
 
 
 class Container(DockerBaseClass):
-    def __init__(self, container):
+    def __init__(self, container, engine_driver):
         super(Container, self).__init__()
         self.raw = container
-        self.Id = None
-        self.Image = None
+        self.id = None
+        self.image = None
         self.container = container
+        self.engine_driver = engine_driver
         if container:
-            self.Id = container['Id']
-            self.Image = container['Image']
+            self.id = engine_driver.get_container_id(container)
+            self.image = engine_driver.get_image_from_container(container)
         self.log(self.container, pretty_print=True)
 
     @property
@@ -1253,22 +1243,15 @@ class Container(DockerBaseClass):
 
     @property
     def removing(self):
-        if self.container and self.container.get('State'):
-            return self.container['State'].get('Status') == 'removing'
-        return False
+        return self.engine_driver.is_container_removing(self.container) if self.container else False
 
     @property
     def running(self):
-        if self.container and self.container.get('State'):
-            if self.container['State'].get('Running') and not self.container['State'].get('Ghost', False):
-                return True
-        return False
+        return self.engine_driver.is_container_running(self.container) if self.container else False
 
     @property
     def paused(self):
-        if self.container and self.container.get('State'):
-            return self.container['State'].get('Paused', False)
-        return False
+        return self.engine_driver.is_container_paused(self.container) if self.container else False
 
 
 class ContainerManager(DockerBaseClass):
@@ -1322,10 +1305,6 @@ class ContainerManager(DockerBaseClass):
         for options in active_options:
             for option in options.options:
                 all_options[option.name] = option
-        for option in [
-            Option('image', 'str', None),
-        ]:
-            all_options[option.name] = option
         return all_options
 
     def _collect_all_module_params(self):
@@ -1447,7 +1426,7 @@ class ContainerManager(DockerBaseClass):
         total_wait = 0
         while True:
             # Inspect container
-            result = self.client.get_container_by_id(container_id)
+            result = self.engine_driver.inspect_container_by_id(self.client, container_id)
             if result is None:
                 if accept_removal:
                     return
@@ -1514,7 +1493,7 @@ class ContainerManager(DockerBaseClass):
             if container.removing and not self.check_mode:
                 # Wait for container to be removed before trying to create it
                 self.wait_for_state(
-                    container.Id, wait_states=['removing'], accept_removal=True, max_wait=self.param_removal_wait_timeout)
+                    container.id, wait_states=['removing'], accept_removal=True, max_wait=self.param_removal_wait_timeout)
             new_container = self.container_create(self.param_image)
             if new_container:
                 container = new_container
@@ -1533,16 +1512,16 @@ class ContainerManager(DockerBaseClass):
                 self.log("differences")
                 self.log(differences.get_legacy_docker_container_diffs(), pretty_print=True)
                 image_to_use = self.param_image
-                if not image_to_use and container and container.Image:
-                    image_to_use = container.Image
+                if not image_to_use and container and container.image:
+                    image_to_use = container.image
                 if not image_to_use:
                     self.fail('Cannot recreate container when image is not specified or cannot be extracted from current container!')
                 if container.running:
-                    self.container_stop(container.Id)
-                self.container_remove(container.Id)
+                    self.container_stop(container.id)
+                self.container_remove(container.id)
                 if not self.check_mode:
                     self.wait_for_state(
-                        container.Id, wait_states=['removing'], accept_removal=True, max_wait=self.param_removal_wait_timeout)
+                        container.id, wait_states=['removing'], accept_removal=True, max_wait=self.param_removal_wait_timeout)
                 new_container = self.container_create(image_to_use)
                 if new_container:
                     container = new_container
@@ -1554,29 +1533,29 @@ class ContainerManager(DockerBaseClass):
 
             if state == 'started' and not container.running:
                 self.diff_tracker.add('running', parameter=True, active=was_running)
-                container = self.container_start(container.Id)
+                container = self.container_start(container.id)
             elif state == 'started' and self.param_restart:
                 self.diff_tracker.add('running', parameter=True, active=was_running)
                 self.diff_tracker.add('restarted', parameter=True, active=False)
-                container = self.container_restart(container.Id)
+                container = self.container_restart(container.id)
             elif state == 'stopped' and container.running:
                 self.diff_tracker.add('running', parameter=False, active=was_running)
-                self.container_stop(container.Id)
-                container = self._get_container(container.Id)
+                self.container_stop(container.id)
+                container = self._get_container(container.id)
 
             if state == 'started' and self.param_paused is not None and container.paused != self.param_paused:
                 self.diff_tracker.add('paused', parameter=self.param_paused, active=was_paused)
                 if not self.check_mode:
                     try:
                         if self.param_paused:
-                            self.client.post_call('/containers/{0}/pause', container.Id)
+                            self.engine_driver.pause_container(self.client, container.id)
                         else:
-                            self.client.post_call('/containers/{0}/unpause', container.Id)
+                            self.engine_driver.unpause_container(self.client, container.id)
                     except Exception as exc:
                         self.fail("Error %s container %s: %s" % (
-                            "pausing" if self.param_paused else "unpausing", container.Id, to_native(exc)
+                            "pausing" if self.param_paused else "unpausing", container.id, to_native(exc)
                         ))
-                    container = self._get_container(container.Id)
+                    container = self._get_container(container.id)
                 self.results['changed'] = True
                 self.results['actions'].append(dict(set_paused=self.param_paused))
 
@@ -1587,9 +1566,9 @@ class ContainerManager(DockerBaseClass):
         if container.exists:
             if container.running:
                 self.diff_tracker.add('running', parameter=False, active=True)
-                self.container_stop(container.Id)
+                self.container_stop(container.id)
             self.diff_tracker.add('exists', parameter=False, active=True)
-            self.container_remove(container.Id)
+            self.container_remove(container.id)
 
     def _output_logs(self, msg):
         self.module.log(msg=msg)
@@ -1598,7 +1577,8 @@ class ContainerManager(DockerBaseClass):
         '''
         Expects container ID or Name. Returns a container object
         '''
-        return Container(self.client.get_container(container))
+        container = self.engine_driver.inspect_container_by_name(self.client, container)
+        return Container(container, self.engine_driver)
 
     def _get_image(self):
         image_parameter = self.param_image
@@ -1606,16 +1586,16 @@ class ContainerManager(DockerBaseClass):
             self.log('No image specified')
             return None
         if is_image_name_id(image_parameter):
-            image = self.client.find_image_by_id(image_parameter)
+            image = self.engine_driver.inspect_image_by_id(self.client, image_parameter)
         else:
             repository, tag = parse_repository_tag(image_parameter)
             if not tag:
                 tag = "latest"
-            image = self.client.find_image(repository, tag)
+            image = self.engine_driver.inspect_image_by_name(self.client, repository, tag)
             if not image or self.param_pull:
                 if not self.check_mode:
                     self.log("Pull the image.")
-                    image, alreadyToLatest = self.client.pull_image(repository, tag)
+                    image, alreadyToLatest = self.engine_driver.pull_image(self.client, repository, tag)
                     if alreadyToLatest:
                         self.results['changed'] = False
                     else:
@@ -1633,95 +1613,79 @@ class ContainerManager(DockerBaseClass):
 
     def _image_is_different(self, image, container):
         if image and image.get('Id'):
-            if container and container.Image:
-                if image.get('Id') != container.Image:
-                    self.diff_tracker.add('image', parameter=image.get('Id'), active=container.Image)
+            if container and container.image:
+                if image.get('Id') != container.image:
+                    self.diff_tracker.add('image', parameter=image.get('Id'), active=container.image)
                     return True
         return False
 
     def _compose_create_parameters(self, image):
-        params = {
-            'Image': image,
-        }
+        params = {}
         for options, values in self.parameters:
             engine = options.get_engine(self.engine_driver.name)
             if engine.can_set_value(self.client.docker_api_version):
                 engine.set_value(self.module, params, self.client.docker_api_version, options.options, values)
+        params['Image'] = image
         return params
+
+    def _record_differences(self, differences, options, param_values, engine, container, image):
+        container_values = engine.get_value(self.module, container.raw, self.client.docker_api_version, options.options)
+        expected_values = engine.get_expected_values(self.module, self.client, self.client.docker_api_version, options.options, image, param_values.copy())
+        for option in options.options:
+            if option.name in expected_values:
+                param_value = expected_values[option.name]
+                container_value = container_values.get(option.name)
+                match = compare_generic(param_value, container_value, option.comparison, option.comparison_type)
+
+                if not match:
+                    # No match.
+                    if engine.ignore_mismatching_result(self.module, self.client, self.client.docker_api_version,
+                                                        option, image, container_value, param_value):
+                        # Ignore the result
+                        continue
+
+                    # Record the differences
+                    p = param_value
+                    c = container_value
+                    if option.comparison_type == 'set':
+                        # Since the order does not matter, sort so that the diff output is better.
+                        if p is not None:
+                            p = sorted(p)
+                        if c is not None:
+                            c = sorted(c)
+                    elif option.comparison_type == 'set(dict)':
+                        # Since the order does not matter, sort so that the diff output is better.
+                        if option.name == 'expected_mounts':
+                            # For selected values, use one entry as key
+                            def sort_key_fn(x):
+                                return x['target']
+                        else:
+                            # We sort the list of dictionaries by using the sorted items of a dict as its key.
+                            def sort_key_fn(x):
+                                return sorted((a, to_text(b, errors='surrogate_or_strict')) for a, b in x.items())
+                        if p is not None:
+                            p = sorted(p, key=sort_key_fn)
+                        if c is not None:
+                            c = sorted(c, key=sort_key_fn)
+                    differences.add(option.name, parameter=p, active=c)
 
     def has_different_configuration(self, container, image):
         differences = DifferenceTracker()
         for options, param_values in self.parameters:
             engine = options.get_engine(self.engine_driver.name)
-            container_values = engine.get_value(self.module, container.raw, self.client.docker_api_version, options.options)
-            expected_values = engine.get_expected_values(self.module, self.client, self.client.docker_api_version, options.options, image, param_values.copy())
-            for option in options.options:
-                if option.name in expected_values:
-                    param_value = expected_values[option.name]
-                    container_value = container_values.get(option.name)
-                    match = compare_generic(param_value, container_value, option.comparison, option.comparison_type)
-
-                    if not match:
-                        if engine.ignore_mismatching_result(self.module, self.client, self.client.docker_api_version,
-                                                            option, image, container_value, param_value):
-                            continue
-                        # TODO
-                        # if option.name == 'healthcheck' and config_mapping['disable_healthcheck'] and self.parameters.disable_healthcheck:
-                        #     # If the healthcheck is disabled (both in parameters and for the current container), and the user
-                        #     # requested strict comparison for healthcheck, the comparison will fail. That's why we ignore the
-                        #     # expected_healthcheck comparison in this case.
-                        #     continue
-
-                        # no match. record the differences
-                        p = param_value
-                        c = container_value
-                        if option.comparison_type == 'set':
-                            # Since the order does not matter, sort so that the diff output is better.
-                            if p is not None:
-                                p = sorted(p)
-                            if c is not None:
-                                c = sorted(c)
-                        elif option.comparison_type == 'set(dict)':
-                            # Since the order does not matter, sort so that the diff output is better.
-                            if option.name == 'expected_mounts':
-                                # For selected values, use one entry as key
-                                def sort_key_fn(x):
-                                    return x['target']
-                            else:
-                                # We sort the list of dictionaries by using the sorted items of a dict as its key.
-                                def sort_key_fn(x):
-                                    return sorted((a, to_text(b, errors='surrogate_or_strict')) for a, b in x.items())
-                            if p is not None:
-                                p = sorted(p, key=sort_key_fn)
-                            if c is not None:
-                                c = sorted(c, key=sort_key_fn)
-                        differences.add(option.name, parameter=p, active=c)
-
+            self._record_differences(differences, options, param_values, engine, container, image)
         has_differences = not differences.empty
         return has_differences, differences
 
     def has_different_resource_limits(self, container, image):
-        '''
-        Diff parameters and container resource limits
-        '''
         differences = DifferenceTracker()
         for options, param_values in self.parameters:
             engine = options.get_engine(self.engine_driver.name)
             if not engine.can_update_value(self.client.docker_api_version):
                 continue
-            container_values = engine.get_value(self.module, container.raw, self.client.docker_api_version, options.options)
-            expected_values = engine.get_expected_values(self.module, self.client, self.client.docker_api_version, options.options, image, param_values.copy())
-            for option in options.options:
-                if option.name in expected_values:
-                    param_value = expected_values[option.name]
-                    container_value = container_values.get(option.name)
-                    match = compare_generic(param_value, container_value, option.comparison, option.comparison_type)
-
-                    if not match:
-                        # no match. record the differences
-                        differences.add(option.name, parameter=param_value, active=container_value)
-        different = not differences.empty
-        return different, differences
+            self._record_differences(differences, options, param_values, engine, container, image)
+        has_differences = not differences.empty
+        return has_differences, differences
 
     def _compose_update_parameters(self):
         result = {}
@@ -1739,8 +1703,8 @@ class ContainerManager(DockerBaseClass):
             self.log(different_limits.get_legacy_docker_container_diffs(), pretty_print=True)
             self.diff_tracker.merge(different_limits)
         if limits_differ and not self.check_mode:
-            self.container_update(container.Id, self._compose_update_parameters())
-            return self._get_container(container.Id)
+            self.container_update(container.id, self._compose_update_parameters())
+            return self._get_container(container.id)
         return container
 
     def has_network_differences(self, container):
@@ -1859,48 +1823,32 @@ class ContainerManager(DockerBaseClass):
                 self.results['actions'].append(dict(removed_from_network=diff['parameter']['name']))
                 if not self.check_mode:
                     try:
-                        self.client.post_json('/networks/{0}/disconnect', diff['parameter']['id'], data={'Container': container.Id})
+                        self.engine_driver.disconnect_container_from_network(self.client, container.id, diff['parameter']['id'])
                     except Exception as exc:
                         self.fail("Error disconnecting container from network %s - %s" % (diff['parameter']['name'],
                                                                                           to_native(exc)))
             # connect to the network
             self.results['actions'].append(dict(added_to_network=diff['parameter']['name'], network_parameters=diff['parameter']))
             if not self.check_mode:
+                params = {key: value for key, value in diff['parameter'].items() if key not in ('id', 'name')}
                 try:
                     self.log("Connecting container to network %s" % diff['parameter']['id'])
-                    self.log(diff['parameter'], pretty_print=True)
-                    params = {}
-                    for para, dest_para in {'ipv4_address': 'IPv4Address', 'ipv6_address': 'IPv6Address', 'links': 'Links', 'aliases': 'Aliases'}.items():
-                        if diff['parameter'].get(para):
-                            value = diff['parameter'][para]
-                            if para == 'links':
-                                value = normalize_links(value)
-                            params[dest_para] = value
-                    ipam_config = {}
-                    for param in ('IPv4Address', 'IPv6Address'):
-                        if param in params:
-                            ipam_config[param] = params.pop(param)
-                    if ipam_config:
-                        params['IPAMConfig'] = ipam_config
-                    data = {
-                        'Container': container.Id,
-                        'EndpointConfig': params,
-                    }
-                    self.client.post_json('/networks/{0}/connect', diff['parameter']['id'], data=data)
+                    self.log(params, pretty_print=True)
+                    self.engine_driver.connect_container_to_network(self.client, container.id, diff['parameter']['id'], params)
                 except Exception as exc:
                     self.fail("Error connecting container to network %s - %s" % (diff['parameter']['name'], to_native(exc)))
-        return self._get_container(container.Id)
+        return self._get_container(container.id)
 
     def _purge_networks(self, container, networks):
         for network in networks:
             self.results['actions'].append(dict(removed_from_network=network['name']))
             if not self.check_mode:
                 try:
-                    self.client.post_json('/networks/{0}/disconnect', network['name'], data={'Container': container.Id})
+                    self.engine_driver.disconnect_container_from_network(self.client, container.id, network['name'])
                 except Exception as exc:
                     self.fail("Error disconnecting container from network %s - %s" % (network['name'],
                                                                                       to_native(exc)))
-        return self._get_container(container.Id)
+        return self._get_container(container.id)
 
     def container_create(self, image):
         create_parameters = self._compose_create_parameters(image)
@@ -1912,12 +1860,10 @@ class ContainerManager(DockerBaseClass):
         new_container = None
         if not self.check_mode:
             try:
-                params = {'name': self.param_name}
-                new_container = self.client.post_json_to_json('/containers/create', data=create_parameters, params=params)
-                self.client.report_warnings(new_container)
+                container_id = self.engine_driver.create_container(self.client, self.param_name, create_parameters)
             except Exception as exc:
                 self.fail("Error creating container: %s" % to_native(exc))
-            return self._get_container(new_container['Id'])
+            return self._get_container(container_id)
         return new_container
 
     def container_start(self, container_id):
@@ -1926,12 +1872,12 @@ class ContainerManager(DockerBaseClass):
         self.results['changed'] = True
         if not self.check_mode:
             try:
-                self.client.post_json('/containers/{0}/start', container_id)
+                self.engine_driver.start_container(self.client, container_id)
             except Exception as exc:
                 self.fail("Error starting container %s: %s" % (container_id, to_native(exc)))
 
             if self.module.params['detach'] is False:
-                status = self.client.post_json_to_json('/containers/{0}/wait', container_id)['StatusCode']
+                status = self.engine_driver.wait_for_container(self.client, container_id)
                 self.client.fail_results['status'] = status
                 self.results['status'] = status
 
@@ -1940,23 +1886,9 @@ class ContainerManager(DockerBaseClass):
                     if self.param_output_logs:
                         self.module.warn('Cannot output_logs if auto_remove is enabled!')
                 else:
-                    config = self.client.get_json('/containers/{0}/json', container_id)
-                    logging_driver = config['HostConfig']['LogConfig']['Type']
-
-                    if logging_driver in ('json-file', 'journald', 'local'):
-                        params = {
-                            'stderr': 1,
-                            'stdout': 1,
-                            'timestamps': 0,
-                            'follow': 0,
-                            'tail': 'all',
-                        }
-                        res = self.client._get(self.client._url('/containers/{0}/logs', container_id), params=params)
-                        output = self.client._get_result_tty(False, res, config['Config']['Tty'])
-                        if self.param_output_logs:
-                            self._output_logs(msg=output)
-                    else:
-                        output = "Result logged using `%s` driver" % logging_driver
+                    output, real_output = self.engine_driver.get_container_output(self.client, container_id)
+                    if real_output and self.param_output_logs:
+                        self._output_logs(msg=output)
 
                 if self.param_cleanup:
                     self.container_remove(container_id, force=True)
@@ -1978,35 +1910,10 @@ class ContainerManager(DockerBaseClass):
         self.results['actions'].append(dict(removed=container_id, volume_state=volume_state, link=link, force=force))
         self.results['changed'] = True
         if not self.check_mode:
-            count = 0
-            while True:
-                try:
-                    params = {'v': volume_state, 'link': link, 'force': force}
-                    self.client.delete_call('/containers/{0}', container_id, params=params)
-                except NotFound as dummy:
-                    pass
-                except APIError as exc:
-                    if 'Unpause the container before stopping or killing' in exc.explanation:
-                        # New docker daemon versions do not allow containers to be removed
-                        # if they are paused. Make sure we don't end up in an infinite loop.
-                        if count == 3:
-                            self.fail("Error removing container %s (tried to unpause three times): %s" % (container_id, to_native(exc)))
-                        count += 1
-                        # Unpause
-                        try:
-                            self.client.post_call('/containers/{0}/unpause', container_id)
-                        except Exception as exc2:
-                            self.fail("Error unpausing container %s for removal: %s" % (container_id, to_native(exc2)))
-                        # Now try again
-                        continue
-                    if 'removal of container ' in exc.explanation and ' is already in progress' in exc.explanation:
-                        pass
-                    else:
-                        self.fail("Error removing container %s: %s" % (container_id, to_native(exc)))
-                except Exception as exc:
-                    self.fail("Error removing container %s: %s" % (container_id, to_native(exc)))
-                # We only loop when explicitly requested by 'continue'
-                break
+            try:
+                self.engine_driver.remove_container(self.client, container_id, remove_volumes=volume_state, link=link, force=force)
+            except Exception as exc:
+                self.client.fail("Error removing container %s: %s" % (container_id, to_native(exc)))
 
     def container_update(self, container_id, update_parameters):
         if update_parameters:
@@ -2016,8 +1923,7 @@ class ContainerManager(DockerBaseClass):
             self.results['changed'] = True
             if not self.check_mode:
                 try:
-                    result = self.client.post_json_to_json('/containers/{0}/update', container_id, data=update_parameters)
-                    self.client.report_warnings(result)
+                    self.engine_driver.update_container(self.client, container_id, update_parameters)
                 except Exception as exc:
                     self.fail("Error updating container %s: %s" % (container_id, to_native(exc)))
         return self._get_container(container_id)
@@ -2027,10 +1933,7 @@ class ContainerManager(DockerBaseClass):
         self.results['changed'] = True
         if not self.check_mode:
             try:
-                params = {}
-                if self.param_kill_signal is not None:
-                    params['signal'] = int(self.param_kill_signal)
-                self.client.post_call('/containers/{0}/kill', container_id, params=params)
+                self.engine_driver.kill_container(self.client, container_id, kill_signal=self.param_kill_signal)
             except Exception as exc:
                 self.fail("Error killing container %s: %s" % (container_id, to_native(exc)))
 
@@ -2039,11 +1942,7 @@ class ContainerManager(DockerBaseClass):
         self.results['changed'] = True
         if not self.check_mode:
             try:
-                timeout = self.module.params['stop_timeout'] or 10
-                client_timeout = self.client.timeout
-                if client_timeout is not None:
-                    client_timeout += timeout
-                self.client.post_call('/containers/{0}/restart', container_id, params={'t': timeout}, timeout=client_timeout)
+                self.engine_driver.restart_container(self.client, container_id, self.module.params['stop_timeout'] or 10)
             except Exception as exc:
                 self.fail("Error restarting container %s: %s" % (container_id, to_native(exc)))
         return self._get_container(container_id)
@@ -2055,45 +1954,17 @@ class ContainerManager(DockerBaseClass):
         self.results['actions'].append(dict(stopped=container_id, timeout=self.module.params['stop_timeout']))
         self.results['changed'] = True
         if not self.check_mode:
-            count = 0
-            while True:
-                try:
-                    timeout = self.module.params['stop_timeout']
-                    if timeout:
-                        params = {'t': timeout}
-                    else:
-                        params = {}
-                        timeout = 10
-                    client_timeout = self.client.timeout
-                    if client_timeout is not None:
-                        client_timeout += timeout
-                    self.client.post_call('/containers/{0}/stop', container_id, params=params, timeout=client_timeout)
-                except APIError as exc:
-                    if 'Unpause the container before stopping or killing' in exc.explanation:
-                        # New docker daemon versions do not allow containers to be removed
-                        # if they are paused. Make sure we don't end up in an infinite loop.
-                        if count == 3:
-                            self.fail("Error removing container %s (tried to unpause three times): %s" % (container_id, to_native(exc)))
-                        count += 1
-                        # Unpause
-                        try:
-                            self.client.post_call('/containers/{0}/unpause', container_id)
-                        except Exception as exc2:
-                            self.fail("Error unpausing container %s for removal: %s" % (container_id, to_native(exc2)))
-                        # Now try again
-                        continue
-                    self.fail("Error stopping container %s: %s" % (container_id, to_native(exc)))
-                except Exception as exc:
-                    self.fail("Error stopping container %s: %s" % (container_id, to_native(exc)))
-                # We only loop when explicitly requested by 'continue'
-                break
+            try:
+                self.engine_driver.stop_container(self.client, container_id, self.module.params['stop_timeout'])
+            except Exception as exc:
+                self.fail("Error stopping container %s: %s" % (container_id, to_native(exc)))
 
 
 def main():
     engine_driver = DockerAPIEngineDriver()
 
     module, active_options, client = engine_driver.setup(
-        argument_spec = dict(
+        argument_spec=dict(
             cleanup=dict(type='bool', default=False),
             comparisons=dict(type='dict'),
             container_default_behavior=dict(type='str', default='no_defaults', choices=['compatibility', 'no_defaults']),
@@ -2116,7 +1987,7 @@ def main():
             restart=dict(type='bool', default=False),
             state=dict(type='str', default='started', choices=['absent', 'present', 'started', 'stopped']),
         ),
-        required_if = [
+        required_if=[
             ('state', 'present', ['image'])
         ],
     )

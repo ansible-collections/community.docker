@@ -30,9 +30,13 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
+from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, NotFound
+
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
-    parse_env_file,
     convert_port_bindings,
+    normalize_links,
+    parse_env_file,
+    parse_repository_tag,
 )
 
 
@@ -176,7 +180,6 @@ class Engine(object):
     min_api_version = None  # string or None
     min_api_version_obj = None  # LooseVersion object or None
 
-
     @abc.abstractmethod
     def get_value(self, module, container, api_version, options):
         pass
@@ -216,6 +219,98 @@ class EngineDriver(object):
     @abc.abstractmethod
     def setup(self, argument_spec, mutually_exclusive=None, required_together=None, required_one_of=None, required_if=None, required_by=None):
         # Return (module, active_options, client)
+        pass
+
+    @abc.abstractmethod
+    def get_container_id(self, container):
+        pass
+
+    @abc.abstractmethod
+    def get_image_from_container(self, container):
+        pass
+
+    @abc.abstractmethod
+    def is_container_removing(self, container):
+        pass
+
+    @abc.abstractmethod
+    def is_container_running(self, container):
+        pass
+
+    @abc.abstractmethod
+    def is_container_paused(self, container):
+        pass
+
+    @abc.abstractmethod
+    def inspect_container_by_name(self, client, container_name):
+        pass
+
+    @abc.abstractmethod
+    def inspect_container_by_id(self, client, container_id):
+        pass
+
+    @abc.abstractmethod
+    def inspect_image_by_id(self, client, image_id):
+        pass
+
+    @abc.abstractmethod
+    def inspect_image_by_name(self, client, repository, tag):
+        pass
+
+    @abc.abstractmethod
+    def pull_image(self, client, repository, tag):
+        pass
+
+    @abc.abstractmethod
+    def pause_container(self, client, container_id):
+        pass
+
+    @abc.abstractmethod
+    def unpause_container(self, client, container_id):
+        pass
+
+    @abc.abstractmethod
+    def disconnect_container_from_network(self, client, container_id, network_id):
+        pass
+
+    @abc.abstractmethod
+    def connect_container_to_network(self, client, container_id, network_id, parameters=None):
+        pass
+
+    @abc.abstractmethod
+    def create_container(self, client, container_name, create_parameters):
+        pass
+
+    @abc.abstractmethod
+    def start_container(self, client, container_id):
+        pass
+
+    @abc.abstractmethod
+    def wait_for_container(self, client, container_id):
+        pass
+
+    @abc.abstractmethod
+    def get_container_output(self, client, container_id):
+        pass
+
+    @abc.abstractmethod
+    def update_container(self, client, container_id, update_parameters):
+        pass
+
+    @abc.abstractmethod
+    def restart_container(self, client, container_id, timeout=None):
+        pass
+
+    @abc.abstractmethod
+    def kill_container(self, client, container_id, kill_signal=None):
+        pass
+
+    @abc.abstractmethod
+    def stop_container(self, client, container_id, timeout=None):
+        pass
+
+    @abc.abstractmethod
+    def remove_container(self, client, container_id, remove_volumes=False, link=False, force=False):
         pass
 
 
@@ -263,6 +358,180 @@ class DockerAPIEngineDriver(EngineDriver):
         )
 
         return client.module, active_options, client
+
+    def get_container_id(self, container):
+        return container['Id']
+
+    def get_image_from_container(self, container):
+        return container['Image']
+
+    def is_container_removing(self, container):
+        if container.get('State'):
+            return container['State'].get('Status') == 'removing'
+        return False
+
+    def is_container_running(self, container):
+        if container.get('State'):
+            if container['State'].get('Running') and not container['State'].get('Ghost', False):
+                return True
+        return False
+
+    def is_container_paused(self, container):
+        if container.get('State'):
+            return container['State'].get('Paused', False)
+        return False
+
+    def inspect_container_by_name(self, client, container_name):
+        return client.get_container(container_name)
+
+    def inspect_container_by_id(self, client, container_id):
+        return client.get_container_by_id(container_id)
+
+    def inspect_image_by_id(self, client, image_id):
+        return client.find_image_by_id(image_id)
+
+    def inspect_image_by_name(self, client, repository, tag):
+        return client.find_image(repository, tag)
+
+    def pull_image(self, client, repository, tag):
+        return client.pull_image(repository, tag)
+
+    def pause_container(self, client, container_id):
+        client.post_call('/containers/{0}/pause', container_id)
+
+    def unpause_container(self, client, container_id):
+        client.post_call('/containers/{0}/unpause', container_id)
+
+    def disconnect_container_from_network(self, client, container_id, network_id):
+        client.post_json('/networks/{0}/disconnect', network_id, data={'Container': container_id})
+
+    def connect_container_to_network(self, client, container_id, network_id, parameters=None):
+        parameters = (parameters or {}).copy()
+        params = {}
+        for para, dest_para in {'ipv4_address': 'IPv4Address', 'ipv6_address': 'IPv6Address', 'links': 'Links', 'aliases': 'Aliases'}.items():
+            value = parameters.pop(para, None)
+            if value:
+                if para == 'links':
+                    value = normalize_links(value)
+                params[dest_para] = value
+        if parameters:
+            raise Exception(
+                'Unknown parameter(s) for connect_container_to_network for Docker API driver: %s' % (', '.join(['"%s"' % p for p in sorted(parameters)])))
+        ipam_config = {}
+        for param in ('IPv4Address', 'IPv6Address'):
+            if param in params:
+                ipam_config[param] = params.pop(param)
+        if ipam_config:
+            params['IPAMConfig'] = ipam_config
+        data = {
+            'Container': container_id,
+            'EndpointConfig': params,
+        }
+        client.post_json('/networks/{0}/connect', network_id, data=data)
+
+    def create_container(self, client, container_name, create_parameters):
+        params = {'name': container_name}
+        new_container = client.post_json_to_json('/containers/create', data=create_parameters, params=params)
+        client.report_warnings(new_container)
+        return new_container['Id']
+
+    def start_container(self, client, container_id):
+        client.post_json('/containers/{0}/start', container_id)
+
+    def wait_for_container(self, client, container_id):
+        return client.post_json_to_json('/containers/{0}/wait', container_id)['StatusCode']
+
+    def get_container_output(self, client, container_id):
+        config = client.get_json('/containers/{0}/json', container_id)
+        logging_driver = config['HostConfig']['LogConfig']['Type']
+        if logging_driver in ('json-file', 'journald', 'local'):
+            params = {
+                'stderr': 1,
+                'stdout': 1,
+                'timestamps': 0,
+                'follow': 0,
+                'tail': 'all',
+            }
+            res = client._get(client._url('/containers/{0}/logs', container_id), params=params)
+            output = client._get_result_tty(False, res, config['Config']['Tty'])
+            return output, True
+        else:
+            return "Result logged using `%s` driver" % logging_driver, False
+
+    def update_container(self, client, container_id, update_parameters):
+        result = client.post_json_to_json('/containers/{0}/update', container_id, data=update_parameters)
+        client.report_warnings(result)
+
+    def restart_container(self, client, container_id, timeout=None):
+        client_timeout = client.timeout
+        if client_timeout is not None:
+            client_timeout += timeout or 10
+        client.post_call('/containers/{0}/restart', container_id, params={'t': timeout}, timeout=client_timeout)
+
+    def kill_container(self, client, container_id, kill_signal=None):
+        params = {}
+        if kill_signal is not None:
+            params['signal'] = int(kill_signal)
+        client.post_call('/containers/{0}/kill', container_id, params=params)
+
+    def stop_container(self, client, container_id, timeout=None):
+        if timeout:
+            params = {'t': timeout}
+        else:
+            params = {}
+            timeout = 10
+        client_timeout = client.timeout
+        if client_timeout is not None:
+            client_timeout += timeout
+        count = 0
+        while True:
+            try:
+                client.post_call('/containers/{0}/stop', container_id, params=params, timeout=client_timeout)
+            except APIError as exc:
+                if 'Unpause the container before stopping or killing' in exc.explanation:
+                    # New docker daemon versions do not allow containers to be removed
+                    # if they are paused. Make sure we don't end up in an infinite loop.
+                    if count == 3:
+                        raise Exception('%s [tried to unpause three times]' % to_native(exc))
+                    count += 1
+                    # Unpause
+                    try:
+                        self.unpause_container(client, container_id)
+                    except Exception as exc2:
+                        raise Exception('%s [while unpausing]' % to_native(exc2))
+                    # Now try again
+                    continue
+                raise
+            # We only loop when explicitly requested by 'continue'
+            break
+
+    def remove_container(self, client, container_id, remove_volumes=False, link=False, force=False):
+        params = {'v': remove_volumes, 'link': link, 'force': force}
+        count = 0
+        while True:
+            try:
+                client.delete_call('/containers/{0}', container_id, params=params)
+            except NotFound as dummy:
+                pass
+            except APIError as exc:
+                if 'Unpause the container before stopping or killing' in exc.explanation:
+                    # New docker daemon versions do not allow containers to be removed
+                    # if they are paused. Make sure we don't end up in an infinite loop.
+                    if count == 3:
+                        raise Exception('%s [tried to unpause three times]' % to_native(exc))
+                    count += 1
+                    # Unpause
+                    try:
+                        self.unpause_container(client, container_id)
+                    except Exception as exc2:
+                        raise Exception('%s [while unpausing]' % to_native(exc2))
+                    # Now try again
+                    continue
+                if 'removal of container ' in exc.explanation and ' is already in progress' in exc.explanation:
+                    pass
+                raise
+            # We only loop when explicitly requested by 'continue'
+            break
 
 
 class DockerAPIEngine(Engine):
@@ -1598,6 +1867,11 @@ OPTIONS = [
     OptionGroup()
     .add_option('hostname', type='str')
     .add_docker_api(DockerAPIEngine.config_value('Hostname')),
+
+    OptionGroup(preprocess=_preprocess_networks)
+    .add_option('image', type='str')
+    .add_docker_api(DockerAPIEngine.config_value(
+        'Image', ignore_mismatching_result=lambda module, client, api_version, option, image, container_value, expected_value: True)),
 
     OptionGroup()
     .add_option('init', type='bool')
