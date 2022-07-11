@@ -2,6 +2,9 @@
 # Copyright 2016 Red Hat | Ansible
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+
 import json
 import os
 import re
@@ -1338,7 +1341,7 @@ def _preprocess_value_ports(module, client, api_version, options, values):
     default_ip = _get_default_host_ip(module, client)
     for port, port_spec in values['published_ports'].items():
         if port_spec[0] == _DEFAULT_IP_REPLACEMENT_STRING:
-            values['published_ports'][port] = (default_ip, *port_spec[1:])
+            values['published_ports'][port] = tuple([default_ip] + list(port_spec[1:]))
     return values
 
 
@@ -1494,7 +1497,8 @@ OPTIONS = [
         start_period=dict(type='str'),
         retries=dict(type='int'),
     ))
-    .add_docker_api(DockerAPIEngine.config_value('Healthcheck', preprocess_value=_preprocess_healthcheck, postprocess_for_get=_postprocess_healthcheck_get_value)),
+    .add_docker_api(DockerAPIEngine.config_value(
+        'Healthcheck', preprocess_value=_preprocess_healthcheck, postprocess_for_get=_postprocess_healthcheck_get_value)),
 
     OptionGroup()
     .add_option('hostname', type='str')

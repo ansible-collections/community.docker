@@ -498,7 +498,7 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
             required_together=required_together_params,
             required_if=required_if,
             required_one_of=required_one_of,
-            required_by=required_by,
+            required_by=required_by or {},
         )
 
         self.debug = self.module.params.get('debug')
