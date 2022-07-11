@@ -1212,12 +1212,10 @@ from ansible.module_utils.six import string_types
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
-    AnsibleDockerClient,
     RequestException,
 )
 from ansible_collections.community.docker.plugins.module_utils.module_container import (
     DockerAPIEngineDriver,
-    OPTIONS,
     Option,
 )
 from ansible_collections.community.docker.plugins.module_utils.util import (
@@ -1274,11 +1272,12 @@ class Container(DockerBaseClass):
 
 
 class ContainerManager(DockerBaseClass):
-    def __init__(self, module, client, active_options):
+    def __init__(self, module, engine_driver, client, active_options):
+        self.module = module
+        self.engine_driver = engine_driver
         self.client = client
         self.options = active_options
         self.all_options = self._collect_all_options(active_options)
-        self.module = module
         self.check_mode = self.module.check_mode
         self.param_cleanup = self.module.params['cleanup']
         self.param_container_default_behavior = self.module.params['container_default_behavior']
@@ -1325,7 +1324,6 @@ class ContainerManager(DockerBaseClass):
                 all_options[option.name] = option
         for option in [
             Option('image', 'str', None),
-            Option('networks', 'set', None, elements='dict', ansible_suboptions={}),
         ]:
             all_options[option.name] = option
         return all_options
@@ -1481,7 +1479,7 @@ class ContainerManager(DockerBaseClass):
         parameters = []
         for options in active_options:
             values = {}
-            engine = options.get_engine('docker_api')
+            engine = options.get_engine(self.engine_driver.name)
             for option in options.options:
                 if not option.not_an_ansible_option and self.module.params[option.name] is not None:
                     values[option.name] = self.module.params[option.name]
@@ -1646,7 +1644,7 @@ class ContainerManager(DockerBaseClass):
             'Image': image,
         }
         for options, values in self.parameters:
-            engine = options.get_engine('docker_api')
+            engine = options.get_engine(self.engine_driver.name)
             if engine.can_set_value(self.client.docker_api_version):
                 engine.set_value(self.module, params, self.client.docker_api_version, options.options, values)
         return params
@@ -1654,7 +1652,7 @@ class ContainerManager(DockerBaseClass):
     def has_different_configuration(self, container, image):
         differences = DifferenceTracker()
         for options, param_values in self.parameters:
-            engine = options.get_engine('docker_api')
+            engine = options.get_engine(self.engine_driver.name)
             container_values = engine.get_value(self.module, container.raw, self.client.docker_api_version, options.options)
             expected_values = engine.get_expected_values(self.module, self.client, self.client.docker_api_version, options.options, image, param_values.copy())
             for option in options.options:
@@ -1708,7 +1706,7 @@ class ContainerManager(DockerBaseClass):
         '''
         differences = DifferenceTracker()
         for options, param_values in self.parameters:
-            engine = options.get_engine('docker_api')
+            engine = options.get_engine(self.engine_driver.name)
             if not engine.can_update_value(self.client.docker_api_version):
                 continue
             container_values = engine.get_value(self.module, container.raw, self.client.docker_api_version, options.options)
@@ -1728,7 +1726,7 @@ class ContainerManager(DockerBaseClass):
     def _compose_update_parameters(self):
         result = {}
         for options, values in self.parameters:
-            engine = options.get_engine('docker_api')
+            engine = options.get_engine(self.engine_driver.name)
             if not engine.can_update_value(self.client.docker_api_version):
                 continue
             engine.update_value(self.module, result, self.client.docker_api_version, options.options, values)
@@ -2092,73 +2090,39 @@ class ContainerManager(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        cleanup=dict(type='bool', default=False),
-        comparisons=dict(type='dict'),
-        container_default_behavior=dict(type='str', default='no_defaults', choices=['compatibility', 'no_defaults']),
-        command_handling=dict(type='str', choices=['compatibility', 'correct'], default='correct'),
-        default_host_ip=dict(type='str'),
-        force_kill=dict(type='bool', default=False, aliases=['forcekill']),
-        ignore_image=dict(type='bool', default=False),
-        image=dict(type='str'),
-        image_label_mismatch=dict(type='str', choices=['ignore', 'fail'], default='ignore'),
-        keep_volumes=dict(type='bool', default=True),
-        kill_signal=dict(type='str'),
-        name=dict(type='str', required=True),
-        networks_cli_compatible=dict(type='bool', default=True),
-        output_logs=dict(type='bool', default=False),
-        paused=dict(type='bool'),
-        pull=dict(type='bool', default=False),
-        purge_networks=dict(type='bool', default=False),
-        recreate=dict(type='bool', default=False),
-        removal_wait_timeout=dict(type='float'),
-        restart=dict(type='bool', default=False),
-        state=dict(type='str', default='started', choices=['absent', 'present', 'started', 'stopped']),
-    )
+    engine_driver = DockerAPIEngineDriver()
 
-    mutually_exclusive = []
-    required_together = []
-    required_one_of = []
-    required_if = [
-        ('state', 'present', ['image'])
-    ]
-    required_by = {}
-
-    option_minimal_versions = {}
-
-    active_options = []
-    for options in OPTIONS:
-        if not options.supports_engine('docker_api'):
-            continue
-
-        mutually_exclusive.extend(options.ansible_mutually_exclusive)
-        required_together.extend(options.ansible_required_together)
-        required_one_of.extend(options.ansible_required_one_of)
-        required_if.extend(options.ansible_required_if)
-        required_by.update(options.ansible_required_by)
-        argument_spec.update(options.argument_spec)
-
-        engine = options.get_engine('docker_api')
-        if engine.min_docker_api is not None:
-            for option in options.options:
-                if not option.not_an_ansible_option:
-                    option_minimal_versions[option.name] = {'docker_api_version': engine.min_docker_api}
-
-        active_options.append(options)
-
-    client = AnsibleDockerClient(
-        argument_spec=argument_spec,
-        mutually_exclusive=mutually_exclusive,
-        required_together=required_together,
-        required_one_of=required_one_of,
-        required_if=required_if,
-        required_by=required_by,
-        option_minimal_versions=option_minimal_versions,
-        supports_check_mode=True,
+    module, active_options, client = engine_driver.setup(
+        argument_spec = dict(
+            cleanup=dict(type='bool', default=False),
+            comparisons=dict(type='dict'),
+            container_default_behavior=dict(type='str', default='no_defaults', choices=['compatibility', 'no_defaults']),
+            command_handling=dict(type='str', choices=['compatibility', 'correct'], default='correct'),
+            default_host_ip=dict(type='str'),
+            force_kill=dict(type='bool', default=False, aliases=['forcekill']),
+            ignore_image=dict(type='bool', default=False),
+            image=dict(type='str'),
+            image_label_mismatch=dict(type='str', choices=['ignore', 'fail'], default='ignore'),
+            keep_volumes=dict(type='bool', default=True),
+            kill_signal=dict(type='str'),
+            name=dict(type='str', required=True),
+            networks_cli_compatible=dict(type='bool', default=True),
+            output_logs=dict(type='bool', default=False),
+            paused=dict(type='bool'),
+            pull=dict(type='bool', default=False),
+            purge_networks=dict(type='bool', default=False),
+            recreate=dict(type='bool', default=False),
+            removal_wait_timeout=dict(type='float'),
+            restart=dict(type='bool', default=False),
+            state=dict(type='str', default='started', choices=['absent', 'present', 'started', 'stopped']),
+        ),
+        required_if = [
+            ('state', 'present', ['image'])
+        ],
     )
 
     try:
-        cm = ContainerManager(client.module, client, active_options)
+        cm = ContainerManager(module, engine_driver, client, active_options)
         cm.run()
         client.module.exit_json(**sanitize_result(cm.results))
     except DockerException as e:

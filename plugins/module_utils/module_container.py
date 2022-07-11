@@ -5,6 +5,7 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+import abc
 import json
 import os
 import re
@@ -16,13 +17,18 @@ from ansible.module_utils.common.text.converters import to_native, to_text
 from ansible.module_utils.common.text.formatters import human_to_bytes
 from ansible.module_utils.six import string_types
 
-from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
+    AnsibleDockerClient,
+    RequestException,
+)
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
     clean_dict_booleans_for_docker_api,
     omit_none_from_dict,
     parse_healthcheck,
 )
+
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
     parse_env_file,
@@ -166,11 +172,100 @@ class OptionGroup(object):
 _SENTRY = object()
 
 
-class DockerAPIEngineDriver(object):
-    pass
+class Engine(object):
+    min_api_version = None  # string or None
+    min_api_version_obj = None  # LooseVersion object or None
 
 
-class DockerAPIEngine(object):
+    @abc.abstractmethod
+    def get_value(self, module, container, api_version, options):
+        pass
+
+    @abc.abstractmethod
+    def set_value(self, module, data, api_version, options, values):
+        pass
+
+    @abc.abstractmethod
+    def get_expected_values(self, module, client, api_version, options, image, values):
+        pass
+
+    @abc.abstractmethod
+    def ignore_mismatching_result(self, module, client, api_version, option, image, container_value, expected_value):
+        pass
+
+    @abc.abstractmethod
+    def preprocess_value(self, module, client, api_version, options, values):
+        pass
+
+    @abc.abstractmethod
+    def update_value(self, module, data, api_version, options, values):
+        pass
+
+    @abc.abstractmethod
+    def can_set_value(self, api_version):
+        pass
+
+    @abc.abstractmethod
+    def can_update_value(self, api_version):
+        pass
+
+
+class EngineDriver(object):
+    name = None  # string
+
+    @abc.abstractmethod
+    def setup(self, argument_spec, mutually_exclusive=None, required_together=None, required_one_of=None, required_if=None, required_by=None):
+        # Return (module, active_options, client)
+        pass
+
+
+class DockerAPIEngineDriver(EngineDriver):
+    name = 'docker_api'
+
+    def setup(self, argument_spec, mutually_exclusive=None, required_together=None, required_one_of=None, required_if=None, required_by=None):
+        argument_spec = argument_spec or {}
+        mutually_exclusive = mutually_exclusive or []
+        required_together = required_together or []
+        required_one_of = required_one_of or []
+        required_if = required_if or []
+        required_by = required_by or {}
+
+        active_options = []
+        option_minimal_versions = {}
+        for options in OPTIONS:
+            if not options.supports_engine(self.name):
+                continue
+
+            mutually_exclusive.extend(options.ansible_mutually_exclusive)
+            required_together.extend(options.ansible_required_together)
+            required_one_of.extend(options.ansible_required_one_of)
+            required_if.extend(options.ansible_required_if)
+            required_by.update(options.ansible_required_by)
+            argument_spec.update(options.argument_spec)
+
+            engine = options.get_engine(self.name)
+            if engine.min_api_version is not None:
+                for option in options.options:
+                    if not option.not_an_ansible_option:
+                        option_minimal_versions[option.name] = {'docker_api_version': engine.min_api_version}
+
+            active_options.append(options)
+
+        client = AnsibleDockerClient(
+            argument_spec=argument_spec,
+            mutually_exclusive=mutually_exclusive,
+            required_together=required_together,
+            required_one_of=required_one_of,
+            required_if=required_if,
+            required_by=required_by,
+            option_minimal_versions=option_minimal_versions,
+            supports_check_mode=True,
+        )
+
+        return client.module, active_options, client
+
+
+class DockerAPIEngine(Engine):
     def __init__(
         self,
         get_value,
@@ -181,10 +276,10 @@ class DockerAPIEngine(object):
         update_value=None,
         can_set_value=None,
         can_update_value=None,
-        min_docker_api=None,
+        min_api_version=None,
     ):
-        self.min_docker_api = min_docker_api
-        self.min_docker_api_obj = None if min_docker_api is None else LooseVersion(min_docker_api)
+        self.min_api_version = min_api_version
+        self.min_api_version_obj = None if min_api_version is None else LooseVersion(min_api_version)
         self.get_value = get_value
         self.set_value = set_value
         self.get_expected_values = get_expected_values or (lambda module, client, api_version, options, image, values: values)
@@ -203,7 +298,7 @@ class DockerAPIEngine(object):
         preprocess_for_set=None,
         get_expected_value=None,
         ignore_mismatching_result=None,
-        min_docker_api=None,
+        min_api_version=None,
         preprocess_value=None,
         update_parameter=None,
     ):
@@ -267,7 +362,7 @@ class DockerAPIEngine(object):
             get_expected_values=get_expected_values_,
             ignore_mismatching_result=ignore_mismatching_result,
             set_value=set_value,
-            min_docker_api=min_docker_api,
+            min_api_version=min_api_version,
             update_value=update_value,
         )
 
@@ -279,7 +374,7 @@ class DockerAPIEngine(object):
         preprocess_for_set=None,
         get_expected_value=None,
         ignore_mismatching_result=None,
-        min_docker_api=None,
+        min_api_version=None,
         preprocess_value=None,
         update_parameter=None,
     ):
@@ -345,7 +440,7 @@ class DockerAPIEngine(object):
             get_expected_values=get_expected_values_,
             ignore_mismatching_result=ignore_mismatching_result,
             set_value=set_value,
-            min_docker_api=min_docker_api,
+            min_api_version=min_api_version,
             update_value=update_value,
         )
 
@@ -1458,7 +1553,7 @@ OPTIONS = [
         driver=dict(type='str'),
         options=dict(type='dict'),
     ))
-    .add_docker_api(DockerAPIEngine.host_config_value('DeviceRequests', min_docker_api='1.40', preprocess_value=_preprocess_device_requests)),
+    .add_docker_api(DockerAPIEngine.host_config_value('DeviceRequests', min_api_version='1.40', preprocess_value=_preprocess_device_requests)),
 
     OptionGroup()
     .add_option('dns_servers', type='list', elements='str')
