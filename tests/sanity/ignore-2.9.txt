@@ -4,3 +4,6 @@
 .azure-pipelines/scripts/publish-codecov.py compile-3.5!skip # Uses Python 3.6+ syntax
 .azure-pipelines/scripts/publish-codecov.py future-import-boilerplate
 .azure-pipelines/scripts/publish-codecov.py metaclass-boilerplate
+plugins/module_utils/module_container/module.py compile-2.6!skip # Uses Python 2.7+ syntax
+plugins/module_utils/module_container/module.py import-2.6!skip # Uses Python 2.7+ syntax
+plugins/modules/docker_container.py import-2.6!skip # Import uses Python 2.7+ syntax
