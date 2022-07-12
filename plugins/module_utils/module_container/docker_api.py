@@ -90,8 +90,8 @@ from ansible_collections.community.docker.plugins.module_utils.module_container.
 )
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
+    normalize_healthcheck_test,
     omit_none_from_dict,
-    parse_healthcheck,
 )
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
@@ -709,17 +709,16 @@ def _preprocess_etc_hosts(module, client, api_version, value):
 def _preprocess_healthcheck(module, client, api_version, value):
     if value is None:
         return value
-    healthcheck, disable_healthcheck = parse_healthcheck(value)
-    if disable_healthcheck:
-        healthcheck = {'test': ['NONE']}
-    if not healthcheck:
-        return None
+    if not value or not value.get('test'):
+        value = {'test': ['NONE']}
+    elif 'test' in value:
+        value['test'] = normalize_healthcheck_test(value['test'])
     return omit_none_from_dict({
-        'Test': healthcheck.get('test'),
-        'Interval': healthcheck.get('interval'),
-        'Timeout': healthcheck.get('timeout'),
-        'StartPeriod': healthcheck.get('start_period'),
-        'Retries': healthcheck.get('retries'),
+        'Test': value.get('test'),
+        'Interval': value.get('interval'),
+        'Timeout': value.get('timeout'),
+        'StartPeriod': value.get('start_period'),
+        'Retries': value.get('retries'),
     })
 
 

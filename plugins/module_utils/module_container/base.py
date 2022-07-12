@@ -18,6 +18,7 @@ from ansible.module_utils.six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
     clean_dict_booleans_for_docker_api,
+    normalize_healthcheck,
     omit_none_from_dict,
 )
 
@@ -425,6 +426,14 @@ def _preprocess_env(module, values):
         formatted_env.append('%s=%s' % (key, value))
     return {
         'env': formatted_env,
+    }
+
+
+def _preprocess_healthcheck(module, values):
+    if not values:
+        return {}
+    return {
+        'healthcheck': normalize_healthcheck(values['healthcheck'], normalize_test=False),
     }
 
 
@@ -873,7 +882,7 @@ OPTION_GROUPS = (
 )
 
 OPTION_HEALTHCHECK = (
-    OptionGroup()
+    OptionGroup(preprocess=_preprocess_healthcheck)
     .add_option('healthcheck', type='dict', ansible_suboptions=dict(
         test=dict(type='raw'),
         interval=dict(type='str'),
