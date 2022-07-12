@@ -352,7 +352,8 @@ class DockerAPIEngineDriver(EngineDriver):
                     continue
                 if 'removal of container ' in exc.explanation and ' is already in progress' in exc.explanation:
                     pass
-                raise
+                else:
+                    raise
             # We only loop when explicitly requested by 'continue'
             break
 
