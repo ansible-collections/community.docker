@@ -123,7 +123,6 @@ from ansible.module_utils.common.text.converters import to_native
 
 try:
     from docker.errors import APIError, NotFound, DockerException
-    from docker import DockerClient
 except ImportError:
     # missing Docker SDK for Python handled in ansible.module_utils.docker_common
     pass
@@ -166,9 +165,6 @@ class DockerPluginManager(object):
     def __init__(self, client):
         self.client = client
 
-        self.dclient = DockerClient(**self.client._connect_params)
-        self.dclient.api = client
-
         self.parameters = TaskParameters(client)
         self.preferred_name = self.parameters.alias or self.parameters.plugin_name
         self.check_mode = self.client.check_mode
@@ -198,16 +194,11 @@ class DockerPluginManager(object):
 
     def get_existing_plugin(self):
         try:
-            plugin = self.dclient.plugins.get(self.preferred_name)
+            return self.client.inspect_plugin(self.preferred_name)
         except NotFound:
             return None
         except APIError as e:
             self.client.fail(to_native(e))
-
-        if plugin is None:
-            return None
-        else:
-            return plugin
 
     def has_different_config(self):
         """
@@ -217,20 +208,19 @@ class DockerPluginManager(object):
         """
         differences = DifferenceTracker()
         if self.parameters.plugin_options:
-            if not self.existing_plugin.settings:
-                differences.add('plugin_options', parameters=self.parameters.plugin_options, active=self.existing_plugin.settings['Env'])
+            settings = self.existing_plugin.get('Settings')
+            if not settings:
+                differences.add('plugin_options', parameters=self.parameters.plugin_options, active=settings)
             else:
-                existing_options_list = self.existing_plugin.settings['Env']
-                existing_options = parse_options(existing_options_list)
+                existing_options = parse_options(settings.get('Env'))
 
                 for key, value in self.parameters.plugin_options.items():
-                    options_count = 0
                     if ((not existing_options.get(key) and value) or
                             not value or
                             value != existing_options[key]):
                         differences.add('plugin_options.%s' % key,
                                         parameter=value,
-                                        active=self.existing_plugin.settings['Env'][options_count])
+                                        active=existing_options.get(key))
 
         return differences
 
@@ -238,11 +228,13 @@ class DockerPluginManager(object):
         if not self.existing_plugin:
             if not self.check_mode:
                 try:
-                    self.existing_plugin = self.dclient.plugins.install(
-                        self.parameters.plugin_name, self.parameters.alias
-                    )
+                    privileges = self.client.plugin_privileges(self.parameters.plugin_name)
+                    it = self.client.pull_plugin(self.parameters.plugin_name, privileges, self.parameters.alias)
+                    for data in it:
+                        pass
+                    self.existing_plugin = self.client.inspect_plugin(self.preferred_name)
                     if self.parameters.plugin_options:
-                        self.existing_plugin.configure(prepare_options(self.parameters.plugin_options))
+                        self.client.configure_plugin(self.preferred_name, prepare_options(self.parameters.plugin_options))
                 except APIError as e:
                     self.client.fail(to_native(e))
 
@@ -254,7 +246,7 @@ class DockerPluginManager(object):
         if self.existing_plugin:
             if not self.check_mode:
                 try:
-                    self.existing_plugin.remove(force)
+                    self.client.remove_plugin(self.preferred_name, force)
                 except APIError as e:
                     self.client.fail(to_native(e))
 
@@ -267,7 +259,7 @@ class DockerPluginManager(object):
             if not differences.empty:
                 if not self.check_mode:
                     try:
-                        self.existing_plugin.configure(prepare_options(self.parameters.plugin_options))
+                        self.client.configure_plugin(self.preferred_name, prepare_options(self.parameters.plugin_options))
                     except APIError as e:
                         self.client.fail(to_native(e))
                 self.actions.append("Updated plugin %s settings" % self.preferred_name)
@@ -299,10 +291,10 @@ class DockerPluginManager(object):
     def enable(self):
         timeout = self.parameters.enable_timeout
         if self.existing_plugin:
-            if not self.existing_plugin.enabled:
+            if not self.existing_plugin.get('Enabled'):
                 if not self.check_mode:
                     try:
-                        self.existing_plugin.enable(timeout)
+                        self.client.enable_plugin(self.preferred_name, timeout)
                     except APIError as e:
                         self.client.fail(to_native(e))
                 self.actions.append("Enabled plugin %s" % self.preferred_name)
@@ -311,7 +303,7 @@ class DockerPluginManager(object):
             self.install_plugin()
             if not self.check_mode:
                 try:
-                    self.existing_plugin.enable(timeout)
+                    self.client.enable_plugin(self.preferred_name, timeout)
                 except APIError as e:
                     self.client.fail(to_native(e))
             self.actions.append("Enabled plugin %s" % self.preferred_name)
@@ -319,10 +311,10 @@ class DockerPluginManager(object):
 
     def disable(self):
         if self.existing_plugin:
-            if self.existing_plugin.enabled:
+            if self.existing_plugin.get('Enabled'):
                 if not self.check_mode:
                     try:
-                        self.existing_plugin.disable()
+                        self.client.disable_plugin(self.preferred_name)
                     except APIError as e:
                         self.client.fail(to_native(e))
                 self.actions.append("Disable plugin %s" % self.preferred_name)
