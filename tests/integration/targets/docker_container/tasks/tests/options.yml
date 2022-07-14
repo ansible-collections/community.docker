@@ -149,6 +149,60 @@
     - capabilities_4 is changed
 
 ####################################################################
+## cgroupns_mode ###################################################
+####################################################################
+
+- name: cgroupns_mode
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    cgroupns_mode: host
+  register: cgroupns_mode_1
+  ignore_errors: yes
+
+- name: cgroupns_mode (idempotency)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    cgroupns_mode: host
+  register: cgroupns_mode_2
+  ignore_errors: yes
+
+- name: cgroupns_mode (changed)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    cgroupns_mode: private
+  register: cgroupns_mode_3
+  ignore_errors: yes
+
+- name: cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
+  diff: no
+
+- assert:
+    that:
+    - cgroupns_mode_1 is changed
+    - cgroupns_mode_2 is not changed and cgroupns_mode_2 is not failed
+    - "cgroupns_mode_3 is changed or 'Docker warning: Your kernel does not support cgroup namespaces.  Cgroup namespace setting discarded.' in (cgroupns_mode_3.warnings | default([]))"
+  when: docker_api_version is version('1.41', '>=')
+- assert:
+    that:
+    - cgroupns_mode_1 is failed
+    - |
+      ('API version is ' ~ docker_api_version ~ '.') in cgroupns_mode_1.msg and 'Minimum version required is 1.41 ' in cgroupns_mode_1.msg
+  when: docker_api_version is version('1.41', '<')
+
+####################################################################
 ## cgroup_parent ###################################################
 ####################################################################
 

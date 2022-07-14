@@ -21,6 +21,7 @@ from ansible_collections.community.docker.plugins.module_utils.module_container.
     OPTION_BLKIO_WEIGHT,
     OPTION_CAPABILITIES,
     OPTION_CAP_DROP,
+    OPTION_CGROUP_NS_MODE,
     OPTION_CGROUP_PARENT,
     OPTION_COMMAND,
     OPTION_CPU_PERIOD,
@@ -1174,6 +1175,8 @@ OPTION_BLKIO_WEIGHT.add_engine('docker_api', DockerAPIEngine.host_config_value('
 OPTION_CAPABILITIES.add_engine('docker_api', DockerAPIEngine.host_config_value('CapAdd'))
 
 OPTION_CAP_DROP.add_engine('docker_api', DockerAPIEngine.host_config_value('CapDrop'))
+
+OPTION_CGROUP_NS_MODE.add_engine('docker_api', DockerAPIEngine.host_config_value('CgroupnsMode', min_api_version='1.41'))
 
 OPTION_CGROUP_PARENT.add_engine('docker_api', DockerAPIEngine.host_config_value('CgroupParent'))
 

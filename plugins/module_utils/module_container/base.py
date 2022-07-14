@@ -746,6 +746,11 @@ OPTION_CAP_DROP = (
     .add_option('cap_drop', type='set', elements='str')
 )
 
+OPTION_CGROUP_NS_MODE = (
+    OptionGroup()
+    .add_option('cgroupns_mode', type='str', ansible_choices=['private', 'host'])
+)
+
 OPTION_CGROUP_PARENT = (
     OptionGroup()
     .add_option('cgroup_parent', type='str')
@@ -1119,6 +1124,7 @@ OPTIONS = [
     OPTION_BLKIO_WEIGHT,
     OPTION_CAPABILITIES,
     OPTION_CAP_DROP,
+    OPTION_CGROUP_NS_MODE,
     OPTION_CGROUP_PARENT,
     OPTION_COMMAND,
     OPTION_CPU_PERIOD,
