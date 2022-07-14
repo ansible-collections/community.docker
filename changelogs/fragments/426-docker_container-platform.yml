@@ -1,0 +1,2 @@
+minor_changes:
+  - "docker_container - allow to specify ``platform`` (https://github.com/ansible-collections/community.docker/issues/123, https://github.com/ansible-collections/community.docker/pull/426)."

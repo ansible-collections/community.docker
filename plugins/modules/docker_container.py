@@ -676,6 +676,14 @@ options:
       - Set PIDs limit for the container. It accepts an integer value.
       - Set C(-1) for unlimited PIDs.
     type: int
+  platform:
+    description:
+      - Platform for the container in the format C(os[/arch[/variant]]).
+      - "Please note that inspecting the container does not always return the exact platform string used to
+         create the container. This can cause idempotency to break for this module. Use the I(comparisons) option
+         with C(platform: ignore) to prevent accidental recreation of the container due to this."
+    type: str
+    version_added: 3.0.0
   privileged:
     description:
       - Give extended privileges to the container.

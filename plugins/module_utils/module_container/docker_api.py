@@ -64,6 +64,7 @@ from ansible_collections.community.docker.plugins.module_utils.module_container.
     OPTION_OOM_SCORE_ADJ,
     OPTION_PID_MODE,
     OPTION_PIDS_LIMIT,
+    OPTION_PLATFORM,
     OPTION_PRIVILEGED,
     OPTION_READ_ONLY,
     OPTION_RESTART_POLICY,
@@ -216,8 +217,8 @@ class DockerAPIEngineDriver(EngineDriver):
     def inspect_image_by_name(self, client, repository, tag):
         return client.find_image(repository, tag)
 
-    def pull_image(self, client, repository, tag):
-        return client.pull_image(repository, tag)
+    def pull_image(self, client, repository, tag, platform=None):
+        return client.pull_image(repository, tag, platform=platform)
 
     def pause_container(self, client, container_id):
         client.post_call('/containers/{0}/pause', container_id)
@@ -254,6 +255,8 @@ class DockerAPIEngineDriver(EngineDriver):
 
     def create_container(self, client, container_name, create_parameters):
         params = {'name': container_name}
+        if 'platform' in create_parameters:
+            params['platform'] = create_parameters.pop('platform')
         new_container = client.post_json_to_json('/containers/create', data=create_parameters, params=params)
         client.report_warnings(new_container)
         return new_container['Id']
@@ -1030,6 +1033,17 @@ def _set_values_log(module, data, api_version, options, values):
     data['HostConfig']['LogConfig'] = log_config
 
 
+def _get_values_platform(module, container, api_version, options):
+    return {
+        'platform': container.get('Platform'),
+    }
+
+
+def _set_values_platform(module, data, api_version, options, values):
+    if 'platform' in values:
+        data['platform'] = values['platform']
+
+
 def _get_values_restart(module, container, api_version, options):
     restart_policy = container['HostConfig'].get('RestartPolicy') or {}
     return {
@@ -1272,6 +1286,12 @@ OPTION_OOM_SCORE_ADJ.add_engine('docker_api', DockerAPIEngine.host_config_value(
 OPTION_PID_MODE.add_engine('docker_api', DockerAPIEngine.host_config_value('PidMode', preprocess_value=_preprocess_container_names))
 
 OPTION_PIDS_LIMIT.add_engine('docker_api', DockerAPIEngine.host_config_value('PidsLimit'))
+
+OPTION_PLATFORM.add_engine('docker_api', DockerAPIEngine(
+    get_value=_get_values_platform,
+    set_value=_set_values_platform,
+    min_api_version='1.41',
+))
 
 OPTION_PRIVILEGED.add_engine('docker_api', DockerAPIEngine.host_config_value('Privileged'))
 
