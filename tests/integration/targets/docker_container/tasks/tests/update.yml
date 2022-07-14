@@ -119,8 +119,8 @@
     - update.diff.after.memory == 50331648
     - update.diff.before.memory_reservation == 67108864
     - update.diff.after.memory_reservation == 50331648
-    - update.diff.before.memory_swap == 67108864
-    - update.diff.after.memory_swap == -1
+    - (update.diff.before.memory_swap | default(0)) == 67108864 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
+    - (update.diff.after.memory_swap | default(0)) == -1 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
     - "'restart_policy' not in update.diff.before"
     - update.diff.before.restart_retries == 5
     - update.diff.after.restart_retries == 2
@@ -140,8 +140,8 @@
     - update2.diff.after.memory == 33554432
     - update2.diff.before.memory_reservation == 50331648
     - update2.diff.after.memory_reservation == 31457280
-    - update2.diff.before.memory_swap == -1
-    - update2.diff.after.memory_swap == 134217728
+    - (update2.diff.before.memory_swap | default(0)) == -1 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
+    - (update2.diff.after.memory_swap | default(0)) == 134217728 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
     - update2.diff.before.restart_policy == 'on-failure'
     - update2.diff.after.restart_policy == 'always'
     - update2.diff.before.restart_retries == 2
@@ -162,8 +162,8 @@
     - recreate.diff.after.memory == 50331648
     - recreate.diff.before.memory_reservation == 31457280
     - recreate.diff.after.memory_reservation == 50331648
-    - recreate.diff.before.memory_swap == 134217728
-    - recreate.diff.after.memory_swap == -1
+    - (recreate.diff.before.memory_swap | default(0)) == 134217728 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
+    - (recreate.diff.after.memory_swap | default(0)) == -1 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
     - recreate.diff.before.restart_policy == 'always'
     - recreate.diff.after.restart_policy == 'on-failure'
     - recreate.diff.before.restart_retries == 0
