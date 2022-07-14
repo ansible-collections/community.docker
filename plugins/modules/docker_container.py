@@ -395,6 +395,18 @@ options:
       - Can also be an image ID. If this is the case, the image is assumed to be available locally.
         The I(pull) option is ignored for this case.
     type: str
+  image_comparison:
+    description:
+      - Determines which image to use for idempotency checks that depend on image parameters.
+      - The default, C(desired-image), will use the image that is provided to the module via the I(image) parameter.
+      - C(current-image) will use the image that the container is currently using, if the container exists. It
+        falls back to the image that is provided in case the container does not yet exist.
+      - This affects the I(env), I(env_file), I(exposed_ports), I(labels), and I(volumes) options.
+    type: str
+    choices:
+      - desired-image
+      - current-image
+    default: desired-image
   image_label_mismatch:
     description:
       - How to handle labels inherited from the image that are not set explicitly.
