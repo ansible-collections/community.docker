@@ -469,10 +469,17 @@ class ContainerManager(DockerBaseClass):
 
     def has_different_configuration(self, container, image):
         differences = DifferenceTracker()
+        update_differences = DifferenceTracker()
         for options, param_values in self.parameters:
             engine = options.get_engine(self.engine_driver.name)
-            self._record_differences(differences, options, param_values, engine, container, image)
+            if engine.can_update_value(self.engine_driver.get_api_version(self.client)):
+                self._record_differences(update_differences, options, param_values, engine, container, image)
+            else:
+                self._record_differences(differences, options, param_values, engine, container, image)
         has_differences = not differences.empty
+        # Only consider differences of properties that can be updated when there are also other differences
+        if has_differences:
+            differences.merge(update_differences)
         return has_differences, differences
 
     def has_different_resource_limits(self, container, image):
