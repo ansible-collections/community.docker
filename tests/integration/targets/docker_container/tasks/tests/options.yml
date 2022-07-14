@@ -21,7 +21,6 @@
     state: started
     auto_remove: yes
   register: auto_remove_1
-  ignore_errors: yes
 
 - name: Give container 1 second to be sure it terminated
   pause:
@@ -32,19 +31,11 @@
     name: "{{ cname }}"
     state: absent
   register: auto_remove_2
-  ignore_errors: yes
 
 - assert:
     that:
     - auto_remove_1 is changed
     - auto_remove_2 is not changed
-  when: docker_py_version is version('2.1.0', '>=')
-- assert:
-    that:
-    - auto_remove_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in auto_remove_1.msg"
-    - "'Minimum version required is 2.1.0 ' in auto_remove_1.msg"
-  when: docker_py_version is version('2.1.0', '<')
 
 ####################################################################
 ## blkio_weight ####################################################
@@ -573,7 +564,6 @@
     name: "{{ cname }}"
     cpus: 1
     state: started
-  ignore_errors: yes
   register: cpus_1
 
 - name: cpus (idempotency)
@@ -583,7 +573,6 @@
     name: "{{ cname }}"
     cpus: 1
     state: started
-  ignore_errors: yes
   register: cpus_2
 
 - name: cpus (change)
@@ -596,7 +585,6 @@
     force_kill: yes
   # This will fail if the system the test is run on doesn't have
   # multiple MEMs available.
-  ignore_errors: yes
   register: cpus_3
 
 - name: cleanup
@@ -611,13 +599,6 @@
     - cpus_1 is changed
     - cpus_2 is not changed and cpus_2 is not failed
     - cpus_3 is failed or cpus_3 is changed
-  when: docker_py_version is version('2.3.0', '>=')
-- assert:
-    that:
-    - cpus_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in cpus_1.msg"
-    - "'Minimum version required is 2.3.0 ' in cpus_1.msg"
-  when: docker_py_version is version('2.3.0', '<')
 
 ####################################################################
 ## debug ###########################################################
@@ -741,11 +722,8 @@
     - detach_cleanup_nonzero.status == 42
     - "'Output' in detach_cleanup_nonzero.container"
     - "detach_cleanup_nonzero.container.Output == ''"
-- assert:
-    that:
     - "'Cannot retrieve result as auto_remove is enabled' == detach_auto_remove.container.Output"
     - detach_auto_remove_cleanup is not changed
-  when: docker_py_version is version('2.1.0', '>=')
 
 ####################################################################
 ## devices #########################################################
@@ -825,7 +803,6 @@
       - path: /dev/urandom
         rate: 10K
   register: device_read_bps_1
-  ignore_errors: yes
 
 - name: device_read_bps (idempotency)
   docker_container:
@@ -839,7 +816,6 @@
       - path: /dev/random
         rate: 20M
   register: device_read_bps_2
-  ignore_errors: yes
 
 - name: device_read_bps (lesser entries)
   docker_container:
@@ -851,7 +827,6 @@
       - path: /dev/random
         rate: 20M
   register: device_read_bps_3
-  ignore_errors: yes
 
 - name: device_read_bps (changed)
   docker_container:
@@ -866,7 +841,6 @@
         rate: 5K
     force_kill: yes
   register: device_read_bps_4
-  ignore_errors: yes
 
 - name: cleanup
   docker_container:
@@ -881,13 +855,6 @@
     - device_read_bps_2 is not changed
     - device_read_bps_3 is not changed
     - device_read_bps_4 is changed
-  when: docker_py_version is version('1.9.0', '>=')
-- assert:
-    that:
-    - device_read_bps_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in device_read_bps_1.msg"
-    - "'Minimum version required is 1.9.0 ' in device_read_bps_1.msg"
-  when: docker_py_version is version('1.9.0', '<')
 
 ####################################################################
 ## device_read_iops ################################################
@@ -905,7 +872,6 @@
       - path: /dev/urandom
         rate: 20
   register: device_read_iops_1
-  ignore_errors: yes
 
 - name: device_read_iops (idempotency)
   docker_container:
@@ -919,7 +885,6 @@
       - path: /dev/random
         rate: 10
   register: device_read_iops_2
-  ignore_errors: yes
 
 - name: device_read_iops (less)
   docker_container:
@@ -931,7 +896,6 @@
       - path: /dev/random
         rate: 10
   register: device_read_iops_3
-  ignore_errors: yes
 
 - name: device_read_iops (changed)
   docker_container:
@@ -946,7 +910,6 @@
         rate: 50
     force_kill: yes
   register: device_read_iops_4
-  ignore_errors: yes
 
 - name: cleanup
   docker_container:
@@ -961,13 +924,6 @@
     - device_read_iops_2 is not changed
     - device_read_iops_3 is not changed
     - device_read_iops_4 is changed
-  when: docker_py_version is version('1.9.0', '>=')
-- assert:
-    that:
-    - device_read_iops_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in device_read_iops_1.msg"
-    - "'Minimum version required is 1.9.0 ' in device_read_iops_1.msg"
-  when: docker_py_version is version('1.9.0', '<')
 
 ####################################################################
 ## device_write_bps and device_write_iops ##########################
@@ -986,7 +942,6 @@
       - path: /dev/urandom
         rate: 30
   register: device_write_limit_1
-  ignore_errors: yes
 
 - name: device_write_bps and device_write_iops (idempotency)
   docker_container:
@@ -1001,7 +956,6 @@
       - path: /dev/urandom
         rate: 30
   register: device_write_limit_2
-  ignore_errors: yes
 
 - name: device_write_bps device_write_iops (changed)
   docker_container:
@@ -1017,7 +971,6 @@
         rate: 100
     force_kill: yes
   register: device_write_limit_3
-  ignore_errors: yes
 
 - name: cleanup
   docker_container:
@@ -1031,13 +984,6 @@
     - device_write_limit_1 is changed
     - device_write_limit_2 is not changed
     - device_write_limit_3 is changed
-  when: docker_py_version is version('1.9.0', '>=')
-- assert:
-    that:
-    - device_write_limit_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in device_write_limit_1.msg"
-    - "'Minimum version required is 1.9.0 ' in device_write_limit_1.msg"
-  when: docker_py_version is version('1.9.0', '<')
 
 ####################################################################
 ## device_requests #################################################
@@ -1074,14 +1020,13 @@
     that:
     - device_requests_1 is changed
     - device_requests_2 is not changed
-  when: docker_py_version is version('4.3.0', '>=') and docker_api_version is version('1.40', '>=')
+  when: docker_api_version is version('1.40', '>=')
 - assert:
     that:
     - device_requests_1 is failed
     - |
-      (('version is ' ~ docker_py_version ~ ' ') in device_requests_1.msg and 'Minimum version required is 4.3.0 ' in device_requests_1.msg) or
-      (('API version is ' ~ docker_api_version ~ '.') in device_requests_1.msg and 'Minimum version required is 1.40 ' in device_requests_1.msg)
-  when: docker_py_version is version('4.3.0', '<') or docker_api_version is version('1.40', '<')
+      ('API version is ' ~ docker_api_version ~ '.') in device_requests_1.msg and 'Minimum version required is 1.40 ' in device_requests_1.msg
+  when: docker_api_version is version('1.40', '<')
 
 ####################################################################
 ## dns_opts ########################################################
@@ -1097,7 +1042,6 @@
     - "timeout:10"
     - rotate
   register: dns_opts_1
-  ignore_errors: yes
 
 - name: dns_opts (idempotency)
   docker_container:
@@ -1109,7 +1053,6 @@
     - rotate
     - "timeout:10"
   register: dns_opts_2
-  ignore_errors: yes
 
 - name: dns_opts (less resolv.conf options)
   docker_container:
@@ -1120,7 +1063,6 @@
     dns_opts:
     - "timeout:10"
   register: dns_opts_3
-  ignore_errors: yes
 
 - name: dns_opts (more resolv.conf options)
   docker_container:
@@ -1133,7 +1075,6 @@
     - no-check-names
     force_kill: yes
   register: dns_opts_4
-  ignore_errors: yes
 
 - name: cleanup
   docker_container:
@@ -1148,13 +1089,6 @@
     - dns_opts_2 is not changed
     - dns_opts_3 is not changed
     - dns_opts_4 is changed
-  when: docker_py_version is version('1.10.0', '>=')
-- assert:
-    that:
-    - dns_opts_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in dns_opts_1.msg"
-    - "'Minimum version required is 1.10.0 ' in dns_opts_1.msg"
-  when: docker_py_version is version('1.10.0', '<')
 
 ####################################################################
 ## dns_search_domains ##############################################
@@ -1854,7 +1788,6 @@
       retries: 2
     force_kill: yes
   register: healthcheck_1
-  ignore_errors: yes
 
 - name: healthcheck (idempotency)
   docker_container:
@@ -1872,7 +1805,6 @@
       retries: 2
     force_kill: yes
   register: healthcheck_2
-  ignore_errors: yes
 
 - name: healthcheck (changed)
   docker_container:
@@ -1890,7 +1822,6 @@
       retries: 3
     force_kill: yes
   register: healthcheck_3
-  ignore_errors: yes
 
 - name: healthcheck (no change)
   docker_container:
@@ -1900,7 +1831,6 @@
     state: started
     force_kill: yes
   register: healthcheck_4
-  ignore_errors: yes
 
 - name: healthcheck (disabled)
   docker_container:
@@ -1913,7 +1843,6 @@
       - NONE
     force_kill: yes
   register: healthcheck_5
-  ignore_errors: yes
 
 - name: healthcheck (disabled, idempotency)
   docker_container:
@@ -1926,7 +1855,6 @@
       - NONE
     force_kill: yes
   register: healthcheck_6
-  ignore_errors: yes
 
 - name: healthcheck (disabled, idempotency, strict)
   docker_container:
@@ -1941,7 +1869,6 @@
     comparisons:
       '*': strict
   register: healthcheck_7
-  ignore_errors: yes
 
 - name: healthcheck (string in healthcheck test, changed)
   docker_container:
@@ -1953,7 +1880,6 @@
       test: "sleep 1"
     force_kill: yes
   register: healthcheck_8
-  ignore_errors: yes
 
 - name: healthcheck (string in healthcheck test, idempotency)
   docker_container:
@@ -1965,7 +1891,6 @@
       test: "sleep 1"
     force_kill: yes
   register: healthcheck_9
-  ignore_errors: yes
 
 - name: cleanup
   docker_container:
@@ -1985,13 +1910,6 @@
     - healthcheck_7 is not changed
     - healthcheck_8 is changed
     - healthcheck_9 is not changed
-  when: docker_py_version is version('2.0.0', '>=')
-- assert:
-    that:
-    - healthcheck_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in healthcheck_1.msg"
-    - "'Minimum version required is 2.0.0 ' in healthcheck_1.msg"
-  when: docker_py_version is version('2.0.0', '<')
 
 ####################################################################
 ## hostname ########################################################
@@ -2050,7 +1968,6 @@
     init: yes
     state: started
   register: init_1
-  ignore_errors: yes
 
 - name: init (idempotency)
   docker_container:
@@ -2060,7 +1977,6 @@
     init: yes
     state: started
   register: init_2
-  ignore_errors: yes
 
 - name: init (change)
   docker_container:
@@ -2071,7 +1987,6 @@
     state: started
     force_kill: yes
   register: init_3
-  ignore_errors: yes
 
 - name: cleanup
   docker_container:
@@ -2085,13 +2000,6 @@
     - init_1 is changed
     - init_2 is not changed
     - init_3 is changed
-  when: docker_py_version is version('2.2.0', '>=')
-- assert:
-    that:
-    - init_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in init_1.msg"
-    - "'Minimum version required is 2.2.0 ' in init_1.msg"
-  when: docker_py_version is version('2.2.0', '<')
 
 ####################################################################
 ## interactive #####################################################
@@ -2462,7 +2370,6 @@
     state: absent
     force_kill: yes
   diff: no
-  ignore_errors: yes
 
 - assert:
     that:
@@ -3188,8 +3095,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     state: started
     pid_mode: "container:{{ pid_mode_helper.container.Id }}"
   register: pid_mode_1
-  ignore_errors: yes
-  # docker-py < 2.0 does not support "arbitrary" pid_mode values
 
 - name: pid_mode (idempotency)
   docker_container:
@@ -3199,8 +3104,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     state: started
     pid_mode: "container:{{ cname_h1 }}"
   register: pid_mode_2
-  ignore_errors: yes
-  # docker-py < 2.0 does not support "arbitrary" pid_mode values
 
 - name: pid_mode (change)
   docker_container:
@@ -3229,13 +3132,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     - pid_mode_1 is changed
     - pid_mode_2 is not changed
     - pid_mode_3 is changed
-  when: docker_py_version is version('2.0.0', '>=')
-- assert:
-    that:
-    - pid_mode_1 is failed
-    - pid_mode_2 is failed
-    - pid_mode_3 is changed
-  when: docker_py_version is version('2.0.0', '<')
 
 ####################################################################
 ## pids_limit ######################################################
@@ -3249,7 +3145,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     state: started
     pids_limit: 10
   register: pids_limit_1
-  ignore_errors: yes
 
 - name: pids_limit (idempotency)
   docker_container:
@@ -3259,7 +3154,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     state: started
     pids_limit: 10
   register: pids_limit_2
-  ignore_errors: yes
 
 - name: pids_limit (changed)
   docker_container:
@@ -3270,7 +3164,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     pids_limit: 20
     force_kill: yes
   register: pids_limit_3
-  ignore_errors: yes
 
 - name: cleanup
   docker_container:
@@ -3284,13 +3177,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     - pids_limit_1 is changed
     - pids_limit_2 is not changed
     - pids_limit_3 is changed
-  when: docker_py_version is version('1.10.0', '>=')
-- assert:
-    that:
-    - pids_limit_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in pids_limit_1.msg"
-    - "'Minimum version required is 1.10.0 ' in pids_limit_1.msg"
-  when: docker_py_version is version('1.10.0', '<')
 
 ####################################################################
 ## privileged ######################################################
@@ -3648,7 +3534,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     runtime: runc
     state: started
   register: runtime_1
-  ignore_errors: yes
 
 - name: runtime (idempotency)
   docker_container:
@@ -3658,7 +3543,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     runtime: runc
     state: started
   register: runtime_2
-  ignore_errors: yes
 
 - name: cleanup
   docker_container:
@@ -3671,13 +3555,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     that:
     - runtime_1 is changed
     - runtime_2 is not changed
-  when: docker_py_version is version('2.4.0', '>=')
-- assert:
-    that:
-    - runtime_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in runtime_1.msg"
-    - "'Minimum version required is 2.4.0 ' in runtime_1.msg"
-  when: docker_py_version is version('2.4.0', '<')
 
 ####################################################################
 ## security_opts ###################################################
@@ -3975,7 +3852,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
       net.ipv4.icmp_echo_ignore_all: 1
       net.ipv4.ip_forward: 1
   register: sysctls_1
-  ignore_errors: yes
 
 - name: sysctls (idempotency)
   docker_container:
@@ -3987,7 +3863,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
       net.ipv4.ip_forward: 1
       net.ipv4.icmp_echo_ignore_all: 1
   register: sysctls_2
-  ignore_errors: yes
 
 - name: sysctls (less sysctls)
   docker_container:
@@ -3998,7 +3873,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     sysctls:
       net.ipv4.icmp_echo_ignore_all: 1
   register: sysctls_3
-  ignore_errors: yes
 
 - name: sysctls (more sysctls)
   docker_container:
@@ -4011,7 +3885,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
       net.ipv6.conf.default.accept_redirects: 0
     force_kill: yes
   register: sysctls_4
-  ignore_errors: yes
 
 - name: cleanup
   docker_container:
@@ -4026,13 +3899,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     - sysctls_2 is not changed
     - sysctls_3 is not changed
     - sysctls_4 is changed
-  when: docker_py_version is version('1.10.0', '>=')
-- assert:
-    that:
-    - sysctls_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in sysctls_1.msg"
-    - "'Minimum version required is 1.10.0 ' in sysctls_1.msg"
-  when: docker_py_version is version('1.10.0', '<')
 
 ####################################################################
 ## tmpfs ###########################################################
@@ -4260,7 +4126,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     userns_mode: host
     state: started
   register: userns_mode_1
-  ignore_errors: yes
 
 - name: userns_mode (idempotency)
   docker_container:
@@ -4270,7 +4135,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     userns_mode: host
     state: started
   register: userns_mode_2
-  ignore_errors: yes
 
 - name: userns_mode (change)
   docker_container:
@@ -4281,7 +4145,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     state: started
     force_kill: yes
   register: userns_mode_3
-  ignore_errors: yes
 
 - name: cleanup
   docker_container:
@@ -4295,13 +4158,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     - userns_mode_1 is changed
     - userns_mode_2 is not changed
     - userns_mode_3 is changed
-  when: docker_py_version is version('1.10.0', '>=')
-- assert:
-    that:
-    - userns_mode_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in userns_mode_1.msg"
-    - "'Minimum version required is 1.10.0 ' in userns_mode_1.msg"
-  when: docker_py_version is version('1.10.0', '<')
 
 ####################################################################
 ## uts #############################################################
@@ -4315,7 +4171,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     uts: host
     state: started
   register: uts_1
-  ignore_errors: yes
 
 - name: uts (idempotency)
   docker_container:
@@ -4325,7 +4180,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     uts: host
     state: started
   register: uts_2
-  ignore_errors: yes
 
 - name: uts (change)
   docker_container:
@@ -4336,7 +4190,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     state: started
     force_kill: yes
   register: uts_3
-  ignore_errors: yes
 
 - name: cleanup
   docker_container:
@@ -4350,13 +4203,6 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     - uts_1 is changed
     - uts_2 is not changed
     - uts_3 is changed
-  when: docker_py_version is version('3.5.0', '>=')
-- assert:
-    that:
-    - uts_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in uts_1.msg"
-    - "'Minimum version required is 3.5.0 ' in uts_1.msg"
-  when: docker_py_version is version('3.5.0', '<')
 
 ####################################################################
 ## working_dir #####################################################
