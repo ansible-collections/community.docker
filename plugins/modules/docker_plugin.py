@@ -61,16 +61,13 @@ options:
     default: 0
 
 extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_2_documentation
+  - community.docker.docker.api_documentation
 
 author:
   - Sakar Mehra (@sakar97)
   - Vladimir Porshkevich (@porshkevich)
 
 requirements:
-  - "python >= 2.7"
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.6.0"
   - "Docker API >= 1.25"
 '''
 
@@ -121,20 +118,18 @@ import traceback
 
 from ansible.module_utils.common.text.converters import to_native
 
-try:
-    from docker.errors import APIError, NotFound, DockerException
-except ImportError:
-    # missing Docker SDK for Python handled in ansible.module_utils.docker_common
-    pass
-
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException
 )
+
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     DifferenceTracker,
 )
+
+from ansible_collections.community.docker.plugins.module_utils._api import auth
+from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException, NotFound
 
 
 class TaskParameters(DockerBaseClass):
@@ -194,7 +189,7 @@ class DockerPluginManager(object):
 
     def get_existing_plugin(self):
         try:
-            return self.client.inspect_plugin(self.preferred_name)
+            return self.client.get_json('/plugins/{0}/json', self.preferred_name)
         except NotFound:
             return None
         except APIError as e:
@@ -228,13 +223,28 @@ class DockerPluginManager(object):
         if not self.existing_plugin:
             if not self.check_mode:
                 try:
-                    privileges = self.client.plugin_privileges(self.parameters.plugin_name)
-                    it = self.client.pull_plugin(self.parameters.plugin_name, privileges, self.parameters.alias)
-                    for data in it:
+                    # Get privileges
+                    headers = {}
+                    registry, repo_name = auth.resolve_repository_name(self.parameters.plugin_name)
+                    header = auth.get_config_header(self.client, registry)
+                    if header:
+                        headers['X-Registry-Auth'] = header
+                    privileges = self.client.get_json('/plugins/privileges', params={'remote': self.parameters.plugin_name}, headers=headers)
+                    # Pull plugin
+                    params = {
+                        'remote': self.parameters.plugin_name,
+                    }
+                    if self.parameters.alias:
+                        params['name'] = self.parameters.alias
+                    response = self.client._post_json(self.client._url('/plugins/pull'), params=params, headers=headers, data=privileges, stream=True)
+                    self.client._raise_for_status(response)
+                    for data in self.client._stream_helper(response, decode=True):
                         pass
-                    self.existing_plugin = self.client.inspect_plugin(self.preferred_name)
+                    # Inspect and configure plugin
+                    self.existing_plugin = self.client.get_json('/plugins/{0}/json', self.preferred_name)
                     if self.parameters.plugin_options:
-                        self.client.configure_plugin(self.preferred_name, prepare_options(self.parameters.plugin_options))
+                        data = prepare_options(self.parameters.plugin_options)
+                        self.client.post_json('/plugins/{0}/set', self.preferred_name, data=['{0}={1}'.format(k, v) for k, v in data.items()])
                 except APIError as e:
                     self.client.fail(to_native(e))
 
@@ -246,7 +256,7 @@ class DockerPluginManager(object):
         if self.existing_plugin:
             if not self.check_mode:
                 try:
-                    self.client.remove_plugin(self.preferred_name, force)
+                    self.client.delete_call('/plugins/{0}', self.preferred_name, params={'force': force})
                 except APIError as e:
                     self.client.fail(to_native(e))
 
@@ -259,7 +269,8 @@ class DockerPluginManager(object):
             if not differences.empty:
                 if not self.check_mode:
                     try:
-                        self.client.configure_plugin(self.preferred_name, prepare_options(self.parameters.plugin_options))
+                        data = prepare_options(self.parameters.plugin_options)
+                        self.client.post_json('/plugins/{0}/set', self.preferred_name, data=['{0}={1}'.format(k, v) for k, v in data.items()])
                     except APIError as e:
                         self.client.fail(to_native(e))
                 self.actions.append("Updated plugin %s settings" % self.preferred_name)
@@ -294,7 +305,7 @@ class DockerPluginManager(object):
             if not self.existing_plugin.get('Enabled'):
                 if not self.check_mode:
                     try:
-                        self.client.enable_plugin(self.preferred_name, timeout)
+                        self.client.post_json('/plugins/{0}/enable', self.preferred_name, params={'timeout': timeout})
                     except APIError as e:
                         self.client.fail(to_native(e))
                 self.actions.append("Enabled plugin %s" % self.preferred_name)
@@ -303,7 +314,7 @@ class DockerPluginManager(object):
             self.install_plugin()
             if not self.check_mode:
                 try:
-                    self.client.enable_plugin(self.preferred_name, timeout)
+                    self.client.post_json('/plugins/{0}/enable', self.preferred_name, params={'timeout': timeout})
                 except APIError as e:
                     self.client.fail(to_native(e))
             self.actions.append("Enabled plugin %s" % self.preferred_name)
@@ -314,7 +325,7 @@ class DockerPluginManager(object):
             if self.existing_plugin.get('Enabled'):
                 if not self.check_mode:
                     try:
-                        self.client.disable_plugin(self.preferred_name)
+                        self.client.post_json('/plugins/{0}/disable', self.preferred_name)
                     except APIError as e:
                         self.client.fail(to_native(e))
                 self.actions.append("Disable plugin %s" % self.preferred_name)
@@ -328,7 +339,7 @@ class DockerPluginManager(object):
             'actions': self.actions,
             'changed': self.changed,
             'diff': self.diff,
-            'plugin': self.client.inspect_plugin(self.preferred_name) if self.parameters.state != 'absent' else {}
+            'plugin': self.client.get_json('/plugins/{0}/json', self.preferred_name) if self.parameters.state != 'absent' else {}
         }
         return dict((k, v) for k, v in result.items() if v is not None)
 
@@ -346,7 +357,6 @@ def main():
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        min_docker_version='2.6.0',
     )
 
     try:
@@ -356,7 +366,7 @@ def main():
         client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
             exception=traceback.format_exc())
 
 
