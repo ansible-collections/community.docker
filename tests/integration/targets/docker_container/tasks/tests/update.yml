@@ -106,7 +106,8 @@
 - name: Check diff for first update
   assert:
     that:
-    - update.diff.before.blkio_weight == 123
+    # blkio_weight sometimes cannot be set, then we end up with 0 instead of the value we had
+    - update.diff.before.blkio_weight == 123 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([]))
     - update.diff.after.blkio_weight == 234
     - update.diff.before.cpu_period == 90000
     - update.diff.after.cpu_period == 50000
@@ -127,7 +128,7 @@
 - name: Check diff for second update
   assert:
     that:
-    - update2.diff.before.blkio_weight == 234
+    - update2.diff.before.blkio_weight == 234 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([]))
     - update2.diff.after.blkio_weight == 135
     - update2.diff.before.cpu_period == 50000
     - update2.diff.after.cpu_period == 30000
@@ -149,7 +150,7 @@
 - name: Check diff for recreation
   assert:
     that:
-    - recreate.diff.before.blkio_weight == 135
+    - recreate.diff.before.blkio_weight == 135 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([]))
     - recreate.diff.after.blkio_weight == 234
     - recreate.diff.before.cpu_period == 30000
     - recreate.diff.after.cpu_period == 50000
