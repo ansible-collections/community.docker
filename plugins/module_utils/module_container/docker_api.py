@@ -1157,7 +1157,7 @@ def _preprocess_container_names(module, client, api_version, value):
         return value
     container_name = value[len('container:'):]
     # Try to inspect container to see whether this is an ID or a
-    # name (and in the latter case, retrieve it's ID)
+    # name (and in the latter case, retrieve its ID)
     container = client.get_container(container_name)
     if container is None:
         # If we can't find the container, issue a warning and continue with
