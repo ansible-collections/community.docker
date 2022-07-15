@@ -65,6 +65,7 @@ class ContainerManager(DockerBaseClass):
         self.param_debug = self.module.params['debug']
         self.param_force_kill = self.module.params['force_kill']
         self.param_image = self.module.params['image']
+        self.param_image_comparison = self.module.params['image_comparison']
         self.param_image_label_mismatch = self.module.params['image_label_mismatch']
         self.param_keep_volumes = self.module.params['keep_volumes']
         self.param_kill_signal = self.module.params['kill_signal']
@@ -276,7 +277,7 @@ class ContainerManager(DockerBaseClass):
         # the container already runs or not; in the former case, in case the
         # container needs to be restarted, we use the existing container's
         # image ID.
-        image = self._get_image()
+        image, comparison_image = self._get_image(container)
         self.log(image, pretty_print=True)
         if not container.exists or container.removing:
             # New container
@@ -297,7 +298,7 @@ class ContainerManager(DockerBaseClass):
             container_created = True
         else:
             # Existing container
-            different, differences = self.has_different_configuration(container, image)
+            different, differences = self.has_different_configuration(container, comparison_image)
             image_different = False
             if self.all_options['image'].comparison == 'strict':
                 image_different = self._image_is_different(image, container)
@@ -323,9 +324,10 @@ class ContainerManager(DockerBaseClass):
                 if new_container:
                     container = new_container
                 container_created = True
+                comparison_image = image
 
         if container and container.exists:
-            container = self.update_limits(container, image)
+            container = self.update_limits(container, comparison_image)
             container = self.update_networks(container, container_created)
 
             if state == 'started' and not container.running:
@@ -377,11 +379,24 @@ class ContainerManager(DockerBaseClass):
         container = self.engine_driver.inspect_container_by_name(self.client, container)
         return Container(container, self.engine_driver)
 
-    def _get_image(self):
+    def _get_container_image(self, container, fallback=None):
+        if not container.exists or container.removing:
+            return fallback
+        image = container.image
+        if is_image_name_id(image):
+            image = self.engine_driver.inspect_image_by_id(self.client, image)
+        else:
+            repository, tag = parse_repository_tag(image)
+            if not tag:
+                tag = "latest"
+            image = self.engine_driver.inspect_image_by_name(self.client, repository, tag)
+        return image or fallback
+
+    def _get_image(self, container):
         image_parameter = self.param_image
         if not image_parameter:
             self.log('No image specified')
-            return None
+            return None, self._get_container_image(container)
         if is_image_name_id(image_parameter):
             image = self.engine_driver.inspect_image_by_id(self.client, image_parameter)
         else:
@@ -406,7 +421,15 @@ class ContainerManager(DockerBaseClass):
 
         self.log("image")
         self.log(image, pretty_print=True)
-        return image
+
+        comparison_image = image
+        if self.param_image_comparison == 'current-image':
+            comparison_image = self._get_container_image(container, image)
+            if comparison_image != image:
+                self.log("current image")
+                self.log(image, pretty_print=True)
+
+        return image, comparison_image
 
     def _image_is_different(self, image, container):
         if image and image.get('Id'):
@@ -776,6 +799,7 @@ def run_module(engine_driver):
             force_kill=dict(type='bool', default=False, aliases=['forcekill']),
             ignore_image=dict(type='bool', default=False),
             image=dict(type='str'),
+            image_comparison=dict(type='str', choices=['desired-image', 'current-image'], default='desired-image'),
             image_label_mismatch=dict(type='str', choices=['ignore', 'fail'], default='ignore'),
             keep_volumes=dict(type='bool', default=True),
             kill_signal=dict(type='str'),
