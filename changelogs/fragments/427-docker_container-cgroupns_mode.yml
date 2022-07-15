@@ -1,0 +1,2 @@
+minor_changes:
+  - "docker_container - add support for ``cgroupns_mode`` (https://github.com/ansible-collections/community.docker/issues/338, https://github.com/ansible-collections/community.docker/pull/427)."

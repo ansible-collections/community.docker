@@ -47,6 +47,15 @@ options:
       - List of capabilities to drop from the container.
     type: list
     elements: str
+  cgroupns_mode:
+    description:
+      - Specify the cgroup namespace mode for the container.
+      - The Docker CLI calls this simply C(cgroupns).
+    type: str
+    choices:
+      - host
+      - private
+    version_added: 3.0.0
   cgroup_parent:
     description:
       - Specify the parent cgroup for the container.
