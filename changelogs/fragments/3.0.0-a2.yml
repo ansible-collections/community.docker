@@ -1,8 +1,0 @@
-release_summary: |
-  Second alpha prerelease of community.docker 3.0.0. This version again has several breaking changes
-  and features rewrites of several modules to directly use the API using ``requests``, instead of using
-  the Docker SDK for Python.
-
-  The largest change to the previous 3.0.0-a1 prerelease is that ``docker_container`` module has been
-  rewritten. It now also no longer needs the Docker SDK for Python, which allowed to implement some new
-  features that were not available before (``platform`` and ``cgroupns_mode`` parameters).

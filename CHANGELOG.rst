@@ -5,6 +5,44 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.0.0-a2
+=========
+
+Release Summary
+---------------
+
+Second alpha prerelease of community.docker 3.0.0. This version again has several breaking changes
+and features rewrites of several modules to directly use the API using ``requests``, instead of using
+the Docker SDK for Python.
+
+The largest change to the previous 3.0.0-a1 prerelease is that ``docker_container`` module has been
+rewritten. It now also no longer needs the Docker SDK for Python, which allowed to implement some new
+features that were not available before (``platform`` and ``cgroupns_mode`` parameters).
+
+
+Major Changes
+-------------
+
+- docker_container - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/422).
+- docker_container - the module was completely rewritten from scratch (https://github.com/ansible-collections/community.docker/pull/422).
+- docker_plugin - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/429).
+
+Minor Changes
+-------------
+
+- docker_container - add a new parameter ``image_comparison`` to control the behavior for which image will be used for idempotency checks (https://github.com/ansible-collections/community.docker/issues/421, https://github.com/ansible-collections/community.docker/pull/428).
+- docker_container - add support for ``cgroupns_mode`` (https://github.com/ansible-collections/community.docker/issues/338, https://github.com/ansible-collections/community.docker/pull/427).
+- docker_container - allow to specify ``platform`` (https://github.com/ansible-collections/community.docker/issues/123, https://github.com/ansible-collections/community.docker/pull/426).
+
+Breaking Changes / Porting Guide
+--------------------------------
+
+- docker_container - ``exposed_ports`` is no longer ignored in ``comparisons``. Before, its value was assumed to be identical with the value of ``published_ports`` (https://github.com/ansible-collections/community.docker/pull/422).
+- docker_container - ``log_options`` can no longer be specified when ``log_driver`` is not specified (https://github.com/ansible-collections/community.docker/pull/422).
+- docker_container - ``publish_all_ports`` is no longer ignored in ``comparisons`` (https://github.com/ansible-collections/community.docker/pull/422).
+- docker_container - ``restart_retries`` can no longer be specified when ``restart_policy`` is not specified (https://github.com/ansible-collections/community.docker/pull/422).
+- docker_container - ``stop_timeout`` is no longer ignored for idempotency if told to be not ignored in ``comparisons``. So far it defaulted to ``ignore`` there, and setting it to ``strict`` had no effect (https://github.com/ansible-collections/community.docker/pull/422).
+
 v3.0.0-a1
 =========
 
