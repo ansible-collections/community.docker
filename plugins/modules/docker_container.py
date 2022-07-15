@@ -407,6 +407,7 @@ options:
       - desired-image
       - current-image
     default: desired-image
+    version_added: 3.0.0
   image_label_mismatch:
     description:
       - How to handle labels inherited from the image that are not set explicitly.
