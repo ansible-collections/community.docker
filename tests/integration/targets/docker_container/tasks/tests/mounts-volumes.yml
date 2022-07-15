@@ -33,7 +33,6 @@
       type: bind
       read_only: no
   register: mounts_1
-  ignore_errors: yes
 
 - name: mounts (idempotency)
   docker_container:
@@ -50,7 +49,6 @@
       target: /tmp
       type: bind
   register: mounts_2
-  ignore_errors: yes
 
 - name: mounts (less mounts)
   docker_container:
@@ -63,7 +61,6 @@
       target: /tmp
       type: bind
   register: mounts_3
-  ignore_errors: yes
 
 - name: mounts (more mounts)
   docker_container:
@@ -81,7 +78,6 @@
       read_only: yes
     force_kill: yes
   register: mounts_4
-  ignore_errors: yes
 
 - name: mounts (different modes)
   docker_container:
@@ -99,7 +95,6 @@
       read_only: no
     force_kill: yes
   register: mounts_5
-  ignore_errors: yes
 
 - name: mounts (endpoint collision)
   docker_container:
@@ -161,13 +156,6 @@
     - "'The mount point \"/x\" appears twice in the mounts option' == mounts_6.msg"
     - mounts_7 is changed
     - mounts_8 is not changed
-  when: docker_py_version is version('2.6.0', '>=')
-- assert:
-    that:
-    - mounts_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in mounts_1.msg"
-    - "'Minimum version required is 2.6.0 ' in mounts_1.msg"
-  when: docker_py_version is version('2.6.0', '<')
 
 ####################################################################
 ## mounts + volumes ################################################
@@ -187,7 +175,6 @@
     volumes:
     - /tmp:/tmp
   register: mounts_volumes_1
-  ignore_errors: yes
 
 - name: mounts + volumes (idempotency)
   docker_container:
@@ -203,7 +190,6 @@
     volumes:
     - /tmp:/tmp
   register: mounts_volumes_2
-  ignore_errors: yes
 
 - name: mounts + volumes (switching)
   docker_container:
@@ -220,7 +206,6 @@
     - /:/whatever:ro
     force_kill: yes
   register: mounts_volumes_3
-  ignore_errors: yes
 
 - name: mounts + volumes (collision, should fail)
   docker_container:
@@ -253,13 +238,6 @@
     - mounts_volumes_3 is changed
     - mounts_volumes_4 is failed
     - "'The mount point \"/tmp\" appears both in the volumes and mounts option' in mounts_volumes_4.msg"
-  when: docker_py_version is version('2.6.0', '>=')
-- assert:
-    that:
-    - mounts_volumes_1 is failed
-    - "('version is ' ~ docker_py_version ~ ' ') in mounts_1.msg"
-    - "'Minimum version required is 2.6.0 ' in mounts_1.msg"
-  when: docker_py_version is version('2.6.0', '<')
 
 ####################################################################
 ## volume_driver ###################################################

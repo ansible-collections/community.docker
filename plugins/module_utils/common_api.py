@@ -467,7 +467,7 @@ class AnsibleDockerClientBase(Client):
 class AnsibleDockerClient(AnsibleDockerClientBase):
 
     def __init__(self, argument_spec=None, supports_check_mode=False, mutually_exclusive=None,
-                 required_together=None, required_if=None, required_one_of=None,
+                 required_together=None, required_if=None, required_one_of=None, required_by=None,
                  min_docker_api_version=None, option_minimal_versions=None,
                  option_minimal_versions_ignore_params=None, fail_results=None):
 
@@ -498,6 +498,7 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
             required_together=required_together_params,
             required_if=required_if,
             required_one_of=required_one_of,
+            required_by=required_by or {},
         )
 
         self.debug = self.module.params.get('debug')

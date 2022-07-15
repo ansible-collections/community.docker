@@ -1,0 +1,172 @@
+---
+- name: Registering container name
+  set_fact:
+    cname: "{{ cname_prefix ~ '-update' }}"
+- name: Registering container name
+  set_fact:
+    cnames: "{{ cnames + [cname] }}"
+
+# We do not test cpuset_cpus and cpuset_mems since changing it fails if the system does
+# not have 'enough' CPUs. We do not test kernel_memory since it is deprecated and fails.
+
+- name: Create container
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    blkio_weight: 123
+    cpu_period: 90000
+    cpu_quota: 150000
+    cpu_shares: 900
+    memory: 64M
+    memory_reservation: 64M
+    memory_swap: 64M
+    restart_policy: on-failure
+    restart_retries: 5
+  register: create
+
+- name: Update values
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    blkio_weight: 234
+    cpu_period: 50000
+    cpu_quota: 50000
+    cpu_shares: 1100
+    memory: 48M
+    memory_reservation: 48M
+    memory_swap: unlimited
+    restart_policy: on-failure  # only on-failure can have restart_retries, so don't change it here
+    restart_retries: 2
+  register: update
+  diff: yes
+
+- name: Update values again
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    blkio_weight: 135
+    cpu_period: 30000
+    cpu_quota: 40000
+    cpu_shares: 1000
+    memory: 32M
+    memory_reservation: 30M
+    memory_swap: 128M
+    restart_policy: always
+    restart_retries: 0
+  register: update2
+  diff: yes
+
+- name: Recreate container
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 20m"'  # this will force re-creation
+    name: "{{ cname }}"
+    state: started
+    blkio_weight: 234
+    cpu_period: 50000
+    cpu_quota: 50000
+    cpu_shares: 1100
+    memory: 48M
+    memory_reservation: 48M
+    memory_swap: unlimited
+    restart_policy: on-failure
+    restart_retries: 2
+    force_kill: yes
+  register: recreate
+  diff: yes
+
+- name: cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
+  diff: no
+
+- name: Check general things
+  assert:
+    that:
+    - create is changed
+    - update is changed
+    - update2 is changed
+    - recreate is changed
+
+    # Make sure the container was *not* recreated when it should not be
+    - create.container.Id == update.container.Id
+    - create.container.Id == update2.container.Id
+
+    # Make sure that the container was recreated when it should be
+    - create.container.Id != recreate.container.Id
+
+- name: Check diff for first update
+  assert:
+    that:
+    # blkio_weight sometimes cannot be set, then we end up with 0 instead of the value we had
+    - update.diff.before.blkio_weight == 123 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([]))
+    - update.diff.after.blkio_weight == 234
+    - update.diff.before.cpu_period == 90000
+    - update.diff.after.cpu_period == 50000
+    - update.diff.before.cpu_quota == 150000
+    - update.diff.after.cpu_quota == 50000
+    - update.diff.before.cpu_shares == 900
+    - update.diff.after.cpu_shares == 1100
+    - update.diff.before.memory == 67108864
+    - update.diff.after.memory == 50331648
+    - update.diff.before.memory_reservation == 67108864
+    - update.diff.after.memory_reservation == 50331648
+    - (update.diff.before.memory_swap | default(0)) == 67108864 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
+    - (update.diff.after.memory_swap | default(0)) == -1 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
+    - "'restart_policy' not in update.diff.before"
+    - update.diff.before.restart_retries == 5
+    - update.diff.after.restart_retries == 2
+
+- name: Check diff for second update
+  assert:
+    that:
+    - update2.diff.before.blkio_weight == 234 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([]))
+    - update2.diff.after.blkio_weight == 135
+    - update2.diff.before.cpu_period == 50000
+    - update2.diff.after.cpu_period == 30000
+    - update2.diff.before.cpu_quota == 50000
+    - update2.diff.after.cpu_quota == 40000
+    - update2.diff.before.cpu_shares == 1100
+    - update2.diff.after.cpu_shares == 1000
+    - update2.diff.before.memory == 50331648
+    - update2.diff.after.memory == 33554432
+    - update2.diff.before.memory_reservation == 50331648
+    - update2.diff.after.memory_reservation == 31457280
+    - (update2.diff.before.memory_swap | default(0)) == -1 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
+    - (update2.diff.after.memory_swap | default(0)) == 134217728 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
+    - update2.diff.before.restart_policy == 'on-failure'
+    - update2.diff.after.restart_policy == 'always'
+    - update2.diff.before.restart_retries == 2
+    - update2.diff.after.restart_retries == 0
+
+- name: Check diff for recreation
+  assert:
+    that:
+    - recreate.diff.before.blkio_weight == 135 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([]))
+    - recreate.diff.after.blkio_weight == 234
+    - recreate.diff.before.cpu_period == 30000
+    - recreate.diff.after.cpu_period == 50000
+    - recreate.diff.before.cpu_quota == 40000
+    - recreate.diff.after.cpu_quota == 50000
+    - recreate.diff.before.cpu_shares == 1000
+    - recreate.diff.after.cpu_shares == 1100
+    - recreate.diff.before.memory == 33554432
+    - recreate.diff.after.memory == 50331648
+    - recreate.diff.before.memory_reservation == 31457280
+    - recreate.diff.after.memory_reservation == 50331648
+    - (recreate.diff.before.memory_swap | default(0)) == 134217728 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
+    - (recreate.diff.after.memory_swap | default(0)) == -1 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
+    - recreate.diff.before.restart_policy == 'always'
+    - recreate.diff.after.restart_policy == 'on-failure'
+    - recreate.diff.before.restart_retries == 0
+    - recreate.diff.after.restart_retries == 2
+    - recreate.diff.before.command == ['/bin/sh', '-c', 'sleep 10m']
+    - recreate.diff.after.command == ['/bin/sh', '-c', 'sleep 20m']

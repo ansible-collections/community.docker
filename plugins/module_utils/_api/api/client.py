@@ -545,6 +545,9 @@ class APIClient(
     def delete_json(self, pathfmt, *args, **kwargs):
         return self._result(self._delete(self._url(pathfmt, *args, versioned_api=True), **kwargs), json=True)
 
+    def post_call(self, pathfmt, *args, **kwargs):
+        self._raise_for_status(self._post(self._url(pathfmt, *args, versioned_api=True), **kwargs))
+
     def post_json(self, pathfmt, *args, **kwargs):
         data = kwargs.pop('data', None)
         self._raise_for_status(self._post_json(self._url(pathfmt, *args, versioned_api=True), data, **kwargs))
