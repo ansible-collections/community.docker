@@ -407,7 +407,8 @@ class ContainerManager(DockerBaseClass):
             if not image or self.param_pull:
                 if not self.check_mode:
                     self.log("Pull the image.")
-                    image, alreadyToLatest = self.engine_driver.pull_image(self.client, repository, tag)
+                    image, alreadyToLatest = self.engine_driver.pull_image(
+                        self.client, repository, tag, platform=self.module.params['platform'])
                     if alreadyToLatest:
                         self.results['changed'] = False
                     else:

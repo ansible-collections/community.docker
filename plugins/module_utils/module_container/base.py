@@ -246,7 +246,7 @@ class EngineDriver(object):
         pass
 
     @abc.abstractmethod
-    def pull_image(self, client, repository, tag):
+    def pull_image(self, client, repository, tag, platform=None):
         pass
 
     @abc.abstractmethod
@@ -1000,6 +1000,11 @@ OPTION_PIDS_LIMIT = (
     .add_option('pids_limit', type='int')
 )
 
+OPTION_PLATFORM = (
+    OptionGroup()
+    .add_option('platform', type='str')
+)
+
 OPTION_PRIVILEGED = (
     OptionGroup()
     .add_option('privileged', type='bool')
@@ -1168,6 +1173,7 @@ OPTIONS = [
     OPTION_OOM_SCORE_ADJ,
     OPTION_PID_MODE,
     OPTION_PIDS_LIMIT,
+    OPTION_PLATFORM,
     OPTION_PRIVILEGED,
     OPTION_READ_ONLY,
     OPTION_RESTART_POLICY,

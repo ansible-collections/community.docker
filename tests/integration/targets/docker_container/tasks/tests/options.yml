@@ -3254,6 +3254,72 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     - pids_limit_3 is changed
 
 ####################################################################
+## platform ########################################################
+####################################################################
+
+- name: Remove hello-world image
+  docker_image:
+    name: hello-world:latest
+    state: absent
+
+- name: platform
+  docker_container:
+    image: hello-world:latest
+    name: "{{ cname }}"
+    state: present
+    pull: true
+    platform: linux/amd64
+    debug: true
+  register: platform_1
+  ignore_errors: yes
+
+- name: platform (idempotency)
+  docker_container:
+    image: hello-world:latest
+    name: "{{ cname }}"
+    state: present
+    # The container always reports 'linux' as platform instead of 'linux/amd64'...
+    platform: linux
+    debug: true
+  register: platform_2
+  ignore_errors: yes
+
+- name: platform (changed)
+  docker_container:
+    image: hello-world:latest
+    name: "{{ cname }}"
+    state: present
+    pull: true
+    platform: linux/386
+    force_kill: yes
+    debug: true
+    comparisons:
+      # Do not restart because of the changed image ID
+      image: ignore
+  register: platform_3
+  ignore_errors: yes
+
+- name: cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
+  diff: no
+
+- assert:
+    that:
+    - platform_1 is changed
+    - platform_2 is not changed and platform_2 is not failed
+    - platform_3 is changed
+  when: docker_api_version is version('1.41', '>=')
+- assert:
+    that:
+    - platform_1 is failed
+    - |
+      ('API version is ' ~ docker_api_version ~ '.') in platform_1.msg and 'Minimum version required is 1.41 ' in platform_1.msg
+  when: docker_api_version is version('1.41', '<')
+
+####################################################################
 ## privileged ######################################################
 ####################################################################
 
