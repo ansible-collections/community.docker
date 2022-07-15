@@ -4,7 +4,8 @@
 #
 # Copyright (c) 2016-2022 Docker, Inc.
 #
-# It is licensed under the Apache 2.0 license (see Apache-2.0.txt in this collection)
+# It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
+# SPDX-License-Identifier: Apache-2.0
 
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type

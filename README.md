@@ -112,3 +112,5 @@ See the [changelog](https://github.com/ansible-collections/community.docker/tree
 GNU General Public License v3.0 or later.
 
 See [COPYING](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.
+
+Parts of the collection are licensed under the [Apache 2.0 license](https://spdx.org/licenses/Apache-2.0). This applies mostly to files vendored from the [Docker SDK for Python](https://github.com/docker/docker-py/).

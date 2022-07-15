@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 # If you use another image, you possibly also need to adjust
 # ansible_python_interpreter in test_connection.inventory.

@@ -7,7 +7,10 @@ readme: README.md
 authors:
   - Ansible Docker Working Group
 description: Modules and plugins for working with Docker
-license_file: COPYING
+license:
+  - GPL-3.0-or-later
+  - Apache-2.0
+#license_file: COPYING
 tags:
   - docker
 repository: https://github.com/ansible-collections/community.docker

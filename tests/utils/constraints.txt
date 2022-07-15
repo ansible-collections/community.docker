@@ -1,3 +1,6 @@
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 bcrypt < 3.2.0 ; python_version <= '3.6'
 certifi < 2022.5.18 ; python_version < '3.5' # certifi 2022.5.18 requires Python 3.5 or later
 cffi >= 1.14.2, != 1.14.3 # Yanked version which older versions of pip will still install
