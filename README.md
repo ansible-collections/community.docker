@@ -1,3 +1,7 @@
+
+[comment]: # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+[comment]: # SPDX-License-Identifier: GPL-3.0-or-later
+
 # Docker Community Collection
 
 [![Doc](https://img.shields.io/badge/docs-brightgreen.svg)](https://docs.ansible.com/ansible/latest/collections/community/docker/)
