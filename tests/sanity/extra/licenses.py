@@ -71,6 +71,13 @@ def main():
     valid_licenses = [license_file[len('LICENSES/'):-len('.txt')] for license_file in glob.glob('LICENSES/*.txt')]
 
     for path in paths:
+        if path.startswith('./'):
+            path = path[2:]
+        if path == 'tests/sanity/extra/licenses.py':
+            # The strings in find_licenses() confuse this code :-)
+            continue
+        if path.startswith('tests/output/') or path == '.ansible-test-timeout.json':
+            continue
         if os.path.basename(path) in empty_allowed:
             if os.stat(path).st_size == 0:
                 continue
@@ -86,6 +93,7 @@ def main():
                 if license not in valid_licenses_for_path:
                     print('%s: found not allowed license "%s", must be one of %s' % (
                         path, license, format_license_list(valid_licenses_for_path)))
+
 
 if __name__ == '__main__':
     main()
