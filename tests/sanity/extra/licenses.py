@@ -17,12 +17,15 @@ def format_license_list(licenses):
     return ', '.join(['"%s"' % license for license in licenses])
 
 
-def find_licenses(filename):
+def find_licenses(filename, relax=False):
     spdx_license_identifiers = []
     other_license_identifiers = []
+    has_copyright = False
     with open(filename, 'r') as f:
         for line in f:
             line = line.rstrip()
+            if 'Copyright' in line:
+                has_copyright = True
             idx = line.find('SPDX-License-Identifier: ')
             if idx >= 0:
                 spdx_license_identifiers.append(line[idx + len('SPDX-License-Identifier: '):])
@@ -44,6 +47,8 @@ def find_licenses(filename):
     if other_license_identifiers and set(other_license_identifiers) != set(spdx_license_identifiers):
         print('%s: SPDX-License-Identifier yielded the license list %s, while manual guessing yielded the license list %s' % (
             filename, format_license_list(spdx_license_identifiers), format_license_list(other_license_identifiers)))
+    if not has_copyright and not relax:
+        print('%s: found no copyright notice' % (filename, ))
     return sorted(spdx_license_identifiers)
 
 
@@ -51,7 +56,7 @@ def main():
     """Main entry point."""
     paths = sys.argv[1:] or sys.stdin.read().splitlines()
 
-    no_license_allowed = [
+    no_comments_allowed = [
         'CHANGELOG.rst',
         'changelogs/changelog.yaml',
         'changelogs/fragments/*.yml',
@@ -66,7 +71,7 @@ def main():
         '__init__.py',
     ]
 
-    no_license_allowed = [fn for pattern in no_license_allowed for fn in glob.glob(pattern)]
+    no_comments_allowed = [fn for pattern in no_comments_allowed for fn in glob.glob(pattern)]
 
     valid_licenses = [license_file[len('LICENSES/'):-len('.txt')] for license_file in glob.glob('LICENSES/*.txt')]
 
@@ -84,9 +89,9 @@ def main():
         valid_licenses_for_path = valid_licenses
         if path.startswith('plugins/') and not path.startswith(('plugins/modules/', 'plugins/module_utils/')):
             valid_licenses_for_path = [license for license in valid_licenses if license == 'GPL-3.0-or-later']
-        licenses = find_licenses(path)
+        licenses = find_licenses(path, relax=path in no_comments_allowed)
         if not licenses:
-            if path not in no_license_allowed:
+            if path not in no_comments_allowed:
                 print('%s: must have at least one license' % (path, ))
         else:
             for license in licenses:
