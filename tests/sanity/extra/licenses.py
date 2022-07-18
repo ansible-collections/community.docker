@@ -24,8 +24,10 @@ def find_licenses(filename, relax=False):
     with open(filename, 'r') as f:
         for line in f:
             line = line.rstrip()
-            if 'Copyright' in line:
+            if 'Copyright ' in line:
                 has_copyright = True
+            if 'Copyright: ' in line:
+                print('%s: found copyright line with "Copyright:". Please remove the colon.' % (filename, ))
             idx = line.find('SPDX-License-Identifier: ')
             if idx >= 0:
                 spdx_license_identifiers.append(line[idx + len('SPDX-License-Identifier: '):])
