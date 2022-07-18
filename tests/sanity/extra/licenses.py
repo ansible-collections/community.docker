@@ -57,8 +57,6 @@ def main():
     paths = sys.argv[1:] or sys.stdin.read().splitlines()
 
     no_comments_allowed = [
-        'CHANGELOG.rst',
-        'changelogs/changelog.yaml',
         'changelogs/fragments/*.yml',
         'tests/sanity/extra/*.json',
         'tests/sanity/ignore-2.*.txt',
@@ -71,17 +69,22 @@ def main():
         '__init__.py',
     ]
 
+    ignore_paths = [
+        'CHANGELOG.rst',
+        'changelogs/changelog.yaml',
+        'tests/sanity/extra/licenses.py',  # The strings in find_licenses() confuse this code :-)
+        '.ansible-test-timeout.json',
+    ]
+
     no_comments_allowed = [fn for pattern in no_comments_allowed for fn in glob.glob(pattern)]
+    ignore_paths = [fn for pattern in ignore_paths for fn in glob.glob(pattern)]
 
     valid_licenses = [license_file[len('LICENSES/'):-len('.txt')] for license_file in glob.glob('LICENSES/*.txt')]
 
     for path in paths:
         if path.startswith('./'):
             path = path[2:]
-        if path == 'tests/sanity/extra/licenses.py':
-            # The strings in find_licenses() confuse this code :-)
-            continue
-        if path.startswith('tests/output/') or path == '.ansible-test-timeout.json':
+        if path in ignore_paths or path.startswith('tests/output/'):
             continue
         if os.path.basename(path) in empty_allowed:
             if os.stat(path).st_size == 0:
