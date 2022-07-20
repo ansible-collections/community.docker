@@ -1,3 +1,8 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 # See https://docs.ansible.com/ansible/latest/dev_guide/collections_galaxy_meta.html
 
 namespace: community
@@ -7,7 +12,10 @@ readme: README.md
 authors:
   - Ansible Docker Working Group
 description: Modules and plugins for working with Docker
-license_file: COPYING
+license:
+  - GPL-3.0-or-later
+  - Apache-2.0
+#license_file: COPYING
 tags:
   - docker
 repository: https://github.com/ansible-collections/community.docker

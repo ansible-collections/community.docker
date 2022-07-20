@@ -1,3 +1,9 @@
+<!--
+Copyright (c) Ansible Project
+GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 # Docker Community Collection
 
 [![Doc](https://img.shields.io/badge/docs-brightgreen.svg)](https://docs.ansible.com/ansible/latest/collections/community/docker/)
@@ -109,6 +115,10 @@ See the [changelog](https://github.com/ansible-collections/community.docker/tree
 
 ## Licensing
 
-GNU General Public License v3.0 or later.
+This collection is primarily licensed and distributed as a whole under the GNU General Public License v3.0 or later.
 
-See [COPYING](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.
+See [LICENSES/GPL-3.0-or-later.txt](https://github.com/ansible-collections/community.docker/blob/main/COPYING) for the full text.
+
+Parts of the collection are licensed under the [Apache 2.0 license](https://github.com/ansible-collections/community.docker/blob/main/LICENSES/Apache-2.0.txt). This mostly applies to files vendored from the [Docker SDK for Python](https://github.com/docker/docker-py/).
+
+Most files in the collection that are not automatically generated have a machine readable `SDPX-License-Identifier:` comment denoting its respective license(s).

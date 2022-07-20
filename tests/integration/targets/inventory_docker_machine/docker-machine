@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Mock Docker Machine wrapper for testing purposes
 
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 [ "$MOCK_ERROR_IN" == "$1" ] && echo >&2 "Mock Docker Machine error" && exit 1
 case $1 in
     env)        
