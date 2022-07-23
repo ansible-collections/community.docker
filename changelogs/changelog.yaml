@@ -880,3 +880,15 @@ releases:
     - 429-docker_plugin.yml
     - docker_container.yml
     release_date: '2022-07-15'
+  3.0.0-a3:
+    changes:
+      minor_changes:
+      - All software licenses are now in the ``LICENSES/`` directory of the collection
+        root. Moreover, ``SPDX-License-Identifier:`` is used to declare the applicable
+        license for every file that is not automatically generated (https://github.com/ansible-collections/community.docker/pull/430).
+      release_summary: No content changes except some license declaration adjustments.
+        This is mainly a trial run to see whether this is causing unexpected problems.
+    fragments:
+    - 3.0.0-a3.yml
+    - 430-licenses.yml
+    release_date: '2022-07-23'

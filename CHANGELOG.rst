@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.0.0-a3
+=========
+
+Release Summary
+---------------
+
+No content changes except some license declaration adjustments. This is mainly a trial run to see whether this is causing unexpected problems.
+
+Minor Changes
+-------------
+
+- All software licenses are now in the ``LICENSES/`` directory of the collection root. Moreover, ``SPDX-License-Identifier:`` is used to declare the applicable license for every file that is not automatically generated (https://github.com/ansible-collections/community.docker/pull/430).
+
 v3.0.0-a2
 =========
 
