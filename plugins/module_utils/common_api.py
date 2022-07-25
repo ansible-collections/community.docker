@@ -71,7 +71,7 @@ def is_using_tls(auth_data):
 
 def get_connect_params(auth_data, fail_function):
     if is_using_tls(auth_data):
-        auth['docker_host'] = auth_data['docker_host'].replace('tcp://', 'https://')
+        auth_data['docker_host'] = auth_data['docker_host'].replace('tcp://', 'https://')
 
     result = dict(
         base_url=auth_data['docker_host'],

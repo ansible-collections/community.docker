@@ -1,0 +1,2 @@
+bugfixes:
+  - "modules and plugins communicating directly with the Docker daemon - prevent crash when TLS is used (https://github.com/ansible-collections/community.docker/pull/432)."
