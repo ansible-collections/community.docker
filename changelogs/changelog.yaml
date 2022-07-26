@@ -892,3 +892,14 @@ releases:
     - 3.0.0-a3.yml
     - 430-licenses.yml
     release_date: '2022-07-23'
+  3.0.0-rc1:
+    changes:
+      bugfixes:
+      - modules and plugins communicating directly with the Docker daemon - prevent
+        crash when TLS is used (https://github.com/ansible-collections/community.docker/pull/432).
+      release_summary: First release candidate for community.docker 3.0.0. As long
+        as more bugs are found new release candidates will be released.
+    fragments:
+    - 3.0.0-rc1.yml
+    - 432-tls.yml
+    release_date: '2022-07-26'

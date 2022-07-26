@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.0.0-rc1
+==========
+
+Release Summary
+---------------
+
+First release candidate for community.docker 3.0.0. As long as more bugs are found new release candidates will be released.
+
+Bugfixes
+--------
+
+- modules and plugins communicating directly with the Docker daemon - prevent crash when TLS is used (https://github.com/ansible-collections/community.docker/pull/432).
+
 v3.0.0-a3
 =========
 
