@@ -11,7 +11,7 @@ import textwrap
 
 import pytest
 
-from mock import MagicMock
+from ansible_collections.community.docker.tests.unit.compat.mock import MagicMock
 
 from ansible import constants as C
 from ansible.errors import AnsibleError
