@@ -78,9 +78,8 @@ class SSHSocket(socket.socket):
         env.pop('SSL_CERT_FILE', None)
 
         self.proc = subprocess.Popen(
-            ' '.join(args),
+            args,
             env=env,
-            shell=True,
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
             preexec_fn=preexec_func)
