@@ -12,6 +12,8 @@ __metaclass__ = type
 
 from ._import_helper import HTTPError as _HTTPError
 
+from ansible.module_utils.six import raise_from
+
 
 class DockerException(Exception):
     """
@@ -40,7 +42,7 @@ def create_api_error_from_http_exception(e):
             cls = ImageNotFound
         else:
             cls = NotFound
-    raise cls(e, response=response, explanation=explanation)
+    raise_from(cls(e, response=response, explanation=explanation), e)
 
 
 class APIError(_HTTPError, DockerException):
