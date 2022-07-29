@@ -244,6 +244,9 @@ class Pattern(object):
     @classmethod
     def normalize(cls, p):
 
+        # Remove trailing spaces
+        p = p.strip()
+
         # Leading and trailing slashes are not relevant. Yes,
         # "foo.py/" must exclude the "foo.py" regular file. "."
         # components are not relevant either, even if the whole
