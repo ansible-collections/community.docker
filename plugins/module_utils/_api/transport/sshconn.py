@@ -78,9 +78,8 @@ class SSHSocket(socket.socket):
         env.pop('SSL_CERT_FILE', None)
 
         self.proc = subprocess.Popen(
-            ' '.join(args),
+            args,
             env=env,
-            shell=True,
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
             preexec_fn=preexec_func)
@@ -225,7 +224,7 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
             host_config = conf.lookup(base_url.hostname)
             if 'proxycommand' in host_config:
                 self.ssh_params["sock"] = paramiko.ProxyCommand(
-                    self.ssh_conf['proxycommand']
+                    host_config['proxycommand']
                 )
             if 'hostname' in host_config:
                 self.ssh_params['hostname'] = host_config['hostname']
@@ -237,7 +236,7 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
                 self.ssh_params['key_filename'] = host_config['identityfile']
 
         self.ssh_client.load_system_host_keys()
-        self.ssh_client.set_missing_host_key_policy(paramiko.WarningPolicy())
+        self.ssh_client.set_missing_host_key_policy(paramiko.RejectPolicy())
 
     def _connect(self):
         if self.ssh_client:

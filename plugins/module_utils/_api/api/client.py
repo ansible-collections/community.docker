@@ -15,7 +15,7 @@ import logging
 import struct
 from functools import partial
 
-from ansible.module_utils.six import PY3, binary_type, iteritems, string_types
+from ansible.module_utils.six import PY3, binary_type, iteritems, string_types, raise_from
 from ansible.module_utils.six.moves.urllib.parse import quote
 
 from .. import auth
@@ -258,7 +258,7 @@ class APIClient(
         try:
             response.raise_for_status()
         except _HTTPError as e:
-            raise create_api_error_from_http_exception(e)
+            raise_from(create_api_error_from_http_exception(e), e)
 
     def _result(self, response, json=False, binary=False):
         if json and binary:

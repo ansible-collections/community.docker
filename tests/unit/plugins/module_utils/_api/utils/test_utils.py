@@ -285,17 +285,24 @@ class ParseHostTest(unittest.TestCase):
             '[fd12::82d1]:2375/docker/engine': (
                 'http://[fd12::82d1]:2375/docker/engine'
             ),
+            'ssh://[fd12::82d1]': 'ssh://[fd12::82d1]:22',
+            'ssh://user@[fd12::82d1]:8765': 'ssh://user@[fd12::82d1]:8765',
             'ssh://': 'ssh://127.0.0.1:22',
             'ssh://user@localhost:22': 'ssh://user@localhost:22',
             'ssh://user@remote': 'ssh://user@remote:22',
         }
 
         for host in invalid_hosts:
-            with pytest.raises(DockerException):
+            msg = 'Should have failed to parse invalid host: {0}'.format(host)
+            with self.assertRaises(DockerException, msg=msg):
                 parse_host(host, None)
 
         for host, expected in valid_hosts.items():
-            assert parse_host(host, None) == expected
+            self.assertEqual(
+                parse_host(host, None),
+                expected,
+                msg='Failed to parse valid host: {0}'.format(host),
+            )
 
     def test_parse_host_empty_value(self):
         unix_socket = 'http+unix:///var/run/docker.sock'
