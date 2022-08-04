@@ -67,7 +67,7 @@ network:
       - Will be C(none) if network does not exist.
     returned: always
     type: dict
-    sample: '{
+    sample: {
         "Attachable": false,
         "ConfigFrom": {
             "Network": ""
@@ -94,7 +94,7 @@ network:
         "Name": "ansible-test-f2700bba",
         "Options": {},
         "Scope": "local"
-    }'
+    }
 '''
 
 import traceback

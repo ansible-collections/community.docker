@@ -277,7 +277,7 @@ actions:
   returned: when action failed.
   type: list
   elements: str
-  example: "['This cluster is already a swarm cluster']"
+  example: ['This cluster is already a swarm cluster']
 
 '''
 

@@ -24,10 +24,11 @@ results:
     description: |
         List of dictionaries containing the list of stacks or tasks associated
         to a stack name.
-    sample: >
-        "results": [{"name":"grafana","namespace":"default","orchestrator":"Kubernetes","services":"2"}]
+    sample:
+        - {"name":"grafana","namespace":"default","orchestrator":"Kubernetes","services":"2"}
     returned: always
     type: list
+    elements: dict
 '''
 
 EXAMPLES = '''

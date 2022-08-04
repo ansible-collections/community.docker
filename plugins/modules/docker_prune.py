@@ -118,13 +118,13 @@ containers:
     returned: I(containers) is C(true)
     type: list
     elements: str
-    sample: '[]'
+    sample: []
 containers_space_reclaimed:
     description:
       - Amount of reclaimed disk space from container pruning in bytes.
     returned: I(containers) is C(true)
     type: int
-    sample: '0'
+    sample: 0
 
 # images
 images:
@@ -133,13 +133,13 @@ images:
     returned: I(images) is C(true)
     type: list
     elements: str
-    sample: '[]'
+    sample: []
 images_space_reclaimed:
     description:
       - Amount of reclaimed disk space from image pruning in bytes.
     returned: I(images) is C(true)
     type: int
-    sample: '0'
+    sample: 0
 
 # networks
 networks:
@@ -148,7 +148,7 @@ networks:
     returned: I(networks) is C(true)
     type: list
     elements: str
-    sample: '[]'
+    sample: []
 
 # volumes
 volumes:
@@ -157,13 +157,13 @@ volumes:
     returned: I(volumes) is C(true)
     type: list
     elements: str
-    sample: '[]'
+    sample: []
 volumes_space_reclaimed:
     description:
       - Amount of reclaimed disk space from volumes pruning in bytes.
     returned: I(volumes) is C(true)
     type: int
-    sample: '0'
+    sample: 0
 
 # builder_cache
 builder_cache_space_reclaimed:
@@ -171,7 +171,7 @@ builder_cache_space_reclaimed:
       - Amount of reclaimed disk space from builder cache pruning in bytes.
     returned: I(builder_cache) is C(true)
     type: int
-    sample: '0'
+    sample: 0
 '''
 
 import traceback
