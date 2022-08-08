@@ -34,7 +34,7 @@ options:
       - To use binary I(data), it is better to keep it Base64 encoded and let it
         be decoded by this option.
     type: bool
-    default: no
+    default: false
   data_src:
     description:
       - The file on the target from which to read the secret.
@@ -51,7 +51,7 @@ options:
       - Use with state C(present) to always remove and recreate an existing secret.
       - If C(true), an existing secret will be replaced, even if it has not changed.
     type: bool
-    default: no
+    default: false
   rolling_versions:
     description:
       - If set to C(true), secrets are created with an increasing version number appended to their name.
@@ -71,7 +71,7 @@ options:
     description:
       - The name of the secret.
     type: str
-    required: yes
+    required: true
   state:
     description:
       - Set to C(present), if the secret should exist, and C(absent), if it should not.
@@ -155,7 +155,7 @@ EXAMPLES = '''
   community.docker.docker_secret:
     name: foo
     data: Goodnight everyone!
-    force: yes
+    force: true
     state: present
 
 - name: Remove secret foo
