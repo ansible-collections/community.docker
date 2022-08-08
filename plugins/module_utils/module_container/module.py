@@ -429,7 +429,7 @@ class ContainerManager(DockerBaseClass):
             comparison_image = self._get_container_image(container, image)
             if comparison_image != image:
                 self.log("current image")
-                self.log(image, pretty_print=True)
+                self.log(comparison_image, pretty_print=True)
 
         return image, comparison_image
 

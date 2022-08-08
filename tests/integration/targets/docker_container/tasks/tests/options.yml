@@ -2108,11 +2108,14 @@
 ## image / image_comparison / ignore_image #########################
 ####################################################################
 
-- name: Pull {{ docker_test_image_hello_world }} image to make sure ignore_image test succeeds
+- name: Pull images to make sure ignore_image test succeeds
   # If the image isn't there, it will pull it and return 'changed'.
   docker_image:
-    name: "{{ docker_test_image_hello_world }}"
+    name: "{{ item }}"
     source: pull
+  loop:
+    - "{{ docker_test_image_hello_world }}"
+    - "{{ docker_test_image_registry_nginx }}"
 
 - name: image
   docker_container:
@@ -2129,6 +2132,7 @@
     name: "{{ cname }}"
     state: started
   register: image_2
+  diff: true
 
 - name: ignore_image
   docker_container:
@@ -2137,6 +2141,7 @@
     name: "{{ cname }}"
     state: started
   register: ignore_image
+  diff: true
 
 - name: ignore_image (labels and env differ in image, image_comparison=current-image)
   docker_container:
@@ -2146,6 +2151,7 @@
     name: "{{ cname }}"
     state: started
   register: ignore_image_2
+  diff: true
 
 - name: ignore_image (labels and env differ in image, image_comparison=desired-image)
   docker_container:
@@ -2156,6 +2162,7 @@
     state: started
     force_kill: yes
   register: ignore_image_3
+  diff: true
 
 - name: image change
   docker_container:
@@ -2164,6 +2171,7 @@
     state: started
     force_kill: yes
   register: image_change
+  diff: true
 
 - name: cleanup
   docker_container:
@@ -4119,6 +4127,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     tty: yes
     state: started
   register: tty_1
+  ignore_errors: true
 
 - name: tty (idempotency)
   docker_container:
@@ -4128,6 +4137,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     tty: yes
     state: started
   register: tty_2
+  ignore_errors: true
 
 - name: tty (change)
   docker_container:
@@ -4138,6 +4148,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     state: started
     force_kill: yes
   register: tty_3
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
@@ -4149,8 +4160,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
 - assert:
     that:
     - tty_1 is changed
-    - tty_2 is not changed
+    - tty_2 is not changed and tty_2 is not failed
     - tty_3 is changed
+  when: tty_1 is not failed
+
+- assert:
+    that:
+    - "'error during container init: open /dev/pts/' in tty_1.msg"
+    - "': operation not permitted: ' in tty_1.msg"
+  when: tty_1 is failed
 
 ####################################################################
 ## ulimits #########################################################
