@@ -26,11 +26,14 @@ def find_executable(executable, path=None):
     As distutils.spawn.find_executable, but on Windows, look up
     every extension declared in PATHEXT instead of just `.exe`
     """
+    if not PY2:
+        # shutil.which() already uses PATHEXT on Windows, so on
+        # Python 3 we can simply use shutil.which() in all cases.
+        # (https://github.com/docker/docker-py/commit/42789818bed5d86b487a030e2e60b02bf0cfa284)
+        return which(executable, path=path)
+
     if sys.platform != 'win32':
-        if PY2:
-            return which(executable, path)
-        else:
-            return which(executable, path=path)
+        return which(executable, path)
 
     if path is None:
         path = os.environ['PATH']
