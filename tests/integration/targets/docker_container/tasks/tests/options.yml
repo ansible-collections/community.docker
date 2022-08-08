@@ -2108,11 +2108,14 @@
 ## image / image_comparison / ignore_image #########################
 ####################################################################
 
-- name: Pull {{ docker_test_image_hello_world }} image to make sure ignore_image test succeeds
+- name: Pull images to make sure ignore_image test succeeds
   # If the image isn't there, it will pull it and return 'changed'.
   docker_image:
-    name: "{{ docker_test_image_hello_world }}"
+    name: "{{ item }}"
     source: pull
+  loop:
+    - "{{ docker_test_image_hello_world }}"
+    - "{{ docker_test_image_registry_nginx }}"
 
 - name: image
   docker_container:
