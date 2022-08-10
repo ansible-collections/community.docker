@@ -76,17 +76,17 @@ options:
     tls:
         description:
             - Secure the connection to the API by using TLS without verifying the authenticity of the Docker host
-              server. Note that if I(validate_certs) is set to C(yes) as well, it will take precedence.
+              server. Note that if I(validate_certs) is set to C(true) as well, it will take precedence.
             - If the value is not specified in the task, the value of environment variable C(DOCKER_TLS) will be used
               instead. If the environment variable is not set, the default value will be used.
         type: bool
-        default: no
+        default: false
     use_ssh_client:
         description:
             - For SSH transports, use the C(ssh) CLI tool instead of paramiko.
             - Requires Docker SDK for Python 4.4.0 or newer.
         type: bool
-        default: no
+        default: false
         version_added: 1.5.0
     validate_certs:
         description:
@@ -94,13 +94,13 @@ options:
             - If the value is not specified in the task, the value of environment variable C(DOCKER_TLS_VERIFY) will be
               used instead. If the environment variable is not set, the default value will be used.
         type: bool
-        default: no
+        default: false
         aliases: [ tls_verify ]
     debug:
         description:
             - Debug mode
         type: bool
-        default: no
+        default: false
 
 notes:
   - Connect to the Docker daemon by providing parameters with each task or by defining environment variables.
@@ -251,16 +251,16 @@ options:
     tls:
         description:
             - Secure the connection to the API by using TLS without verifying the authenticity of the Docker host
-              server. Note that if I(validate_certs) is set to C(yes) as well, it will take precedence.
+              server. Note that if I(validate_certs) is set to C(true) as well, it will take precedence.
             - If the value is not specified in the task, the value of environment variable C(DOCKER_TLS) will be used
               instead. If the environment variable is not set, the default value will be used.
         type: bool
-        default: no
+        default: false
     use_ssh_client:
         description:
             - For SSH transports, use the C(ssh) CLI tool instead of paramiko.
         type: bool
-        default: no
+        default: false
         version_added: 1.5.0
     validate_certs:
         description:
@@ -268,13 +268,13 @@ options:
             - If the value is not specified in the task, the value of environment variable C(DOCKER_TLS_VERIFY) will be
               used instead. If the environment variable is not set, the default value will be used.
         type: bool
-        default: no
+        default: false
         aliases: [ tls_verify ]
     debug:
         description:
             - Debug mode
         type: bool
-        default: no
+        default: false
 
 notes:
   - Connect to the Docker daemon by providing parameters with each task or by defining environment variables.

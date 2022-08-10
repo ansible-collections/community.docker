@@ -22,7 +22,7 @@ options:
     description:
       - Stack name
     type: str
-    required: yes
+    required: true
   state:
     description:
       - Service state.
@@ -45,13 +45,13 @@ options:
         This will have docker remove the services not present in the
         current stack definition.
     type: bool
-    default: no
+    default: false
   with_registry_auth:
     description:
       - If true will add the C(--with-registry-auth) option to the C(docker stack deploy) command.
         This will have docker send registry authentication details to Swarm agents.
     type: bool
-    default: no
+    default: false
   resolve_image:
     description:
       - If set will add the C(--resolve-image) option to the C(docker stack deploy) command.

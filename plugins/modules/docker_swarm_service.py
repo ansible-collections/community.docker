@@ -47,7 +47,7 @@ options:
         description:
           - Config's name as defined at its creation.
         type: str
-        required: yes
+        required: true
       filename:
         description:
           - Name of the file containing the config. Defaults to the I(config_name) if not specified.
@@ -117,7 +117,7 @@ options:
       - Force update even if no changes require it.
       - Corresponds to the C(--force) option of C(docker service update).
     type: bool
-    default: no
+    default: false
   groups:
     description:
       - List of additional group names and/or IDs that the container process will run as.
@@ -241,7 +241,7 @@ options:
         description:
           - Container path.
         type: str
-        required: yes
+        required: true
       type:
         description:
           - The mount type.
@@ -309,7 +309,7 @@ options:
       - Service name.
       - Corresponds to the C(--name) option of C(docker service create).
     type: str
-    required: yes
+    required: true
   networks:
     description:
       - List of the service networks names or dictionaries.
@@ -356,12 +356,12 @@ options:
         description:
           - The port to make externally available.
         type: int
-        required: no
+        required: false
       target_port:
         description:
           - The port inside the container to expose.
         type: int
-        required: yes
+        required: true
       protocol:
         description:
           - What protocol to use.
@@ -415,7 +415,7 @@ options:
       - If the current image digest should be resolved from registry and updated if changed.
       - Requires API version >= 1.30.
     type: bool
-    default: no
+    default: false
   restart_config:
     description:
       - Configures if and how to restart containers when they exit.
@@ -512,7 +512,7 @@ options:
         description:
           - Secret's name as defined at its creation.
         type: str
-        required: yes
+        required: true
       filename:
         description:
           - Name of the file containing the secret. Defaults to the I(secret_name) if not specified.
