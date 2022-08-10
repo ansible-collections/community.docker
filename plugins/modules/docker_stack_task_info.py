@@ -21,7 +21,7 @@ options:
     description:
       - Stack name.
     type: str
-    required: yes
+    required: true
 '''
 
 RETURN = '''

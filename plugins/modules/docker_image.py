@@ -60,17 +60,17 @@ options:
           - Use with state 'present' to build an image. Will be the path to a directory containing the context and
             Dockerfile for building an image.
         type: path
-        required: yes
+        required: true
       pull:
         description:
           - When building an image downloads any updates to the FROM image in Dockerfile.
         type: bool
-        default: no
+        default: false
       rm:
         description:
           - Remove intermediate containers after build.
         type: bool
-        default: yes
+        default: true
       network:
         description:
           - The network to use for C(RUN) build instructions.
@@ -79,7 +79,7 @@ options:
         description:
           - Do not use cache when building an image.
         type: bool
-        default: no
+        default: false
       etc_hosts:
         description:
           - Extra hosts to add to C(/etc/hosts) in building containers, as a mapping of hostname to IP address.
@@ -115,7 +115,7 @@ options:
             type: str
       use_config_proxy:
         description:
-          - If set to C(yes) and a proxy configuration is specified in the docker client configuration
+          - If set to C(true) and a proxy configuration is specified in the docker client configuration
             (by default C($HOME/.docker/config.json)), the corresponding environment variables will
             be set in the container being built.
           - Needs Docker SDK for Python >= 3.7.0.
@@ -162,7 +162,7 @@ options:
       - Note that image IDs (hashes) are only supported for I(state=absent), for I(state=present) with I(source=load),
         and for I(state=present) with I(source=local).
     type: str
-    required: yes
+    required: true
   pull:
     description:
       - "Specifies options used for pulling images."
@@ -179,7 +179,7 @@ options:
     description:
       - Push the image to the registry. Specify the registry as part of the I(name) or I(repository) parameter.
     type: bool
-    default: no
+    default: false
   repository:
     description:
       - Use with state C(present) to tag the image.
@@ -237,7 +237,7 @@ EXAMPLES = '''
   community.docker.docker_image:
     name: pacur/centos-7:56
     repository: dcoppenhagan/myimage:7.56
-    push: yes
+    push: true
     source: local
 
 - name: Tag and push to local registry
@@ -247,7 +247,7 @@ EXAMPLES = '''
     # Will be pushed to localhost:5000/centos:7
     repository: localhost:5000/centos
     tag: 7
-    push: yes
+    push: true
     source: local
 
 - name: Add tag latest to image
@@ -255,7 +255,7 @@ EXAMPLES = '''
     name: myimage:7.1.2
     repository: myimage:latest
     # As 'latest' usually already is present, we need to enable overwriting of existing tags:
-    force_tag: yes
+    force_tag: true
     source: local
 
 - name: Remove image
@@ -270,7 +270,7 @@ EXAMPLES = '''
       path: ./sinatra
     name: registry.ansible.com/chouseknecht/sinatra
     tag: v1
-    push: yes
+    push: true
     source: build
 
 - name: Archive image
@@ -284,7 +284,7 @@ EXAMPLES = '''
   community.docker.docker_image:
     name: localhost:5000/myimages/sinatra
     tag: v1
-    push: yes
+    push: true
     load_path: my_sinatra.tar
     source: load
 

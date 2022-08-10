@@ -59,7 +59,7 @@ options:
       - Use with state C(present) to force creating a new Swarm, even if already part of one.
       - Use with state C(absent) to Leave the swarm even if this node is a manager.
     type: bool
-    default: no
+    default: false
   state:
     description:
       - Set to C(present), to create/update a new cluster.
@@ -164,17 +164,17 @@ options:
   autolock_managers:
     description:
       - If set, generate a key and use it to lock data stored on the managers.
-      - Docker default value is C(no).
+      - Docker default value is C(false).
       - M(community.docker.docker_swarm_info) can be used to retrieve the unlock key.
     type: bool
   rotate_worker_token:
     description: Rotate the worker join token.
     type: bool
-    default: no
+    default: false
   rotate_manager_token:
     description: Rotate the manager join token.
     type: bool
-    default: no
+    default: false
   data_path_addr:
     description:
       - Address or interface to use for data path traffic.

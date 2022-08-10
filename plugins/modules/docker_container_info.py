@@ -25,7 +25,7 @@ options:
       - The name of the container to inspect.
       - When identifying an existing container name may be a name or a long or short container ID.
     type: str
-    required: yes
+    required: true
 extends_documentation_fragment:
 - community.docker.docker
 - community.docker.docker.docker_py_1_documentation
