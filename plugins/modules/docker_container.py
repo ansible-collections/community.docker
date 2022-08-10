@@ -56,7 +56,7 @@ options:
     description:
       - Use with I(detach=false) to remove the container after successful execution.
     type: bool
-    default: no
+    default: false
   command:
     description:
       - Command to execute when the container starts. A command may be either a string or a list.
@@ -69,7 +69,7 @@ options:
         module options to decide whether the container should be recreated / updated
         or not.
       - Only options which correspond to the state of a container as handled by the
-        Docker daemon can be specified, as well as C(networks).
+        Docker daemon can be specified, as well as I(networks).
       - Must be a dictionary specifying for an option one of the keys C(strict), C(ignore)
         and C(allow_more_present).
       - If C(strict) is specified, values are tested for equality, and changes always
@@ -177,7 +177,7 @@ options:
         description:
         - Device path in the container.
         type: str
-        required: yes
+        required: true
       rate:
         description:
         - "Device read limit in format C(<number>[<unit>])."
@@ -185,7 +185,7 @@ options:
           C(T) (tebibyte), or C(P) (pebibyte)."
         - "Omitting the unit defaults to bytes."
         type: str
-        required: yes
+        required: true
   device_write_bps:
     description:
       - "List of device and write rate (bytes per second) to device."
@@ -196,7 +196,7 @@ options:
         description:
         - Device path in the container.
         type: str
-        required: yes
+        required: true
       rate:
         description:
         - "Device read limit in format C(<number>[<unit>])."
@@ -204,7 +204,7 @@ options:
           C(T) (tebibyte), or C(P) (pebibyte)."
         - "Omitting the unit defaults to bytes."
         type: str
-        required: yes
+        required: true
   device_read_iops:
     description:
       - "List of device and read rate (IO per second) from device."
@@ -215,13 +215,13 @@ options:
         description:
         - Device path in the container.
         type: str
-        required: yes
+        required: true
       rate:
         description:
         - "Device read limit."
         - "Must be a positive integer."
         type: int
-        required: yes
+        required: true
   device_write_iops:
     description:
       - "List of device and write rate (IO per second) to device."
@@ -232,13 +232,13 @@ options:
         description:
         - Device path in the container.
         type: str
-        required: yes
+        required: true
       rate:
         description:
         - "Device read limit."
         - "Must be a positive integer."
         type: int
-        required: yes
+        required: true
   device_requests:
     description:
       - Allows to request additional resources, such as GPUs.
@@ -331,7 +331,7 @@ options:
     description:
       - Use the kill command when stopping a running container.
     type: bool
-    default: no
+    default: false
     aliases:
       - forcekill
   groups:
@@ -382,11 +382,11 @@ options:
       - When I(state) is C(present) or C(started), the module compares the configuration of an existing
         container to requested configuration. The evaluation includes the image version. If the image
         version in the registry does not match the container, the container will be recreated. You can
-        stop this behavior by setting I(ignore_image) to C(True).
+        stop this behavior by setting I(ignore_image) to C(true).
       - "B(Warning:) This option is ignored if C(image: ignore) or C(*: ignore) is specified in the
         I(comparisons) option."
     type: bool
-    default: no
+    default: false
   image:
     description:
       - Repository path and tag used to create the container. If an image is not found or pull is true, the image
@@ -431,7 +431,7 @@ options:
     description:
       - Retain anonymous volumes associated with a removed container.
     type: bool
-    default: yes
+    default: true
   kill_signal:
     description:
       - Override default signal used to kill a running container.
@@ -586,7 +586,7 @@ options:
       - Assign a name to a new container or match an existing container.
       - When identifying an existing container name may be a name or a long or short container ID.
     type: str
-    required: yes
+    required: true
   network_mode:
     description:
       - Connect the container to a network. Choices are C(bridge), C(host), C(none), C(container:<name|id>), C(<network_name>) or C(default).
@@ -614,7 +614,7 @@ options:
         description:
           - The network's name.
         type: str
-        required: yes
+        required: true
       ipv4_address:
         description:
           - The container's IPv4 address in this network.
@@ -636,15 +636,15 @@ options:
         elements: str
   networks_cli_compatible:
     description:
-      - "If I(networks_cli_compatible) is set to C(yes) (default), this module will behave as
+      - "If I(networks_cli_compatible) is set to C(true) (default), this module will behave as
          C(docker run --network) and will B(not) add the default network if I(networks) is
          specified. If I(networks) is not specified, the default network will be attached."
-      - "When I(networks_cli_compatible) is set to C(no) and networks are provided to the module
+      - "When I(networks_cli_compatible) is set to C(false) and networks are provided to the module
          via the I(networks) option, the module behaves differently than C(docker run --network):
          C(docker run --network other) will create a container with network C(other) attached,
          but the default network not attached. This module with I(networks: {name: other}) will
          create a container with both C(default) and C(other) attached. If I(purge_networks) is
-         set to C(yes), the C(default) network will be removed afterwards."
+         set to C(true), the C(default) network will be removed afterwards."
     type: bool
     default: true
   oom_killer:
@@ -661,7 +661,7 @@ options:
       - If set to true, output of the container command will be printed.
       - Only effective when I(log_driver) is set to C(json-file), C(journald), or C(local).
     type: bool
-    default: no
+    default: false
   paused:
     description:
       - Use with the started state to pause running processes inside the container.
@@ -722,13 +722,13 @@ options:
        - "B(Note:) images are only pulled when specified by name. If the image is specified
          as a image ID (hash), it cannot be pulled."
     type: bool
-    default: no
+    default: false
   purge_networks:
     description:
        - Remove the container from ALL networks not included in I(networks) parameter.
        - Any default networks such as C(bridge), if not found in I(networks), will be removed as well.
     type: bool
-    default: no
+    default: false
   read_only:
     description:
       - Mount the container's root file system as read-only.
@@ -738,7 +738,7 @@ options:
     description:
       - Use with present and started states to force the re-creation of an existing container.
     type: bool
-    default: no
+    default: false
   removal_wait_timeout:
     description:
       - When removing an existing container, the docker daemon API call exists after the container
@@ -753,7 +753,7 @@ options:
     description:
       - Use with started state to force a matching container to be stopped and restarted.
     type: bool
-    default: no
+    default: false
   restart_policy:
     description:
       - Container restart policy.
@@ -917,7 +917,7 @@ EXAMPLES = '''
     image: redis
     command: redis-server --appendonly yes
     state: present
-    recreate: yes
+    recreate: true
     exposed_ports:
       - 6379
     volumes_from:
@@ -928,7 +928,7 @@ EXAMPLES = '''
     name: myapplication
     image: someuser/appimage
     state: started
-    restart: yes
+    restart: true
     links:
      - "myredis:aliasedredis"
     devices:
@@ -965,7 +965,7 @@ EXAMPLES = '''
 - name: Start 4 load-balanced containers
   community.docker.docker_container:
     name: "container{{ item }}"
-    recreate: yes
+    recreate: true
     image: someuser/anotherappimage
     command: sleep 1d
   with_sequence: count=4
@@ -1038,12 +1038,12 @@ EXAMPLES = '''
     name: sleepy
     networks:
       - name: TestingNet2
-    purge_networks: yes
+    purge_networks: true
 
 - name: Remove container from all networks
   community.docker.docker_container:
     name: sleepy
-    purge_networks: yes
+    purge_networks: true
 
 - name: Start a container and use an env file
   community.docker.docker_container:
