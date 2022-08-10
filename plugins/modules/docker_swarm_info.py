@@ -31,7 +31,7 @@ options:
     description:
       - Whether to list swarm nodes.
     type: bool
-    default: no
+    default: false
   nodes_filters:
     description:
       - A dictionary of filter values used for selecting nodes to list.
@@ -43,7 +43,7 @@ options:
     description:
       - Whether to list swarm services.
     type: bool
-    default: no
+    default: false
   services_filters:
     description:
       - A dictionary of filter values used for selecting services to list.
@@ -55,7 +55,7 @@ options:
     description:
       - Whether to list containers.
     type: bool
-    default: no
+    default: false
   tasks_filters:
     description:
       - A dictionary of filter values used for selecting tasks to list.
@@ -67,16 +67,16 @@ options:
     description:
       - Whether to retrieve the swarm unlock key.
     type: bool
-    default: no
+    default: false
   verbose_output:
     description:
-      - When set to C(yes) and I(nodes), I(services) or I(tasks) is set to C(yes), then the module output will
+      - When set to C(true) and I(nodes), I(services) or I(tasks) is set to C(true), then the module output will
         contain verbose information about objects matching the full output of API method.
       - For details see the documentation of your version of Docker API at U(https://docs.docker.com/engine/api/).
       - The verbose output in this module contains only subset of information returned by I(_info) module
         for each type of the objects.
     type: bool
-    default: no
+    default: false
 extends_documentation_fragment:
 - community.docker.docker
 - community.docker.docker.docker_py_1_documentation
@@ -90,7 +90,7 @@ requirements:
 EXAMPLES = '''
 - name: Get info on Docker Swarm
   community.docker.docker_swarm_info:
-  ignore_errors: yes
+  ignore_errors: true
   register: result
 
 - name: Inform about basic flags
@@ -104,18 +104,18 @@ EXAMPLES = '''
 
 - name: Get info on Docker Swarm and list of registered nodes
   community.docker.docker_swarm_info:
-    nodes: yes
+    nodes: true
   register: result
 
 - name: Get info on Docker Swarm and extended list of registered nodes
   community.docker.docker_swarm_info:
-    nodes: yes
-    verbose_output: yes
+    nodes: true
+    verbose_output: true
   register: result
 
 - name: Get info on Docker Swarm and filtered list of registered nodes
   community.docker.docker_swarm_info:
-    nodes: yes
+    nodes: true
     nodes_filters:
       name: mynode
   register: result
@@ -125,7 +125,7 @@ EXAMPLES = '''
 
 - name: Get the swarm unlock key
   community.docker.docker_swarm_info:
-    unlock_key: yes
+    unlock_key: true
   register: result
 
 - ansible.builtin.debug:
@@ -167,25 +167,25 @@ swarm_unlock_key:
 nodes:
     description:
       - List of dict objects containing the basic information about each volume.
-        Keys matches the C(docker node ls) output unless I(verbose_output=yes).
+        Keys matches the C(docker node ls) output unless I(verbose_output=true).
         See description for I(verbose_output).
-    returned: When I(nodes) is C(yes)
+    returned: When I(nodes) is C(true)
     type: list
     elements: dict
 services:
     description:
       - List of dict objects containing the basic information about each volume.
-        Keys matches the C(docker service ls) output unless I(verbose_output=yes).
+        Keys matches the C(docker service ls) output unless I(verbose_output=true).
         See description for I(verbose_output).
-    returned: When I(services) is C(yes)
+    returned: When I(services) is C(true)
     type: list
     elements: dict
 tasks:
     description:
       - List of dict objects containing the basic information about each volume.
-        Keys matches the C(docker service ps) output unless I(verbose_output=yes).
+        Keys matches the C(docker service ps) output unless I(verbose_output=true).
         See description for I(verbose_output).
-    returned: When I(tasks) is C(yes)
+    returned: When I(tasks) is C(true)
     type: list
     elements: dict
 

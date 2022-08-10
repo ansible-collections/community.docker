@@ -24,7 +24,7 @@ options:
     description:
       - The name of the service to inspect.
     type: str
-    required: yes
+    required: true
 extends_documentation_fragment:
 - community.docker.docker
 - community.docker.docker.docker_py_1_documentation

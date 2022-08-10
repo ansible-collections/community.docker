@@ -44,7 +44,7 @@ options:
     description:
       - Refresh existing authentication found in the configuration file.
     type: bool
-    default: no
+    default: false
     aliases:
       - reauth
   config_path:
@@ -90,7 +90,7 @@ EXAMPLES = '''
     registry_url: your.private.registry.io
     username: yourself
     password: secrets3
-    reauthorize: yes
+    reauthorize: true
 
 - name: Log into DockerHub using a custom config file
   community.docker.docker_login:

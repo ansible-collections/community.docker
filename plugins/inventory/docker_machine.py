@@ -22,7 +22,7 @@ DOCUMENTATION = '''
     options:
         plugin:
             description: token that ensures this is a source file for the C(docker_machine) plugin.
-            required: yes
+            required: true
             choices: ['docker_machine', 'community.docker.docker_machine']
         daemon_env:
             description:
@@ -45,13 +45,13 @@ DOCUMENTATION = '''
             description:
                 - When C(true), hosts which Docker Machine indicates are in a state other than C(running) will be skipped.
             type: bool
-            default: yes
+            default: true
         verbose_output:
             description:
                 - When C(true), include all available nodes metadata (for exmaple C(Image), C(Region), C(Size)) as a JSON object
                   named C(docker_machine_node_attributes).
             type: bool
-            default: yes
+            default: true
 '''
 
 EXAMPLES = '''
@@ -70,13 +70,13 @@ plugin: community.docker.docker_machine
 #       ]
 #     ...
 #   }
-strict: no
+strict: false
 keyed_groups:
   - separator: ''
     key: docker_machine_node_attributes.DriverName
 
 # Example grouping hosts by Digital Machine tag
-strict: no
+strict: false
 keyed_groups:
   - prefix: tag
     key: 'dm_tags'

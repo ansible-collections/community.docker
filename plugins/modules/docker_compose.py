@@ -86,7 +86,7 @@ options:
     description:
       - When I(state) is C(present) specify whether or not to include linked services.
     type: bool
-    default: yes
+    default: true
   definition:
     description:
       - Compose file describing one or more services, networks and volumes.
@@ -96,7 +96,7 @@ options:
     description:
       - Whether or not to check the Docker daemon's hostname against the name provided in the client certificate.
     type: bool
-    default: no
+    default: false
   recreate:
     description:
       - By default containers will be recreated when their configuration differs from the service definition.
@@ -116,19 +116,19 @@ options:
       - Use the I(nocache) option to ignore the image cache when performing the build.
       - If an existing image is replaced, services using the image will be recreated unless I(recreate) is C(never).
     type: bool
-    default: no
+    default: false
   pull:
     description:
       - Use with I(state) C(present) to always pull images prior to starting the application.
       - Same as running C(docker-compose pull).
       - When a new image is pulled, services using the image will be recreated unless I(recreate) is C(never).
     type: bool
-    default: no
+    default: false
   nocache:
     description:
       - Use with the I(build) option to ignore the cache during the image build process.
     type: bool
-    default: no
+    default: false
   remove_images:
     description:
       - Use with I(state) C(absent) to remove all images or only local images.
@@ -140,7 +140,7 @@ options:
     description:
       - Use with I(state) C(absent) to remove data volumes.
     type: bool
-    default: no
+    default: false
   stopped:
     description:
       - Use with I(state) C(present) to stop all containers defined in the Compose file.
@@ -148,18 +148,18 @@ options:
       - Requires C(docker-compose) version 1.17.0 or greater for full support. For older versions, the services will
         first be started and then stopped when the service is supposed to be created as stopped.
     type: bool
-    default: no
+    default: false
   restarted:
     description:
       - Use with I(state) C(present) to restart all containers defined in the Compose file.
       - If I(services) is defined, only the containers listed there will be restarted.
     type: bool
-    default: no
+    default: false
   remove_orphans:
     description:
       - Remove containers for services not defined in the Compose file.
     type: bool
-    default: no
+    default: false
   timeout:
     description:
       - Timeout in seconds for container shutdown when attached or when containers are already running.
@@ -189,7 +189,7 @@ EXAMPLES = '''
 
 - name: Run using a project directory
   hosts: localhost
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Tear down existing services
       community.docker.docker_compose:
@@ -207,7 +207,7 @@ EXAMPLES = '''
     - name: Run `docker-compose up` again
       community.docker.docker_compose:
         project_src: flask
-        build: no
+        build: false
       register: output
 
     - ansible.builtin.debug:
@@ -219,8 +219,8 @@ EXAMPLES = '''
     - name: Stop all services
       community.docker.docker_compose:
         project_src: flask
-        build: no
-        stopped: yes
+        build: false
+        stopped: true
       register: output
 
     - ansible.builtin.debug:
@@ -234,8 +234,8 @@ EXAMPLES = '''
     - name: Restart services
       community.docker.docker_compose:
         project_src: flask
-        build: no
-        restarted: yes
+        build: false
+        restarted: true
       register: output
 
     - ansible.builtin.debug:
@@ -248,7 +248,7 @@ EXAMPLES = '''
 
 - name: Scale the web service to 2
   hosts: localhost
-  gather_facts: no
+  gather_facts: false
   tasks:
     - community.docker.docker_compose:
         project_src: flask
@@ -261,7 +261,7 @@ EXAMPLES = '''
 
 - name: Run with inline v2 compose
   hosts: localhost
-  gather_facts: no
+  gather_facts: false
   tasks:
     - community.docker.docker_compose:
         project_src: flask
@@ -295,7 +295,7 @@ EXAMPLES = '''
 
 - name: Run with inline v1 compose
   hosts: localhost
-  gather_facts: no
+  gather_facts: false
   tasks:
     - community.docker.docker_compose:
         project_src: flask
@@ -415,7 +415,7 @@ services:
 
 actions:
   description: Provides the actions to be taken on each service as determined by compose.
-  returned: when in check mode or I(debug) is C(yes)
+  returned: when in check mode or I(debug) is C(true)
   type: complex
   contains:
       service_name:

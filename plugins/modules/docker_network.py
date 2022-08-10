@@ -18,7 +18,7 @@ options:
     description:
       - Name of the network to operate on.
     type: str
-    required: yes
+    required: true
     aliases:
       - network_name
 
@@ -53,14 +53,14 @@ options:
       - This option is required if you have changed the IPAM or driver options
         and want an existing network to be updated to use the new options.
     type: bool
-    default: no
+    default: false
 
   appends:
     description:
       - By default the connected list is canonical, meaning containers not on the list are removed from the network.
       - Use I(appends) to leave existing containers connected.
     type: bool
-    default: no
+    default: false
     aliases:
       - incremental
 
@@ -192,7 +192,7 @@ EXAMPLES = '''
     name: network_one
     connected:
       - container_a
-    appends: yes
+    appends: true
 
 - name: Create a network with driver options
   community.docker.docker_network:
@@ -221,14 +221,14 @@ EXAMPLES = '''
 - name: Create a network with IPv6 IPAM config
   community.docker.docker_network:
     name: network_ipv6_one
-    enable_ipv6: yes
+    enable_ipv6: true
     ipam_config:
       - subnet: fdd1:ac8c:0557:7ce1::/64
 
 - name: Create a network with IPv6 and custom IPv4 IPAM config
   community.docker.docker_network:
     name: network_ipv6_two
-    enable_ipv6: yes
+    enable_ipv6: true
     ipam_config:
       - subnet: 172.24.27.0/24
       - subnet: fdd1:ac8c:0557:7ce2::/64
@@ -237,7 +237,7 @@ EXAMPLES = '''
   community.docker.docker_network:
     name: network_one
     state: absent
-    force: yes
+    force: true
 '''
 
 RETURN = '''

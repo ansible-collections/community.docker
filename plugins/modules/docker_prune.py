@@ -23,7 +23,7 @@ options:
     description:
       - Whether to prune containers.
     type: bool
-    default: no
+    default: false
   containers_filters:
     description:
       - A dictionary of filter values used for selecting containers to delete.
@@ -35,7 +35,7 @@ options:
     description:
       - Whether to prune images.
     type: bool
-    default: no
+    default: false
   images_filters:
     description:
       - A dictionary of filter values used for selecting images to delete.
@@ -47,7 +47,7 @@ options:
     description:
       - Whether to prune networks.
     type: bool
-    default: no
+    default: false
   networks_filters:
     description:
       - A dictionary of filter values used for selecting networks to delete.
@@ -58,7 +58,7 @@ options:
     description:
       - Whether to prune volumes.
     type: bool
-    default: no
+    default: false
   volumes_filters:
     description:
       - A dictionary of filter values used for selecting volumes to delete.
@@ -70,7 +70,7 @@ options:
       - Whether to prune the builder cache.
       - Requires version 3.3.0 of the Docker SDK for Python or newer.
     type: bool
-    default: no
+    default: false
 
 extends_documentation_fragment:
 - community.docker.docker
@@ -88,28 +88,28 @@ requirements:
 EXAMPLES = '''
 - name: Prune containers older than 24h
   community.docker.docker_prune:
-    containers: yes
+    containers: true
     containers_filters:
       # only consider containers created more than 24 hours ago
       until: 24h
 
 - name: Prune everything
   community.docker.docker_prune:
-    containers: yes
-    images: yes
-    networks: yes
-    volumes: yes
-    builder_cache: yes
+    containers: true
+    images: true
+    networks: true
+    volumes: true
+    builder_cache: true
 
 - name: Prune everything (including non-dangling images)
   community.docker.docker_prune:
-    containers: yes
-    images: yes
+    containers: true
+    images: true
     images_filters:
       dangling: false
-    networks: yes
-    volumes: yes
-    builder_cache: yes
+    networks: true
+    volumes: true
+    builder_cache: true
 '''
 
 RETURN = '''

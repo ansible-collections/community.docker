@@ -28,7 +28,7 @@ options:
     description:
       - Whether to list containers.
     type: bool
-    default: no
+    default: false
   containers_filters:
     description:
       - A dictionary of filter values used for selecting containers to list.
@@ -42,7 +42,7 @@ options:
     description:
       - Whether to list images.
     type: bool
-    default: no
+    default: false
   images_filters:
     description:
       - A dictionary of filter values used for selecting images to list.
@@ -56,7 +56,7 @@ options:
     description:
       - Whether to list networks.
     type: bool
-    default: no
+    default: false
   networks_filters:
     description:
       - A dictionary of filter values used for selecting networks to list.
@@ -69,7 +69,7 @@ options:
     description:
       - Whether to list volumes.
     type: bool
-    default: no
+    default: false
   volumes_filters:
     description:
       - A dictionary of filter values used for selecting volumes to list.
@@ -83,16 +83,16 @@ options:
       - Summary information on used disk space by all Docker layers.
       - The output is a sum of images, volumes, containers and build cache.
     type: bool
-    default: no
+    default: false
   verbose_output:
     description:
-      - When set to C(yes) and I(networks), I(volumes), I(images), I(containers) or I(disk_usage) is set to C(yes)
+      - When set to C(true) and I(networks), I(volumes), I(images), I(containers) or I(disk_usage) is set to C(true)
         then output will contain verbose information about objects matching the full output of API method.
         For details see the documentation of your version of Docker API at U(https://docs.docker.com/engine/api/).
       - The verbose output in this module contains only subset of information returned by I(_info) module
         for each type of the objects.
     type: bool
-    default: no
+    default: false
 extends_documentation_fragment:
 - community.docker.docker
 - community.docker.docker.docker_py_1_documentation
@@ -113,30 +113,30 @@ EXAMPLES = '''
 
 - name: Get info on docker host and list images
   community.docker.docker_host_info:
-    images: yes
+    images: true
   register: result
 
 - name: Get info on docker host and list images matching the filter
   community.docker.docker_host_info:
-    images: yes
+    images: true
     images_filters:
       label: "mylabel"
   register: result
 
 - name: Get info on docker host and verbose list images
   community.docker.docker_host_info:
-    images: yes
-    verbose_output: yes
+    images: true
+    verbose_output: true
   register: result
 
 - name: Get info on docker host and used disk space
   community.docker.docker_host_info:
-    disk_usage: yes
+    disk_usage: true
   register: result
 
 - name: Get info on docker host and list containers matching the filter
   community.docker.docker_host_info:
-    containers: yes
+    containers: true
     containers_filters:
       label:
         - key1=value1
@@ -163,40 +163,40 @@ host_info:
 volumes:
     description:
       - List of dict objects containing the basic information about each volume.
-        Keys matches the C(docker volume ls) output unless I(verbose_output=yes).
+        Keys matches the C(docker volume ls) output unless I(verbose_output=true).
         See description for I(verbose_output).
-    returned: When I(volumes) is C(yes)
+    returned: When I(volumes) is C(true)
     type: list
     elements: dict
 networks:
     description:
       - List of dict objects containing the basic information about each network.
-        Keys matches the C(docker network ls) output unless I(verbose_output=yes).
+        Keys matches the C(docker network ls) output unless I(verbose_output=true).
         See description for I(verbose_output).
-    returned: When I(networks) is C(yes)
+    returned: When I(networks) is C(true)
     type: list
     elements: dict
 containers:
     description:
       - List of dict objects containing the basic information about each container.
-        Keys matches the C(docker container ls) output unless I(verbose_output=yes).
+        Keys matches the C(docker container ls) output unless I(verbose_output=true).
         See description for I(verbose_output).
-    returned: When I(containers) is C(yes)
+    returned: When I(containers) is C(true)
     type: list
     elements: dict
 images:
     description:
       - List of dict objects containing the basic information about each image.
-        Keys matches the C(docker image ls) output unless I(verbose_output=yes).
+        Keys matches the C(docker image ls) output unless I(verbose_output=true).
         See description for I(verbose_output).
-    returned: When I(images) is C(yes)
+    returned: When I(images) is C(true)
     type: list
     elements: dict
 disk_usage:
     description:
       - Information on summary disk usage by images, containers and volumes on docker host
-        unless I(verbose_output=yes). See description for I(verbose_output).
-    returned: When I(disk_usage) is C(yes)
+        unless I(verbose_output=true). See description for I(verbose_output).
+    returned: When I(disk_usage) is C(true)
     type: dict
 
 '''
