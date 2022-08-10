@@ -1,0 +1,3 @@
+release_summary: >-
+  The 3.0.0 release features a rewrite of the ``docker_container`` module,
+  and many modules and plugins no longer depend on the Docker SDK for Python.
