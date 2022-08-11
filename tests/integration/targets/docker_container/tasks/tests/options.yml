@@ -4108,6 +4108,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     tty: yes
     state: started
   register: tty_1
+  ignore_errors: true
 
 - name: tty (idempotency)
   docker_container:
@@ -4117,6 +4118,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     tty: yes
     state: started
   register: tty_2
+  ignore_errors: true
 
 - name: tty (change)
   docker_container:
@@ -4127,6 +4129,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     state: started
     force_kill: yes
   register: tty_3
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
@@ -4138,8 +4141,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
 - assert:
     that:
     - tty_1 is changed
-    - tty_2 is not changed
+    - tty_2 is not changed and tty_2 is not failed
     - tty_3 is changed
+  when: tty_1 is not failed
+
+- assert:
+    that:
+    - "'error during container init: open /dev/pts/' in tty_1.msg"
+    - "': operation not permitted: ' in tty_1.msg"
+  when: tty_1 is failed
 
 ####################################################################
 ## ulimits #########################################################
