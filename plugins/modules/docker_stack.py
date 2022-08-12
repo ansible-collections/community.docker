@@ -248,8 +248,7 @@ def main():
             elif isinstance(compose_def, string_types):
                 compose_files.append(compose_def)
             else:
-                module.fail_json(msg="compose element '%s' must be a " +
-                                 "string or a dictionary" % compose_def)
+                module.fail_json(msg="compose element '%s' must be a string or a dictionary" % compose_def)
 
         before_stack_services = docker_stack_inspect(module, name)
 
