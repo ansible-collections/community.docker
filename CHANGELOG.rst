@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v2.7.1
+======
+
+Release Summary
+---------------
+
+Maintenance release with updated documentation.
+
+Bugfixes
+--------
+
+- docker_stack - fix broken string formatting when reporting error in case ``compose`` was containing invalid values (https://github.com/ansible-collections/community.docker/pull/448).
+
 v2.7.0
 ======
 
