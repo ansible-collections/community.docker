@@ -1,2 +1,0 @@
-bugfixes:
-  - "docker_stack - fix broken string formatting when reporting error in case ``compose`` was containing invalid values (https://github.com/ansible-collections/community.docker/pull/448)."
