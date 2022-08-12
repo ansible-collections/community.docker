@@ -5,114 +5,21 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
-v3.0.0-rc2
-==========
+v3.0.0
+======
 
 Release Summary
 ---------------
 
-Second release candidate for community.docker 3.0.0. As long as more bugs are found new release candidates will be released.
-
-Minor Changes
--------------
-
-- modules and plugins communicating directly with the Docker daemon - improve default TLS version selection for Python 3.6 and newer. This is only a change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
-
-Breaking Changes / Porting Guide
---------------------------------
-
-- modules and plugins communicating directly with the Docker daemon - when connecting by SSH and not using ``use_ssh_client=true``, reject unknown host keys instead of accepting them. This is only a breaking change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
-
-Security Fixes
---------------
-
-- modules and plugins communicating directly with the Docker daemon - when connecting by SSH and not using ``use_ssh_client=true``, reject unknown host keys instead of accepting them. This is only a change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
-
-Bugfixes
---------
-
-- docker_image - when composing the build context, trim trailing whitespace from ``.dockerignore`` entries. This is only a change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
-- modules and plugins communicating directly with the Docker daemon - do not create a subshell for SSH connections when using ``use_ssh_client=true``. This is only a change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
-- modules and plugins communicating directly with the Docker daemon - fix ``ProxyCommand`` handling for SSH connections when not using ``use_ssh_client=true``. This is only a change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
-- modules and plugins communicating directly with the Docker daemon - fix parsing of IPv6 addresses with a port in ``docker_host``. This is only a change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
-
-v3.0.0-rc1
-==========
-
-Release Summary
----------------
-
-First release candidate for community.docker 3.0.0. As long as more bugs are found new release candidates will be released.
-
-Bugfixes
---------
-
-- modules and plugins communicating directly with the Docker daemon - prevent crash when TLS is used (https://github.com/ansible-collections/community.docker/pull/432).
-
-v3.0.0-a3
-=========
-
-Release Summary
----------------
-
-No content changes except some license declaration adjustments. This is mainly a trial run to see whether this is causing unexpected problems.
-
-Minor Changes
--------------
-
-- All software licenses are now in the ``LICENSES/`` directory of the collection root. Moreover, ``SPDX-License-Identifier:`` is used to declare the applicable license for every file that is not automatically generated (https://github.com/ansible-collections/community.docker/pull/430).
-
-v3.0.0-a2
-=========
-
-Release Summary
----------------
-
-Second alpha prerelease of community.docker 3.0.0. This version again has several breaking changes
-and features rewrites of several modules to directly use the API using ``requests``, instead of using
-the Docker SDK for Python.
-
-The largest change to the previous 3.0.0-a1 prerelease is that ``docker_container`` module has been
-rewritten. It now also no longer needs the Docker SDK for Python, which allowed to implement some new
-features that were not available before (``platform`` and ``cgroupns_mode`` parameters).
-
-
-Major Changes
--------------
-
-- docker_container - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/422).
-- docker_container - the module was completely rewritten from scratch (https://github.com/ansible-collections/community.docker/pull/422).
-- docker_plugin - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/429).
-
-Minor Changes
--------------
-
-- docker_container - add a new parameter ``image_comparison`` to control the behavior for which image will be used for idempotency checks (https://github.com/ansible-collections/community.docker/issues/421, https://github.com/ansible-collections/community.docker/pull/428).
-- docker_container - add support for ``cgroupns_mode`` (https://github.com/ansible-collections/community.docker/issues/338, https://github.com/ansible-collections/community.docker/pull/427).
-- docker_container - allow to specify ``platform`` (https://github.com/ansible-collections/community.docker/issues/123, https://github.com/ansible-collections/community.docker/pull/426).
-
-Breaking Changes / Porting Guide
---------------------------------
-
-- docker_container - ``exposed_ports`` is no longer ignored in ``comparisons``. Before, its value was assumed to be identical with the value of ``published_ports`` (https://github.com/ansible-collections/community.docker/pull/422).
-- docker_container - ``log_options`` can no longer be specified when ``log_driver`` is not specified (https://github.com/ansible-collections/community.docker/pull/422).
-- docker_container - ``publish_all_ports`` is no longer ignored in ``comparisons`` (https://github.com/ansible-collections/community.docker/pull/422).
-- docker_container - ``restart_retries`` can no longer be specified when ``restart_policy`` is not specified (https://github.com/ansible-collections/community.docker/pull/422).
-- docker_container - ``stop_timeout`` is no longer ignored for idempotency if told to be not ignored in ``comparisons``. So far it defaulted to ``ignore`` there, and setting it to ``strict`` had no effect (https://github.com/ansible-collections/community.docker/pull/422).
-
-v3.0.0-a1
-=========
-
-Release Summary
----------------
-
-First alpha prerelease of community.docker 3.0.0. This version has several breaking changes and features rewrites of several modules to directly use the API using ``requests``, instead of using the Docker SDK for Python.
+The 3.0.0 release features a rewrite of the ``docker_container`` module, and many modules and plugins no longer depend on the Docker SDK for Python.
 
 Major Changes
 -------------
 
 - The collection now contains vendored code from the Docker SDK for Python to talk to the Docker daemon. Modules and plugins using this code no longer need the Docker SDK for Python installed on the machine the module or plugin is running on (https://github.com/ansible-collections/community.docker/pull/398).
 - docker_api connection plugin - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/414).
+- docker_container - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/422).
+- docker_container - the module was completely rewritten from scratch (https://github.com/ansible-collections/community.docker/pull/422).
 - docker_container_exec - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/401).
 - docker_container_info - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/402).
 - docker_containers inventory plugin - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/413).
@@ -123,6 +30,7 @@ Major Changes
 - docker_login - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/407).
 - docker_network - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/408).
 - docker_network_info - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/409).
+- docker_plugin - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/429).
 - docker_prune - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/410).
 - docker_volume - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/411).
 - docker_volume_info - no longer uses the Docker SDK for Python. It requires ``requests`` to be installed, and depending on the features used has some more requirements. If the Docker SDK for Python is installed, these requirements are likely met (https://github.com/ansible-collections/community.docker/pull/412).
@@ -130,13 +38,25 @@ Major Changes
 Minor Changes
 -------------
 
+- All software licenses are now in the ``LICENSES/`` directory of the collection root. Moreover, ``SPDX-License-Identifier:`` is used to declare the applicable license for every file that is not automatically generated (https://github.com/ansible-collections/community.docker/pull/430).
 - Remove vendored copy of ``distutils.version`` in favor of vendored copy included with ansible-core 2.12+. For ansible-core 2.11, uses ``distutils.version`` for Python < 3.12. There is no support for ansible-core 2.11 with Python 3.12+ (https://github.com/ansible-collections/community.docker/pull/271).
+- docker_container - add a new parameter ``image_comparison`` to control the behavior for which image will be used for idempotency checks (https://github.com/ansible-collections/community.docker/issues/421, https://github.com/ansible-collections/community.docker/pull/428).
+- docker_container - add support for ``cgroupns_mode`` (https://github.com/ansible-collections/community.docker/issues/338, https://github.com/ansible-collections/community.docker/pull/427).
+- docker_container - allow to specify ``platform`` (https://github.com/ansible-collections/community.docker/issues/123, https://github.com/ansible-collections/community.docker/pull/426).
+- modules and plugins communicating directly with the Docker daemon - improve default TLS version selection for Python 3.6 and newer. This is only a change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
+- modules and plugins communicating directly with the Docker daemon - simplify use of helper function that was removed in Docker SDK for Python to find executables (https://github.com/ansible-collections/community.docker/pull/438).
 - socker_handler and socket_helper module utils - improve Python forward compatibilty, create helper functions for file blocking/unblocking (https://github.com/ansible-collections/community.docker/pull/415).
 
 Breaking Changes / Porting Guide
 --------------------------------
 
 - This collection does not work with ansible-core 2.11 on Python 3.12+. Please either upgrade to ansible-core 2.12+, or use Python 3.11 or earlier (https://github.com/ansible-collections/community.docker/pull/271).
+- docker_container - ``exposed_ports`` is no longer ignored in ``comparisons``. Before, its value was assumed to be identical with the value of ``published_ports`` (https://github.com/ansible-collections/community.docker/pull/422).
+- docker_container - ``log_options`` can no longer be specified when ``log_driver`` is not specified (https://github.com/ansible-collections/community.docker/pull/422).
+- docker_container - ``publish_all_ports`` is no longer ignored in ``comparisons`` (https://github.com/ansible-collections/community.docker/pull/422).
+- docker_container - ``restart_retries`` can no longer be specified when ``restart_policy`` is not specified (https://github.com/ansible-collections/community.docker/pull/422).
+- docker_container - ``stop_timeout`` is no longer ignored for idempotency if told to be not ignored in ``comparisons``. So far it defaulted to ``ignore`` there, and setting it to ``strict`` had no effect (https://github.com/ansible-collections/community.docker/pull/422).
+- modules and plugins communicating directly with the Docker daemon - when connecting by SSH and not using ``use_ssh_client=true``, reject unknown host keys instead of accepting them. This is only a breaking change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
 
 Removed Features (previously deprecated)
 ----------------------------------------
@@ -149,6 +69,22 @@ Removed Features (previously deprecated)
 - docker_container - the ``all`` value is no longer allowed in ``published_ports``. Use ``publish_all_ports=true`` instead (https://github.com/ansible-collections/community.docker/pull/399).
 - docker_container - the default of ``command_handling`` was changed from ``compatibility`` to ``correct``. Older versions were warning for every invocation of the module when this would result in a change of behavior (https://github.com/ansible-collections/community.docker/pull/399).
 - docker_stack - the return values ``out`` and ``err`` have been removed. Use ``stdout`` and ``stderr`` instead (https://github.com/ansible-collections/community.docker/pull/363).
+
+Security Fixes
+--------------
+
+- modules and plugins communicating directly with the Docker daemon - when connecting by SSH and not using ``use_ssh_client=true``, reject unknown host keys instead of accepting them. This is only a change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
+
+Bugfixes
+--------
+
+- docker_image - when composing the build context, trim trailing whitespace from ``.dockerignore`` entries. This is only a change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
+- docker_plugin - fix crash when handling plugin options (https://github.com/ansible-collections/community.docker/issues/446, https://github.com/ansible-collections/community.docker/pull/447).
+- docker_stack - fix broken string formatting when reporting error in case ``compose`` was containing invalid values (https://github.com/ansible-collections/community.docker/pull/448).
+- modules and plugins communicating directly with the Docker daemon - do not create a subshell for SSH connections when using ``use_ssh_client=true``. This is only a change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
+- modules and plugins communicating directly with the Docker daemon - fix ``ProxyCommand`` handling for SSH connections when not using ``use_ssh_client=true``. This is only a change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
+- modules and plugins communicating directly with the Docker daemon - fix parsing of IPv6 addresses with a port in ``docker_host``. This is only a change relative to older community.docker 3.0.0 pre-releases or with respect to Docker SDK for Python < 6.0.0. Docker SDK for Python 6.0.0 will also include this change (https://github.com/ansible-collections/community.docker/pull/434).
+- modules and plugins communicating directly with the Docker daemon - prevent crash when TLS is used (https://github.com/ansible-collections/community.docker/pull/432).
 
 v2.7.0
 ======

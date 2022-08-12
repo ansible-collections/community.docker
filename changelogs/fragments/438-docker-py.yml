@@ -1,2 +1,0 @@
-minor_changes:
-  - "modules and plugins communicating directly with the Docker daemon - simplify use of helper function that was removed in Docker SDK for Python to find executables (https://github.com/ansible-collections/community.docker/pull/438)."

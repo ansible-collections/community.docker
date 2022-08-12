@@ -700,6 +700,26 @@ releases:
     - 397-deprecate-docker-api-1.24.yml
     - python-2.6.yml
     release_date: '2022-07-02'
+  3.0.0:
+    changes:
+      bugfixes:
+      - docker_plugin - fix crash when handling plugin options (https://github.com/ansible-collections/community.docker/issues/446,
+        https://github.com/ansible-collections/community.docker/pull/447).
+      - docker_stack - fix broken string formatting when reporting error in case ``compose``
+        was containing invalid values (https://github.com/ansible-collections/community.docker/pull/448).
+      minor_changes:
+      - modules and plugins communicating directly with the Docker daemon - simplify
+        use of helper function that was removed in Docker SDK for Python to find executables
+        (https://github.com/ansible-collections/community.docker/pull/438).
+      release_summary: The 3.0.0 release features a rewrite of the ``docker_container``
+        module, and many modules and plugins no longer depend on the Docker SDK for
+        Python.
+    fragments:
+    - 3.0.0.yml
+    - 438-docker-py.yml
+    - 447-docker_plugin-bug.yml
+    - 448-docker_stack-error.yml
+    release_date: '2022-08-12'
   3.0.0-a1:
     changes:
       breaking_changes:
