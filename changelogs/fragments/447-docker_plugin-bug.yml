@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_plugin - fix crash when handling plugin options (https://github.com/ansible-collections/community.docker/issues/446, https://github.com/ansible-collections/community.docker/pull/447)."
