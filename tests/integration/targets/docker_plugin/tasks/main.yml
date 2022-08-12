@@ -5,7 +5,7 @@
 
 - name: Create random name prefix
   set_fact:
-    name_prefix: "cvmfs/overlay2-graphdriver"
+    name_prefix: "vieux/sshfs"
     plugin_names: []
 
 - debug:
