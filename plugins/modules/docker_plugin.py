@@ -245,7 +245,7 @@ class DockerPluginManager(object):
                     self.existing_plugin = self.client.get_json('/plugins/{0}/json', self.preferred_name)
                     if self.parameters.plugin_options:
                         data = prepare_options(self.parameters.plugin_options)
-                        self.client.post_json('/plugins/{0}/set', self.preferred_name, data=['{0}={1}'.format(k, v) for k, v in data.items()])
+                        self.client.post_json('/plugins/{0}/set', self.preferred_name, data=data)
                 except APIError as e:
                     self.client.fail(to_native(e))
 
@@ -271,7 +271,7 @@ class DockerPluginManager(object):
                 if not self.check_mode:
                     try:
                         data = prepare_options(self.parameters.plugin_options)
-                        self.client.post_json('/plugins/{0}/set', self.preferred_name, data=['{0}={1}'.format(k, v) for k, v in data.items()])
+                        self.client.post_json('/plugins/{0}/set', self.preferred_name, data=data)
                     except APIError as e:
                         self.client.fail(to_native(e))
                 self.actions.append("Updated plugin %s settings" % self.preferred_name)

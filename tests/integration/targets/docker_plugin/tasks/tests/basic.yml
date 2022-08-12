@@ -62,6 +62,12 @@
     state: absent
   register: absent_4
 
+- name: Cleanup
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: absent
+    force_remove: true
+
 - assert:
     that:
     - create_1 is changed
@@ -75,10 +81,48 @@
 
 ############ Plugin_Options ############
 ########################################
-# Integration-Test with plugin_options is in TODO-List
+
+- name: Install a plugin with options
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    plugin_options:
+      DEBUG: '1'
+    state: present
+  register: create_1
+
+- name: Install a plugin with options (idempotent)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    plugin_options:
+      DEBUG: '1'
+    state: present
+  register: create_2
+
+- name: Install a plugin with different options
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    plugin_options:
+      DEBUG: '0'
+    state: present
+  register: update_1
+
+- name: Install a plugin with different options (idempotent)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    plugin_options:
+      DEBUG: '0'
+    state: present
+  register: update_2
 
 - name: Cleanup
   docker_plugin:
     plugin_name: "{{ plugin_name }}"
     state: absent
     force_remove: true
+
+- assert:
+    that:
+    - create_1 is changed
+    - create_2 is not changed
+    - update_1 is changed
+    - update_2 is not changed
