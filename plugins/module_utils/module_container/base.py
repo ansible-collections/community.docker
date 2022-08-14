@@ -123,6 +123,7 @@ class OptionGroup(object):
                 return values
         self.preprocess = preprocess
         self.options = []
+        self.all_options = []
         self.engines = {}
         self.ansible_mutually_exclusive = ansible_mutually_exclusive or []
         self.ansible_required_together = ansible_required_together or []
@@ -135,6 +136,7 @@ class OptionGroup(object):
         option = Option(*args, owner=self, **kwargs)
         if not option.not_a_container_option:
             self.options.append(option)
+        self.all_options.append(option)
         if not option.not_an_ansible_option:
             ansible_option = {
                 'type': option.ansible_type,
