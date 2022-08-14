@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_container - fix handling of ``env_file`` (https://github.com/ansible-collections/community.docker/issues/451, https://github.com/ansible-collections/community.docker/pull/452)."
