@@ -1665,6 +1665,19 @@
       TEST1: val1
   register: env_file_5
 
+- name: env_file (with env, override)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    env_file: "{{ remote_tmp_dir }}/env-file"
+    env:
+      TEST2: val2
+      TEST4: val4alt
+    force_kill: yes
+  register: env_file_6
+
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
@@ -1684,6 +1697,10 @@
     - "'TEST3=val3' in env_file_4.container.Config.Env"
     - "'TEST4=val4' in env_file_4.container.Config.Env"
     - env_file_5 is not changed
+    - env_file_6 is changed
+    - "'TEST2=val2' in env_file_6.container.Config.Env"
+    - "'TEST3=val3' in env_file_6.container.Config.Env"
+    - "'TEST4=val4alt' in env_file_6.container.Config.Env"
 
 ####################################################################
 ## etc_hosts #######################################################
