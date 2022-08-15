@@ -1589,8 +1589,16 @@
 - assert:
     that:
     - env_1 is changed
+    - "'TEST1=val1' in env_1.container.Config.Env"
+    - "'TEST2=val2' in env_1.container.Config.Env"
+    - "'TEST3=False' in env_1.container.Config.Env"
+    - "'TEST4=true' in env_1.container.Config.Env"
+    - "'TEST5=yes' in env_1.container.Config.Env"
     - env_2 is not changed
     - env_3 is not changed
+    - "'TEST1=val1' in env_4.container.Config.Env"
+    - "'TEST2=val2' not in env_4.container.Config.Env"
+    - "'TEST3=val3' in env_4.container.Config.Env"
     - env_4 is changed
     - env_5 is failed
     - "('Non-string value found for env option.') in env_5.msg"
@@ -1622,6 +1630,54 @@
     env_file: "{{ remote_tmp_dir }}/env-file"
   register: env_file_2
 
+- name: env_file (with env, idempotent)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    env_file: "{{ remote_tmp_dir }}/env-file"
+    env:
+      TEST3: val3
+  register: env_file_3
+
+- name: env_file (with env)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    env_file: "{{ remote_tmp_dir }}/env-file"
+    env:
+      TEST1: val1
+      TEST3: val3
+    force_kill: yes
+  register: env_file_4
+
+- name: env_file (with env, idempotent)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    env_file: "{{ remote_tmp_dir }}/env-file"
+    env:
+      TEST1: val1
+  register: env_file_5
+
+- name: env_file (with env, override)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    env_file: "{{ remote_tmp_dir }}/env-file"
+    env:
+      TEST2: val2
+      TEST4: val4alt
+    force_kill: yes
+  register: env_file_6
+
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
@@ -1632,7 +1688,19 @@
 - assert:
     that:
     - env_file_1 is changed
+    - "'TEST3=val3' in env_file_1.container.Config.Env"
+    - "'TEST4=val4' in env_file_1.container.Config.Env"
     - env_file_2 is not changed
+    - env_file_3 is not changed
+    - env_file_4 is changed
+    - "'TEST1=val1' in env_file_4.container.Config.Env"
+    - "'TEST3=val3' in env_file_4.container.Config.Env"
+    - "'TEST4=val4' in env_file_4.container.Config.Env"
+    - env_file_5 is not changed
+    - env_file_6 is changed
+    - "'TEST2=val2' in env_file_6.container.Config.Env"
+    - "'TEST3=val3' in env_file_6.container.Config.Env"
+    - "'TEST4=val4alt' in env_file_6.container.Config.Env"
 
 ####################################################################
 ## etc_hosts #######################################################

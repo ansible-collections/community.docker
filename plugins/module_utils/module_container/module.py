@@ -258,7 +258,7 @@ class ContainerManager(DockerBaseClass):
         for options in active_options:
             values = {}
             engine = options.get_engine(self.engine_driver.name)
-            for option in options.options:
+            for option in options.all_options:
                 if not option.not_an_ansible_option and self.module.params[option.name] is not None:
                     values[option.name] = self.module.params[option.name]
             values = options.preprocess(self.module, values)
