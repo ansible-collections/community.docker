@@ -1,0 +1,12 @@
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+ARG TEST1
+ARG TEST2
+ARG TEST3
+
+FROM {{ docker_test_image_busybox }}
+ENV foo /bar
+WORKDIR ${foo}
+RUN echo "${TEST1} - ${TEST2} - ${TEST3}"
