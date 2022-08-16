@@ -286,7 +286,7 @@ notes:
 #    In general, it will use C($HOME/.docker/config.json) if the C(DOCKER_CONFIG) environment variable is not specified,
 #    and use C($DOCKER_CONFIG/config.json) otherwise.
   - This module does B(not) use the L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) to
-    communicate with the Docker daemon. It uses code derived from the Docker SDK or Python hat is included in this
+    communicate with the Docker daemon. It uses code derived from the Docker SDK or Python that is included in this
     collection.
 requirements:
   - requests
