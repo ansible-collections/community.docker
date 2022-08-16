@@ -696,7 +696,7 @@ class ImageManager(DockerBaseClass):
         buildargs = {}
         if self.buildargs:
             for key, value in self.buildargs.items():
-                self.buildargs[key] = to_native(value)
+                buildargs[key] = to_native(value)
 
         container_limits = self.container_limits or {}
         for key in container_limits.keys():
