@@ -24,6 +24,7 @@
     src: '{{ item }}'
     dest: '{{ remote_tmp_dir }}/files/{{ item }}'
   loop:
+    - ArgsDockerfile
     - Dockerfile
     - EtcHostsDockerfile
     - MyDockerfile

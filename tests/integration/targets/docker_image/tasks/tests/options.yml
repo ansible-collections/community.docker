@@ -27,7 +27,9 @@
     name: "{{ iname }}"
     build:
       path: "{{ remote_tmp_dir }}/files"
+      dockerfile: "ArgsDockerfile"
       args:
+        IMAGE: "{{ docker_test_image_busybox }}"
         TEST1: val1
         TEST2: val2
         TEST3: "True"
@@ -41,7 +43,9 @@
     name: "{{ iname }}"
     build:
       path: "{{ remote_tmp_dir }}/files"
+      dockerfile: "ArgsDockerfile"
       args:
+        IMAGE: "{{ docker_test_image_busybox }}"
         TEST1: val1
         TEST2: val2
         TEST3: "True"
