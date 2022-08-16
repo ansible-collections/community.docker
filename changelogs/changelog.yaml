@@ -979,3 +979,13 @@ releases:
     - 3.0.1.yml
     - 452-docker_container-env_file.yml
     release_date: '2022-08-15'
+  3.0.2:
+    changes:
+      bugfixes:
+      - docker_image - fix build argument handling (https://github.com/ansible-collections/community.docker/issues/455,
+        https://github.com/ansible-collections/community.docker/pull/456).
+      release_summary: Bugfix release.
+    fragments:
+    - 3.0.2.yml
+    - 456-docker_image-build-args.yml
+    release_date: '2022-08-16'
