@@ -23,6 +23,7 @@
     name: "{{ iname }}"
     build:
       path: "{{ remote_tmp_dir }}/files"
+      dockerfile: "ArgsDockerfile"
       args:
         TEST1: val1
         TEST2: val2
@@ -37,6 +38,7 @@
     name: "{{ iname }}"
     build:
       path: "{{ remote_tmp_dir }}/files"
+      dockerfile: "ArgsDockerfile"
       args:
         TEST1: val1
         TEST2: val2
