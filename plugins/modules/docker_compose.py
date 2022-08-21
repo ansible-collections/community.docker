@@ -339,7 +339,7 @@ services:
           returned: success
           type: complex
           contains:
-              cmd:
+              command:
                   description: One or more commands to be executed in the container.
                   returned: success
                   type: list
