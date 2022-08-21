@@ -21,29 +21,35 @@ def find_licenses(filename, relax=False):
     spdx_license_identifiers = []
     other_license_identifiers = []
     has_copyright = False
-    with open(filename, 'r', encoding='utf-8') as f:
-        for line in f:
-            line = line.rstrip()
-            if 'Copyright ' in line:
-                has_copyright = True
-            if 'Copyright: ' in line:
-                print('%s: found copyright line with "Copyright:". Please remove the colon.' % (filename, ))
-            idx = line.find('SPDX-License-Identifier: ')
-            if idx >= 0:
-                spdx_license_identifiers.append(line[idx + len('SPDX-License-Identifier: '):])
-            if 'GNU General Public License' in line:
-                if 'v3.0+' in line:
-                    other_license_identifiers.append('GPL-3.0-or-later')
-                if 'version 3 or later' in line:
-                    other_license_identifiers.append('GPL-3.0-or-later')
-            if 'Simplified BSD License' in line:
-                other_license_identifiers.append('BSD-2-Clause')
-            if 'Apache License 2.0' in line:
-                other_license_identifiers.append('Apache-2.0')
-            if 'PSF License' in line or 'Python-2.0' in line:
-                other_license_identifiers.append('PSF-2.0')
-            if 'MIT License' in line:
-                other_license_identifiers.append('MIT')
+    try:
+        with open(filename, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.rstrip()
+                if 'Copyright ' in line:
+                    has_copyright = True
+                if 'Copyright: ' in line:
+                    print('%s: found copyright line with "Copyright:". Please remove the colon.' % (filename, ))
+                if 'SPDX-FileCopyrightText: ' in line:
+                    has_copyright = True
+                idx = line.find('SPDX-License-Identifier: ')
+                if idx >= 0:
+                    lic_id = line[idx + len('SPDX-License-Identifier: '):]
+                    spdx_license_identifiers.extend(lic_id.split(' OR '))
+                if 'GNU General Public License' in line:
+                    if 'v3.0+' in line:
+                        other_license_identifiers.append('GPL-3.0-or-later')
+                    if 'version 3 or later' in line:
+                        other_license_identifiers.append('GPL-3.0-or-later')
+                if 'Simplified BSD License' in line:
+                    other_license_identifiers.append('BSD-2-Clause')
+                if 'Apache License 2.0' in line:
+                    other_license_identifiers.append('Apache-2.0')
+                if 'PSF License' in line or 'Python-2.0' in line:
+                    other_license_identifiers.append('PSF-2.0')
+                if 'MIT License' in line:
+                    other_license_identifiers.append('MIT')
+    except Exception as exc:
+        print('%s: error while processing file: %s' % (filename, exc))
     if len(set(spdx_license_identifiers)) < len(spdx_license_identifiers):
         print('%s: found identical SPDX-License-Identifier values' % (filename, ))
     if other_license_identifiers and set(other_license_identifiers) != set(spdx_license_identifiers):
@@ -61,24 +67,14 @@ def main():
     # The following paths are allowed to have no license identifier
     no_comments_allowed = [
         'changelogs/fragments/*.yml',
-        'tests/sanity/extra/*.json',
-        'tests/sanity/ignore-2.*.txt',
-        'LICENSES/*.txt',
-        'COPYING',
-    ]
-
-    # Files of this name are allowed to be empty
-    empty_allowed = [
-        '.keep',
-        '__init__.py',
     ]
 
     # These files are completely ignored
     ignore_paths = [
-        'CHANGELOG.rst',
-        'changelogs/changelog.yaml',
-        'tests/sanity/extra/licenses.py',  # The strings in find_licenses() confuse this code :-)
         '.ansible-test-timeout.json',
+        '.reuse/dep5',
+        'LICENSES/*.txt',
+        'COPYING',
     ]
 
     no_comments_allowed = [fn for pattern in no_comments_allowed for fn in glob.glob(pattern)]
@@ -91,9 +87,10 @@ def main():
             path = path[2:]
         if path in ignore_paths or path.startswith('tests/output/'):
             continue
-        if os.path.basename(path) in empty_allowed:
-            if os.stat(path).st_size == 0:
-                continue
+        if os.stat(path).st_size == 0:
+            continue
+        if not path.endswith('.license') and os.path.exists(path + '.license'):
+            path = path + '.license'
         valid_licenses_for_path = valid_licenses
         if path.startswith('plugins/') and not path.startswith(('plugins/modules/', 'plugins/module_utils/')):
             valid_licenses_for_path = [license for license in valid_licenses if license == 'GPL-3.0-or-later']
