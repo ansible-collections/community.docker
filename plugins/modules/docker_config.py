@@ -340,7 +340,7 @@ class ConfigManager(DockerBaseClass):
                     data_changed = True
             else:
                 if not self.force:
-                    self.client.module.warn("'ansible_key' label not found. Config will not be changed unless the force parameter is set to 'yes'")
+                    self.client.module.warn("'ansible_key' label not found. Config will not be changed unless the force parameter is set to 'true'")
             # template_driver has changed if it was set in the previous config
             # and now it differs, or if it wasn't set but now it is.
             if attrs.get('Templating', {}).get('Name'):
