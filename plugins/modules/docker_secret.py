@@ -323,7 +323,7 @@ class SecretManager(DockerBaseClass):
                     data_changed = True
             else:
                 if not self.force:
-                    self.client.module.warn("'ansible_key' label not found. Secret will not be changed unless the force parameter is set to 'yes'")
+                    self.client.module.warn("'ansible_key' label not found. Secret will not be changed unless the force parameter is set to 'true'")
             labels_changed = not compare_generic(self.labels, attrs.get('Labels'), 'allow_more_present', 'dict')
             if self.rolling_versions:
                 self.version = self.get_version(secret)
