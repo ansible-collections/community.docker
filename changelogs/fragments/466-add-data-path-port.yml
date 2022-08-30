@@ -1,0 +1,2 @@
+minor_changes:
+  - docker_swarm - allows usage of the `data_path_port` parameter when initializing or joining a swarm (https://github.com/ansible-collections/community.docker/issues/296).
