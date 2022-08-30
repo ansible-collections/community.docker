@@ -189,7 +189,7 @@ options:
     description:
       - Port to use for data path traffic.
       - This needs to be a port number like C(9789).
-      - Only used when swarm is initialised or joined. Because of this it is not
+      - Only used when swarm is initialised. Because of this it is not
         considered for idempotency checking.
     type: int
     version_added: 3.1.0
@@ -530,6 +530,8 @@ class SwarmManager(DockerBaseClass):
                 init_arguments['default_addr_pool'] = self.parameters.default_addr_pool
             if self.parameters.subnet_size is not None:
                 init_arguments['subnet_size'] = self.parameters.subnet_size
+            if self.parameters.data_path_port is not None:
+                init_arguments['data_path_port'] = self.parameters.data_path_port
             try:
                 self.client.init_swarm(**init_arguments)
             except APIError as exc:
@@ -585,8 +587,7 @@ class SwarmManager(DockerBaseClass):
                 self.client.join_swarm(
                     remote_addrs=self.parameters.remote_addrs, join_token=self.parameters.join_token,
                     listen_addr=self.parameters.listen_addr, advertise_addr=self.parameters.advertise_addr,
-                    data_path_addr=self.parameters.data_path_addr,
-                    data_path_port=self.parameters.data_path_port)
+                    data_path_addr=self.parameters.data_path_addr)
             except APIError as exc:
                 self.client.fail("Can not join the Swarm Cluster: %s" % to_native(exc))
         self.results['actions'].append("New node is added to swarm cluster")
