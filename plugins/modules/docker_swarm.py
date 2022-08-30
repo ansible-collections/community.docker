@@ -522,7 +522,6 @@ class SwarmManager(DockerBaseClass):
                 'advertise_addr': self.parameters.advertise_addr,
                 'listen_addr': self.parameters.listen_addr,
                 'data_path_addr': self.parameters.data_path_addr,
-                'data_path_port': self.parameters.data_path_port,
                 'force_new_cluster': self.force,
                 'swarm_spec': self.parameters.spec,
             }
