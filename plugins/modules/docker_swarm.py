@@ -185,6 +185,13 @@ options:
         considered for idempotency checking.
     type: str
     version_added: 2.5.0
+  data_path_port:
+    description:
+      - Port to use for data path traffic.
+      - This needs to be a port number like C(9789).
+      - Only used when swarm is initialised or joined. Because of this it is not
+        considered for idempotency checking.
+    type: int
 extends_documentation_fragment:
 - community.docker.docker
 - community.docker.docker.docker_py_1_documentation
@@ -234,6 +241,11 @@ EXAMPLES = '''
     state: present
     advertise_addr: eth0
     data_path_addr: ens10
+
+- name: Init a new swarm with a different data path port
+  community.docker.docker_swarm:
+    state: present
+    data_path_port: 9789
 '''
 
 RETURN = '''
@@ -312,6 +324,7 @@ class TaskParameters(DockerBaseClass):
         self.remote_addrs = None
         self.join_token = None
         self.data_path_addr = None
+        self.data_path_port = None
 
         # Spec
         self.snapshot_interval = None
@@ -417,7 +430,8 @@ class TaskParameters(DockerBaseClass):
         for k in self.__dict__:
             if k in ('advertise_addr', 'listen_addr', 'remote_addrs', 'join_token',
                      'rotate_worker_token', 'rotate_manager_token', 'spec',
-                     'default_addr_pool', 'subnet_size', 'data_path_addr'):
+                     'default_addr_pool', 'subnet_size', 'data_path_addr',
+                     'data_path_port'):
                 continue
             if not client.option_minimal_versions[k]['supported']:
                 continue
@@ -507,6 +521,7 @@ class SwarmManager(DockerBaseClass):
                 'advertise_addr': self.parameters.advertise_addr,
                 'listen_addr': self.parameters.listen_addr,
                 'data_path_addr': self.parameters.data_path_addr,
+                'data_path_port': self.parameters.data_path_port,
                 'force_new_cluster': self.force,
                 'swarm_spec': self.parameters.spec,
             }
@@ -569,7 +584,8 @@ class SwarmManager(DockerBaseClass):
                 self.client.join_swarm(
                     remote_addrs=self.parameters.remote_addrs, join_token=self.parameters.join_token,
                     listen_addr=self.parameters.listen_addr, advertise_addr=self.parameters.advertise_addr,
-                    data_path_addr=self.parameters.data_path_addr)
+                    data_path_addr=self.parameters.data_path_addr,
+                    data_path_port=self.parameters.data_path_port)
             except APIError as exc:
                 self.client.fail("Can not join the Swarm Cluster: %s" % to_native(exc))
         self.results['actions'].append("New node is added to swarm cluster")
@@ -619,6 +635,7 @@ def main():
     argument_spec = dict(
         advertise_addr=dict(type='str'),
         data_path_addr=dict(type='str'),
+        data_path_port=dict(type='int'),
         state=dict(type='str', default='present', choices=['present', 'join', 'absent', 'remove']),
         force=dict(type='bool', default=False),
         listen_addr=dict(type='str', default='0.0.0.0:2377'),
@@ -665,6 +682,7 @@ def main():
         default_addr_pool=dict(docker_py_version='4.0.0', docker_api_version='1.39'),
         subnet_size=dict(docker_py_version='4.0.0', docker_api_version='1.39'),
         data_path_addr=dict(docker_py_version='4.0.0', docker_api_version='1.30'),
+        data_path_port=dict(docker_py_version='6.0.0', docker_api_version='1.40'),
     )
 
     client = AnsibleDockerSwarmClient(
