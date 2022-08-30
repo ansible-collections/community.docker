@@ -192,6 +192,7 @@ options:
       - Only used when swarm is initialised or joined. Because of this it is not
         considered for idempotency checking.
     type: int
+    version_added: 3.1.0
 extends_documentation_fragment:
 - community.docker.docker
 - community.docker.docker.docker_py_1_documentation
