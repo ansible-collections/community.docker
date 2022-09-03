@@ -185,6 +185,14 @@ options:
         considered for idempotency checking.
     type: str
     version_added: 2.5.0
+  data_path_port:
+    description:
+      - Port to use for data path traffic.
+      - This needs to be a port number like C(9789).
+      - Only used when swarm is initialised. Because of this it is not
+        considered for idempotency checking.
+    type: int
+    version_added: 3.1.0
 extends_documentation_fragment:
 - community.docker.docker
 - community.docker.docker.docker_py_1_documentation
@@ -234,6 +242,11 @@ EXAMPLES = '''
     state: present
     advertise_addr: eth0
     data_path_addr: ens10
+
+- name: Init a new swarm with a different data path port
+  community.docker.docker_swarm:
+    state: present
+    data_path_port: 9789
 '''
 
 RETURN = '''
@@ -312,6 +325,7 @@ class TaskParameters(DockerBaseClass):
         self.remote_addrs = None
         self.join_token = None
         self.data_path_addr = None
+        self.data_path_port = None
 
         # Spec
         self.snapshot_interval = None
@@ -417,7 +431,8 @@ class TaskParameters(DockerBaseClass):
         for k in self.__dict__:
             if k in ('advertise_addr', 'listen_addr', 'remote_addrs', 'join_token',
                      'rotate_worker_token', 'rotate_manager_token', 'spec',
-                     'default_addr_pool', 'subnet_size', 'data_path_addr'):
+                     'default_addr_pool', 'subnet_size', 'data_path_addr',
+                     'data_path_port'):
                 continue
             if not client.option_minimal_versions[k]['supported']:
                 continue
@@ -514,6 +529,8 @@ class SwarmManager(DockerBaseClass):
                 init_arguments['default_addr_pool'] = self.parameters.default_addr_pool
             if self.parameters.subnet_size is not None:
                 init_arguments['subnet_size'] = self.parameters.subnet_size
+            if self.parameters.data_path_port is not None:
+                init_arguments['data_path_port'] = self.parameters.data_path_port
             try:
                 self.client.init_swarm(**init_arguments)
             except APIError as exc:
@@ -619,6 +636,7 @@ def main():
     argument_spec = dict(
         advertise_addr=dict(type='str'),
         data_path_addr=dict(type='str'),
+        data_path_port=dict(type='int'),
         state=dict(type='str', default='present', choices=['present', 'join', 'absent', 'remove']),
         force=dict(type='bool', default=False),
         listen_addr=dict(type='str', default='0.0.0.0:2377'),
@@ -665,6 +683,7 @@ def main():
         default_addr_pool=dict(docker_py_version='4.0.0', docker_api_version='1.39'),
         subnet_size=dict(docker_py_version='4.0.0', docker_api_version='1.39'),
         data_path_addr=dict(docker_py_version='4.0.0', docker_api_version='1.30'),
+        data_path_port=dict(docker_py_version='6.0.0', docker_api_version='1.40'),
     )
 
     client = AnsibleDockerSwarmClient(
