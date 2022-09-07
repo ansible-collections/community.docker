@@ -19,6 +19,9 @@ description:
   - Build, load or pull an image, making the image available for creating containers. Also supports tagging
     an image, pushing an image, and archiving an image to a C(.tar) file.
 
+notes:
+  - Building images is done using Docker daemon's API. It is not possible to use BuildKit / buildx this way.
+
 options:
   source:
     description:
