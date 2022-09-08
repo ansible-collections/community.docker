@@ -5,6 +5,20 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.1.0
+======
+
+Release Summary
+---------------
+
+Feature release.
+
+Minor Changes
+-------------
+
+- The collection repository conforms to the `REUSE specification <https://reuse.software/spec/>`__ except for the changelog fragments (https://github.com/ansible-collections/community.docker/pull/462).
+- docker_swarm - allows usage of the ``data_path_port`` parameter when initializing a swarm (https://github.com/ansible-collections/community.docker/issues/296).
+
 v3.0.2
 ======
 
