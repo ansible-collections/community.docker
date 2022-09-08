@@ -260,7 +260,8 @@ EXAMPLES = '''
     - ansible.builtin.debug:
         var: output
 
-- name: Run with inline v2 compose
+- name: Run with inline Compose file version 2
+  # https://docs.docker.com/compose/compose-file/compose-file-v2/
   hosts: localhost
   gather_facts: false
   tasks:
@@ -294,7 +295,8 @@ EXAMPLES = '''
           - "web.flask_web_1.state.running"
           - "db.flask_db_1.state.running"
 
-- name: Run with inline v1 compose
+- name: Run with inline Compose file version 1
+  # https://docs.docker.com/compose/compose-file/compose-file-v1/
   hosts: localhost
   gather_facts: false
   tasks:
