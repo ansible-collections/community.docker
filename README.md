@@ -10,7 +10,7 @@ Please note that this collection does **not** support Windows targets. The conne
 
 ## Tested with Ansible
 
-Tested with the current Ansible 2.9, ansible-base 2.10, ansible-core 2.11, ansible-core 2.12 and ansible-core 2.13 releases and the current development version of ansible-core. Ansible versions before 2.9.10 are not supported.
+Tested with the current Ansible 2.9, ansible-base 2.10, ansible-core 2.11, ansible-core 2.12, ansible-core 2.13, and ansible-core 2.14 releases. Ansible versions before 2.9.10 are not supported.
 
 Please note that support for Ansible 2.9 and ansible-base 2.10 has been deprecated and will be dropped from community.docker 3.0.0 on.
 
