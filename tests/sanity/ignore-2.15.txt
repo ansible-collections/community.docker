@@ -1,0 +1,1 @@
+.azure-pipelines/scripts/publish-codecov.py replace-urlopen
