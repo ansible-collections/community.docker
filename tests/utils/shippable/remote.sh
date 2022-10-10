@@ -13,9 +13,9 @@ version="${args[1]}"
 target="shippable/posix/"
 
 if [ "${#args[@]}" -gt 2 ]; then
-    target="shippable/posix/group${args[2]}/"
+    target="azp/${args[2]}/"
 else
-    target="shippable/posix/"
+    target="azp/"
 fi
 
 force_python=""
