@@ -2421,6 +2421,155 @@
     - image_label_mismatch_11 is changed
 
 ####################################################################
+## image_name_mismatch #############################################
+####################################################################
+
+- name: Pull images to make sure ignore_image test succeeds
+  # If the image isn't there, it will pull it and return 'changed'.
+  docker_image:
+    name: "{{ item }}"
+    source: pull
+  loop:
+    - "{{ docker_test_image_hello_world }}"
+    - "{{ docker_test_image_registry_nginx }}"
+
+- name: image
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+  register: image_1
+
+- name: image (idempotency)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+  register: image_2
+  diff: true
+
+- name: ignore_image
+  docker_container:
+    image: "{{ docker_test_image_hello_world }}"
+    ignore_image: yes
+    name: "{{ cname }}"
+    state: started
+  register: ignore_image
+  diff: true
+
+- name: ignore_image (labels and env differ in image, image_comparison=current-image)
+  docker_container:
+    image: "{{ docker_test_image_registry_nginx }}"
+    ignore_image: yes
+    image_comparison: current-image
+    name: "{{ cname }}"
+    state: started
+  register: ignore_image_2
+  diff: true
+
+- name: ignore_image (labels and env differ in image, image_comparison=desired-image)
+  docker_container:
+    image: "{{ docker_test_image_registry_nginx }}"
+    ignore_image: yes
+    image_comparison: desired-image
+    name: "{{ cname }}"
+    state: started
+    force_kill: yes
+  register: ignore_image_3
+  diff: true
+
+- name: image change
+  docker_container:
+    image: "{{ docker_test_image_hello_world }}"
+    name: "{{ cname }}"
+    state: started
+    force_kill: yes
+  register: image_change
+  diff: true
+
+- name: cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
+  diff: no
+
+- assert:
+    that:
+    - image_1 is changed
+    - image_2 is not changed
+    - ignore_image is not changed
+    - ignore_image_2 is not changed
+    - ignore_image_3 is changed
+    - image_change is changed
+
+####################################################################
+## image_name_mismatch #############################################
+####################################################################
+
+- name: Registering image name
+  set_fact:
+    iname_name_mismatch: "{{ cname_prefix ~ '-image-name' }}"
+- name: Registering image name
+  set_fact:
+    inames: "{{ inames + [iname_name_mismatch] }}"
+
+- name: Tag hello world image (pulled earlier) with new name
+  docker_image:
+    name: "{{ docker_test_image_registry_nginx }}"
+    source: local
+    repository: "{{ iname_name_mismatch }}:latest"
+
+- name: image_name_mismatch
+  docker_container:
+    image: "{{ docker_test_image_registry_nginx }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+  register: image_name_mismatch_1
+
+- name: image_name_mismatch (ignore)
+  docker_container:
+    image: "{{ iname_name_mismatch }}:latest"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    image_name_mismatch: ignore
+    state: started
+  register: image_name_mismatch_2
+
+- name: image_name_mismatch (recreate)
+  docker_container:
+    image: "{{ iname_name_mismatch }}:latest"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    image_name_mismatch: recreate
+    state: started
+    force_kill: yes
+  register: image_name_mismatch_3
+
+- name: Cleanup container
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
+  diff: no
+
+- name: Cleanup image
+  docker_image:
+    name: "{{ iname_name_mismatch }}"
+    state: absent
+  diff: no
+
+- assert:
+    that:
+    - image_name_mismatch_1 is changed
+    - image_name_mismatch_2 is not changed
+    - image_name_mismatch_3 is changed
+    - image_name_mismatch_3.container.Image == image_name_mismatch_2.container.Image
+
+####################################################################
 ## ipc_mode ########################################################
 ####################################################################
 
