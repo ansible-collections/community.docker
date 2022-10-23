@@ -628,10 +628,10 @@ options:
     description:
       - List of networks the container belongs to.
       - For examples of the data structure and usage see EXAMPLES below.
-      - To remove a container from one or more networks, use C(networks: strict) in the I(comparisons) option.
-      - If I(networks_cli_compatible) is set to C(false), this will not remove the default network if I(networks) is specified.
+      - "To remove a container from one or more networks, use C(networks: strict) in the I(comparisons) option."
+      - "If I(networks_cli_compatible) is set to C(false), this will not remove the default network if I(networks) is specified.
         This is different from the behavior of C(docker run ...). You need to explicitly use C(networks: strict) in I(comparisons)
-        to enforce the removal of the default network (and all other networks not explicitly mentioned in I(networks)) in that case.
+        to enforce the removal of the default network (and all other networks not explicitly mentioned in I(networks)) in that case."
     type: list
     elements: dict
     suboptions:
@@ -829,8 +829,8 @@ options:
         state. Use I(restart) to force a matching container to be stopped and restarted.'
       - 'C(stopped) - Asserts that the container is first C(present), and then if the container is running moves it to a stopped
         state.'
-      - To control what will be taken into account when comparing configuration, see the I(comparisons) option. To avoid that the
-        image version will be taken into account, you can also use the C(image: ignore) in the I(comparisons) option.
+      - "To control what will be taken into account when comparing configuration, see the I(comparisons) option. To avoid that the
+        image version will be taken into account, you can also use the C(image: ignore) in the I(comparisons) option."
       - Use the I(recreate) option to always force re-creation of a matching container, even if it is running.
       - If the container should be killed instead of stopped in case it needs to be stopped for recreation, or because I(state) is
         C(stopped), please use the I(force_kill) option. Use I(keep_volumes) to retain anonymous volumes associated with a removed container.
