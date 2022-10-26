@@ -18,6 +18,7 @@ author:
 short_description: docker swarm service
 description:
   - Manages docker services via a swarm manager node.
+  - This modules does not support updating services in a stack.
 options:
   args:
     description:
