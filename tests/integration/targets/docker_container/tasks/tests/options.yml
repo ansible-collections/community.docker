@@ -2205,7 +2205,8 @@
 - name: ignore_image
   docker_container:
     image: "{{ docker_test_image_hello_world }}"
-    ignore_image: yes
+    comparisons:
+      image: ignore
     name: "{{ cname }}"
     state: started
   register: ignore_image
@@ -2214,7 +2215,8 @@
 - name: ignore_image (labels and env differ in image, image_comparison=current-image)
   docker_container:
     image: "{{ docker_test_image_registry_nginx }}"
-    ignore_image: yes
+    comparisons:
+      image: ignore
     image_comparison: current-image
     name: "{{ cname }}"
     state: started
@@ -2224,7 +2226,8 @@
 - name: ignore_image (labels and env differ in image, image_comparison=desired-image)
   docker_container:
     image: "{{ docker_test_image_registry_nginx }}"
-    ignore_image: yes
+    comparisons:
+      image: ignore
     image_comparison: desired-image
     name: "{{ cname }}"
     state: started

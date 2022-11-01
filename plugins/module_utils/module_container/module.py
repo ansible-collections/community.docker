@@ -75,7 +75,6 @@ class ContainerManager(DockerBaseClass):
         self.param_output_logs = self.module.params['output_logs']
         self.param_paused = self.module.params['paused']
         self.param_pull = self.module.params['pull']
-        self.param_purge_networks = self.module.params['purge_networks']
         self.param_recreate = self.module.params['recreate']
         self.param_removal_wait_timeout = self.module.params['removal_wait_timeout']
         self.param_restart = self.module.params['restart']
@@ -128,7 +127,7 @@ class ContainerManager(DockerBaseClass):
         # Process legacy ignore options
         if self.module.params['ignore_image']:
             self.all_options['image'].comparison = 'ignore'
-        if self.param_purge_networks:
+        if self.module.params['purge_networks']:
             self.all_options['networks'].comparison = 'strict'
         # Process comparsions specified by user
         if self.module.params.get('comparisons'):
@@ -177,7 +176,7 @@ class ContainerManager(DockerBaseClass):
         # Check legacy values
         if self.module.params['ignore_image'] and self.all_options['image'].comparison != 'ignore':
             self.module.warn('The ignore_image option has been overridden by the comparisons option!')
-        if self.param_purge_networks and self.all_options['networks'].comparison != 'strict':
+        if self.module.params['purge_networks'] and self.all_options['networks'].comparison != 'strict':
             self.module.warn('The purge_networks option has been overridden by the comparisons option!')
 
     def _update_params(self):
@@ -630,7 +629,15 @@ class ContainerManager(DockerBaseClass):
                 self.results['changed'] = True
                 updated_container = self._add_networks(container, network_differences)
 
-        if (self.all_options['networks'].comparison == 'strict' and self.module.params['networks'] is not None) or self.param_purge_networks:
+        purge_networks = self.all_options['networks'].comparison == 'strict' and self.module.params['networks'] is not None
+        if not purge_networks and self.module.params['purge_networks']:
+            purge_networks = True
+            self.module.deprecate(
+                'The purge_networks option is used while networks is not specified. In this case purge_networks=true cannot'
+                ' be replaced by `networks: strict` in comparisons, which is necessary once purge_networks is removed.'
+                ' Please modify the docker_container invocation by adding `networks: []`',
+                version='4.0.0', collection_name='community.docker')
+        if purge_networks:
             has_extra_networks, extra_networks = self.has_extra_networks(container)
             if has_extra_networks:
                 if self.diff.get('differences'):
@@ -799,7 +806,7 @@ def run_module(engine_driver):
             command_handling=dict(type='str', choices=['compatibility', 'correct'], default='correct'),
             default_host_ip=dict(type='str'),
             force_kill=dict(type='bool', default=False, aliases=['forcekill']),
-            ignore_image=dict(type='bool', default=False),
+            ignore_image=dict(type='bool', default=False, removed_in_version='4.0.0', removed_from_collection='community.docker'),
             image=dict(type='str'),
             image_comparison=dict(type='str', choices=['desired-image', 'current-image'], default='desired-image'),
             image_label_mismatch=dict(type='str', choices=['ignore', 'fail'], default='ignore'),
@@ -810,7 +817,7 @@ def run_module(engine_driver):
             output_logs=dict(type='bool', default=False),
             paused=dict(type='bool'),
             pull=dict(type='bool', default=False),
-            purge_networks=dict(type='bool', default=False),
+            purge_networks=dict(type='bool', default=False, removed_in_version='4.0.0', removed_from_collection='community.docker'),
             recreate=dict(type='bool', default=False),
             removal_wait_timeout=dict(type='float'),
             restart=dict(type='bool', default=False),

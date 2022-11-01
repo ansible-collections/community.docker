@@ -396,6 +396,8 @@ options:
         stop this behavior by setting I(ignore_image) to C(true).
       - "B(Warning:) This option is ignored if C(image: ignore) or C(*: ignore) is specified in the
         I(comparisons) option."
+      - "This option is deprecated since community.docker 3.2.0 and will be removed in community.docker 4.0.0.
+        Use C(image: ignore) in I(comparisons) instead of I(ignore_image=true)."
     type: bool
     default: false
   image:
@@ -626,10 +628,10 @@ options:
     description:
       - List of networks the container belongs to.
       - For examples of the data structure and usage see EXAMPLES below.
-      - To remove a container from one or more networks, use the I(purge_networks) option.
-      - If I(networks_cli_compatible) is set to C(false), this will not remove the default network if I(networks) is specified.
-        This is different from the behavior of C(docker run ...). You need to explicitly use I(purge_networks) to enforce
-        the removal of the default network (and all other networks not explicitly mentioned in I(networks)) in that case.
+      - "To remove a container from one or more networks, use C(networks: strict) in the I(comparisons) option."
+      - "If I(networks_cli_compatible) is set to C(false), this will not remove the default network if I(networks) is specified.
+        This is different from the behavior of C(docker run ...). You need to explicitly use C(networks: strict) in I(comparisons)
+        to enforce the removal of the default network (and all other networks not explicitly mentioned in I(networks)) in that case."
     type: list
     elements: dict
     suboptions:
@@ -666,8 +668,8 @@ options:
          via the I(networks) option, the module behaves differently than C(docker run --network):
          C(docker run --network other) will create a container with network C(other) attached,
          but the default network not attached. This module with I(networks: {name: other}) will
-         create a container with both C(default) and C(other) attached. If I(purge_networks) is
-         set to C(true), the C(default) network will be removed afterwards."
+         create a container with both C(default) and C(other) attached. If C(networks: strict)
+         or C(*: strict) is set in I(comparisons), the C(default) network will be removed afterwards."
     type: bool
     default: true
   oom_killer:
@@ -745,16 +747,19 @@ options:
       - ports
   pull:
     description:
-       - If true, always pull the latest version of an image. Otherwise, will only pull an image
-         when missing.
-       - "B(Note:) images are only pulled when specified by name. If the image is specified
-         as a image ID (hash), it cannot be pulled."
+      - If true, always pull the latest version of an image. Otherwise, will only pull an image
+        when missing.
+      - "B(Note:) images are only pulled when specified by name. If the image is specified
+        as a image ID (hash), it cannot be pulled."
     type: bool
     default: false
   purge_networks:
     description:
-       - Remove the container from ALL networks not included in I(networks) parameter.
-       - Any default networks such as C(bridge), if not found in I(networks), will be removed as well.
+      - Remove the container from ALL networks not included in I(networks) parameter.
+      - Any default networks such as C(bridge), if not found in I(networks), will be removed as well.
+      - "This option is deprecated since community.docker 3.2.0 and will be removed in community.docker 4.0.0.
+        Use C(networks: strict) in I(comparisons) instead of I(purge_networks=true) and make sure that
+        I(networks) is specified. If you want to remove all networks, specify I(networks: [])."
     type: bool
     default: false
   read_only:
@@ -824,8 +829,8 @@ options:
         state. Use I(restart) to force a matching container to be stopped and restarted.'
       - 'C(stopped) - Asserts that the container is first C(present), and then if the container is running moves it to a stopped
         state.'
-      - To control what will be taken into account when comparing configuration, see the I(comparisons) option. To avoid that the
-        image version will be taken into account, you can also use the I(ignore_image) option.
+      - "To control what will be taken into account when comparing configuration, see the I(comparisons) option. To avoid that the
+        image version will be taken into account, you can also use the C(image: ignore) in the I(comparisons) option."
       - Use the I(recreate) option to always force re-creation of a matching container, even if it is running.
       - If the container should be killed instead of stopped in case it needs to be stopped for recreation, or because I(state) is
         C(stopped), please use the I(force_kill) option. Use I(keep_volumes) to retain anonymous volumes associated with a removed container.
@@ -1065,12 +1070,14 @@ EXAMPLES = '''
     name: sleepy
     networks:
       - name: TestingNet2
-    purge_networks: true
+    comparisons:
+      networks: strict
 
 - name: Remove container from all networks
   community.docker.docker_container:
     name: sleepy
-    purge_networks: true
+    comparisons:
+      networks: strict
 
 - name: Start a container and use an env file
   community.docker.docker_container:
