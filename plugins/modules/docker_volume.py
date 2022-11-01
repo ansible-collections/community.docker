@@ -34,6 +34,7 @@ options:
       - "Dictionary of volume settings. Consult docker docs for valid options and values:
         U(https://docs.docker.com/engine/reference/commandline/volume_create/#driver-specific-options)."
     type: dict
+    default: {}
 
   labels:
     description:
