@@ -47,6 +47,7 @@ options:
     description:
       - Dictionary of plugin settings.
     type: dict
+    default: {}
 
   force_remove:
     description:
