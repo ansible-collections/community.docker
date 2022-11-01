@@ -191,6 +191,9 @@ class DockerAPIEngineDriver(EngineDriver):
     def get_image_from_container(self, container):
         return container['Image']
 
+    def get_image_name_from_container(self, container):
+        return container['Config'].get('Image')
+
     def is_container_removing(self, container):
         if container.get('State'):
             return container['State'].get('Status') == 'removing'

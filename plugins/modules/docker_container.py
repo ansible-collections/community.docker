@@ -436,6 +436,20 @@ options:
       - 'fail'
     default: ignore
     version_added: 2.6.0
+  image_name_mismatch:
+    description:
+      - Determines what the module does if the image matches, but the image name in the container's configuration
+        does not match the image name provided to the module.
+      - "This is ignored if C(image: ignore) is set in I(comparisons)."
+      - If set to C(recreate) the container will be recreated.
+      - If set to C(ignore) the container will not be recreated because of this. It might still get recreated for other reasons.
+        This has been the default behavior of the module for a long time, but might not be what users expect.
+    type: str
+    choices:
+      - recreate
+      - ignore
+    default: ignore
+    version_added: 3.2.0
   init:
     description:
       - Run an init inside the container that forwards signals and reaps processes.

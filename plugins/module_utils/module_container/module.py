@@ -28,11 +28,13 @@ class Container(DockerBaseClass):
         self.raw = container
         self.id = None
         self.image = None
+        self.image_name = None
         self.container = container
         self.engine_driver = engine_driver
         if container:
             self.id = engine_driver.get_container_id(container)
             self.image = engine_driver.get_image_from_container(container)
+            self.image_name = engine_driver.get_image_name_from_container(container)
         self.log(self.container, pretty_print=True)
 
     @property
@@ -68,6 +70,7 @@ class ContainerManager(DockerBaseClass):
         self.param_image = self.module.params['image']
         self.param_image_comparison = self.module.params['image_comparison']
         self.param_image_label_mismatch = self.module.params['image_label_mismatch']
+        self.param_image_name_mismatch = self.module.params['image_name_mismatch']
         self.param_keep_volumes = self.module.params['keep_volumes']
         self.param_kill_signal = self.module.params['kill_signal']
         self.param_name = self.module.params['name']
@@ -302,6 +305,9 @@ class ContainerManager(DockerBaseClass):
             image_different = False
             if self.all_options['image'].comparison == 'strict':
                 image_different = self._image_is_different(image, container)
+                if self.param_image_name_mismatch == 'recreate' and self.param_image is not None and self.param_image != container.image_name:
+                    different = True
+                    self.diff_tracker.add('image_name', parameter=self.param_image, active=container.image_name)
             if image_different or different or self.param_recreate:
                 self.diff_tracker.merge(differences)
                 self.diff['differences'] = differences.get_legacy_docker_container_diffs()
@@ -810,6 +816,7 @@ def run_module(engine_driver):
             image=dict(type='str'),
             image_comparison=dict(type='str', choices=['desired-image', 'current-image'], default='desired-image'),
             image_label_mismatch=dict(type='str', choices=['ignore', 'fail'], default='ignore'),
+            image_name_mismatch=dict(type='str', choices=['ignore', 'recreate'], default='ignore'),
             keep_volumes=dict(type='bool', default=True),
             kill_signal=dict(type='str'),
             name=dict(type='str', required=True),

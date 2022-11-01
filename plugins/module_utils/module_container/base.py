@@ -221,6 +221,10 @@ class EngineDriver(object):
         pass
 
     @abc.abstractmethod
+    def get_image_name_from_container(self, container):
+        pass
+
+    @abc.abstractmethod
     def is_container_removing(self, container):
         pass
 
