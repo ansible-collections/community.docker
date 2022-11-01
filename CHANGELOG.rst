@@ -5,6 +5,25 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.2.0
+======
+
+Release Summary
+---------------
+
+Feature and deprecation release.
+
+Minor Changes
+-------------
+
+- docker_container - added ``image_name_mismatch`` option which allows to control the behavior if the container uses the image specified, but the container's configuration uses a different name for the image than the one provided to the module (https://github.com/ansible-collections/community.docker/issues/485, https://github.com/ansible-collections/community.docker/pull/488).
+
+Deprecated Features
+-------------------
+
+- docker_container - the ``ignore_image`` option is deprecated and will be removed in community.docker 4.0.0. Use ``image: ignore`` in ``comparisons`` instead (https://github.com/ansible-collections/community.docker/pull/487).
+- docker_container - the ``purge_networks`` option is deprecated and will be removed in community.docker 4.0.0. Use ``networks: strict`` in ``comparisons`` instead, and make sure to provide ``networks``, with value ``[]`` if all networks should be removed (https://github.com/ansible-collections/community.docker/pull/487).
+
 v3.1.0
 ======
 

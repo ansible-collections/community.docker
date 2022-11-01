@@ -1002,3 +1002,25 @@ releases:
     - 466-add-data-path-port.yml
     - licenses.yml
     release_date: '2022-09-08'
+  3.2.0:
+    changes:
+      deprecated_features:
+      - 'docker_container - the ``ignore_image`` option is deprecated and will be
+        removed in community.docker 4.0.0. Use ``image: ignore`` in ``comparisons``
+        instead (https://github.com/ansible-collections/community.docker/pull/487).'
+      - 'docker_container - the ``purge_networks`` option is deprecated and will be
+        removed in community.docker 4.0.0. Use ``networks: strict`` in ``comparisons``
+        instead, and make sure to provide ``networks``, with value ``[]`` if all networks
+        should be removed (https://github.com/ansible-collections/community.docker/pull/487).'
+      minor_changes:
+      - docker_container - added ``image_name_mismatch`` option which allows to control
+        the behavior if the container uses the image specified, but the container's
+        configuration uses a different name for the image than the one provided to
+        the module (https://github.com/ansible-collections/community.docker/issues/485,
+        https://github.com/ansible-collections/community.docker/pull/488).
+      release_summary: Feature and deprecation release.
+    fragments:
+    - 3.2.0.yml
+    - 487-docker_container-deprecate.yml
+    - 488-docker_container-image-name.yml
+    release_date: '2022-11-01'
