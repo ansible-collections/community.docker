@@ -31,6 +31,7 @@ options:
         M(community.docker.docker_container) module to ensure your containers are correctly connected to this network.
     type: list
     elements: str
+    default: []
     aliases:
       - containers
 
@@ -44,6 +45,7 @@ options:
     description:
       - Dictionary of network settings. Consult docker docs for valid options and values.
     type: dict
+    default: {}
 
   force:
     description:
@@ -131,6 +133,7 @@ options:
     description:
       - Dictionary of labels.
     type: dict
+    default: {}
 
   scope:
     description:
