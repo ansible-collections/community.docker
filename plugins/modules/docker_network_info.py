@@ -19,6 +19,11 @@ description:
   - Essentially returns the output of C(docker network inspect <name>), similar to what M(community.docker.docker_network)
     returns for a non-absent network.
 
+extends_documentation_fragment:
+  - community.docker.docker.api_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+  - community.docker.attributes.info_module
 
 options:
   name:
@@ -27,9 +32,6 @@ options:
       - When identifying an existing network name may be a name or a long or short network ID.
     type: str
     required: true
-extends_documentation_fragment:
-- community.docker.docker.api_documentation
-
 
 author:
   - "Dave Bendit (@DBendit)"

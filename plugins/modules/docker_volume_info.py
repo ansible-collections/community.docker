@@ -14,6 +14,13 @@ module: docker_volume_info
 short_description: Retrieve facts about Docker volumes
 description:
   - Performs largely the same function as the C(docker volume inspect) CLI subcommand.
+
+extends_documentation_fragment:
+  - community.docker.docker.api_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+  - community.docker.attributes.info_module
+
 options:
   name:
     description:
@@ -22,10 +29,6 @@ options:
     required: true
     aliases:
       - volume_name
-
-extends_documentation_fragment:
-- community.docker.docker.api_documentation
-
 
 author:
   - Felix Fontein (@felixfontein)

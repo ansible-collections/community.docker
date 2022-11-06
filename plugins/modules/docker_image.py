@@ -14,13 +14,25 @@ module: docker_image
 
 short_description: Manage docker images
 
-
 description:
   - Build, load or pull an image, making the image available for creating containers. Also supports tagging
     an image, pushing an image, and archiving an image to a C(.tar) file.
 
 notes:
   - Building images is done using Docker daemon's API. It is not possible to use BuildKit / buildx this way.
+
+extends_documentation_fragment:
+  - community.docker.docker.api_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: partial
+    details:
+      - When trying to pull an image, the module assumes this is always changed in check mode.
+  diff_mode:
+    support: none
 
 options:
   source:
@@ -208,10 +220,6 @@ options:
       - If I(name) parameter format is I(name:tag), then tag value from I(name) will take precedence.
     type: str
     default: latest
-
-extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-
 
 requirements:
   - "Docker API >= 1.25"

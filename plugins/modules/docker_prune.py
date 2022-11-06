@@ -18,6 +18,16 @@ description:
   - Allows to run C(docker container prune), C(docker image prune), C(docker network prune)
     and C(docker volume prune) via the Docker API.
 
+extends_documentation_fragment:
+  - community.docker.docker.api_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: none
+  diff_mode:
+    support: none
 
 options:
   containers:
@@ -71,10 +81,6 @@ options:
       - Whether to prune the builder cache.
     type: bool
     default: false
-
-extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-
 
 author:
   - "Felix Fontein (@felixfontein)"

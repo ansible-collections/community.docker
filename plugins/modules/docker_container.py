@@ -18,7 +18,6 @@ description:
   - Manage the life cycle of Docker containers.
   - Supports check mode. Run with C(--check) and C(--diff) to view config difference and list of actions to be taken.
 
-
 notes:
   - For most config changes, the container needs to be recreated. This means that the existing container has to be destroyed and
     a new one created. This can cause unexpected data loss and downtime. You can use the I(comparisons) option to
@@ -26,6 +25,20 @@ notes:
   - If the module needs to recreate the container, it will only use the options provided to the module to create the
     new container (except I(image)). Therefore, always specify B(all) options relevant to the container.
   - When I(restart) is set to C(true), the module will only restart the container if no config changes are detected.
+
+extends_documentation_fragment:
+  - community.docker.docker
+  - community.docker.docker.docker_py_1_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: partial
+    details:
+      - When trying to pull an image, the module assumes this is always changed in check mode.
+  diff_mode:
+    support: full
 
 options:
   auto_remove:
@@ -929,10 +942,6 @@ options:
     description:
       - Path to the working directory.
     type: str
-extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
-
 
 author:
   - "Cove Schneider (@cove)"

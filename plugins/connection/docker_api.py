@@ -17,6 +17,9 @@ description:
       directly with the Docker daemon instead of using the Docker CLI. Use the
       R(community.docker.docker,ansible_collections.community.docker.docker_connection)
       connection plugin if you want to use the Docker CLI.
+extends_documentation_fragment:
+    - community.docker.docker.api_documentation
+    - community.docker.docker.var_names
 options:
     remote_user:
         type: str
@@ -63,10 +66,6 @@ options:
         cli:
             - name: timeout
         type: integer
-
-extends_documentation_fragment:
-    - community.docker.docker.api_documentation
-    - community.docker.docker.var_names
 '''
 
 import io

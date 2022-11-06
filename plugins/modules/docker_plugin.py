@@ -17,6 +17,18 @@ version_added: 1.3.0
 description:
   - This module allows to install, delete, enable and disable Docker plugins.
   - Performs largely the same function as the C(docker plugin) CLI subcommand.
+
+extends_documentation_fragment:
+  - community.docker.docker.api_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: full
+  diff_mode:
+    support: full
+
 options:
   plugin_name:
     description:
@@ -61,9 +73,6 @@ options:
       - Timeout in seconds.
     type: int
     default: 0
-
-extends_documentation_fragment:
-  - community.docker.docker.api_documentation
 
 author:
   - Sakar Mehra (@sakar97)

@@ -23,6 +23,20 @@ description:
   - If the docker daemon cannot be contacted or does not meet the API version requirements,
     the module will fail.
 
+extends_documentation_fragment:
+  - community.docker.docker.api_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: full
+    details:
+      - This action does not modify state.
+  diff_mode:
+    support: N/A
+    details:
+      - This action does not modify state.
 
 options:
   containers:
@@ -94,9 +108,6 @@ options:
         for each type of the objects.
     type: bool
     default: false
-extends_documentation_fragment:
-- community.docker.docker.api_documentation
-
 
 author:
   - Piotr Wojciechowski (@WojciechowskiPiotr)

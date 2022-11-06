@@ -15,6 +15,18 @@ short_description: Manage Docker volumes
 description:
   - Create/remove Docker volumes.
   - Performs largely the same function as the C(docker volume) CLI subcommand.
+
+extends_documentation_fragment:
+  - community.docker.docker.api_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: full
+  diff_mode:
+    support: full
+
 options:
   volume_name:
     description:
@@ -68,10 +80,6 @@ options:
     choices:
       - absent
       - present
-
-extends_documentation_fragment:
-- community.docker.docker.api_documentation
-
 
 author:
   - Alex Grönholm (@agronholm)

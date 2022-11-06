@@ -18,6 +18,10 @@ description:
   - Return facts about whether the module runs in a Docker container.
 author:
   - Felix Fontein (@felixfontein)
+extends_documentation_fragment:
+  - community.docker.attributes
+  - community.docker.attributes.facts
+  - community.docker.attributes.facts_module
 '''
 
 EXAMPLES = '''

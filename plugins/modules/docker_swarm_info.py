@@ -23,9 +23,15 @@ description:
     the docker daemon can be communicated with, whether it is in Swarm mode, and
     whether it is a Swarm Manager node.
 
-
 author:
-    - Piotr Wojciechowski (@WojciechowskiPiotr)
+  - Piotr Wojciechowski (@WojciechowskiPiotr)
+
+extends_documentation_fragment:
+  - community.docker.docker
+  - community.docker.docker.docker_py_1_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+  - community.docker.attributes.info_module
 
 options:
   nodes:
@@ -78,10 +84,6 @@ options:
         for each type of the objects.
     type: bool
     default: false
-extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
-
 
 requirements:
     - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"

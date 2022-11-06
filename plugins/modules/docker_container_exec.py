@@ -19,6 +19,17 @@ version_added: 1.5.0
 description:
   - Executes a command in a Docker container.
 
+extends_documentation_fragment:
+  - community.docker.docker.api_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: none
+  diff_mode:
+    support: none
+
 options:
   container:
     type: str
@@ -82,8 +93,6 @@ options:
     type: dict
     version_added: 2.1.0
 
-extends_documentation_fragment:
-  - community.docker.docker.api_documentation
 notes:
   - Does not support C(check_mode).
 author:

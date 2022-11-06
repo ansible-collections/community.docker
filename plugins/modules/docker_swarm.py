@@ -14,6 +14,19 @@ short_description: Manage Swarm cluster
 description:
   - Create a new Swarm cluster.
   - Add/Remove nodes or managers to an existing cluster.
+
+extends_documentation_fragment:
+  - community.docker.docker
+  - community.docker.docker.docker_py_1_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: full
+  diff_mode:
+    support: full
+
 options:
   advertise_addr:
     description:
@@ -193,9 +206,6 @@ options:
         considered for idempotency checking.
     type: int
     version_added: 3.1.0
-extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"

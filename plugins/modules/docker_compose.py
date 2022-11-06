@@ -14,7 +14,6 @@ module: docker_compose
 
 short_description: Manage multi-container Docker applications with Docker Compose.
 
-
 author: "Chris Houseknecht (@chouseknecht)"
 
 description:
@@ -23,6 +22,18 @@ description:
   - See the examples for more details.
   - Supports check mode.
   - This module was called C(docker_service) before Ansible 2.8. The usage did not change.
+
+extends_documentation_fragment:
+  - community.docker.docker
+  - community.docker.docker.docker_py_1_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: full
+  diff_mode:
+    support: none
 
 options:
   project_src:
@@ -171,11 +182,6 @@ options:
   use_ssh_client:
     description:
       - Currently ignored for this module, but might suddenly be supported later on.
-
-extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_1_documentation
-
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"

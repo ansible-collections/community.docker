@@ -14,6 +14,18 @@ short_description: Manage Docker networks
 description:
   - Create/remove Docker networks and connect containers to them.
   - Performs largely the same function as the C(docker network) CLI subcommand.
+
+extends_documentation_fragment:
+  - community.docker.docker.api_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: full
+  diff_mode:
+    support: full
+
 options:
   name:
     description:
@@ -148,10 +160,6 @@ options:
     description:
       - If enabled, and the network is in the global scope, non-service containers on worker nodes will be able to connect to the network.
     type: bool
-
-extends_documentation_fragment:
-- community.docker.docker.api_documentation
-
 
 notes:
   - When network options are changed, the module disconnects all containers from the network, deletes the network, and re-creates the network.

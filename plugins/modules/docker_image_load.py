@@ -21,15 +21,23 @@ description:
   - Load one or multiple Docker images from a C(.tar) archive, and return information on
     the loaded image(s).
 
+extends_documentation_fragment:
+  - community.docker.docker.api_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: none
+  diff_mode:
+    support: none
+
 options:
   path:
     description:
       - The path to the C(.tar) archive to load Docker image(s) from.
     type: path
     required: true
-
-extends_documentation_fragment:
-  - community.docker.docker.api_documentation
 
 notes:
   - Does not support C(check_mode).
