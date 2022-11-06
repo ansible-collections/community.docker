@@ -18,9 +18,6 @@ attributes:
       description: Can run in C(check_mode) and return changed status prediction without modifying target.
     diff_mode:
       description: Will return details on what has changed (or possibly needs changing in C(check_mode)), when in diff mode.
-    platform:
-      description: Target OS/families that can be operated against.
-      support: N/A
 '''
 
     ACTIONGROUP_DOCKER = r'''

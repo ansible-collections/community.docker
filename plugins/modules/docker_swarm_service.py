@@ -19,6 +19,19 @@ short_description: docker swarm service
 description:
   - Manages docker services via a swarm manager node.
   - This modules does not support updating services in a stack.
+
+extends_documentation_fragment:
+  - community.docker.docker
+  - community.docker.docker.docker_py_2_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: full
+  diff_mode:
+    support: full
+
 options:
   args:
     description:
@@ -629,11 +642,6 @@ options:
     type: list
     elements: str
     version_added: 2.2.0
-
-extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_2_documentation
-  - community.docker.attributes.actiongroup_acme
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.0.2"

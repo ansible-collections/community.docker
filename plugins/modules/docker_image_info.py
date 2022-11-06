@@ -15,15 +15,26 @@ module: docker_image_info
 short_description: Inspect docker images
 
 description:
-     - Provide one or more image names, and the module will inspect each, returning an array of inspection results.
-     - If an image does not exist locally, it will not appear in the results. If you want to check whether an image exists
-       locally, you can call the module with the image name, then check whether the result list is empty (image does not
-       exist) or has one element (the image exists locally).
-     - The module will not attempt to pull images from registries. Use M(community.docker.docker_image) with I(source) set to C(pull)
-       to ensure an image is pulled.
+  - Provide one or more image names, and the module will inspect each, returning an array of inspection results.
+  - If an image does not exist locally, it will not appear in the results. If you want to check whether an image exists
+    locally, you can call the module with the image name, then check whether the result list is empty (image does not
+    exist) or has one element (the image exists locally).
+  - The module will not attempt to pull images from registries. Use M(community.docker.docker_image) with I(source) set to C(pull)
+    to ensure an image is pulled.
 
 notes:
-     - This module was called C(docker_image_facts) before Ansible 2.8. The usage did not change.
+  - This module was called C(docker_image_facts) before Ansible 2.8. The usage did not change.
+
+extends_documentation_fragment:
+  - community.docker.docker.api_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: full
+  diff_mode:
+    support: full
 
 options:
   name:
@@ -34,10 +45,6 @@ options:
       - If no name is provided, a list of all images will be returned.
     type: list
     elements: str
-
-extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-  - community.docker.attributes.actiongroup_acme
 
 requirements:
   - "Docker API >= 1.25"

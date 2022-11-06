@@ -15,6 +15,19 @@ short_description: Manage Docker Swarm node
 description:
     - Manages the Docker nodes via Swarm Manager.
     - This module allows to change the node's role, its availability, and to modify, add or remove node labels.
+
+extends_documentation_fragment:
+  - community.docker.docker
+  - community.docker.docker.docker_py_1_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: full
+  diff_mode:
+    support: none
+
 options:
     hostname:
         description:
@@ -69,10 +82,6 @@ options:
           - manager
           - worker
         type: str
-extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_1_documentation
-  - community.docker.attributes.actiongroup_acme
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.4.0"

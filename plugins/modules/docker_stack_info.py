@@ -17,6 +17,13 @@ short_description: Return information on a docker stack
 description:
   - Retrieve information on docker stacks using the C(docker stack) command
     on the target node (see examples).
+extends_documentation_fragment:
+  - community.docker.attributes
+attributes:
+  check_mode:
+    support: full
+  diff_mode:
+    support: full
 '''
 
 RETURN = '''

@@ -19,6 +19,17 @@ description:
   - Essentially returns the output of C(docker node inspect <name>).
   - Must be executed on a host running as Swarm Manager, otherwise the module will fail.
 
+extends_documentation_fragment:
+  - community.docker.docker
+  - community.docker.docker.docker_py_1_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: full
+  diff_mode:
+    support: full
 
 options:
   name:
@@ -37,10 +48,6 @@ options:
       - If C(false) then query depends on I(name) presence and value.
     type: bool
     default: false
-extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_1_documentation
-  - community.docker.attributes.actiongroup_acme
 
 author:
   - Piotr Wojciechowski (@WojciechowskiPiotr)

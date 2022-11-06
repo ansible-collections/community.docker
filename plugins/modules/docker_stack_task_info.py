@@ -17,6 +17,13 @@ short_description: Return information of the tasks on a docker stack
 description:
   - Retrieve information on docker stacks tasks using the C(docker stack) command
     on the target node (see examples).
+extends_documentation_fragment:
+  - community.docker.attributes
+attributes:
+  check_mode:
+    support: full
+  diff_mode:
+    support: full
 options:
   name:
     description:

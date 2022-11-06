@@ -11,19 +11,19 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = '''
-    author:
-        - Lorin Hochestein (!UNKNOWN)
-        - Leendert Brouwer (!UNKNOWN)
-    name: docker
-    short_description: Run tasks in docker containers
-    description:
-        - Run commands or put/fetch files to an existing docker container.
-        - Uses the Docker CLI to execute commands in the container. If you prefer
-          to directly connect to the Docker daemon, use the
-          R(community.docker.docker_api,ansible_collections.community.docker.docker_api_connection)
-          connection plugin.
-    options:
-      remote_addr:
+author:
+    - Lorin Hochestein (!UNKNOWN)
+    - Leendert Brouwer (!UNKNOWN)
+name: docker
+short_description: Run tasks in docker containers
+description:
+    - Run commands or put/fetch files to an existing docker container.
+    - Uses the Docker CLI to execute commands in the container. If you prefer
+      to directly connect to the Docker daemon, use the
+      R(community.docker.docker_api,ansible_collections.community.docker.docker_api_connection)
+      connection plugin.
+options:
+    remote_addr:
         description:
             - The name of the container you want to access.
         default: inventory_hostname
@@ -31,7 +31,7 @@ DOCUMENTATION = '''
             - name: inventory_hostname
             - name: ansible_host
             - name: ansible_docker_host
-      remote_user:
+    remote_user:
         description:
             - The user to execute as inside the container.
             - If Docker is too old to allow this (< 1.7), the one set by Docker itself will be used.
@@ -47,7 +47,7 @@ DOCUMENTATION = '''
             - name: user
         keyword:
             - name: remote_user
-      docker_extra_args:
+    docker_extra_args:
         description:
             - Extra arguments to pass to the docker command line.
         default: ''
@@ -56,7 +56,7 @@ DOCUMENTATION = '''
         ini:
             - section: docker_connection
               key: extra_cli_args
-      container_timeout:
+    container_timeout:
         default: 10
         description:
             - Controls how long we can wait to access reading output from the container once execution started.

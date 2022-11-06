@@ -14,13 +14,25 @@ module: docker_config
 
 short_description: Manage docker configs.
 
-
 description:
-     - Create and remove Docker configs in a Swarm environment. Similar to C(docker config create) and C(docker config rm).
-     - Adds to the metadata of new configs 'ansible_key', an encrypted hash representation of the data, which is then used
-       in future runs to test if a config has changed. If 'ansible_key' is not present, then a config will not be updated
-       unless the I(force) option is set.
-     - Updates to configs are performed by removing the config and creating it again.
+  - Create and remove Docker configs in a Swarm environment. Similar to C(docker config create) and C(docker config rm).
+  - Adds to the metadata of new configs 'ansible_key', an encrypted hash representation of the data, which is then used
+    in future runs to test if a config has changed. If 'ansible_key' is not present, then a config will not be updated
+    unless the I(force) option is set.
+  - Updates to configs are performed by removing the config and creating it again.
+
+extends_documentation_fragment:
+  - community.docker.docker
+  - community.docker.docker.docker_py_2_documentation
+  - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
+
+attributes:
+  check_mode:
+    support: full
+  diff_mode:
+    support: none
+
 options:
   data:
     description:
@@ -87,11 +99,6 @@ options:
     choices:
       - golang
     version_added: 2.5.0
-
-extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_2_documentation
-  - community.docker.attributes.actiongroup_acme
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.6.0"

@@ -17,6 +17,13 @@ short_description: docker stack module
 description:
   - Manage docker stacks using the C(docker stack) command
     on the target node (see examples).
+extends_documentation_fragment:
+  - community.docker.attributes
+attributes:
+  check_mode:
+    support: none
+  diff_mode:
+    support: none
 options:
   name:
     description:
