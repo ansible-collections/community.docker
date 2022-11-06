@@ -56,7 +56,7 @@ attributes:
 options: {}
 attributes:
     safe_file_operations:
-      description: Uses Ansbile's strict file operation functions to ensure proper permissions and avoid data corruption.
+      description: Uses Ansible's strict file operation functions to ensure proper permissions and avoid data corruption.
 '''
 
     FLOW = r'''
