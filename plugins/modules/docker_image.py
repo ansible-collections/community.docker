@@ -211,7 +211,7 @@ options:
 
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
-
+  - community.docker.attributes.actiongroup_acme
 
 requirements:
   - "Docker API >= 1.25"

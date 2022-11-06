@@ -70,8 +70,8 @@ options:
       - present
 
 extends_documentation_fragment:
-- community.docker.docker.api_documentation
-
+  - community.docker.docker.api_documentation
+  - community.docker.attributes.actiongroup_acme
 
 author:
   - Alex Grönholm (@agronholm)

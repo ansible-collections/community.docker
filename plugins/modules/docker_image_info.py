@@ -14,7 +14,6 @@ module: docker_image_info
 
 short_description: Inspect docker images
 
-
 description:
      - Provide one or more image names, and the module will inspect each, returning an array of inspection results.
      - If an image does not exist locally, it will not appear in the results. If you want to check whether an image exists
@@ -37,8 +36,8 @@ options:
     elements: str
 
 extends_documentation_fragment:
-- community.docker.docker.api_documentation
-
+  - community.docker.docker.api_documentation
+  - community.docker.attributes.actiongroup_acme
 
 requirements:
   - "Docker API >= 1.25"

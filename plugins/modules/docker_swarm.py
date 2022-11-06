@@ -193,9 +193,11 @@ options:
         considered for idempotency checking.
     type: int
     version_added: 3.1.0
+
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
+  - community.docker.docker
+  - community.docker.docker.docker_py_1_documentation
+  - community.docker.attributes.actiongroup_acme
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"

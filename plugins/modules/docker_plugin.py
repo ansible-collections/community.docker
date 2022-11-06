@@ -64,6 +64,7 @@ options:
 
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
+  - community.docker.attributes.actiongroup_acme
 
 author:
   - Sakar Mehra (@sakar97)

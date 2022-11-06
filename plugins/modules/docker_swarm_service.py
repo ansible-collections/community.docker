@@ -629,9 +629,11 @@ options:
     type: list
     elements: str
     version_added: 2.2.0
+
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_2_documentation
+  - community.docker.docker
+  - community.docker.docker.docker_py_2_documentation
+  - community.docker.attributes.actiongroup_acme
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.0.2"

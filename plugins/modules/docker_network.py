@@ -150,8 +150,8 @@ options:
     type: bool
 
 extends_documentation_fragment:
-- community.docker.docker.api_documentation
-
+  - community.docker.docker.api_documentation
+  - community.docker.attributes.actiongroup_acme
 
 notes:
   - When network options are changed, the module disconnects all containers from the network, deletes the network, and re-creates the network.

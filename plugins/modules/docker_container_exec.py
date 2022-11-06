@@ -84,6 +84,8 @@ options:
 
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
+  - community.docker.attributes.actiongroup_acme
+
 notes:
   - Does not support C(check_mode).
 author:

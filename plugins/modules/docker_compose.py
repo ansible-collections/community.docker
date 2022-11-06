@@ -175,6 +175,7 @@ options:
 extends_documentation_fragment:
   - community.docker.docker
   - community.docker.docker.docker_py_1_documentation
+  - community.docker.attributes.actiongroup_acme
 
 
 requirements:

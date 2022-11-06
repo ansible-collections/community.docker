@@ -26,10 +26,11 @@ options:
       - The name of the service to inspect.
     type: str
     required: true
-extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
 
+extends_documentation_fragment:
+  - community.docker.docker
+  - community.docker.docker.docker_py_1_documentation
+  - community.docker.attributes.actiongroup_acme
 
 author:
   - Hannes Ljungberg (@hannseman)

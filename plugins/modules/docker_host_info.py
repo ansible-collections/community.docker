@@ -94,9 +94,10 @@ options:
         for each type of the objects.
     type: bool
     default: false
-extends_documentation_fragment:
-- community.docker.docker.api_documentation
 
+extends_documentation_fragment:
+  - community.docker.docker.api_documentation
+  - community.docker.attributes.actiongroup_acme
 
 author:
   - Piotr Wojciechowski (@WojciechowskiPiotr)

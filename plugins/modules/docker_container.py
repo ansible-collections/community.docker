@@ -929,10 +929,11 @@ options:
     description:
       - Path to the working directory.
     type: str
-extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_1_documentation
 
+extends_documentation_fragment:
+  - community.docker.docker
+  - community.docker.docker.docker_py_1_documentation
+  - community.docker.attributes.actiongroup_acme
 
 author:
   - "Cove Schneider (@cove)"

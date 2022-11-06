@@ -82,9 +82,9 @@ options:
       - present
 
 extends_documentation_fragment:
-- community.docker.docker
-- community.docker.docker.docker_py_2_documentation
-
+  - community.docker.docker
+  - community.docker.docker.docker_py_2_documentation
+  - community.docker.attributes.actiongroup_acme
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.1.0"
