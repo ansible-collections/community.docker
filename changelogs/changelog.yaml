@@ -1024,3 +1024,9 @@ releases:
     - 487-docker_container-deprecate.yml
     - 488-docker_container-image-name.yml
     release_date: '2022-11-01'
+  3.2.1:
+    changes:
+      release_summary: Maintenance release with improved documentation.
+    fragments:
+    - 3.2.1.yml
+    release_date: '2022-11-06'
