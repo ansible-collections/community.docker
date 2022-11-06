@@ -21,17 +21,7 @@ author:
 extends_documentation_fragment:
   - community.docker.attributes
   - community.docker.attributes.facts
-attributes:
-  check_mode:
-    support: full
-    details:
-      - This action does not modify state.
-  diff_mode:
-    support: N/A
-    details:
-      - This action does not modify state.
-  facts:
-    support: full
+  - community.docker.attributes.facts_module
 '''
 
 EXAMPLES = '''

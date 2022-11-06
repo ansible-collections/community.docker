@@ -19,15 +19,7 @@ description:
     on the target node (see examples).
 extends_documentation_fragment:
   - community.docker.attributes
-attributes:
-  check_mode:
-    support: full
-    details:
-      - This action does not modify state.
-  diff_mode:
-    support: N/A
-    details:
-      - This action does not modify state.
+  - community.docker.attributes.info_module
 options:
   name:
     description:

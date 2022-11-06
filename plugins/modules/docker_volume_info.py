@@ -19,16 +19,7 @@ extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
   - community.docker.attributes.actiongroup_docker
-
-attributes:
-  check_mode:
-    support: full
-    details:
-      - This action does not modify state.
-  diff_mode:
-    support: N/A
-    details:
-      - This action does not modify state.
+  - community.docker.attributes.info_module
 
 options:
   name:

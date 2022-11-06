@@ -20,6 +20,20 @@ attributes:
       description: Will return details on what has changed (or possibly needs changing in C(check_mode)), when in diff mode.
 '''
 
+    # Should be used together with the standard fragment
+    INFO_MODULE = r'''
+options: {}
+attributes:
+    check_mode:
+      support: full
+      details:
+        - This action does not modify state.
+    diff_mode:
+      support: N/A
+      details:
+        - This action does not modify state.
+'''
+
     ACTIONGROUP_DOCKER = r'''
 options: {}
 attributes:
@@ -47,6 +61,22 @@ options: {}
 attributes:
     facts:
       description: Action returns an C(ansible_facts) dictionary that will update existing host facts.
+'''
+
+    # Should be used together with the standard fragment and the FACTS fragment
+    FACTS_MODULE = r'''
+options: {}
+attributes:
+    check_mode:
+      support: full
+      details:
+        - This action does not modify state.
+    diff_mode:
+      support: N/A
+      details:
+        - This action does not modify state.
+    facts:
+      support: full
 '''
 
     FILES = r'''
