@@ -67,6 +67,7 @@ def main():
     # The following paths are allowed to have no license identifier
     no_comments_allowed = [
         'changelogs/fragments/*.yml',
+        'changelogs/fragments/*.yaml',
     ]
 
     # These files are completely ignored
