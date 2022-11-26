@@ -1,0 +1,43 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: Collection Docs
+concurrency:
+  group: docs-push-${{ github.sha }}
+  cancel-in-progress: true
+on:
+  push:
+    branches:
+      - main
+      - stable-*
+    tags:
+      - '*'
+  # Run CI once per day (at 09:00 UTC)
+  schedule:
+    - cron: '0 9 * * *'
+
+jobs:
+  build-docs:
+    permissions:
+      contents: read
+    name: Build Ansible Docs
+    uses: ansible-community/github-docs-build/.github/workflows/_shared-docs-build-push.yml@main
+    with:
+      init-lenient: false
+      init-fail-on-error: true
+      squash-hierarchy: true
+
+  publish-docs-gh-pages:
+    # for now we won't run this on forks
+    if: github.repository == 'ansible-collections/community.docker'
+    permissions:
+      contents: write
+    needs: [build-docs]
+    name: Publish Ansible Docs
+    uses: ansible-community/github-docs-build/.github/workflows/_shared-docs-build-publish-gh-pages.yml@main
+    with:
+      artifact-name: ${{ needs.build-docs.outputs.artifact-name }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
