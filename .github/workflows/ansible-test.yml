@@ -1,0 +1,116 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# For the comprehensive list of the inputs supported by the ansible-community/ansible-test-gh-action GitHub Action, see
+# https://github.com/marketplace/actions/ansible-test
+
+name: EOL CI
+on:
+  # Run EOL CI against all pushes (direct commits, also merged PRs), Pull Requests
+  push:
+    branches:
+      - main
+      - stable-*
+  pull_request:
+  # Run EOL CI once per day (at 09:00 UTC)
+  schedule:
+    - cron: '0 9 * * *'
+
+jobs:
+  sanity:
+    name: EOL Sanity (Ⓐ${{ matrix.ansible }})
+    strategy:
+      matrix:
+        ansible:
+          - '2.11'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Perform sanity testing
+        uses: felixfontein/ansible-test-gh-action@integration-error-behavior
+        with:
+          ansible-core-version: stable-${{ matrix.ansible }}
+          coverage: ${{ github.event_name == 'schedule' && 'always' || 'never' }}
+          pull-request-change-detection: 'true'
+          testing-type: sanity
+
+  units:
+    runs-on: ubuntu-latest
+    name: EOL Units (Ⓐ${{ matrix.ansible }})
+    strategy:
+      # As soon as the first unit test fails, cancel the others to free up the CI queue
+      fail-fast: true
+      matrix:
+        ansible:
+          - '2.11'
+
+    steps:
+      - name: >-
+          Perform unit testing against
+          Ansible version ${{ matrix.ansible }}
+        uses: felixfontein/ansible-test-gh-action@integration-error-behavior
+        with:
+          ansible-core-version: stable-${{ matrix.ansible }}
+          coverage: ${{ github.event_name == 'schedule' && 'always' || 'never' }}
+          pull-request-change-detection: 'true'
+          testing-type: units
+
+  integration:
+    runs-on: ubuntu-latest
+    name: EOL I (Ⓐ${{ matrix.ansible }}+${{ matrix.docker }}+py${{ matrix.python }}:${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        ansible:
+          - ''
+        docker:
+          - ''
+        python:
+          - ''
+        target:
+          - ''
+        exclude:
+          - ansible: ''
+        include:
+          # 2.11
+          - ansible: '2.11'
+            docker: fedora32
+            python: ''
+            target: azp/4/
+          - ansible: '2.11'
+            docker: fedora32
+            python: ''
+            target: azp/5/
+          - ansible: '2.11'
+            docker: alpine3
+            python: ''
+            target: azp/4/
+          - ansible: '2.11'
+            docker: alpine3
+            python: ''
+            target: azp/5/
+
+    steps:
+      - name: >-
+          Perform integration testing against
+          Ansible version ${{ matrix.ansible }}
+          under Python ${{ matrix.python }}
+        uses: felixfontein/ansible-test-gh-action@integration-error-behavior
+        with:
+          ansible-core-version: stable-${{ matrix.ansible }}
+          coverage: ${{ github.event_name == 'schedule' && 'always' || 'never' }}
+          docker-image: ${{ matrix.docker }}
+          integration-continue-on-error: 'false'
+          pre-test-cmd: >-
+            mkdir -p ../../ansible
+            ;
+            git clone --depth=1 --single-branch https://github.com/ansible-collections/ansible.posix.git ../../ansible/posix
+            ;
+            git clone --depth=1 --single-branch https://github.com/ansible-collections/community.crypto.git ../../community/crypto
+            ;
+            git clone --depth=1 --single-branch https://github.com/ansible-collections/community.general.git ../../community/general
+          pull-request-change-detection: 'true'
+          target: ${{ matrix.target }}
+          target-python-version: ${{ matrix.python }}
+          testing-type: integration
