@@ -25,6 +25,7 @@ jobs:
     name: Build Ansible Docs
     uses: ansible-community/github-docs-build/.github/workflows/_shared-docs-build-push.yml@main
     with:
+      collection-name: community.docker
       init-lenient: false
       init-fail-on-error: true
       squash-hierarchy: true
