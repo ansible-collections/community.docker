@@ -1030,3 +1030,14 @@ releases:
     fragments:
     - 3.2.1.yml
     release_date: '2022-11-06'
+  3.2.2:
+    changes:
+      bugfixes:
+      - docker_container - the ``kill_signal`` option erroneously did not accept strings
+        anymore since 3.0.0 (https://github.com/ansible-collections/community.docker/issues/505,
+        https://github.com/ansible-collections/community.docker/pull/506).
+      release_summary: Bugfix release.
+    fragments:
+    - 3.2.2.yml
+    - 506-docker_container-kill_signal.yml
+    release_date: '2022-11-28'

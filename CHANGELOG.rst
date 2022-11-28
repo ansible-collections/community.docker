@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.2.2
+======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- docker_container - the ``kill_signal`` option erroneously did not accept strings anymore since 3.0.0 (https://github.com/ansible-collections/community.docker/issues/505, https://github.com/ansible-collections/community.docker/pull/506).
+
 v3.2.1
 ======
 
