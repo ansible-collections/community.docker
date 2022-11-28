@@ -302,7 +302,7 @@ class DockerAPIEngineDriver(EngineDriver):
     def kill_container(self, client, container_id, kill_signal=None):
         params = {}
         if kill_signal is not None:
-            params['signal'] = int(kill_signal)
+            params['signal'] = kill_signal
         client.post_call('/containers/{0}/kill', container_id, params=params)
 
     def stop_container(self, client, container_id, timeout=None):
