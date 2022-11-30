@@ -1,0 +1,4 @@
+minor_changes:
+  - docker_image - when using ``archive_path``, detect whether changes are necessary based on the image ID (hash). If the existing tar archive matches the source, do nothing.
+    Previously, each task execution re-created the archive
+    (https://github.com/ansible-collections/community.docker/pull/500).

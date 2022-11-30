@@ -7,10 +7,11 @@
   set_fact:
     iname: "{{ name_prefix ~ '-options' }}"
     iname_1: "{{ name_prefix ~ '-options-1' }}"
+    hello_world_alt: "{{ name_prefix }}-hello-world-alt:v1.2.3-foo"
 
 - name: Registering image name
   set_fact:
-    inames: "{{ inames + [iname, iname_1] }}"
+    inames: "{{ inames + [iname, iname_1, hello_world_alt] }}"
 
 ####################################################################
 ## build.args ######################################################
@@ -235,6 +236,63 @@
     source: pull
   register: archive_image
 
+- assert:
+    that:
+      - archive_image is changed
+
+- name: Copy archive because we will mutate it but other tests need the original
+  copy:
+    remote_src: true
+    src: "{{ remote_tmp_dir }}/image.tar"
+    dest: "{{ remote_tmp_dir }}/image_mutated.tar"
+
+- name: Archive image again (idempotent)
+  docker_image:
+    name: "{{ docker_test_image_hello_world }}"
+    archive_path: "{{ remote_tmp_dir }}/image_mutated.tar"
+    source: local
+  register: archive_image_2
+
+- assert:
+    that:
+      - archive_image_2 is not changed
+
+- name: Archive image 3rd time, should overwrite due to different id
+  docker_image:
+    name: "{{ docker_test_image_alpine_different }}"
+    archive_path: "{{ remote_tmp_dir }}/image_mutated.tar"
+    source: pull
+  register: archive_image_3
+
+- assert:
+    that:
+      - archive_image_3 is changed
+
+- name: Reset archive
+  copy:
+    remote_src: true
+    src: "{{ remote_tmp_dir }}/image.tar"
+    dest: "{{ remote_tmp_dir }}/image_mutated.tar"
+
+- name: Tag image with different name
+  docker_image:
+    name: "{{ docker_test_image_hello_world }}"
+    repository: "{{ hello_world_alt }}"
+    source: local
+
+- name: Archive image 4th time, should overwrite due to different name even when ID is same
+  docker_image:
+    name: "{{ hello_world_alt }}"
+    # Tagged as docker_test_image_hello_world but has same hash/id (before this task overwrites it)
+    archive_path: "{{ remote_tmp_dir }}/image_mutated.tar"
+    source: local
+  register: archive_image_4
+
+- assert:
+    that:
+      - archive_image_4 is changed
+
+# This is the test that needs the original, non-mutated archive
 - name: Archive image by ID
   docker_image:
     name: "{{ archive_image.image.Id }}"
