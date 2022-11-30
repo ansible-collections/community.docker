@@ -9,13 +9,16 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: current_container_facts
 short_description: Return facts about whether the module runs in a Docker container
 version_added: 1.1.0
 description:
   - Return facts about whether the module runs in a Docker container.
+  - This module attempts a best-effort detection. There might be special cases where
+    it does not work; if you encounter one, L(please file an issue,
+    https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&template=bug_report.md).
 author:
   - Felix Fontein (@felixfontein)
 extends_documentation_fragment:
@@ -34,7 +37,7 @@ EXAMPLES = '''
   when: ansible_module_running_in_container
 '''
 
-RETURN = '''
+RETURN = r'''
 ansible_facts:
     description: Ansible facts returned by the module
     type: dict
