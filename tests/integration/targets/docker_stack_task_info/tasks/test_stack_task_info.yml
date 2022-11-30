@@ -19,7 +19,7 @@
   - name: Create a swarm cluster
     docker_swarm:
       state: present
-      advertise_addr: "{{ ansible_default_ipv4.address }}"
+      advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
 
   - name: Get docker_stack_info when docker is running and not stack available
     docker_stack_info:
