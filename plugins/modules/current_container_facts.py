@@ -54,9 +54,9 @@ ansible_facts:
         ansible_module_container_type:
             description:
               - The detected container environment.
-              - Contains an empty string if no container was detected.
-              - Otherwise, will be one of C(docker), C(azure_pipelines), or C(github_actions).
+              - Contains an empty string if no container was detected, or a non-empty string identifying the container environment.
               - C(github_actions) is supported since community.docker 2.4.0.
+              - C(podman) is supported since community.docker 3.3.0.
             returned: always
             type: str
             choices:
@@ -64,9 +64,11 @@ ansible_facts:
               - docker
               - azure_pipelines
               - github_actions
+              - podman
 '''
 
 import os
+import re
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -74,18 +76,20 @@ from ansible.module_utils.basic import AnsibleModule
 def main():
     module = AnsibleModule(dict(), supports_check_mode=True)
 
-    path = '/proc/self/cpuset'
+    cpuset_path = '/proc/self/cpuset'
+    mountinfo_path = '/proc/self/mountinfo'
+
     container_id = ''
     container_type = ''
 
     contents = None
-    if os.path.exists(path):
+    if os.path.exists(cpuset_path):
         # File content varies based on the environment:
         #   No Container: /
         #   Docker: /docker/c86f3732b5ba3d28bb83b6e14af767ab96abbc52de31313dcb1176a62d91a507
         #   Azure Pipelines (Docker): /azpl_job/0f2edfed602dd6ec9f2e42c867f4d5ee640ebf4c058e6d3196d4393bb8fd0891
         #   Podman: /../../../../../..
-        with open(path, 'rb') as f:
+        with open(cpuset_path, 'rb') as f:
             contents = f.read().decode('utf-8')
 
         cgroup_path, cgroup_name = os.path.split(contents.strip())
@@ -102,11 +106,28 @@ def main():
             container_id = cgroup_name
             container_type = 'github_actions'
 
+    if not container_id and os.path.exists(mountinfo_path):
+        with open(mountinfo_path, 'rb') as f:
+            contents = f.read().decode('utf-8')
+
+        for line in contents.splitlines():
+            parts = line.split()
+            if len(parts) >= 5 and parts[4] == '/etc/hostname':
+                m = re.match('/var/lib/docker/containers/([a-f0-9]+)/hostname', parts[3])
+                if m:
+                    container_id = m.group(1)
+                    container_type = 'docker'
+
+                m = re.match('/containers/overlay-containers/([a-f0-9]+)/userdata/hostname', parts[3])
+                if m:
+                    container_id = m.group(1)
+                    container_type = 'podman'
+
     module.exit_json(ansible_facts=dict(
         ansible_module_running_in_container=container_id != '',
         ansible_module_container_id=container_id,
         ansible_module_container_type=container_type,
-    ), cpuset_contents=contents)
+    ))
 
 
 if __name__ == '__main__':
