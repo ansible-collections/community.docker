@@ -9,13 +9,16 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: current_container_facts
 short_description: Return facts about whether the module runs in a Docker container
 version_added: 1.1.0
 description:
   - Return facts about whether the module runs in a Docker container.
+  - This module attempts a best-effort detection. There might be special cases where
+    it does not work; if you encounter one, L(please file an issue,
+    https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&template=bug_report.md).
 author:
   - Felix Fontein (@felixfontein)
 extends_documentation_fragment:
@@ -34,7 +37,7 @@ EXAMPLES = '''
   when: ansible_module_running_in_container
 '''
 
-RETURN = '''
+RETURN = r'''
 ansible_facts:
     description: Ansible facts returned by the module
     type: dict
@@ -54,9 +57,9 @@ ansible_facts:
         ansible_module_container_type:
             description:
               - The detected container environment.
-              - Contains an empty string if no container was detected.
-              - Otherwise, will be one of C(docker), C(azure_pipelines), or C(github_actions).
+              - Contains an empty string if no container was detected, or a non-empty string identifying the container environment.
               - C(github_actions) is supported since community.docker 2.4.0.
+              - C(podman) is supported since community.docker 3.3.0.
             returned: always
             type: str
             choices:
@@ -64,9 +67,11 @@ ansible_facts:
               - docker
               - azure_pipelines
               - github_actions
+              - podman
 '''
 
 import os
+import re
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -74,17 +79,23 @@ from ansible.module_utils.basic import AnsibleModule
 def main():
     module = AnsibleModule(dict(), supports_check_mode=True)
 
-    path = '/proc/self/cpuset'
+    cpuset_path = '/proc/self/cpuset'
+    mountinfo_path = '/proc/self/mountinfo'
+
     container_id = ''
     container_type = ''
 
-    if os.path.exists(path):
+    contents = None
+    if os.path.exists(cpuset_path):
         # File content varies based on the environment:
         #   No Container: /
         #   Docker: /docker/c86f3732b5ba3d28bb83b6e14af767ab96abbc52de31313dcb1176a62d91a507
         #   Azure Pipelines (Docker): /azpl_job/0f2edfed602dd6ec9f2e42c867f4d5ee640ebf4c058e6d3196d4393bb8fd0891
         #   Podman: /../../../../../..
-        with open(path, 'rb') as f:
+        # While this was true and worked well for a long time, this seems to be no longer accurate
+        # with newer Docker / Podman versions and/or with cgroupv2. That's why the /proc/self/mountinfo
+        # detection further down is done when this test is inconclusive.
+        with open(cpuset_path, 'rb') as f:
             contents = f.read().decode('utf-8')
 
         cgroup_path, cgroup_name = os.path.split(contents.strip())
@@ -100,6 +111,23 @@ def main():
         if cgroup_path == '/actions_job':
             container_id = cgroup_name
             container_type = 'github_actions'
+
+    if not container_id and os.path.exists(mountinfo_path):
+        with open(mountinfo_path, 'rb') as f:
+            contents = f.read().decode('utf-8')
+
+        for line in contents.splitlines():
+            parts = line.split()
+            if len(parts) >= 5 and parts[4] == '/etc/hostname':
+                m = re.match('.*/docker/containers/([a-f0-9]+)/hostname', parts[3])
+                if m:
+                    container_id = m.group(1)
+                    container_type = 'docker'
+
+                m = re.match('/containers/overlay-containers/([a-f0-9]+)/userdata/hostname', parts[3])
+                if m:
+                    container_id = m.group(1)
+                    container_type = 'podman'
 
     module.exit_json(ansible_facts=dict(
         ansible_module_running_in_container=container_id != '',
