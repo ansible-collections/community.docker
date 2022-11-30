@@ -92,6 +92,9 @@ def main():
         #   Docker: /docker/c86f3732b5ba3d28bb83b6e14af767ab96abbc52de31313dcb1176a62d91a507
         #   Azure Pipelines (Docker): /azpl_job/0f2edfed602dd6ec9f2e42c867f4d5ee640ebf4c058e6d3196d4393bb8fd0891
         #   Podman: /../../../../../..
+        # While this was true and worked well for a long time, this seems to be no longer accurate
+        # with newer Docker / Podman versions and/or with cgroupv2. That's why the /proc/self/mountinfo
+        # detection further down is done when this test is inconclusive.
         with open(cpuset_path, 'rb') as f:
             contents = f.read().decode('utf-8')
 
