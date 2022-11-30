@@ -78,6 +78,7 @@ def main():
     container_id = ''
     container_type = ''
 
+    contents = None
     if os.path.exists(path):
         # File content varies based on the environment:
         #   No Container: /
@@ -105,7 +106,7 @@ def main():
         ansible_module_running_in_container=container_id != '',
         ansible_module_container_id=container_id,
         ansible_module_container_type=container_type,
-    ))
+    ), cpuset_contents=contents)
 
 
 if __name__ == '__main__':
