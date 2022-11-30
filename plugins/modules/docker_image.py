@@ -362,6 +362,14 @@ if docker_version is not None:
 class ImageManager(DockerBaseClass):
 
     def __init__(self, client, results):
+        '''
+        Configure a docker_image task.
+
+        :param client: Ansible Docker Client wrapper over Docker client
+        :type client: AnsibleDockerClient
+        :param results: This task adds its output values to this dictionary
+        :type results: dict
+        '''
 
         super(ImageManager, self).__init__()
 
@@ -520,8 +528,10 @@ class ImageManager(DockerBaseClass):
         '''
         Archive an image to a .tar file. Called when archive_path is passed.
 
-        :param name - name of the image. Type: str
-        :return None
+        :param name: Name/repository of the image
+        :type name: str
+        :param tag: Optional image tag; assumed to be "latest" if None
+        :type tag: str | None
         '''
 
         if not tag:
