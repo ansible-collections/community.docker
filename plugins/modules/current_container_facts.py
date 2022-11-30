@@ -113,7 +113,7 @@ def main():
         for line in contents.splitlines():
             parts = line.split()
             if len(parts) >= 5 and parts[4] == '/etc/hostname':
-                m = re.match('/var/lib/docker/containers/([a-f0-9]+)/hostname', parts[3])
+                m = re.match('.*/docker/containers/([a-f0-9]+)/hostname', parts[3])
                 if m:
                     container_id = m.group(1)
                     container_type = 'docker'
