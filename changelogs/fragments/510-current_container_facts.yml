@@ -1,0 +1,2 @@
+minor_changes:
+  - "current_container_facts - make work with current Docker version (https://github.com/ansible-collections/community.docker/pull/510, https://github.com/ansible-collections/community.docker/pull/512)."

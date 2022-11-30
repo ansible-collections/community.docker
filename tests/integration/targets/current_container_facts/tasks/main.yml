@@ -1,0 +1,41 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+####################################################################
+# WARNING: These are designed specifically for Ansible tests       #
+# and should not be used as examples of how to write Ansible roles #
+####################################################################
+
+- name: Get facts
+  current_container_facts:
+  register: result
+
+  # WARNING: This is not a proper test as it won't fail when the module does not work!
+  #          To make this a proper test, we need to know the environment in which this
+  #          test runs, which we do not know in general...
+
+- name: Print facts
+  ansible.builtin.debug:
+    var: result.ansible_facts
+
+- name: Read files
+  ansible.builtin.slurp:
+    src: '{{ item }}'
+  loop:
+    - /proc/self/cgroup
+    - /proc/self/cpuset
+    - /proc/self/mountinfo
+  register: slurp
+  ignore_errors: true
+
+- name: Print files
+  ansible.builtin.debug:
+    msg: |-
+      {{ item.content | ansible.builtin.b64decode | split('
+      ') }}
+  loop: '{{ slurp.results }}'
+  loop_control:
+    label: '{{ item.source | default(item.item) }}'
+  when: item is not failed
