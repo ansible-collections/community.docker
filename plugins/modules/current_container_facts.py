@@ -54,7 +54,6 @@ ansible_facts:
               - The detected container environment.
               - Contains an empty string if no container was detected, or a non-empty string identifying the container environment.
               - C(github_actions) is supported since community.docker 2.4.0.
-              - C(podman) is supported since community.docker 3.3.0.
             returned: always
             type: str
             choices:
@@ -62,7 +61,6 @@ ansible_facts:
               - docker
               - azure_pipelines
               - github_actions
-              - podman
 '''
 
 import os
@@ -118,11 +116,6 @@ def main():
                 if m:
                     container_id = m.group(1)
                     container_type = 'docker'
-
-                m = re.match('/containers/overlay-containers/([a-f0-9]+)/userdata/hostname', parts[3])
-                if m:
-                    container_id = m.group(1)
-                    container_type = 'podman'
 
     module.exit_json(ansible_facts=dict(
         ansible_module_running_in_container=container_id != '',
