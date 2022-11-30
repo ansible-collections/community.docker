@@ -17,7 +17,7 @@
     docker_swarm:
       name: default
       state: present
-      advertise_addr: "{{ansible_default_ipv4.address}}"
+      advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
 
   - name: Parameter name should be required
     docker_config:
