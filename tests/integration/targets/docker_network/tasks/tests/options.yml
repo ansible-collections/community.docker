@@ -119,7 +119,7 @@
   - name: swarm
     docker_swarm:
       state: present
-      advertise_addr: "{{ansible_default_ipv4.address}}"
+      advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
 
   # Driver change alongside scope is intentional - bridge doesn't appear to support anything but local, and overlay can't downgrade to local. Additionally, overlay reports as swarm for swarm OR global, so no change is reported in that case.
   # Test output indicates that the scope is altered, at least, so manual inspection will be required to verify this going forward, unless we come up with a test driver that supports multiple scopes.
