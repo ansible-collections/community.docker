@@ -27,7 +27,9 @@
 
 - name: Print files
   ansible.builtin.debug:
-    msg: '{{ item.content | ansible.builtin.b64decode }}'
+    msg: |-
+      {{ item.content | ansible.builtin.b64decode | split('
+      ') }}
   loop: '{{ slurp.results }}'
   loop_control:
     label: '{{ item.source | default(item.item) }}'
