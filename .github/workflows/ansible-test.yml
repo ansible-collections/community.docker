@@ -25,7 +25,7 @@ jobs:
       matrix:
         ansible:
           - '2.11'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Perform sanity testing
         uses: felixfontein/ansible-test-gh-action@integration-error-behavior
@@ -36,7 +36,7 @@ jobs:
           testing-type: sanity
 
   units:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: EOL Units (Ⓐ${{ matrix.ansible }})
     strategy:
       # As soon as the first unit test fails, cancel the others to free up the CI queue
@@ -57,7 +57,7 @@ jobs:
           testing-type: units
 
   integration:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: EOL I (Ⓐ${{ matrix.ansible }}+${{ matrix.docker }}+py${{ matrix.python }}:${{ matrix.target }})
     strategy:
       fail-fast: false
