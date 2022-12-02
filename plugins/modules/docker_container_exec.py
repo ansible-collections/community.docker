@@ -250,6 +250,9 @@ def main():
             'Cmd': argv,
             'Env': format_environment(env) if env is not None else None,
         }
+        if chdir is not None:
+            data['WorkingDir'] = chdir
+
         exec_data = client.post_json_to_json('/containers/{0}/exec', container, data=data)
         exec_id = exec_data['Id']
 
