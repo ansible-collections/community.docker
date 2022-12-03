@@ -200,6 +200,16 @@ releases:
     - 389-api-version.yml
     - 448-docker_stack-error.yml
     release_date: '2022-08-12'
+  1.10.12:
+    changes:
+      minor_changes:
+      - current_container_facts - make work with current Docker version (https://github.com/ansible-collections/community.docker/pull/510,
+        https://github.com/ansible-collections/community.docker/pull/512).
+      release_summary: Maintenance release with a bugfix and improved documentation.
+    fragments:
+    - 1.10.12.yml
+    - 510-current_container_facts.yml
+    release_date: '2022-12-03'
   1.10.2:
     changes:
       bugfixes:
