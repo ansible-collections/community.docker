@@ -710,3 +710,13 @@ releases:
     - 2.7.1.yml
     - 448-docker_stack-error.yml
     release_date: '2022-08-12'
+  2.7.2:
+    changes:
+      minor_changes:
+      - current_container_facts - make work with current Docker version (https://github.com/ansible-collections/community.docker/pull/510,
+        https://github.com/ansible-collections/community.docker/pull/512).
+      release_summary: Bugfix release.
+    fragments:
+    - 2.7.2.yml
+    - 510-current_container_facts.yml
+    release_date: '2022-12-03'

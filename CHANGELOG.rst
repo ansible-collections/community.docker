@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v2.7.2
+======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Minor Changes
+-------------
+
+- current_container_facts - make work with current Docker version (https://github.com/ansible-collections/community.docker/pull/510, https://github.com/ansible-collections/community.docker/pull/512).
+
 v2.7.1
 ======
 
