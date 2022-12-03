@@ -1,2 +1,0 @@
-bugfixes:
-  - "vendored latest Docker SDK for Python bugfix (https://github.com/ansible-collections/community.docker/pull/513, https://github.com/docker/docker-py/issues/3045)."

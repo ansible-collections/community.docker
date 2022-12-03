@@ -1041,3 +1041,25 @@ releases:
     - 3.2.2.yml
     - 506-docker_container-kill_signal.yml
     release_date: '2022-11-28'
+  3.3.0:
+    changes:
+      bugfixes:
+      - docker_container_exec - fix ``chdir`` option which was ignored since community.docker
+        3.0.0 (https://github.com/ansible-collections/community.docker/issues/517,
+        https://github.com/ansible-collections/community.docker/pull/518).
+      - vendored latest Docker SDK for Python bugfix (https://github.com/ansible-collections/community.docker/pull/513,
+        https://github.com/docker/docker-py/issues/3045).
+      minor_changes:
+      - current_container_facts - make work with current Docker version, also support
+        Podman (https://github.com/ansible-collections/community.docker/pull/510).
+      - docker_image - when using ``archive_path``, detect whether changes are necessary
+        based on the image ID (hash). If the existing tar archive matches the source,
+        do nothing. Previously, each task execution re-created the archive (https://github.com/ansible-collections/community.docker/pull/500).
+      release_summary: Feature and bugfix release.
+    fragments:
+    - 3.3.0.yml
+    - 500-idempotent-image-archival.yaml
+    - 510-current_container_facts.yml
+    - 513-api-npipe.yml
+    - 518-docker_container_exec-workdir.yml
+    release_date: '2022-12-03'
