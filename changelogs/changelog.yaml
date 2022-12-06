@@ -720,3 +720,13 @@ releases:
     - 2.7.2.yml
     - 510-current_container_facts.yml
     release_date: '2022-12-03'
+  2.7.3:
+    changes:
+      bugfixes:
+      - current_container_facts - make container detection work better in more cases
+        (https://github.com/ansible-collections/community.docker/pull/522).
+      release_summary: Bugfix release.
+    fragments:
+    - 2.7.3.yml
+    - 522-current-image.yml
+    release_date: '2022-12-06'
