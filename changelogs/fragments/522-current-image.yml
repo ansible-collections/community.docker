@@ -1,2 +1,0 @@
-bugfixes:
-  - "current_container_facts - make container detection work better in more cases (https://github.com/ansible-collections/community.docker/pull/522)."

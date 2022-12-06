@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v1.10.13
+========
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- current_container_facts - make container detection work better in more cases (https://github.com/ansible-collections/community.docker/pull/522).
+
 v1.10.12
 ========
 
