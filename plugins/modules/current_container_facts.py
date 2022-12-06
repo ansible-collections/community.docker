@@ -109,10 +109,13 @@ def main():
         with open(mountinfo_path, 'rb') as f:
             contents = f.read().decode('utf-8')
 
+        # As to why this works, see the explanations by Matt Clay in
+        # https://github.com/ansible/ansible/blob/80d2f8da02052f64396da6b8caaf820eedbf18e2/test/lib/ansible_test/_internal/docker_util.py#L571-L610
+
         for line in contents.splitlines():
             parts = line.split()
             if len(parts) >= 5 and parts[4] == '/etc/hostname':
-                m = re.match('.*/docker/containers/([a-f0-9]+)/hostname', parts[3])
+                m = re.match('.*/([a-f0-9]{64})/hostname$', parts[3])
                 if m:
                     container_id = m.group(1)
                     container_type = 'docker'
