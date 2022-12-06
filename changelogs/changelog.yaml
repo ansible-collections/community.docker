@@ -1063,3 +1063,13 @@ releases:
     - 513-api-npipe.yml
     - 518-docker_container_exec-workdir.yml
     release_date: '2022-12-03'
+  3.3.1:
+    changes:
+      bugfixes:
+      - current_container_facts - make container detection work better in more cases
+        (https://github.com/ansible-collections/community.docker/pull/522).
+      release_summary: Bugfix release.
+    fragments:
+    - 3.3.1.yml
+    - 522-current-image.yml
+    release_date: '2022-12-06'
