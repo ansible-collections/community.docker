@@ -269,8 +269,8 @@ class DockerAPIEngineDriver(EngineDriver):
     def start_container(self, client, container_id):
         client.post_json('/containers/{0}/start', container_id)
 
-    def wait_for_container(self, client, container_id):
-        return client.post_json_to_json('/containers/{0}/wait', container_id)['StatusCode']
+    def wait_for_container(self, client, container_id, timeout=None):
+        return client.post_json_to_json('/containers/{0}/wait', container_id, timeout=timeout)['StatusCode']
 
     def get_container_output(self, client, container_id):
         config = client.get_json('/containers/{0}/json', container_id)

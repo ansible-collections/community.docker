@@ -281,7 +281,7 @@ class EngineDriver(object):
         pass
 
     @abc.abstractmethod
-    def wait_for_container(self, client, container_id):
+    def wait_for_container(self, client, container_id, timeout=None):
         pass
 
     @abc.abstractmethod
