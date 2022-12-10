@@ -43,6 +43,12 @@
           paths:
             - "{{ role_path }}/tasks"
 
+    - name: Make sure that docker is running
+      service:
+        name: docker
+        state: started
+      when: not ansible_module_running_in_container
+
     # Detect docker API version
     - name: Check Docker API version
       command: "docker version -f {% raw %}'{{(index .Server.Components 0).Details.ApiVersion}}'{% endraw %}"
