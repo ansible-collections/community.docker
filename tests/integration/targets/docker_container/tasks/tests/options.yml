@@ -62,6 +62,7 @@
     state: started
     blkio_weight: 123
   register: blkio_weight_2
+  ignore_error: true
 
 - name: blkio_weight (change)
   docker_container:
@@ -72,6 +73,7 @@
     blkio_weight: 234
     force_kill: yes
   register: blkio_weight_3
+  ignore_error: true
 
 - name: cleanup
   docker_container:
@@ -80,10 +82,18 @@
     force_kill: yes
   diff: no
 
-- assert:
+- when: blkio_weight_1 is failed
+  assert:
+    that:
+    - "'setting cgroup config for procHooks process caused: failed to write' in blkio_weight_1.msg"
+
+- when: blkio_weight_1 is not failed
+  assert:
     that:
     - blkio_weight_1 is changed
+    - blkio_weight_2 is not failed
     - "blkio_weight_2 is not changed or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (blkio_weight_2.warnings | default([]))"
+    - blkio_weight_3 is not failed
     - blkio_weight_3 is changed
 
 ####################################################################
@@ -198,7 +208,12 @@
     - cgroupns_mode_1 is changed
     - cgroupns_mode_2 is not changed and cgroupns_mode_2 is not failed
     - "cgroupns_mode_3 is changed or 'Docker warning: Your kernel does not support cgroup namespaces.  Cgroup namespace setting discarded.' in (cgroupns_mode_3.warnings | default([]))"
-  when: docker_api_version is version('1.41', '>=')
+  when: docker_api_version is version('1.41', '>=') and cgroupns_mode_1 is not failed
+- assert:
+    that:
+    - >-
+      'error mounting "cgroup" to rootfs at "/sys/fs/cgroup"' in cgroupns_mode_1.msg
+  when: docker_api_version is version('1.41', '>=') and cgroupns_mode_1 is failed
 - assert:
     that:
     - cgroupns_mode_1 is failed
