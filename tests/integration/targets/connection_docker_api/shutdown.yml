@@ -6,7 +6,7 @@
 - hosts: localhost
   connection: local
   vars:
-    docker_skip_cleanup: yes
+    docker_skip_cleanup: true
 
   tasks:
     - name: Remove docker packages
@@ -17,3 +17,4 @@
           - docker-ce
           - docker-ce-cli
         state: absent
+      when: not docker_skip_cleanup
