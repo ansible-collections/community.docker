@@ -208,7 +208,10 @@
     that:
     - cgroupns_mode_1 is changed
     - cgroupns_mode_2 is not changed and cgroupns_mode_2 is not failed
-    - "cgroupns_mode_3 is changed or 'Docker warning: Your kernel does not support cgroup namespaces.  Cgroup namespace setting discarded.' in (cgroupns_mode_3.warnings | default([]))"
+    - >-
+      cgroupns_mode_3 is changed or
+      'Docker warning: Your kernel does not support cgroup namespaces.  Cgroup namespace setting discarded.' in (cgroupns_mode_3.warnings | default([])) or
+      (cgroupns_mode_3 is failed and 'error mounting "cgroup" to rootfs at "/sys/fs/cgroup"' in cgroupns_mode_3.msg)
   when: docker_api_version is version('1.41', '>=') and cgroupns_mode_1 is not failed
 - assert:
     that:

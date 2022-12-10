@@ -13,13 +13,16 @@
 # We do not test cpuset_cpus and cpuset_mems since changing it fails if the system does
 # not have 'enough' CPUs. We do not test kernel_memory since it is deprecated and fails.
 
+- set_fact:
+    has_blkio_weight: true
+
 - name: Create container
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
-    blkio_weight: 123
+    blkio_weight: "{{ 123 if has_blkio_weight else omit }}"
     cpu_period: 90000
     cpu_quota: 150000
     cpu_shares: 900
@@ -29,6 +32,39 @@
     restart_policy: on-failure
     restart_retries: 5
   register: create
+  ignore_errors: true
+
+- when: create is failed
+  block:
+    - name: Make sure container is not there
+      docker_container:
+        name: "{{ cname }}"
+        state: absent
+
+    - when: "'setting cgroup config for procHooks process caused: failed to write' in create.msg and 'io.bfq.weight' in create.msg"
+      set_fact:
+        has_blkio_weight: false
+
+    - name: Create container again
+      docker_container:
+        image: "{{ docker_test_image_alpine }}"
+        command: '/bin/sh -c "sleep 10m"'
+        name: "{{ cname }}"
+        state: started
+        blkio_weight: "{{ 123 if has_blkio_weight else omit }}"
+        cpu_period: 90000
+        cpu_quota: 150000
+        cpu_shares: 900
+        memory: 64M
+        memory_reservation: 64M
+        memory_swap: 64M
+        restart_policy: on-failure
+        restart_retries: 5
+      register: create_2
+
+    - when: "'setting cgroup config for procHooks process caused: failed to write' in create.msg and 'io.bfq.weight' in create.msg"
+      set_fact:
+        create: "{{ create_2 }}"
 
 - name: Update values
   docker_container:
@@ -36,7 +72,7 @@
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
-    blkio_weight: 234
+    blkio_weight: "{{ 234 if has_blkio_weight else omit }}"
     cpu_period: 50000
     cpu_quota: 50000
     cpu_shares: 1100
@@ -54,7 +90,7 @@
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
-    blkio_weight: 135
+    blkio_weight: "{{ 135 if has_blkio_weight else omit }}"
     cpu_period: 30000
     cpu_quota: 40000
     cpu_shares: 1000
@@ -72,7 +108,7 @@
     command: '/bin/sh -c "sleep 20m"'  # this will force re-creation
     name: "{{ cname }}"
     state: started
-    blkio_weight: 234
+    blkio_weight: "{{ 234 if has_blkio_weight else omit }}"
     cpu_period: 50000
     cpu_quota: 50000
     cpu_shares: 1100
@@ -111,8 +147,8 @@
   assert:
     that:
     # blkio_weight sometimes cannot be set, then we end up with 0 instead of the value we had
-    - update.diff.before.blkio_weight == 123 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([]))
-    - update.diff.after.blkio_weight == 234
+    - update.diff.before.blkio_weight == 123 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([])) or not has_blkio_weight
+    - update.diff.after.blkio_weight == 234 or not has_blkio_weight
     - update.diff.before.cpu_period == 90000
     - update.diff.after.cpu_period == 50000
     - update.diff.before.cpu_quota == 150000
@@ -132,8 +168,8 @@
 - name: Check diff for second update
   assert:
     that:
-    - update2.diff.before.blkio_weight == 234 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([]))
-    - update2.diff.after.blkio_weight == 135
+    - update2.diff.before.blkio_weight == 234 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([])) or not has_blkio_weight
+    - update2.diff.after.blkio_weight == 135 or not has_blkio_weight
     - update2.diff.before.cpu_period == 50000
     - update2.diff.after.cpu_period == 30000
     - update2.diff.before.cpu_quota == 50000
@@ -154,8 +190,8 @@
 - name: Check diff for recreation
   assert:
     that:
-    - recreate.diff.before.blkio_weight == 135 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([]))
-    - recreate.diff.after.blkio_weight == 234
+    - recreate.diff.before.blkio_weight == 135 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([])) or not has_blkio_weight
+    - recreate.diff.after.blkio_weight == 234 or not has_blkio_weight
     - recreate.diff.before.cpu_period == 30000
     - recreate.diff.after.cpu_period == 50000
     - recreate.diff.before.cpu_quota == 40000
