@@ -880,6 +880,7 @@
       - path: /dev/urandom
         rate: 10K
   register: device_read_bps_1
+  ignore_errors: true
 
 - name: device_read_bps (idempotency)
   docker_container:
@@ -893,6 +894,7 @@
       - path: /dev/random
         rate: 20M
   register: device_read_bps_2
+  ignore_errors: true
 
 - name: device_read_bps (lesser entries)
   docker_container:
@@ -904,6 +906,7 @@
       - path: /dev/random
         rate: 20M
   register: device_read_bps_3
+  ignore_errors: true
 
 - name: device_read_bps (changed)
   docker_container:
@@ -918,6 +921,7 @@
         rate: 5K
     force_kill: yes
   register: device_read_bps_4
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
@@ -926,12 +930,22 @@
     force_kill: yes
   diff: no
 
-- assert:
+- when: device_read_bps_1 is not failed
+  assert:
     that:
+    - device_read_bps_1 is not failed
     - device_read_bps_1 is changed
+    - device_read_bps_2 is not failed
     - device_read_bps_2 is not changed
+    - device_read_bps_3 is not failed
     - device_read_bps_3 is not changed
+    - device_read_bps_4 is not failed
     - device_read_bps_4 is changed
+
+- when: device_read_bps_1 is failed
+  assert:
+    that:
+    - "'error setting cgroup config for procHooks process' in device_read_bps_1.msg and 'blkio.throttle.read_bps_device: no such device' in device_read_bps_1.msg"
 
 ####################################################################
 ## device_read_iops ################################################
@@ -949,6 +963,7 @@
       - path: /dev/urandom
         rate: 20
   register: device_read_iops_1
+  ignore_errors: true
 
 - name: device_read_iops (idempotency)
   docker_container:
@@ -962,6 +977,7 @@
       - path: /dev/random
         rate: 10
   register: device_read_iops_2
+  ignore_errors: true
 
 - name: device_read_iops (less)
   docker_container:
@@ -973,6 +989,7 @@
       - path: /dev/random
         rate: 10
   register: device_read_iops_3
+  ignore_errors: true
 
 - name: device_read_iops (changed)
   docker_container:
@@ -987,6 +1004,7 @@
         rate: 50
     force_kill: yes
   register: device_read_iops_4
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
@@ -995,12 +1013,22 @@
     force_kill: yes
   diff: no
 
-- assert:
+- when: device_read_iops_1 is not failed
+  assert:
     that:
+    - device_read_iops_1 is not failed
     - device_read_iops_1 is changed
+    - device_read_iops_2 is not failed
     - device_read_iops_2 is not changed
+    - device_read_iops_3 is not failed
     - device_read_iops_3 is not changed
+    - device_read_iops_4 is not failed
     - device_read_iops_4 is changed
+
+- when: device_read_iops_1 is failed
+  assert:
+    that:
+    - "'error setting cgroup config for procHooks process' in device_read_iops_1.msg and 'blkio.throttle.read_iops_device: no such device' in device_read_iops_1.msg"
 
 ####################################################################
 ## device_write_bps and device_write_iops ##########################
@@ -1019,6 +1047,7 @@
       - path: /dev/urandom
         rate: 30
   register: device_write_limit_1
+  ignore_errors: true
 
 - name: device_write_bps and device_write_iops (idempotency)
   docker_container:
@@ -1033,6 +1062,7 @@
       - path: /dev/urandom
         rate: 30
   register: device_write_limit_2
+  ignore_errors: true
 
 - name: device_write_bps device_write_iops (changed)
   docker_container:
@@ -1048,6 +1078,7 @@
         rate: 100
     force_kill: yes
   register: device_write_limit_3
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
@@ -1056,11 +1087,18 @@
     force_kill: yes
   diff: no
 
-- assert:
+- when: device_write_limit_1 is not failed
+  assert:
     that:
+    - device_write_limit_1 is not failed and device_write_limit_2 is not failed and device_write_limit_3 is not failed
     - device_write_limit_1 is changed
     - device_write_limit_2 is not changed
     - device_write_limit_3 is changed
+
+- when: device_write_limit_1 is failed
+  assert:
+    that:
+    - "'error setting cgroup config for procHooks process' in device_write_limit_1.msg and 'blkio.throttle.write_bps_device: no such device' in device_write_limit_1.msg"
 
 ####################################################################
 ## device_requests #################################################
