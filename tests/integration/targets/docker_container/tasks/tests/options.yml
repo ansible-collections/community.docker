@@ -53,6 +53,7 @@
     state: started
     blkio_weight: 123
   register: blkio_weight_1
+  ignore_errors: true
 
 - name: blkio_weight (idempotency)
   docker_container:
@@ -62,7 +63,7 @@
     state: started
     blkio_weight: 123
   register: blkio_weight_2
-  ignore_error: true
+  ignore_errors: true
 
 - name: blkio_weight (change)
   docker_container:
@@ -73,7 +74,7 @@
     blkio_weight: 234
     force_kill: yes
   register: blkio_weight_3
-  ignore_error: true
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
