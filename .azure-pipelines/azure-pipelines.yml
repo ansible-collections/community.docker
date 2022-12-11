@@ -187,6 +187,8 @@ stages:
               test: debian-bullseye/3.9
             - name: ArchLinux
               test: archlinux/3.10
+            - name: CentOS Stream 8 with Python 3.6
+              test: centos-stream8/3.6
             - name: CentOS Stream 8 with Python 3.9
               test: centos-stream8/3.9
           groups:
@@ -206,6 +208,14 @@ stages:
               test: rhel/7.9
             - name: RHEL 9.0 with latest Docker SDK from PyPi
               test: rhel/9.0-pypi-latest
+            - name: Alpine 3.16
+              test: alpine/3.16
+            - name: Fedora 36
+              test: fedora/36
+            - name: Ubuntu 20.04
+              test: ubuntu/20.04
+            - name: Ubuntu 22.04
+              test: ubuntu/22.04
           groups:
             - 1
             - 2
