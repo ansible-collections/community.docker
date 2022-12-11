@@ -41,11 +41,11 @@
   - name: Restore /usr/sbin/policy-rc.d (if needed)
     command: mv {{ policy_rc_d.backup_file }} /usr/sbin/policy-rc.d
     when:
-    - '''backup_file'' in policy_rc_d'
+    - '"backup_file" in policy_rc_d'
 
   - name: Remove /usr/sbin/policy-rc.d (if needed)
     file:
       path: /usr/sbin/policy-rc.d
       state: absent
     when:
-    - '''backup_file'' not in policy_rc_d'
+    - '"backup_file" not in policy_rc_d'

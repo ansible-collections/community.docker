@@ -53,6 +53,7 @@
     state: started
     blkio_weight: 123
   register: blkio_weight_1
+  ignore_errors: true
 
 - name: blkio_weight (idempotency)
   docker_container:
@@ -62,6 +63,7 @@
     state: started
     blkio_weight: 123
   register: blkio_weight_2
+  ignore_errors: true
 
 - name: blkio_weight (change)
   docker_container:
@@ -72,6 +74,7 @@
     blkio_weight: 234
     force_kill: yes
   register: blkio_weight_3
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
@@ -80,10 +83,18 @@
     force_kill: yes
   diff: no
 
-- assert:
+- when: blkio_weight_1 is failed
+  assert:
+    that:
+    - "'setting cgroup config for procHooks process caused: failed to write' in blkio_weight_1.msg"
+
+- when: blkio_weight_1 is not failed
+  assert:
     that:
     - blkio_weight_1 is changed
+    - blkio_weight_2 is not failed
     - "blkio_weight_2 is not changed or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (blkio_weight_2.warnings | default([]))"
+    - blkio_weight_3 is not failed
     - blkio_weight_3 is changed
 
 ####################################################################
@@ -197,8 +208,16 @@
     that:
     - cgroupns_mode_1 is changed
     - cgroupns_mode_2 is not changed and cgroupns_mode_2 is not failed
-    - "cgroupns_mode_3 is changed or 'Docker warning: Your kernel does not support cgroup namespaces.  Cgroup namespace setting discarded.' in (cgroupns_mode_3.warnings | default([]))"
-  when: docker_api_version is version('1.41', '>=')
+    - >-
+      cgroupns_mode_3 is changed or
+      'Docker warning: Your kernel does not support cgroup namespaces.  Cgroup namespace setting discarded.' in (cgroupns_mode_3.warnings | default([])) or
+      (cgroupns_mode_3 is failed and 'error mounting "cgroup" to rootfs at "/sys/fs/cgroup"' in cgroupns_mode_3.msg)
+  when: docker_api_version is version('1.41', '>=') and cgroupns_mode_1 is not failed
+- assert:
+    that:
+    - >-
+      'error mounting "cgroup" to rootfs at "/sys/fs/cgroup"' in cgroupns_mode_1.msg
+  when: docker_api_version is version('1.41', '>=') and cgroupns_mode_1 is failed
 - assert:
     that:
     - cgroupns_mode_1 is failed
@@ -861,6 +880,7 @@
       - path: /dev/urandom
         rate: 10K
   register: device_read_bps_1
+  ignore_errors: true
 
 - name: device_read_bps (idempotency)
   docker_container:
@@ -874,6 +894,7 @@
       - path: /dev/random
         rate: 20M
   register: device_read_bps_2
+  ignore_errors: true
 
 - name: device_read_bps (lesser entries)
   docker_container:
@@ -885,6 +906,7 @@
       - path: /dev/random
         rate: 20M
   register: device_read_bps_3
+  ignore_errors: true
 
 - name: device_read_bps (changed)
   docker_container:
@@ -899,6 +921,7 @@
         rate: 5K
     force_kill: yes
   register: device_read_bps_4
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
@@ -907,12 +930,22 @@
     force_kill: yes
   diff: no
 
-- assert:
+- when: device_read_bps_1 is not failed
+  assert:
     that:
+    - device_read_bps_1 is not failed
     - device_read_bps_1 is changed
+    - device_read_bps_2 is not failed
     - device_read_bps_2 is not changed
+    - device_read_bps_3 is not failed
     - device_read_bps_3 is not changed
+    - device_read_bps_4 is not failed
     - device_read_bps_4 is changed
+
+- when: device_read_bps_1 is failed
+  assert:
+    that:
+    - "'error setting cgroup config for procHooks process' in device_read_bps_1.msg and 'blkio.throttle.read_bps_device: no such device' in device_read_bps_1.msg"
 
 ####################################################################
 ## device_read_iops ################################################
@@ -930,6 +963,7 @@
       - path: /dev/urandom
         rate: 20
   register: device_read_iops_1
+  ignore_errors: true
 
 - name: device_read_iops (idempotency)
   docker_container:
@@ -943,6 +977,7 @@
       - path: /dev/random
         rate: 10
   register: device_read_iops_2
+  ignore_errors: true
 
 - name: device_read_iops (less)
   docker_container:
@@ -954,6 +989,7 @@
       - path: /dev/random
         rate: 10
   register: device_read_iops_3
+  ignore_errors: true
 
 - name: device_read_iops (changed)
   docker_container:
@@ -968,6 +1004,7 @@
         rate: 50
     force_kill: yes
   register: device_read_iops_4
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
@@ -976,12 +1013,22 @@
     force_kill: yes
   diff: no
 
-- assert:
+- when: device_read_iops_1 is not failed
+  assert:
     that:
+    - device_read_iops_1 is not failed
     - device_read_iops_1 is changed
+    - device_read_iops_2 is not failed
     - device_read_iops_2 is not changed
+    - device_read_iops_3 is not failed
     - device_read_iops_3 is not changed
+    - device_read_iops_4 is not failed
     - device_read_iops_4 is changed
+
+- when: device_read_iops_1 is failed
+  assert:
+    that:
+    - "'error setting cgroup config for procHooks process' in device_read_iops_1.msg and 'blkio.throttle.read_iops_device: no such device' in device_read_iops_1.msg"
 
 ####################################################################
 ## device_write_bps and device_write_iops ##########################
@@ -1000,6 +1047,7 @@
       - path: /dev/urandom
         rate: 30
   register: device_write_limit_1
+  ignore_errors: true
 
 - name: device_write_bps and device_write_iops (idempotency)
   docker_container:
@@ -1014,6 +1062,7 @@
       - path: /dev/urandom
         rate: 30
   register: device_write_limit_2
+  ignore_errors: true
 
 - name: device_write_bps device_write_iops (changed)
   docker_container:
@@ -1029,6 +1078,7 @@
         rate: 100
     force_kill: yes
   register: device_write_limit_3
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
@@ -1037,11 +1087,18 @@
     force_kill: yes
   diff: no
 
-- assert:
+- when: device_write_limit_1 is not failed
+  assert:
     that:
+    - device_write_limit_1 is not failed and device_write_limit_2 is not failed and device_write_limit_3 is not failed
     - device_write_limit_1 is changed
     - device_write_limit_2 is not changed
     - device_write_limit_3 is changed
+
+- when: device_write_limit_1 is failed
+  assert:
+    that:
+    - "'error setting cgroup config for procHooks process' in device_write_limit_1.msg and 'blkio.throttle.write_bps_device: no such device' in device_write_limit_1.msg"
 
 ####################################################################
 ## device_requests #################################################

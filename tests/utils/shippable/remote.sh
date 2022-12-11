@@ -10,7 +10,16 @@ IFS='/:' read -ra args <<< "$1"
 
 platform="${args[0]}"
 version="${args[1]}"
-target="shippable/posix/"
+pyver=default
+
+# check for explicit python version like 8.3@3.8
+declare -a splitversion
+IFS='@' read -ra splitversion <<< "$version"
+
+if [ "${#splitversion[@]}" -gt 1 ]; then
+    version="${splitversion[0]}"
+    pyver="${splitversion[1]}"
+fi
 
 if [ "${#args[@]}" -gt 2 ]; then
     target="azp/${args[2]}/"
@@ -22,10 +31,6 @@ force_python=""
 if [[ "${version}" =~ -pypi-latest$ ]]; then
     version="${version/-pypi-latest}"
     echo 'force_docker_sdk_for_python_pypi: true' >> tests/integration/interation_config.yml
-    if [ "${platform}" == "rhel" ] && [[ "${version}" =~ ^8\. ]]; then
-        # Use Python 3.8 on RHEL 8.x - TODO: this might be no longer necessary for high enough minor version! Check!
-        force_python="--python 3.8"
-    fi
 fi
 
 stage="${S:-prod}"
@@ -37,4 +42,4 @@ fi
 
 # shellcheck disable=SC2086
 ansible-test integration --color -v --retry-on-error "${target}" ${COVERAGE:+"$COVERAGE"} ${CHANGED:+"$CHANGED"} ${UNSTABLE:+"$UNSTABLE"} \
-    --remote "${platform}/${version}" --remote-terminate always --remote-stage "${stage}" --remote-provider "${provider}" ${force_python}
+    --python "${pyver}" --remote "${platform}/${version}" --remote-terminate always --remote-stage "${stage}" --remote-provider "${provider}" ${force_python}

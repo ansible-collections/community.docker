@@ -11,6 +11,11 @@
 - debug:
     msg: "Using name prefix {{ name_prefix }}"
 
+- name: Check whether /dev/fuse exists
+  stat:
+    path: /dev/fuse
+  register: dev_fuse_stat
+
 - block:
   - include_tasks: run-test.yml
     with_fileglob:
@@ -23,7 +28,7 @@
       state: absent
     with_items: "{{ plugin_names }}"
 
-  when: docker_api_version is version('1.25', '>=')
+  when: docker_api_version is version('1.25', '>=') and dev_fuse_stat.stat.exists
 
 - fail: msg="Too old docker / docker-py version to run docker_plugin tests!"
   when: not(docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)

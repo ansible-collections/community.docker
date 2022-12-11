@@ -187,7 +187,7 @@ stages:
               test: debian-bullseye/3.9
             - name: ArchLinux
               test: archlinux/3.10
-            - name: CentOS Stream 8
+            - name: CentOS Stream 8 w/ Python 3.9
               test: centos-stream8/3.9
           groups:
             - 4
@@ -200,11 +200,12 @@ stages:
     jobs:
       - template: templates/matrix.yml
         parameters:
-          nameFormat: RHEL {0}
-          testFormat: devel/rhel/{0}
+          testFormat: devel/{0}
           targets:
-            - test: '7.9'
-            - test: '9.0-pypi-latest'
+            - name: RHEL 7.9
+              test: rhel/7.9
+            - name: RHEL 9.0 w/ latest Docker SDK from PyPi
+              test: rhel/9.0-pypi-latest
           groups:
             - 1
             - 2
@@ -217,10 +218,10 @@ stages:
     jobs:
       - template: templates/matrix.yml
         parameters:
-          nameFormat: RHEL {0}
-          testFormat: 2.14/rhel/{0}
+          testFormat: 2.14/{0}
           targets:
-            - test: '9.0'
+            - name: RHEL 9.0
+              test: rhel/9.0
           groups:
             - 1
             - 2
@@ -233,10 +234,10 @@ stages:
     jobs:
       - template: templates/matrix.yml
         parameters:
-          nameFormat: RHEL {0}
-          testFormat: 2.13/rhel/{0}
+          testFormat: 2.13/{0}
           targets:
-            - test: '8.5'
+            - name: RHEL 8.5
+              test: rhel/8.5
           groups:
             - 1
             - 2
@@ -249,10 +250,10 @@ stages:
     jobs:
       - template: templates/matrix.yml
         parameters:
-          nameFormat: RHEL {0}
-          testFormat: 2.12/rhel/{0}
+          testFormat: 2.12/{0}
           targets:
-            - test: '8.4'
+            - name: RHEL 8.4
+              test: rhel/8.4
           groups:
             - 1
             - 2

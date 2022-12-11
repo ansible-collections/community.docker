@@ -6,3 +6,4 @@ azp/4
 destructive
 needs/root
 skip/docker  # we need a VM, and not a container
+skip/alpine  # for some reason, SSH has problems with Alpine VMs
