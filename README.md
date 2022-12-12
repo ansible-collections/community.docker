@@ -90,7 +90,7 @@ If you use the Ansible package and do not update collections independently, use 
 
 ## Using this collection
 
-Before using the General community collection, you need to install the collection with the `ansible-galaxy` CLI:
+Before using the Docker community collection, you need to install the collection with the `ansible-galaxy` CLI:
 
     ansible-galaxy collection install community.docker
 
