@@ -187,7 +187,7 @@ stages:
               test: debian-bullseye/3.9
             - name: ArchLinux
               test: archlinux/3.10
-            - name: CentOS Stream 8 w/ Python 3.9
+            - name: CentOS Stream 8 with Python 3.9
               test: centos-stream8/3.9
           groups:
             - 4
@@ -204,7 +204,7 @@ stages:
           targets:
             - name: RHEL 7.9
               test: rhel/7.9
-            - name: RHEL 9.0 w/ latest Docker SDK from PyPi
+            - name: RHEL 9.0 with latest Docker SDK from PyPi
               test: rhel/9.0-pypi-latest
           groups:
             - 1
