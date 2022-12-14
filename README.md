@@ -65,7 +65,7 @@ Both libraries cannot be installed at the same time. If you accidentally did ins
 
 ## Using this collection
 
-Before using the General community collection, you need to install the collection with the `ansible-galaxy` CLI:
+Before using the Docker community collection, you need to install the collection with the `ansible-galaxy` CLI:
 
     ansible-galaxy collection install community.docker
 
