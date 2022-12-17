@@ -32,7 +32,7 @@ jobs:
     # for the latest list.
     runs-on: >-
       ${{ contains(fromJson(
-          '["2.9", "2.10", "2.11", "2.12"]'
+          '["2.9", "2.10", "2.11"]'
       ), matrix.ansible) && 'ubuntu-20.04' || 'ubuntu-latest' }}
     steps:
       - name: Perform sanity testing
@@ -51,7 +51,7 @@ jobs:
     # for the latest list.
     runs-on: >-
       ${{ contains(fromJson(
-          '["2.9", "2.10", "2.11", "2.12"]'
+          '["2.9", "2.10", "2.11"]'
       ), matrix.ansible) && 'ubuntu-20.04' || 'ubuntu-latest' }}
     name: EOL Units (Ⓐ${{ matrix.ansible }})
     strategy:
@@ -80,7 +80,7 @@ jobs:
     # for the latest list.
     runs-on: >-
       ${{ contains(fromJson(
-          '["2.9", "2.10", "2.11", "2.12"]'
+          '["2.9", "2.10", "2.11"]'
       ), matrix.ansible) && 'ubuntu-20.04' || 'ubuntu-latest' }}
     name: EOL I (Ⓐ${{ matrix.ansible }}+${{ matrix.docker }}+py${{ matrix.python }}:${{ matrix.target }})
     strategy:
