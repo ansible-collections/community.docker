@@ -36,7 +36,7 @@ jobs:
       ), matrix.ansible) && 'ubuntu-20.04' || 'ubuntu-latest' }}
     steps:
       - name: Perform sanity testing
-        uses: felixfontein/ansible-test-gh-action@integration-error-behavior
+        uses: felixfontein/ansible-test-gh-action@main
         with:
           ansible-core-version: stable-${{ matrix.ansible }}
           coverage: ${{ github.event_name == 'schedule' && 'always' || 'never' }}
@@ -65,7 +65,7 @@ jobs:
       - name: >-
           Perform unit testing against
           Ansible version ${{ matrix.ansible }}
-        uses: felixfontein/ansible-test-gh-action@integration-error-behavior
+        uses: felixfontein/ansible-test-gh-action@main
         with:
           ansible-core-version: stable-${{ matrix.ansible }}
           coverage: ${{ github.event_name == 'schedule' && 'always' || 'never' }}
@@ -120,12 +120,14 @@ jobs:
           Perform integration testing against
           Ansible version ${{ matrix.ansible }}
           under Python ${{ matrix.python }}
-        uses: felixfontein/ansible-test-gh-action@integration-error-behavior
+        uses: felixfontein/ansible-test-gh-action@main
         with:
           ansible-core-version: stable-${{ matrix.ansible }}
           coverage: ${{ github.event_name == 'schedule' && 'always' || 'never' }}
           docker-image: ${{ matrix.docker }}
           integration-continue-on-error: 'false'
+          integration-diff: 'false'
+          integration-retry-on-error: 'true'
           pre-test-cmd: >-
             mkdir -p ../../ansible
             ;
