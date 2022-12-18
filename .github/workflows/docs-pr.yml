@@ -25,6 +25,12 @@ jobs:
       init-lenient: false
       init-fail-on-error: true
       squash-hierarchy: true
+      init-project: Community.Docker Collection
+      init-copyright: Community.Docker Contributors
+      init-title: Community.Docker Collection Documentation
+      init-html-short-title: Community.Docker Collection Docs
+      init-extra-html-theme-options: |
+        documentation_home_url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/branch/main/
       render-file-line: '> * `$<status>` [$<path_tail>](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr/${{ github.event.number }}/$<path_tail>)'
 
   publish-docs-gh-pages:
