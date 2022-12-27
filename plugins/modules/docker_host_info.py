@@ -44,6 +44,13 @@ options:
       - Whether to list containers.
     type: bool
     default: false
+  containers_all:
+    description:
+      - By default, only running containers are returned.
+      - This corresponds to the C(--all) option to C(docker container list).
+    type: bool
+    default: false
+    version_added: 3.4.0
   containers_filters:
     description:
       - A dictionary of filter values used for selecting containers to list.
@@ -283,7 +290,7 @@ class DockerHostManager(DockerBaseClass):
             if docker_object == 'containers':
                 params = {
                     'limit': -1,
-                    'all': 0,
+                    'all': 1 if self.client.module.params['containers_all'] else 0,
                     'size': 0,
                     'trunc_cmd': 0,
                     'filters': convert_filters(filters) if filters else None,
@@ -336,6 +343,7 @@ class DockerHostManager(DockerBaseClass):
 def main():
     argument_spec = dict(
         containers=dict(type='bool', default=False),
+        containers_all=dict(type='bool', default=False),
         containers_filters=dict(type='dict'),
         images=dict(type='bool', default=False),
         images_filters=dict(type='dict'),
