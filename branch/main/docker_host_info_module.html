@@ -265,6 +265,20 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-containers_all"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-containers-all"><strong>containers_all</strong></p>
+<a class="ansibleOptionLink" href="#parameter-containers_all" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><span class="ansible-option-versionadded">added in community.docker 3.4.0</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>By default, only running containers are returned.</p>
+<p>This corresponds to the <code class="docutils literal notranslate"><span class="pre">--all</span></code> option to <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">list</span></code>.</p>
+<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-containers_filters"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-containers-filters"><strong>containers_filters</strong></p>
 <a class="ansibleOptionLink" href="#parameter-containers_filters" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
@@ -274,7 +288,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>See <a class="reference external" href="https://docs.docker.com/engine/reference/commandline/container_prune/#filtering">the docker documentation</a> for more information on possible filters.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-debug"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-debug"><strong>debug</strong></p>
 <a class="ansibleOptionLink" href="#parameter-debug" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -286,7 +300,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-disk_usage"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-disk-usage"><strong>disk_usage</strong></p>
 <a class="ansibleOptionLink" href="#parameter-disk_usage" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -299,7 +313,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-docker_host"></div>
 <div class="ansibleOptionAnchor" id="parameter-docker_url"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-docker-url"><span id="ansible-collections-community-docker-docker-host-info-module-parameter-docker-host"></span><strong>docker_host</strong></p>
 <a class="ansibleOptionLink" href="#parameter-docker_host" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: docker_url</span></p>
@@ -310,7 +324,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;unix://var/run/docker.sock&quot;</span></code></p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-images"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-images"><strong>images</strong></p>
 <a class="ansibleOptionLink" href="#parameter-images" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -322,7 +336,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-images_filters"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-images-filters"><strong>images_filters</strong></p>
 <a class="ansibleOptionLink" href="#parameter-images_filters" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
@@ -332,7 +346,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>See <a class="reference external" href="https://docs.docker.com/engine/reference/commandline/image_prune/#filtering">the docker documentation</a> for more information on possible filters.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-networks"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-networks"><strong>networks</strong></p>
 <a class="ansibleOptionLink" href="#parameter-networks" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -344,7 +358,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-networks_filters"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-networks-filters"><strong>networks_filters</strong></p>
 <a class="ansibleOptionLink" href="#parameter-networks_filters" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
@@ -353,7 +367,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>See <a class="reference external" href="https://docs.docker.com/engine/reference/commandline/network_prune/#filtering">the docker documentation</a> for more information on possible filters.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ssl_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-ssl-version"><strong>ssl_version</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ssl_version" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -361,7 +375,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code> will be used instead.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-timeout"><strong>timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -370,7 +384,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">60</span></code></p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -383,7 +397,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-tls-hostname"><strong>tls_hostname</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -392,7 +406,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Note that this option had a default value <code class="docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-use_ssh_client"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-use-ssh-client"><strong>use_ssh_client</strong></p>
 <a class="ansibleOptionLink" href="#parameter-use_ssh_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 <p><span class="ansible-option-versionadded">added in community.docker 1.5.0</span></p>
@@ -405,7 +419,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-host-info-module-parameter-tls-verify"></span><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
@@ -420,7 +434,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-verbose_output"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-verbose-output"><strong>verbose_output</strong></p>
 <a class="ansibleOptionLink" href="#parameter-verbose_output" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -433,7 +447,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-volumes"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-volumes"><strong>volumes</strong></p>
 <a class="ansibleOptionLink" href="#parameter-volumes" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -445,7 +459,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-volumes_filters"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-host-info-module-parameter-volumes-filters"><strong>volumes_filters</strong></p>
 <a class="ansibleOptionLink" href="#parameter-volumes_filters" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
