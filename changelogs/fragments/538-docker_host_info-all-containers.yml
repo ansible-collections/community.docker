@@ -1,2 +1,2 @@
 minor_changes:
-  - "docker_host_info - allow to list all containers with new option ``container_all`` (https://github.com/ansible-collections/community.docker/issues/535, https://github.com/ansible-collections/community.docker/pull/538)."
+  - "docker_host_info - allow to list all containers with new option ``containers_all`` (https://github.com/ansible-collections/community.docker/issues/535, https://github.com/ansible-collections/community.docker/pull/538)."
