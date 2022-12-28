@@ -341,11 +341,14 @@
          - 'output.disk_usage.BuilderSize is number'
 
   always:
-  - name: Delete container
+  - name: Delete containers
     docker_container:
-      name: "{{ cname }}"
+      name: "{{ item }}"
       state: absent
       force_kill: yes
+    loop:
+      - "{{ cname }}"
+      - "{{ cname2 }}"
 
   - name: Delete volume
     docker_volume:
