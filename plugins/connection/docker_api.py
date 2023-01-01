@@ -68,11 +68,8 @@ options:
         type: integer
 '''
 
-import io
 import os
 import os.path
-import shutil
-import tarfile
 
 from ansible.errors import AnsibleFileNotFound, AnsibleConnectionFailure
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
@@ -82,6 +79,13 @@ from ansible.utils.display import Display
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     RequestException,
 )
+from ansible_collections.community.docker.plugins.module_utils.copy import (
+    DockerFileCopyError,
+    DockerFileNotFound,
+    fetch_file,
+    put_file,
+)
+
 from ansible_collections.community.docker.plugins.plugin_utils.socket_handler import (
     DockerSocketHandler,
 )
@@ -89,7 +93,6 @@ from ansible_collections.community.docker.plugins.plugin_utils.common_api import
     AnsibleDockerClient,
 )
 
-from ansible_collections.community.docker.plugins.module_utils._api.constants import DEFAULT_DATA_CHUNK_SIZE
 from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException, NotFound
 
 MIN_DOCKER_API = None
@@ -260,24 +263,12 @@ class Connection(ConnectionBase):
                 remote_path = os.path.join(os.path.sep, remote_path)
             return os.path.normpath(remote_path)
 
-    def _put_archive(self, container, path, data):
-        # data can also be file object for streaming. This is because _put uses requests's put().
-        # See https://2.python-requests.org/en/master/user/advanced/#streaming-uploads
-        # WARNING: might not work with all transports!
-        url = self.client._url('/containers/{0}/archive', container)
-        res = self.client._put(url, params={'path': path}, data=data)
-        self.client._raise_for_status(res)
-        return res.status_code == 200
-
     def put_file(self, in_path, out_path):
         """ Transfer a file from local to docker container """
         super(Connection, self).put_file(in_path, out_path)
         display.vvv("PUT %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
 
         out_path = self._prefix_login_path(out_path)
-        if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
-            raise AnsibleFileNotFound(
-                "file or module does not exist: %s" % to_native(in_path))
 
         if self.actual_user not in self.ids:
             dummy, ids, dummy = self.exec_command(b'id -u && id -g')
@@ -294,43 +285,23 @@ class Connection(ConnectionBase):
                     .format(e, self.get_option('remote_addr'), ids)
                 )
 
-        b_in_path = to_bytes(in_path, errors='surrogate_or_strict')
-
-        out_dir, out_file = os.path.split(out_path)
-
-        # TODO: stream tar file, instead of creating it in-memory into a BytesIO
-
-        bio = io.BytesIO()
-        with tarfile.open(fileobj=bio, mode='w|', dereference=True, encoding='utf-8') as tar:
-            # Note that without both name (bytes) and arcname (unicode), this either fails for
-            # Python 2.7, Python 3.5/3.6, or Python 3.7+. Only when passing both (in this
-            # form) it works with Python 2.7, 3.5, 3.6, and 3.7 up to 3.11
-            tarinfo = tar.gettarinfo(b_in_path, arcname=to_text(out_file))
-            user_id, group_id = self.ids[self.actual_user]
-            tarinfo.uid = user_id
-            tarinfo.uname = ''
-            if self.actual_user:
-                tarinfo.uname = self.actual_user
-            tarinfo.gid = group_id
-            tarinfo.gname = ''
-            tarinfo.mode &= 0o700
-            with open(b_in_path, 'rb') as f:
-                tar.addfile(tarinfo, fileobj=f)
-        data = bio.getvalue()
-
-        ok = self._call_client(
-            lambda: self._put_archive(
-                self.get_option('remote_addr'),
-                out_dir,
-                data,
-            ),
-            not_found_can_be_resource=True,
-        )
-        if not ok:
-            raise AnsibleConnectionFailure(
-                'Unknown error while creating file "{0}" in container "{1}".'
-                .format(out_path, self.get_option('remote_addr'))
+        user_id, group_id = self.ids[self.actual_user]
+        try:
+            put_file(
+                call_client=lambda callback: self._call_client(lambda: callback(self.client), not_found_can_be_resource=True),
+                container=self.get_option('remote_addr'),
+                in_path=in_path,
+                out_path=out_path,
+                user_id=user_id,
+                group_id=group_id,
+                user_name=self.actual_user,
+                follow_links=True,
+                log=lambda msg: display.vvvv(msg, host=self.get_option('remote_addr')),
             )
+        except DockerFileNotFound as exc:
+            raise AnsibleFileNotFound(to_native(exc))
+        except DockerFileCopyError as exc:
+            raise AnsibleConnectionFailure(to_native(exc))
 
     def fetch_file(self, in_path, out_path):
         """ Fetch a file from container to local. """
@@ -338,55 +309,20 @@ class Connection(ConnectionBase):
         display.vvv("FETCH %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
 
         in_path = self._prefix_login_path(in_path)
-        b_out_path = to_bytes(out_path, errors='surrogate_or_strict')
 
-        considered_in_paths = set()
-
-        while True:
-            if in_path in considered_in_paths:
-                raise AnsibleConnectionFailure('Found infinite symbolic link loop when trying to fetch "{0}"'.format(in_path))
-            considered_in_paths.add(in_path)
-
-            display.vvvv('FETCH: Fetching "%s"' % in_path, host=self.get_option('remote_addr'))
-            stream = self._call_client(
-                lambda: self.client.get_raw_stream(
-                    '/containers/{0}/archive', self.get_option('remote_addr'),
-                    params={'path': in_path},
-                    headers={'Accept-Encoding': 'identity'},
-                ),
-                not_found_can_be_resource=True,
+        try:
+            fetch_file(
+                call_client=lambda callback: self._call_client(lambda: callback(self.client), not_found_can_be_resource=True),
+                container=self.get_option('remote_addr'),
+                in_path=in_path,
+                out_path=out_path,
+                follow_links=True,
+                log=lambda msg: display.vvvv(msg, host=self.get_option('remote_addr')),
             )
-
-            # TODO: stream tar file instead of downloading it into a BytesIO
-
-            bio = io.BytesIO()
-            for chunk in stream:
-                bio.write(chunk)
-            bio.seek(0)
-
-            with tarfile.open(fileobj=bio, mode='r|') as tar:
-                symlink_member = None
-                first = True
-                for member in tar:
-                    if not first:
-                        raise AnsibleConnectionFailure('Received tarfile contains more than one file!')
-                    first = False
-                    if member.issym():
-                        symlink_member = member
-                        continue
-                    if not member.isfile():
-                        raise AnsibleConnectionFailure('Remote file "%s" is not a regular file or a symbolic link' % in_path)
-                    in_f = tar.extractfile(member)  # in Python 2, this *cannot* be used in `with`...
-                    with open(b_out_path, 'wb') as out_f:
-                        shutil.copyfileobj(in_f, out_f, member.size)
-                if first:
-                    raise AnsibleConnectionFailure('Received tarfile is empty!')
-                # If the only member was a file, it's already extracted. If it is a symlink, process it now.
-                if symlink_member is not None:
-                    in_path = os.path.join(os.path.split(in_path)[0], symlink_member.linkname)
-                    display.vvvv('FETCH: Following symbolic link to "%s"' % in_path, host=self.get_option('remote_addr'))
-                    continue
-                return
+        except DockerFileNotFound as exc:
+            raise AnsibleFileNotFound(to_native(exc))
+        except DockerFileCopyError as exc:
+            raise AnsibleConnectionFailure(to_native(exc))
 
     def close(self):
         """ Terminate the connection. Nothing to do for Docker"""
