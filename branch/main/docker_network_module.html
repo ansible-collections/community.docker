@@ -576,74 +576,74 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </section>
 <section id="examples">
 <h2><a class="toc-backref" href="#id6">Examples</a><a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
-<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a network</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_one</span><span class="w"></span>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a network</span>
+<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_one</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Remove all but selected list of containers</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_one</span><span class="w"></span>
-<span class="w">    </span><span class="nt">connected</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container_a</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container_b</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container_c</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Remove all but selected list of containers</span>
+<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_one</span>
+<span class="w">    </span><span class="nt">connected</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container_a</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container_b</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container_c</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Remove a single container</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_one</span><span class="w"></span>
-<span class="w">    </span><span class="nt">connected</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">fulllist</span><span class="o">|</span><span class="nf">difference</span><span class="o">([</span><span class="s1">&#39;container_a&#39;</span><span class="o">])</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Remove a single container</span>
+<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_one</span>
+<span class="w">    </span><span class="nt">connected</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">fulllist</span><span class="o">|</span><span class="nf">difference</span><span class="o">([</span><span class="s1">&#39;container_a&#39;</span><span class="o">])</span> <span class="cp">}}</span><span class="s">&quot;</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Add a container to a network, leaving existing containers connected</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_one</span><span class="w"></span>
-<span class="w">    </span><span class="nt">connected</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container_a</span><span class="w"></span>
-<span class="w">    </span><span class="nt">appends</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Add a container to a network, leaving existing containers connected</span>
+<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_one</span>
+<span class="w">    </span><span class="nt">connected</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container_a</span>
+<span class="w">    </span><span class="nt">appends</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a network with driver options</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_two</span><span class="w"></span>
-<span class="w">    </span><span class="nt">driver_options</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">com.docker.network.bridge.name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">net2</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a network with driver options</span>
+<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_two</span>
+<span class="w">    </span><span class="nt">driver_options</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">com.docker.network.bridge.name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">net2</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a network with custom IPAM config</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_three</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ipam_config</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">subnet</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.23.27.0/24</span><span class="w"></span>
-<span class="w">        </span><span class="nt">gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.23.27.2</span><span class="w"></span>
-<span class="w">        </span><span class="nt">iprange</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.23.27.0/26</span><span class="w"></span>
-<span class="w">        </span><span class="nt">aux_addresses</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">host1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.23.27.3</span><span class="w"></span>
-<span class="w">          </span><span class="nt">host2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.23.27.4</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a network with custom IPAM config</span>
+<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_three</span>
+<span class="w">    </span><span class="nt">ipam_config</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">subnet</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.23.27.0/24</span>
+<span class="w">        </span><span class="nt">gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.23.27.2</span>
+<span class="w">        </span><span class="nt">iprange</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.23.27.0/26</span>
+<span class="w">        </span><span class="nt">aux_addresses</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">host1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.23.27.3</span>
+<span class="w">          </span><span class="nt">host2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.23.27.4</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a network with labels</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_four</span><span class="w"></span>
-<span class="w">    </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">key1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value1</span><span class="w"></span>
-<span class="w">      </span><span class="nt">key2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value2</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a network with labels</span>
+<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_four</span>
+<span class="w">    </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">key1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value1</span>
+<span class="w">      </span><span class="nt">key2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value2</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a network with IPv6 IPAM config</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_ipv6_one</span><span class="w"></span>
-<span class="w">    </span><span class="nt">enable_ipv6</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ipam_config</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">subnet</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fdd1:ac8c:0557:7ce1::/64</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a network with IPv6 IPAM config</span>
+<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_ipv6_one</span>
+<span class="w">    </span><span class="nt">enable_ipv6</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">ipam_config</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">subnet</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fdd1:ac8c:0557:7ce1::/64</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a network with IPv6 and custom IPv4 IPAM config</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_ipv6_two</span><span class="w"></span>
-<span class="w">    </span><span class="nt">enable_ipv6</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ipam_config</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">subnet</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.24.27.0/24</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">subnet</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fdd1:ac8c:0557:7ce2::/64</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a network with IPv6 and custom IPv4 IPAM config</span>
+<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_ipv6_two</span>
+<span class="w">    </span><span class="nt">enable_ipv6</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">ipam_config</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">subnet</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.24.27.0/24</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">subnet</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fdd1:ac8c:0557:7ce2::/64</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Delete a network, disconnecting all containers</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_one</span><span class="w"></span>
-<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span><span class="w"></span>
-<span class="w">    </span><span class="nt">force</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Delete a network, disconnecting all containers</span>
+<span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_one</span>
+<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span>
+<span class="w">    </span><span class="nt">force</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 </section>

@@ -622,148 +622,148 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </section>
 <section id="examples">
 <h2><a class="toc-backref" href="#id6">Examples</a><a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
-<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="c1"># Examples use the django example at https://docs.docker.com/compose/django. Follow it to create the</span><span class="w"></span>
-<span class="c1"># flask directory</span><span class="w"></span>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="c1"># Examples use the django example at https://docs.docker.com/compose/django. Follow it to create the</span>
+<span class="c1"># flask directory</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run using a project directory</span><span class="w"></span>
-<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span><span class="w"></span>
-<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Tear down existing services</span><span class="w"></span>
-<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span><span class="w"></span>
-<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run using a project directory</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Tear down existing services</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create and start services</span><span class="w"></span>
-<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span><span class="w"></span>
-<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create and start services</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run `docker-compose up` again</span><span class="w"></span>
-<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span><span class="w"></span>
-<span class="w">        </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run `docker-compose up` again</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">that</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not output.changed</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">that</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not output.changed</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Stop all services</span><span class="w"></span>
-<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span><span class="w"></span>
-<span class="w">        </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-<span class="w">        </span><span class="nt">stopped</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Stop all services</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">stopped</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">that</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">web.flask_web_1.state.running&quot;</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">db.flask_db_1.state.running&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">that</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">web.flask_web_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">db.flask_db_1.state.running&quot;</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Restart services</span><span class="w"></span>
-<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span><span class="w"></span>
-<span class="w">        </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-<span class="w">        </span><span class="nt">restarted</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Restart services</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">restarted</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">that</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;web.flask_web_1.state.running&quot;</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;db.flask_db_1.state.running&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">that</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;web.flask_web_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;db.flask_db_1.state.running&quot;</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Scale the web service to 2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span><span class="w"></span>
-<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span><span class="w"></span>
-<span class="w">        </span><span class="nt">scale</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">web</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Scale the web service to 2</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">scale</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">web</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run with inline Compose file version 2</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># https://docs.docker.com/compose/compose-file/compose-file-v2/</span><span class="w"></span>
-<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span><span class="w"></span>
-<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span><span class="w"></span>
-<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run with inline Compose file version 2</span>
+<span class="w">  </span><span class="c1"># https://docs.docker.com/compose/compose-file/compose-file-v2/</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">project_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span><span class="w"></span>
-<span class="w">        </span><span class="nt">definition</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2&#39;</span><span class="w"></span>
-<span class="w">          </span><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">db</span><span class="p">:</span><span class="w"></span>
-<span class="w">              </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span><span class="w"></span>
-<span class="w">            </span><span class="nt">web</span><span class="p">:</span><span class="w"></span>
-<span class="w">              </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">playbook_dir</span> <span class="cp">}}</span><span class="s">/flask&quot;</span><span class="w"></span>
-<span class="w">              </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;python</span><span class="nv"> </span><span class="s">manage.py</span><span class="nv"> </span><span class="s">runserver</span><span class="nv"> </span><span class="s">0.0.0.0:8000&quot;</span><span class="w"></span>
-<span class="w">              </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">playbook_dir</span> <span class="cp">}}</span><span class="s">/flask:/code&quot;</span><span class="w"></span>
-<span class="w">              </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8000:8000&quot;</span><span class="w"></span>
-<span class="w">              </span><span class="nt">depends_on</span><span class="p">:</span><span class="w"></span>
-<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span><span class="w"></span>
-<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">definition</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2&#39;</span>
+<span class="w">          </span><span class="nt">services</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">db</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="w">            </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">playbook_dir</span> <span class="cp">}}</span><span class="s">/flask&quot;</span>
+<span class="w">              </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;python</span><span class="nv"> </span><span class="s">manage.py</span><span class="nv"> </span><span class="s">runserver</span><span class="nv"> </span><span class="s">0.0.0.0:8000&quot;</span>
+<span class="w">              </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">playbook_dir</span> <span class="cp">}}</span><span class="s">/flask:/code&quot;</span>
+<span class="w">              </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8000:8000&quot;</span>
+<span class="w">              </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">that</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;web.flask_web_1.state.running&quot;</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;db.flask_db_1.state.running&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">that</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;web.flask_web_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;db.flask_db_1.state.running&quot;</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run with inline Compose file version 1</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># https://docs.docker.com/compose/compose-file/compose-file-v1/</span><span class="w"></span>
-<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span><span class="w"></span>
-<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span><span class="w"></span>
-<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run with inline Compose file version 1</span>
+<span class="w">  </span><span class="c1"># https://docs.docker.com/compose/compose-file/compose-file-v1/</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">project_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span><span class="w"></span>
-<span class="w">        </span><span class="nt">definition</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">db</span><span class="p">:</span><span class="w"></span>
-<span class="w">              </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span><span class="w"></span>
-<span class="w">            </span><span class="nt">web</span><span class="p">:</span><span class="w"></span>
-<span class="w">              </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">playbook_dir</span> <span class="cp">}}</span><span class="s">/flask&quot;</span><span class="w"></span>
-<span class="w">              </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;python</span><span class="nv"> </span><span class="s">manage.py</span><span class="nv"> </span><span class="s">runserver</span><span class="nv"> </span><span class="s">0.0.0.0:8000&quot;</span><span class="w"></span>
-<span class="w">              </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">playbook_dir</span> <span class="cp">}}</span><span class="s">/flask:/code&quot;</span><span class="w"></span>
-<span class="w">              </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8000:8000&quot;</span><span class="w"></span>
-<span class="w">              </span><span class="nt">links</span><span class="p">:</span><span class="w"></span>
-<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span><span class="w"></span>
-<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">definition</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">db</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="w">            </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">playbook_dir</span> <span class="cp">}}</span><span class="s">/flask&quot;</span>
+<span class="w">              </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;python</span><span class="nv"> </span><span class="s">manage.py</span><span class="nv"> </span><span class="s">runserver</span><span class="nv"> </span><span class="s">0.0.0.0:8000&quot;</span>
+<span class="w">              </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">playbook_dir</span> <span class="cp">}}</span><span class="s">/flask:/code&quot;</span>
+<span class="w">              </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8000:8000&quot;</span>
+<span class="w">              </span><span class="nt">links</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">that</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;web.flask_web_1.state.running&quot;</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;db.flask_db_1.state.running&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">that</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;web.flask_web_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;db.flask_db_1.state.running&quot;</span>
 </pre></div>
 </div>
 </section>

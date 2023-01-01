@@ -650,46 +650,46 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </section>
 <section id="examples">
 <h2><a class="toc-backref" href="#id6">Examples</a><a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
-<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Init a new swarm with default parameters</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">present</span><span class="w"></span>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Init a new swarm with default parameters</span>
+<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">present</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Update swarm configuration</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">present</span><span class="w"></span>
-<span class="w">    </span><span class="nt">election_tick</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Update swarm configuration</span>
+<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">present</span>
+<span class="w">    </span><span class="nt">election_tick</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Add nodes</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">join</span><span class="w"></span>
-<span class="w">    </span><span class="nt">advertise_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.1.2</span><span class="w"></span>
-<span class="w">    </span><span class="nt">join_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SWMTKN-1--xxxxx</span><span class="w"></span>
-<span class="w">    </span><span class="nt">remote_addrs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;192.168.1.1:2377&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Add nodes</span>
+<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">join</span>
+<span class="w">    </span><span class="nt">advertise_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.1.2</span>
+<span class="w">    </span><span class="nt">join_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SWMTKN-1--xxxxx</span>
+<span class="w">    </span><span class="nt">remote_addrs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;192.168.1.1:2377&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Leave swarm for a node</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Leave swarm for a node</span>
+<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Remove a swarm manager</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span><span class="w"></span>
-<span class="w">    </span><span class="nt">force</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Remove a swarm manager</span>
+<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span>
+<span class="w">    </span><span class="nt">force</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Remove node from swarm</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">remove</span><span class="w"></span>
-<span class="w">    </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mynode</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Remove node from swarm</span>
+<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">remove</span>
+<span class="w">    </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mynode</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Init a new swarm with different data path interface</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">present</span><span class="w"></span>
-<span class="w">    </span><span class="nt">advertise_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eth0</span><span class="w"></span>
-<span class="w">    </span><span class="nt">data_path_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ens10</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Init a new swarm with different data path interface</span>
+<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">present</span>
+<span class="w">    </span><span class="nt">advertise_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eth0</span>
+<span class="w">    </span><span class="nt">data_path_addr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ens10</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Init a new swarm with a different data path port</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">present</span><span class="w"></span>
-<span class="w">    </span><span class="nt">data_path_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9789</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Init a new swarm with a different data path port</span>
+<span class="w">  </span><span class="nt">community.docker.docker_swarm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">present</span>
+<span class="w">    </span><span class="nt">data_path_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9789</span>
 </pre></div>
 </div>
 </section>

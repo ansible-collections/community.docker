@@ -401,19 +401,19 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </section>
 <section id="examples">
 <h2><a class="toc-backref" href="#id6">Examples</a><a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
-<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Get infos on container</span><span class="w"></span>
-<span class="w">  </span><span class="nt">community.docker.docker_container_info</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mydata</span><span class="w"></span>
-<span class="w">  </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span><span class="w"></span>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Get infos on container</span>
+<span class="w">  </span><span class="nt">community.docker.docker_container_info</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mydata</span>
+<span class="w">  </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Does container exist?</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">msg</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;The</span><span class="nv"> </span><span class="s">container</span><span class="nv"> </span><span class="cp">{{</span> <span class="s1">&#39;exists&#39;</span> <span class="k">if</span> <span class="nv">result.exists</span> <span class="k">else</span> <span class="s1">&#39;does not exist&#39;</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Does container exist?</span>
+<span class="w">  </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">msg</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;The</span><span class="nv"> </span><span class="s">container</span><span class="nv"> </span><span class="cp">{{</span> <span class="s1">&#39;exists&#39;</span> <span class="k">if</span> <span class="nv">result.exists</span> <span class="k">else</span> <span class="s1">&#39;does not exist&#39;</span> <span class="cp">}}</span><span class="s">&quot;</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Print information about container</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result.container</span><span class="w"></span>
-<span class="w">  </span><span class="nt">when</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result.exists</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Print information about container</span>
+<span class="w">  </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result.container</span>
+<span class="w">  </span><span class="nt">when</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result.exists</span>
 </pre></div>
 </div>
 </section>
