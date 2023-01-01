@@ -27,8 +27,7 @@ notes:
   - When I(restart) is set to C(true), the module will only restart the container if no config changes are detected.
 
 extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_1_documentation
+  - community.docker.docker.api_documentation
   - community.docker.attributes
   - community.docker.attributes.actiongroup_docker
 
