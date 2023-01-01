@@ -188,7 +188,11 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>The below requirements are needed on the host that executes this module.</p>
 <ul class="simple">
 <li><p>Docker API &gt;= 1.25</p></li>
-<li><p>Docker SDK for Python: Please note that the <a class="reference external" href="https://pypi.org/project/docker-py/">docker-py</a> Python module has been superseded by <a class="reference external" href="https://pypi.org/project/docker/">docker</a> (see <a class="reference external" href="https://github.com/docker/docker-py/issues/1310">here</a> for details). Note that both modules should *not* be installed at the same time. Also note that when both modules are installed and one of them is uninstalled, the other might no longer function and a reinstall of it is required.</p></li>
+<li><p>backports.ssl_match_hostname (when using TLS on Python 2)</p></li>
+<li><p>paramiko (when using SSH with <em>use_ssh_client=false</em>)</p></li>
+<li><p>pyOpenSSL (when using TLS)</p></li>
+<li><p>pywin32 (when using named pipes on Windows 32)</p></li>
+<li><p>requests</p></li>
 </ul>
 </section>
 <section id="parameters">
@@ -207,7 +211,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>The version of the Docker API running on the Docker Host.</p>
-<p>Defaults to the latest version of the API supported by Docker SDK for Python and the docker daemon.</p>
+<p>Defaults to the latest version of the API supported by this collection and the docker daemon.</p>
 <p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code></p>
 </div></td>
@@ -1511,7 +1515,6 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p><span class="ansible-option-versionadded">added in community.docker 1.5.0</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>For SSH transports, use the <code class="docutils literal notranslate"><span class="pre">ssh</span></code> CLI tool instead of paramiko.</p>
-<p>Requires Docker SDK for Python 4.4.0 or newer.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -1638,9 +1641,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <li><p>If the module needs to recreate the container, it will only use the options provided to the module to create the new container (except <em>image</em>). Therefore, always specify <strong>all</strong> options relevant to the container.</p></li>
 <li><p>When <em>restart</em> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the module will only restart the container if no config changes are detected.</p></li>
 <li><p>Connect to the Docker daemon by providing parameters with each task or by defining environment variables. You can define <code class="docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code> and <code class="docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code>. If you are using docker machine, run the script shipped with the product that sets up the environment. It will set these variables for you. See <a class="reference external" href="https://docs.docker.com/machine/reference/env/">https://docs.docker.com/machine/reference/env/</a> for more details.</p></li>
-<li><p>When connecting to Docker daemon with TLS, you might need to install additional Python packages. For the Docker SDK for Python, version 2.4 or newer, this can be done by installing <code class="docutils literal notranslate"><span class="pre">docker[tls]</span></code> with <a class="reference external" href="https://docs.ansible.com/ansible/devel/collections/ansible/builtin/pip_module.html#ansible-collections-ansible-builtin-pip-module" title="(in Ansible vdevel)"><span class="xref std std-ref">ansible.builtin.pip</span></a>.</p></li>
-<li><p>Note that the Docker SDK for Python only allows to specify the path to the Docker configuration for very few functions. In general, it will use <code class="docutils literal notranslate"><span class="pre">$HOME/.docker/config.json</span></code> if the <code class="docutils literal notranslate"><span class="pre">DOCKER_CONFIG</span></code> environment variable is not specified, and use <code class="docutils literal notranslate"><span class="pre">$DOCKER_CONFIG/config.json</span></code> otherwise.</p></li>
-<li><p>This module uses the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a> to communicate with the Docker daemon.</p></li>
+<li><p>This module does <strong>not</strong> use the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a> to communicate with the Docker daemon. It uses code derived from the Docker SDK or Python that is included in this collection.</p></li>
 </ul>
 </div>
 </section>
