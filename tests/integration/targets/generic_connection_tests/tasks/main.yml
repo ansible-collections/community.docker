@@ -43,7 +43,10 @@
     - nginx.conf
 
   - name: Copy static files into volume
-    command: docker cp {{ remote_tmp_dir }}/{{ item }} {{ daemon_nginx_frontend }}:/etc/nginx/{{ item }}
+    docker_container_copy_into:
+      container: '{{ daemon_nginx_frontend }}'
+      path: '{{ remote_tmp_dir }}/{{ item }}'
+      container_path: '/etc/nginx/{{ item }}'
     loop:
     - nginx.conf
     register: can_copy_files
@@ -94,7 +97,10 @@
         provider: ownca
 
     - name: Copy dynamic files into volume
-      command: docker cp {{ remote_tmp_dir }}/{{ item }} {{ daemon_nginx_frontend }}:/etc/nginx/{{ item }}
+      docker_container_copy_into:
+        container: '{{ daemon_nginx_frontend }}'
+        path: '{{ remote_tmp_dir }}/{{ item }}'
+        container_path: '/etc/nginx/{{ item }}'
       loop:
       - ca.pem
       - cert.pem

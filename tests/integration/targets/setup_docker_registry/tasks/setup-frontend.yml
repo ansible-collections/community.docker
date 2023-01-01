@@ -39,7 +39,10 @@
   - nginx.htpasswd
 
 - name: Copy static files into volume
-  command: docker cp {{ remote_tmp_dir }}/{{ item }} {{ docker_registry_container_name_frontend }}:/etc/nginx/{{ item }}
+  docker_container_copy_into:
+    container: '{{ docker_registry_container_name_frontend }}'
+    path: '{{ remote_tmp_dir }}/{{ item }}'
+    container_path: '/etc/nginx/{{ item }}'
   loop:
   - nginx.conf
   - nginx.htpasswd
@@ -71,7 +74,10 @@
       provider: selfsigned
 
   - name: Copy dynamic files into volume
-    command: docker cp {{ remote_tmp_dir }}/{{ item }} {{ docker_registry_container_name_frontend }}:/etc/nginx/{{ item }}
+    docker_container_copy_into:
+      container: '{{ docker_registry_container_name_frontend }}'
+      path: '{{ remote_tmp_dir }}/{{ item }}'
+      container_path: '/etc/nginx/{{ item }}'
     loop:
     - cert.pem
     - cert.key
