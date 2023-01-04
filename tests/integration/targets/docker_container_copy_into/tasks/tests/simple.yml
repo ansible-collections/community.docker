@@ -539,6 +539,15 @@
     group_id: 910
   register: result_4
 
+- name: Copy file (stopped container, no owner/group provided, should fail)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    mode: 0707
+  register: result_5
+  ignore_errors: true
+
 - name: Start container
   docker_container:
     name: "{{ cname }}"
@@ -554,7 +563,7 @@
         cat /file | base64;
         stat -c '%s %a %F %u %g %N' /file > /dev/stderr
     chdir: /root
-  register: result_5
+  register: result_6
 
 - name: Check results
   assert:
@@ -563,8 +572,10 @@
       - result_2 is changed
       - result_3 is not changed
       - result_4 is not changed
-      - result_5.stdout | b64decode == 'Content 1\n'
-      - result_5.stderr == '10 707 regular file 12 910 /file'
+      - result_5 is failed
+      - result_5.msg == ('Cannot execute command in paused container "' ~ cname ~ '"')
+      - result_6.stdout | b64decode == 'Content 1\n'
+      - result_6.stderr == '10 707 regular file 12 910 /file'
 
 ################################################################################################
 # Cleanup
