@@ -18,6 +18,7 @@ description:
   - Copy a file into a Docker container.
   - Similar to C(docker cp).
   - The file is processed in-memory. Do not use for large files!
+  - To copy files in a non-running container, you must provide the I(owner_id) and I(group_id) options.
 
 attributes:
   check_mode:
@@ -58,6 +59,7 @@ options:
       - If provided, I(group_id) must also be provided.
       - If not provided, the module will try to determine the user and group ID for the current user in the container.
         This will only work if C(/bin/sh) is present in the container and the C(id) binary or shell builtin is available.
+        Also the container must be running.
     type: int
   group_id:
     description:
@@ -65,6 +67,7 @@ options:
       - If provided, I(owner_id) must also be provided.
       - If not provided, the module will try to determine the user and group ID for the current user in the container.
         This will only work if C(/bin/sh) is present in the container and the C(id) binary or shell builtin is available.
+        Also the container must be running.
     type: int
   mode:
     description:

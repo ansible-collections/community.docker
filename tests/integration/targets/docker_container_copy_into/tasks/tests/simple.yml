@@ -489,6 +489,83 @@
       - result_8.stdout | b64decode == 'Content 2\nExtra line'
       - result_8.stderr == '20 707 regular file 13 13 /file'
 
+######################### Operate with stopped container
+
+- name: Stop container
+  docker_container:
+    name: "{{ cname }}"
+    state: stopped
+    stop_timeout: 1
+
+- name: Copy file (stopped container, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  register: result_1
+
+- name: Copy file (stopped container)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  register: result_2
+
+- name: Copy file (stopped container, idempotent, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  register: result_3
+
+- name: Copy file (stopped container, idempotent)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  register: result_4
+
+- name: Start container
+  docker_container:
+    name: "{{ cname }}"
+    state: started
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_5
+
+- name: Check results
+  assert:
+    that:
+      - result_1 is changed
+      - result_2 is changed
+      - result_3 is not changed
+      - result_4 is not changed
+      - result_5.stdout | b64decode == 'Content 1\n'
+      - result_5.stderr == '10 707 regular file 12 910 /file'
+
 ################################################################################################
 # Cleanup
 
