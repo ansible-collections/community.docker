@@ -183,6 +183,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <li><p>Copy a file into a Docker container.</p></li>
 <li><p>Similar to <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">cp</span></code>.</p></li>
 <li><p>The file is processed in-memory. Do not use for large files!</p></li>
+<li><p>To copy files in a non-running container, you must provide the <em>owner_id</em> and <em>group_id</em> options.</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -307,7 +308,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>The group ID to use when writing the file to disk.</p>
 <p>If provided, <em>owner_id</em> must also be provided.</p>
-<p>If not provided, the module will try to determine the user and group ID for the current user in the container. This will only work if <code class="docutils literal notranslate"><span class="pre">/bin/sh</span></code> is present in the container and the <code class="docutils literal notranslate"><span class="pre">id</span></code> binary or shell builtin is available.</p>
+<p>If not provided, the module will try to determine the user and group ID for the current user in the container. This will only work if <code class="docutils literal notranslate"><span class="pre">/bin/sh</span></code> is present in the container and the <code class="docutils literal notranslate"><span class="pre">id</span></code> binary or shell builtin is available. Also the container must be running.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -336,7 +337,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>The owner ID to use when writing the file to disk.</p>
 <p>If provided, <em>group_id</em> must also be provided.</p>
-<p>If not provided, the module will try to determine the user and group ID for the current user in the container. This will only work if <code class="docutils literal notranslate"><span class="pre">/bin/sh</span></code> is present in the container and the <code class="docutils literal notranslate"><span class="pre">id</span></code> binary or shell builtin is available.</p>
+<p>If not provided, the module will try to determine the user and group ID for the current user in the container. This will only work if <code class="docutils literal notranslate"><span class="pre">/bin/sh</span></code> is present in the container and the <code class="docutils literal notranslate"><span class="pre">id</span></code> binary or shell builtin is available. Also the container must be running.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
