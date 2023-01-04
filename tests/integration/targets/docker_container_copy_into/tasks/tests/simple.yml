@@ -233,6 +233,64 @@
       - result_5.stdout | b64decode == 'Content 1\n'
       - result_5.stderr == '10 644 regular file 0 0 /lnk'
 
+######################### Replace directory by file
+
+- name: Copy file to replace directory (check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/dir'
+    follow: false
+  check_mode: true
+  register: result_1
+
+- name: Copy file to replace directory (check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/dir'
+    follow: false
+  register: result_2
+
+- name: Copy file to replace directory (idempotent, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/dir'
+  check_mode: true
+  register: result_3
+
+- name: Copy file to replace directory (idempotent)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/dir'
+  register: result_4
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /dir | base64;
+        stat -c '%s %a %F %u %g %N' /dir > /dev/stderr
+    chdir: /root
+  register: result_5
+
+- name: Check results
+  assert:
+    that:
+      - result_1 is changed
+      - result_1.container_path == '/dir'
+      - result_2 is changed
+      - result_2.container_path == '/dir'
+      - result_3 is not changed
+      - result_4 is not changed
+      - result_5.stdout | b64decode == 'Content 1\n'
+      - result_5.stderr == '10 644 regular file 0 0 /dir'
+
 ######################### Modify
 
 - name: Copy file (changed, check mode)

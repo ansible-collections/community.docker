@@ -92,6 +92,17 @@ def put_file(call_client, container, in_path, out_path, user_id, group_id, mode=
 
 
 def stat_file(call_client, container, in_path, follow_links=False, log=None):
+    """Fetch information on a file from a Docker container to local.
+
+    Return a tuple ``(path, stat_data, link_target)`` where:
+
+    :path: is the resolved path in case ``follow_links=True``;
+    :stat_data: is ``None`` if the file does not exist, or a dictionary with fields
+        ``name`` (string), ``size`` (integer), ``mode`` (integer, see https://pkg.go.dev/io/fs#FileMode),
+        ``mtime`` (string), and ``linkTarget`` (string);
+    :link_target: is ``None`` if the file is not a symlink or when ``follow_links=False``,
+        and a string with the symlink target otherwise.
+    """
     considered_in_paths = set()
 
     while True:
@@ -123,10 +134,11 @@ def stat_file(call_client, container, in_path, follow_links=False, log=None):
         if stat_data is None:
             return in_path, None, None
 
-        link_target = stat_data.pop('linkTarget', '')
-        if link_target:
+        # https://pkg.go.dev/io/fs#FileMode: bit 32 - 5 means ModeSymlink
+        if stat_data['mode'] & (1 << (32 - 5)) != 0:
+            link_target = stat_data['linkTarget']
             if not follow_links:
-                return in_path, None, link_target
+                return in_path, stat_data, link_target
             in_path = os.path.join(os.path.split(in_path)[0], link_target)
             continue
 

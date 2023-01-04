@@ -90,6 +90,15 @@ EXAMPLES = '''
     container: mydata
     path: /home/user/data.txt
     container_path: /data/input.txt
+
+- name: Copy a file into the container with owner, group, and mode set
+  community.docker.docker_container_copy_into:
+    container: mydata
+    path: /home/user/bin/runme.o
+    container_path: /bin/runme
+    owner: 0  # root
+    group: 0  # root
+    mode: 0o755  # readable and executable by all users, writable by root
 '''
 
 RETURN = '''
@@ -149,7 +158,7 @@ def is_idempotent(client, container, managed_path, container_path, follow_links,
         container_path = real_container_path
 
     # If the file wasn't found, continue
-    if regular_stat is None and link_target is None:
+    if regular_stat is None:
         return container_path, mode, False
 
     # Basic idempotency checks
@@ -158,13 +167,31 @@ def is_idempotent(client, container, managed_path, container_path, follow_links,
             return container_path, mode, False
         local_link_target = os.readlink(managed_path)
         return container_path, mode, local_link_target == link_target
-    if not stat.S_ISREG(file_stat.st_mode):
-        raise DockerFileCopyError('Local path {managed_path} is not a symbolic link or file')
-    if regular_stat is None:
+    if link_target is not None:
         return container_path, mode, False
+    for bit in (
+        # https://pkg.go.dev/io/fs#FileMode
+        32 - 1,  # ModeDir
+        32 - 4,  # ModeTemporary
+        32 - 5,  # ModeSymlink
+        32 - 6,  # ModeDevice
+        32 - 7,  # ModeNamedPipe
+        32 - 8,  # ModeSocket
+        32 - 11,  # ModeCharDevice
+        32 - 13,  # ModeIrregular
+    ):
+        if regular_stat['mode'] & (1 << bit) != 0:
+            return container_path, mode, False
     if file_stat.st_size != regular_stat['size']:
         return container_path, mode, False
-    if mode != regular_stat['mode'] & 0xFFF:
+    container_file_mode = regular_stat['mode'] & 0xFFF
+    if regular_stat['mode'] & (1 << (32 - 9)) != 0:  # ModeSetuid
+        container_file_mode |= stat.S_ISUID  # set UID bit
+    if regular_stat['mode'] & (1 << (32 - 10)) != 0:  # ModeSetgid
+        container_file_mode |= stat.S_ISGID  # set GID bit
+    if regular_stat['mode'] & (1 << (32 - 12)) != 0:  # ModeSticky
+        container_file_mode |= stat.S_ISVTX  # sticky bit
+    if mode != container_file_mode:
         return container_path, mode, False
 
     # Fetch file from container
