@@ -145,6 +145,44 @@ def stat_file(call_client, container, in_path, follow_links=False, log=None):
         return in_path, stat_data, None
 
 
+class _RawGeneratorFileobj(io.RawIOBase):
+    def __init__(self, stream):
+        self._stream = stream
+        self._buf = b''
+
+    def readable(self):
+        return True
+
+    def _readinto_from_buf(self, b, index, length):
+        cpy = min(length - index, len(self._buf))
+        if cpy:
+            b[index:index + cpy] = self._buf[:cpy]
+            self._buf = self._buf[cpy:]
+            index += cpy
+        return index
+
+    def readinto(self, b):
+        index = 0
+        length = len(b)
+
+        index = self._readinto_from_buf(b, index, length)
+        if index == length:
+            return index
+
+        try:
+            self._buf += next(self._stream)
+        except StopIteration:
+            return index
+
+        return self._readinto_from_buf(b, index, length)
+
+
+def _stream_generator_to_fileobj(stream):
+    '''Given a generator that generates chunks of bytes, create a readable buffered stream.'''
+    raw = _RawGeneratorFileobj(stream)
+    return io.BufferedReader(raw)
+
+
 def fetch_file_ex(call_client, container, in_path, process_none, process_regular, process_symlink, follow_links=False, log=None):
     """Fetch a file (as a tar file entry) from a Docker container to local."""
     considered_in_paths = set()
@@ -167,14 +205,7 @@ def fetch_file_ex(call_client, container, in_path, process_none, process_regular
         except DockerFileNotFound:
             return process_none(in_path)
 
-        # TODO: stream tar file instead of downloading it into a BytesIO
-
-        bio = io.BytesIO()
-        for chunk in stream:
-            bio.write(chunk)
-        bio.seek(0)
-
-        with tarfile.open(fileobj=bio, mode='r|') as tar:
+        with tarfile.open(fileobj=_stream_generator_to_fileobj(stream), mode='r|') as tar:
             file_member = None
             symlink_member = None
             result = None
