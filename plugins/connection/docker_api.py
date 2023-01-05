@@ -110,7 +110,7 @@ class Connection(ConnectionBase):
             else:
                 raise AnsibleConnectionFailure('Could not find container "{1}" ({0})'.format(e, self.get_option('remote_addr')))
         except APIError as e:
-            if e.response and e.response.status_code == 409:
+            if e.response is not None and e.response.status_code == 409:
                 raise AnsibleConnectionFailure('The container "{1}" has been paused ({0})'.format(e, self.get_option('remote_addr')))
             self.client.fail(
                 'An unexpected docker error occurred for container "{1}": {0}'.format(e, self.get_option('remote_addr'))
