@@ -37,8 +37,7 @@ class DockerFileNotFound(DockerFileCopyError):
 
 def _put_archive(client, container, path, data):
     # data can also be file object for streaming. This is because _put uses requests's put().
-    # See https://2.python-requests.org/en/master/user/advanced/#streaming-uploads
-    # WARNING: might not work with all transports!
+    # See https://requests.readthedocs.io/en/latest/user/advanced/#streaming-uploads
     url = client._url('/containers/{0}/archive', container)
     res = client._put(url, params={'path': path}, data=data)
     client._raise_for_status(res)
