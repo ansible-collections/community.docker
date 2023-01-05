@@ -295,7 +295,7 @@ def main():
     except NotFound:
         client.fail('Could not find container "{0}"'.format(container))
     except APIError as e:
-        if e.response and e.response.status_code == 409:
+        if e.response is not None and e.response.status_code == 409:
             client.fail('The container "{0}" has been paused ({1})'.format(container, to_native(e)))
         client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except DockerException as e:
