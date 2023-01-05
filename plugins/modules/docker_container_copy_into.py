@@ -143,13 +143,13 @@ def are_fileobjs_equal(f1, f2):
     b2buf = b''
     while True:
         if f1 and len(b1buf) < blocksize:
-            f1b = f1.read1(blocksize)
+            f1b = f1.read(blocksize)
             if not f1b:
                 # f1 is EOF, so stop reading from it
                 f1 = None
             b1buf += f1b
         if f2 and len(b2buf) < blocksize:
-            f2b = f2.read1(blocksize)
+            f2b = f2.read(blocksize)
             if not f2b:
                 # f2 is EOF, so stop reading from it
                 f2 = None
