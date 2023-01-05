@@ -217,7 +217,7 @@ def fetch_file(call_client, container, in_path, out_path, follow_links=False, lo
 
         in_f = tar.extractfile(member)  # in Python 2, this *cannot* be used in `with`...
         with open(b_out_path, 'wb') as out_f:
-            shutil.copyfileobj(in_f, out_f, member.size)
+            shutil.copyfileobj(in_f, out_f)
         return in_path
 
     def process_symlink(in_path, member):
