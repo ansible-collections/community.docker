@@ -29,7 +29,7 @@ attributes:
 options:
   container:
     description:
-      - The name of the container to copy files to/from.
+      - The name of the container to copy files to.
     type: str
     required: true
   path:
