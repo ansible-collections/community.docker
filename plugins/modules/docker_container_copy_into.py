@@ -136,6 +136,37 @@ from ansible_collections.community.docker.plugins.module_utils.copy import (
 )
 
 
+def are_fileobjs_equal(f1, f2):
+    '''Given two (buffered) file objects, compare their contents.'''
+    blocksize = 65536
+    b1buf = b''
+    b2buf = b''
+    while True:
+        if f1 and len(b1buf) < blocksize:
+            f1b = f1.read1(blocksize)
+            if not f1b:
+                # f1 is EOF, so stop reading from it
+                f1 = None
+            b1buf += f1b
+        if f2 and len(b2buf) < blocksize:
+            f2b = f2.read1(blocksize)
+            if not f2b:
+                # f2 is EOF, so stop reading from it
+                f2 = None
+            b2buf += f2b
+        if not b1buf or not b2buf:
+            # At least one of f1 and f2 is EOF and all its data has
+            # been processed. If both are EOF and their data has been
+            # processed, the files are equal, otherwise not.
+            return not b1buf and not b2buf
+        # Compare the next chunk of data, and remove it from the buffers
+        buflen = min(len(b1buf), len(b2buf))
+        if b1buf[:buflen] != b2buf[:buflen]:
+            return False
+        b1buf = b1buf[buflen:]
+        b2buf = b2buf[buflen:]
+
+
 def is_idempotent(client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode):
     # Retrieve information of local file
     try:
@@ -217,7 +248,7 @@ def is_idempotent(client, container, managed_path, container_path, follow_links,
 
         tar_f = tar.extractfile(member)  # in Python 2, this *cannot* be used in `with`...
         with open(managed_path, 'rb') as local_f:
-            return container_path, mode, tar_f.read() == local_f.read()
+            return container_path, mode, are_fileobjs_equal(tar_f, local_f)
 
     def process_symlink(in_path, member):
         # Check things like user/group ID and mode
