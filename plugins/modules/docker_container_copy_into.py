@@ -17,7 +17,6 @@ short_description: Copy a file into a Docker container
 description:
   - Copy a file into a Docker container.
   - Similar to C(docker cp).
-  - The file is processed in-memory. Do not use for large files!
   - To copy files in a non-running container, you must provide the I(owner_id) and I(group_id) options.
 
 attributes:

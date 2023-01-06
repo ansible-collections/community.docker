@@ -11,6 +11,7 @@ import json
 import os
 import os.path
 import shutil
+import stat
 import tarfile
 
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
@@ -44,20 +45,11 @@ def _put_archive(client, container, path, data):
     return res.status_code == 200
 
 
-def put_file(call_client, container, in_path, out_path, user_id, group_id, mode=None, user_name=None, follow_links=False, log=None):
-    """Transfer a file from local to Docker container."""
-    if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
-        raise DockerFileNotFound(
-            "file or module does not exist: %s" % to_native(in_path))
-
-    b_in_path = to_bytes(in_path, errors='surrogate_or_strict')
-
-    out_dir, out_file = os.path.split(out_path)
-
-    # TODO: stream tar file, instead of creating it in-memory into a BytesIO
-
+def _symlink_tar_creator(b_in_path, file_stat, out_file, user_id, group_id, mode=None, user_name=None):
+    if not stat.S_ISLNK(file_stat.st_mode):
+        raise DockerUnexpectedError('stat information is not for a symlink')
     bio = io.BytesIO()
-    with tarfile.open(fileobj=bio, mode='w|', dereference=follow_links, encoding='utf-8') as tar:
+    with tarfile.open(fileobj=bio, mode='w|', dereference=False, encoding='utf-8') as tar:
         # Note that without both name (bytes) and arcname (unicode), this either fails for
         # Python 2.7, Python 3.5/3.6, or Python 3.7+. Only when passing both (in this
         # form) it works with Python 2.7, 3.5, 3.6, and 3.7 up to 3.11
@@ -71,21 +63,86 @@ def put_file(call_client, container, in_path, out_path, user_id, group_id, mode=
         tarinfo.mode &= 0o700
         if mode is not None:
             tarinfo.mode = mode
-        if os.path.isfile(b_in_path) or follow_links:
-            with open(b_in_path, 'rb') as f:
-                tar.addfile(tarinfo, fileobj=f)
-        else:
-            tar.addfile(tarinfo)
-    data = bio.getvalue()
+        if not tarinfo.issym():
+            raise DockerUnexpectedError('stat information is not for a symlink')
+        tar.addfile(tarinfo)
+    return bio.getvalue()
 
-    ok = call_client(
-        lambda client: _put_archive(
-            client,
-            container,
-            out_dir,
-            data,
-        )
-    )
+
+def _symlink_tar_generator(b_in_path, file_stat, out_file, user_id, group_id, mode=None, user_name=None):
+    yield _symlink_tar_creator(b_in_path, file_stat, out_file, user_id, group_id, mode, user_name)
+
+
+def _regular_file_tar_generator(b_in_path, file_stat, out_file, user_id, group_id, mode=None, user_name=None):
+    if not stat.S_ISREG(file_stat.st_mode):
+        raise DockerUnexpectedError('stat information is not for a regular file')
+    tarinfo = tarfile.TarInfo()
+    tarinfo.name = os.path.splitdrive(to_text(out_file))[1].replace(os.sep, '/').lstrip('/')
+    tarinfo.mode = (file_stat.st_mode & 0o700) if mode is None else mode
+    tarinfo.uid = user_id
+    tarinfo.gid = group_id
+    tarinfo.size = file_stat.st_size
+    tarinfo.mtime = file_stat.st_mtime
+    tarinfo.type = tarfile.REGTYPE
+    tarinfo.linkname = ''
+    
+    tarinfo_buf = tarinfo.tobuf()
+    total_size = len(tarinfo_buf)
+    yield tarinfo_buf
+
+    remainder = tarinfo.size % tarfile.BLOCKSIZE
+    size = tarinfo.size
+    total_size += size
+    with open(b_in_path, 'rb') as f:
+        while size > 0:
+            to_read = min(size, 65536)
+            buf = f.read(to_read)
+            if not buf:
+                break
+            size -= len(buf)
+            yield buf
+
+    if size:
+        # If for some reason the file shrunk, fill up to the announced size with zeros.
+        # (If it enlarged, ignore the remainder.)
+        yield tarfile.NUL * size
+    if remainder:
+        # We need to write a multiple of 512 bytes. Fill up with zeros.
+        yield tarfile.NUL * (tarfile.BLOCKSIZE - remainder)
+        total_size += tarfile.BLOCKSIZE - remainder
+
+    # End with two zeroed blocks
+    yield tarfile.NUL * (2 * tarfile.BLOCKSIZE)
+    total_size += 2 * tarfile.BLOCKSIZE
+
+    remainder = total_size % tarfile.RECORDSIZE
+    if remainder > 0:
+        yield tarfile.NUL * (tarfile.RECORDSIZE - remainder)
+
+
+def put_file(call_client, container, in_path, out_path, user_id, group_id, mode=None, user_name=None, follow_links=False, log=None):
+    """Transfer a file from local to Docker container."""
+    if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
+        raise DockerFileNotFound(
+            "file or module does not exist: %s" % to_native(in_path))
+
+    b_in_path = to_bytes(in_path, errors='surrogate_or_strict')
+
+    out_dir, out_file = os.path.split(out_path)
+
+    if follow_links:
+        file_stat = os.stat(b_in_path)
+    else:
+        file_stat = os.lstat(b_in_path)
+
+    if stat.S_ISREG(file_stat.st_mode):
+        stream = _regular_file_tar_generator(b_in_path, file_stat, out_file, user_id, group_id, mode=mode, user_name=user_name)
+    elif stat.S_ISLNK(file_stat.st_mode):
+        stream = _symlink_tar_generator(b_in_path, file_stat, out_file, user_id, group_id, mode=mode, user_name=user_name)
+    else:
+        raise DockerFileCopyError('File{0} {1} is neither a regular file nor a symlink (stat mode {2}).'.format(' referenced by' if follow_links else '', in_path, oct(file_stat.st_mode)))
+
+    ok = call_client(lambda client: _put_archive(client, container, out_dir, stream))
     if not ok:
         raise DockerFileCopyError('Unknown error while creating file "{0}" in container "{1}".'.format(out_path, container))
 
