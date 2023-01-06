@@ -85,7 +85,7 @@ def _regular_file_tar_generator(b_in_path, file_stat, out_file, user_id, group_i
     tarinfo.mtime = file_stat.st_mtime
     tarinfo.type = tarfile.REGTYPE
     tarinfo.linkname = ''
-    
+
     tarinfo_buf = tarinfo.tobuf()
     total_size = len(tarinfo_buf)
     yield tarinfo_buf
@@ -140,7 +140,9 @@ def put_file(call_client, container, in_path, out_path, user_id, group_id, mode=
     elif stat.S_ISLNK(file_stat.st_mode):
         stream = _symlink_tar_generator(b_in_path, file_stat, out_file, user_id, group_id, mode=mode, user_name=user_name)
     else:
-        raise DockerFileCopyError('File{0} {1} is neither a regular file nor a symlink (stat mode {2}).'.format(' referenced by' if follow_links else '', in_path, oct(file_stat.st_mode)))
+        raise DockerFileCopyError(
+            'File{0} {1} is neither a regular file nor a symlink (stat mode {2}).'.format(
+                ' referenced by' if follow_links else '', in_path, oct(file_stat.st_mode)))
 
     ok = call_client(lambda client: _put_archive(client, container, out_dir, stream))
     if not ok:
