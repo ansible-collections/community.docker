@@ -73,6 +73,11 @@ options:
       - The file mode to use when writing the file to disk.
       - Will use the file's mode from the source system if this option is not provided.
     type: int
+  force:
+    description:
+      - Force writing the file (without performing any idempotency checks).
+    type: bool
+    default: false
 
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
@@ -166,7 +171,7 @@ def are_fileobjs_equal(f1, f2):
         b2buf = b2buf[buflen:]
 
 
-def is_idempotent(client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode):
+def is_idempotent(client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode, force=False):
     # Retrieve information of local file
     try:
         file_stat = os.stat(managed_path) if local_follow_links else os.lstat(managed_path)
@@ -179,6 +184,11 @@ def is_idempotent(client, container, managed_path, container_path, follow_links,
     if not stat.S_ISLNK(file_stat.st_mode) and not stat.S_ISREG(file_stat.st_mode):
         raise DockerFileCopyError('Local path {managed_path} is not a symbolic link or file')
 
+    # When forcing and we're not following links in the container, go!
+    if force and not follow_links:
+        return container_path, mode, False
+
+    # Resolve symlinks in the container (if requested), and get information on container's file
     real_container_path, regular_stat, link_target = stat_file(
         call_client(client, container),
         container,
@@ -189,6 +199,10 @@ def is_idempotent(client, container, managed_path, container_path, follow_links,
     # Follow links in the Docker container?
     if follow_links:
         container_path = real_container_path
+
+    # When forcing, go!
+    if force:
+        return container_path, mode, False
 
     # If the file wasn't found, continue
     if regular_stat is None:
@@ -275,9 +289,9 @@ def is_idempotent(client, container, managed_path, container_path, follow_links,
     )
 
 
-def copy_into_container(client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode):
+def copy_into_container(client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode, force=False):
     container_path, mode, idempotent = is_idempotent(
-        client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode)
+        client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode, force=force)
     changed = not idempotent
 
     if changed and not client.module.check_mode:
@@ -308,6 +322,7 @@ def main():
         owner_id=dict(type='int'),
         group_id=dict(type='int'),
         mode=dict(type='int'),
+        force=dict(type='bool', default=False),
     )
 
     client = AnsibleDockerClient(
@@ -325,6 +340,7 @@ def main():
     owner_id = client.module.params['owner_id']
     group_id = client.module.params['group_id']
     mode = client.module.params['mode']
+    force = client.module.params['force']
 
     if not container_path.startswith(os.path.sep):
         container_path = os.path.join(os.path.sep, container_path)
@@ -344,6 +360,7 @@ def main():
             owner_id=owner_id,
             group_id=group_id,
             mode=mode,
+            force=force,
         )
     except DockerUnexpectedError as exc:
         client.fail('Unexpected error: {exc}'.format(exc=to_native(exc)), exception=traceback.format_exc())

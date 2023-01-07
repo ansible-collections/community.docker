@@ -108,6 +108,35 @@
     chdir: /root
   register: result_5
 
+- name: Copy file (force, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    force: true
+  check_mode: true
+  register: result_6
+
+- name: Copy file (force)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    force: true
+  register: result_7
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_8
+
 - name: Check results
   assert:
     that:
@@ -117,6 +146,10 @@
       - result_4 is not changed
       - result_5.stdout | b64decode == 'Content 1\n'
       - result_5.stderr == '10 644 regular file 0 0 /file'
+      - result_6 is changed
+      - result_7 is changed
+      - result_8.stdout | b64decode == 'Content 1\n'
+      - result_8.stderr == '10 644 regular file 0 0 /file'
 
 ######################### Follow link - idempotence
 
@@ -141,7 +174,7 @@
   check_mode: true
   register: result_1
 
-- name: Copy file following link (check mode)
+- name: Copy file following link
   docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
@@ -162,6 +195,38 @@
     chdir: /root
   register: result_3
 
+- name: Copy file following link (force, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    follow: true
+    force: true
+  check_mode: true
+  register: result_4
+
+- name: Copy file following link (force)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    follow: true
+    force: true
+  register: result_5
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /lnk | base64;
+        stat -c '%s %a %F %u %g %N' /lnk > /dev/stderr;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_6
+
 - name: Check results
   assert:
     that:
@@ -174,6 +239,13 @@
       - result_3.stdout | b64decode == 'Content 1\n'
       - result_3.stderr_lines[0] == "4 777 symbolic link 0 0 '/lnk' -> 'file'"
       - result_3.stderr_lines[1] == '10 644 regular file 0 0 /file'
+      - result_4 is changed
+      - result_4.container_path == '/file'
+      - result_5 is changed
+      - result_5.container_path == '/file'
+      - result_6.stdout | b64decode == 'Content 1\n'
+      - result_6.stderr_lines[0] == "4 777 symbolic link 0 0 '/lnk' -> 'file'"
+      - result_6.stderr_lines[1] == '10 644 regular file 0 0 /file'
 
 ######################### Do not follow link - replace by file
 
@@ -186,7 +258,7 @@
   check_mode: true
   register: result_1
 
-- name: Copy file not following link (check mode)
+- name: Copy file not following link
   docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
@@ -221,6 +293,35 @@
     chdir: /root
   register: result_5
 
+- name: Copy file not following link (force, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    force: true
+  check_mode: true
+  register: result_6
+
+- name: Copy file not following link (force)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    force: true
+  register: result_7
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /lnk | base64;
+        stat -c '%s %a %F %u %g %N' /lnk > /dev/stderr
+    chdir: /root
+  register: result_8
+
 - name: Check results
   assert:
     that:
@@ -232,6 +333,12 @@
       - result_4 is not changed
       - result_5.stdout | b64decode == 'Content 1\n'
       - result_5.stderr == '10 644 regular file 0 0 /lnk'
+      - result_6 is changed
+      - result_6.container_path == '/lnk'
+      - result_7 is changed
+      - result_7.container_path == '/lnk'
+      - result_8.stdout | b64decode == 'Content 1\n'
+      - result_8.stderr == '10 644 regular file 0 0 /lnk'
 
 ######################### Replace directory by file
 
