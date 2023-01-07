@@ -111,8 +111,8 @@ stages:
           targets:
             - name: CentOS 7
               test: centos7
-            - name: Fedora 36
-              test: fedora36
+            - name: Fedora 37
+              test: fedora37
             - name: openSUSE 15
               test: opensuse15
             - name: Ubuntu 20.04
@@ -132,8 +132,8 @@ stages:
         parameters:
           testFormat: 2.14/linux/{0}
           targets:
-            - name: Ubuntu 22.04
-              test: ubuntu2204
+            - name: Fedora 36
+              test: fedora36
           groups:
             - 4
             - 5
@@ -206,8 +206,8 @@ stages:
           targets:
             - name: RHEL 7.9
               test: rhel/7.9
-            - name: RHEL 9.0 with latest Docker SDK from PyPi
-              test: rhel/9.0-pypi-latest
+            - name: RHEL 9.1 with latest Docker SDK from PyPi
+              test: rhel/9.1-pypi-latest
           groups:
             - 1
             - 2
