@@ -327,10 +327,12 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-force"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-force"><strong>force</strong></p>
 <a class="ansibleOptionLink" href="#parameter-force" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Force writing the file (without performing any idempotency checks).</p>
+<td><div class="ansible-option-cell"><p>If set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, force writing the file (without performing any idempotency checks).</p>
+<p>If set to <code class="docutils literal notranslate"><span class="pre">false</span></code>, only write the file if it does not exist on the target. If a filesystem object exists at the destination, the module will not do any change.</p>
+<p>If this option is not specified, the module will be idempotent. To verify idempotency, it will try to get information on the filesystem object in the container, and if everything seems to match will download the file from the container to compare it to the file to upload.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
