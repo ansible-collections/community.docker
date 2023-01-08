@@ -267,6 +267,28 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-content"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-content"><strong>content</strong></p>
+<a class="ansibleOptionLink" href="#parameter-content" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The file’s content.</p>
+<p>If you plan to provide binary data, use the <em>content_is_b64</em> option.</p>
+<p>Mutually exclusive with <em>path</em>. One of <em>content</em> and <em>path</em> is required.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-content_is_b64"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-content-is-b64"><strong>content_is_b64</strong></p>
+<a class="ansibleOptionLink" href="#parameter-content_is_b64" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>If set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the content in <em>content</em> is assumed to be Base64 encoded and will be decoded before being used.</p>
+<p>To use binary <em>content</em>, it is better to keep it Base64 encoded and let it be decoded by this option. Otherwise you risk the data to be interpreted as UTF-8 and corrupted.</p>
+<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-debug"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-debug"><strong>debug</strong></p>
 <a class="ansibleOptionLink" href="#parameter-debug" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -353,9 +375,10 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-path"><strong>path</strong></p>
-<a class="ansibleOptionLink" href="#parameter-path" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span> / <span class="ansible-option-required">required</span></p>
+<a class="ansibleOptionLink" href="#parameter-path" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Path to a file on the managed node.</p>
+<p>Mutually exclusive with <em>content</em>. One of <em>content</em> and <em>path</em> is required.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
