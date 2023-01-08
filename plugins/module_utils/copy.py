@@ -6,6 +6,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 import base64
+import datetime
 import io
 import json
 import os
@@ -118,6 +119,46 @@ def _regular_file_tar_generator(b_in_path, file_stat, out_file, user_id, group_i
         yield tarfile.NUL * (tarfile.RECORDSIZE - remainder)
 
 
+def _regular_content_tar_generator(content, out_file, user_id, group_id, mode, user_name=None):
+    tarinfo = tarfile.TarInfo()
+    tarinfo.name = os.path.splitdrive(to_text(out_file))[1].replace(os.sep, '/').lstrip('/')
+    tarinfo.mode = mode
+    tarinfo.uid = user_id
+    tarinfo.gid = group_id
+    tarinfo.size = len(content)
+    try:
+        tarinfo.mtime = int(datetime.datetime.now().timestamp())
+    except AttributeError:
+        # Python 2 (or more precisely: Python < 3.3) has no timestamp(). Use the following
+        # expression for Python 2:
+        tarinfo.mtime = int((datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)).total_seconds())
+    tarinfo.type = tarfile.REGTYPE
+    tarinfo.linkname = ''
+    if user_name:
+        tarinfo.uname = user_name
+
+    tarinfo_buf = tarinfo.tobuf()
+    total_size = len(tarinfo_buf)
+    yield tarinfo_buf
+
+    total_size += len(content)
+    yield content
+
+    remainder = tarinfo.size % tarfile.BLOCKSIZE
+    if remainder:
+        # We need to write a multiple of 512 bytes. Fill up with zeros.
+        yield tarfile.NUL * (tarfile.BLOCKSIZE - remainder)
+        total_size += tarfile.BLOCKSIZE - remainder
+
+    # End with two zeroed blocks
+    yield tarfile.NUL * (2 * tarfile.BLOCKSIZE)
+    total_size += 2 * tarfile.BLOCKSIZE
+
+    remainder = total_size % tarfile.RECORDSIZE
+    if remainder > 0:
+        yield tarfile.NUL * (tarfile.RECORDSIZE - remainder)
+
+
 def put_file(client, container, in_path, out_path, user_id, group_id, mode=None, user_name=None, follow_links=False):
     """Transfer a file from local to Docker container."""
     if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
@@ -141,6 +182,17 @@ def put_file(client, container, in_path, out_path, user_id, group_id, mode=None,
         raise DockerFileCopyError(
             'File{0} {1} is neither a regular file nor a symlink (stat mode {2}).'.format(
                 ' referenced by' if follow_links else '', in_path, oct(file_stat.st_mode)))
+
+    ok = _put_archive(client, container, out_dir, stream)
+    if not ok:
+        raise DockerUnexpectedError('Unknown error while creating file "{0}" in container "{1}".'.format(out_path, container))
+
+
+def put_file_content(client, container, content, out_path, user_id, group_id, mode, user_name=None):
+    """Transfer a file from local to Docker container."""
+    out_dir, out_file = os.path.split(out_path)
+
+    stream = _regular_content_tar_generator(content, out_file, user_id, group_id, mode, user_name=user_name)
 
     ok = _put_archive(client, container, out_dir, stream)
     if not ok:

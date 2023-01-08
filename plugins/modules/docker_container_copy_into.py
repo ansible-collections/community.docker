@@ -34,8 +34,23 @@ options:
   path:
     description:
       - Path to a file on the managed node.
+      - Mutually exclusive with I(content). One of I(content) and I(path) is required.
     type: path
-    required: true
+  content:
+    description:
+      - The file's content.
+      - If you plan to provide binary data, use the I(content_is_b64) option.
+      - Mutually exclusive with I(path). One of I(content) and I(path) is required.
+    type: str
+  content_is_b64:
+    description:
+      - If set to C(true), the content in I(content) is assumed to be Base64 encoded and
+        will be decoded before being used.
+      - To use binary I(content), it is better to keep it Base64 encoded and let it
+        be decoded by this option. Otherwise you risk the data to be interpreted as
+        UTF-8 and corrupted.
+    type: bool
+    default: false
   container_path:
     description:
       - Path to a file inside the Docker container.
@@ -117,6 +132,8 @@ container_path:
   returned: success
 '''
 
+import base64
+import io
 import os
 import stat
 import traceback
@@ -137,6 +154,7 @@ from ansible_collections.community.docker.plugins.module_utils.copy import (
     determine_user_group,
     fetch_file_ex,
     put_file,
+    put_file_content,
     stat_file,
 )
 
@@ -172,7 +190,35 @@ def are_fileobjs_equal(f1, f2):
         b2buf = b2buf[buflen:]
 
 
-def is_idempotent(client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode, force=False):
+def is_container_file_not_regular_file(container_stat):
+    for bit in (
+        # https://pkg.go.dev/io/fs#FileMode
+        32 - 1,  # ModeDir
+        32 - 4,  # ModeTemporary
+        32 - 5,  # ModeSymlink
+        32 - 6,  # ModeDevice
+        32 - 7,  # ModeNamedPipe
+        32 - 8,  # ModeSocket
+        32 - 11,  # ModeCharDevice
+        32 - 13,  # ModeIrregular
+    ):
+        if container_stat['mode'] & (1 << bit) != 0:
+            return True
+    return False
+
+
+def get_container_file_mode(container_stat):
+    mode = container_stat['mode'] & 0xFFF
+    if container_stat['mode'] & (1 << (32 - 9)) != 0:  # ModeSetuid
+        mode |= stat.S_ISUID  # set UID bit
+    if container_stat['mode'] & (1 << (32 - 10)) != 0:  # ModeSetgid
+        mode |= stat.S_ISGID  # set GID bit
+    if container_stat['mode'] & (1 << (32 - 12)) != 0:  # ModeSticky
+        mode |= stat.S_ISVTX  # sticky bit
+    return mode
+
+
+def is_file_idempotent(client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode, force=False):
     # Retrieve information of local file
     try:
         file_stat = os.stat(managed_path) if local_follow_links else os.lstat(managed_path)
@@ -217,29 +263,11 @@ def is_idempotent(client, container, managed_path, container_path, follow_links,
         return container_path, mode, local_link_target == link_target
     if link_target is not None:
         return container_path, mode, False
-    for bit in (
-        # https://pkg.go.dev/io/fs#FileMode
-        32 - 1,  # ModeDir
-        32 - 4,  # ModeTemporary
-        32 - 5,  # ModeSymlink
-        32 - 6,  # ModeDevice
-        32 - 7,  # ModeNamedPipe
-        32 - 8,  # ModeSocket
-        32 - 11,  # ModeCharDevice
-        32 - 13,  # ModeIrregular
-    ):
-        if regular_stat['mode'] & (1 << bit) != 0:
-            return container_path, mode, False
+    if is_container_file_not_regular_file(regular_stat):
+        return container_path, mode, False
     if file_stat.st_size != regular_stat['size']:
         return container_path, mode, False
-    container_file_mode = regular_stat['mode'] & 0xFFF
-    if regular_stat['mode'] & (1 << (32 - 9)) != 0:  # ModeSetuid
-        container_file_mode |= stat.S_ISUID  # set UID bit
-    if regular_stat['mode'] & (1 << (32 - 10)) != 0:  # ModeSetgid
-        container_file_mode |= stat.S_ISGID  # set GID bit
-    if regular_stat['mode'] & (1 << (32 - 12)) != 0:  # ModeSticky
-        container_file_mode |= stat.S_ISVTX  # sticky bit
-    if mode != container_file_mode:
+    if mode != get_container_file_mode(regular_stat):
         return container_path, mode, False
 
     # Fetch file from container
@@ -290,8 +318,8 @@ def is_idempotent(client, container, managed_path, container_path, follow_links,
     )
 
 
-def copy_into_container(client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode, force=False):
-    container_path, mode, idempotent = is_idempotent(
+def copy_file_into_container(client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode, force=False):
+    container_path, mode, idempotent = is_file_idempotent(
         client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode, force=force)
     changed = not idempotent
 
@@ -313,10 +341,100 @@ def copy_into_container(client, container, managed_path, container_path, follow_
     )
 
 
+def is_content_idempotent(client, container, content, container_path, follow_links, owner_id, group_id, mode, force=False):
+    # When forcing and we're not following links in the container, go!
+    if force and not follow_links:
+        return container_path, mode, False
+
+    # Resolve symlinks in the container (if requested), and get information on container's file
+    real_container_path, regular_stat, link_target = stat_file(
+        client,
+        container,
+        in_path=container_path,
+        follow_links=follow_links,
+    )
+
+    # Follow links in the Docker container?
+    if follow_links:
+        container_path = real_container_path
+
+    # When forcing, go!
+    if force:
+        return container_path, mode, False
+
+    # If the file wasn't found, continue
+    if regular_stat is None:
+        return container_path, mode, False
+
+    # Basic idempotency checks
+    if link_target is not None:
+        return container_path, mode, False
+    if is_container_file_not_regular_file(regular_stat):
+        return container_path, mode, False
+    if len(content) != regular_stat['size']:
+        return container_path, mode, False
+    if mode != get_container_file_mode(regular_stat):
+        return container_path, mode, False
+
+    # Fetch file from container
+    def process_none(in_path):
+        return container_path, mode, False
+
+    def process_regular(in_path, tar, member):
+        # Check things like user/group ID and mode
+        if member.mode & 0xFFF != mode:
+            return container_path, mode, False
+        if member.uid != owner_id:
+            return container_path, mode, False
+        if member.gid != group_id:
+            return container_path, mode, False
+
+        if member.size != len(content):
+            return container_path, mode, False
+
+        tar_f = tar.extractfile(member)  # in Python 2, this *cannot* be used in `with`...
+        return container_path, mode, are_fileobjs_equal(tar_f, io.BytesIO(content))
+
+    def process_symlink(in_path, member):
+        return container_path, mode, False
+
+    return fetch_file_ex(
+        client,
+        container,
+        in_path=container_path,
+        process_none=process_none,
+        process_regular=process_regular,
+        process_symlink=process_symlink,
+        follow_links=follow_links,
+    )
+
+
+def copy_content_into_container(client, container, content, container_path, follow_links, owner_id, group_id, mode, force=False):
+    container_path, mode, idempotent = is_content_idempotent(
+        client, container, content, container_path, follow_links, owner_id, group_id, mode, force=force)
+    changed = not idempotent
+
+    if changed and not client.module.check_mode:
+        put_file_content(
+            client,
+            container,
+            content=content,
+            out_path=container_path,
+            user_id=owner_id,
+            group_id=group_id,
+            mode=mode,
+        )
+
+    client.module.exit_json(
+        container_path=container_path,
+        changed=changed,
+    )
+
+
 def main():
     argument_spec = dict(
         container=dict(type='str', required=True),
-        path=dict(type='path', required=True),
+        path=dict(type='path'),
         container_path=dict(type='str', required=True),
         follow=dict(type='bool', default=False),
         local_follow=dict(type='bool', default=True),
@@ -324,13 +442,19 @@ def main():
         group_id=dict(type='int'),
         mode=dict(type='int'),
         force=dict(type='bool', default=False),
+        content=dict(type='str'),
+        content_is_b64=dict(type='bool', default=False),
     )
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         min_docker_api_version='1.20',
         supports_check_mode=True,
+        mutually_exclusive=[('path', 'content')],
         required_together=[('owner_id', 'group_id')],
+        required_by={
+            'content': ['mode'],
+        },
     )
 
     container = client.module.params['container']
@@ -342,6 +466,16 @@ def main():
     group_id = client.module.params['group_id']
     mode = client.module.params['mode']
     force = client.module.params['force']
+    content = client.module.params['content']
+
+    if content is not None:
+        if client.module.params['content_is_b64']:
+            try:
+                content = base64.b64decode(content)
+            except Exception as e:  # depending on Python version and error, multiple different exceptions can be raised
+                client.fail('Cannot Base64 decode the content option: {0}'.format(e))
+        else:
+            content = to_bytes(content)
 
     if not container_path.startswith(os.path.sep):
         container_path = os.path.join(os.path.sep, container_path)
@@ -351,18 +485,34 @@ def main():
         if owner_id is None or group_id is None:
             owner_id, group_id = determine_user_group(client, container)
 
-        copy_into_container(
-            client,
-            container,
-            managed_path,
-            container_path,
-            follow_links=follow,
-            local_follow_links=local_follow,
-            owner_id=owner_id,
-            group_id=group_id,
-            mode=mode,
-            force=force,
-        )
+        if content is not None:
+            copy_content_into_container(
+                client,
+                container,
+                content,
+                container_path,
+                follow_links=follow,
+                owner_id=owner_id,
+                group_id=group_id,
+                mode=mode,
+                force=force,
+            )
+        elif managed_path is not None:
+            copy_file_into_container(
+                client,
+                container,
+                managed_path,
+                container_path,
+                follow_links=follow,
+                local_follow_links=local_follow,
+                owner_id=owner_id,
+                group_id=group_id,
+                mode=mode,
+                force=force,
+            )
+        else:
+            # Can happen if a user explicitly passes `content: null` or `path: null`...
+            client.fail('One of path and content must be supplied')
     except NotFound as exc:
         client.fail('Could not find container "{1}" or resource in it ({0})'.format(exc, container), exception=traceback.format_exc())
     except APIError as exc:
