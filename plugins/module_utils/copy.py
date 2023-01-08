@@ -384,10 +384,15 @@ def _execute_command(client, container, command, log=None, check_rc=False):
 
     try:
         exec_data = client.post_json_to_json('/containers/{0}/exec', container, data=data)
+    except NotFound as e:
+        raise_from(
+            DockerFileCopyError('Could not find container "{container}"'.format(container=container)),
+            e,
+        )
     except APIError as e:
         if e.response is not None and e.response.status_code == 409:
             raise_from(
-                DockerFileCopyError('Cannot execute command in paused container "{0}"'.format(container)),
+                DockerFileCopyError('Cannot execute command in paused container "{container}"'.format(container=container)),
                 e,
             )
         raise

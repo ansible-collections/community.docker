@@ -850,7 +850,7 @@ def main():
             # Can happen if a user explicitly passes `content: null` or `path: null`...
             client.fail('One of path and content must be supplied')
     except NotFound as exc:
-        client.fail('Could not find container "{1}" or resource in it ({0})'.format(exc, container), exception=traceback.format_exc())
+        client.fail('Could not find container "{1}" or resource in it ({0})'.format(exc, container))
     except APIError as exc:
         client.fail('An unexpected Docker error occurred for container "{1}": {0}'.format(exc, container), exception=traceback.format_exc())
     except DockerException as exc:
