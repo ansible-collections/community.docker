@@ -47,6 +47,8 @@
       container: '{{ daemon_nginx_frontend }}'
       path: '{{ remote_tmp_dir }}/{{ item }}'
       container_path: '/etc/nginx/{{ item }}'
+      owner_id: 0
+      group_id: 0
     loop:
     - nginx.conf
     register: can_copy_files
@@ -101,6 +103,8 @@
         container: '{{ daemon_nginx_frontend }}'
         path: '{{ remote_tmp_dir }}/{{ item }}'
         container_path: '/etc/nginx/{{ item }}'
+        owner_id: 0
+        group_id: 0
       loop:
       - ca.pem
       - cert.pem

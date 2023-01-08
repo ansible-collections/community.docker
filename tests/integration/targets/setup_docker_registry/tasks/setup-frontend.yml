@@ -43,6 +43,8 @@
     container: '{{ docker_registry_container_name_frontend }}'
     path: '{{ remote_tmp_dir }}/{{ item }}'
     container_path: '/etc/nginx/{{ item }}'
+    owner_id: 0
+    group_id: 0
   loop:
   - nginx.conf
   - nginx.htpasswd
@@ -78,6 +80,8 @@
       container: '{{ docker_registry_container_name_frontend }}'
       path: '{{ remote_tmp_dir }}/{{ item }}'
       container_path: '/etc/nginx/{{ item }}'
+      owner_id: 0
+      group_id: 0
     loop:
     - cert.pem
     - cert.key
