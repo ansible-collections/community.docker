@@ -137,6 +137,41 @@
     chdir: /root
   register: result_8
 
+- name: Copy file (force=false, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0777
+    owner_id: 123
+    group_id: 321
+    force: false
+  check_mode: true
+  register: result_9
+
+- name: Copy file (force=false)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0777
+    owner_id: 123
+    group_id: 321
+    force: false
+  register: result_10
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_11
+
 - name: Check results
   assert:
     that:
@@ -150,6 +185,10 @@
       - result_7 is changed
       - result_8.stdout | b64decode == 'Content 1\n'
       - result_8.stderr == '10 644 regular file 0 0 /file'
+      - result_9 is not changed
+      - result_10 is not changed
+      - result_11.stdout | b64decode == 'Content 1\n'
+      - result_11.stderr == '10 644 regular file 0 0 /file'
 
 ######################### Follow link - idempotence
 

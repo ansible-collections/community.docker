@@ -90,9 +90,13 @@ options:
     type: int
   force:
     description:
-      - Force writing the file (without performing any idempotency checks).
+      - If set to C(true), force writing the file (without performing any idempotency checks).
+      - If set to C(false), only write the file if it does not exist on the target. If a filesystem object exists at
+        the destination, the module will not do any change.
+      - If this option is not specified, the module will be idempotent. To verify idempotency, it will try to get information
+        on the filesystem object in the container, and if everything seems to match will download the file from the container
+        to compare it to the file to upload.
     type: bool
-    default: false
 
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
@@ -255,6 +259,10 @@ def is_file_idempotent(client, container, managed_path, container_path, follow_l
     if regular_stat is None:
         return container_path, mode, False
 
+    # If force is set to False, and the destination exists, assume there's nothing to do
+    if force is False:
+        return container_path, mode, True
+
     # Basic idempotency checks
     if stat.S_ISLNK(file_stat.st_mode):
         if link_target is None:
@@ -366,6 +374,10 @@ def is_content_idempotent(client, container, content, container_path, follow_lin
     if regular_stat is None:
         return container_path, mode, False
 
+    # If force is set to False, and the destination exists, assume there's nothing to do
+    if force is False:
+        return container_path, mode, True
+
     # Basic idempotency checks
     if link_target is not None:
         return container_path, mode, False
@@ -441,7 +453,7 @@ def main():
         owner_id=dict(type='int'),
         group_id=dict(type='int'),
         mode=dict(type='int'),
-        force=dict(type='bool', default=False),
+        force=dict(type='bool'),
         content=dict(type='str'),
         content_is_b64=dict(type='bool', default=False),
     )
