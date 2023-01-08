@@ -182,7 +182,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <ul class="simple">
 <li><p>Copy a file into a Docker container.</p></li>
 <li><p>Similar to <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">cp</span></code>.</p></li>
-<li><p>To copy files in a non-running container, you must provide the <em>owner_id</em> and <em>group_id</em> options.</p></li>
+<li><p>To copy files in a non-running container, you must provide the <em>owner_id</em> and <em>group_id</em> options. This is also necessary if the container does not contain a <code class="docutils literal notranslate"><span class="pre">/bin/sh</span></code> shell with an <code class="docutils literal notranslate"><span class="pre">id</span></code> tool.</p></li>
 </ul>
 </section>
 <section id="requirements">
