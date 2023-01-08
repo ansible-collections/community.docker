@@ -370,7 +370,9 @@ def main():
     except DockerException as exc:
         client.fail('An unexpected Docker error occurred for container "{1}": {0}'.format(exc, container), exception=traceback.format_exc())
     except RequestException as exc:
-        client.fail('An unexpected requests error occurred for container "{1}" when trying to talk to the Docker daemon: {0}'.format(exc, container), exception=traceback.format_exc())
+        client.fail(
+            'An unexpected requests error occurred for container "{1}" when trying to talk to the Docker daemon: {0}'.format(exc, container),
+            exception=traceback.format_exc())
     except DockerUnexpectedError as exc:
         client.fail('Unexpected error: {exc}'.format(exc=to_native(exc)), exception=traceback.format_exc())
     except DockerFileCopyError as exc:
