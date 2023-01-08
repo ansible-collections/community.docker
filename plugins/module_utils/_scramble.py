@@ -6,12 +6,28 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 import base64
+import random
 
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
 from ansible.module_utils.six import PY2
 
 
+def generate_insecure_key():
+    '''Do NOT use this for cryptographic purposes!'''
+    while True:
+        # Generate a one-byte key. Right now the functions below do not use more
+        # than one byte, so this is sufficient.
+        if PY2:
+            key = chr(random.randint(0, 255))
+        else:
+            key = bytes([random.randint(0, 255)])
+        # Return anything that is not zero
+        if key != b'\x00':
+            return key
+
+
 def scramble(value, key):
+    '''Do NOT use this for cryptographic purposes!'''
     if len(key) < 1:
         raise ValueError('Key must be at least one byte')
     value = to_bytes(value)
@@ -25,6 +41,7 @@ def scramble(value, key):
 
 
 def unscramble(value, key):
+    '''Do NOT use this for cryptographic purposes!'''
     if len(key) < 1:
         raise ValueError('Key must be at least one byte')
     if not value.startswith(u'=S='):

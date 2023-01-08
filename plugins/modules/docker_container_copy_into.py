@@ -168,7 +168,7 @@ from ansible_collections.community.docker.plugins.module_utils.copy import (
     stat_file,
 )
 
-from ansible_collections.community.docker.plugins.module_utils._scramble import scramble
+from ansible_collections.community.docker.plugins.module_utils._scramble import generate_insecure_key, scramble
 
 
 def are_fileobjs_equal(f1, f2):
@@ -748,9 +748,7 @@ def copy_content_into_container(client, container, content, container_path, foll
     )
     if diff:
         # Since the content is no_log, make sure that the before/after strings look sufficiently different
-        key = b'\x00'
-        while key[0] == 0:
-            key = random.randbytes(1)
+        key = generate_insecure_key()
         diff['scrambled_diff'] = base64.b64encode(key)
         for k in ('before', 'after'):
             if k in diff:
@@ -774,7 +772,7 @@ def main():
         content_is_b64=dict(type='bool', default=False),
 
         # Undocumented parameters for use by the action plugin
-        _max_file_size_for_diff=dict(type='int', required=True),
+        _max_file_size_for_diff=dict(type='int'),
     )
 
     client = AnsibleDockerClient(
