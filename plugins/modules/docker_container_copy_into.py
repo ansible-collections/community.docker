@@ -455,7 +455,7 @@ def main():
         group_id=dict(type='int'),
         mode=dict(type='int'),
         force=dict(type='bool'),
-        content=dict(type='str'),
+        content=dict(type='str', no_log=True),
         content_is_b64=dict(type='bool', default=False),
     )
 
