@@ -121,7 +121,9 @@ import os
 import stat
 import traceback
 
-from ansible.module_utils._text import to_bytes, to_text, to_native
+from ansible.module_utils._text import to_bytes, to_native
+
+from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException, NotFound
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
@@ -132,7 +134,6 @@ from ansible_collections.community.docker.plugins.module_utils.copy import (
     DockerFileCopyError,
     DockerFileNotFound,
     DockerUnexpectedError,
-    call_client,
     determine_user_group,
     fetch_file_ex,
     put_file,
@@ -190,7 +191,7 @@ def is_idempotent(client, container, managed_path, container_path, follow_links,
 
     # Resolve symlinks in the container (if requested), and get information on container's file
     real_container_path, regular_stat, link_target = stat_file(
-        call_client(client, container),
+        client,
         container,
         in_path=container_path,
         follow_links=follow_links,
@@ -279,7 +280,7 @@ def is_idempotent(client, container, managed_path, container_path, follow_links,
         return container_path, mode, member.linkname == local_link_target
 
     return fetch_file_ex(
-        call_client(client, container, use_file_not_found_exception=True),
+        client,
         container,
         in_path=container_path,
         process_none=process_none,
@@ -296,7 +297,7 @@ def copy_into_container(client, container, managed_path, container_path, follow_
 
     if changed and not client.module.check_mode:
         put_file(
-            call_client(client, container),
+            client,
             container,
             in_path=managed_path,
             out_path=container_path,
@@ -348,7 +349,7 @@ def main():
 
     try:
         if owner_id is None or group_id is None:
-            owner_id, group_id = call_client(client, container)(lambda c: determine_user_group(c, container))
+            owner_id, group_id = determine_user_group(client, container)
 
         copy_into_container(
             client,
@@ -362,6 +363,14 @@ def main():
             mode=mode,
             force=force,
         )
+    except NotFound as exc:
+        client.fail('Could not find container "{1}" or resource in it ({0})'.format(exc, container), exception=traceback.format_exc())
+    except APIError as exc:
+        client.fail('An unexpected Docker error occurred for container "{1}": {0}'.format(exc, container), exception=traceback.format_exc())
+    except DockerException as exc:
+        client.fail('An unexpected Docker error occurred for container "{1}": {0}'.format(exc, container), exception=traceback.format_exc())
+    except RequestException as exc:
+        client.fail('An unexpected requests error occurred for container "{1}" when trying to talk to the Docker daemon: {0}'.format(exc, container), exception=traceback.format_exc())
     except DockerUnexpectedError as exc:
         client.fail('Unexpected error: {exc}'.format(exc=to_native(exc)), exception=traceback.format_exc())
     except DockerFileCopyError as exc:

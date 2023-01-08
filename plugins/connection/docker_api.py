@@ -287,16 +287,18 @@ class Connection(ConnectionBase):
 
         user_id, group_id = self.ids[self.actual_user]
         try:
-            put_file(
-                call_client=lambda callback: self._call_client(lambda: callback(self.client), not_found_can_be_resource=True),
-                container=self.get_option('remote_addr'),
-                in_path=in_path,
-                out_path=out_path,
-                user_id=user_id,
-                group_id=group_id,
-                user_name=self.actual_user,
-                follow_links=True,
-                log=lambda msg: display.vvvv(msg, host=self.get_option('remote_addr')),
+            self._call_client(
+                lambda: put_file(
+                    self.client,
+                    container=self.get_option('remote_addr'),
+                    in_path=in_path,
+                    out_path=out_path,
+                    user_id=user_id,
+                    group_id=group_id,
+                    user_name=self.actual_user,
+                    follow_links=True,
+                ),
+                not_found_can_be_resource=True,
             )
         except DockerFileNotFound as exc:
             raise AnsibleFileNotFound(to_native(exc))
@@ -311,13 +313,16 @@ class Connection(ConnectionBase):
         in_path = self._prefix_login_path(in_path)
 
         try:
-            fetch_file(
-                call_client=lambda callback: self._call_client(lambda: callback(self.client), not_found_can_be_resource=True),
-                container=self.get_option('remote_addr'),
-                in_path=in_path,
-                out_path=out_path,
-                follow_links=True,
-                log=lambda msg: display.vvvv(msg, host=self.get_option('remote_addr')),
+            self._call_client(
+                lambda: fetch_file(
+                    self.client,
+                    container=self.get_option('remote_addr'),
+                    in_path=in_path,
+                    out_path=out_path,
+                    follow_links=True,
+                    log=lambda msg: display.vvvv(msg, host=self.get_option('remote_addr')),
+                ),
+                not_found_can_be_resource=True,
             )
         except DockerFileNotFound as exc:
             raise AnsibleFileNotFound(to_native(exc))

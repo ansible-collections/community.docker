@@ -17,11 +17,7 @@ import tarfile
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
 from ansible.module_utils.six import raise_from
 
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
-    RequestException,
-)
-
-from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException, NotFound
+from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, NotFound
 
 
 class DockerFileCopyError(Exception):
@@ -85,12 +81,13 @@ def _regular_file_tar_generator(b_in_path, file_stat, out_file, user_id, group_i
     tarinfo.mtime = file_stat.st_mtime
     tarinfo.type = tarfile.REGTYPE
     tarinfo.linkname = ''
+    if user_name:
+        tarinfo.uname = user_name
 
     tarinfo_buf = tarinfo.tobuf()
     total_size = len(tarinfo_buf)
     yield tarinfo_buf
 
-    remainder = tarinfo.size % tarfile.BLOCKSIZE
     size = tarinfo.size
     total_size += size
     with open(b_in_path, 'rb') as f:
@@ -101,11 +98,12 @@ def _regular_file_tar_generator(b_in_path, file_stat, out_file, user_id, group_i
                 break
             size -= len(buf)
             yield buf
-
     if size:
         # If for some reason the file shrunk, fill up to the announced size with zeros.
         # (If it enlarged, ignore the remainder.)
         yield tarfile.NUL * size
+
+    remainder = tarinfo.size % tarfile.BLOCKSIZE
     if remainder:
         # We need to write a multiple of 512 bytes. Fill up with zeros.
         yield tarfile.NUL * (tarfile.BLOCKSIZE - remainder)
@@ -120,7 +118,7 @@ def _regular_file_tar_generator(b_in_path, file_stat, out_file, user_id, group_i
         yield tarfile.NUL * (tarfile.RECORDSIZE - remainder)
 
 
-def put_file(call_client, container, in_path, out_path, user_id, group_id, mode=None, user_name=None, follow_links=False, log=None):
+def put_file(client, container, in_path, out_path, user_id, group_id, mode=None, user_name=None, follow_links=False):
     """Transfer a file from local to Docker container."""
     if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
         raise DockerFileNotFound(
@@ -144,12 +142,12 @@ def put_file(call_client, container, in_path, out_path, user_id, group_id, mode=
             'File{0} {1} is neither a regular file nor a symlink (stat mode {2}).'.format(
                 ' referenced by' if follow_links else '', in_path, oct(file_stat.st_mode)))
 
-    ok = call_client(lambda client: _put_archive(client, container, out_dir, stream))
+    ok = _put_archive(client, container, out_dir, stream)
     if not ok:
-        raise DockerFileCopyError('Unknown error while creating file "{0}" in container "{1}".'.format(out_path, container))
+        raise DockerUnexpectedError('Unknown error while creating file "{0}" in container "{1}".'.format(out_path, container))
 
 
-def stat_file(call_client, container, in_path, follow_links=False, log=None):
+def stat_file(client, container, in_path, follow_links=False, log=None):
     """Fetch information on a file from a Docker container to local.
 
     Return a tuple ``(path, stat_data, link_target)`` where:
@@ -171,26 +169,21 @@ def stat_file(call_client, container, in_path, follow_links=False, log=None):
         if log:
             log('FETCH: Stating "%s"' % in_path)
 
-        def f(client):
-            response = client._head(
-                client._url('/containers/{0}/archive', container),
-                params={'path': in_path},
-            )
-            if response.status_code == 404:
-                return None
-            client._raise_for_status(response)
-            header = response.headers.get('x-docker-container-path-stat')
-            try:
-                return json.loads(base64.b64decode(header))
-            except Exception as exc:
-                raise DockerUnexpectedError(
-                    'When retrieving information for {in_path} from {container}, obtained header {header!r} that cannot be loaded as JSON: {exc}'
-                    .format(in_path=in_path, container=container, header=header, exc=exc)
-                )
-
-        stat_data = call_client(f)
-        if stat_data is None:
+        response = client._head(
+            client._url('/containers/{0}/archive', container),
+            params={'path': in_path},
+        )
+        if response.status_code == 404:
             return in_path, None, None
+        client._raise_for_status(response)
+        header = response.headers.get('x-docker-container-path-stat')
+        try:
+            stat_data = json.loads(base64.b64decode(header))
+        except Exception as exc:
+            raise DockerUnexpectedError(
+                'When retrieving information for {in_path} from {container}, obtained header {header!r} that cannot be loaded as JSON: {exc}'
+                .format(in_path=in_path, container=container, header=header, exc=exc)
+            )
 
         # https://pkg.go.dev/io/fs#FileMode: bit 32 - 5 means ModeSymlink
         if stat_data['mode'] & (1 << (32 - 5)) != 0:
@@ -241,7 +234,7 @@ def _stream_generator_to_fileobj(stream):
     return io.BufferedReader(raw)
 
 
-def fetch_file_ex(call_client, container, in_path, process_none, process_regular, process_symlink, follow_links=False, log=None):
+def fetch_file_ex(client, container, in_path, process_none, process_regular, process_symlink, follow_links=False, log=None):
     """Fetch a file (as a tar file entry) from a Docker container to local."""
     considered_in_paths = set()
 
@@ -253,24 +246,21 @@ def fetch_file_ex(call_client, container, in_path, process_none, process_regular
         if log:
             log('FETCH: Fetching "%s"' % in_path)
         try:
-            stream = call_client(
-                lambda client: client.get_raw_stream(
-                    '/containers/{0}/archive', container,
-                    params={'path': in_path},
-                    headers={'Accept-Encoding': 'identity'},
-                )
+            stream = client.get_raw_stream(
+                '/containers/{0}/archive', container,
+                params={'path': in_path},
+                headers={'Accept-Encoding': 'identity'},
             )
-        except DockerFileNotFound:
+        except NotFound as dummy:
             return process_none(in_path)
 
         with tarfile.open(fileobj=_stream_generator_to_fileobj(stream), mode='r|') as tar:
-            file_member = None
             symlink_member = None
             result = None
             found = False
             for member in tar:
                 if found:
-                    raise DockerFileCopyError('Received tarfile contains more than one file!')
+                    raise DockerUnexpectedError('Received tarfile contains more than one file!')
                 found = True
                 if member.issym():
                     symlink_member = member
@@ -291,7 +281,7 @@ def fetch_file_ex(call_client, container, in_path, process_none, process_regular
             raise DockerUnexpectedError('Received tarfile is empty!')
 
 
-def fetch_file(call_client, container, in_path, out_path, follow_links=False, log=None):
+def fetch_file(client, container, in_path, out_path, follow_links=False, log=None):
     b_out_path = to_bytes(out_path, errors='surrogate_or_strict')
 
     def process_none(in_path):
@@ -316,43 +306,7 @@ def fetch_file(call_client, container, in_path, out_path, follow_links=False, lo
         os.symlink(member.linkname, b_out_path)
         return in_path
 
-    return fetch_file_ex(call_client, container, in_path, process_none, process_regular, process_symlink, follow_links=follow_links, log=log)
-
-
-def call_client(client, container, use_file_not_found_exception=False):
-    def f(callback):
-        try:
-            return callback(client)
-        except NotFound as e:
-            if use_file_not_found_exception:
-                raise_from(DockerFileNotFound(to_native(e)), e)
-            raise_from(
-                DockerFileCopyError('Could not find container "{1}" or resource in it ({0})'.format(e, container)),
-                e,
-            )
-        except APIError as e:
-            if e.response is not None and e.response.status_code == 409:
-                raise_from(
-                    DockerFileCopyError('The container "{1}" has been paused ({0})'.format(e, container)),
-                    e,
-                )
-            raise_from(
-                DockerUnexpectedError('An unexpected Docker error occurred for container "{1}": {0}'.format(e, container)),
-                e,
-            )
-        except DockerException as e:
-            raise_from(
-                DockerUnexpectedError('An unexpected Docker error occurred for container "{1}": {0}'.format(e, container)),
-                e,
-            )
-        except RequestException as e:
-            raise_from(
-                DockerUnexpectedError(
-                    'An unexpected requests error occurred for container "{1}" when trying to talk to the Docker daemon: {0}'.format(e, container)),
-                e,
-            )
-
-    return f
+    return fetch_file_ex(client, container, in_path, process_none, process_regular, process_symlink, follow_links=follow_links, log=log)
 
 
 def _execute_command(client, container, command, log=None, check_rc=False):
@@ -400,7 +354,7 @@ def _execute_command(client, container, command, log=None, check_rc=False):
         log('Exit code {rc}, stdout {stdout!r}, stderr {stderr!r}'.format(rc=rc, stdout=stdout, stderr=stderr))
 
     if check_rc and rc != 0:
-        raise DockerFileCopyError(
+        raise DockerUnexpectedError(
             'Obtained unexpected exit code {rc} when running "{command}" in {container}.\nSTDOUT: {stdout}\nSTDERR: {stderr}'
             .format(command=' '.join(command), container=container, rc=rc, stdout=stdout, stderr=stderr)
         )
@@ -413,7 +367,7 @@ def determine_user_group(client, container, log=None):
 
     stdout_lines = stdout.splitlines()
     if len(stdout_lines) != 2:
-        raise DockerFileCopyError(
+        raise DockerUnexpectedError(
             'Expected two-line output to obtain user and group ID for container {container}, but got {lc} lines:\n{stdout}'
             .format(container=container, lc=len(stdout_lines), stdout=stdout)
         )
@@ -422,7 +376,7 @@ def determine_user_group(client, container, log=None):
     try:
         return int(user_id), int(group_id)
     except ValueError:
-        raise DockerFileCopyError(
+        raise DockerUnexpectedError(
             'Expected two-line output with numeric IDs to obtain user and group ID for container {container}, but got "{l1}" and "{l2}" instead'
             .format(container=container, l1=user_id, l2=group_id)
         )
