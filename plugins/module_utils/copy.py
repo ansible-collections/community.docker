@@ -286,7 +286,7 @@ def _stream_generator_to_fileobj(stream):
     return io.BufferedReader(raw)
 
 
-def fetch_file_ex(client, container, in_path, process_none, process_regular, process_symlink, follow_links=False, log=None):
+def fetch_file_ex(client, container, in_path, process_none, process_regular, process_symlink, process_other, follow_links=False, log=None):
     """Fetch a file (as a tar file entry) from a Docker container to local."""
     considered_in_paths = set()
 
@@ -320,7 +320,7 @@ def fetch_file_ex(client, container, in_path, process_none, process_regular, pro
                 if member.isfile():
                     result = process_regular(in_path, tar, member)
                     continue
-                raise DockerFileCopyError('Remote file "%s" is not a regular file or a symbolic link' % in_path)
+                result = process_other(in_path, member)
             if symlink_member:
                 if not follow_links:
                     return process_symlink(in_path, symlink_member)
@@ -358,7 +358,10 @@ def fetch_file(client, container, in_path, out_path, follow_links=False, log=Non
         os.symlink(member.linkname, b_out_path)
         return in_path
 
-    return fetch_file_ex(client, container, in_path, process_none, process_regular, process_symlink, follow_links=follow_links, log=log)
+    def process_other(in_path, member):
+        raise DockerFileCopyError('Remote file "%s" is not a regular file or a symbolic link' % in_path)
+
+    return fetch_file_ex(client, container, in_path, process_none, process_regular, process_symlink, process_other, follow_links=follow_links, log=log)
 
 
 def _execute_command(client, container, command, log=None, check_rc=False):

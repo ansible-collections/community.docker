@@ -1,2 +1,3 @@
 .azure-pipelines/scripts/publish-codecov.py replace-urlopen
 plugins/modules/current_container_facts.py validate-modules:return-syntax-error
+plugins/modules/docker_container_copy_into.py validate-modules:undocumented-parameter # _max_file_size_for_diff is used by the action plugin

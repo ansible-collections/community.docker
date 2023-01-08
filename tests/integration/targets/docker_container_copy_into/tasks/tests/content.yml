@@ -58,7 +58,19 @@
     container_path: '/file'
     mode: 0644
   check_mode: true
+  diff: false
   register: result_1
+
+- name: Copy content (check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/file'
+    mode: 0644
+  check_mode: true
+  diff: true
+  register: result_1_diff
 
 - name: Copy content (check mode)
   docker_container_copy_into:
@@ -77,7 +89,19 @@
     container_path: '/file'
     mode: 0644
   check_mode: true
+  diff: false
   register: result_3
+
+- name: Copy content (idempotent, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/file'
+    mode: 0644
+  check_mode: true
+  diff: true
+  register: result_3_diff
 
 - name: Copy content (idempotent)
   docker_container_copy_into:
@@ -96,7 +120,19 @@
     container_path: '/file'
     mode: 0644
   check_mode: true
+  diff: false
   register: result_3b64
+
+- name: Copy content (idempotent, check mode, base 64, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: "{{ 'Content 1\n' | b64encode }}"
+    content_is_b64: true
+    container_path: '/file'
+    mode: 0644
+  check_mode: true
+  diff: true
+  register: result_3b64_diff
 
 - name: Copy content (idempotent, base 64)
   docker_container_copy_into:
@@ -128,7 +164,20 @@
     mode: 0644
     force: true
   check_mode: true
+  diff: false
   register: result_6
+
+- name: Copy content (force, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/file'
+    mode: 0644
+    force: true
+  check_mode: true
+  diff: true
+  register: result_6_diff
 
 - name: Copy content (force)
   docker_container_copy_into:
@@ -163,7 +212,22 @@
     group_id: 321
     force: false
   check_mode: true
+  diff: false
   register: result_9
+
+- name: Copy content (force=false, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Some other content
+    container_path: '/file'
+    mode: 0777
+    owner_id: 123
+    group_id: 321
+    force: false
+  check_mode: true
+  diff: true
+  register: result_9_diff
 
 - name: Copy content (force=false)
   docker_container_copy_into:
@@ -193,18 +257,48 @@
   assert:
     that:
       - result_1 is changed
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == ''
+      - result_1_diff.diff.before_header == '/file'
+      - result_1_diff.diff.after == 'Content 1\n'
+      - result_1_diff.diff.after_header == 'dynamically generated'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_3 is not changed
+      - "'diff' not in result_3"
+      - result_3_diff.diff.before == 'Content 1\n'
+      - result_3_diff.diff.before_header == '/file'
+      - result_3_diff.diff.after == 'Content 1\n'
+      - result_3_diff.diff.after_header == 'dynamically generated'
+      - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4 is not changed
       - result_3b64 is not changed
+      - "'diff' not in result_3b64"
+      - result_3b64_diff.diff.before == 'Content 1\n'
+      - result_3b64_diff.diff.before_header == '/file'
+      - result_3b64_diff.diff.after == 'Content 1\n'
+      - result_3b64_diff.diff.after_header == 'dynamically generated'
+      - result_3b64 == (result_3b64_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4b64 is not changed
       - result_5.stdout | b64decode == 'Content 1\n'
       - result_5.stderr == '10 644 regular file 0 0 /file'
       - result_6 is changed
+      - "'diff' not in result_6"
+      - result_6_diff.diff.before == 'Content 1\n'
+      - result_6_diff.diff.before_header == '/file'
+      - result_6_diff.diff.after == 'Content 1\n'
+      - result_6_diff.diff.after_header == 'dynamically generated'
+      - result_6 == (result_6_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_7 is changed
       - result_8.stdout | b64decode == 'Content 1\n'
       - result_8.stderr == '10 644 regular file 0 0 /file'
       - result_9 is not changed
+      - "'diff' not in result_9"
+      - result_9_diff.diff.before == 'Content 1\n'
+      - result_9_diff.diff.before_header == '/file'
+      - result_9_diff.diff.after == 'Content 1\n'  # note that force=false
+      - result_9_diff.diff.after_header == '/file'  # note that force=false
+      - result_9 == (result_9_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_10 is not changed
       - result_11.stdout | b64decode == 'Content 1\n'
       - result_11.stderr == '10 644 regular file 0 0 /file'
@@ -232,7 +326,20 @@
     mode: 0644
     follow: true
   check_mode: true
+  diff: false
   register: result_1
+
+- name: Copy content following link (check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/lnk'
+    mode: 0644
+    follow: true
+  check_mode: true
+  diff: true
+  register: result_1_diff
 
 - name: Copy content following link
   docker_container_copy_into:
@@ -267,7 +374,21 @@
     follow: true
     force: true
   check_mode: true
+  diff: false
   register: result_4
+
+- name: Copy content following link (force, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/lnk'
+    mode: 0644
+    follow: true
+    force: true
+  check_mode: true
+  diff: true
+  register: result_4_diff
 
 - name: Copy content following link (force)
   docker_container_copy_into:
@@ -300,6 +421,12 @@
       - result_0.stderr == "4 777 symbolic link 0 0 '/lnk' -> 'file'"
       - result_1 is not changed
       - result_1.container_path == '/file'
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == 'Content 1\n'
+      - result_1_diff.diff.before_header == '/file'
+      - result_1_diff.diff.after == 'Content 1\n'
+      - result_1_diff.diff.after_header == 'dynamically generated'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is not changed
       - result_2.container_path == '/file'
       - result_3.stdout | b64decode == 'Content 1\n'
@@ -307,6 +434,12 @@
       - result_3.stderr_lines[1] == '10 644 regular file 0 0 /file'
       - result_4 is changed
       - result_4.container_path == '/file'
+      - "'diff' not in result_4"
+      - result_4_diff.diff.before == 'Content 1\n'
+      - result_4_diff.diff.before_header == '/file'
+      - result_4_diff.diff.after == 'Content 1\n'
+      - result_4_diff.diff.after_header == 'dynamically generated'
+      - result_4 == (result_4_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_5 is changed
       - result_5.container_path == '/file'
       - result_6.stdout | b64decode == 'Content 1\n'
@@ -324,7 +457,20 @@
     mode: 0644
     follow: false
   check_mode: true
+  diff: false
   register: result_1
+
+- name: Copy content not following link (check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/lnk'
+    mode: 0644
+    follow: false
+  check_mode: true
+  diff: true
+  register: result_1_diff
 
 - name: Copy content not following link
   docker_container_copy_into:
@@ -344,7 +490,19 @@
     container_path: '/lnk'
     mode: 0644
   check_mode: true
+  diff: false
   register: result_3
+
+- name: Copy content not following link (idempotent, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/lnk'
+    mode: 0644
+  check_mode: true
+  diff: true
+  register: result_3_diff
 
 - name: Copy content not following link (idempotent)
   docker_container_copy_into:
@@ -376,7 +534,20 @@
     mode: 0644
     force: true
   check_mode: true
+  diff: false
   register: result_6
+
+- name: Copy content not following link (force, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/lnk'
+    mode: 0644
+    force: true
+  check_mode: true
+  diff: true
+  register: result_6_diff
 
 - name: Copy content not following link (force)
   docker_container_copy_into:
@@ -405,14 +576,32 @@
     that:
       - result_1 is changed
       - result_1.container_path == '/lnk'
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == '/file'
+      - result_1_diff.diff.before_header == '/lnk'
+      - result_1_diff.diff.after == 'Content 1\n'
+      - result_1_diff.diff.after_header == 'dynamically generated'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_2.container_path == '/lnk'
       - result_3 is not changed
+      - "'diff' not in result_3"
+      - result_3_diff.diff.before == 'Content 1\n'
+      - result_3_diff.diff.before_header == '/lnk'
+      - result_3_diff.diff.after == 'Content 1\n'
+      - result_3_diff.diff.after_header == 'dynamically generated'
+      - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4 is not changed
       - result_5.stdout | b64decode == 'Content 1\n'
       - result_5.stderr == '10 644 regular file 0 0 /lnk'
       - result_6 is changed
       - result_6.container_path == '/lnk'
+      - "'diff' not in result_6"
+      - result_6_diff.diff.before == 'Content 1\n'
+      - result_6_diff.diff.before_header == '/lnk'
+      - result_6_diff.diff.after == 'Content 1\n'
+      - result_6_diff.diff.after_header == 'dynamically generated'
+      - result_6 == (result_6_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_7 is changed
       - result_7.container_path == '/lnk'
       - result_8.stdout | b64decode == 'Content 1\n'
@@ -429,7 +618,20 @@
     mode: 0644
     follow: false
   check_mode: true
+  diff: false
   register: result_1
+
+- name: Copy content to replace directory (check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/dir'
+    mode: 0644
+    follow: false
+  check_mode: true
+  diff: true
+  register: result_1_diff
 
 - name: Copy content to replace directory (check mode)
   docker_container_copy_into:
@@ -449,7 +651,19 @@
     container_path: '/dir'
     mode: 0644
   check_mode: true
+  diff: false
   register: result_3
+
+- name: Copy content to replace directory (idempotent, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/dir'
+    mode: 0644
+  check_mode: true
+  diff: true
+  register: result_3_diff
 
 - name: Copy content to replace directory (idempotent)
   docker_container_copy_into:
@@ -477,9 +691,21 @@
     that:
       - result_1 is changed
       - result_1.container_path == '/dir'
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == '(directory)'
+      - result_1_diff.diff.before_header == '/dir'
+      - result_1_diff.diff.after == 'Content 1\n'
+      - result_1_diff.diff.after_header == 'dynamically generated'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_2.container_path == '/dir'
       - result_3 is not changed
+      - "'diff' not in result_3"
+      - result_3_diff.diff.before == 'Content 1\n'
+      - result_3_diff.diff.before_header == '/dir'
+      - result_3_diff.diff.after == 'Content 1\n'
+      - result_3_diff.diff.after_header == 'dynamically generated'
+      - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4 is not changed
       - result_5.stdout | b64decode == 'Content 1\n'
       - result_5.stderr == '10 644 regular file 0 0 /dir'
@@ -495,7 +721,20 @@
     container_path: '/file'
     mode: 0644
   check_mode: true
+  diff: false
   register: result_1
+
+- name: Copy content (changed, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |-
+      Content 2
+      Extra line
+    container_path: '/file'
+    mode: 0644
+  check_mode: true
+  diff: true
+  register: result_1_diff
 
 - name: Copy content (changed)
   docker_container_copy_into:
@@ -523,6 +762,12 @@
   assert:
     that:
       - result_1 is changed
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == 'Content 1\n'
+      - result_1_diff.diff.before_header == '/file'
+      - result_1_diff.diff.after == 'Content 2\nExtra line'
+      - result_1_diff.diff.after_header == 'dynamically generated'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_3.stdout | b64decode == 'Content 2\nExtra line'
       - result_3.stderr == '20 644 regular file 0 0 /file'
@@ -538,7 +783,20 @@
     container_path: '/file'
     mode: 0707
   check_mode: true
+  diff: false
   register: result_1
+
+- name: Copy content (mode changed, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |-
+      Content 2
+      Extra line
+    container_path: '/file'
+    mode: 0707
+  check_mode: true
+  diff: true
+  register: result_1_diff
 
 - name: Copy content (mode changed)
   docker_container_copy_into:
@@ -559,7 +817,20 @@
     container_path: '/file'
     mode: 0707
   check_mode: true
+  diff: false
   register: result_3
+
+- name: Copy content (idempotent, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |-
+      Content 2
+      Extra line
+    container_path: '/file'
+    mode: 0707
+  check_mode: true
+  diff: true
+  register: result_3_diff
 
 - name: Copy content (idempotent)
   docker_container_copy_into:
@@ -587,8 +858,20 @@
   assert:
     that:
       - result_1 is changed
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == 'Content 2\nExtra line'
+      - result_1_diff.diff.before_header == '/file'
+      - result_1_diff.diff.after == 'Content 2\nExtra line'
+      - result_1_diff.diff.after_header == 'dynamically generated'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_3 is not changed
+      - "'diff' not in result_3"
+      - result_3_diff.diff.before == 'Content 2\nExtra line'
+      - result_3_diff.diff.before_header == '/file'
+      - result_3_diff.diff.after == 'Content 2\nExtra line'
+      - result_3_diff.diff.after_header == 'dynamically generated'
+      - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4 is not changed
       - result_5.stdout | b64decode == 'Content 2\nExtra line'
       - result_5.stderr == '20 707 regular file 0 0 /file'
@@ -606,7 +889,22 @@
     owner_id: 12
     group_id: 910
   check_mode: true
+  diff: false
   register: result_1
+
+- name: Copy content (owner/group changed, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |-
+      Content 2
+      Extra line
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  diff: true
+  register: result_1_diff
 
 - name: Copy content (owner/group changed)
   docker_container_copy_into:
@@ -631,7 +929,22 @@
     owner_id: 12
     group_id: 910
   check_mode: true
+  diff: false
   register: result_3
+
+- name: Copy content (idempotent, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |-
+      Content 2
+      Extra line
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  diff: true
+  register: result_3_diff
 
 - name: Copy content (idempotent)
   docker_container_copy_into:
@@ -668,7 +981,22 @@
     owner_id: 13
     group_id: 13
   check_mode: true
+  diff: false
   register: result_6
+
+- name: Copy content (owner/group changed again, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |-
+      Content 2
+      Extra line
+    container_path: '/file'
+    mode: 0707
+    owner_id: 13
+    group_id: 13
+  check_mode: true
+  diff: true
+  register: result_6_diff
 
 - name: Copy content (owner/group changed again)
   docker_container_copy_into:
@@ -698,12 +1026,30 @@
   assert:
     that:
       - result_1 is changed
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == 'Content 2\nExtra line'
+      - result_1_diff.diff.before_header == '/file'
+      - result_1_diff.diff.after == 'Content 2\nExtra line'
+      - result_1_diff.diff.after_header == 'dynamically generated'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_3 is not changed
+      - "'diff' not in result_3"
+      - result_3_diff.diff.before == 'Content 2\nExtra line'
+      - result_3_diff.diff.before_header == '/file'
+      - result_3_diff.diff.after == 'Content 2\nExtra line'
+      - result_3_diff.diff.after_header == 'dynamically generated'
+      - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4 is not changed
       - result_5.stdout | b64decode == 'Content 2\nExtra line'
       - result_5.stderr == '20 707 regular file 12 910 /file'
       - result_6 is changed
+      - "'diff' not in result_6"
+      - result_6_diff.diff.before == 'Content 2\nExtra line'
+      - result_6_diff.diff.before_header == '/file'
+      - result_6_diff.diff.after == 'Content 2\nExtra line'
+      - result_6_diff.diff.after_header == 'dynamically generated'
+      - result_6 == (result_6_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_7 is changed
       - result_8.stdout | b64decode == 'Content 2\nExtra line'
       - result_8.stderr == '20 707 regular file 13 13 /file'
@@ -726,7 +1072,21 @@
     owner_id: 12
     group_id: 910
   check_mode: true
+  diff: false
   register: result_1
+
+- name: Copy content (stopped container, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  diff: true
+  register: result_1_diff
 
 - name: Copy content (stopped container)
   docker_container_copy_into:
@@ -749,7 +1109,21 @@
     owner_id: 12
     group_id: 910
   check_mode: true
+  diff: false
   register: result_3
+
+- name: Copy content (stopped container, idempotent, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  diff: true
+  register: result_3_diff
 
 - name: Copy content (stopped container, idempotent)
   docker_container_copy_into:
@@ -793,8 +1167,20 @@
   assert:
     that:
       - result_1 is changed
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == 'Content 2\nExtra line'
+      - result_1_diff.diff.before_header == '/file'
+      - result_1_diff.diff.after == 'Content 1\n'
+      - result_1_diff.diff.after_header == 'dynamically generated'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_3 is not changed
+      - "'diff' not in result_3"
+      - result_3_diff.diff.before == 'Content 1\n'
+      - result_3_diff.diff.before_header == '/file'
+      - result_3_diff.diff.after == 'Content 1\n'
+      - result_3_diff.diff.after_header == 'dynamically generated'
+      - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4 is not changed
       - result_5 is failed
       - result_5.msg == ('Cannot execute command in paused container "' ~ cname ~ '"')

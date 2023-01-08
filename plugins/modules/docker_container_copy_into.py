@@ -24,7 +24,11 @@ attributes:
   check_mode:
     support: full
   diff_mode:
-    support: none
+    support: full
+    details:
+      - Additional data will need to be transferred to compute diffs.
+      - The module uses R(the MAX_FILE_SIZE_FOR_DIFF ansible-core configuration,MAX_FILE_SIZE_FOR_DIFF)
+        to determine for how large files diffs should be computed.
 
 options:
   container:
@@ -140,10 +144,11 @@ container_path:
 import base64
 import io
 import os
+import random
 import stat
 import traceback
 
-from ansible.module_utils._text import to_bytes, to_native
+from ansible.module_utils._text import to_bytes, to_native, to_text
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException, NotFound
 
@@ -162,6 +167,8 @@ from ansible_collections.community.docker.plugins.module_utils.copy import (
     put_file_content,
     stat_file,
 )
+
+from ansible_collections.community.docker.plugins.module_utils._scramble import scramble
 
 
 def are_fileobjs_equal(f1, f2):
@@ -195,6 +202,52 @@ def are_fileobjs_equal(f1, f2):
         b2buf = b2buf[buflen:]
 
 
+def are_fileobjs_equal_read_first(f1, f2):
+    '''Given two (buffered) file objects, compare their contents.
+
+    Returns a tuple (is_equal, content_of_f1), where the first element indicates
+    whether the two file objects have the same content, and the second element is
+    the content of the first file object.'''
+    blocksize = 65536
+    b1buf = b''
+    b2buf = b''
+    is_equal = True
+    content = []
+    while True:
+        if f1 and len(b1buf) < blocksize:
+            f1b = f1.read(blocksize)
+            if not f1b:
+                # f1 is EOF, so stop reading from it
+                f1 = None
+            b1buf += f1b
+        if f2 and len(b2buf) < blocksize:
+            f2b = f2.read(blocksize)
+            if not f2b:
+                # f2 is EOF, so stop reading from it
+                f2 = None
+            b2buf += f2b
+        if not b1buf or not b2buf:
+            # At least one of f1 and f2 is EOF and all its data has
+            # been processed. If both are EOF and their data has been
+            # processed, the files are equal, otherwise not.
+            is_equal = not b1buf and not b2buf
+            break
+        # Compare the next chunk of data, and remove it from the buffers
+        buflen = min(len(b1buf), len(b2buf))
+        if b1buf[:buflen] != b2buf[:buflen]:
+            is_equal = False
+            break
+        content.append(b1buf[:buflen])
+        b1buf = b1buf[buflen:]
+        b2buf = b2buf[buflen:]
+
+    content.append(b1buf)
+    if f1:
+        content.append(f1.read())
+
+    return is_equal, b''.join(content)
+
+
 def is_container_file_not_regular_file(container_stat):
     for bit in (
         # https://pkg.go.dev/io/fs#FileMode
@@ -223,7 +276,152 @@ def get_container_file_mode(container_stat):
     return mode
 
 
-def is_file_idempotent(client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode, force=False):
+def add_other_diff(diff, in_path, member):
+    if diff is None:
+        return
+    diff['before_header'] = in_path
+    if member.isdir():
+        diff['before'] = '(directory)'
+    elif member.issym() or member.islnk():
+        diff['before'] = member.linkname
+    elif member.ischr():
+        diff['before'] = '(character device)'
+    elif member.isblk():
+        diff['before'] = '(block device)'
+    elif member.isfifo():
+        diff['before'] = '(fifo)'
+    elif member.isdev():
+        diff['before'] = '(device)'
+    elif member.isfile():
+        raise DockerUnexpectedError('should not be a regular file')
+    else:
+        diff['before'] = '(unknown filesystem object)'
+
+
+def retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat=None, link_target=None):
+    if diff is None:
+        return
+    if regular_stat is not None:
+        # First handle all filesystem object types that are not regular files
+        if regular_stat['mode'] & (1 << (32 - 1)) != 0:
+            diff['before_header'] = container_path
+            diff['before'] = '(directory)'
+            return
+        elif regular_stat['mode'] & (1 << (32 - 4)) != 0:
+            diff['before_header'] = container_path
+            diff['before'] = '(temporary file)'
+            return
+        elif regular_stat['mode'] & (1 << (32 - 5)) != 0:
+            diff['before_header'] = container_path
+            diff['before'] = link_target
+            return
+        elif regular_stat['mode'] & (1 << (32 - 6)) != 0:
+            diff['before_header'] = container_path
+            diff['before'] = '(device)'
+            return
+        elif regular_stat['mode'] & (1 << (32 - 7)) != 0:
+            diff['before_header'] = container_path
+            diff['before'] = '(named pipe)'
+            return
+        elif regular_stat['mode'] & (1 << (32 - 8)) != 0:
+            diff['before_header'] = container_path
+            diff['before'] = '(socket)'
+            return
+        elif regular_stat['mode'] & (1 << (32 - 11)) != 0:
+            diff['before_header'] = container_path
+            diff['before'] = '(character device)'
+            return
+        elif regular_stat['mode'] & (1 << (32 - 13)) != 0:
+            diff['before_header'] = container_path
+            diff['before'] = '(unknown filesystem object)'
+            return
+        # Check whether file is too large
+        if regular_stat['size'] > max_file_size_for_diff > 0:
+            diff['dst_larger'] = max_file_size_for_diff
+            return
+
+    # We need to get hold of the content
+    def process_none(in_path):
+        diff['before'] = ''
+
+    def process_regular(in_path, tar, member):
+        add_diff_dst_from_regular_member(diff, max_file_size_for_diff, in_path, tar, member)
+
+    def process_symlink(in_path, member):
+        diff['before_header'] = in_path
+        diff['before'] = member.linkname
+
+    def process_other(in_path, member):
+        add_other_diff(diff, in_path, member)
+
+    fetch_file_ex(
+        client,
+        container,
+        in_path=container_path,
+        process_none=process_none,
+        process_regular=process_regular,
+        process_symlink=process_symlink,
+        process_other=process_other,
+        follow_links=follow_links,
+    )
+
+
+def is_binary(content):
+    if b'\x00' in content:
+        return True
+    # TODO: better detection
+    # (ansible-core also just checks for 0x00, and even just sticks to the first 8k, so this isn't too bad...)
+    return False
+
+
+def are_fileobjs_equal_with_diff_of_first(f1, f2, size, diff, max_file_size_for_diff, container_path):
+    if diff is None:
+        return are_fileobjs_equal(f1, f2)
+    if size > max_file_size_for_diff > 0:
+        diff['dst_larger'] = max_file_size_for_diff
+        return are_fileobjs_equal(f1, f2)
+    is_equal, content = are_fileobjs_equal_read_first(f1, f2)
+    if is_binary(content):
+        diff['dst_binary'] = 1
+    else:
+        diff['before_header'] = container_path
+        diff['before'] = to_text(content)
+    return is_equal
+
+
+def add_diff_dst_from_regular_member(diff, max_file_size_for_diff, container_path, tar, member):
+    if diff is None:
+        return
+    if member.size > max_file_size_for_diff > 0:
+        diff['dst_larger'] = max_file_size_for_diff
+        return
+
+    tar_f = tar.extractfile(member)  # in Python 2, this *cannot* be used in `with`...
+    content = tar_f.read()
+    if is_binary(content):
+        diff['dst_binary'] = 1
+    else:
+        diff['before_header'] = container_path
+        diff['before'] = to_text(content)
+
+
+def copy_dst_to_src(diff):
+    if diff is None:
+        return
+    for f, t in [
+        ('dst_size', 'src_size'),
+        ('dst_binary', 'src_binary'),
+        ('before_header', 'after_header'),
+        ('before', 'after'),
+    ]:
+        if f in diff:
+            diff[t] = diff[f]
+        elif t in diff:
+            diff.pop(t)
+
+
+def is_file_idempotent(client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode,
+                       force=False, diff=None, max_file_size_for_diff=1):
     # Retrieve information of local file
     try:
         file_stat = os.stat(managed_path) if local_follow_links else os.lstat(managed_path)
@@ -236,8 +434,24 @@ def is_file_idempotent(client, container, managed_path, container_path, follow_l
     if not stat.S_ISLNK(file_stat.st_mode) and not stat.S_ISREG(file_stat.st_mode):
         raise DockerFileCopyError('Local path {managed_path} is not a symbolic link or file')
 
+    if diff is not None:
+        if file_stat.st_size > max_file_size_for_diff > 0:
+            diff['src_larger'] = max_file_size_for_diff
+        elif stat.S_ISLNK(file_stat.st_mode):
+            diff['after_header'] = managed_path
+            diff['after'] = os.readlink(managed_path)
+        else:
+            with open(managed_path, 'rb') as f:
+                content = f.read()
+            if is_binary(content):
+                diff['src_binary'] = 1
+            else:
+                diff['after_header'] = managed_path
+                diff['after'] = to_text(content)
+
     # When forcing and we're not following links in the container, go!
     if force and not follow_links:
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff)
         return container_path, mode, False
 
     # Resolve symlinks in the container (if requested), and get information on container's file
@@ -252,31 +466,43 @@ def is_file_idempotent(client, container, managed_path, container_path, follow_l
     if follow_links:
         container_path = real_container_path
 
-    # When forcing, go!
-    if force:
-        return container_path, mode, False
-
     # If the file wasn't found, continue
     if regular_stat is None:
+        if diff is not None:
+            diff['before_header'] = container_path
+            diff['before'] = ''
+        return container_path, mode, False
+
+    # When forcing, go!
+    if force:
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
         return container_path, mode, False
 
     # If force is set to False, and the destination exists, assume there's nothing to do
     if force is False:
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
+        copy_dst_to_src(diff)
         return container_path, mode, True
 
     # Basic idempotency checks
     if stat.S_ISLNK(file_stat.st_mode):
         if link_target is None:
+            retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
             return container_path, mode, False
         local_link_target = os.readlink(managed_path)
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
         return container_path, mode, local_link_target == link_target
     if link_target is not None:
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
         return container_path, mode, False
     if is_container_file_not_regular_file(regular_stat):
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
         return container_path, mode, False
     if file_stat.st_size != regular_stat['size']:
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
         return container_path, mode, False
     if mode != get_container_file_mode(regular_stat):
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
         return container_path, mode, False
 
     # Fetch file from container
@@ -285,23 +511,26 @@ def is_file_idempotent(client, container, managed_path, container_path, follow_l
 
     def process_regular(in_path, tar, member):
         # Check things like user/group ID and mode
-        if member.mode & 0xFFF != mode:
-            return container_path, mode, False
-        if member.uid != owner_id:
-            return container_path, mode, False
-        if member.gid != group_id:
-            return container_path, mode, False
-
-        if not stat.S_ISREG(file_stat.st_mode):
-            return container_path, mode, False
-        if member.size != file_stat.st_size:
+        if any([
+            member.mode & 0xFFF != mode,
+            member.uid != owner_id,
+            member.gid != group_id,
+            not stat.S_ISREG(file_stat.st_mode),
+            member.size != file_stat.st_size,
+        ]):
+            add_diff_dst_from_regular_member(diff, max_file_size_for_diff, in_path, tar, member)
             return container_path, mode, False
 
         tar_f = tar.extractfile(member)  # in Python 2, this *cannot* be used in `with`...
         with open(managed_path, 'rb') as local_f:
-            return container_path, mode, are_fileobjs_equal(tar_f, local_f)
+            is_equal = are_fileobjs_equal_with_diff_of_first(tar_f, local_f, member.size, diff, max_file_size_for_diff, in_path)
+        return container_path, mode, is_equal
 
     def process_symlink(in_path, member):
+        if diff is not None:
+            diff['before_header'] = in_path
+            diff['before'] = member.linkname
+
         # Check things like user/group ID and mode
         if member.mode & 0xFFF != mode:
             return container_path, mode, False
@@ -316,6 +545,10 @@ def is_file_idempotent(client, container, managed_path, container_path, follow_l
         local_link_target = os.readlink(managed_path)
         return container_path, mode, member.linkname == local_link_target
 
+    def process_other(in_path, member):
+        add_other_diff(diff, in_path, member)
+        return container_path, mode, False
+
     return fetch_file_ex(
         client,
         container,
@@ -323,13 +556,32 @@ def is_file_idempotent(client, container, managed_path, container_path, follow_l
         process_none=process_none,
         process_regular=process_regular,
         process_symlink=process_symlink,
+        process_other=process_other,
         follow_links=follow_links,
     )
 
 
-def copy_file_into_container(client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode, force=False):
+def copy_file_into_container(client, container, managed_path, container_path, follow_links, local_follow_links,
+                             owner_id, group_id, mode, force=False, diff=False, max_file_size_for_diff=1):
+    if diff:
+        diff = {}
+    else:
+        diff = None
+
     container_path, mode, idempotent = is_file_idempotent(
-        client, container, managed_path, container_path, follow_links, local_follow_links, owner_id, group_id, mode, force=force)
+        client,
+        container,
+        managed_path,
+        container_path,
+        follow_links,
+        local_follow_links,
+        owner_id,
+        group_id,
+        mode,
+        force=force,
+        diff=diff,
+        max_file_size_for_diff=max_file_size_for_diff,
+    )
     changed = not idempotent
 
     if changed and not client.module.check_mode:
@@ -344,15 +596,29 @@ def copy_file_into_container(client, container, managed_path, container_path, fo
             follow_links=local_follow_links,
         )
 
-    client.module.exit_json(
+    result = dict(
         container_path=container_path,
         changed=changed,
     )
+    if diff:
+        result['diff'] = diff
+    client.module.exit_json(**result)
 
 
-def is_content_idempotent(client, container, content, container_path, follow_links, owner_id, group_id, mode, force=False):
+def is_content_idempotent(client, container, content, container_path, follow_links, owner_id, group_id, mode,
+                          force=False, diff=None, max_file_size_for_diff=1):
+    if diff is not None:
+        if len(content) > max_file_size_for_diff > 0:
+            diff['src_larger'] = max_file_size_for_diff
+        elif is_binary(content):
+            diff['src_binary'] = 1
+        else:
+            diff['after_header'] = 'dynamically generated'
+            diff['after'] = to_text(content)
+
     # When forcing and we're not following links in the container, go!
     if force and not follow_links:
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff)
         return container_path, mode, False
 
     # Resolve symlinks in the container (if requested), and get information on container's file
@@ -367,48 +633,68 @@ def is_content_idempotent(client, container, content, container_path, follow_lin
     if follow_links:
         container_path = real_container_path
 
-    # When forcing, go!
-    if force:
-        return container_path, mode, False
-
     # If the file wasn't found, continue
     if regular_stat is None:
+        if diff is not None:
+            diff['before_header'] = container_path
+            diff['before'] = ''
+        return container_path, mode, False
+
+    # When forcing, go!
+    if force:
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
         return container_path, mode, False
 
     # If force is set to False, and the destination exists, assume there's nothing to do
     if force is False:
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
+        copy_dst_to_src(diff)
         return container_path, mode, True
 
     # Basic idempotency checks
     if link_target is not None:
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
         return container_path, mode, False
     if is_container_file_not_regular_file(regular_stat):
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
         return container_path, mode, False
     if len(content) != regular_stat['size']:
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
         return container_path, mode, False
     if mode != get_container_file_mode(regular_stat):
+        retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff, regular_stat, link_target)
         return container_path, mode, False
 
     # Fetch file from container
     def process_none(in_path):
+        if diff is not None:
+            diff['before'] = ''
         return container_path, mode, False
 
     def process_regular(in_path, tar, member):
         # Check things like user/group ID and mode
-        if member.mode & 0xFFF != mode:
-            return container_path, mode, False
-        if member.uid != owner_id:
-            return container_path, mode, False
-        if member.gid != group_id:
-            return container_path, mode, False
-
-        if member.size != len(content):
+        if any([
+            member.mode & 0xFFF != mode,
+            member.uid != owner_id,
+            member.gid != group_id,
+            member.size != len(content),
+        ]):
+            add_diff_dst_from_regular_member(diff, max_file_size_for_diff, in_path, tar, member)
             return container_path, mode, False
 
         tar_f = tar.extractfile(member)  # in Python 2, this *cannot* be used in `with`...
-        return container_path, mode, are_fileobjs_equal(tar_f, io.BytesIO(content))
+        is_equal = are_fileobjs_equal_with_diff_of_first(tar_f, io.BytesIO(content), member.size, diff, max_file_size_for_diff, in_path)
+        return container_path, mode, is_equal
 
     def process_symlink(in_path, member):
+        if diff is not None:
+            diff['before_header'] = in_path
+            diff['before'] = member.linkname
+
+        return container_path, mode, False
+
+    def process_other(in_path, member):
+        add_other_diff(diff, in_path, member)
         return container_path, mode, False
 
     return fetch_file_ex(
@@ -418,13 +704,31 @@ def is_content_idempotent(client, container, content, container_path, follow_lin
         process_none=process_none,
         process_regular=process_regular,
         process_symlink=process_symlink,
+        process_other=process_other,
         follow_links=follow_links,
     )
 
 
-def copy_content_into_container(client, container, content, container_path, follow_links, owner_id, group_id, mode, force=False):
+def copy_content_into_container(client, container, content, container_path, follow_links,
+                                owner_id, group_id, mode, force=False, diff=False, max_file_size_for_diff=1):
+    if diff:
+        diff = {}
+    else:
+        diff = None
+
     container_path, mode, idempotent = is_content_idempotent(
-        client, container, content, container_path, follow_links, owner_id, group_id, mode, force=force)
+        client,
+        container,
+        content,
+        container_path,
+        follow_links,
+        owner_id,
+        group_id,
+        mode,
+        force=force,
+        diff=diff,
+        max_file_size_for_diff=max_file_size_for_diff,
+    )
     changed = not idempotent
 
     if changed and not client.module.check_mode:
@@ -438,10 +742,21 @@ def copy_content_into_container(client, container, content, container_path, foll
             mode=mode,
         )
 
-    client.module.exit_json(
+    result = dict(
         container_path=container_path,
         changed=changed,
     )
+    if diff:
+        # Since the content is no_log, make sure that the before/after strings look sufficiently different
+        key = b'\x00'
+        while key[0] == 0:
+            key = random.randbytes(1)
+        diff['scrambled_diff'] = base64.b64encode(key)
+        for k in ('before', 'after'):
+            if k in diff:
+                diff[k] = scramble(diff[k], key)
+        result['diff'] = diff
+    client.module.exit_json(**result)
 
 
 def main():
@@ -457,6 +772,9 @@ def main():
         force=dict(type='bool'),
         content=dict(type='str', no_log=True),
         content_is_b64=dict(type='bool', default=False),
+
+        # Undocumented parameters for use by the action plugin
+        _max_file_size_for_diff=dict(type='int', required=True),
     )
 
     client = AnsibleDockerClient(
@@ -480,6 +798,7 @@ def main():
     mode = client.module.params['mode']
     force = client.module.params['force']
     content = client.module.params['content']
+    max_file_size_for_diff = client.module.params['_max_file_size_for_diff'] or 1
 
     if content is not None:
         if client.module.params['content_is_b64']:
@@ -509,6 +828,8 @@ def main():
                 group_id=group_id,
                 mode=mode,
                 force=force,
+                diff=client.module._diff,
+                max_file_size_for_diff=max_file_size_for_diff,
             )
         elif managed_path is not None:
             copy_file_into_container(
@@ -522,6 +843,8 @@ def main():
                 group_id=group_id,
                 mode=mode,
                 force=force,
+                diff=client.module._diff,
+                max_file_size_for_diff=max_file_size_for_diff,
             )
         else:
             # Can happen if a user explicitly passes `content: null` or `path: null`...
