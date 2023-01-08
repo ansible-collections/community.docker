@@ -18,6 +18,7 @@ description:
   - Copy a file into a Docker container.
   - Similar to C(docker cp).
   - To copy files in a non-running container, you must provide the I(owner_id) and I(group_id) options.
+    This is also necessary if the container does not contain a C(/bin/sh) shell with an C(id) tool.
 
 attributes:
   check_mode:
