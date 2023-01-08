@@ -14,40 +14,53 @@
     - name: Detect whether we are running inside a container
       current_container_facts:
 
-    - name: Determine whether Docker Daemon needs to be installed
-      set_fact:
-        needs_docker_daemon: '{{ not ansible_module_running_in_container }}'
+    - name: Look for marker whether Docker was already set up
+      stat:
+        path: /root/community.docker-docker-is-set-up
+      register: docker_setup_marker
 
-    - name: Include distribution specific variables
-      include_vars: "{{ lookup('first_found', params) }}"
-      vars:
-        params:
-          files:
-            - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}.yml"
-            - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
-            - "{{ ansible_facts.distribution }}.yml"
-            - "{{ ansible_facts.os_family }}.yml"
-            - default.yml
-          paths:
-            - "{{ role_path }}/vars"
+    - when: not docker_setup_marker.stat.exists
+      block:
+        - name: Determine whether Docker Daemon needs to be installed
+          set_fact:
+            needs_docker_daemon: '{{ not ansible_module_running_in_container }}'
 
-    - name: Include distribution specific tasks
-      include_tasks: "{{ lookup('first_found', params) }}"
-      vars:
-        params:
-          files:
-            - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}.yml"
-            - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
-            - "{{ ansible_facts.distribution }}.yml"
-            - "{{ ansible_facts.os_family }}.yml"
-          paths:
-            - "{{ role_path }}/tasks"
+        - name: Include distribution specific variables
+          include_vars: "{{ lookup('first_found', params) }}"
+          vars:
+            params:
+              files:
+                - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}.yml"
+                - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
+                - "{{ ansible_facts.distribution }}.yml"
+                - "{{ ansible_facts.os_family }}.yml"
+                - default.yml
+              paths:
+                - "{{ role_path }}/vars"
 
-    - name: Make sure that docker is running
-      service:
-        name: docker
-        state: started
-      when: not ansible_module_running_in_container
+        - name: Include distribution specific tasks
+          include_tasks: "{{ lookup('first_found', params) }}"
+          vars:
+            params:
+              files:
+                - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}.yml"
+                - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
+                - "{{ ansible_facts.distribution }}.yml"
+                - "{{ ansible_facts.os_family }}.yml"
+              paths:
+                - "{{ role_path }}/tasks"
+
+        - name: Make sure that docker is running
+          service:
+            name: docker
+            state: started
+          when: not ansible_module_running_in_container
+
+        - name: Set marker that Docker was already set up
+          file:
+            path: /root/community.docker-docker-is-set-up
+            state: touch
+          when: docker_skip_cleanup
 
     # Detect docker API version
     - name: Check Docker API version

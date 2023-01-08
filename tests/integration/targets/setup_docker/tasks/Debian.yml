@@ -35,7 +35,6 @@
     apt:
       name: '{{ docker_packages if needs_docker_daemon else docker_cli_packages }}'
       state: present
-      update_cache: true
 
   always:
   - name: Restore /usr/sbin/policy-rc.d (if needed)
