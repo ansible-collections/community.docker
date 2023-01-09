@@ -44,7 +44,7 @@ options:
   content:
     description:
       - The file's content.
-      - If you plan to provide binary data, use the I(content_is_b64) option.
+      - If you plan to provide binary data, provide it pre-encoded to base64, and set I(content_is_b64=true).
       - Mutually exclusive with I(path). One of I(content) and I(path) is required.
     type: str
   content_is_b64:

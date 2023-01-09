@@ -303,7 +303,7 @@ def fetch_file_ex(client, container, in_path, process_none, process_regular, pro
                 params={'path': in_path},
                 headers={'Accept-Encoding': 'identity'},
             )
-        except NotFound as dummy:
+        except NotFound:
             return process_none(in_path)
 
         with tarfile.open(fileobj=_stream_generator_to_fileobj(stream), mode='r|') as tar:
