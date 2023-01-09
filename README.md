@@ -57,6 +57,7 @@ If you use the Ansible package and do not update collections independently, use 
 * Modules:
   * Docker:
     - community.docker.docker_container: manage Docker containers
+    - community.docker.docker_container_copy_into: copy a file into a Docker container
     - community.docker.docker_container_exec: run commands in Docker containers
     - community.docker.docker_container_info: retrieve information on Docker containers
     - community.docker.docker_host_info: retrieve information on the Docker daemon

@@ -1,0 +1,45 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+####################################################################
+# WARNING: These are designed specifically for Ansible tests       #
+# and should not be used as examples of how to write Ansible roles #
+####################################################################
+
+- name: Gather facts on controller
+  setup:
+    gather_subset: '!all'
+  delegate_to: localhost
+  delegate_facts: true
+  run_once: true
+
+# Create random name prefix (for containers)
+- name: Create random container name prefix
+  set_fact:
+    cname_prefix: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
+    cnames: []
+
+- debug:
+    msg: "Using container name prefix {{ cname_prefix }}"
+
+# Run the tests
+- block:
+  - include_tasks: run-test.yml
+    with_fileglob:
+    - "tests/*.yml"
+
+  always:
+  - name: "Make sure all containers are removed"
+    docker_container:
+      name: "{{ item }}"
+      state: absent
+      force_kill: true
+    with_items: "{{ cnames }}"
+    diff: false
+
+  when: docker_api_version is version('1.25', '>=')
+
+- fail: msg="Too old Docker API version to run all docker_container_copy_into tests!"
+  when: not(docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)

@@ -1,0 +1,1065 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- name: Registering container name
+  set_fact:
+    cname: "{{ cname_prefix ~ '-f' }}"
+- name: Registering container name
+  set_fact:
+    cnames: "{{ cnames + [cname] }}"
+
+# Create container
+
+- name: Create container
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command:
+      - /bin/sh
+      - "-c"
+      - >-
+        mkdir /dir;
+        ln -s file /lnk;
+        ln -s lnk3 /lnk2;
+        ln -s lnk2 /lnk1;
+        sleep 10m;
+    name: "{{ cname }}"
+    state: started
+
+# Create files
+
+- name: Create file 1
+  copy:
+    dest: '{{ remote_tmp_dir }}/file_1'
+    content: |
+      Content 1
+    mode: 0644
+
+- name: Create file 2
+  copy:
+    dest: '{{ remote_tmp_dir }}/file_2'
+    content: |-
+      Content 2
+      Extra line
+    mode: 0644
+
+- name: Create link 1
+  file:
+    dest: '{{ remote_tmp_dir }}/link_1'
+    state: link
+    src: file_1
+    follow: false
+    mode: 0644
+
+- name: Create link 2
+  file:
+    dest: '{{ remote_tmp_dir }}/link_2'
+    state: link
+    src: dead
+    force: true
+    follow: false
+    mode: 0644
+
+################################################################################################
+# Do tests
+
+######################### Copy
+
+- name: Copy file (check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+  check_mode: true
+  diff: false
+  register: result_1
+
+- name: Copy file (check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+  check_mode: true
+  diff: true
+  register: result_1_diff
+
+- name: Copy file (check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+  register: result_2
+
+- name: Copy file (idempotent, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+  check_mode: true
+  diff: false
+  register: result_3
+
+- name: Copy file (idempotent, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+  check_mode: true
+  diff: true
+  register: result_3_diff
+
+- name: Copy file (idempotent)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+  register: result_4
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_5
+
+- name: Copy file (force, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    force: true
+  check_mode: true
+  diff: false
+  register: result_6
+
+- name: Copy file (force, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    force: true
+  check_mode: true
+  diff: true
+  register: result_6_diff
+
+- name: Copy file (force)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    force: true
+  register: result_7
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_8
+
+- name: Copy file (force=false, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0777
+    owner_id: 123
+    group_id: 321
+    force: false
+  check_mode: true
+  diff: false
+  register: result_9
+
+- name: Copy file (force=false, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0777
+    owner_id: 123
+    group_id: 321
+    force: false
+  check_mode: true
+  diff: true
+  register: result_9_diff
+
+- name: Copy file (force=false)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0777
+    owner_id: 123
+    group_id: 321
+    force: false
+  register: result_10
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_11
+
+- name: Check results
+  assert:
+    that:
+      - result_1 is changed
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == ''
+      - result_1_diff.diff.before_header == '/file'
+      - result_1_diff.diff.after == 'Content 1\n'
+      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_2 is changed
+      - result_3 is not changed
+      - "'diff' not in result_3"
+      - result_3_diff.diff.before == 'Content 1\n'
+      - result_3_diff.diff.before_header == '/file'
+      - result_3_diff.diff.after == 'Content 1\n'
+      - result_3_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_4 is not changed
+      - result_5.stdout | b64decode == 'Content 1\n'
+      - result_5.stderr == '10 644 regular file 0 0 /file'
+      - result_6 is changed
+      - "'diff' not in result_6"
+      - result_6_diff.diff.before == 'Content 1\n'
+      - result_6_diff.diff.before_header == '/file'
+      - result_6_diff.diff.after == 'Content 1\n'
+      - result_6_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_6 == (result_6_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_7 is changed
+      - result_8.stdout | b64decode == 'Content 1\n'
+      - result_8.stderr == '10 644 regular file 0 0 /file'
+      - result_9 is not changed
+      - "'diff' not in result_9"
+      - result_9_diff.diff.before == 'Content 1\n'
+      - result_9_diff.diff.before_header == '/file'
+      - result_9_diff.diff.after == 'Content 1\n'  # note that force=false
+      - result_9_diff.diff.after_header == '/file'  # note that force=false
+      - result_9 == (result_9_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_10 is not changed
+      - result_11.stdout | b64decode == 'Content 1\n'
+      - result_11.stderr == '10 644 regular file 0 0 /file'
+
+######################### Follow link - idempotence
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /lnk | base64;
+        stat -c '%s %a %F %u %g %N' /lnk > /dev/stderr;
+    chdir: /root
+  register: result_0
+
+- name: Copy file following link (check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    follow: true
+  check_mode: true
+  diff: false
+  register: result_1
+
+- name: Copy file following link (check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    follow: true
+  check_mode: true
+  diff: true
+  register: result_1_diff
+
+- name: Copy file following link
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    follow: true
+  register: result_2
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /lnk | base64;
+        stat -c '%s %a %F %u %g %N' /lnk > /dev/stderr;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_3
+
+- name: Copy file following link (force, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    follow: true
+    force: true
+  check_mode: true
+  diff: false
+  register: result_4
+
+- name: Copy file following link (force, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    follow: true
+    force: true
+  check_mode: true
+  diff: true
+  register: result_4_diff
+
+- name: Copy file following link (force)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    follow: true
+    force: true
+  register: result_5
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /lnk | base64;
+        stat -c '%s %a %F %u %g %N' /lnk > /dev/stderr;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_6
+
+- name: Check results
+  assert:
+    that:
+      - result_0.stdout | b64decode == 'Content 1\n'
+      - result_0.stderr == "4 777 symbolic link 0 0 '/lnk' -> 'file'"
+      - result_1 is not changed
+      - result_1.container_path == '/file'
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == 'Content 1\n'
+      - result_1_diff.diff.before_header == '/file'
+      - result_1_diff.diff.after == 'Content 1\n'
+      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_2 is not changed
+      - result_2.container_path == '/file'
+      - result_3.stdout | b64decode == 'Content 1\n'
+      - result_3.stderr_lines[0] == "4 777 symbolic link 0 0 '/lnk' -> 'file'"
+      - result_3.stderr_lines[1] == '10 644 regular file 0 0 /file'
+      - result_4 is changed
+      - result_4.container_path == '/file'
+      - "'diff' not in result_4"
+      - result_4_diff.diff.before == 'Content 1\n'
+      - result_4_diff.diff.before_header == '/file'
+      - result_4_diff.diff.after == 'Content 1\n'
+      - result_4_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_4 == (result_4_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_5 is changed
+      - result_5.container_path == '/file'
+      - result_6.stdout | b64decode == 'Content 1\n'
+      - result_6.stderr_lines[0] == "4 777 symbolic link 0 0 '/lnk' -> 'file'"
+      - result_6.stderr_lines[1] == '10 644 regular file 0 0 /file'
+
+######################### Do not follow link - replace by file
+
+- name: Copy file not following link (check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    follow: false
+  check_mode: true
+  diff: false
+  register: result_1
+
+- name: Copy file not following link (check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    follow: false
+  check_mode: true
+  diff: true
+  register: result_1_diff
+
+- name: Copy file not following link
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    follow: false
+  register: result_2
+
+- name: Copy file not following link (idempotent, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+  check_mode: true
+  diff: false
+  register: result_3
+
+- name: Copy file not following link (idempotent, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+  check_mode: true
+  diff: true
+  register: result_3_diff
+
+- name: Copy file not following link (idempotent)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+  register: result_4
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /lnk | base64;
+        stat -c '%s %a %F %u %g %N' /lnk > /dev/stderr
+    chdir: /root
+  register: result_5
+
+- name: Copy file not following link (force, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    force: true
+  check_mode: true
+  diff: false
+  register: result_6
+
+- name: Copy file not following link (force, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    force: true
+  check_mode: true
+  diff: true
+  register: result_6_diff
+
+- name: Copy file not following link (force)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/lnk'
+    force: true
+  register: result_7
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /lnk | base64;
+        stat -c '%s %a %F %u %g %N' /lnk > /dev/stderr
+    chdir: /root
+  register: result_8
+
+- name: Check results
+  assert:
+    that:
+      - result_1 is changed
+      - result_1.container_path == '/lnk'
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == '/file'
+      - result_1_diff.diff.before_header == '/lnk'
+      - result_1_diff.diff.after == 'Content 1\n'
+      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_2 is changed
+      - result_2.container_path == '/lnk'
+      - result_3 is not changed
+      - "'diff' not in result_3"
+      - result_3_diff.diff.before == 'Content 1\n'
+      - result_3_diff.diff.before_header == '/lnk'
+      - result_3_diff.diff.after == 'Content 1\n'
+      - result_3_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_4 is not changed
+      - result_5.stdout | b64decode == 'Content 1\n'
+      - result_5.stderr == '10 644 regular file 0 0 /lnk'
+      - result_6 is changed
+      - result_6.container_path == '/lnk'
+      - "'diff' not in result_6"
+      - result_6_diff.diff.before == 'Content 1\n'
+      - result_6_diff.diff.before_header == '/lnk'
+      - result_6_diff.diff.after == 'Content 1\n'
+      - result_6_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_6 == (result_6_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_7 is changed
+      - result_7.container_path == '/lnk'
+      - result_8.stdout | b64decode == 'Content 1\n'
+      - result_8.stderr == '10 644 regular file 0 0 /lnk'
+
+######################### Replace directory by file
+
+- name: Copy file to replace directory (check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/dir'
+    follow: false
+  check_mode: true
+  diff: false
+  register: result_1
+
+- name: Copy file to replace directory (check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/dir'
+    follow: false
+  check_mode: true
+  diff: true
+  register: result_1_diff
+
+- name: Copy file to replace directory (check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/dir'
+    follow: false
+  register: result_2
+
+- name: Copy file to replace directory (idempotent, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/dir'
+  check_mode: true
+  diff: false
+  register: result_3
+
+- name: Copy file to replace directory (idempotent, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/dir'
+  check_mode: true
+  diff: true
+  register: result_3_diff
+
+- name: Copy file to replace directory (idempotent)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/dir'
+  register: result_4
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /dir | base64;
+        stat -c '%s %a %F %u %g %N' /dir > /dev/stderr
+    chdir: /root
+  register: result_5
+
+- name: Check results
+  assert:
+    that:
+      - result_1 is changed
+      - result_1.container_path == '/dir'
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == '(directory)'
+      - result_1_diff.diff.before_header == '/dir'
+      - result_1_diff.diff.after == 'Content 1\n'
+      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_2 is changed
+      - result_2.container_path == '/dir'
+      - result_3 is not changed
+      - "'diff' not in result_3"
+      - result_3_diff.diff.before == 'Content 1\n'
+      - result_3_diff.diff.before_header == '/dir'
+      - result_3_diff.diff.after == 'Content 1\n'
+      - result_3_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_4 is not changed
+      - result_5.stdout | b64decode == 'Content 1\n'
+      - result_5.stderr == '10 644 regular file 0 0 /dir'
+
+######################### Modify
+
+- name: Copy file (changed, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+  check_mode: true
+  diff: false
+  register: result_1
+
+- name: Copy file (changed, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+  check_mode: true
+  diff: true
+  register: result_1_diff
+
+- name: Copy file (changed)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+  register: result_2
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_3
+
+- name: Check results
+  assert:
+    that:
+      - result_1 is changed
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == 'Content 1\n'
+      - result_1_diff.diff.before_header == '/file'
+      - result_1_diff.diff.after == 'Content 2\nExtra line'
+      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_2'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_2 is changed
+      - result_3.stdout | b64decode == 'Content 2\nExtra line'
+      - result_3.stderr == '20 644 regular file 0 0 /file'
+
+######################### Change mode
+
+- name: Copy file (mode changed, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+  check_mode: true
+  diff: false
+  register: result_1
+
+- name: Copy file (mode changed, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+  check_mode: true
+  diff: true
+  register: result_1_diff
+
+- name: Copy file (mode changed)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+  register: result_2
+
+- name: Copy file (idempotent, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+  check_mode: true
+  diff: false
+  register: result_3
+
+- name: Copy file (idempotent, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+  check_mode: true
+  diff: true
+  register: result_3_diff
+
+- name: Copy file (idempotent)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+  register: result_4
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_5
+
+- name: Check results
+  assert:
+    that:
+      - result_1 is changed
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == 'Content 2\nExtra line'
+      - result_1_diff.diff.before_header == '/file'
+      - result_1_diff.diff.after == 'Content 2\nExtra line'
+      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_2'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_2 is changed
+      - result_3 is not changed
+      - "'diff' not in result_3"
+      - result_3_diff.diff.before == 'Content 2\nExtra line'
+      - result_3_diff.diff.before_header == '/file'
+      - result_3_diff.diff.after == 'Content 2\nExtra line'
+      - result_3_diff.diff.after_header == remote_tmp_dir ~ '/file_2'
+      - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_4 is not changed
+      - result_5.stdout | b64decode == 'Content 2\nExtra line'
+      - result_5.stderr == '20 707 regular file 0 0 /file'
+
+######################### Change owner and group
+
+- name: Copy file (owner/group changed, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  diff: false
+  register: result_1
+
+- name: Copy file (owner/group changed, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  diff: true
+  register: result_1_diff
+
+- name: Copy file (owner/group changed)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  register: result_2
+
+- name: Copy file (idempotent, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  diff: false
+  register: result_3
+
+- name: Copy file (idempotent, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  diff: true
+  register: result_3_diff
+
+- name: Copy file (idempotent)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  register: result_4
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_5
+
+- name: Copy file (owner/group changed again, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 13
+    group_id: 13
+  check_mode: true
+  diff: false
+  register: result_6
+
+- name: Copy file (owner/group changed again, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 13
+    group_id: 13
+  check_mode: true
+  diff: true
+  register: result_6_diff
+
+- name: Copy file (owner/group changed again)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_2'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 13
+    group_id: 13
+  register: result_7
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_8
+
+- name: Check results
+  assert:
+    that:
+      - result_1 is changed
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == 'Content 2\nExtra line'
+      - result_1_diff.diff.before_header == '/file'
+      - result_1_diff.diff.after == 'Content 2\nExtra line'
+      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_2'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_2 is changed
+      - result_3 is not changed
+      - "'diff' not in result_3"
+      - result_3_diff.diff.before == 'Content 2\nExtra line'
+      - result_3_diff.diff.before_header == '/file'
+      - result_3_diff.diff.after == 'Content 2\nExtra line'
+      - result_3_diff.diff.after_header == remote_tmp_dir ~ '/file_2'
+      - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_4 is not changed
+      - result_5.stdout | b64decode == 'Content 2\nExtra line'
+      - result_5.stderr == '20 707 regular file 12 910 /file'
+      - result_6 is changed
+      - "'diff' not in result_6"
+      - result_6_diff.diff.before == 'Content 2\nExtra line'
+      - result_6_diff.diff.before_header == '/file'
+      - result_6_diff.diff.after == 'Content 2\nExtra line'
+      - result_6_diff.diff.after_header == remote_tmp_dir ~ '/file_2'
+      - result_6 == (result_6_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_7 is changed
+      - result_8.stdout | b64decode == 'Content 2\nExtra line'
+      - result_8.stderr == '20 707 regular file 13 13 /file'
+
+######################### Operate with stopped container
+
+- name: Stop container
+  docker_container:
+    name: "{{ cname }}"
+    state: stopped
+    stop_timeout: 1
+
+- name: Copy file (stopped container, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  diff: false
+  register: result_1
+
+- name: Copy file (stopped container, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  diff: true
+  register: result_1_diff
+
+- name: Copy file (stopped container)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  register: result_2
+
+- name: Copy file (stopped container, idempotent, check mode)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  diff: false
+  register: result_3
+
+- name: Copy file (stopped container, idempotent, check mode, diff)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  check_mode: true
+  diff: true
+  register: result_3_diff
+
+- name: Copy file (stopped container, idempotent)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    mode: 0707
+    owner_id: 12
+    group_id: 910
+  register: result_4
+
+- name: Copy file (stopped container, no owner/group provided, should fail)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    path: '{{ remote_tmp_dir }}/file_1'
+    container_path: '/file'
+    mode: 0707
+  register: result_5
+  ignore_errors: true
+
+- name: Start container
+  docker_container:
+    name: "{{ cname }}"
+    state: started
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_6
+
+- name: Check results
+  assert:
+    that:
+      - result_1 is changed
+      - "'diff' not in result_1"
+      - result_1_diff.diff.before == 'Content 2\nExtra line'
+      - result_1_diff.diff.before_header == '/file'
+      - result_1_diff.diff.after == 'Content 1\n'
+      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_2 is changed
+      - result_3 is not changed
+      - "'diff' not in result_3"
+      - result_3_diff.diff.before == 'Content 1\n'
+      - result_3_diff.diff.before_header == '/file'
+      - result_3_diff.diff.after == 'Content 1\n'
+      - result_3_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
+      - result_4 is not changed
+      - result_5 is failed
+      - result_5.msg == ('Cannot execute command in paused container "' ~ cname ~ '"')
+      - result_6.stdout | b64decode == 'Content 1\n'
+      - result_6.stderr == '10 707 regular file 12 910 /file'
+
+################################################################################################
+# Cleanup
+
+- name: Remove container
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
