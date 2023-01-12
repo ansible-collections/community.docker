@@ -14,11 +14,25 @@
 ############ basic test ############
 ####################################
 
+- name: Create a plugin (check mode)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: present
+  register: create_1_check
+  check_mode: true
+
 - name: Create a plugin
   docker_plugin:
     plugin_name: "{{ plugin_name }}"
     state: present
   register: create_1
+
+- name: Create a plugin (Idempotent, check mode)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: present
+  register: create_2_check
+  check_mode: true
 
 - name: Create a plugin (Idempotent)
   docker_plugin:
@@ -26,11 +40,25 @@
     state: present
   register: create_2
 
+- name: Enable a plugin (check mode)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: enable
+  register: create_3_check
+  check_mode: true
+
 - name: Enable a plugin
   docker_plugin:
     plugin_name: "{{ plugin_name }}"
     state: enable
   register: create_3
+
+- name: Enable a plugin (Idempotent, check mode)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: enable
+  register: create_4_check
+  check_mode: true
 
 - name: Enable a plugin (Idempotent)
   docker_plugin:
@@ -38,11 +66,25 @@
     state: enable
   register: create_4
 
+- name: Disable a plugin (check mode)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: disable
+  register: absent_1_check
+  check_mode: true
+
 - name: Disable a plugin
   docker_plugin:
     plugin_name: "{{ plugin_name }}"
     state: disable
   register: absent_1
+
+- name: Disable a plugin (Idempotent, check mode)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: disable
+  register: absent_2_check
+  check_mode: true
 
 - name: Disable a plugin (Idempotent)
   docker_plugin:
@@ -50,11 +92,25 @@
     state: disable
   register: absent_2
 
+- name: Remove a plugin (check mode)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: absent
+  register: absent_3_check
+  check_mode: true
+
 - name: Remove a plugin
   docker_plugin:
     plugin_name: "{{ plugin_name }}"
     state: absent
   register: absent_3
+
+- name: Remove a plugin (Idempotent, check mode)
+  docker_plugin:
+    plugin_name: "{{ plugin_name }}"
+    state: absent
+  register: absent_4_check
+  check_mode: true
 
 - name: Remove a plugin (Idempotent)
   docker_plugin:
@@ -70,13 +126,21 @@
 
 - assert:
     that:
+    - create_1_check is changed
     - create_1 is changed
+    - create_2_check is not changed
     - create_2 is not changed
+    - create_3_check is changed
     - create_3 is changed
+    - create_4_check is not changed
     - create_4 is not changed
+    - absent_1_check is changed
     - absent_1 is changed
+    - absent_2_check is not changed
     - absent_2 is not changed
+    - absent_3_check is changed
     - absent_3 is changed
+    - absent_4_check is not changed
     - absent_4 is not changed
 
 ############ Plugin_Options ############
