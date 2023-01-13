@@ -338,13 +338,17 @@ class AnsibleDockerClientBase(Client):
         pass
 
     @staticmethod
-    def _get_value(param_name, param_value, env_variable, default_value):
+    def _get_value(param_name, param_value, env_variable, default_value, type='str'):
         if param_value is not None:
             # take module parameter value
-            if param_value in BOOLEANS_TRUE:
-                return True
-            if param_value in BOOLEANS_FALSE:
-                return False
+            if type == 'bool':
+                if param_value in BOOLEANS_TRUE:
+                    return True
+                if param_value in BOOLEANS_FALSE:
+                    return False
+                return bool(param_value)
+            if type == 'int':
+                return int(param_value)
             return param_value
 
         if env_variable is not None:
@@ -357,10 +361,14 @@ class AnsibleDockerClientBase(Client):
                     return os.path.join(env_value, 'ca.pem')
                 if param_name == 'key_path':
                     return os.path.join(env_value, 'key.pem')
-                if env_value in BOOLEANS_TRUE:
-                    return True
-                if env_value in BOOLEANS_FALSE:
-                    return False
+                if type == 'bool':
+                    if env_value in BOOLEANS_TRUE:
+                        return True
+                    if env_value in BOOLEANS_FALSE:
+                        return False
+                    return bool(env_value)
+                if type == 'int':
+                    return int(env_value)
                 return env_value
 
         # take the default
@@ -385,21 +393,21 @@ class AnsibleDockerClientBase(Client):
 
         result = dict(
             docker_host=self._get_value('docker_host', params['docker_host'], 'DOCKER_HOST',
-                                        DEFAULT_DOCKER_HOST),
+                                        DEFAULT_DOCKER_HOST, type='str'),
             tls_hostname=self._get_value('tls_hostname', params['tls_hostname'],
-                                         'DOCKER_TLS_HOSTNAME', None),
+                                         'DOCKER_TLS_HOSTNAME', None, type='str'),
             api_version=self._get_value('api_version', params['api_version'], 'DOCKER_API_VERSION',
-                                        'auto'),
-            cacert_path=self._get_value('cacert_path', params['ca_cert'], 'DOCKER_CERT_PATH', None),
-            cert_path=self._get_value('cert_path', params['client_cert'], 'DOCKER_CERT_PATH', None),
-            key_path=self._get_value('key_path', params['client_key'], 'DOCKER_CERT_PATH', None),
-            ssl_version=self._get_value('ssl_version', params['ssl_version'], 'DOCKER_SSL_VERSION', None),
-            tls=self._get_value('tls', params['tls'], 'DOCKER_TLS', DEFAULT_TLS),
+                                        'auto', type='str'),
+            cacert_path=self._get_value('cacert_path', params['ca_cert'], 'DOCKER_CERT_PATH', None, type='str'),
+            cert_path=self._get_value('cert_path', params['client_cert'], 'DOCKER_CERT_PATH', None, type='str'),
+            key_path=self._get_value('key_path', params['client_key'], 'DOCKER_CERT_PATH', None, type='str'),
+            ssl_version=self._get_value('ssl_version', params['ssl_version'], 'DOCKER_SSL_VERSION', None, type='str'),
+            tls=self._get_value('tls', params['tls'], 'DOCKER_TLS', DEFAULT_TLS, type='bool'),
             tls_verify=self._get_value('tls_verfy', params['validate_certs'], 'DOCKER_TLS_VERIFY',
-                                       DEFAULT_TLS_VERIFY),
+                                       DEFAULT_TLS_VERIFY, type='bool'),
             timeout=self._get_value('timeout', params['timeout'], 'DOCKER_TIMEOUT',
-                                    DEFAULT_TIMEOUT_SECONDS),
-            use_ssh_client=self._get_value('use_ssh_client', params['use_ssh_client'], None, False),
+                                    DEFAULT_TIMEOUT_SECONDS, type='int'),
+            use_ssh_client=self._get_value('use_ssh_client', params['use_ssh_client'], None, False, type='bool'),
         )
 
         def depr(*args, **kwargs):
