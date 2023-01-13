@@ -13,3 +13,4 @@
           - docker-ce
           - docker-ce-cli
         state: absent
+      when: false
