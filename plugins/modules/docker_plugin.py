@@ -346,11 +346,18 @@ class DockerPluginManager(object):
 
     @property
     def result(self):
+        plugin_data = {}
+        if self.parameters.state != 'absent':
+            try:
+                plugin_data = self.client.get_json('/plugins/{0}/json', self.preferred_name)
+            except NotFound:
+                # This can happen in check mode
+                pass
         result = {
             'actions': self.actions,
             'changed': self.changed,
             'diff': self.diff,
-            'plugin': self.client.get_json('/plugins/{0}/json', self.preferred_name) if self.parameters.state != 'absent' else {}
+            'plugin': plugin_data,
         }
         return dict((k, v) for k, v in result.items() if v is not None)
 
