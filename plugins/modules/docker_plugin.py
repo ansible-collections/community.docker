@@ -357,7 +357,7 @@ class DockerPluginManager(object):
             'actions': self.actions,
             'changed': self.changed,
             'diff': self.diff,
-            'plugin': plugin_data
+            'plugin': plugin_data,
         }
         return dict((k, v) for k, v in result.items() if v is not None)
 
