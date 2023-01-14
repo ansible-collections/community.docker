@@ -1,2 +1,0 @@
-bugfixes:
-  - "docker_plugin - do not crash if plugin is installed in check mode (https://github.com/ansible-collections/community.docker/issues/552, https://github.com/ansible-collections/community.docker/pull/553)."
