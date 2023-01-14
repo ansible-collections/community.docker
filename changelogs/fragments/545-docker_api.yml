@@ -1,2 +1,0 @@
-minor_changes:
-  - "docker_api connection plugin - when copying files to/from a container, stream the file contents instead of first reading them to memory (https://github.com/ansible-collections/community.docker/pull/545)."
