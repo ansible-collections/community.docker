@@ -14,6 +14,8 @@ module: docker_container_copy_into
 
 short_description: Copy a file into a Docker container
 
+version_added: 3.4.0
+
 description:
   - Copy a file into a Docker container.
   - Similar to C(docker cp).
