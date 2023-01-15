@@ -1,27 +1,30 @@
 #!/usr/bin/python
+#
+# Copyright (c) 2022 Sid Sun <sid@dronk.dev>
+# Based on Ansible docker compose module by:
+# Copyright 2016 Red Hat | Ansible
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import (absolute_import, division, print_function)
-from ansible.module_utils.basic import AnsibleModule
-import os
-from python_on_whales.docker_client import DockerClient
-from python_on_whales.exceptions import (
-    DockerException,
-)
 __metaclass__ = type
 
-DOCUMENTATION = r'''
+DOCUMENTATION = '''
 ---
 module: docker_compose_v2
 
 short_description: Manage multi-container Docker applications with Docker Compose v2.
 
-version_added: "1.0.0"
+version_added: "3.5.0"
 
 description:
-  - Uses Docker Compose v2 to manage docker services. B(This module requires docker-compose > 2.0.0.)
+  - Uses Docker Compose v2 to manage docker services. B(This module requires docker-compose >= 2.0.0. and python >= 3.7)
   - Configuration can be read from a C(docker-compose.yaml) file.
   - See the examples for more details.
   - Supports check mode.
+
+extends_documentation_fragment:
+  - community.docker.attributes
 
 attributes:
   check_mode:
@@ -108,13 +111,14 @@ options:
 
 requirements:
   - "L(Python on Whales,https://pypi.org/project/python-on-whales/) >= 0.55.0"
-  - "docker-compose > 2.0.0"
+  - "docker-compose >= 2.0.0"
+  - "python >= 3.7"
 
 author:
     - Sid Sun (@SidSun)
 '''
 
-EXAMPLES = r'''
+EXAMPLES = '''
 # Set up a virtual environment for the module and install python on whales
 - name: Set up virtual env for compose v2
   ansible.builtin.pip:
@@ -129,7 +133,7 @@ EXAMPLES = r'''
     state: directory
 # Create the docker compose file 
 - name: Create compose file with content
-  copy:
+  ansible.builtin.copy:
     dest: "uptime-kuma/docker-compose.yaml"
     content: |
       version: '3.3'
@@ -192,18 +196,18 @@ EXAMPLES = r'''
     state: present
 '''
 
-RETURN = r'''
-# retuens are a bit finicky at the moment, see: https://github.com/gabrieldemarmiesse/python-on-whales/issues/395
+RETURN = '''
+# returns are a bit finicky at the moment, see: https://github.com/gabrieldemarmiesse/python-on-whales/issues/395
 msg:
     description: In docker failures, has docker command + some description. In other failures, stringified exception is returned. In success, descriptive message of what happened.
     type: bool
     returned: always
-    sample: 'true'
+    sample: true
 changed:
     description: If something was changed (currently, changed is (almost) always true as there is no check of current state).
     type: bool
     returned: always
-    sample: 'true'
+    sample: true
 actions:
     description: List stating which compose commands were run (not the entire command itself).
     type: list
@@ -214,23 +218,28 @@ rc:
     type: str
     returned: failure from docker
     sample: 12
-stderr_lines:
-    description: stderr ouput of docker command.
-    type: list
-    returned: failure from docker
-    sample: ["Authorization to docker daemon failed"]
-stdout_lines:
-    description: stdout output of docker command.
-    type: list
-    returned: failure from docker
-    sample: ["Authorization to docker daemon failed"]
 '''
 
+import os
+import traceback
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.common.text.converters import to_native
+
+try:
+  from python_on_whales.docker_client import DockerClient
+  from python_on_whales.exceptions import (
+      DockerException,
+  )
+  HAS_POW = True
+  HAS_POW_EXC = None
+except ImportError as e:
+  HAS_POW = False
+  HAS_POW_EXC = traceback.format_exc()
 
 class ComposeV2Module:
     module: AnsibleModule
 
-    def __init__(self, module: AnsibleModule) -> None:
+    def __init__(self, module: AnsibleModule):
         self.module = module
         self.remove_images = None
         self.remove_orphans = None
@@ -249,13 +258,18 @@ class ComposeV2Module:
 
         self.check_mode = module.check_mode
 
-    def exec_module(self) -> dict:
+        if not HAS_POW:
+            self.client.fail("Unable to load python-on-whales. Try `pip install python-on-whales`. Error: %s" %
+                             to_native(HAS_POW_EXC))
+
+
+    def exec_module(self):
         if self.state == 'present':
             return self.cmd_up()
         elif self.state == 'absent':
             return self.cmd_down()
 
-    def cmd_up(self) -> dict:
+    def cmd_up(self):
         result = dict(
             changed=False,
             msg='',
@@ -300,7 +314,7 @@ class ComposeV2Module:
 
         return result
 
-    def cmd_down(self) -> dict:
+    def cmd_down(self):
         result = dict(
             changed=False,
             msg='',
@@ -355,12 +369,8 @@ def main():
             failed=True,
             stderr=e.stderr,
             stdout=e.stdout,
-            stderr_lines=e.stderr.split(
-                "\n") if e.stderr is not None else None,
-            stdout_lines=e.stdout.split(
-                "\n") if e.stdout is not None else None,
             rc=e.return_code,
-            err=str(e)
+            err=str(e),
         )
         module.fail_json(**failure)
     except Exception as e:
