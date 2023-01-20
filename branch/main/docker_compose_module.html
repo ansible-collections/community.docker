@@ -667,8 +667,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">that</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">web.flask_web_1.state.running&quot;</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">db.flask_db_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">output.services.web.flask_web_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">output.services.db.flask_db_1.state.running&quot;</span>
 
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Restart services</span>
 <span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
@@ -682,8 +682,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">that</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;web.flask_web_1.state.running&quot;</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;db.flask_db_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.web.flask_web_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.db.flask_db_1.state.running&quot;</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Scale the web service to 2</span>
 <span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
@@ -730,8 +730,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">that</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;web.flask_web_1.state.running&quot;</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;db.flask_db_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.web.flask_web_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.db.flask_db_1.state.running&quot;</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run with inline Compose file version 1</span>
 <span class="w">  </span><span class="c1"># https://docs.docker.com/compose/compose-file/compose-file-v1/</span>
@@ -763,8 +763,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">that</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;web.flask_web_1.state.running&quot;</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;db.flask_db_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.web.flask_web_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.db.flask_db_1.state.running&quot;</span>
 </pre></div>
 </div>
 </section>
