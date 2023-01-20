@@ -226,8 +226,8 @@ EXAMPLES = '''
 
     - ansible.builtin.assert:
         that:
-          - "not web.flask_web_1.state.running"
-          - "not db.flask_db_1.state.running"
+          - "not output.services.web.flask_web_1.state.running"
+          - "not output.services.db.flask_db_1.state.running"
 
     - name: Restart services
       community.docker.docker_compose:
@@ -241,8 +241,8 @@ EXAMPLES = '''
 
     - ansible.builtin.assert:
         that:
-          - "web.flask_web_1.state.running"
-          - "db.flask_db_1.state.running"
+          - "output.services.web.flask_web_1.state.running"
+          - "output.services.db.flask_db_1.state.running"
 
 - name: Scale the web service to 2
   hosts: localhost
@@ -289,8 +289,8 @@ EXAMPLES = '''
 
     - ansible.builtin.assert:
         that:
-          - "web.flask_web_1.state.running"
-          - "db.flask_db_1.state.running"
+          - "output.services.web.flask_web_1.state.running"
+          - "output.services.db.flask_db_1.state.running"
 
 - name: Run with inline Compose file version 1
   # https://docs.docker.com/compose/compose-file/compose-file-v1/
@@ -322,8 +322,8 @@ EXAMPLES = '''
 
     - ansible.builtin.assert:
         that:
-          - "web.flask_web_1.state.running"
-          - "db.flask_db_1.state.running"
+          - "output.services.web.flask_web_1.state.running"
+          - "output.services.db.flask_db_1.state.running"
 '''
 
 RETURN = '''
