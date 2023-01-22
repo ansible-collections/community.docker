@@ -58,7 +58,7 @@
       - 'output.volumes is not defined'
       - 'output.images is not defined'
       - 'output.disk_usage is not defined'
-  when: output is succeeded or 'Install paramiko package to enable' in output.msg
+  when: output is succeeded or 'Install paramiko package to enable' not in output.msg
   # For whatever reason, even though paramiko is installed, *sometimes* this error
   # shows up. I have no idea why it sometimes works and sometimes not...
 
