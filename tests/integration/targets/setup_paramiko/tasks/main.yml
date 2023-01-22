@@ -4,3 +4,25 @@
     name: "paramiko{% if cryptography_version.stdout is version('2.5.0', '<') %}<2.5.0{% endif %}"
     extra_args: "-c {{ remote_constraints }}"
   become: true
+
+- name: Gather facts on localhost
+  setup:
+    filter:
+      - ansible_python
+    gather_subset:
+      - '!all'
+      - '!min'
+      - python
+  delegate_to: localhost
+  delegate_facts: true
+
+- name: Register cryptography version on localhost
+  command: "{{ hostvars['localhost'].ansible_facts.python.executable }} -c 'import cryptography; print(cryptography.__version__)'"
+  register: cryptography_version_localhost
+  delegate_to: localhost
+
+- name: Install paramiko on localhost
+  pip:
+    name: "paramiko{% if cryptography_version_localhost.stdout is version('2.5.0', '<') %}<2.5.0{% endif %}"
+  become: true
+  delegate_to: localhost
