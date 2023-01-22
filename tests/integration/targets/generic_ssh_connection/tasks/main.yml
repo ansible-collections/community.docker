@@ -58,9 +58,10 @@
       - 'output.volumes is not defined'
       - 'output.images is not defined'
       - 'output.disk_usage is not defined'
-  when: output is succeeded or 'Install paramiko package to enable' in output.msg
-  # For whatever reason, even though paramiko is installed, *sometimes* this error
-  # shows up. I have no idea why it sometimes works and sometimes not...
+  when: output is succeeded or 'Failed to import the required Python library (paramiko)' not in output.msg
+  # Sometimes paramiko being installed isn't enough: importing it can fail
+  # due to 'ImportError: No module named x25519' when it executes
+  # `from cryptography.hazmat.primitives.asymmetric.x25519 import ...`.
 
 - name: Get docker daemon information via ssh (OpenSSH) to localhost
   docker_host_info:
