@@ -12,10 +12,10 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: current_container_facts
-short_description: Return facts about whether the module runs in a Docker container
+short_description: Return facts about whether the module runs in a container
 version_added: 1.1.0
 description:
-  - Return facts about whether the module runs in a Docker container.
+  - Return facts about whether the module runs in a Docker or podman container.
   - This module attempts a best-effort detection. There might be special cases where
     it does not work; if you encounter one, L(please file an issue,
     https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&template=bug_report.md).
@@ -58,8 +58,10 @@ ansible_facts:
             description:
               - The detected container environment.
               - Contains an empty string if no container was detected, or a non-empty string identifying the container environment.
-              - C(github_actions) is supported since community.docker 2.4.0.
-              - C(podman) is supported since community.docker 3.3.0.
+              - C(docker) indicates that the module ran inside a regular Docker container.
+              - C(azure_pipelines) indicates that the module ran on Azure Pipelines. This seems to no longer be reported.
+              - C(github_actions) indicates that the module ran inside a Docker container on GitHub Actions. It is supported since community.docker 2.4.0.
+              - C(podman) indicates that the module ran inside a regular Podman container. It is supported since community.docker 3.3.0.
             returned: always
             type: str
             choices:
