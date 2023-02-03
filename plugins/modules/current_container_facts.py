@@ -20,6 +20,7 @@ description:
     it does not work; if you encounter one, L(please file an issue,
     https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&template=bug_report.md).
   - Docs test.
+  - And another part.
 author:
   - Felix Fontein (@felixfontein)
 extends_documentation_fragment:
