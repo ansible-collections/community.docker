@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>community.docker.current_container_facts module – Return facts about whether the module runs in a Docker container &mdash; Community.Docker Collection  documentation</title>
+  <title>community.docker.current_container_facts module – Return facts about whether the module runs in a container &mdash; Community.Docker Collection  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/ansible.css" type="text/css" />
       <link rel="stylesheet" href="_static/antsibull-minimal.css" type="text/css" />
@@ -75,7 +75,7 @@
 <li class="toctree-l1"><a class="reference internal" href="docsite/scenario_guide.html">Docker Guide</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">community.docker.current_container_facts module – Return facts about whether the module runs in a Docker container</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">community.docker.current_container_facts module – Return facts about whether the module runs in a container</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#attributes">Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
@@ -140,7 +140,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a></li>
-      <li class="breadcrumb-item active">community.docker.current_container_facts module – Return facts about whether the module runs in a Docker container</li>
+      <li class="breadcrumb-item active">community.docker.current_container_facts module – Return facts about whether the module runs in a container</li>
       <li class="wy-breadcrumbs-aside">
               <!-- User defined GitHub URL -->
               <a href="https://github.com/ansible-collections/community.docker/edit/main/plugins/modules/current_container_facts.py?description=%23%23%23%23%23%20SUMMARY%0A%3C!—%20Your%20description%20here%20–%3E%0A%0A%0A%23%23%23%23%23%20ISSUE%20TYPE%0A-%20Docs%20Pull%20Request%0A%0A%2Blabel:%20docsite_pr" class="fa fa-github"> Edit on GitHub</a>
@@ -153,8 +153,8 @@
   
            <div itemprop="articleBody">
              
-  <span class="target" id="ansible-collections-community-docker-current-container-facts-module"></span><section id="community-docker-current-container-facts-module-return-facts-about-whether-the-module-runs-in-a-docker-container">
-<h1>community.docker.current_container_facts module – Return facts about whether the module runs in a Docker container<a class="headerlink" href="#community-docker-current-container-facts-module-return-facts-about-whether-the-module-runs-in-a-docker-container" title="Permalink to this heading"></a></h1>
+  <span class="target" id="ansible-collections-community-docker-current-container-facts-module"></span><section id="community-docker-current-container-facts-module-return-facts-about-whether-the-module-runs-in-a-container">
+<h1>community.docker.current_container_facts module – Return facts about whether the module runs in a container<a class="headerlink" href="#community-docker-current-container-facts-module-return-facts-about-whether-the-module-runs-in-a-container" title="Permalink to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/community/docker">community.docker collection</a> (version 3.5.0).</p>
@@ -173,7 +173,7 @@
 <section id="synopsis">
 <h2><a class="toc-backref" href="#id1">Synopsis</a><a class="headerlink" href="#synopsis" title="Permalink to this heading"></a></h2>
 <ul class="simple">
-<li><p>Return facts about whether the module runs in a Docker container.</p></li>
+<li><p>Return facts about whether the module runs in a Docker or podman container.</p></li>
 <li><p>This module attempts a best-effort detection. There might be special cases where it does not work; if you encounter one, <a class="reference external" href="https://github.com/ansible-collections/community.docker/issues/new?assignees%3D%26labels%3D%26template%3Dbug_report.md">please file an issue</a>.</p></li>
 </ul>
 </section>
@@ -253,8 +253,10 @@
 </div></td>
 <td><div class="ansible-option-cell"><p>The detected container environment.</p>
 <p>Contains an empty string if no container was detected, or a non-empty string identifying the container environment.</p>
-<p><code class="docutils literal notranslate"><span class="pre">github_actions</span></code> is supported since community.docker 2.4.0.</p>
-<p><code class="docutils literal notranslate"><span class="pre">podman</span></code> is supported since community.docker 3.3.0.</p>
+<p><code class="docutils literal notranslate"><span class="pre">docker</span></code> indicates that the module ran inside a regular Docker container.</p>
+<p><code class="docutils literal notranslate"><span class="pre">azure_pipelines</span></code> indicates that the module ran on Azure Pipelines. This seems to no longer be reported.</p>
+<p><code class="docutils literal notranslate"><span class="pre">github_actions</span></code> indicates that the module ran inside a Docker container on GitHub Actions. It is supported since community.docker 2.4.0.</p>
+<p><code class="docutils literal notranslate"><span class="pre">podman</span></code> indicates that the module ran inside a regular Podman container. It is supported since community.docker 3.3.0.</p>
 <p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> always</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Can only return:</span></p>
 <ul class="simple">
