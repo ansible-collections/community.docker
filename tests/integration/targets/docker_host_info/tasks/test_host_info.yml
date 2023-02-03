@@ -272,7 +272,9 @@
          - 'output.volumes is not defined'
          - 'output.images is not defined'
          - 'output.disk_usage.LayersSize is number'
-         - 'output.disk_usage.BuilderSize is not defined'
+         - 'output.disk_usage.Images is not defined'
+         - 'output.disk_usage.Containers is not defined'
+         - 'output.disk_usage.Volumes is not defined'
 
   - name: Get info on Docker host and get disk usage with verbose output
     docker_host_info:
@@ -289,7 +291,9 @@
          - 'output.volumes is not defined'
          - 'output.images is not defined'
          - 'output.disk_usage.LayersSize is number'
-         - 'output.disk_usage.BuilderSize is number'
+         - 'output.disk_usage.Images is sequence'
+         - 'output.disk_usage.Containers is sequence'
+         - 'output.disk_usage.Volumes is sequence'
 
   - name: Get info on Docker host, disk usage and get all lists together
     docker_host_info:
@@ -313,7 +317,9 @@
          - 'output.images[0].Id is string'
          - 'output.images[0].ParentId is not defined'
          - 'output.disk_usage.LayersSize is number'
-         - 'output.disk_usage.BuilderSize is not defined'
+         - 'output.disk_usage.Images is not defined'
+         - 'output.disk_usage.Containers is not defined'
+         - 'output.disk_usage.Volumes is not defined'
 
   - name: Get info on Docker host, disk usage and get all lists together with verbose output
     docker_host_info:
@@ -338,7 +344,9 @@
          - 'output.images[0].Id is string'
          - 'output.images[0].ParentId is string'
          - 'output.disk_usage.LayersSize is number'
-         - 'output.disk_usage.BuilderSize is number'
+         - 'output.disk_usage.Images is sequence'
+         - 'output.disk_usage.Containers is sequence'
+         - 'output.disk_usage.Volumes is sequence'
 
   always:
   - name: Delete containers
