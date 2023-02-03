@@ -143,3 +143,5 @@ jobs:
           target: ${{ matrix.target }}
           target-python-version: ${{ matrix.python }}
           testing-type: integration
+      - name: Show output of the current_container_facts module
+        run: ANSIBLE_COLLECTIONS_PATHS=/home/runner/work/community.docker/community.docker/ ansible localhost -m community.docker.current_container_facts

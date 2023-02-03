@@ -16,6 +16,8 @@ else
     target="azp/"
 fi
 
+ansible localhost -m community.docker.current_container_facts
+
 # shellcheck disable=SC2086
 ansible-test integration --color -v --retry-on-error "${target}" ${COVERAGE:+"$COVERAGE"} ${CHANGED:+"$CHANGED"} ${UNSTABLE:+"$UNSTABLE"} \
     --docker "${image}"
