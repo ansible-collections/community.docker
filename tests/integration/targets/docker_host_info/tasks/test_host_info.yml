@@ -235,7 +235,9 @@
          - 'output.volumes is not defined'
          - 'output.images is not defined'
          - 'output.disk_usage.LayersSize is number'
-         - 'output.disk_usage.BuilderSize is not defined'
+         - 'output.disk_usage.Images is not defined'
+         - 'output.disk_usage.Containers is not defined'
+         - 'output.disk_usage.Volumes is not defined'
     when: docker_py_version is version('2.2.0', '>=')
   - assert:
       that:
@@ -260,7 +262,9 @@
          - 'output.volumes is not defined'
          - 'output.images is not defined'
          - 'output.disk_usage.LayersSize is number'
-         - 'output.disk_usage.BuilderSize is number'
+         - 'output.disk_usage.Images is sequence'
+         - 'output.disk_usage.Containers is sequence'
+         - 'output.disk_usage.Volumes is sequence'
     when: docker_py_version is version('2.2.0', '>=')
   - assert:
       that:
@@ -293,7 +297,9 @@
   - assert:
       that:
          - 'output.disk_usage.LayersSize is number'
-         - 'output.disk_usage.BuilderSize is not defined'
+         - 'output.disk_usage.Images is not defined'
+         - 'output.disk_usage.Containers is not defined'
+         - 'output.disk_usage.Volumes is not defined'
     when: docker_py_version is version('2.2.0', '>=')
 
   - name: Get info on Docker host, disk usage and get all lists together with verbose output
@@ -321,7 +327,9 @@
   - assert:
       that:
          - 'output.disk_usage.LayersSize is number'
-         - 'output.disk_usage.BuilderSize is number'
+         - 'output.disk_usage.Images is sequence'
+         - 'output.disk_usage.Containers is sequence'
+         - 'output.disk_usage.Volumes is sequence'
     when: docker_py_version is version('2.2.0', '>=')
 
   always:
