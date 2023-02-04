@@ -53,14 +53,14 @@ except ImportError as exc:
 # installed, as they utilize the same namespace are are incompatible
 try:
     # docker (Docker SDK for Python >= 2.0.0)
-    import docker.models  # noqa: F401
+    import docker.models  # noqa: F401, pylint: disable=unused-import
     HAS_DOCKER_MODELS = True
 except ImportError:
     HAS_DOCKER_MODELS = False
 
 try:
     # docker-py (Docker SDK for Python < 2.0.0)
-    import docker.ssladapter  # noqa: F401
+    import docker.ssladapter  # noqa: F401, pylint: disable=unused-import
     HAS_DOCKER_SSLADAPTER = True
 except ImportError:
     HAS_DOCKER_SSLADAPTER = False
@@ -75,30 +75,30 @@ except ImportError:
     class RequestException(Exception):
         pass
 
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils.util import (  # noqa: F401, pylint: disable=unused-import
     DEFAULT_DOCKER_HOST,
     DEFAULT_TLS,
     DEFAULT_TLS_VERIFY,
-    DEFAULT_TLS_HOSTNAME,  # pylint: disable=unused-import
+    DEFAULT_TLS_HOSTNAME,  # TODO: remove
     DEFAULT_TIMEOUT_SECONDS,
     DOCKER_COMMON_ARGS,
-    DOCKER_COMMON_ARGS_VARS,  # pylint: disable=unused-import
+    DOCKER_COMMON_ARGS_VARS,  # TODO: remove
     DOCKER_MUTUALLY_EXCLUSIVE,
     DOCKER_REQUIRED_TOGETHER,
-    DEFAULT_DOCKER_REGISTRY,  # pylint: disable=unused-import
-    BYTE_SUFFIXES,  # pylint: disable=unused-import
-    is_image_name_id,  # pylint: disable=unused-import
-    is_valid_tag,  # pylint: disable=unused-import
+    DEFAULT_DOCKER_REGISTRY,  # TODO: remove
+    BYTE_SUFFIXES,  # TODO: remove
+    is_image_name_id,  # TODO: remove
+    is_valid_tag,  # TODO: remove
     sanitize_result,
-    DockerBaseClass,  # pylint: disable=unused-import
+    DockerBaseClass,  # TODO: remove
     update_tls_hostname,
-    compare_dict_allow_more_present,  # pylint: disable=unused-import
-    compare_generic,  # pylint: disable=unused-import
-    DifferenceTracker,  # pylint: disable=unused-import
-    clean_dict_booleans_for_docker_api,  # pylint: disable=unused-import
-    convert_duration_to_nanosecond,  # pylint: disable=unused-import
-    parse_healthcheck,  # pylint: disable=unused-import
-    omit_none_from_dict,  # pylint: disable=unused-import
+    compare_dict_allow_more_present,  # TODO: remove
+    compare_generic,  # TODO: remove
+    DifferenceTracker,  # TODO: remove
+    clean_dict_booleans_for_docker_api,  # TODO: remove
+    convert_duration_to_nanosecond,  # TODO: remove
+    parse_healthcheck,  # TODO: remove
+    omit_none_from_dict,  # TODO: remove
 )
 
 

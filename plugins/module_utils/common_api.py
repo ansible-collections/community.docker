@@ -39,18 +39,18 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.utils 
     parse_repository_tag,
 )
 
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils.util import (  # noqa: F401, pylint: disable=unused-import
     DEFAULT_DOCKER_HOST,
     DEFAULT_TLS,
     DEFAULT_TLS_VERIFY,
-    DEFAULT_TLS_HOSTNAME,  # pylint: disable=unused-import
+    DEFAULT_TLS_HOSTNAME,  # TODO: remove
     DEFAULT_TIMEOUT_SECONDS,
     DOCKER_COMMON_ARGS,
     DOCKER_MUTUALLY_EXCLUSIVE,
     DOCKER_REQUIRED_TOGETHER,
-    DEFAULT_DOCKER_REGISTRY,  # pylint: disable=unused-import
-    is_image_name_id,  # pylint: disable=unused-import
-    is_valid_tag,  # pylint: disable=unused-import
+    DEFAULT_DOCKER_REGISTRY,  # TODO: remove
+    is_image_name_id,  # TODO: remove
+    is_valid_tag,  # TODO: remove
     sanitize_result,
     update_tls_hostname,
 )
