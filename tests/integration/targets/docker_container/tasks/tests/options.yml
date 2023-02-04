@@ -2306,7 +2306,11 @@
     - kernel_memory_1 is changed
     - kernel_memory_2 is not changed
     - kernel_memory_3 is changed
-  when: kernel_memory_1 is not failed or 'kernel memory accounting disabled in this runc build' not in kernel_memory_1.msg
+  when:
+    - kernel_memory_1 is not failed or 'kernel memory accounting disabled in this runc build' not in kernel_memory_1.msg
+    - "'Docker warning: Specifying a kernel memory limit is deprecated and will be removed in a future release.' not in (kernel_memory_1.warnings | default([]))"
+    # API version 1.42 seems to remove the kernel memory option completely
+    - "'KernelMemory' in kernel_memory_1.container.HostConfig or docker_api_version is version('1.42', '<')"
 
 ####################################################################
 ## kill_signal #####################################################
