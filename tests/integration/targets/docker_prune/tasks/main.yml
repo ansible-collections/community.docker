@@ -16,7 +16,7 @@
 
 - block:
   # Create objects to be pruned
-  - name: Create container
+  - name: Create container with anonymous volume
     docker_container:
       name: "{{ cname }}"
       image: "{{ docker_test_image_hello_world }}"
@@ -24,6 +24,16 @@
       volumes:
         # Should create an anonymous volume
         - /data
+    register: container_av
+  - name: Delete container
+    docker_container:
+      name: "{{ cname }}"
+      state: absent
+  - name: Re-create container (without volume)
+    docker_container:
+      name: "{{ cname }}"
+      image: "{{ docker_test_image_hello_world }}"
+      state: present
     register: container
   - name: Create network
     docker_network:
@@ -53,6 +63,7 @@
     assert:
       that:
       # containers
+      - container_av.container.Id not in result.containers
       - container.container.Id in result.containers
       - "'containers_space_reclaimed' in result"
       # images
@@ -60,7 +71,7 @@
       # networks
       - network.network.Name in result.networks
       # volumes
-      - container.container.Mounts[0].Name in result.volumes
+      - container_av.container.Mounts[0].Name in result.volumes
       - "'volumes_space_reclaimed' in result"
       # builder_cache
       - "'builder_cache_space_reclaimed' in result"
