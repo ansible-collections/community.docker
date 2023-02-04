@@ -16,16 +16,22 @@
 
 - block:
   # Create objects to be pruned
-  - docker_container:
+  - name: Create container
+    docker_container:
       name: "{{ cname }}"
       image: "{{ docker_test_image_hello_world }}"
       state: present
+      volumes:
+        # Should create an anonymous volume
+        - /data
     register: container
-  - docker_network:
+  - name: Create network
+    docker_network:
       name: "{{ nname }}"
       state: present
     register: network
-  - docker_volume:
+  - name: Create named volume
+    docker_volume:
       name: "{{ vname }}"
       state: present
     register: volume
@@ -40,8 +46,11 @@
     register: result
 
   # Analyze result
-  - debug: var=result
-  - assert:
+  - name: Show results
+    debug:
+      var: result
+  - name: General checks
+    assert:
       that:
       # containers
       - container.container.Id in result.containers
@@ -51,19 +60,55 @@
       # networks
       - network.network.Name in result.networks
       # volumes
-      - volume.volume.Name in result.volumes
+      - container.container.Mounts[0].Name in result.volumes
       - "'volumes_space_reclaimed' in result"
       # builder_cache
       - "'builder_cache_space_reclaimed' in result"
+  - name: API-version specific volumes check (API version before 1.42)
+    assert:
+      that:
+      # For API version 1.41 and before, pruning always considers all volumes
+      - volume.volume.Name in result.volumes
+    when: docker_api_version is version('1.42', '<')
+  - name: API-version specific volumes check (API version 1.42+)
+    assert:
+      that:
+      # For API version 1.41 and before, pruning considers only anonymous volumes,
+      # so our named container is not removed
+      - volume.volume.Name not in result.volumes
+    when: docker_api_version is version('1.42', '>=')
 
   # Test with filters
-  - docker_prune:
+  - name: Prune with filters
+    docker_prune:
       images: yes
       images_filters:
         dangling: true
     register: result
 
-  - debug: var=result
+  - name: Show results
+    debug:
+      var: result
+
+  - name: Prune volumes with all filter (API version 1.42+)
+    when: docker_api_version is version('1.42', '>=')
+    block:
+    - name: Prune with filters
+      docker_prune:
+        volumes: yes
+        volumes_filters:
+          all: true
+      register: result
+
+    - name: Show results
+      debug:
+        var: result
+
+    - name: Check results
+      assert:
+        that:
+          - volume.volume.Name in result.volumes
+          - "'volumes_space_reclaimed' in result"
 
   when: docker_api_version is version('1.25', '>=')
 
