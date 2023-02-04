@@ -8,7 +8,6 @@ __metaclass__ = type
 import base64
 
 from ansible import constants as C
-from ansible.errors import AnsibleError
 from ansible.plugins.action import ActionBase
 from ansible.utils.vars import merge_hash
 

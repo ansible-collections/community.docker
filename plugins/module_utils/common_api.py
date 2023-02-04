@@ -11,10 +11,9 @@ import abc
 import os
 import re
 
-from ansible.module_utils.basic import AnsibleModule, env_fallback, missing_required_lib
+from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.common._collections_compat import Mapping, Sequence
 from ansible.module_utils.six import string_types
-from ansible.module_utils.six.moves.urllib.parse import urlparse
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE, BOOLEANS_FALSE
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
@@ -44,14 +43,14 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     DEFAULT_DOCKER_HOST,
     DEFAULT_TLS,
     DEFAULT_TLS_VERIFY,
-    DEFAULT_TLS_HOSTNAME,
+    DEFAULT_TLS_HOSTNAME,  # pylint: disable=unused-import
     DEFAULT_TIMEOUT_SECONDS,
     DOCKER_COMMON_ARGS,
     DOCKER_MUTUALLY_EXCLUSIVE,
     DOCKER_REQUIRED_TOGETHER,
-    DEFAULT_DOCKER_REGISTRY,
-    is_image_name_id,
-    is_valid_tag,
+    DEFAULT_DOCKER_REGISTRY,  # pylint: disable=unused-import
+    is_image_name_id,  # pylint: disable=unused-import
+    is_valid_tag,  # pylint: disable=unused-import
     sanitize_result,
     update_tls_hostname,
 )

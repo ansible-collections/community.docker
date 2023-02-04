@@ -10,7 +10,6 @@ import os
 import os.path
 import socket as pysocket
 
-from ansible.module_utils.basic import missing_required_lib
 from ansible.module_utils.six import PY2
 
 try:

@@ -108,7 +108,6 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
     convert_port_bindings,
     normalize_links,
-    parse_repository_tag,
 )
 
 

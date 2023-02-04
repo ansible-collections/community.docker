@@ -167,11 +167,6 @@ from ansible_collections.community.docker.plugins.module_utils.common_api import
     RequestException,
 )
 
-from ansible_collections.community.docker.plugins.module_utils.socket_helper import (
-    shutdown_writing,
-    write_to_socket,
-)
-
 from ansible_collections.community.docker.plugins.module_utils.socket_handler import (
     DockerSocketHandlerModule,
 )

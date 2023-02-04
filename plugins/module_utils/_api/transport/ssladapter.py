@@ -14,7 +14,6 @@ __metaclass__ = type
       https://lukasa.co.uk/2013/01/Choosing_SSL_Version_In_Requests/
       https://github.com/kennethreitz/requests/pull/799
 """
-import sys
 
 from ansible_collections.community.docker.plugins.module_utils.version import StrictVersion
 

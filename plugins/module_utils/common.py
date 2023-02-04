@@ -12,13 +12,10 @@ import platform
 import re
 import sys
 import traceback
-from datetime import timedelta
 
-from ansible.module_utils.basic import AnsibleModule, env_fallback, missing_required_lib
-from ansible.module_utils.common.collections import is_sequence
+from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.common._collections_compat import Mapping, Sequence
 from ansible.module_utils.six import string_types
-from ansible.module_utils.six.moves.urllib.parse import urlparse
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE, BOOLEANS_FALSE
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
@@ -82,26 +79,26 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     DEFAULT_DOCKER_HOST,
     DEFAULT_TLS,
     DEFAULT_TLS_VERIFY,
-    DEFAULT_TLS_HOSTNAME,
+    DEFAULT_TLS_HOSTNAME,  # pylint: disable=unused-import
     DEFAULT_TIMEOUT_SECONDS,
     DOCKER_COMMON_ARGS,
-    DOCKER_COMMON_ARGS_VARS,
+    DOCKER_COMMON_ARGS_VARS,  # pylint: disable=unused-import
     DOCKER_MUTUALLY_EXCLUSIVE,
     DOCKER_REQUIRED_TOGETHER,
-    DEFAULT_DOCKER_REGISTRY,
-    BYTE_SUFFIXES,
-    is_image_name_id,
-    is_valid_tag,
+    DEFAULT_DOCKER_REGISTRY,  # pylint: disable=unused-import
+    BYTE_SUFFIXES,  # pylint: disable=unused-import
+    is_image_name_id,  # pylint: disable=unused-import
+    is_valid_tag,  # pylint: disable=unused-import
     sanitize_result,
-    DockerBaseClass,
+    DockerBaseClass,  # pylint: disable=unused-import
     update_tls_hostname,
-    compare_dict_allow_more_present,
-    compare_generic,
-    DifferenceTracker,
-    clean_dict_booleans_for_docker_api,
-    convert_duration_to_nanosecond,
-    parse_healthcheck,
-    omit_none_from_dict,
+    compare_dict_allow_more_present,  # pylint: disable=unused-import
+    compare_generic,  # pylint: disable=unused-import
+    DifferenceTracker,  # pylint: disable=unused-import
+    clean_dict_booleans_for_docker_api,  # pylint: disable=unused-import
+    convert_duration_to_nanosecond,  # pylint: disable=unused-import
+    parse_healthcheck,  # pylint: disable=unused-import
+    omit_none_from_dict,  # pylint: disable=unused-import
 )
 
 
