@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v1.10.15
+========
+
+Release Summary
+---------------
+
+Final maintenance release of community.docker major version 1.
+
+Major Changes
+-------------
+
+- The community.docker 1.x.y release stream is now effectively **End of Life**. No more releases will be made, and regular CI runs will stop.
+
 v1.10.14
 ========
 

@@ -239,6 +239,16 @@ releases:
     - 553-docker_plugin-check-mode.yml
     - 554-env-vars.yml
     release_date: '2023-01-14'
+  1.10.15:
+    changes:
+      major_changes:
+      - The community.docker 1.x.y release stream is now effectively **End of Life**.
+        No more releases will be made, and regular CI runs will stop.
+      release_summary: Final maintenance release of community.docker major version
+        1.
+    fragments:
+    - eol.yml
+    release_date: '2023-02-06'
   1.10.2:
     changes:
       bugfixes:
