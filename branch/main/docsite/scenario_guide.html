@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Docker Guide &mdash; Community.Docker Collection  documentation</title>
@@ -14,10 +14,8 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -53,7 +51,11 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> Community.Docker Collection
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Community.Docker Collection
           </a><!--- Based on https://github.com/rtfd/sphinx_rtd_theme/pull/438/files -->
 
 <div class="version">
@@ -148,7 +150,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Docker Guide</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -163,7 +165,7 @@
   <section id="docker-guide">
 <span id="ansible-collections-community-docker-docsite-scenario-guide"></span><h1>Docker Guide<a class="headerlink" href="#docker-guide" title="Permalink to this heading"></a></h1>
 <p>The <a class="reference external" href="https://galaxy.ansible.com/community/docker">community.docker collection</a> offers several modules and plugins for orchestrating Docker containers and Docker Swarm.</p>
-<div class="contents local topic" id="contents">
+<nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#requirements" id="id2">Requirements</a></p></li>
 <li><p><a class="reference internal" href="#connecting-to-the-docker-api" id="id3">Connecting to the Docker API</a></p></li>
@@ -174,9 +176,9 @@
 <li><p><a class="reference internal" href="#docker-swarm" id="id8">Docker Swarm</a></p></li>
 <li><p><a class="reference internal" href="#helpful-links" id="id9">Helpful links</a></p></li>
 </ul>
-</div>
+</nav>
 <section id="requirements">
-<h2><a class="toc-backref" href="#id2">Requirements</a><a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h2>
 <p>Most of the modules and plugins in community.docker require the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a>. The SDK needs to be installed on the machines where the modules and plugins are executed, and for the Python version(s) with which the modules and plugins are executed. You can use the <a class="reference external" href="https://docs.ansible.com/ansible/devel/collections/community/general/python_requirements_info_module.html#ansible-collections-community-general-python-requirements-info-module" title="(in Ansible vdevel)"><span class="xref std std-ref">community.general.python_requirements_info module</span></a> to make sure that the Docker SDK for Python is installed on the correct machine and for the Python version used by Ansible.</p>
 <p>Note that plugins (inventory plugins and connection plugins) are always executed in the context of Ansible itself. If you use a plugin that requires the Docker SDK for Python, you need to install it on the machine running <code class="docutils literal notranslate"><span class="pre">ansible</span></code> or <code class="docutils literal notranslate"><span class="pre">ansible-playbook</span></code> and for the same Python interpreter used by Ansible. To see which Python is used, run <code class="docutils literal notranslate"><span class="pre">ansible</span> <span class="pre">--version</span></code>.</p>
 <p>You can install the Docker SDK for Python for Python 3.6 or later as follows:</p>
@@ -190,7 +192,7 @@
 <p>Note that the Docker SDK for Python was called <code class="docutils literal notranslate"><span class="pre">docker-py</span></code> on PyPi before version 2.0.0. Please avoid installing this really old version, and make sure to not install both <code class="docutils literal notranslate"><span class="pre">docker</span></code> and <code class="docutils literal notranslate"><span class="pre">docker-py</span></code>. Installing both will result in a broken installation. If this happens, Ansible will detect it and inform you about it. If that happens, you must uninstall both and reinstall the correct version. If in doubt, always install <code class="docutils literal notranslate"><span class="pre">docker</span></code> and never <code class="docutils literal notranslate"><span class="pre">docker-py</span></code>.</p>
 </section>
 <section id="connecting-to-the-docker-api">
-<h2><a class="toc-backref" href="#id3">Connecting to the Docker API</a><a class="headerlink" href="#connecting-to-the-docker-api" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Connecting to the Docker API</a><a class="headerlink" href="#connecting-to-the-docker-api" title="Permalink to this heading"></a></h2>
 <p>You can connect to a local or remote API using parameters passed to each task or by setting environment variables. The order of precedence is command line parameters and then environment variables. If neither a command line option nor an environment variable is found, Ansible uses the default value  provided under <a class="reference internal" href="#parameters">Parameters</a>.</p>
 <section id="parameters">
 <h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
@@ -246,7 +248,7 @@ by Docker SDK for Python.</p>
 </section>
 </section>
 <section id="plain-docker-daemon-images-networks-volumes-and-containers">
-<h2><a class="toc-backref" href="#id4">Plain Docker daemon: images, networks, volumes, and containers</a><a class="headerlink" href="#plain-docker-daemon-images-networks-volumes-and-containers" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Plain Docker daemon: images, networks, volumes, and containers</a><a class="headerlink" href="#plain-docker-daemon-images-networks-volumes-and-containers" title="Permalink to this heading"></a></h2>
 <p>For working with a plain Docker daemon, that is without Swarm, there are connection plugins, an inventory plugin, and several modules available:</p>
 <blockquote>
 <div><dl>
@@ -283,22 +285,22 @@ by Docker SDK for Python.</p>
 </div></blockquote>
 </section>
 <section id="docker-compose">
-<h2><a class="toc-backref" href="#id5">Docker Compose</a><a class="headerlink" href="#docker-compose" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Docker Compose</a><a class="headerlink" href="#docker-compose" title="Permalink to this heading"></a></h2>
 <p>The <a class="reference internal" href="../docker_compose_module.html#ansible-collections-community-docker-docker-compose-module"><span class="std std-ref">community.docker.docker_compose module</span></a>
 allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
 Supports compose versions 1 and 2.</p>
 <p>Next to Docker SDK for Python, you need to install <a class="reference external" href="https://github.com/docker/compose">docker-compose</a> on the remote machines to use the module.</p>
 </section>
 <section id="docker-machine">
-<h2><a class="toc-backref" href="#id6">Docker Machine</a><a class="headerlink" href="#docker-machine" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Docker Machine</a><a class="headerlink" href="#docker-machine" title="Permalink to this heading"></a></h2>
 <p>The <a class="reference internal" href="../docker_machine_inventory.html#ansible-collections-community-docker-docker-machine-inventory"><span class="std std-ref">community.docker.docker_machine inventory plugin</span></a> allows you to dynamically add Docker Machine hosts to your Ansible inventory.</p>
 </section>
 <section id="docker-stack">
-<h2><a class="toc-backref" href="#id7">Docker stack</a><a class="headerlink" href="#docker-stack" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Docker stack</a><a class="headerlink" href="#docker-stack" title="Permalink to this heading"></a></h2>
 <p>The <a class="reference internal" href="../docker_stack_module.html#ansible-collections-community-docker-docker-stack-module"><span class="std std-ref">community.docker.docker_stack module</span></a> module allows you to control Docker stacks. Information on stacks can be retrieved by the <a class="reference internal" href="../docker_stack_info_module.html#ansible-collections-community-docker-docker-stack-info-module"><span class="std std-ref">community.docker.docker_stack_info module</span></a>, and information on stack tasks can be retrieved by the <a class="reference internal" href="../docker_stack_task_info_module.html#ansible-collections-community-docker-docker-stack-task-info-module"><span class="std std-ref">community.docker.docker_stack_task_info module</span></a>.</p>
 </section>
 <section id="docker-swarm">
-<h2><a class="toc-backref" href="#id8">Docker Swarm</a><a class="headerlink" href="#docker-swarm" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Docker Swarm</a><a class="headerlink" href="#docker-swarm" title="Permalink to this heading"></a></h2>
 <p>The community.docker collection provides multiple plugins and modules for managing Docker Swarms.</p>
 <section id="swarm-management">
 <h3>Swarm management<a class="headerlink" href="#swarm-management" title="Permalink to this heading"></a></h3>
@@ -336,7 +338,7 @@ Supports compose versions 1 and 2.</p>
 </section>
 </section>
 <section id="helpful-links">
-<h2><a class="toc-backref" href="#id9">Helpful links</a><a class="headerlink" href="#helpful-links" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Helpful links</a><a class="headerlink" href="#helpful-links" title="Permalink to this heading"></a></h2>
 <p>Still using Dockerfile to build images? Check out <a class="reference external" href="https://github.com/ansible-community/ansible-bender">ansible-bender</a>, and start building images from your Ansible playbooks.</p>
 <p>Use <a class="reference external" href="https://learn.openshift.com/ansibleop/ansible-operator-overview/">Ansible Operator</a> to launch your docker-compose file on <a class="reference external" href="https://www.okd.io/">OpenShift</a>. Go from an app on your laptop to a fully scalable app in the cloud with Kubernetes in just a few moments.</p>
 </section>
