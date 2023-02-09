@@ -12,13 +12,10 @@ import platform
 import re
 import sys
 import traceback
-from datetime import timedelta
 
-from ansible.module_utils.basic import AnsibleModule, env_fallback, missing_required_lib
-from ansible.module_utils.common.collections import is_sequence
+from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.common._collections_compat import Mapping, Sequence
 from ansible.module_utils.six import string_types
-from ansible.module_utils.six.moves.urllib.parse import urlparse
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE, BOOLEANS_FALSE
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
@@ -56,14 +53,14 @@ except ImportError as exc:
 # installed, as they utilize the same namespace are are incompatible
 try:
     # docker (Docker SDK for Python >= 2.0.0)
-    import docker.models  # noqa: F401
+    import docker.models  # noqa: F401, pylint: disable=unused-import
     HAS_DOCKER_MODELS = True
 except ImportError:
     HAS_DOCKER_MODELS = False
 
 try:
     # docker-py (Docker SDK for Python < 2.0.0)
-    import docker.ssladapter  # noqa: F401
+    import docker.ssladapter  # noqa: F401, pylint: disable=unused-import
     HAS_DOCKER_SSLADAPTER = True
 except ImportError:
     HAS_DOCKER_SSLADAPTER = False
@@ -78,30 +75,30 @@ except ImportError:
     class RequestException(Exception):
         pass
 
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils.util import (  # noqa: F401, pylint: disable=unused-import
     DEFAULT_DOCKER_HOST,
     DEFAULT_TLS,
     DEFAULT_TLS_VERIFY,
-    DEFAULT_TLS_HOSTNAME,
+    DEFAULT_TLS_HOSTNAME,  # TODO: remove
     DEFAULT_TIMEOUT_SECONDS,
     DOCKER_COMMON_ARGS,
-    DOCKER_COMMON_ARGS_VARS,
+    DOCKER_COMMON_ARGS_VARS,  # TODO: remove
     DOCKER_MUTUALLY_EXCLUSIVE,
     DOCKER_REQUIRED_TOGETHER,
-    DEFAULT_DOCKER_REGISTRY,
-    BYTE_SUFFIXES,
-    is_image_name_id,
-    is_valid_tag,
+    DEFAULT_DOCKER_REGISTRY,  # TODO: remove
+    BYTE_SUFFIXES,  # TODO: remove
+    is_image_name_id,  # TODO: remove
+    is_valid_tag,  # TODO: remove
     sanitize_result,
-    DockerBaseClass,
+    DockerBaseClass,  # TODO: remove
     update_tls_hostname,
-    compare_dict_allow_more_present,
-    compare_generic,
-    DifferenceTracker,
-    clean_dict_booleans_for_docker_api,
-    convert_duration_to_nanosecond,
-    parse_healthcheck,
-    omit_none_from_dict,
+    compare_dict_allow_more_present,  # TODO: remove
+    compare_generic,  # TODO: remove
+    DifferenceTracker,  # TODO: remove
+    clean_dict_booleans_for_docker_api,  # TODO: remove
+    convert_duration_to_nanosecond,  # TODO: remove
+    parse_healthcheck,  # TODO: remove
+    omit_none_from_dict,  # TODO: remove
 )
 
 

@@ -118,7 +118,7 @@ volume:
 import traceback
 
 from ansible.module_utils.common.text.converters import to_native
-from ansible.module_utils.six import iteritems, text_type
+from ansible.module_utils.six import iteritems
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
@@ -131,7 +131,6 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     APIError,
     DockerException,
-    NotFound,
 )
 
 

@@ -146,7 +146,6 @@ container_path:
 import base64
 import io
 import os
-import random
 import stat
 import traceback
 
