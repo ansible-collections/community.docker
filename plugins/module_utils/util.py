@@ -5,17 +5,11 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 
-import abc
-import os
-import platform
 import re
-import sys
-import traceback
 from datetime import timedelta
 
 from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.common.collections import is_sequence
-from ansible.module_utils.common._collections_compat import Sequence
 from ansible.module_utils.six.moves.urllib.parse import urlparse
 
 

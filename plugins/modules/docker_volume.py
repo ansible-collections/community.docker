@@ -111,6 +111,7 @@ volume:
 import traceback
 
 from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.six import iteritems
 
 try:
     from docker.errors import DockerException, APIError
@@ -126,7 +127,6 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     DifferenceTracker,
 )
-from ansible.module_utils.six import iteritems, text_type
 
 
 class TaskParameters(DockerBaseClass):
