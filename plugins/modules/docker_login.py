@@ -117,7 +117,6 @@ login_results:
 import base64
 import json
 import os
-import re
 import traceback
 
 from ansible.module_utils.common.text.converters import to_bytes, to_text, to_native
