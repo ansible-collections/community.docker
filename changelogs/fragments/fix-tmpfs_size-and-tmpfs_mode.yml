@@ -1,0 +1,2 @@
+bugfixes:
+  - docker_container - fix tmfs_size and tmpfs_mode not being set
