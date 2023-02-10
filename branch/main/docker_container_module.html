@@ -1857,6 +1857,17 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">      </span><span class="c1"># The &quot;NONE&quot; check needs to be specified</span>
 <span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;NONE&quot;</span><span class="p p-Indicator">]</span>
 
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a tmpfs with a size and mode</span>
+<span class="w">  </span><span class="nt">community.docker.docker_container</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tmpfs test</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu:22.04</span>
+<span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">started</span>
+<span class="w">    </span><span class="nt">mounts</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tmpfs</span>
+<span class="w">        </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/cache</span>
+<span class="w">        </span><span class="nt">tmpfs_mode</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1700&quot;</span><span class="w"> </span><span class="c1"># only readable to the owner</span>
+<span class="w">        </span><span class="nt">tmpfs_size</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;16G&quot;</span>
+
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Start container with block device read limit</span>
 <span class="w">  </span><span class="nt">community.docker.docker_container</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span>
