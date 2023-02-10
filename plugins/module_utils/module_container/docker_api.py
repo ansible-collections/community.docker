@@ -994,8 +994,8 @@ def _set_values_mounts(module, data, api_version, options, values):
                     tmpfs_opts['Mode'] = mount.get('tmpfs_mode')
                 if mount.get('tmpfs_size'):
                     tmpfs_opts['SizeBytes'] = mount.get('tmpfs_size')
-                if mount.get('tmpfs_opts'):
-                    mount_res['TmpfsOptions'] = mount.get('tmpfs_opts')
+                if tmpfs_opts:
+                    mount_res['TmpfsOptions'] = tmpfs_opts
             mounts.append(mount_res)
         data['HostConfig']['Mounts'] = mounts
     if 'volumes' in values:

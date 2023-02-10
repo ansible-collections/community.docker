@@ -418,7 +418,6 @@
         type: "tmpfs"
         tmpfs_size: "50M"
   register: mounts_tmpfs_size_1
-  ignore_errors: yes
 
 - name: mounts.tmpfs_size (idempotency)
   docker_swarm_service:
@@ -432,7 +431,6 @@
         type: "tmpfs"
         tmpfs_size: "50M"
   register: mounts_tmpfs_size_2
-  ignore_errors: yes
 
 - name: mounts.tmpfs_size (change)
   docker_swarm_service:
@@ -446,7 +444,6 @@
         type: "tmpfs"
         tmpfs_size: "25M"
   register: mounts_tmpfs_size_3
-  ignore_errors: yes
 
 - name: cleanup
   docker_swarm_service:
