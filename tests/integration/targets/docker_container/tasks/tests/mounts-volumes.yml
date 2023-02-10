@@ -162,6 +162,111 @@
     - mounts_8 is not changed
 
 ####################################################################
+## tmpfs ###########################################################
+####################################################################
+
+- name: tmpfs
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    mounts:
+    - target: /cache1
+      type: tmpfs
+      tmpfs_mode: "1777"
+      tmpfs_size: "1GB"
+    - target: /cache2
+      type: tmpfs
+      tmpfs_mode: "1777"
+      tmpfs_size: "1GB"
+    force_kill: true
+  register: tmpfs_1
+
+- name: tmpfs (idempotency)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    mounts:
+    - target: /cache2
+      type: tmpfs
+      tmpfs_mode: "1777"
+      tmpfs_size: "1GB"
+    - target: /cache1
+      type: tmpfs
+      tmpfs_mode: "1777"
+      tmpfs_size: "1GB"
+    force_kill: true
+  register: tmpfs_2
+
+- name: tmpfs (more mounts)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    mounts:
+    - target: /cache1
+      type: tmpfs
+      tmpfs_mode: "1777"
+      tmpfs_size: "1GB"
+    - target: /cache2
+      type: tmpfs
+      tmpfs_mode: "1777"
+      tmpfs_size: "1GB"
+    - target: /cache3
+      type: tmpfs
+      tmpfs_mode: "1777"
+      tmpfs_size: "1GB"
+    force_kill: true
+  register: tmpfs_3
+
+- name: tmpfs (change mode)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    mounts:
+    - target: /cache1
+      type: tmpfs
+      tmpfs_mode: "1700"
+      tmpfs_size: "1GB"
+    force_kill: true
+  register: tmpfs_4
+
+- name: tmpfs (change size)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    mounts:
+    - target: /cache1
+      type: tmpfs
+      tmpfs_mode: "1700"
+      tmpfs_size: "2GB"
+    force_kill: true
+  register: tmpfs_5
+
+- name: cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: yes
+  diff: no
+
+- assert:
+    that:
+    - tmpfs_1 is changed
+    - tmpfs_2 is not changed
+    - tmpfs_3 is changed
+    - tmpfs_4 is changed
+    - tmpfs_5 is changed
+
+####################################################################
 ## mounts + volumes ################################################
 ####################################################################
 
