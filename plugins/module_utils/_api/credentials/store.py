@@ -23,7 +23,7 @@ from .utils import find_executable
 
 
 class Store(object):
-    def __init__(self, program, environment=None):
+    def __init__(self, program, environment=None, warn=None):
         """ Create a store object that acts as an interface to
             perform the basic operations for storing, retrieving
             and erasing credentials using `program`.
@@ -32,11 +32,11 @@ class Store(object):
         self.exe = find_executable(self.program)
         self.environment = environment
         if self.exe is None:
-            raise errors.InitializationError(
-                '{0} not installed or not available in PATH'.format(
-                    self.program
-                )
-            )
+            msg = '{0} not installed or not available in PATH'.format(self.program)
+            if warn is not None:
+                warn(msg)
+            else:
+                raise errors.InitializationError(msg)
 
     def get(self, server):
         """ Retrieve credentials for `server`. If no credentials are found,
@@ -84,6 +84,10 @@ class Store(object):
         return json.loads(data.decode('utf-8'))
 
     def _execute(self, subcmd, data_input):
+        if self.exe is None:
+            raise errors.StoreError(
+                '{0} not installed or not available in PATH'.format(self.program)
+            )
         output = None
         env = create_environment_dict(self.environment)
         try:

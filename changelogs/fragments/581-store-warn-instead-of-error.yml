@@ -1,0 +1,2 @@
+bugfixes:
+  - modules and plugins communicating directly with the Docker daemon - fail when using a credential helper instead of when initializing it (https://github.com/ansible-collections/community.docker/pull/581).

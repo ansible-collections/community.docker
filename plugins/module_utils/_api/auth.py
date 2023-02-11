@@ -50,13 +50,13 @@ def resolve_index_name(index_name):
     return index_name
 
 
-def get_config_header(client, registry):
+def get_config_header(client, registry, warn=None):
     log.debug('Looking for auth config')
     if not client._auth_configs or client._auth_configs.is_empty:
         log.debug(
             "No auth config in memory - loading from filesystem"
         )
-        client._auth_configs = load_config(credstore_env=client.credstore_env)
+        client._auth_configs = load_config(credstore_env=client.credstore_env, warn=warn)
     authcfg = resolve_authconfig(
         client._auth_configs, registry, credstore_env=client.credstore_env
     )
@@ -82,19 +82,20 @@ def split_repo_name(repo_name):
     return tuple(parts)
 
 
-def get_credential_store(authconfig, registry):
+def get_credential_store(authconfig, registry, warn=None):
     if not isinstance(authconfig, AuthConfig):
-        authconfig = AuthConfig(authconfig)
+        authconfig = AuthConfig(authconfig, warn=warn)
     return authconfig.get_credential_store(registry)
 
 
 class AuthConfig(dict):
-    def __init__(self, dct, credstore_env=None):
+    def __init__(self, dct, credstore_env=None, warn=None):
         if 'auths' not in dct:
             dct['auths'] = {}
         self.update(dct)
         self._credstore_env = credstore_env
         self._stores = {}
+        self._warn = warn
 
     @classmethod
     def parse_auth(cls, entries, raise_on_error=False):
@@ -152,7 +153,7 @@ class AuthConfig(dict):
         return conf
 
     @classmethod
-    def load_config(cls, config_path, config_dict, credstore_env=None):
+    def load_config(cls, config_path, config_dict, credstore_env=None, warn=None):
         """
         Loads authentication data from a Docker configuration file in the given
         root directory or if config_path is passed use given path.
@@ -165,7 +166,7 @@ class AuthConfig(dict):
             config_file = config.find_config_file(config_path)
 
             if not config_file:
-                return cls({}, credstore_env)
+                return cls({}, credstore_env, warn=warn)
             try:
                 with open(config_file) as f:
                     config_dict = json.load(f)
@@ -174,7 +175,7 @@ class AuthConfig(dict):
                 # unknown format, continue to attempt to read old location
                 # and format.
                 log.debug(e)
-                return cls(_load_legacy_config(config_file), credstore_env)
+                return cls(_load_legacy_config(config_file), credstore_env, warn=warn)
 
         res = {}
         if config_dict.get('auths'):
@@ -191,13 +192,13 @@ class AuthConfig(dict):
             log.debug("Found 'credHelpers' section")
             res.update({'credHelpers': config_dict.pop('credHelpers')})
         if res:
-            return cls(res, credstore_env)
+            return cls(res, credstore_env, warn=warn)
 
         log.debug(
             "Couldn't find auth-related section ; attempting to interpret "
             "as auth-only file"
         )
-        return cls({'auths': cls.parse_auth(config_dict)}, credstore_env)
+        return cls({'auths': cls.parse_auth(config_dict)}, credstore_env, warn=warn)
 
     @property
     def auths(self):
@@ -281,7 +282,7 @@ class AuthConfig(dict):
     def _get_store_instance(self, name):
         if name not in self._stores:
             self._stores[name] = Store(
-                name, environment=self._credstore_env
+                name, environment=self._credstore_env, warn=self._warn,
             )
         return self._stores[name]
 
@@ -315,9 +316,9 @@ class AuthConfig(dict):
         self['auths'][reg] = data
 
 
-def resolve_authconfig(authconfig, registry=None, credstore_env=None):
+def resolve_authconfig(authconfig, registry=None, credstore_env=None, warn=None):
     if not isinstance(authconfig, AuthConfig):
-        authconfig = AuthConfig(authconfig, credstore_env)
+        authconfig = AuthConfig(authconfig, credstore_env, warn=warn)
     return authconfig.resolve_authconfig(registry)
 
 
@@ -354,8 +355,8 @@ def parse_auth(entries, raise_on_error=False):
     return AuthConfig.parse_auth(entries, raise_on_error)
 
 
-def load_config(config_path=None, config_dict=None, credstore_env=None):
-    return AuthConfig.load_config(config_path, config_dict, credstore_env)
+def load_config(config_path=None, config_dict=None, credstore_env=None, warn=None):
+    return AuthConfig.load_config(config_path, config_dict, credstore_env, warn=warn)
 
 
 def _load_legacy_config(config_file):

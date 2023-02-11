@@ -98,7 +98,8 @@ class APIClient(
                  timeout=DEFAULT_TIMEOUT_SECONDS, tls=False,
                  user_agent=DEFAULT_USER_AGENT, num_pools=None,
                  credstore_env=None, use_ssh_client=False,
-                 max_pool_size=DEFAULT_MAX_POOL_SIZE):
+                 max_pool_size=DEFAULT_MAX_POOL_SIZE,
+                 warn=None):
         super(APIClient, self).__init__()
 
         fail_on_missing_imports()
@@ -108,6 +109,7 @@ class APIClient(
                 'If using TLS, the base_url argument must be provided.'
             )
 
+        self._warn = warn
         self.base_url = base_url
         self.timeout = timeout
         self.headers['User-Agent'] = user_agent
@@ -123,7 +125,7 @@ class APIClient(
         self._proxy_configs = ProxyConfig.from_dict(proxies)
 
         self._auth_configs = auth.load_config(
-            config_dict=self._general_configs, credstore_env=credstore_env,
+            config_dict=self._general_configs, credstore_env=credstore_env, warn=self._warn,
         )
         self.credstore_env = credstore_env
 
@@ -500,7 +502,7 @@ class APIClient(
             None
         """
         self._auth_configs = auth.load_config(
-            dockercfg_path, credstore_env=self.credstore_env
+            dockercfg_path, credstore_env=self.credstore_env, warn=self._warn,
         )
 
     def _set_auth_headers(self, headers):
@@ -511,7 +513,7 @@ class APIClient(
         if not self._auth_configs or self._auth_configs.is_empty:
             log.debug("No auth config in memory - loading from filesystem")
             self._auth_configs = auth.load_config(
-                credstore_env=self.credstore_env
+                credstore_env=self.credstore_env, warn=self._warn,
             )
 
         # Send the full auth configuration (if any exists), since the build

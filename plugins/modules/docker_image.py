@@ -664,7 +664,7 @@ class ImageManager(DockerBaseClass):
                         push_repository, push_tag = parse_repository_tag(push_repository)
                     push_registry, dummy = resolve_repository_name(push_repository)
                     headers = {}
-                    header = get_config_header(self.client, push_registry)
+                    header = get_config_header(self.client, push_registry, warn=self.client.module.warn)
                     if header:
                         headers['X-Registry-Auth'] = header
                     response = self.client._post_json(

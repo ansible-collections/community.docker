@@ -11,9 +11,10 @@ import abc
 import os
 import re
 
-from ansible.module_utils.basic import AnsibleModule, missing_required_lib
+from ansible.module_utils.basic import AnsibleModule, env_fallback, missing_required_lib
 from ansible.module_utils.common._collections_compat import Mapping, Sequence
 from ansible.module_utils.six import string_types
+from ansible.module_utils.six.moves.urllib.parse import urlparse
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE, BOOLEANS_FALSE
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
@@ -39,18 +40,18 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.utils 
     parse_repository_tag,
 )
 
-from ansible_collections.community.docker.plugins.module_utils.util import (  # noqa: F401, pylint: disable=unused-import
+from ansible_collections.community.docker.plugins.module_utils.util import (
     DEFAULT_DOCKER_HOST,
     DEFAULT_TLS,
     DEFAULT_TLS_VERIFY,
-    DEFAULT_TLS_HOSTNAME,  # TODO: remove
+    DEFAULT_TLS_HOSTNAME,
     DEFAULT_TIMEOUT_SECONDS,
     DOCKER_COMMON_ARGS,
     DOCKER_MUTUALLY_EXCLUSIVE,
     DOCKER_REQUIRED_TOGETHER,
-    DEFAULT_DOCKER_REGISTRY,  # TODO: remove
-    is_image_name_id,  # TODO: remove
-    is_valid_tag,  # TODO: remove
+    DEFAULT_DOCKER_REGISTRY,
+    is_image_name_id,
+    is_valid_tag,
     sanitize_result,
     update_tls_hostname,
 )
@@ -114,7 +115,7 @@ class AnsibleDockerClientBase(Client):
         self._connect_params = get_connect_params(self.auth_params, fail_function=self.fail)
 
         try:
-            super(AnsibleDockerClientBase, self).__init__(**self._connect_params)
+            super(AnsibleDockerClientBase, self).__init__(**self._connect_params, warn=self.warn)
             self.docker_api_version_str = self.api_version
         except MissingRequirementException as exc:
             self.fail(missing_required_lib(exc.requirement), exception=exc.import_exception)
@@ -143,6 +144,9 @@ class AnsibleDockerClientBase(Client):
         pass
 
     def deprecate(self, msg, version=None, date=None, collection_name=None):
+        pass
+
+    def warn(self, msg):
         pass
 
     @staticmethod
@@ -445,7 +449,7 @@ class AnsibleDockerClientBase(Client):
                 params['platform'] = platform
 
             headers = {}
-            header = auth.get_config_header(self, registry)
+            header = auth.get_config_header(self, registry, warn=self.warn)
             if header:
                 headers['X-Registry-Auth'] = header
 
@@ -520,6 +524,9 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
     def fail(self, msg, **kwargs):
         self.fail_results.update(kwargs)
         self.module.fail_json(msg=msg, **sanitize_result(self.fail_results))
+
+    def warn(self, msg):
+        self.module.warn(msg)
 
     def deprecate(self, msg, version=None, date=None, collection_name=None):
         self.module.deprecate(msg, version=version, date=date, collection_name=collection_name)

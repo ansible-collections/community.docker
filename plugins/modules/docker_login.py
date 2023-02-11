@@ -276,11 +276,11 @@ class LoginManager(DockerBaseClass):
     def _login(self, reauth):
         if self.config_path and os.path.exists(self.config_path):
             self.client._auth_configs = auth.load_config(
-                self.config_path, credstore_env=self.client.credstore_env
+                self.config_path, credstore_env=self.client.credstore_env, warn=self.client.module.warn,
             )
         elif not self.client._auth_configs or self.client._auth_configs.is_empty:
             self.client._auth_configs = auth.load_config(
-                credstore_env=self.client.credstore_env
+                credstore_env=self.client.credstore_env, warn=self.client.module.warn,
             )
 
         authcfg = self.client._auth_configs.resolve_authconfig(self.registry_url)
@@ -392,15 +392,15 @@ class LoginManager(DockerBaseClass):
 
         credstore_env = self.client.credstore_env
 
-        config = auth.load_config(config_path=dockercfg_path)
+        config = auth.load_config(config_path=dockercfg_path, warn=self.client.module.warn)
 
-        store_name = auth.get_credential_store(config, registry)
+        store_name = auth.get_credential_store(config, registry, warn=self.client.module.warn)
 
         # Make sure that there is a credential helper before trying to instantiate a
         # Store object.
         if store_name:
             self.log("Found credential store %s" % store_name)
-            return Store(store_name, environment=credstore_env)
+            return Store(store_name, environment=credstore_env, warn=self.client.module.warn)
 
         return DockerFileStore(dockercfg_path)
 

@@ -237,7 +237,7 @@ class DockerPluginManager(object):
                     # Get privileges
                     headers = {}
                     registry, repo_name = auth.resolve_repository_name(self.parameters.plugin_name)
-                    header = auth.get_config_header(self.client, registry)
+                    header = auth.get_config_header(self.client, registry, warn=self.client.module.warn)
                     if header:
                         headers['X-Registry-Auth'] = header
                     privileges = self.client.get_json('/plugins/privileges', params={'remote': self.parameters.plugin_name}, headers=headers)

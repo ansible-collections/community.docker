@@ -30,6 +30,9 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
             msg += '\nContext:\n' + '\n'.join('  {0} = {1!r}'.format(k, v) for (k, v) in kwargs.items())
         raise AnsibleConnectionFailure(msg)
 
+    def warn(self, msg):
+        self.display.warning(msg)
+
     def deprecate(self, msg, version=None, date=None, collection_name=None):
         self.display.deprecated(msg, version=version, date=date, collection_name=collection_name)
 
