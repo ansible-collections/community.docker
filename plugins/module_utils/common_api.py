@@ -115,7 +115,7 @@ class AnsibleDockerClientBase(Client):
         self._connect_params = get_connect_params(self.auth_params, fail_function=self.fail)
 
         try:
-            super(AnsibleDockerClientBase, self).__init__(**self._connect_params, warn=self.warn)
+            super(AnsibleDockerClientBase, self).__init__(warn=self.warn, **self._connect_params)
             self.docker_api_version_str = self.api_version
         except MissingRequirementException as exc:
             self.fail(missing_required_lib(exc.requirement), exception=exc.import_exception)
