@@ -152,7 +152,7 @@ NEEDS_DOCKER_PYCREDS = False
 # the credential store api.
 if HAS_DOCKER_PY:
     try:
-        from docker.credentials.errors import StoreError, CredentialsNotFound
+        from docker.credentials.errors import StoreError, CredentialsNotFound  # noqa: F401, pylint: disable=unused-import
         from docker.credentials import Store
     except ImportError:
         try:
