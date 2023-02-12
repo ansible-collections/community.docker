@@ -20,11 +20,10 @@ if sys.version_info < (2, 7):
     pytestmark = pytest.mark.skip('Python 2.6 is not supported')
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
-    APIError, ContainerError, DockerException,
+    APIError, DockerException,
     create_unexpected_kwargs_error,
     create_api_error_from_http_exception,
 )
-from .fake_api import FAKE_CONTAINER_ID, FAKE_IMAGE_ID
 
 
 class APIErrorTest(unittest.TestCase):

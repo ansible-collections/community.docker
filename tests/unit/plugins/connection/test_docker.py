@@ -7,13 +7,11 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 from io import StringIO
-import pytest
 
 from ansible_collections.community.docker.tests.unit.compat import mock
 from ansible_collections.community.docker.tests.unit.compat import unittest
 from ansible.errors import AnsibleError
 from ansible.playbook.play_context import PlayContext
-from ansible_collections.community.docker.plugins.connection.docker import Connection as DockerConnection
 from ansible.plugins.loader import connection_loader
 
 

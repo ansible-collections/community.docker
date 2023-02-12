@@ -9,10 +9,7 @@ import pytest
 
 from ansible_collections.community.docker.plugins.modules.docker_image import ImageManager
 
-from ansible_collections.community.docker.plugins.module_utils.image_archive import (
-    api_image_id,
-    ImageArchiveInvalidException
-)
+from ansible_collections.community.docker.plugins.module_utils.image_archive import api_image_id
 
 from ..test_support.docker_image_archive_stubbing import (
     write_imitation_archive,

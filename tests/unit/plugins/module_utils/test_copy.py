@@ -6,7 +6,6 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 import pytest
-import tarfile
 
 from ansible_collections.community.docker.plugins.module_utils.copy import (
     _stream_generator_to_fileobj,
