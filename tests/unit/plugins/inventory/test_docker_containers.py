@@ -5,17 +5,9 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 
-import json
-import textwrap
-
 import pytest
 
-from mock import MagicMock
-
-from ansible import constants as C
-from ansible.errors import AnsibleError
 from ansible.inventory.data import InventoryData
-from ansible.inventory.manager import InventoryManager
 
 from ansible_collections.community.docker.plugins.inventory.docker_containers import InventoryModule
 
