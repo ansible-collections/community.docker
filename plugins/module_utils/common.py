@@ -67,7 +67,7 @@ except ImportError:
 
 
 try:
-    from requests.exceptions import RequestException
+    from requests.exceptions import RequestException  # noqa: F401, pylint: disable=unused-import
 except ImportError:
     # Either Docker SDK for Python is no longer using requests, or Docker SDK for Python isn't around either,
     # or Docker SDK for Python's dependency requests is missing. In any case, define an exception

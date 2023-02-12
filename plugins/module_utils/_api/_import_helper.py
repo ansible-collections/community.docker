@@ -21,9 +21,9 @@ BACKPORTS_SSL_MATCH_HOSTNAME_IMPORT_ERROR = None
 
 
 try:
-    from requests import Session
-    from requests.adapters import HTTPAdapter
-    from requests.exceptions import HTTPError, InvalidSchema
+    from requests import Session  # noqa: F401, pylint: disable=unused-import
+    from requests.adapters import HTTPAdapter  # noqa: F401, pylint: disable=unused-import
+    from requests.exceptions import HTTPError, InvalidSchema  # noqa: F401, pylint: disable=unused-import
 except ImportError:
     REQUESTS_IMPORT_ERROR = traceback.format_exc()
 
