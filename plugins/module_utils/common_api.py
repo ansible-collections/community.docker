@@ -19,7 +19,7 @@ from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE, BOOLEANS_FA
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 try:
-    from requests.exceptions import RequestException, SSLError
+    from requests.exceptions import RequestException, SSLError  # noqa: F401, pylint: disable=unused-import
 except ImportError:
     # Define an exception class RequestException so that our code doesn't break.
     class RequestException(Exception):
