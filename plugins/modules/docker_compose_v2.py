@@ -364,8 +364,12 @@ networks:
 
 
 import sys
-if sys.version_info == 3:
-    from typing import List, Optional, Tuple, Union, Literal, Final, FrozenSet, Text, Dict, Type, NamedTuple, TYPE_CHECKING, Any
+if sys.version_info[0] == 3 and sys.version_info[1] >= 5:
+    from typing import List, Optional, Tuple, Union, Literal, Final, FrozenSet, Dict, Type, TYPE_CHECKING, Any
+    if sys.version_info[1] < 11:
+        from typing import Text
+    else:
+        Text = str
 else:
     TYPE_CHECKING = False
 import re
