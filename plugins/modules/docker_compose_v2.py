@@ -304,17 +304,17 @@ EXAMPLES = '''
 RETURN = '''
 stdout:
   description:
-  - The stdout from docker-compose.
+    - The stdout from docker-compose.
   returned: always, unless when C(docker-compose) was not given the chance to run
   type: str
 stderr:
   description:
-  - The stderr from docker-compose.
+    - The stderr from docker-compose.
   returned: always, unless when C(docker-compose) was not given the chance to run
   type: str
 containers:
   description:
-  - A dictionary mapping the various status of containers during C(docker-compose) operation.
+    - A dictionary mapping the various status of containers during C(docker-compose) operation.
   returned: always, unless when C(docker-compose) was not given the chance to run
   type: complex:
   contains:
@@ -326,7 +326,7 @@ containers:
       example: ["stopped", "removed"]
 volumes:
   description:
-  - A dictionary mapping the various status of volumes during C(docker-compose) operation.
+    - A dictionary mapping the various status of volumes during C(docker-compose) operation.
   returned: always, unless when C(docker-compose) was not given the chance to run
   type: complex:
   contains:
@@ -338,7 +338,7 @@ volumes:
       example: ["created"]
 images:
   description:
-  - A dictionary mapping the various status of volumes during C(docker-compose) operation.
+    - A dictionary mapping the various status of volumes during C(docker-compose) operation.
   returned: always, unless when C(docker-compose) was not given the chance to run
   type: complex:
   contains:
@@ -350,7 +350,7 @@ images:
       example: ["removed"]
 networks:
   description:
-  - A dictionary mapping the various status of networks during C(docker-compose) operation.
+    - A dictionary mapping the various status of networks during C(docker-compose) operation.
   returned: always, unless when C(docker-compose) was not given the chance to run
   type: complex:
   contains:
@@ -370,8 +370,6 @@ else:
     TYPE_CHECKING = False
 import re
 from collections import defaultdict, namedtuple
-import enum
-from dataclasses import dataclass
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DOCKER_COMMON_ARGS,
@@ -412,7 +410,7 @@ STATUS_ERROR = frozenset({
 })  # type: Final[FrozenSet[Text]]
 
 
-STATUS_THAT_CAUSE_A_CHANGE = FrozenSet({
+STATUS_THAT_CAUSE_A_CHANGE = frozenset({
     'Started',
     'Exited',
     'Restarted',
@@ -463,7 +461,16 @@ ResourceEvent = namedtuple(
 )
 
 
-_re_resource_event = re.compile(r'^(?P<resource_type>Network|Image|Volume|Container) (?P<resource_id>.+)  (?P<status>{:s})'.format("|".join(STATUS_DONE | STATUS_WORKING | STATUS_ERROR)))
+_re_resource_event = re.compile(
+    r'^'
+    r'(?P<resource_type>Network|Image|Volume|Container)'
+    r' '
+    r'(?P<resource_id>.+)'
+    r'  '
+    r'(?P<status>%s)' % (
+        "|".join(STATUS_DONE | STATUS_WORKING | STATUS_ERROR)
+    )
+)
 
 
 DOCKER_COMPOSE_EXECUTABLE = 'docker-compose'
@@ -478,10 +485,11 @@ class ComposeManager(object):
     @staticmethod
     def _parse_stderr(stderr):
         # type: (Text) -> List[EVENT]
-        events: List[ResourceEvent] = []
+        events = []  # type: List[EVENT]
         for line in stderr.splitlines():
             line = line.rstrip()
-            if ((match := _re_resource_event.match(line)) is not None):
+            match = _re_resource_event.match(line)
+            if (match is not None):
                 events.append(ResourceEvent(
                     ResourceType.from_docker_compose_event(match.group('resource_type')),
                     match.group('resource_id'),
@@ -493,24 +501,26 @@ class ComposeManager(object):
         self,
         subcommand,  # type: List[Text]
         files,  # type: List[Text]
-        content = None,  # type: Optional[Text]
-        project_name = None,  # type: Optional[Text]
-        project_directory = None,  # type: Optional[Text]
-        profiles = [],  # type: List[Text]
-        env_file = None,  # type: Optional[Text]
+        content=None,  # type: Optional[Text]
+        project_name=None,  # type: Optional[Text]
+        project_directory=None,  # type: Optional[Text]
+        profiles=None,  # type: Optional[List[Text]]
+        env_file=None,  # type: Optional[Text]
     ):
         # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        if profiles is None:
+            profiles = []
         command = [DOCKER_COMPOSE_EXECUTABLE, '--ansi', 'never']
         for file in files:
-          command.extend(['-f', file])
+            command.extend(['-f', file])
         if project_name is not None:
-          command.extend(['-p', project_name])
+            command.extend(['-p', project_name])
         if project_directory is not None:
-          command.extend(['--project-directory', project_directory])
+            command.extend(['--project-directory', project_directory])
         if env_file is not None:
             command.extend(['--env-file', env_file])
         for profile in profiles:
-          command.extend(['--profile', profile])
+            command.extend(['--profile', profile])
         command += subcommand
         kwargs = {}
         if content is not None:
@@ -518,17 +528,17 @@ class ComposeManager(object):
         env = {
             'DOCKER_HOST': self._docker_host
         }
-        self._module.debug('DOCKER-COMPOSE command: {!r:s}'.format(command))
-        self._module.debug('DOCKER-COMPOSE stdin: {!r:s}'.format(content))
-        self._module.debug('DOCKER-COMPOSE env: {!r:s}'.format(env))
+        self._module.debug('DOCKER-COMPOSE command: %s' % (repr(command)))
+        self._module.debug('DOCKER-COMPOSE stdin: %s' % (repr(content)))
+        self._module.debug('DOCKER-COMPOSE env: %s' % (repr(env)))
         rc, out, err = self._module.run_command(
             command,
             environ_update=env,
-            **kwargs,
+            **kwargs
         )
-        self._module.debug('DOCKER-COMPOSE rc: {:d}'.format(rc))
-        self._module.debug('DOCKER-COMPOSE stdout: {!r:s}'.format(out))
-        self._module.debug('DOCKER-COMPOSE stderr: {!r:s}'.format(err))
+        self._module.debug('DOCKER-COMPOSE rc: %d' % (rc))
+        self._module.debug('DOCKER-COMPOSE stdout: %s' % (repr(out)))
+        self._module.debug('DOCKER-COMPOSE stderr: %s' % (repr(err)))
         events = self._parse_stderr(err)
         return rc, out, err, events
 
@@ -536,22 +546,26 @@ class ComposeManager(object):
         self,
         # Common arguments
         files,  # type: List[Text]
-        content = None,  # type: Optional[Text]
-        project_name = None,  # type: Optional[Text]
-        project_directory = None,  # type: Optional[Text]
-        profiles = [],  # type: List[Text]
-        env_file = None,  # type: Optional[Text]
+        content=None,  # type: Optional[Text]
+        project_name=None,  # type: Optional[Text]
+        project_directory=None,  # type: Optional[Text]
+        profiles=None,  # type: Optional[List[Text]]
+        env_file=None,  # type: Optional[Text]
         # Specific arguments
-        services = [],  # type: List[Text]
-        no_deps = False,  # type: bool
-        pull = None,  # type: Optional[Union[Literal['always'], Literal['missing'], Literal['never']]]
-        build = False,  # type: bool
-        force_recreate = False,  # type: bool
-        no_recreate = False,  # type: bool
-        remove_orphans = False,  # type: bool
-        timeout = None,  # type: Optional[int]
+        services=None,  # type: Optional[List[Text]]
+        no_deps=False,  # type: bool
+        pull=None,  # type: Optional[Union[Literal['always'], Literal['missing'], Literal['never']]]
+        build=False,  # type: bool
+        force_recreate=False,  # type: bool
+        no_recreate=False,  # type: bool
+        remove_orphans=False,  # type: bool
+        timeout=None,  # type: Optional[int]
     ):
         # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        if profiles is None:
+            profiles = []
+        if services is None:
+            services = []
         subcommand = ['up', '-d']
         if no_deps:
             subcommand.append('--no-deps')
@@ -566,7 +580,7 @@ class ComposeManager(object):
         if remove_orphans:
             subcommand.append('--remove-orphans')
         if timeout is not None:
-            subcommand.extend(['--timeout', '{:d}'.format(timeout)])
+            subcommand.extend(['--timeout', '%d' % (timeout)])
         for service in services:
             subcommand.append(service)
         return self._run_subcommand(
@@ -583,18 +597,20 @@ class ComposeManager(object):
         self,
         # Common arguments
         files,  # type: List[Text]
-        content = None,  # type: Optional[Text]
-        project_name = None,  # type: Optional[Text]
-        project_directory = None,  # type: Optional[Text]
-        profiles = [],  # type: List[Text]
-        env_file = None,  # type: Optional[Text]
+        content=None,  # type: Optional[Text]
+        project_name=None,  # type: Optional[Text]
+        project_directory=None,  # type: Optional[Text]
+        profiles=None,  # type: Optional[List[Text]]
+        env_file=None,  # type: Optional[Text]
         # Specific arguments
-        remove_orphans: bool = False,  # type: bool
-        rmi = None,  # type: Optional[Union[Literal['all'], Literal['local']]]
-        volumes = False,  # type: bool
-        timeout = None,  # type: Optional[int]
+        remove_orphans=False,  # type: bool
+        rmi=None,  # type: Optional[Union[Literal['all'], Literal['local']]]
+        volumes=False,  # type: bool
+        timeout=None,  # type: Optional[int]
     ):
         # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        if profiles is None:
+            profiles = []
         subcommand = ['down']
         if remove_orphans:
             subcommand.append('--remove-orphans')
@@ -603,7 +619,7 @@ class ComposeManager(object):
         if volumes:
             subcommand.extend(['--volumes'])
         if timeout is not None:
-            subcommand.extend(['--timeout', '{:d}'.format(timeout)])
+            subcommand.extend(['--timeout', '%d' % (timeout)])
         return self._run_subcommand(
             subcommand,
             files,
@@ -618,18 +634,20 @@ class ComposeManager(object):
         self,
         # Common arguments
         files,  # type: List[Text]
-        content = None,  # type: Optional[Text]
-        project_name = None,  # type: Optional[Text]
-        project_directory = None,  # type: Optional[Text]
-        profiles = [],  # type: List[Text]
-        env_file = None,  # type: Optional[Text]
+        content=None,  # type: Optional[Text]
+        project_name=None,  # type: Optional[Text]
+        project_directory=None,  # type: Optional[Text]
+        profiles=None,  # type: Optional[List[Text]]
+        env_file=None,  # type: Optional[Text]
         # Specific arguments
-        timeout = None,  # type: Optional[int]
+        timeout=None,  # type: Optional[int]
     ):
         # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        if profiles is None:
+            profiles = []
         subcommand = ['stop']
         if timeout is not None:
-            subcommand.extend(['--timeout', '{:d}'.format(timeout)])
+            subcommand.extend(['--timeout', '%d' % (timeout)])
         return self._run_subcommand(
             subcommand,
             files,
@@ -644,19 +662,23 @@ class ComposeManager(object):
         self,
         # Common arguments
         files,  # type: List[Text]
-        content = None,  # type: Optional[Text]
-        project_name = None,  # type: Optional[Text]
-        project_directory = None,  # type: Optional[Text]
-        profiles = [],  # type: List[Text]
-        env_file = None,  # type: Optional[Text]
+        content=None,  # type: Optional[Text]
+        project_name=None,  # type: Optional[Text]
+        project_directory=None,  # type: Optional[Text]
+        profiles=None,  # type: Optional[List[Text]]
+        env_file=None,  # type: Optional[Text]
         # Specific arguments
-        services = [],  # type: List[Text]
-        timeout = None,  # type: Optional[int]
+        services=None,  # type: Optional[List[Text]]
+        timeout=None,  # type: Optional[int]
     ):
         # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        if profiles is None:
+            profiles = []
+        if services is None:
+            services = []
         subcommand = ['restart']
         if timeout is not None:
-            subcommand.extend(['--timeout', '{:d}'.format(timeout)])
+            subcommand.extend(['--timeout', '%d' % (timeout)])
         for service in services:
             subcommand.append(service)
         return self._run_subcommand(
@@ -673,17 +695,21 @@ class ComposeManager(object):
         self,
         # Common arguments
         files,  # type: List[Text]
-        content = None,  # type: Optional[Text]
-        project_name = None,  # type: Optional[Text]
-        project_directory = None,  # type: Optional[Text]
-        profiles = [],  # type: List[Text]
-        env_file = None,  # type: Optional[Text]
+        content=None,  # type: Optional[Text]
+        project_name=None,  # type: Optional[Text]
+        project_directory=None,  # type: Optional[Text]
+        profiles=None,  # type: Optional[List[Text]]
+        env_file=None,  # type: Optional[Text]
         # Specific arguments
-        services = [],  # type: List[Text]
-        no_cache= False,  # type: bool
-        pull= False,  # type: bool
+        services=None,  # type: Optional[List[Text]]
+        no_cache=False,  # type: bool
+        pull=False,  # type: bool
     ):
         # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        if profiles is None:
+            profiles = []
+        if services is None:
+            services = []
         subcommand = ['build']
         if no_cache:
             subcommand.append('--no-cache')
@@ -705,16 +731,20 @@ class ComposeManager(object):
         self,
         # Common arguments
         files,  # type: List[Text]
-        content = None,  # type: Optional[Text]
-        project_name = None,  # type: Optional[Text]
-        project_directory = None,  # type: Optional[Text]
-        profiles = [],  # type: List[Text]
-        env_file = None,  # type: Optional[Text]
+        content=None,  # type: Optional[Text]
+        project_name=None,  # type: Optional[Text]
+        project_directory=None,  # type: Optional[Text]
+        profiles=None,  # type: Optional[List[Text]]
+        env_file=None,  # type: Optional[Text]
         # Specific arguments
-        services = [],  # type: List[Text]
-        include_deps = False,  # type: bool
+        services=None,  # type: Optional[List[Text]]
+        include_deps=False,  # type: bool
     ):
         # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        if profiles is None:
+            profiles = []
+        if services is None:
+            services = []
         subcommand = ['pull']
         if include_deps:
             subcommand.append('--include-deps')
@@ -792,7 +822,6 @@ def main():
     if module.params['state'] == 'present':
         rc, out, err, events = compose.up(
             *common_args,
-            **common_kwargs,
             services=module.params['services'] or [],
             no_deps=not module.params['dependencies'],
             pull='always' if module.params['pull'] else None,
@@ -801,47 +830,48 @@ def main():
             no_recreate=module.params['recreate'] == "never",
             remove_orphans=module.params['remove_orphans'],
             timeout=module.params['timeout'],
+            **common_kwargs
         )
     elif module.params['state'] == 'stopped':
         rc, out, err, events = compose.stop(
             *common_args,
-            **common_kwargs,
             timeout=module.params['timeout'],
+            **common_kwargs
         )
     elif module.params['state'] == 'restarted':
         rc, out, err, events = compose.restart(
             *common_args,
-            **common_kwargs,
             services=module.params['services'] or [],
             timeout=module.params['timeout'],
+            **common_kwargs
         )
     elif module.params['state'] == 'built':
         rc, out, err, events = compose.build(
             *common_args,
-            **common_kwargs,
             services=module.params['services'] or [],
             no_cache=not module.params['nocache'],
             pull=module.params['pull'],
+            **common_kwargs
         )
     elif module.params['state'] == 'pulled':
         rc, out, err, events = compose.pull(
             *common_args,
-            **common_kwargs,
             services=module.params['services'] or [],
             include_deps=module.params['dependencies'],
+            **common_kwargs
         )
         changed = True  # We cannot detect change from docker-compose stderr
     elif module.params['state'] == 'absent':
         rc, out, err, events = compose.down(
             *common_args,
-            **common_kwargs,
             remove_orphans=module.params['remove_orphans'],
             rmi=module.params['remove_images'],
             volumes=module.params['remove_volumes'],
             timeout=module.params['timeout'],
+            **common_kwargs
         )
     else:
-        assert False  # DEAD CODE
+        raise AssertionError("THIS IS DEAD CODE")
     networks_states = defaultdict(list)
     images_states = defaultdict(list)
     volumes_states = defaultdict(list)
@@ -868,7 +898,7 @@ def main():
         stderr=err,
     )
     if rc != 0:
-        result['msg'] = "docker-compose exited with code {:d}. Read stderr for more information.".format(rc)
+        result['msg'] = "docker-compose exited with code %d. Read stderr for more information." % (rc)
         module.fail_json(**result)
     else:
         module.exit_json(**result)
