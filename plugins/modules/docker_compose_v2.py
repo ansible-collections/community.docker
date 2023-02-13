@@ -323,7 +323,7 @@ containers:
   description:
     - A dictionary mapping the various status of containers during C(docker-compose) operation.
   returned: always, unless when C(docker-compose) was not given the chance to run
-  type: complex:
+  type: complex
   contains:
     container_name:
       description: Name of the container.
@@ -335,7 +335,7 @@ volumes:
   description:
     - A dictionary mapping the various status of volumes during C(docker-compose) operation.
   returned: always, unless when C(docker-compose) was not given the chance to run
-  type: complex:
+  type: complex
   contains:
     volume_name:
       description: Name of the volume.
@@ -347,7 +347,7 @@ images:
   description:
     - A dictionary mapping the various status of volumes during C(docker-compose) operation.
   returned: always, unless when C(docker-compose) was not given the chance to run
-  type: complex:
+  type: complex
   contains:
     image_name:
       description: Name of the image.
@@ -359,7 +359,7 @@ networks:
   description:
     - A dictionary mapping the various status of networks during C(docker-compose) operation.
   returned: always, unless when C(docker-compose) was not given the chance to run
-  type: complex:
+  type: complex
   contains:
     image_name:
       description: Name of the image.
