@@ -380,7 +380,9 @@ if sys.version_info[0] == 3 and sys.version_info[1] >= 5:
             from typing_extensions import Literal, Final
         except ImportError:
             pass
+    # `Text` can be removed and replaced by `str` once Python 2 support is dropped
     if sys.version_info[1] < 11:
+        # pylint: disable-next=deprecated-class
         from typing import Text
     else:
         Text = str
