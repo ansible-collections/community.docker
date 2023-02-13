@@ -23,8 +23,10 @@ description:
 attributes:
   check_mode:
     support: none
+    description: Check mode is not supported because the `docker-compose` CLI doesn't allow it.
   diff_mode:
     support: none
+    description: Diff mode is not supported.
 
 options:
   docker_host:
@@ -37,6 +39,11 @@ options:
     type: str
     default: unix://var/run/docker.sock
     aliases: [ docker_url ]
+  project_src:
+    description:
+      - Path to the root directory of the Compose project.
+      - Required when I(definition) is provided.
+    type: path
   project_name:
     description:
       - Provide a project name.
@@ -781,8 +788,6 @@ def main():
             remove_images=dict(type='str', choices=['all', 'local']),
             remove_volumes=dict(type='bool', default=False),
             remove_orphans=dict(type='bool', default=False),
-            stopped=dict(type='bool', default=False),
-            restarted=dict(type='bool', default=False),
             services=dict(type='list', elements='str'),
             dependencies=dict(type='bool', default=True),
             pull=dict(type='bool', default=False),
