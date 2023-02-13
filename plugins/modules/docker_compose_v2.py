@@ -372,12 +372,12 @@ networks:
 
 import sys
 if sys.version_info[0] == 3 and sys.version_info[1] >= 5:
-    from typing import List, Optional, Tuple, Union, Final, FrozenSet, Dict, Type, TYPE_CHECKING, Any
+    from typing import List, Optional, Tuple, Union, FrozenSet, Dict, Type, TYPE_CHECKING, Any
     if sys.version_info[1] >= 8:
-        from typing import Literal
+        from typing import Literal, Final
     else:
         try:
-            from typing_extensions import Literal
+            from typing_extensions import Literal, Final
         except ImportError:
             pass
     if sys.version_info[1] < 11:
