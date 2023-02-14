@@ -507,7 +507,7 @@ class ComposeManager(object):
         # type: (Text) -> List[EVENT]
         events = []  # type: List[EVENT]
         for line in stderr.splitlines():
-            line = line.rstrip()
+            line = line.strip()
             match = _re_resource_event.match(line)
             if (match is not None):
                 events.append(ResourceEvent(
