@@ -813,8 +813,6 @@ def main():
             ('files', 'definition'),
         ],
     )
-    if bool(module.params['stopped']) and bool(module.params['restarted']):
-        module.fail_json(changed=False, msg='Cannot use restarted and stopped at the same time.')
     changed = False
     compose = ComposeManager(module, module.params['docker_host'])
     if module.params['definition'] is not None:
