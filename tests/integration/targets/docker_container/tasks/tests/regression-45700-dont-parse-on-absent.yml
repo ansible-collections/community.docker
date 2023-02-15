@@ -21,7 +21,7 @@
 - name: Stop container with a lot of invalid options
   docker_container:
     name: "{{ cname }}"
-    force_kill: yes
+    force_kill: true
     # Some options with "invalid" values, which would
     # have to be parsed. The values are "invalid" because
     # the containers and networks listed here do not exist.

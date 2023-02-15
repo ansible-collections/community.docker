@@ -76,7 +76,7 @@
     state: present
     connected:
     - "{{ cname_3 }}"
-    appends: yes
+    appends: true
   register: networks_4
 
 - name: Connect network to container 3 (idempotency)
@@ -85,7 +85,7 @@
     state: present
     connected:
     - "{{ cname_3 }}"
-    appends: yes
+    appends: true
   register: networks_4_idem
 
 - name: Disconnect network from container 1
@@ -129,7 +129,7 @@
   docker_container:
     name: "{{ container_name }}"
     state: absent
-    force_kill: yes
+    force_kill: true
   loop:
   - "{{ cname_1 }}"
   - "{{ cname_2 }}"

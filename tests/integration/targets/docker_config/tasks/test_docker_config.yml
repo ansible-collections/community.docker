@@ -22,7 +22,7 @@
   - name: Parameter name should be required
     docker_config:
       state: present
-    ignore_errors: yes
+    ignore_errors: true
     register: output
 
   - name: Assert failure when called with no name
@@ -35,7 +35,7 @@
     docker_config:
       name: foo
       state: present
-    ignore_errors: yes
+    ignore_errors: true
     register: output
 
   - name: Assert failure when called with no data
@@ -58,7 +58,7 @@
   - name: Inspect config
     command: "docker config inspect {{ config_id }}"
     register: inspect
-    ignore_errors: yes
+    ignore_errors: true
 
   - debug:
       var: inspect
@@ -138,7 +138,7 @@
   - name: Check that config is removed
     command: "docker config inspect {{ config_id }}"
     register: output
-    ignore_errors: yes
+    ignore_errors: true
 
   - name: Assert config was removed
     assert:
@@ -173,7 +173,7 @@
   - name: Inspect config
     command: "docker config inspect {{ config_id }}"
     register: inspect
-    ignore_errors: yes
+    ignore_errors: true
 
   - debug:
       var: inspect
@@ -216,7 +216,7 @@
   - name: Check that config is removed
     command: "docker config inspect {{ original_output.config_id }}"
     register: output
-    ignore_errors: yes
+    ignore_errors: true
 
   - name: Assert config was removed
     assert:
@@ -226,7 +226,7 @@
   - name: Check that config is removed
     command: "docker config inspect {{ new_output.config_id }}"
     register: output
-    ignore_errors: yes
+    ignore_errors: true
 
   - name: Assert config was removed
     assert:
@@ -263,7 +263,7 @@
         data: opensesame!
         template_driver: "not a template driver"
         state: present
-      ignore_errors: yes
+      ignore_errors: true
       register: output
 
     - name: Assert failure when called with invalid template_driver
@@ -320,7 +320,7 @@
     - name: Check that config is removed
       command: "docker config inspect {{ output.config_id }}"
       register: output
-      ignore_errors: yes
+      ignore_errors: true
 
     - name: Assert config was removed
       assert:

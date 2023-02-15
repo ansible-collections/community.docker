@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - hosts: 127.0.0.1
-  gather_facts: no
+  gather_facts: false
   tasks:
   - name: sanity check Docker Machine output
     vars:
@@ -33,7 +33,7 @@
         - "'DOCKER_MACHINE_NAME=\"{{ hostvars['vm'].dm_DOCKER_MACHINE_NAME }}\"' in result.stdout"
 
 - hosts: vm
-  gather_facts: no
+  gather_facts: false
   tasks:
   - name: do something to verify that accept-new ssh setting was applied by the docker-machine inventory plugin
     raw: uname -a
@@ -42,7 +42,7 @@
   - debug: var=result.stdout
 
 - hosts: 127.0.0.1
-  gather_facts: no
+  gather_facts: false
   environment:
     DOCKER_CERT_PATH: "{{ hostvars['vm'].dm_DOCKER_CERT_PATH }}"
     DOCKER_HOST: "{{ hostvars['vm'].dm_DOCKER_HOST }}"

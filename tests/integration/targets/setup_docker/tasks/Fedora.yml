@@ -14,8 +14,8 @@
     name: docker-ce-stable
     description: Docker CE Stable - $basearch
     baseurl: https://download.docker.com/linux/fedora/{{ 31 if ansible_facts.distribution_major_version|int > 31 else '$releasever' }}/$basearch/stable
-    enabled: yes
-    gpgcheck: yes
+    enabled: true
+    gpgcheck: true
 
 - name: Update cache
   command: dnf makecache

@@ -19,7 +19,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     logging:
       driver: json-file
@@ -29,7 +29,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     logging:
       driver: json-file
@@ -39,7 +39,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     logging:
       driver: syslog
@@ -49,7 +49,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -65,7 +65,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     logging:
       driver: json-file
@@ -78,7 +78,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     logging:
       driver: json-file
@@ -91,7 +91,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     logging:
       driver: json-file
@@ -105,7 +105,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     logging:
       driver: json-file
@@ -116,7 +116,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     logging:
       driver: json-file
@@ -127,7 +127,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:

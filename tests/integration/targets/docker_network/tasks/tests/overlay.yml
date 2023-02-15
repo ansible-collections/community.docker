@@ -47,7 +47,7 @@
     docker_network:
       name: "{{ nname_1 }}"
       state: absent
-      force: yes
+      force: true
 
   - assert:
       that:
@@ -59,4 +59,4 @@
   - name: cleanup swarm
     docker_swarm:
       state: absent
-      force: yes
+      force: true

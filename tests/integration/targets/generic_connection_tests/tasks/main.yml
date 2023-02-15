@@ -52,7 +52,7 @@
     loop:
     - nginx.conf
     register: can_copy_files
-    ignore_errors: yes
+    ignore_errors: true
 
   - when: can_copy_files is not failed
     block:
@@ -62,7 +62,7 @@
         path: '{{ remote_tmp_dir }}/{{ item }}.key'
         type: ECC
         curve: secp256r1
-        force: yes
+        force: true
       loop:
         - cert
         - ca
@@ -73,7 +73,7 @@
         privatekey_path: '{{ remote_tmp_dir }}/ca.key'
         basic_constraints:
         - 'CA:TRUE'
-        basic_constraints_critical: yes
+        basic_constraints_critical: true
 
     - name: Create CA certificate
       community.crypto.x509_certificate:

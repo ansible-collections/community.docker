@@ -59,7 +59,7 @@
         aux_addresses:
           host1: 10.25.121.3
   register: network
-  diff: yes
+  diff: true
 
 - assert:
     that:
@@ -92,7 +92,7 @@
 - name: Create network with IPv6 IPAM config
   docker_network:
     name: "{{ nname_ipam_2 }}"
-    enable_ipv6: yes
+    enable_ipv6: true
     ipam_config:
       - subnet: fdd1:ac8c:0557:7ce0::/64
   register: network
@@ -104,7 +104,7 @@
 - name: Create network with IPv6 IPAM config (idempotence)
   docker_network:
     name: "{{ nname_ipam_2 }}"
-    enable_ipv6: yes
+    enable_ipv6: true
     ipam_config:
       - subnet: fdd1:ac8c:0557:7ce0::/64
   register: network
@@ -116,11 +116,11 @@
 - name: Change subnet of network with IPv6 IPAM config
   docker_network:
     name: "{{ nname_ipam_2 }}"
-    enable_ipv6: yes
+    enable_ipv6: true
     ipam_config:
       - subnet: fdd1:ac8c:0557:7ce1::/64
   register: network
-  diff: yes
+  diff: true
 
 - assert:
     that:
@@ -131,11 +131,11 @@
 - name: Change subnet of network with IPv6 IPAM config
   docker_network:
     name: "{{ nname_ipam_2 }}"
-    enable_ipv6: yes
+    enable_ipv6: true
     ipam_config:
       - subnet: "fdd1:ac8c:0557:7ce1::"
   register: network
-  ignore_errors: yes
+  ignore_errors: true
 
 - assert:
     that:
@@ -153,7 +153,7 @@
 - name: Create network with IPv6 and custom IPv4 IPAM config
   docker_network:
     name: "{{ nname_ipam_3 }}"
-    enable_ipv6: yes
+    enable_ipv6: true
     ipam_config:
       - subnet: 10.26.120.0/24
       - subnet: fdd1:ac8c:0557:7ce2::/64
@@ -166,7 +166,7 @@
 - name: Change subnet order of network with IPv6 and custom IPv4 IPAM config (idempotence)
   docker_network:
     name: "{{ nname_ipam_3 }}"
-    enable_ipv6: yes
+    enable_ipv6: true
     ipam_config:
       - subnet: fdd1:ac8c:0557:7ce2::/64
       - subnet: 10.26.120.0/24
@@ -179,11 +179,11 @@
 - name: Remove IPv6 from network with custom IPv4 and IPv6 IPAM config (change)
   docker_network:
     name: "{{ nname_ipam_3 }}"
-    enable_ipv6: no
+    enable_ipv6: false
     ipam_config:
       - subnet: 10.26.120.0/24
   register: network
-  diff: yes
+  diff: true
 
 - assert:
     that:
@@ -240,7 +240,7 @@
         - subnet: 10.26.120.0/24
         - subnet: 10.26.122.0/24
     register: network
-    diff: yes
+    diff: true
 
   - assert:
       that:
@@ -278,25 +278,25 @@
     ipam_driver_options:
       a: b
   register: network_1
-  ignore_errors: yes
+  ignore_errors: true
 - name: Create network with IPAM driver options (idempotence)
   docker_network:
     name: "{{ nname_ipam_3 }}"
     ipam_driver: default
     ipam_driver_options:
       a: b
-  diff: yes
+  diff: true
   register: network_2
-  ignore_errors: yes
+  ignore_errors: true
 - name: Create network with IPAM driver options (change)
   docker_network:
     name: "{{ nname_ipam_3 }}"
     ipam_driver: default
     ipam_driver_options:
       a: c
-  diff: yes
+  diff: true
   register: network_3
-  ignore_errors: yes
+  ignore_errors: true
 - name: Cleanup network
   docker_network:
     name: "{{ nname_ipam_3 }}"

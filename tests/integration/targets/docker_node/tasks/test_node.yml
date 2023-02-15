@@ -11,7 +11,7 @@
 
   - name: Try to get docker_node_info when docker is not running in swarm mode
     docker_node_info:
-    ignore_errors: yes
+    ignore_errors: true
     register: output
 
   - name: assert failure when called when swarm is not in use or not run on manager node
@@ -56,7 +56,7 @@
     docker_node:
       hostname: "{{ nodeid }}"
       role: manager
-    check_mode: yes
+    check_mode: true
     register: set_as_manager_1
 
   - name: Try to set node as manager
@@ -75,7 +75,7 @@
     docker_node:
       hostname: "{{ nodeid }}"
       role: manager
-    check_mode: yes
+    check_mode: true
     register: set_as_manager_4
 
   - name: assert that node role does has not changed
@@ -98,14 +98,14 @@
     docker_node:
       hostname: "{{ nodeid }}"
       role: worker
-    check_mode: yes
+    check_mode: true
     register: set_as_worker_1
 
   - name: Try to set node as worker
     docker_node:
       hostname: "{{ nodeid }}"
       role: worker
-    ignore_errors: yes
+    ignore_errors: true
     register: set_as_worker_2
 
   - name: assert that node cannot change role to worker
@@ -123,7 +123,7 @@
     docker_node:
       hostname: "{{ nodeid }}"
       availability: pause
-    check_mode: yes
+    check_mode: true
     register: set_as_paused_1
 
   - name: Try to set node availability as paused
@@ -142,7 +142,7 @@
     docker_node:
       hostname: "{{ nodeid }}"
       availability: pause
-    check_mode: yes
+    check_mode: true
     register: set_as_paused_4
 
   - name: assert node changed availability to paused
@@ -162,7 +162,7 @@
     docker_node:
       hostname: "{{ nodeid }}"
       availability: drain
-    check_mode: yes
+    check_mode: true
     register: output_drain_1
 
   - name: Try to set node availability as drained
@@ -181,7 +181,7 @@
     docker_node:
       hostname: "{{ nodeid }}"
       availability: drain
-    check_mode: yes
+    check_mode: true
     register: output_drain_4
 
   - name: assert node changed availability to drained
@@ -202,7 +202,7 @@
     docker_node:
       hostname: "{{ nodeid }}"
       availability: active
-    check_mode: yes
+    check_mode: true
     register: output_active_1
 
   - name: Try to set node availability as active
@@ -221,7 +221,7 @@
     docker_node:
       hostname: "{{ nodeid }}"
       availability: active
-    check_mode: yes
+    check_mode: true
     register: output_active_4
 
   - name: assert node changed availability to active
@@ -242,7 +242,7 @@
       hostname: "{{ nodeid }}"
       labels:
         label1: value1
-    check_mode: yes
+    check_mode: true
     register: output_add_single_label_1
 
   - name: Try to add single label to swarm node
@@ -264,7 +264,7 @@
       hostname: "{{ nodeid }}"
       labels:
         label1: value1
-    check_mode: yes
+    check_mode: true
     register: output_add_single_label_4
 
   - name: assert adding single label to swarm node
@@ -290,7 +290,7 @@
         label4: value4
         label5: value5
         label6: value6
-    check_mode: yes
+    check_mode: true
     register: output_add_multiple_labels_1
 
   - name: Try to add five labels to swarm node
@@ -324,7 +324,7 @@
         label4: value4
         label5: value5
         label6: value6
-    check_mode: yes
+    check_mode: true
     register: output_add_multiple_labels_4
 
   - name: assert adding multiple labels to swarm node
@@ -347,7 +347,7 @@
       hostname: "{{ nodeid }}"
       labels:
         label1: value1111
-    check_mode: yes
+    check_mode: true
     register: output_update_label_1
 
   - name: Update value of existing label
@@ -369,7 +369,7 @@
       hostname: "{{ nodeid }}"
       labels:
         label1: value1111
-    check_mode: yes
+    check_mode: true
     register: output_update_label_4
 
   - name: assert updating single label assigned to swarm node
@@ -393,7 +393,7 @@
       labels:
         label2: value2222
         label3: value3333
-    check_mode: yes
+    check_mode: true
     register: output_update_labels_1
 
   - name: Update value of multiple existing label
@@ -418,7 +418,7 @@
       labels:
         label2: value2222
         label3: value3333
-    check_mode: yes
+    check_mode: true
     register: output_update_labels_4
 
   - name: assert updating multiple labels assigned to swarm node
@@ -442,7 +442,7 @@
       hostname: "{{ nodeid }}"
       labels_to_remove:
         - label1
-    check_mode: yes
+    check_mode: true
     register: output_remove_label_1
 
   - name: Try to remove single existing label from swarm node
@@ -464,7 +464,7 @@
       hostname: "{{ nodeid }}"
       labels_to_remove:
         - label1
-    check_mode: yes
+    check_mode: true
     register: output_remove_label_4
 
   - name: assert removing single label from swarm node
@@ -489,7 +489,7 @@
       hostname: "{{ nodeid }}"
       labels_to_remove:
         - labelnotexist
-    check_mode: yes
+    check_mode: true
     register: output_remove_nonexist_label_1
 
   - name: Try to remove single non-existing label from swarm node
@@ -511,7 +511,7 @@
       hostname: "{{ nodeid }}"
       labels_to_remove:
         - labelnotexist
-    check_mode: yes
+    check_mode: true
     register: output_remove_nonexist_label_4
 
   - name: assert removing single non-existing label from swarm node
@@ -536,7 +536,7 @@
       labels_to_remove:
         - label2
         - label3
-    check_mode: yes
+    check_mode: true
     register: output_remove_label_1
 
   - name: Try to remove two existing labels from swarm node
@@ -561,7 +561,7 @@
       labels_to_remove:
         - label2
         - label3
-    check_mode: yes
+    check_mode: true
     register: output_remove_label_4
 
   - name: assert removing multiple labels from swarm node
@@ -586,7 +586,7 @@
       labels_to_remove:
         - label4
         - labelisnotthere
-    check_mode: yes
+    check_mode: true
     register: output_remove_mix_labels_1
 
   - name: Try to remove mix of existing amd non-existing labels from swarm node
@@ -611,7 +611,7 @@
       labels_to_remove:
         - label4
         - labelisnotthere
-    check_mode: yes
+    check_mode: true
     register: output_remove_mix_labels_4
 
   - name: assert removing mix of existing and non-existing labels from swarm node
@@ -638,7 +638,7 @@
         label8: value8
       labels_to_remove:
         - label5
-    check_mode: yes
+    check_mode: true
     register: output_add_del_labels_1
 
   - name: Try to add and remove nonoverlapping labels at the same time
@@ -669,7 +669,7 @@
         label8: value8
       labels_to_remove:
         - label5
-    check_mode: yes
+    check_mode: true
     register: output_add_del_labels_4
 
   - name: assert adding and removing nonoverlapping labels from swarm node
@@ -696,7 +696,7 @@
       labels_to_remove:
         - label6
         - label7
-    check_mode: yes
+    check_mode: true
     register: output_add_del_overlap_lables_1
 
   - name: Try to add or update and remove overlapping labels at the same time
@@ -730,7 +730,7 @@
       labels_to_remove:
         - label6
         - label7
-    check_mode: yes
+    check_mode: true
     register: output_add_del_overlap_lables_4
 
   - name: assert adding or updating and removing overlapping labels from swarm node
@@ -756,7 +756,7 @@
         label11: value11
         label12: value12
       labels_state: replace
-    check_mode: yes
+    check_mode: true
     register: output_replace_labels_1
 
   - name: Replace labels on swarm node
@@ -784,7 +784,7 @@
         label11: value11
         label12: value12
       labels_state: replace
-    check_mode: yes
+    check_mode: true
     register: output_replace_labels_4
 
   - name: assert replacing labels from swarm node
@@ -806,7 +806,7 @@
     docker_node:
       hostname: "{{ nodeid }}"
       labels_state: replace
-    check_mode: yes
+    check_mode: true
     register: output_remove_labels_1
 
   - name: Remove all labels from swarm node
@@ -825,7 +825,7 @@
     docker_node:
       hostname: "{{ nodeid }}"
       labels_state: replace
-    check_mode: yes
+    check_mode: true
     register: output_remove_labels_4
 
   - name: assert removing all lables from swarm node

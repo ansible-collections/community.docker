@@ -29,17 +29,17 @@
     docker_container:
       name: "{{ item }}"
       state: absent
-      force_kill: yes
+      force_kill: true
     with_items: "{{ cnames }}"
-    diff: no
+    diff: false
   - name: "Make sure all networks are removed"
     docker_network:
       name: "{{ item }}"
       state: absent
-      force: yes
+      force: true
     with_items: "{{ dnetworks }}"
     when: docker_py_version is version('1.10.0', '>=')
-    diff: no
+    diff: false
 
   when: has_docker_compose and docker_py_version is version('1.8.0', '>=') and docker_api_version is version('1.25', '>=')
 

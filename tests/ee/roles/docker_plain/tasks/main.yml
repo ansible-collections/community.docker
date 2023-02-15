@@ -29,4 +29,4 @@
     name: "{{ cname_prefix }}-1"
     state: absent
     stop_timeout: 1
-    force_kill: yes
+    force_kill: true

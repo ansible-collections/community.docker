@@ -20,7 +20,7 @@
   - name: Try to get docker_swarm_service_info when docker is not running in swarm mode
     docker_swarm_service_info:
       name: "{{ service_name }}"
-    ignore_errors: yes
+    ignore_errors: true
     register: output
 
   - name: assert failure when called when swarm is not in use or not run on manager node
@@ -72,7 +72,7 @@
       docker_swarm_service:
         name: "{{ service_name }}"
         state: absent
-      ignore_errors: yes
+      ignore_errors: true
 
     - name: Remove swarm
       docker_swarm:

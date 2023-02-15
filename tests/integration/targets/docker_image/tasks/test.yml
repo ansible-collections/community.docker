@@ -45,7 +45,7 @@
     docker_container:
       name: "{{ item }}"
       state: absent
-      force_kill: yes
+      force_kill: true
     with_items: "{{ cnames }}"
 
   when: docker_api_version is version('1.25', '>=')

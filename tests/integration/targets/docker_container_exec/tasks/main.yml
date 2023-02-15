@@ -17,7 +17,7 @@
     docker_container:
       name: "{{ cname }}"
       state: absent
-      force_kill: yes
+      force_kill: true
 
   - name: Execute in a non-present container
     docker_container_exec:
@@ -37,7 +37,7 @@
       image: "{{ docker_test_image_alpine }}"
       command: '/bin/sh -c "sleep 10m"'
       state: started
-      force_kill: yes
+      force_kill: true
 
   - name: Execute in a present container (command)
     docker_container_exec:
@@ -220,7 +220,7 @@
     docker_container:
       name: "{{ cname }}"
       state: absent
-      force_kill: yes
+      force_kill: true
 
   when: docker_api_version is version('1.25', '>=')
 

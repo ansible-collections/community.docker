@@ -21,7 +21,7 @@
     command: '/bin/sh -c "sleep 10m"'
     state: started
     container_default_behavior: compatibility
-  check_mode: yes
+  check_mode: true
   register: start_1
 
 - name: Start container
@@ -48,15 +48,15 @@
     image: "{{ docker_test_image_alpine }}"
     state: started
     container_default_behavior: compatibility
-  check_mode: yes
+  check_mode: true
   register: start_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -76,7 +76,7 @@
     command: '/bin/sh -c "sleep 10m"'
     state: started
     container_default_behavior: no_defaults
-  check_mode: yes
+  check_mode: true
   register: start_1
 
 - name: Start container
@@ -104,15 +104,15 @@
     command: '/bin/sh -c "sleep 10m"'
     state: started
     container_default_behavior: no_defaults
-  check_mode: yes
+  check_mode: true
   register: start_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:

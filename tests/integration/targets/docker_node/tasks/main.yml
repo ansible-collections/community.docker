@@ -17,23 +17,23 @@
     docker_swarm:
       state: absent
       force: true
-    diff: no
-    ignore_errors: yes
+    diff: false
+    ignore_errors: true
 
   - name: Restart docker daemon
     service:
       name: docker
       state: restarted
-    become: yes
+    become: true
   - name: Wait for docker daemon to be fully restarted
     command: docker ps
-    ignore_errors: yes
+    ignore_errors: true
 
   - name: Cleanup
     docker_swarm:
       state: absent
       force: true
-    diff: no
+    diff: false
 
   when: docker_py_version is version('2.4.0', '>=') and docker_api_version is version('1.25', '>=')
 

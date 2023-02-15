@@ -35,7 +35,7 @@
     - source: /
       target: /whatever
       type: bind
-      read_only: no
+      read_only: false
   register: mounts_1
 
 - name: mounts (idempotency)
@@ -48,7 +48,7 @@
     - source: /
       target: /whatever
       type: bind
-      read_only: no
+      read_only: false
     - source: /tmp
       target: /tmp
       type: bind
@@ -79,8 +79,8 @@
     - source: /tmp
       target: /somewhereelse
       type: bind
-      read_only: yes
-    force_kill: yes
+      read_only: true
+    force_kill: true
   register: mounts_4
 
 - name: mounts (different modes)
@@ -96,8 +96,8 @@
     - source: /tmp
       target: /somewhereelse
       type: bind
-      read_only: no
-    force_kill: yes
+      read_only: false
+    force_kill: true
   register: mounts_5
 
 - name: mounts (endpoint collision)
@@ -113,10 +113,10 @@
     - source: /etc
       target: /x
       type: bind
-      read_only: no
-    force_kill: yes
+      read_only: false
+    force_kill: true
   register: mounts_6
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: mounts (anonymous volume)
   docker_container:
@@ -146,8 +146,8 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -255,8 +255,8 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -280,7 +280,7 @@
     - source: /
       target: /whatever
       type: bind
-      read_only: yes
+      read_only: true
     volumes:
     - /tmp:/tmp
   register: mounts_volumes_1
@@ -295,7 +295,7 @@
     - source: /
       target: /whatever
       type: bind
-      read_only: yes
+      read_only: true
     volumes:
     - /tmp:/tmp
   register: mounts_volumes_2
@@ -310,10 +310,10 @@
     - source: /tmp
       target: /tmp
       type: bind
-      read_only: no
+      read_only: false
     volumes:
     - /:/whatever:ro
-    force_kill: yes
+    force_kill: true
   register: mounts_volumes_3
 
 - name: mounts + volumes (collision, should fail)
@@ -326,19 +326,19 @@
     - source: /tmp
       target: /tmp
       type: bind
-      read_only: no
+      read_only: false
     volumes:
     - /tmp:/tmp
-    force_kill: yes
+    force_kill: true
   register: mounts_volumes_4
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -377,15 +377,15 @@
     name: "{{ cname }}"
     volume_driver: /
     state: started
-    force_kill: yes
+    force_kill: true
   register: volume_driver_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -440,7 +440,7 @@
     volumes:
     - "/tmp:/tmp"
     - "/tmp:/somewhereelse:ro,Z"
-    force_kill: yes
+    force_kill: true
   register: volumes_4
 
 - name: volumes (different modes)
@@ -452,7 +452,7 @@
     volumes:
     - "/tmp:/tmp"
     - "/tmp:/somewhereelse:ro"
-    force_kill: yes
+    force_kill: true
   register: volumes_5
 
 - name: volumes (collision)
@@ -464,16 +464,16 @@
     volumes:
     - "/etc:/tmp"
     - "/home:/tmp:ro"
-    force_kill: yes
+    force_kill: true
   register: volumes_6
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -531,21 +531,21 @@
     name: "{{ cname }}"
     state: started
     volumes_from: "{{ cname_h2 }}"
-    force_kill: yes
+    force_kill: true
   register: volumes_from_3
 
 - name: cleanup
   docker_container:
     name: "{{ container_name }}"
     state: absent
-    force_kill: yes
+    force_kill: true
   loop:
   - "{{ cname }}"
   - "{{ cname_h1 }}"
   - "{{ cname_h2 }}"
   loop_control:
     loop_var: container_name
-  diff: no
+  diff: false
 
 - assert:
     that:

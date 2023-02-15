@@ -17,7 +17,7 @@
     docker_container:
       name: "{{ cname }}"
       state: absent
-      force_kill: yes
+      force_kill: true
 
   - name: Inspect a non-present container
     docker_container_info:
@@ -36,7 +36,7 @@
       image: "{{ docker_test_image_alpine }}"
       command: '/bin/sh -c "sleep 10m"'
       state: started
-      force_kill: yes
+      force_kill: true
 
   - name: Inspect a present container
     docker_container_info:
@@ -48,7 +48,7 @@
   - name: "Comparison: use 'docker inspect'"
     command: docker inspect "{{ cname }}"
     register: docker_inspect
-    ignore_errors: yes
+    ignore_errors: true
   - block:
     - set_fact:
         docker_inspect_result: "{{ docker_inspect.stdout | from_json }}"
@@ -76,7 +76,7 @@
     docker_container:
       name: "{{ cname }}"
       state: absent
-      force_kill: yes
+      force_kill: true
 
   when: docker_api_version is version('1.25', '>=')
 

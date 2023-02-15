@@ -44,32 +44,32 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         filename: "/tmp/{{ config_name_1 }}.txt"
   register: configs_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_name: "{{ config_name_1 }}"
         filename: "/tmp/{{ config_name_1 }}.txt"
   register: configs_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (add)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
@@ -78,13 +78,13 @@
       - config_name: "{{ config_name_2 }}"
         filename: "/tmp/{{ config_name_2 }}.txt"
   register: configs_3
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (add idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_name: "{{ config_name_1 }}"
@@ -93,13 +93,13 @@
         config_name: "{{ config_name_2 }}"
         filename: "/tmp/{{ config_name_2 }}.txt"
   register: configs_4
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (add idempotency no id)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_name: "{{ config_name_1 }}"
@@ -107,13 +107,13 @@
       - config_name: "{{ config_name_2 }}"
         filename: "/tmp/{{ config_name_2 }}.txt"
   register: configs_5
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (add idempotency no id and re-ordered)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_name: "{{ config_name_2 }}"
@@ -121,39 +121,39 @@
       - config_name: "{{ config_name_1 }}"
         filename: "/tmp/{{ config_name_1 }}.txt"
   register: configs_6
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (empty)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs: []
   register: configs_7
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (empty idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs: []
   register: configs_8
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: rolling configs
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_name: "{{ config_name_3 }}_v1"
         filename: "/run/configs/{{ config_name_3 }}.txt"
   register: configs_9
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: update rolling config
   docker_config:
@@ -163,25 +163,25 @@
     rolling_versions: true
   register: configs_10
   when: docker_api_version is version('1.30', '>=') and docker_py_version is version('2.6.0', '>=')
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: rolling configs service update
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_name: "{{ config_name_3 }}_v2"
         filename: "/run/configs/{{ config_name_3 }}.txt"
   register: configs_11
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -212,72 +212,72 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         uid: 1000        
   register: configs_1
-  ignore_errors: yes
+  ignore_errors: true
   
 - name: configs (uid int idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         uid: 1000        
   register: configs_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (uid int change)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         uid: 1002      
   register: configs_3
-  ignore_errors: yes
+  ignore_errors: true
   
 - name: configs (uid str)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         uid: "1001"
   register: configs_4
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (uid str idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         uid: "1001"
   register: configs_5
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 - assert:
     that:
     - configs_1 is changed
@@ -302,72 +302,72 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         gid: 1000        
   register: configs_1
-  ignore_errors: yes
+  ignore_errors: true
   
 - name: configs (gid int idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         gid: 1000        
   register: configs_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (gid int change)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         gid: 1002      
   register: configs_3
-  ignore_errors: yes
+  ignore_errors: true
   
 - name: configs (gid str)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         gid: "1001"
   register: configs_4
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (gid str idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         gid: "1001"
   register: configs_5
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 - assert:
     that:
     - configs_1 is changed
@@ -391,46 +391,46 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         mode: 0600
   register: configs_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (mode idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         mode: 0600
   register: configs_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: configs (mode change)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
       - config_id: "{{ config_result_1.config_id|default('') }}"
         config_name: "{{ config_name_1 }}"
         mode: 0777
   register: configs_3
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 - assert:
     that:
     - configs_1 is changed
@@ -452,12 +452,12 @@
   docker_config:
     name: "{{ config_name }}"
     state: absent
-    force: yes
+    force: true
   loop:
     - "{{ config_name_1 }}"
     - "{{ config_name_2 }}"
     - "{{ config_name_3 }}"
   loop_control:
     loop_var: config_name
-  ignore_errors: yes
+  ignore_errors: true
   when: docker_api_version is version('1.30', '>=') and docker_py_version is version('2.6.0', '>=')

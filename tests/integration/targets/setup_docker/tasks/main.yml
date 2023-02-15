@@ -66,7 +66,7 @@
     - name: Check Docker API version
       command: "docker version -f {% raw %}'{{(index .Server.Components 0).Details.ApiVersion}}'{% endraw %}"
       register: docker_api_version_stdout
-      ignore_errors: yes
+      ignore_errors: true
 
     - name: Limit docker pypi package version to < 4.3.0
       set_fact:
@@ -84,17 +84,17 @@
     - name: Check Docker CLI version
       command: "docker version -f {% raw %}'{{.Client.Version}}'{% endraw %}"
       register: docker_cli_version_stdout
-      ignore_errors: yes
+      ignore_errors: true
 
     - name: Check Docker API version
       command: "{{ ansible_python.executable }} -c 'import docker; print(docker.from_env().version()[\"ApiVersion\"])'"
       register: docker_api_version_stdout
-      ignore_errors: yes
+      ignore_errors: true
 
     - name: Check docker-py API version
       command: "{{ ansible_python.executable }} -c 'import docker; print(docker.__version__)'"
       register: docker_py_version_stdout
-      ignore_errors: yes
+      ignore_errors: true
 
     - set_fact:
         docker_cli_version: "{{ docker_cli_version_stdout.stdout | default('0.0') }}"
@@ -114,17 +114,17 @@
         retries: 3
         delay: 3
         until: docker_containers is success
-        ignore_errors: yes
+        ignore_errors: true
 
       - name: "Remove all ansible-docker-test-* docker volumes"
         shell: 'docker volume ls --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r docker volume rm -f'
         register: docker_volumes
-        ignore_errors: yes
+        ignore_errors: true
 
       - name: "Remove all ansible-docker-test-* docker networks"
         shell: 'docker network ls --no-trunc --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r docker network rm'
         register: docker_networks
-        ignore_errors: yes
+        ignore_errors: true
 
       - name: Cleaned docker resources
         debug:
@@ -139,22 +139,22 @@
       - name: List all docker containers
         command: docker ps --no-trunc -a
         register: docker_containers
-        ignore_errors: yes
+        ignore_errors: true
 
       - name: List all docker volumes
         command: docker volume ls
         register: docker_volumes
-        ignore_errors: yes
+        ignore_errors: true
 
       - name: List all docker networks
         command: docker network ls --no-trunc
         register: docker_networks
-        ignore_errors: yes
+        ignore_errors: true
 
       - name: List all docker images
         command: docker images --no-trunc -a
         register: docker_images
-        ignore_errors: yes
+        ignore_errors: true
 
       - name: Still existing docker resources
         debug:
