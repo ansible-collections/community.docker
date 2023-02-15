@@ -17,26 +17,26 @@
 - name: internal
   docker_network:
     name: "{{ nname_1 }}"
-    internal: yes
+    internal: true
   register: internal_1
 
 - name: internal (idempotency)
   docker_network:
     name: "{{ nname_1 }}"
-    internal: yes
+    internal: true
   register: internal_2
 
 - name: internal (change)
   docker_network:
     name: "{{ nname_1 }}"
-    internal: no
+    internal: false
   register: internal_3
 
 - name: cleanup
   docker_network:
     name: "{{ nname_1 }}"
     state: absent
-    force: yes
+    force: true
 
 - assert:
     that:
@@ -87,7 +87,7 @@
   docker_network:
     name: "{{ nname_1 }}"
     state: absent
-    force: yes
+    force: true
 
 - assert:
     that:
@@ -134,7 +134,7 @@
     docker_network:
       name: "{{ nname_1 }}"
       state: absent
-      force: yes
+      force: true
 
   - assert:
       that:
@@ -146,7 +146,7 @@
   - name: cleanup swarm
     docker_swarm:
       state: absent
-      force: yes
+      force: true
 
 ####################################################################
 ## attachable ######################################################
@@ -157,27 +157,27 @@
     name: "{{ nname_1 }}"
     attachable: true
   register: attachable_1
-  ignore_errors: yes
+  ignore_errors: true
   
 - name: attachable (idempotency)
   docker_network:
     name: "{{ nname_1 }}"
     attachable: true
   register: attachable_2
-  ignore_errors: yes
+  ignore_errors: true
   
 - name: attachable (change)
   docker_network:
     name: "{{ nname_1 }}"
     attachable: false
   register: attachable_3
-  ignore_errors: yes
+  ignore_errors: true
   
 - name: cleanup
   docker_network:
     name: "{{ nname_1 }}"
     state: absent
-    force: yes
+    force: true
 
 - assert:
     that:
@@ -224,7 +224,7 @@
   docker_network:
     name: "{{ nname_1 }}"
     state: absent
-    force: yes
+    force: true
 
 - assert:
     that:

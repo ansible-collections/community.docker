@@ -1194,4 +1194,4 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
+    force_kill: true

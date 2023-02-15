@@ -11,7 +11,7 @@
 
   - name: Try to get docker_swarm_info when docker is not running in swarm mode
     docker_swarm_info:
-    ignore_errors: yes
+    ignore_errors: true
     register: output
 
   - name: assert failure when called when swarm is not in use or not run on mamager node
@@ -55,7 +55,7 @@
 
   - name: Try to get docker_swarm_info and list of nodes when docker is running in swarm mode and as manager
     docker_swarm_info:
-      nodes: yes
+      nodes: true
     register: output
 
   - name: assert reding swarm facts with list of nodes option
@@ -77,8 +77,8 @@
 
   - name: Try to get docker_swarm_info and verbose list of nodes when docker is running in swarm mode and as manager
     docker_swarm_info:
-      nodes: yes
-      verbose_output: yes
+      nodes: true
+      verbose_output: true
     register: output
 
   - name: assert reading swarm facts with list of nodes and versbose output options
@@ -96,7 +96,7 @@
 
   - name: Try to get docker_swarm_info and list of nodes with filters providing existing node name
     docker_swarm_info:
-      nodes: yes
+      nodes: true
       nodes_filters:
         name: "{{ localnodename }}"
     register: output
@@ -119,7 +119,7 @@
 
   - name: Try to get docker_swarm_info and list of nodes with filters providing non-existing random node name
     docker_swarm_info:
-      nodes: yes
+      nodes: true
       nodes_filters:
         name: "{{ randomnodename }}"
     register: output
@@ -138,9 +138,9 @@
 
   - name: Try to get docker_swarm_info and swarm_unlock_key on non a unlocked swarm
     docker_swarm_info:
-      unlock_key: yes
+      unlock_key: true
     register: output
-    ignore_errors: yes
+    ignore_errors: true
 
   - name: assert reading swarm facts and non existing swarm unlock key
     assert:
@@ -163,13 +163,13 @@
       advertise_addr: "{{ansible_default_ipv4.address | default('127.0.0.1')}}"
       autolock_managers: true
     register: autolock_managers_update_output
-    ignore_errors: yes
+    ignore_errors: true
 
   - name: Try to get docker_swarm_info and swarm_unlock_key
     docker_swarm_info:
-      unlock_key: yes
+      unlock_key: true
     register: output
-    ignore_errors: yes
+    ignore_errors: true
 
   - name: assert reading swarm facts and swarm unlock key
     assert:

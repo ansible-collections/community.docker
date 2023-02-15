@@ -6,7 +6,7 @@
 - hosts: 127.0.0.1
   connection: local
   vars:
-    docker_skip_cleanup: yes
+    docker_skip_cleanup: true
 
   tasks:
     - name: Setup docker

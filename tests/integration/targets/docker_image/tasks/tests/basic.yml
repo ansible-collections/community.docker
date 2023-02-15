@@ -11,7 +11,7 @@
   docker_image:
     name: "{{ docker_test_image_hello_world }}"
     state: absent
-    force_absent: yes
+    force_absent: true
   register: absent_1
 
 - name: Make sure image is not there (idempotency)
@@ -71,7 +71,7 @@
     source: local
     name: "{{ docker_test_image_hello_world }}"
     repository: "{{ docker_test_image_hello_world_base }}:alias"
-    force_tag: yes
+    force_tag: true
   register: tag_3
 
 - name: Tag image with ID instead of name
@@ -125,7 +125,7 @@
       path: "{{ remote_tmp_dir }}/files"
     force_source: true
   register: fail_4
-  ignore_errors: yes
+  ignore_errors: true
 
 - assert:
     that:

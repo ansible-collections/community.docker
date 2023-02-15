@@ -15,18 +15,18 @@
     state: present
     default_addr_pool:
       - "2.0.0.0/16"
-  diff: yes
+  diff: true
   register: output_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: default_addr_pool (idempotent)
   docker_swarm:
     state: present
     default_addr_pool:
       - "2.0.0.0/16"
-  diff: yes
+  diff: true
   register: output_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: assert default_addr_pool
   assert:
@@ -52,27 +52,27 @@
 - name: Leave swarm
   docker_swarm:
     state: absent
-    force: yes
+    force: true
     default_addr_pool:
       - "2.0.0.0/16"
-  diff: yes
+  diff: true
 
 - name: subnet_size
   docker_swarm:
     state: present
-    force: yes
+    force: true
     subnet_size: 26
-  diff: yes
+  diff: true
   register: output_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: subnet_size (idempotent)
   docker_swarm:
     state: present
     subnet_size: 26
-  diff: yes
+  diff: true
   register: output_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: assert subnet_size
   assert:

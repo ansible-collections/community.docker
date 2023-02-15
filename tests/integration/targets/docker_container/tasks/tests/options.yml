@@ -23,7 +23,7 @@
     command: '/bin/sh -c "echo"'
     name: "{{ cname }}"
     state: started
-    auto_remove: yes
+    auto_remove: true
   register: auto_remove_1
 
 - name: Give container 1 second to be sure it terminated
@@ -72,7 +72,7 @@
     name: "{{ cname }}"
     state: started
     blkio_weight: 234
-    force_kill: yes
+    force_kill: true
   register: blkio_weight_3
   ignore_errors: true
 
@@ -80,8 +80,8 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - when: blkio_weight_1 is failed
   assert:
@@ -146,15 +146,15 @@
     - setgid
     cap_drop:
     - all
-    force_kill: yes
+    force_kill: true
   register: capabilities_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -175,7 +175,7 @@
     state: started
     cgroupns_mode: host
   register: cgroupns_mode_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cgroupns_mode (idempotency)
   docker_container:
@@ -185,7 +185,7 @@
     state: started
     cgroupns_mode: host
   register: cgroupns_mode_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cgroupns_mode (changed)
   docker_container:
@@ -195,14 +195,14 @@
     state: started
     cgroupns_mode: private
   register: cgroupns_mode_3
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -251,8 +251,8 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -303,7 +303,7 @@
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: command_4
 
 - name: command (compatibility, empty list)
@@ -313,15 +313,15 @@
     command: []
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: command_5
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -371,7 +371,7 @@
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: command_4
 
 - name: command (correct, empty list)
@@ -381,15 +381,15 @@
     command: []
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: command_5
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -428,15 +428,15 @@
     name: "{{ cname }}"
     cpu_period: 50000
     state: started
-    force_kill: yes
+    force_kill: true
   register: cpu_period_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -473,15 +473,15 @@
     name: "{{ cname }}"
     cpu_quota: 50000
     state: started
-    force_kill: yes
+    force_kill: true
   register: cpu_quota_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -518,15 +518,15 @@
     name: "{{ cname }}"
     cpu_shares: 1100
     state: started
-    force_kill: yes
+    force_kill: true
   register: cpu_shares_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -563,18 +563,18 @@
     name: "{{ cname }}"
     cpuset_cpus: "1"
     state: started
-    force_kill: yes
+    force_kill: true
   # This will fail if the system the test is run on doesn't have
   # multiple CPUs/cores available.
-  ignore_errors: yes
+  ignore_errors: true
   register: cpuset_cpus_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -611,18 +611,18 @@
     name: "{{ cname }}"
     cpuset_mems: "1"
     state: started
-    force_kill: yes
+    force_kill: true
   # This will fail if the system the test is run on doesn't have
   # multiple MEMs available.
-  ignore_errors: yes
+  ignore_errors: true
   register: cpuset_mems_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -659,7 +659,7 @@
     name: "{{ cname }}"
     cpus: 1.5
     state: started
-    force_kill: yes
+    force_kill: true
   # This will fail if the system the test is run on doesn't have
   # multiple MEMs available.
   register: cpus_3
@@ -668,8 +668,8 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -687,14 +687,14 @@
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: present
-    debug: yes
+    debug: true
   register: debug_1
 
 - name: debug (start)
   docker_container:
     name: "{{ cname }}"
     state: started
-    debug: yes
+    debug: true
   register: debug_2
 
 - name: debug (stop)
@@ -702,16 +702,16 @@
     image: "{{ docker_test_image_alpine }}"
     name: "{{ cname }}"
     state: stopped
-    force_kill: yes
-    debug: yes
+    force_kill: true
+    debug: true
   register: debug_3
 
 - name: debug (absent)
   docker_container:
     name: "{{ cname }}"
     state: absent
-    debug: yes
-    force_kill: yes
+    debug: true
+    force_kill: true
   register: debug_4
 
 - assert:
@@ -729,7 +729,7 @@
   docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_hello_world }}"
-    detach: no
+    detach: false
   register: detach_no_cleanup
 
 - name: cleanup
@@ -737,14 +737,14 @@
     name: "{{ cname }}"
     state: absent
   register: detach_no_cleanup_cleanup
-  diff: no
+  diff: false
 
 - name: detach with cleanup
   docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_hello_world }}"
-    detach: no
-    cleanup: yes
+    detach: false
+    cleanup: true
   register: detach_cleanup
 
 - name: cleanup (unnecessary)
@@ -752,32 +752,32 @@
     name: "{{ cname }}"
     state: absent
   register: detach_cleanup_cleanup
-  diff: no
+  diff: false
 
 - name: detach with auto_remove and cleanup
   docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_hello_world }}"
-    detach: no
-    auto_remove: yes
-    cleanup: yes
+    detach: false
+    auto_remove: true
+    cleanup: true
   register: detach_auto_remove
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup (unnecessary)
   docker_container:
     name: "{{ cname }}"
     state: absent
   register: detach_auto_remove_cleanup
-  diff: no
+  diff: false
 
 - name: detach with cleanup and non-zero status
   docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "exit 42"'
-    detach: no
-    cleanup: yes
+    detach: false
+    cleanup: true
   register: detach_cleanup_nonzero
   ignore_errors: true
 
@@ -847,15 +847,15 @@
     devices:
     - "/dev/random:/dev/virt-random:rwm"
     - "/dev/null:/dev/virt-null:rwm"
-    force_kill: yes
+    force_kill: true
   register: devices_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -919,7 +919,7 @@
         rate: 10M
       - path: /dev/urandom
         rate: 5K
-    force_kill: yes
+    force_kill: true
   register: device_read_bps_4
   ignore_errors: true
 
@@ -927,8 +927,8 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - when: device_read_bps_1 is not failed
   assert:
@@ -1002,7 +1002,7 @@
         rate: 30
       - path: /dev/urandom
         rate: 50
-    force_kill: yes
+    force_kill: true
   register: device_read_iops_4
   ignore_errors: true
 
@@ -1010,8 +1010,8 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - when: device_read_iops_1 is not failed
   assert:
@@ -1076,7 +1076,7 @@
     device_write_iops:
       - path: /dev/urandom
         rate: 100
-    force_kill: yes
+    force_kill: true
   register: device_write_limit_3
   ignore_errors: true
 
@@ -1084,8 +1084,8 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - when: device_write_limit_1 is not failed
   assert:
@@ -1112,7 +1112,7 @@
     state: started
     device_requests: []
   register: device_requests_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: device_requests (idempotency)
   docker_container:
@@ -1122,14 +1122,14 @@
     state: started
     device_requests: []
   register: device_requests_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -1188,15 +1188,15 @@
     dns_opts:
     - "timeout:10"
     - no-check-names
-    force_kill: yes
+    force_kill: true
   register: dns_opts_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -1240,7 +1240,7 @@
     dns_search_domains:
     - example.org
     - example.com
-    force_kill: yes
+    force_kill: true
   register: dns_search_domains_3
 
 - name: dns_search_domains (changed elements)
@@ -1252,15 +1252,15 @@
     dns_search_domains:
     - ansible.com
     - example.com
-    force_kill: yes
+    force_kill: true
   register: dns_search_domains_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -1304,7 +1304,7 @@
     dns_servers:
     - 8.8.8.8
     - 1.1.1.1
-    force_kill: yes
+    force_kill: true
   register: dns_servers_3
 
 - name: dns_servers (changed elements)
@@ -1316,15 +1316,15 @@
     dns_servers:
     - 8.8.8.8
     - 9.9.9.9
-    force_kill: yes
+    force_kill: true
   register: dns_servers_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -1362,15 +1362,15 @@
     name: "{{ cname }}"
     domainname: example.org
     state: started
-    force_kill: yes
+    force_kill: true
   register: domainname_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -1421,7 +1421,7 @@
     - "-v"
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: entrypoint_3
 
 - name: entrypoint (compatibility, fewer parameters)
@@ -1434,7 +1434,7 @@
     - "'sleep 10m'"
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: entrypoint_4
 
 - name: entrypoint (compatibility, other parameters)
@@ -1447,7 +1447,7 @@
     - "'sleep 5m'"
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: entrypoint_5
 
 - name: entrypoint (compatibility, force empty)
@@ -1457,15 +1457,15 @@
     entrypoint: []
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: entrypoint_6
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -1515,7 +1515,7 @@
     - "-v"
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: entrypoint_3
 
 - name: entrypoint (correct, fewer parameters)
@@ -1528,7 +1528,7 @@
     - "sleep 10m"
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: entrypoint_4
 
 - name: entrypoint (correct, other parameters)
@@ -1541,7 +1541,7 @@
     - "sleep 5m"
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: entrypoint_5
 
 - name: entrypoint (correct, force empty)
@@ -1551,15 +1551,15 @@
     entrypoint: []
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: entrypoint_6
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -1621,7 +1621,7 @@
     env:
       TEST1: val1
       TEST3: val3
-    force_kill: yes
+    force_kill: true
   register: env_4
 
 - name: env (fail unwrapped values)
@@ -1632,16 +1632,16 @@
     state: started
     env:
       TEST1: true
-    force_kill: yes
+    force_kill: true
   register: env_5
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -1708,7 +1708,7 @@
     env:
       TEST1: val1
       TEST3: val3
-    force_kill: yes
+    force_kill: true
   register: env_file_4
 
 - name: env_file (with env, idempotent)
@@ -1732,15 +1732,15 @@
     env:
       TEST2: val2
       TEST4: val4alt
-    force_kill: yes
+    force_kill: true
   register: env_file_6
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -1804,15 +1804,15 @@
     etc_hosts:
       example.com: 1.2.3.4
       example.us: 1.2.3.5
-    force_kill: yes
+    force_kill: true
   register: etc_hosts_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -1866,15 +1866,15 @@
     exposed_ports:
     - "9002"
     - "9003"
-    force_kill: yes
+    force_kill: true
   register: exposed_ports_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -1934,15 +1934,15 @@
     groups:
     - "1234"
     - "2345"
-    force_kill: yes
+    force_kill: true
   register: groups_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -1969,7 +1969,7 @@
       timeout: 2s
       interval: 0h0m2s3ms4us
       retries: 2
-    force_kill: yes
+    force_kill: true
   register: healthcheck_1
 
 - name: healthcheck (idempotency)
@@ -1986,7 +1986,7 @@
       timeout: 2s
       interval: 0h0m2s3ms4us
       retries: 2
-    force_kill: yes
+    force_kill: true
   register: healthcheck_2
 
 - name: healthcheck (changed)
@@ -2003,7 +2003,7 @@
       timeout: 3s
       interval: 0h1m2s3ms4us
       retries: 3
-    force_kill: yes
+    force_kill: true
   register: healthcheck_3
 
 - name: healthcheck (no change)
@@ -2012,7 +2012,7 @@
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: healthcheck_4
 
 - name: healthcheck (disabled)
@@ -2024,7 +2024,7 @@
     healthcheck:
       test:
       - NONE
-    force_kill: yes
+    force_kill: true
   register: healthcheck_5
 
 - name: healthcheck (disabled, idempotency)
@@ -2036,7 +2036,7 @@
     healthcheck:
       test:
       - NONE
-    force_kill: yes
+    force_kill: true
   register: healthcheck_6
 
 - name: healthcheck (disabled, idempotency, strict)
@@ -2048,7 +2048,7 @@
     healthcheck:
       test:
       - NONE
-    force_kill: yes
+    force_kill: true
     comparisons:
       '*': strict
   register: healthcheck_7
@@ -2061,7 +2061,7 @@
     state: started
     healthcheck:
       test: "sleep 1"
-    force_kill: yes
+    force_kill: true
   register: healthcheck_8
 
 - name: healthcheck (string in healthcheck test, idempotency)
@@ -2072,15 +2072,15 @@
     state: started
     healthcheck:
       test: "sleep 1"
-    force_kill: yes
+    force_kill: true
   register: healthcheck_9
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -2123,15 +2123,15 @@
     name: "{{ cname }}"
     hostname: me.example.org
     state: started
-    force_kill: yes
+    force_kill: true
   register: hostname_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -2148,7 +2148,7 @@
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    init: yes
+    init: true
     state: started
   register: init_1
 
@@ -2157,7 +2157,7 @@
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    init: yes
+    init: true
     state: started
   register: init_2
 
@@ -2166,17 +2166,17 @@
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    init: no
+    init: false
     state: started
-    force_kill: yes
+    force_kill: true
   register: init_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -2193,7 +2193,7 @@
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    interactive: yes
+    interactive: true
     state: started
   register: interactive_1
 
@@ -2202,7 +2202,7 @@
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    interactive: yes
+    interactive: true
     state: started
   register: interactive_2
 
@@ -2211,17 +2211,17 @@
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    interactive: no
+    interactive: false
     state: started
-    force_kill: yes
+    force_kill: true
   register: interactive_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -2288,7 +2288,7 @@
     image_comparison: desired-image
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: ignore_image_3
   diff: true
 
@@ -2297,7 +2297,7 @@
     image: "{{ docker_test_image_hello_world }}"
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: image_change
   diff: true
 
@@ -2305,8 +2305,8 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -2379,7 +2379,7 @@
     labels:
       img_label: override
     state: started
-    force_kill: yes
+    force_kill: true
   register: image_label_mismatch_5
 
 - name: image_label_mismatch (ignore,remove img label)
@@ -2390,7 +2390,7 @@
     image_label_mismatch: ignore
     labels: {}
     state: started
-    force_kill: yes
+    force_kill: true
   register: image_label_mismatch_6
 
 - name: image_label_mismatch (fail,unmanaged labels)
@@ -2422,7 +2422,7 @@
       labels: strict
     labels: {}
     state: started
-  ignore_errors: yes
+  ignore_errors: true
   register: image_label_mismatch_9
 
 - name: image_label_mismatch (fail,match img label)
@@ -2445,21 +2445,21 @@
     labels:
       img_label: override
     state: started
-    force_kill: yes
+    force_kill: true
   register: image_label_mismatch_11
 
 - name: cleanup container
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - name: cleanup image
   docker_image:
     name: "{{ iname_labels }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -2513,7 +2513,7 @@
 - name: ignore_image
   docker_container:
     image: "{{ docker_test_image_hello_world }}"
-    ignore_image: yes
+    ignore_image: true
     name: "{{ cname }}"
     state: started
   register: ignore_image
@@ -2522,7 +2522,7 @@
 - name: ignore_image (labels and env differ in image, image_comparison=current-image)
   docker_container:
     image: "{{ docker_test_image_registry_nginx }}"
-    ignore_image: yes
+    ignore_image: true
     image_comparison: current-image
     name: "{{ cname }}"
     state: started
@@ -2532,11 +2532,11 @@
 - name: ignore_image (labels and env differ in image, image_comparison=desired-image)
   docker_container:
     image: "{{ docker_test_image_registry_nginx }}"
-    ignore_image: yes
+    ignore_image: true
     image_comparison: desired-image
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: ignore_image_3
   diff: true
 
@@ -2545,7 +2545,7 @@
     image: "{{ docker_test_image_hello_world }}"
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: image_change
   diff: true
 
@@ -2553,8 +2553,8 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -2606,21 +2606,21 @@
     name: "{{ cname }}"
     image_name_mismatch: recreate
     state: started
-    force_kill: yes
+    force_kill: true
   register: image_name_mismatch_3
 
 - name: Cleanup container
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - name: Cleanup image
   docker_image:
     name: "{{ iname_name_mismatch }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -2672,20 +2672,20 @@
     name: "{{ cname }}"
     state: started
     ipc_mode: private
-    force_kill: yes
+    force_kill: true
   register: ipc_mode_3
 
 - name: cleanup
   docker_container:
     name: "{{ container_name }}"
     state: absent
-    force_kill: yes
+    force_kill: true
   loop:
   - "{{ cname }}"
   - "{{ cname_h1 }}"
   loop_control:
     loop_var: container_name
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -2705,7 +2705,7 @@
     kernel_memory: 8M
     state: started
   register: kernel_memory_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: kernel_memory (idempotency)
   docker_container:
@@ -2715,7 +2715,7 @@
     kernel_memory: 8M
     state: started
   register: kernel_memory_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: kernel_memory (change)
   docker_container:
@@ -2724,16 +2724,16 @@
     name: "{{ cname }}"
     kernel_memory: 6M
     state: started
-    force_kill: yes
+    force_kill: true
   register: kernel_memory_3
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -2797,15 +2797,15 @@
     labels:
       ansible.test.1: hello
       ansible.test.3: ansible
-    force_kill: yes
+    force_kill: true
   register: labels_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -2872,14 +2872,14 @@
     links:
     - "{{ cname_h1 }}:test1"
     - "{{ cname_h3 }}:test3"
-    force_kill: yes
+    force_kill: true
   register: links_4
 
 - name: cleanup
   docker_container:
     name: "{{ container_name }}"
     state: absent
-    force_kill: yes
+    force_kill: true
   loop:
   - "{{ cname }}"
   - "{{ cname_h1 }}"
@@ -2887,7 +2887,7 @@
   - "{{ cname_h3 }}"
   loop_control:
     loop_var: container_name
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -2925,15 +2925,15 @@
     name: "{{ cname }}"
     state: started
     log_driver: syslog
-    force_kill: yes
+    force_kill: true
   register: log_driver_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -2992,15 +2992,15 @@
     log_options:
       labels: production_status
       max-size: 10m
-    force_kill: yes
+    force_kill: true
   register: log_options_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3040,15 +3040,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     mac_address: 92:d0:c6:0a:29:44
     state: started
-    force_kill: yes
+    force_kill: true
   register: mac_address_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3085,15 +3085,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     memory: 48M
     state: started
-    force_kill: yes
+    force_kill: true
   register: memory_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3130,15 +3130,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     memory_reservation: 48M
     state: started
-    force_kill: yes
+    force_kill: true
   register: memory_reservation_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3159,7 +3159,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     memory: 32M
     memory_swap: 64M
     state: started
-    debug: yes
+    debug: true
   register: memory_swap_1
 
 - name: memory_swap (idempotency)
@@ -3171,7 +3171,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     memory: 32M
     memory_swap: 64M
     state: started
-    debug: yes
+    debug: true
   register: memory_swap_2
 
 - name: memory_swap (change)
@@ -3183,8 +3183,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     memory: 32M
     memory_swap: 48M
     state: started
-    force_kill: yes
-    debug: yes
+    force_kill: true
+    debug: true
   register: memory_swap_3
 
 - name: memory_swap (unlimited)
@@ -3196,8 +3196,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     memory: 32M
     memory_swap: unlimited
     state: started
-    force_kill: yes
-    debug: yes
+    force_kill: true
+    debug: true
   register: memory_swap_4
 
 - name: memory_swap (unlimited via -1)
@@ -3209,16 +3209,16 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     memory: 32M
     memory_swap: -1
     state: started
-    force_kill: yes
-    debug: yes
+    force_kill: true
+    debug: true
   register: memory_swap_5
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3269,15 +3269,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     memory_swappiness: 60
     state: started
-    force_kill: yes
+    force_kill: true
   register: memory_swappiness_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3295,7 +3295,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    oom_killer: yes
+    oom_killer: true
     state: started
   register: oom_killer_1
 
@@ -3304,7 +3304,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    oom_killer: yes
+    oom_killer: true
     state: started
   register: oom_killer_2
 
@@ -3313,17 +3313,17 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    oom_killer: no
+    oom_killer: false
     state: started
-    force_kill: yes
+    force_kill: true
   register: oom_killer_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3361,15 +3361,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     oom_score_adj: 7
     state: started
-    force_kill: yes
+    force_kill: true
   register: oom_score_adj_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3394,8 +3394,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     command: "/bin/sh -c 'sleep 10m'"
     name: "{{ cname }}"
     state: started
-    paused: yes
-    force_kill: yes
+    paused: true
+    force_kill: true
   register: paused_1
 
 - name: inspect paused
@@ -3408,8 +3408,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     command: "/bin/sh -c 'sleep 10m'"
     name: "{{ cname }}"
     state: started
-    paused: yes
-    force_kill: yes
+    paused: true
+    force_kill: true
   register: paused_3
 
 - name: paused (continue)
@@ -3418,8 +3418,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     command: "/bin/sh -c 'sleep 10m'"
     name: "{{ cname }}"
     state: started
-    paused: no
-    force_kill: yes
+    paused: false
+    force_kill: true
   register: paused_4
 
 - name: inspect paused
@@ -3430,8 +3430,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3478,20 +3478,20 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     state: started
     pid_mode: host
-    force_kill: yes
+    force_kill: true
   register: pid_mode_3
 
 - name: cleanup
   docker_container:
     name: "{{ container_name }}"
     state: absent
-    force_kill: yes
+    force_kill: true
   loop:
   - "{{ cname }}"
   - "{{ cname_h1 }}"
   loop_control:
     loop_var: container_name
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -3528,15 +3528,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     state: started
     pids_limit: 20
-    force_kill: yes
+    force_kill: true
   register: pids_limit_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3562,7 +3562,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     platform: linux/amd64
     debug: true
   register: platform_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: platform (idempotency)
   docker_container:
@@ -3573,7 +3573,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     platform: linux
     debug: true
   register: platform_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: platform (changed)
   docker_container:
@@ -3582,20 +3582,20 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     state: present
     pull: true
     platform: linux/386
-    force_kill: yes
+    force_kill: true
     debug: true
     comparisons:
       # Do not restart because of the changed image ID
       image: ignore
   register: platform_3
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3619,7 +3619,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    privileged: yes
+    privileged: true
     state: started
   register: privileged_1
 
@@ -3628,7 +3628,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    privileged: yes
+    privileged: true
     state: started
   register: privileged_2
 
@@ -3637,17 +3637,17 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    privileged: no
+    privileged: false
     state: started
-    force_kill: yes
+    force_kill: true
   register: privileged_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3700,7 +3700,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     published_ports:
     - '9002'
     - '9003'
-    force_kill: yes
+    force_kill: true
   register: published_ports_4
 
 - name: published_ports (ports with IP addresses)
@@ -3713,7 +3713,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     - '127.0.0.1:9002:9002/tcp'
     - '[::1]:9003:9003/tcp'
     - '[fe80::1%test]:90:90/tcp'
-    force_kill: yes
+    force_kill: true
   register: published_ports_5
 
 - name: published_ports (ports with IP addresses, idempotent)
@@ -3737,7 +3737,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     published_ports: []
     comparisons:
       published_ports: strict
-    force_kill: yes
+    force_kill: true
   register: published_ports_7
 
 - name: published_ports (default_host_ip not set)
@@ -3749,7 +3749,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     published_ports:
     - '9001'
     - '9002'
-    force_kill: yes
+    force_kill: true
   register: published_ports_8
 
 - name: published_ports (default_host_ip set to empty string)
@@ -3762,7 +3762,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     - '9002'
     - '9001'
     default_host_ip: ''
-    force_kill: yes
+    force_kill: true
   register: published_ports_9
 
 - name: published_ports (default_host_ip set to empty string, idempotent)
@@ -3786,15 +3786,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     published_ports:
     - '9002'
     - '9001'
-    force_kill: yes
+    force_kill: true
   register: published_ports_11
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3825,7 +3825,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    read_only: yes
+    read_only: true
     state: started
   register: read_only_1
 
@@ -3834,7 +3834,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    read_only: yes
+    read_only: true
     state: started
   register: read_only_2
 
@@ -3843,17 +3843,17 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    read_only: no
+    read_only: false
     state: started
-    force_kill: yes
+    force_kill: true
   register: read_only_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3890,15 +3890,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     restart_policy: unless-stopped
     state: started
-    force_kill: yes
+    force_kill: true
   register: restart_policy_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3938,15 +3938,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     restart_policy: on-failure
     restart_retries: 2
     state: started
-    force_kill: yes
+    force_kill: true
   register: restart_retries_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -3980,8 +3980,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4049,15 +4049,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     security_opts:
     - "label:disable"
     - "no-new-privileges"
-    force_kill: yes
+    force_kill: true
   register: security_opts_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4095,15 +4095,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     shm_size: 75M
     state: started
-    force_kill: yes
+    force_kill: true
   register: shm_size_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4140,15 +4140,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     stop_signal: "9"
     state: started
-    force_kill: yes
+    force_kill: true
   register: stop_signal_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4192,8 +4192,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4214,7 +4214,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
       size: 12m
     state: started
   register: storage_opts_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: storage_opts (idempotency)
   docker_container:
@@ -4225,7 +4225,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
       size: 12m
     state: started
   register: storage_opts_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: storage_opts (change)
   docker_container:
@@ -4235,16 +4235,16 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     storage_opts:
       size: 24m
     state: started
-    force_kill: yes
+    force_kill: true
   register: storage_opts_3
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4315,15 +4315,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     sysctls:
       net.ipv4.icmp_echo_ignore_all: 1
       net.ipv6.conf.default.accept_redirects: 0
-    force_kill: yes
+    force_kill: true
   register: sysctls_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4377,15 +4377,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     tmpfs:
     - "/test1:rw,noexec,nosuid,size=65536k"
     - "/test3:rw,noexec,nosuid,size=65536k"
-    force_kill: yes
+    force_kill: true
   register: tmpfs_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4403,7 +4403,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    tty: yes
+    tty: true
     state: started
   register: tty_1
   ignore_errors: true
@@ -4413,7 +4413,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    tty: yes
+    tty: true
     state: started
   register: tty_2
   ignore_errors: true
@@ -4423,9 +4423,9 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    tty: no
+    tty: false
     state: started
-    force_kill: yes
+    force_kill: true
   register: tty_3
   ignore_errors: true
 
@@ -4433,8 +4433,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4494,15 +4494,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     ulimits:
     - "nofile:1234:1234"
     - "sigpending:100:200"
-    force_kill: yes
+    force_kill: true
   register: ulimits_4
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4540,15 +4540,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     user: root
     state: started
-    force_kill: yes
+    force_kill: true
   register: user_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4585,15 +4585,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     userns_mode: ""
     state: started
-    force_kill: yes
+    force_kill: true
   register: userns_mode_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4630,15 +4630,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     uts: ""
     state: started
-    force_kill: yes
+    force_kill: true
   register: uts_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -4675,15 +4675,15 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     name: "{{ cname }}"
     working_dir: /
     state: started
-    force_kill: yes
+    force_kill: true
   register: working_dir_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:

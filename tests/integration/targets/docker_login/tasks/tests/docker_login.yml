@@ -18,8 +18,8 @@
       password: "1234"
       state: present
     register: login_failed_check
-    ignore_errors: yes
-    check_mode: yes
+    ignore_errors: true
+    check_mode: true
 
   - name: Log in with wrong password
     docker_login:
@@ -28,7 +28,7 @@
       password: "1234"
       state: present
     register: login_failed
-    ignore_errors: yes
+    ignore_errors: true
 
   - name: Make sure that login failed
     assert:
@@ -45,7 +45,7 @@
       password: hunter2
       state: present
     register: login_1
-    check_mode: yes
+    check_mode: true
 
   - name: Log in
     docker_login:
@@ -75,7 +75,7 @@
       password: hunter2
       state: present
     register: login_4
-    check_mode: yes
+    check_mode: true
 
   - name: Make sure that login worked
     assert:
@@ -93,8 +93,8 @@
       password: "1234"
       state: present
     register: login_failed_check
-    ignore_errors: yes
-    check_mode: yes
+    ignore_errors: true
+    check_mode: true
 
   - name: Log in again with wrong password
     docker_login:
@@ -103,7 +103,7 @@
       password: "1234"
       state: present
     register: login_failed
-    ignore_errors: yes
+    ignore_errors: true
 
   - name: Make sure that login failed again
     assert:
@@ -118,7 +118,7 @@
       registry_url: "{{ registry_frontend_address }}"
       state: absent
     register: logout_1
-    check_mode: yes
+    check_mode: true
 
   - name: Log out
     docker_login:
@@ -137,7 +137,7 @@
       registry_url: "{{ registry_frontend_address }}"
       state: absent
     register: logout_4
-    check_mode: yes
+    check_mode: true
 
   - name: Make sure that login worked
     assert:

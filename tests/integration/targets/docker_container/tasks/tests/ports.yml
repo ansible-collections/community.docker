@@ -73,7 +73,7 @@
     published_ports:
     - "9001:9001"
     - "9010-9050:9010-9050"
-    force_kill: yes
+    force_kill: true
   register: published_ports_1
 
 - name: published_ports -- port range (idempotency)
@@ -88,7 +88,7 @@
     published_ports:
     - "9001:9001"
     - "9010-9050:9010-9050"
-    force_kill: yes
+    force_kill: true
   register: published_ports_2
 
 - name: published_ports -- port range (different range)
@@ -103,15 +103,15 @@
     published_ports:
     - "9001:9001"
     - "9020-9060:9020-9060"
-    force_kill: yes
+    force_kill: true
   register: published_ports_3
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -131,7 +131,7 @@
     state: started
     published_ports:
     - "9010-9050:9010"
-    force_kill: yes
+    force_kill: true
   loop:
     - '{{ cname }}'
     - '{{ cname2 }}'
@@ -145,7 +145,7 @@
     state: started
     published_ports:
     - "9010-9050:9010"
-    force_kill: yes
+    force_kill: true
   loop:
     - '{{ cname }}'
     - '{{ cname2 }}'
@@ -159,7 +159,7 @@
     state: started
     published_ports:
     - "9010-9051:9010"
-    force_kill: yes
+    force_kill: true
   loop:
     - '{{ cname }}'
     - '{{ cname2 }}'
@@ -169,11 +169,11 @@
   docker_container:
     name: "{{ item }}"
     state: absent
-    force_kill: yes
+    force_kill: true
   loop:
     - '{{ cname }}'
     - '{{ cname2 }}'
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -193,7 +193,7 @@
     state: started
     published_ports:
     - "[::1]:9001:9001"
-    force_kill: yes
+    force_kill: true
   register: published_ports_1
 
 - name: published_ports -- IPv6 (idempotency)
@@ -204,7 +204,7 @@
     state: started
     published_ports:
     - "[::1]:9001:9001"
-    force_kill: yes
+    force_kill: true
   register: published_ports_2
 
 - name: published_ports -- IPv6 (different IP)
@@ -215,7 +215,7 @@
     state: started
     published_ports:
     - "127.0.0.1:9001:9001"
-    force_kill: yes
+    force_kill: true
   register: published_ports_3
 
 - name: published_ports -- IPv6 (hostname)
@@ -226,16 +226,16 @@
     state: started
     published_ports:
     - "localhost:9001:9001"
-    force_kill: yes
+    force_kill: true
   register: published_ports_4
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -311,7 +311,7 @@
     state: started
     publish_all_ports: "{{ test_case.publish_all_ports_value | default(omit) }}"
     published_ports: "{{ test_case.published_ports_value | default(omit) }}"
-    force_kill: yes
+    force_kill: true
   register: publish_all_ports
   loop_control:
     loop_var: test_case

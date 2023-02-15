@@ -5,12 +5,12 @@
 
 - hosts: 127.0.0.1
   connection: local
-  gather_facts: yes
+  gather_facts: true
   tasks:
     - name: Make sure swarm is removed
       docker_swarm:
         state: absent
-        force: yes
+        force: true
 
     - name: remove docker pagkages
       action: "{{ ansible_facts.pkg_mgr }}"

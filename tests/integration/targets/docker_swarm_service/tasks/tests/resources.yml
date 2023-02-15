@@ -19,7 +19,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     limits:
       cpus: 1
@@ -29,7 +29,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     limits:
       cpus: 1
@@ -39,7 +39,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     limits:
       cpus: 0.5
@@ -49,7 +49,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -65,7 +65,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     limits:
       memory: 64M
@@ -75,7 +75,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     limits:
       memory: 64M
@@ -85,7 +85,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     limits:
       memory: 32M
@@ -95,7 +95,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -111,7 +111,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     reservations:
       cpus: 1
@@ -121,7 +121,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     reservations:
       cpus: 1
@@ -131,7 +131,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     reservations:
       cpus: 0.5
@@ -141,7 +141,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -157,7 +157,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     reservations:
       memory: 64M
@@ -167,7 +167,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     reservations:
       memory: 64M
@@ -177,7 +177,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     reservations:
       memory: 32M
@@ -187,7 +187,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:

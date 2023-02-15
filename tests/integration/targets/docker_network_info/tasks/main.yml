@@ -17,7 +17,7 @@
     docker_network:
       name: "{{ nname }}"
       state: absent
-      force: yes
+      force: true
 
   - name: Inspect a non-present network
     docker_network_info:
@@ -45,7 +45,7 @@
   - name: "Comparison: use 'docker network inspect'"
     command: docker network inspect "{{ nname }}"
     register: docker_inspect
-    ignore_errors: yes
+    ignore_errors: true
   - block:
     - set_fact:
         docker_inspect_result: "{{ docker_inspect.stdout | from_json }}"
@@ -57,7 +57,7 @@
     docker_network:
       name: "{{ nname }}"
       state: absent
-      force: yes
+      force: true
 
   - assert:
       that:

@@ -8,7 +8,7 @@
       register: output
       docker_swarm_service:
         state: present
-      ignore_errors: yes
+      ignore_errors: true
 
     - name: assert failure when name not set
       assert:
@@ -33,7 +33,7 @@
         name: test_service
         endpoint_mode: dnsrr
         image: "{{ docker_test_image_busybox }}"
-        resolve_image: no
+        resolve_image: false
         args:
           - sleep
           - "3600"
@@ -48,7 +48,7 @@
       docker_swarm_service:
         name: test_service
         image: "{{ docker_test_image_busybox }}"
-        resolve_image: no
+        resolve_image: false
         args:
           - sleep
           - "1800"
@@ -63,7 +63,7 @@
       docker_swarm_service:
         name: test_service
         image: "{{ docker_test_image_busybox }}"
-        resolve_image: no
+        resolve_image: false
         endpoint_mode: vip
         mode: global
         args:
@@ -80,7 +80,7 @@
       docker_swarm_service:
         name: test_service
         image: "{{ docker_test_image_busybox }}"
-        resolve_image: no
+        resolve_image: false
         mode: global
         args:
           - sleep

@@ -5,13 +5,13 @@
 
 - hosts: 127.0.0.1
   connection: local
-  gather_facts: yes
+  gather_facts: true
   tasks:
     - name: remove docker containers
       docker_container:
         name: "{{ item }}"
         state: absent
-        force_kill: yes
+        force_kill: true
       loop:
         - ansible-docker-test-docker-inventory-container-1
         - ansible-docker-test-docker-inventory-container-2

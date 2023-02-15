@@ -20,7 +20,7 @@
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: present
-  check_mode: yes
+  check_mode: true
   register: create_1
 
 - name: Create container
@@ -45,7 +45,7 @@
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: present
-  check_mode: yes
+  check_mode: true
   register: create_4
 
 - assert:
@@ -63,7 +63,7 @@
   docker_container:
     name: "{{ cname }}"
     state: started
-  check_mode: yes
+  check_mode: true
   register: start_1
 
 - name: Start container
@@ -82,7 +82,7 @@
   docker_container:
     name: "{{ cname }}"
     state: started
-  check_mode: yes
+  check_mode: true
   register: start_4
 
 - assert:
@@ -102,7 +102,7 @@
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: present
-  check_mode: yes
+  check_mode: true
   register: present_check_1
 
 - name: Present check for running container
@@ -126,7 +126,7 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
+    force_kill: true
 
 - name: Start container from scratch (check)
   docker_container:
@@ -135,7 +135,7 @@
     stop_timeout: 1
     name: "{{ cname }}"
     state: started
-  check_mode: yes
+  check_mode: true
   register: start_scratch_1
 
 - name: Start container from scratch
@@ -163,7 +163,7 @@
     stop_timeout: 1
     name: "{{ cname }}"
     state: started
-  check_mode: yes
+  check_mode: true
   register: start_scratch_4
 
 - assert:
@@ -183,7 +183,7 @@
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: present
-    force_kill: yes
+    force_kill: true
   register: recreate_1
 
 - name: Recreating container (created, recreate, check mode)
@@ -191,20 +191,20 @@
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    recreate: yes
+    recreate: true
     state: present
-    force_kill: yes
+    force_kill: true
   register: recreate_2
-  check_mode: yes
+  check_mode: true
 
 - name: Recreating container (created, recreate)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    recreate: yes
+    recreate: true
     state: present
-    force_kill: yes
+    force_kill: true
   register: recreate_3
 
 - name: Recreating container (started)
@@ -213,7 +213,7 @@
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
-    force_kill: yes
+    force_kill: true
   register: recreate_4
 
 - name: Recreating container (started, recreate, check mode)
@@ -221,30 +221,30 @@
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    recreate: yes
+    recreate: true
     removal_wait_timeout: 10
     state: started
-    force_kill: yes
+    force_kill: true
   register: recreate_5
-  check_mode: yes
+  check_mode: true
 
 - name: Recreating container (started, recreate)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    recreate: yes
+    recreate: true
     removal_wait_timeout: 10
     state: started
-    force_kill: yes
+    force_kill: true
   register: recreate_6
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - debug: var=recreate_1
 - debug: var=recreate_3
@@ -284,22 +284,22 @@
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    restart: yes
+    restart: true
     state: started
     stop_timeout: 1
-    force_kill: yes
+    force_kill: true
   register: restart_2
-  check_mode: yes
+  check_mode: true
 
 - name: Restarting (restart)
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
-    restart: yes
+    restart: true
     state: started
     stop_timeout: 1
-    force_kill: yes
+    force_kill: true
   register: restart_3
 
 - name: Restarting (verify volumes)
@@ -317,8 +317,8 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -338,7 +338,7 @@
     name: "{{ cname }}"
     state: stopped
     stop_timeout: 1
-  check_mode: yes
+  check_mode: true
   register: stop_1
 
 - name: Stop container
@@ -363,7 +363,7 @@
     name: "{{ cname }}"
     state: stopped
     stop_timeout: 1
-  check_mode: yes
+  check_mode: true
   register: stop_4
 
 - assert:
@@ -381,7 +381,7 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-  check_mode: yes
+  check_mode: true
   register: remove_1
 
 - name: Remove container
@@ -400,7 +400,7 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-  check_mode: yes
+  check_mode: true
   register: remove_4
 
 - assert:
@@ -425,30 +425,30 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  check_mode: yes
+    force_kill: true
+  check_mode: true
   register: remove_from_running_1
 
 - name: Remove container from running
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
+    force_kill: true
   register: remove_from_running_2
 
 - name: Remove container from running (idempotent)
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
+    force_kill: true
   register: remove_from_running_3
 
 - name: Remove container from running (idempotent check)
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  check_mode: yes
+    force_kill: true
+  check_mode: true
   register: remove_from_running_4
 
 - assert:

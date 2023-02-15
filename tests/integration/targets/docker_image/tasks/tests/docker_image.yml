@@ -24,7 +24,7 @@
   docker_image:
     name: "{{ hello_world_image_base }}:latest"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - name: Make sure we have {{ docker_test_image_hello_world }}
   docker_image:
@@ -35,7 +35,7 @@
   docker_image:
     name: "{{ docker_test_image_hello_world }}"
     repository: "{{ hello_world_image_base }}:latest"
-    push: yes
+    push: true
     source: local
   register: push_1
 
@@ -43,7 +43,7 @@
   docker_image:
     name: "{{ docker_test_image_hello_world }}"
     repository: "{{ hello_world_image_base }}:latest"
-    push: yes
+    push: true
     source: local
   register: push_2
 
@@ -51,9 +51,9 @@
   docker_image:
     name: "{{ docker_test_image_hello_world }}"
     repository: "{{ hello_world_image_base }}:latest"
-    push: yes
+    push: true
     source: local
-    force_tag: yes
+    force_tag: true
   register: push_3
 
 - assert:
@@ -71,7 +71,7 @@
   docker_image:
     name: "{{ hello_world_image_base }}:latest"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - name: Get facts of local image (absent)
   docker_image_info:
@@ -122,7 +122,7 @@
   docker_image:
     name: "{{ docker_test_image_alpine_different }}"
     repository: "{{ hello_world_image_base }}:newtag"
-    push: no
+    push: false
     source: pull
 
 - name: Push different image with new tag
@@ -130,7 +130,7 @@
     name: "{{ hello_world_image_base }}"
     repository: "{{ hello_world_image_base }}"
     tag: newtag
-    push: yes
+    push: true
     source: local
   register: push_1_different
 
@@ -139,7 +139,7 @@
     name: "{{ hello_world_image_base }}"
     repository: "{{ hello_world_image_base }}"
     tag: newtag
-    push: yes
+    push: true
     source: local
   register: push_2_different
 
@@ -152,7 +152,7 @@
   docker_image:
     name: "{{ docker_test_image_alpine_different }}"
     repository: "{{ hello_world_image_base }}:newtag2"
-    push: no
+    push: false
     source: pull
 
 - name: Push same image with new tag
@@ -160,7 +160,7 @@
     name: "{{ hello_world_image_base }}"
     repository: "{{ hello_world_image_base }}"
     tag: newtag2
-    push: yes
+    push: true
     source: local
   register: push_1_same
 
@@ -169,7 +169,7 @@
     name: "{{ hello_world_image_base }}"
     repository: "{{ hello_world_image_base }}"
     tag: newtag2
-    push: yes
+    push: true
     source: local
   register: push_2_same
 
@@ -202,14 +202,14 @@
   docker_image:
     name: "{{ test_image_base }}:latest"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - name: repository
   docker_image:
     name: "{{ iname }}"
     build:
       path: "{{ remote_tmp_dir }}/files"
-      pull: no
+      pull: false
     repository: "{{ test_image_base }}"
     source: build
   register: repository_1
@@ -252,7 +252,7 @@
   docker_image:
     name: "{{ test_image_base }}:latest"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - assert:
     that:

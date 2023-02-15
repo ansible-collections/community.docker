@@ -6,5 +6,5 @@
 - name: Install docker
   community.general.pacman:
     name: docker
-    update_cache: yes
+    update_cache: true
   notify: cleanup docker

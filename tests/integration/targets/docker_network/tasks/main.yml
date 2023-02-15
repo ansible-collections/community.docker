@@ -37,13 +37,13 @@
     docker_container:
       name: "{{ item }}"
       state: absent
-      force_kill: yes
+      force_kill: true
     loop: "{{ cnames }}"
   - name: "Make sure all networks are removed"
     docker_network:
       name: "{{ item }}"
       state: absent
-      force: yes
+      force: true
     loop: "{{ dnetworks }}"
 
   when: docker_api_version is version('1.25', '>=')  # FIXME: find out API version!

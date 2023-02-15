@@ -11,7 +11,7 @@
 
   - name: Try to get docker_node_info when docker is not running in swarm mode
     docker_node_info:
-    ignore_errors: yes
+    ignore_errors: true
     register: output
 
   - name: assert failure when called when swarm is not in use or not run on manager node
@@ -46,7 +46,7 @@
 
   - name: Try to get docker_node_info using the self parameter
     docker_node_info:
-      self: yes
+      self: true
     register: output
 
   - name: assert reading swarm facts with list of nodes option

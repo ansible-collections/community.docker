@@ -82,7 +82,7 @@
     restart_policy: on-failure  # only on-failure can have restart_retries, so don't change it here
     restart_retries: 2
   register: update
-  diff: yes
+  diff: true
 
 - name: Update values again
   docker_container:
@@ -100,7 +100,7 @@
     restart_policy: always
     restart_retries: 0
   register: update2
-  diff: yes
+  diff: true
 
 - name: Recreate container
   docker_container:
@@ -117,16 +117,16 @@
     memory_swap: unlimited
     restart_policy: on-failure
     restart_retries: 2
-    force_kill: yes
+    force_kill: true
   register: recreate
-  diff: yes
+  diff: true
 
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - name: Check general things
   assert:

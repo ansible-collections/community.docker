@@ -19,4 +19,4 @@
         dest: /tmp/docker-machine
     - name: Install docker-machine binary
       command: install /tmp/docker-machine /usr/bin/docker-machine
-      become: yes
+      become: true

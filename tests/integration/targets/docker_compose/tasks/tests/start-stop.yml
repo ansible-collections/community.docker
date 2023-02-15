@@ -38,7 +38,7 @@
     project_name: "{{ pname }}"
     state: present
     definition: "{{ test_service | from_yaml }}"
-  check_mode: yes
+  check_mode: true
   register: present_1
 
 - name: Present
@@ -60,7 +60,7 @@
     project_name: "{{ pname }}"
     state: present
     definition: "{{ test_service | from_yaml }}"
-  check_mode: yes
+  check_mode: true
   register: present_4
 
 - name: Present (changed check)
@@ -68,7 +68,7 @@
     project_name: "{{ pname }}"
     state: present
     definition: "{{ test_service_mod | from_yaml }}"
-  check_mode: yes
+  check_mode: true
   register: present_5
 
 - name: Present (changed)
@@ -96,7 +96,7 @@
     project_name: "{{ pname }}"
     state: absent
     definition: "{{ test_service_mod | from_yaml }}"
-  check_mode: yes
+  check_mode: true
   register: absent_1
 
 - name: Absent
@@ -118,7 +118,7 @@
     project_name: "{{ pname }}"
     state: absent
     definition: "{{ test_service_mod | from_yaml }}"
-  check_mode: yes
+  check_mode: true
   register: absent_4
 
 - assert:
@@ -138,7 +138,7 @@
     state: present
     definition: "{{ test_service | from_yaml }}"
     stopped: true
-  check_mode: yes
+  check_mode: true
   register: present_1
 
 - name: Present stopped
@@ -163,7 +163,7 @@
     state: present
     definition: "{{ test_service | from_yaml }}"
     stopped: true
-  check_mode: yes
+  check_mode: true
   register: present_4
 
 - name: Started (check)
@@ -171,7 +171,7 @@
     project_name: "{{ pname }}"
     state: present
     definition: "{{ test_service | from_yaml }}"
-  check_mode: yes
+  check_mode: true
   register: started_1
 
 - name: Started
@@ -193,7 +193,7 @@
     project_name: "{{ pname }}"
     state: present
     definition: "{{ test_service | from_yaml }}"
-  check_mode: yes
+  check_mode: true
   register: started_4
 
 - name: Stopped (check)
@@ -202,7 +202,7 @@
     state: present
     definition: "{{ test_service | from_yaml }}"
     stopped: true
-  check_mode: yes
+  check_mode: true
   register: stopped_1
 
 - name: Stopped

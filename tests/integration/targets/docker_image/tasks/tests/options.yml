@@ -21,7 +21,7 @@
   docker_image:
     name: "{{ iname }}"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - name: buildargs
   docker_image:
@@ -34,10 +34,10 @@
         TEST1: val1
         TEST2: val2
         TEST3: "True"
-      pull: no
+      pull: false
     source: build
   register: buildargs_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: buildargs (idempotency)
   docker_image:
@@ -50,16 +50,16 @@
         TEST1: val1
         TEST2: val2
         TEST3: "True"
-      pull: no
+      pull: false
     source: build
   register: buildargs_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_image:
     name: "{{ iname }}"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - assert:
     that:
@@ -77,9 +77,9 @@
       path: "{{ remote_tmp_dir }}/files"
       container_limits:
         memory: 4000
-      pull: no
+      pull: false
     source: build
-  ignore_errors: yes
+  ignore_errors: true
   register: container_limits_1
 
 - name: container_limits
@@ -90,7 +90,7 @@
       container_limits:
         memory: 7000000
         memswap: 8000000
-      pull: no
+      pull: false
     source: build
   register: container_limits_2
 
@@ -98,7 +98,7 @@
   docker_image:
     name: "{{ iname }}"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - assert:
     that:
@@ -121,7 +121,7 @@
     build:
       path: "{{ remote_tmp_dir }}/files"
       dockerfile: "MyDockerfile"
-      pull: no
+      pull: false
     source: build
   register: dockerfile_1
 
@@ -129,7 +129,7 @@
   docker_image:
     name: "{{ iname }}"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - assert:
     that:
@@ -145,7 +145,7 @@
   docker_image:
     name: "{{ iname }}"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - name: build.platform
   docker_image:
@@ -153,10 +153,10 @@
     build:
       path: "{{ remote_tmp_dir }}/files"
       platform: linux
-      pull: no
+      pull: false
     source: build
   register: platform_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: build.platform (idempotency)
   docker_image:
@@ -164,16 +164,16 @@
     build:
       path: "{{ remote_tmp_dir }}/files"
       platform: linux
-      pull: no
+      pull: false
     source: build
   register: platform_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_image:
     name: "{{ iname }}"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - assert:
     that:
@@ -189,7 +189,7 @@
     name: "{{ iname }}"
     build:
       path: "{{ remote_tmp_dir }}/files"
-      pull: no
+      pull: false
     source: build
 
 - name: force (changed)
@@ -198,9 +198,9 @@
     build:
       path: "{{ remote_tmp_dir }}/files"
       dockerfile: "MyDockerfile"
-      pull: no
+      pull: false
     source: build
-    force_source: yes
+    force_source: true
   register: force_1
 
 - name: force (unchanged)
@@ -209,16 +209,16 @@
     build:
       path: "{{ remote_tmp_dir }}/files"
       dockerfile: "MyDockerfile"
-      pull: no
+      pull: false
     source: build
-    force_source: yes
+    force_source: true
   register: force_2
 
 - name: cleanup
   docker_image:
     name: "{{ iname }}"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - assert:
     that:
@@ -309,7 +309,7 @@
   docker_image:
     name: "{{ docker_test_image_hello_world }}"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - name: load image (changed)
   docker_image:
@@ -369,7 +369,7 @@
     name: "{{ iname }}"
     build:
       path: "{{ remote_tmp_dir }}/files"
-      pull: no
+      pull: false
     source: build
   register: path_1
 
@@ -378,7 +378,7 @@
     name: "{{ iname }}"
     build:
       path: "{{ remote_tmp_dir }}/files"
-      pull: no
+      pull: false
     source: build
   register: path_2
 
@@ -386,7 +386,7 @@
   docker_image:
     name: "{{ iname }}"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - assert:
     that:
@@ -404,7 +404,7 @@
       path: "{{ remote_tmp_dir }}/files"
       dockerfile: "StagedDockerfile"
       target: first
-      pull: no
+      pull: false
     source: build
   register: dockerfile_2
 
@@ -412,7 +412,7 @@
   docker_image:
     name: "{{ iname }}"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - assert:
     that:
@@ -429,7 +429,7 @@
     build:
       path: "{{ remote_tmp_dir }}/files"
       dockerfile: "EtcHostsDockerfile"
-      pull: no
+      pull: false
       etc_hosts:
         some-custom-host: "127.0.0.1"
     source: build
@@ -439,7 +439,7 @@
   docker_image:
     name: "{{ iname }}"
     state: absent
-    force_absent: yes
+    force_absent: true
 
 - assert:
     that:

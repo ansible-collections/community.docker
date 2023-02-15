@@ -40,7 +40,7 @@
     image: "{{ image_info.images[0].Id }}"
     name: "{{ cname }}"
     state: present
-    force_kill: yes
+    force_kill: true
   register: create_1
 
 - name: Create container with {{ docker_test_image_hello_world }} image via ID (idempotent)
@@ -48,7 +48,7 @@
     image: "{{ image_info.images[0].Id }}"
     name: "{{ cname }}"
     state: present
-    force_kill: yes
+    force_kill: true
   register: create_2
 
 - name: Create container with {{ docker_test_image_alpine }} image via ID
@@ -56,7 +56,7 @@
     image: "{{ image_info.images[1].Id }}"
     name: "{{ cname }}"
     state: present
-    force_kill: yes
+    force_kill: true
   register: create_3
 
 - name: Create container with {{ docker_test_image_alpine }} image via ID (idempotent)
@@ -64,14 +64,14 @@
     image: "{{ image_info.images[1].Id }}"
     name: "{{ cname }}"
     state: present
-    force_kill: yes
+    force_kill: true
   register: create_4
 
 - name: Untag image
   # Image will not be deleted since the container still uses it
   docker_image:
     name: "{{ docker_test_image_alpine }}"
-    force_absent: yes
+    force_absent: true
     state: absent
 
 - name: Create container with {{ docker_test_image_alpine }} image via name (check mode, will pull, same image)
@@ -80,7 +80,7 @@
     name: "{{ cname }}"
     state: present
   register: create_5
-  check_mode: yes
+  check_mode: true
 
 - name: Create container with {{ docker_test_image_alpine }} image via name (will pull, same image)
   docker_container:
@@ -93,8 +93,8 @@
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:
@@ -112,7 +112,7 @@
     image: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
     name: "{{ cname }}"
     state: present
-    force_kill: yes
+    force_kill: true
   register: digest_1
 
 - name: Create container with {{ docker_test_image_digest_base }} image via old digest (idempotent)
@@ -120,16 +120,16 @@
     image: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
     name: "{{ cname }}"
     state: present
-    force_kill: yes
+    force_kill: true
   register: digest_2
 
 - name: Create container with {{ docker_test_image_digest_base }} image via old digest (idempotent, pull)
   docker_container:
     image: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
     name: "{{ cname }}"
-    pull: yes
+    pull: true
     state: present
-    force_kill: yes
+    force_kill: true
   register: digest_3
 
 - name: Update container with {{ docker_test_image_digest_base }} image via new digest
@@ -137,15 +137,15 @@
     image: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v2 }}"
     name: "{{ cname }}"
     state: present
-    force_kill: yes
+    force_kill: true
   register: digest_4
 
 - name: Cleanup
   docker_container:
     name: "{{ cname }}"
     state: absent
-    force_kill: yes
-  diff: no
+    force_kill: true
+  diff: false
 
 - assert:
     that:

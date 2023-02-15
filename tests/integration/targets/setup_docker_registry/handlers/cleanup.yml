@@ -12,8 +12,8 @@
 - name: "Get registry logs"
   command: "docker logs {{ docker_registry_container_name_registry }}"
   register: registry_logs
-  no_log: yes
-  ignore_errors: yes
+  no_log: true
+  ignore_errors: true
 
 - name: "Printing registry logs"
   debug:
@@ -23,14 +23,14 @@
 - name: "Get nginx logs for first instance"
   command: "docker logs {{ docker_registry_container_name_nginx }}"
   register: nginx_logs
-  no_log: yes
-  ignore_errors: yes
+  no_log: true
+  ignore_errors: true
 
 - name: "Get nginx logs for second instance"
   command: "docker logs {{ docker_registry_container_name_nginx2 }}"
   register: nginx2_logs
-  no_log: yes
-  ignore_errors: yes
+  no_log: true
+  ignore_errors: true
 
 - name: "Printing nginx logs for first instance"
   debug:
@@ -46,7 +46,7 @@
   docker_container:
     name: "{{ item }}"
     state: absent
-    force_kill: yes
+    force_kill: true
   with_items: "{{ docker_registry_setup_cnames }}"
   register: result
   retries: 3
@@ -56,4 +56,4 @@
 - name: "Make sure all volumes are removed"
   command: "docker volume rm -f {{ item }}"
   with_items: "{{ docker_registry_setup_vnames }}"
-  ignore_errors: yes
+  ignore_errors: true

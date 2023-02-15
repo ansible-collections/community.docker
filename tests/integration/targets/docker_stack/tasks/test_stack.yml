@@ -22,7 +22,7 @@
     register: output
     docker_stack:
       state: present
-    ignore_errors: yes
+    ignore_errors: true
 
   - name: assert failure when name not set
     assert:
@@ -34,7 +34,7 @@
     register: output
     docker_stack:
       name: test_stack
-    ignore_errors: yes
+    ignore_errors: true
 
   - name: assert failure when compose not set
     assert:

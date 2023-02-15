@@ -49,7 +49,7 @@
   - nginx.conf
   - nginx.htpasswd
   register: can_copy_files
-  ignore_errors: yes
+  ignore_errors: true
 
 - when: can_copy_files is not failed
   block:
@@ -59,7 +59,7 @@
       path: '{{ remote_tmp_dir }}/cert.key'
       type: ECC
       curve: secp256r1
-      force: yes
+      force: true
 
   - name: Create CSR for frontend certificate
     community.crypto.openssl_csr:

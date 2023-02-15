@@ -31,7 +31,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -43,7 +43,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -55,7 +55,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -70,7 +70,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "/tmp/"
@@ -85,7 +85,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts: []
   register: mounts_5
@@ -94,7 +94,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts: []
   register: mounts_6
@@ -103,7 +103,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -122,7 +122,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -135,7 +135,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -147,7 +147,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -159,7 +159,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -175,7 +175,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "/tmp"
@@ -189,7 +189,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "/tmp"
@@ -202,7 +202,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "/tmp"
@@ -215,7 +215,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -231,7 +231,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -247,7 +247,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -262,7 +262,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -276,7 +276,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -292,7 +292,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -306,7 +306,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -319,7 +319,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -332,7 +332,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -348,7 +348,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -364,7 +364,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -380,7 +380,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -394,7 +394,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -410,7 +410,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -418,13 +418,13 @@
         type: "tmpfs"
         tmpfs_size: "50M"
   register: mounts_tmpfs_size_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: mounts.tmpfs_size (idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -432,13 +432,13 @@
         type: "tmpfs"
         tmpfs_size: "50M"
   register: mounts_tmpfs_size_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: mounts.tmpfs_size (change)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -446,13 +446,13 @@
         type: "tmpfs"
         tmpfs_size: "25M"
   register: mounts_tmpfs_size_3
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -474,7 +474,7 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -482,13 +482,13 @@
         type: "tmpfs"
         tmpfs_mode: 0444
   register: mounts_tmpfs_mode_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: mounts.tmpfs_mode (idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -496,13 +496,13 @@
         type: "tmpfs"
         tmpfs_mode: 0444
   register: mounts_tmpfs_mode_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: mounts.tmpfs_mode (change)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: "{{ volume_name_1 }}"
@@ -510,13 +510,13 @@
         type: "tmpfs"
         tmpfs_mode: 0777
   register: mounts_tmpfs_mode_3
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -538,45 +538,45 @@
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: ""
         target: "/tmp/{{ volume_name_1 }}"
         type: "tmpfs"
   register: mounts_tmpfs_source_1
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: mounts.source (empty for tmpfs idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - source: ""
         target: "/tmp/{{ volume_name_1 }}"
         type: "tmpfs"
   register: mounts_tmpfs_source_2
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: mounts.source (not specified for tmpfs idempotency)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
-    resolve_image: no
+    resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     mounts:
       - target: "/tmp/{{ volume_name_1 }}"
         type: "tmpfs"
   register: mounts_tmpfs_source_3
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: cleanup
   docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
-  diff: no
+  diff: false
 
 - assert:
     that:
@@ -603,4 +603,4 @@
     - "{{ volume_name_2 }}"
   loop_control:
     loop_var: volume_name
-  ignore_errors: yes
+  ignore_errors: true
