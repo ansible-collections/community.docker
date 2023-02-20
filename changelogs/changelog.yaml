@@ -1115,3 +1115,17 @@ releases:
       name: docker_container_copy_into
       namespace: ''
     release_date: '2023-01-14'
+  3.4.1:
+    changes:
+      bugfixes:
+      - docker_api connection plugin, docker_container_exec, docker_container_copy_into
+        - properly close socket to Daemon after executing commands in containers (https://github.com/ansible-collections/community.docker/pull/582).
+      - docker_container - fix ``tmfs_size`` and ``tmpfs_mode`` not being set (https://github.com/ansible-collections/community.docker/pull/580).
+      - various plugins and modules - remove unnecessary imports (https://github.com/ansible-collections/community.docker/pull/574).
+      release_summary: Regular bugfix release.
+    fragments:
+    - 3.4.1.yml
+    - 582-stream-close.yml
+    - fix-tmpfs_size-and-tmpfs_mode.yml
+    - remove-unneeded-imports.yml
+    release_date: '2023-02-20'

@@ -5,6 +5,21 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.4.1
+======
+
+Release Summary
+---------------
+
+Regular bugfix release.
+
+Bugfixes
+--------
+
+- docker_api connection plugin, docker_container_exec, docker_container_copy_into - properly close socket to Daemon after executing commands in containers (https://github.com/ansible-collections/community.docker/pull/582).
+- docker_container - fix ``tmfs_size`` and ``tmpfs_mode`` not being set (https://github.com/ansible-collections/community.docker/pull/580).
+- various plugins and modules - remove unnecessary imports (https://github.com/ansible-collections/community.docker/pull/574).
+
 v3.4.0
 ======
 

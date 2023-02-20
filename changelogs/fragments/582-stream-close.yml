@@ -1,2 +1,0 @@
-bugfixes:
-  - "docker_api connection plugin, docker_container_exec, docker_container_copy_into - properly close socket to Daemon after executing commands in containers (https://github.com/ansible-collections/community.docker/pull/582)."

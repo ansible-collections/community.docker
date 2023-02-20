@@ -1,2 +1,0 @@
-bugfixes:
-  - docker_container - fix ``tmfs_size`` and ``tmpfs_mode`` not being set (https://github.com/ansible-collections/community.docker/pull/580).
