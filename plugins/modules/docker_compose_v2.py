@@ -171,6 +171,7 @@ options:
 
 requirements:
   - "docker-compose >= 2.0.0"
+  - "PyYAML"
 
 author:
   - Léo El Amri (@lel-amri)
@@ -392,7 +393,7 @@ from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DOCKER_COMMON_ARGS,
 )
-from ansible.module_utils.common.yaml import HAS_YAML, yaml_dump
+from ansible_collections.community.docker.plugins.module_utils._yaml import HAS_YAML, yaml_dump
 
 
 STATUS_DONE = frozenset({
