@@ -162,7 +162,7 @@
 <h1>community.docker.docker_compose_v2 module – Manage multi-container Docker applications with Docker Compose.<a class="headerlink" href="#community-docker-docker-compose-v2-module-manage-multi-container-docker-applications-with-docker-compose" title="Permalink to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/community/docker">community.docker collection</a> (version 3.4.1).</p>
+<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/community/docker">community.docker collection</a> (version 3.5.0).</p>
 <p>To install it, use: <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">install</span> <span class="pre">community.docker</span></code>.
 You need further requirements to be able to use this module,
 see <a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-requirements"><span class="std std-ref">Requirements</span></a> for details.</p>
@@ -192,6 +192,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>The below requirements are needed on the host that executes this module.</p>
 <ul class="simple">
 <li><p>docker-compose &gt;= 2.0.0</p></li>
+<li><p>PyYAML</p></li>
 </ul>
 </section>
 <section id="parameters">
@@ -594,56 +595,36 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tbody>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-containers"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-return-containers"><strong>containers</strong></p>
-<a class="ansibleOptionLink" href="#return-containers" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">complex</span></p>
+<a class="ansibleOptionLink" href="#return-containers" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>A dictionary mapping the various status of containers during <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> operation.</p>
+<td><div class="ansible-option-cell"><p>A dictionary mapping containers to the various status they went through during <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> operation.</p>
+<p>A dict of lists, where dict keys are containers names and lists elements are statuses.</p>
 <p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> always, unless when <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> was not given the chance to run</p>
+<p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">{&quot;container_1&quot;:</span> <span class="pre">[&quot;stopped&quot;,</span> <span class="pre">&quot;removed&quot;],</span> <span class="pre">&quot;container_2&quot;:</span> <span class="pre">[&quot;running&quot;]}</span></code></p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/container_name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-return-containers-container-name"><strong>container_name</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/container_name" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Name of the container.</p>
-<p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> always, unless when <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> was not given the chance to run</p>
-<p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[&quot;stopped&quot;,</span> <span class="pre">&quot;removed&quot;]</span></code></p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-images"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-return-images"><strong>images</strong></p>
-<a class="ansibleOptionLink" href="#return-images" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">complex</span></p>
+<a class="ansibleOptionLink" href="#return-images" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>A dictionary mapping the various status of volumes during <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> operation.</p>
+<td><div class="ansible-option-cell"><p>A dictionary mapping images to the various status they went through during <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> operation.</p>
+<p>A dict of lists, where dict keys are services names and lists elements are statuses.</p>
+<p><code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> does not report images by their names, but by the name of the service which require them.</p>
 <p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> always, unless when <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> was not given the chance to run</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-images/image_name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-return-images-image-name"><strong>image_name</strong></p>
-<a class="ansibleOptionLink" href="#return-images/image_name" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Name of the image.</p>
-<p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> always, unless when <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> was not given the chance to run</p>
-<p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[&quot;removed&quot;]</span></code></p>
+<p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">{&quot;service_1&quot;:</span> <span class="pre">[&quot;pulled&quot;],</span> <span class="pre">&quot;service_2&quot;:</span> <span class="pre">[&quot;pulled&quot;]}</span></code></p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-networks"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-return-networks"><strong>networks</strong></p>
-<a class="ansibleOptionLink" href="#return-networks" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">complex</span></p>
+<a class="ansibleOptionLink" href="#return-networks" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>A dictionary mapping the various status of networks during <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> operation.</p>
+<td><div class="ansible-option-cell"><p>A dictionary mapping networks to the various status they went through during <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> operation.</p>
+<p>A dict of lists, where dict keys are networks names and lists elements are statuses.</p>
 <p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> always, unless when <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> was not given the chance to run</p>
+<p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">{&quot;network1&quot;:</span> <span class="pre">[&quot;created&quot;],</span> <span class="pre">&quot;network2&quot;:</span> <span class="pre">[&quot;removed&quot;]}</span></code></p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-networks/image_name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-return-networks-image-name"><strong>image_name</strong></p>
-<a class="ansibleOptionLink" href="#return-networks/image_name" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Name of the image.</p>
-<p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> always, unless when <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> was not given the chance to run</p>
-<p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[&quot;created&quot;]</span></code></p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-stderr"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-return-stderr"><strong>stderr</strong></p>
 <a class="ansibleOptionLink" href="#return-stderr" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -651,7 +632,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> always, unless when <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> was not given the chance to run</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-stdout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-return-stdout"><strong>stdout</strong></p>
 <a class="ansibleOptionLink" href="#return-stdout" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -659,21 +640,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> always, unless when <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> was not given the chance to run</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-volumes"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-return-volumes"><strong>volumes</strong></p>
-<a class="ansibleOptionLink" href="#return-volumes" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">complex</span></p>
+<a class="ansibleOptionLink" href="#return-volumes" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>A dictionary mapping the various status of volumes during <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> operation.</p>
+<td><div class="ansible-option-cell"><p>A dictionary mapping volumes to the various status they went through during <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> operation.</p>
+<p>A dict of lists, where dict keys are volumes names and lists elements are statuses.</p>
 <p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> always, unless when <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> was not given the chance to run</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-volumes/volume_name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-return-volumes-volume-name"><strong>volume_name</strong></p>
-<a class="ansibleOptionLink" href="#return-volumes/volume_name" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Name of the volume.</p>
-<p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> always, unless when <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> was not given the chance to run</p>
-<p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[&quot;created&quot;]</span></code></p>
+<p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">{&quot;volume_1&quot;:</span> <span class="pre">[&quot;created&quot;],</span> <span class="pre">&quot;volume_2&quot;:</span> <span class="pre">[&quot;removed&quot;]}</span></code></p>
 </div></td>
 </tr>
 </tbody>
