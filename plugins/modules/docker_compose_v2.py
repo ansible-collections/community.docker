@@ -321,52 +321,50 @@ stderr:
   type: str
 containers:
   description:
-    - A dictionary mapping the various status of containers during C(docker-compose) operation.
+    - A dictionary mapping containers to the various status they went through during C(docker-compose) operation.
+    - A dict of lists, where dict keys are containers names and lists elements are statuses.
   returned: always, unless when C(docker-compose) was not given the chance to run
-  type: complex
-  contains:
-    container_name:
-      description: Name of the container.
-      returned: always, unless when C(docker-compose) was not given the chance to run
-      type: list
-      elements: str
-      example: ["stopped", "removed"]
+  type: dict
+  sample:
+    container_1:
+      - stopped
+      - removed
+    container_2:
+      - running
 volumes:
   description:
-    - A dictionary mapping the various status of volumes during C(docker-compose) operation.
+    - A dictionary mapping volumes to the various status they went through during C(docker-compose) operation.
+    - A dict of lists, where dict keys are volumes names and lists elements are statuses.
   returned: always, unless when C(docker-compose) was not given the chance to run
-  type: complex
-  contains:
-    volume_name:
-      description: Name of the volume.
-      returned: always, unless when C(docker-compose) was not given the chance to run
-      type: list
-      elements: str
-      example: ["created"]
+  type: dict
+  sample:
+    volume_1:
+      - created
+    volume_2:
+      - removed
 images:
   description:
-    - A dictionary mapping the various status of volumes during C(docker-compose) operation.
+    - A dictionary mapping images to the various status they went through during C(docker-compose) operation.
+    - A dict of lists, where dict keys are services names and lists elements are statuses.
+    - C(docker-compose) does not report images by their names, but by the name of the service which require them.
   returned: always, unless when C(docker-compose) was not given the chance to run
-  type: complex
-  contains:
-    image_name:
-      description: Name of the image.
-      returned: always, unless when C(docker-compose) was not given the chance to run
-      type: list
-      elements: str
-      example: ["removed"]
+  type: dict
+  sample:
+    "service_1":
+      - pulled
+    "service_2":
+      - pulled
 networks:
   description:
-    - A dictionary mapping the various status of networks during C(docker-compose) operation.
+    - A dictionary mapping networks to the various status they went through during C(docker-compose) operation.
+    - A dict of lists, where dict keys are networks names and lists elements are statuses.
   returned: always, unless when C(docker-compose) was not given the chance to run
-  type: complex
-  contains:
-    image_name:
-      description: Name of the image.
-      returned: always, unless when C(docker-compose) was not given the chance to run
-      type: list
-      elements: str
-      example: ["created"]
+  type: dict
+  sample:
+    network1:
+      - created
+    network2:
+      - removed
 '''
 
 
