@@ -11,6 +11,11 @@ on:
       - stable-2
   pull_request:
 
+concurrency:
+  # Make sure there is at most one active run per PR, but do not cancel any non-PR runs
+  group: ${{ github.workflow }}-${{ (github.head_ref && github.event.number) || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   sanity:
     name: EOL Sanity (Ⓐ${{ matrix.ansible }})
