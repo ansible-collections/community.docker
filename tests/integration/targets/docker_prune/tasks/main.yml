@@ -103,7 +103,7 @@
       - result is not changed
       # containers
       - result.containers == []
-      - reuslt.containers_space_reclaimed == 0
+      - result.containers_space_reclaimed == 0
       # images
       - result.images == []
       - result.images_space_reclaimed == 0
