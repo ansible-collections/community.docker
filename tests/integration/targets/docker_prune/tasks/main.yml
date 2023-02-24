@@ -36,7 +36,8 @@
     command: docker volume list
 
   # Prune objects
-  - docker_prune:
+  - name: Prune everything
+    docker_prune:
       containers: yes
       images: yes
       networks: yes
@@ -51,6 +52,7 @@
   - name: General checks
     assert:
       that:
+      - result is changed
       # containers
       - container.container.Id in result.containers
       - "'containers_space_reclaimed' in result"
@@ -77,6 +79,37 @@
       # so our named container is not removed
       - volume.volume.Name not in result.volumes
     when: docker_api_version is version('1.42', '>=')
+
+  # Prune objects again
+  - name: Prune everything again (should have no change)
+    docker_prune:
+      containers: true
+      images: true
+      networks: true
+      volumes: true
+      builder_cache: "{{ docker_py_version is version('3.3.0', '>=') }}"
+    register: result
+
+  # Analyze result
+  - name: Show results
+    debug:
+      var: result
+  - name: General checks
+    assert:
+      that:
+      - result is not changed
+      # containers
+      - result.containers == []
+      - result.containers_space_reclaimed == 0
+      # images
+      - result.images == []
+      - result.images_space_reclaimed == 0
+      # networks
+      - result.networks == []
+      # volumes
+      - result.volumes == []
+      # builder_cache
+      - result.builder_cache_space_reclaimed == 0
 
   # Test with filters
   - name: Prune with filters
@@ -107,6 +140,7 @@
     - name: Check results
       assert:
         that:
+          - result is changed
           - volume.volume.Name in result.volumes
           - "'volumes_space_reclaimed' in result"
 
