@@ -85,6 +85,9 @@ options:
 author:
   - "Felix Fontein (@felixfontein)"
 
+notes:
+  - The module always returned C(changed=false) before community.docker 3.5.1.
+
 requirements:
   - "Docker API >= 1.25"
 '''
@@ -215,6 +218,7 @@ def main():
 
     try:
         result = dict()
+        changed = False
 
         if client.module.params['containers']:
             filters = clean_dict_booleans_for_docker_api(client.module.params.get('containers_filters'))
@@ -222,6 +226,8 @@ def main():
             res = client.post_to_json('/containers/prune', params=params)
             result['containers'] = res.get('ContainersDeleted') or []
             result['containers_space_reclaimed'] = res['SpaceReclaimed']
+            if result['containers'] or result['containers_space_reclaimed']:
+                changed = True
 
         if client.module.params['images']:
             filters = clean_dict_booleans_for_docker_api(client.module.params.get('images_filters'))
@@ -229,12 +235,16 @@ def main():
             res = client.post_to_json('/images/prune', params=params)
             result['images'] = res.get('ImagesDeleted') or []
             result['images_space_reclaimed'] = res['SpaceReclaimed']
+            if result['images'] or result['images_space_reclaimed']:
+                changed = True
 
         if client.module.params['networks']:
             filters = clean_dict_booleans_for_docker_api(client.module.params.get('networks_filters'))
             params = {'filters': convert_filters(filters)}
             res = client.post_to_json('/networks/prune', params=params)
             result['networks'] = res.get('NetworksDeleted') or []
+            if result['networks']:
+                changed = True
 
         if client.module.params['volumes']:
             filters = clean_dict_booleans_for_docker_api(client.module.params.get('volumes_filters'))
@@ -242,11 +252,16 @@ def main():
             res = client.post_to_json('/volumes/prune', params=params)
             result['volumes'] = res.get('VolumesDeleted') or []
             result['volumes_space_reclaimed'] = res['SpaceReclaimed']
+            if result['volumes'] or result['volumes_space_reclaimed']:
+                changed = True
 
         if client.module.params['builder_cache']:
             res = client.post_to_json('/build/prune')
             result['builder_cache_space_reclaimed'] = res['SpaceReclaimed']
+            if result['builder_cache_space_reclaimed']:
+                changed = True
 
+        result['changed'] = changed
         client.module.exit_json(**result)
     except DockerException as e:
         client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
