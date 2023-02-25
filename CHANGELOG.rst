@@ -5,6 +5,20 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v2.7.5
+======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- docker_prune - return correct value for ``changed``. So far the module always claimed that nothing changed (https://github.com/ansible-collections/community.docker/pull/593).
+- various plugins and modules - remove unnecessary imports (https://github.com/ansible-collections/community.docker/pull/574).
+
 v2.7.4
 ======
 

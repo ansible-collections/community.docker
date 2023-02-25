@@ -1,2 +1,0 @@
-bugfixes:
-  - "docker_prune - return correct value for ``changed``. So far the module always claimed that nothing changed (https://github.com/ansible-collections/community.docker/pull/593)."
