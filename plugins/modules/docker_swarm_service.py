@@ -777,7 +777,7 @@ rebuilt:
   description:
     - True if the service has been recreated (removed and created)
   type: bool
-  sample: True
+  sample: true
 '''
 
 EXAMPLES = '''
