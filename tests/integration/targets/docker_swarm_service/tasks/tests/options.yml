@@ -146,7 +146,7 @@
     resolve_image: false
     command:
       - "/bin/sh"
-      - yes
+      - true
   register: command_8
   ignore_errors: true
 

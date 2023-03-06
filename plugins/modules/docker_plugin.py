@@ -65,7 +65,7 @@ options:
   force_remove:
     description:
       - Remove even if the plugin is enabled.
-    default: False
+    default: false
     type: bool
 
   enable_timeout:

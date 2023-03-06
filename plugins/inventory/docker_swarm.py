@@ -131,7 +131,7 @@ client_cert: /somewhere/cert.pem
 # Example using constructed features to create groups and set ansible_host
 plugin: community.docker.docker_swarm
 docker_host: tcp://my-docker-host:2375
-strict: False
+strict: false
 keyed_groups:
   # add for example x86_64 hosts to an arch_x86_64 group
   - prefix: arch

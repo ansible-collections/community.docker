@@ -66,7 +66,7 @@
   docker_network:
     name: "{{ nname_1 }}"
     driver_options:
-      com.docker.network.bridge.enable_icc: False
+      com.docker.network.bridge.enable_icc: false
   register: driver_options_3
 
 - name: driver_options (change)
@@ -80,7 +80,7 @@
   docker_network:
     name: "{{ nname_1 }}"
     driver_options:
-      com.docker.network.bridge.enable_icc: True
+      com.docker.network.bridge.enable_icc: true
   register: driver_options_5
 
 - name: cleanup
