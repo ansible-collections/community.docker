@@ -1139,3 +1139,9 @@ releases:
     - 3.4.2.yml
     - 593-docker_prune-changed.yml
     release_date: '2023-02-25'
+  3.4.3:
+    changes:
+      release_summary: Maintenance release with improved documentation.
+    fragments:
+    - 3.4.3.yml
+    release_date: '2023-03-24'
