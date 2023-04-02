@@ -1,12 +1,8 @@
-# PLEASE READ THE FOLLOWING
-# This file is the vendored version of Ansible's `/lib/ansible/module_utils/common/yaml.py`.
-# This file MUST be removed once this collection drops support for ansible-core v2.11, and
-# related imports MUST be changed to `from ansible.module_utils.common.yaml import ...` or
-# alike.
-# This file was taken at https://raw.githubusercontent.com/ansible/ansible/5f6ebebce9f0e7eab1ba26848d2dd02d24f43e0a/lib/ansible/module_utils/common/yaml.py
-
-# (c) 2020 Matt Martz <matt@sivel.net>
-# Simplified BSD License (see licenses/simplified_bsd.txt or https://opensource.org/licenses/BSD-2-Clause)
+# A vendored version of ansible-core's `lib/ansible/module_utils/common/yaml.py`.
+# This file can be removed once community.docker drops support for ansible-core 2.11.
+# Copyright (c) 2020 Matt Martz <matt@sivel.net>
+# Simplified BSD License (see LICENSES/BSD-2-Clause.txt or https://opensource.org/licenses/BSD-2-Clause)
+# SPDX-License-Identifier: BSD-2-Clause
 
 """
 This file provides ease of use shortcuts for loading and dumping YAML,

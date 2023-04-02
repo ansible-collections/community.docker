@@ -15,6 +15,7 @@ description: Modules and plugins for working with Docker
 license:
   - GPL-3.0-or-later
   - Apache-2.0
+  - BSD-2-Clause
 #license_file: COPYING
 tags:
   - docker
