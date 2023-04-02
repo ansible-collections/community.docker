@@ -46,58 +46,48 @@
     ## Present #########################################################
     ####################################################################
 
-    - name: Present (check)
-      docker_compose_v2:
-        state: present
-        project_src: "{{ remote_tmp_dir }}/{{ cname_prefix }}"
-      check_mode: true
-      register: present_1
-
     - name: Present
       docker_compose_v2:
         state: present
-        project_src: "{{ remote_tmp_dir }}/{{ cname_prefix }}"
-      register: present_2
+        files:
+          - "{{ remote_tmp_dir }}/{{ cname_prefix }}/docker-compose.yaml"
+      register: present_1
 
     - name: Present (idempotent)
       docker_compose_v2:
         state: present
-        project_src: "{{ remote_tmp_dir }}/{{ cname_prefix }}"
-      register: present_3
-
-    - name: Present (idempotent check)
-      docker_compose_v2:
-        state: present
-        project_src: "{{ remote_tmp_dir }}/{{ cname_prefix }}"
-      check_mode: true
-      register: present_4
+        files:
+          - "{{ remote_tmp_dir }}/{{ cname_prefix }}/docker-compose.yaml"
+      register: present_2
 
     - name: Update docker-compose.yml file
       copy:
         content: '{{ test_service_mod | string }}'
         dest: '{{ remote_tmp_dir }}/{{ pname }}/docker-compose.yaml'
 
-    - name: Present (changed check)
-      docker_compose_v2:
-        state: present
-        project_src: "{{ remote_tmp_dir }}/{{ cname_prefix }}"
-      check_mode: true
-      register: present_5
-
     - name: Present (changed)
       docker_compose_v2:
         state: present
-        project_src: "{{ remote_tmp_dir }}/{{ cname_prefix }}"
-      register: present_6
+        files:
+          - "{{ remote_tmp_dir }}/{{ cname_prefix }}/docker-compose.yaml"
+      register: present_3
 
     - assert:
         that:
         - present_1 is changed
-        - present_2 is changed
-        - present_3 is not changed
-        - present_4 is not changed
-        - present_5 is changed
-        - present_6 is changed
+        - "cname in present_1.containers"
+        - "present_1.containers[cname] | length == 2"
+        - "'created' in present_1.containers[cname]"
+        - "'started' in present_1.containers[cname]"
+        - present_2 is not changed
+        - "cname in present_2.containers"
+        - "present_2.containers[cname] | length == 1"
+        - "'running' in present_2.containers[cname]"
+        - present_3 is changed
+        - "cname in present_3.containers"
+        - "present_3.containers[cname] | length == 2"
+        - "'recreated' in present_3.containers[cname]"
+        - "'started' in present_3.containers[cname]"
 
     ####################################################################
     ## Absent ##########################################################
@@ -238,4 +228,5 @@
     - name: Clean up
       docker_compose_v2:
         state: absent
-        project_src: "{{ remote_tmp_dir }}/{{ cname_prefix }}"
+        files:
+          - "{{ remote_tmp_dir }}/{{ cname_prefix }}/docker-compose.yaml"

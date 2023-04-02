@@ -369,7 +369,7 @@ networks:
 
 import sys
 if sys.version_info[0] == 3 and sys.version_info[1] >= 5:
-    from typing import List, Optional, Tuple, Union, FrozenSet, Dict, Type, TYPE_CHECKING, Any
+    from typing import List, Optional, Tuple, Union, FrozenSet, Dict, Type, TYPE_CHECKING, Any, NamedTuple
     if sys.version_info[1] >= 8:
         from typing import Literal, Final
     else:
@@ -435,6 +435,7 @@ STATUS_THAT_CAUSE_A_CHANGE = frozenset({
     'Stopped',
     'Killed',
     'Removed',
+    'Recreated',
 })  # type: Final[FrozenSet[Text]]
 
 
@@ -469,23 +470,31 @@ class ResourceType(object):
         }[resource_type]
 
 
-if TYPE_CHECKING:
-    EVENT = Tuple[Any, Text, Text]
-
 ResourceEvent = namedtuple(
     'ResourceEvent',
     ['resource_type', 'resource_id', 'status']
 )
 
 
+if TYPE_CHECKING:
+  ResourceEvent = NamedTuple(
+      'ResourceEvent',
+      [('resource_type', ResourceType), ('resource_id', Text), ('status', Text)]
+  )
+
+
 _re_resource_event = re.compile(
     r'^'
+    r'\s*'
     r'(?P<resource_type>Network|Image|Volume|Container)'
-    r' '
-    r'(?P<resource_id>.+)'
-    r'  '
-    r'(?P<status>%s)' % (
-        "|".join(STATUS_DONE | STATUS_WORKING | STATUS_ERROR)
+    r'\s+'
+    r'(?P<resource_id>[^\s]+)'
+    r'\s+'
+    r'(?P<status>%s)'
+    r'\s*'
+    r'$'
+    % (
+        "|".join(sorted(STATUS_DONE | STATUS_WORKING | STATUS_ERROR, key=lambda e: len(e), reverse=True))
     )
 )
 
@@ -501,8 +510,8 @@ class ComposeManager(object):
 
     @staticmethod
     def _parse_stderr(stderr):
-        # type: (Text) -> List[EVENT]
-        events = []  # type: List[EVENT]
+        # type: (Text) -> List[ResourceEvent]
+        events = []  # type: List[ResourceEvent]
         for line in stderr.splitlines():
             line = line.strip()
             match = _re_resource_event.match(line)
@@ -524,7 +533,7 @@ class ComposeManager(object):
         profiles=None,  # type: Optional[List[Text]]
         env_file=None,  # type: Optional[Text]
     ):
-        # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        # type: (...) -> Tuple[int, Text, Text, List[ResourceEvent]]
         if profiles is None:
             profiles = []
         command = [DOCKER_COMPOSE_EXECUTABLE, '--ansi', 'never']
@@ -578,7 +587,7 @@ class ComposeManager(object):
         remove_orphans=False,  # type: bool
         timeout=None,  # type: Optional[int]
     ):
-        # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        # type: (...) -> Tuple[int, Text, Text, List[ResourceEvent]]
         if profiles is None:
             profiles = []
         if services is None:
@@ -625,7 +634,7 @@ class ComposeManager(object):
         volumes=False,  # type: bool
         timeout=None,  # type: Optional[int]
     ):
-        # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        # type: (...) -> Tuple[int, Text, Text, List[ResourceEvent]]
         if profiles is None:
             profiles = []
         subcommand = ['down']
@@ -659,7 +668,7 @@ class ComposeManager(object):
         # Specific arguments
         timeout=None,  # type: Optional[int]
     ):
-        # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        # type: (...) -> Tuple[int, Text, Text, List[ResourceEvent]]
         if profiles is None:
             profiles = []
         subcommand = ['stop']
@@ -688,7 +697,7 @@ class ComposeManager(object):
         services=None,  # type: Optional[List[Text]]
         timeout=None,  # type: Optional[int]
     ):
-        # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        # type: (...) -> Tuple[int, Text, Text, List[ResourceEvent]]
         if profiles is None:
             profiles = []
         if services is None:
@@ -722,7 +731,7 @@ class ComposeManager(object):
         no_cache=False,  # type: bool
         pull=False,  # type: bool
     ):
-        # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        # type: (...) -> Tuple[int, Text, Text, List[ResourceEvent]]
         if profiles is None:
             profiles = []
         if services is None:
@@ -757,7 +766,7 @@ class ComposeManager(object):
         services=None,  # type: Optional[List[Text]]
         include_deps=False,  # type: bool
     ):
-        # type: (...) -> Tuple[int, Text, Text, List[EVENT]]
+        # type: (...) -> Tuple[int, Text, Text, List[ResourceEvent]]
         if profiles is None:
             profiles = []
         if services is None:
