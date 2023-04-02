@@ -23,10 +23,9 @@ description:
 attributes:
   check_mode:
     support: none
-    description: Check mode is not supported because the `docker-compose` CLI doesn't allow it.
+    details: Check mode is not supported because the C(docker-compose) CLI does not allow it.
   diff_mode:
     support: none
-    description: Diff mode is not supported.
 
 options:
   docker_host:
@@ -122,7 +121,7 @@ options:
       - smart
   build:
     description:
-      - Use with I(state) C(present) to always build images prior to starting the application.
+      - Use with I(state=present) to always build images prior to starting the application.
       - Equivalent to C(docker-compose up --build).
       - Images will only be rebuilt if Docker detects a change in the Dockerfile or build directory contents.
       - If an existing image is replaced, services using the image will be recreated unless I(recreate) is C(never).
@@ -130,7 +129,7 @@ options:
     default: false
   pull:
     description:
-      - Use with I(state) C(present) to always pull images prior to starting the application.
+      - Use with I(state=present) to always pull images prior to starting the application.
       - Equivalent to C(docker-compose up --pull always).
       - When a new image is pulled, services using the image will be recreated unless I(recreate) is C(never).
     type: bool
@@ -143,7 +142,7 @@ options:
     default: false
   remove_images:
     description:
-      - Use with I(state) C(absent) to remove all images or only local images.
+      - Use with I(state=absent) to remove all images or only local images.
       - Equivalent to C(docker-compose down --rmi all|local).
     type: str
     choices:
@@ -151,7 +150,7 @@ options:
       - local
   remove_volumes:
     description:
-      - Use with I(state) C(absent) to remove data volumes.
+      - Use with I(state=absent) to remove data volumes.
       - Equivalent to C(docker-compose down --volumes).
     type: bool
     default: false
@@ -164,10 +163,9 @@ options:
   timeout:
     description:
       - Timeout in seconds for container shutdown when attached or when containers are already running.
-      - By default C(compose) will use a C(10s) timeout unless C(default_grace_period) is defined for a
+      - By default C(docker-compose) will use a C(10s) timeout unless C(default_grace_period) is defined for a
         particular service in the I(project_src).
     type: int
-    default: null
 
 requirements:
   - "docker-compose >= 2.0.0"
