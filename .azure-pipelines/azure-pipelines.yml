@@ -66,6 +66,17 @@ stages:
               test: 'devel/sanity/extra'
             - name: Units
               test: 'devel/units/1'
+  - stage: Ansible_2_15
+    displayName: Sanity & Units 2.15
+    dependsOn: []
+    jobs:
+      - template: templates/matrix.yml
+        parameters:
+          targets:
+            - name: Sanity
+              test: '2.15/sanity/1'
+            - name: Units
+              test: '2.15/units/1'
   - stage: Ansible_2_14
     displayName: Sanity & Units 2.14
     dependsOn: []
@@ -124,6 +135,19 @@ stages:
           groups:
             - 4
             - 5
+  - stage: Docker_2_15
+    displayName: Docker 2.15
+    dependsOn: []
+    jobs:
+      - template: templates/matrix.yml
+        parameters:
+          testFormat: 2.15/linux/{0}
+          targets:
+            - name: CentOS 7
+              test: centos7
+          groups:
+            - 4
+            - 5
   - stage: Docker_2_14
     displayName: Docker 2.14
     dependsOn: []
@@ -145,8 +169,6 @@ stages:
         parameters:
           testFormat: 2.13/linux/{0}
           targets:
-            - name: CentOS 7
-              test: centos7
             - name: Fedora 35
               test: fedora35
             - name: openSUSE 15 py2
@@ -204,10 +226,24 @@ stages:
         parameters:
           testFormat: devel/{0}
           targets:
-            - name: RHEL 7.9
-              test: rhel/7.9
             - name: RHEL 9.1 with latest Docker SDK from PyPi
               test: rhel/9.1-pypi-latest
+          groups:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+  - stage: Remote_2_15
+    displayName: Remote 2.15
+    dependsOn: []
+    jobs:
+      - template: templates/matrix.yml
+        parameters:
+          testFormat: 2.15/{0}
+          targets:
+            - name: RHEL 7.9
+              test: rhel/7.9
           groups:
             - 1
             - 2
@@ -269,14 +305,17 @@ stages:
     condition: succeededOrFailed()
     dependsOn:
       - Ansible_devel
+      - Ansible_2_15
       - Ansible_2_14
       - Ansible_2_13
       - Ansible_2_12
       - Remote_devel
+      - Remote_2_15
       - Remote_2_14
       - Remote_2_13
       - Remote_2_12
       - Docker_devel
+      - Docker_2_15
       - Docker_2_14
       - Docker_2_13
       - Docker_2_12
