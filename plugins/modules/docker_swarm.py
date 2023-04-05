@@ -80,8 +80,8 @@ options:
       - Set to C(join), to join an existing cluster.
       - Set to C(absent), to leave an existing cluster.
       - Set to C(remove), to remove an absent node from the cluster.
+        Note that removing requires Docker SDK for Python >= 2.4.0.
       - M(community.docker.docker_node) can be used to demote a manager before removal.
-      Note that removing requires Docker SDK for Python >= 2.4.0.
     type: str
     default: present
     choices:
