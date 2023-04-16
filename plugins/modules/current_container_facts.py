@@ -19,6 +19,7 @@ description:
   - This module attempts a best-effort detection. There might be special cases where
     it does not work; if you encounter one, L(please file an issue,
     https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&template=bug_report.md).
+  - M(foo).
 author:
   - Felix Fontein (@felixfontein)
 extends_documentation_fragment:
