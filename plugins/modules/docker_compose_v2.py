@@ -77,6 +77,7 @@ options:
       - Specifying C(present) is the same as running C(docker-compose up).
       - Specifying C(restarted) is the same as running C(docker-compose restart).
       - Specifying C(absent) is the same as running C(docker-compose down).
+      - Specifying C(created) is the same as running C(docker-compose create).
     type: str
     default: present
     choices:
@@ -86,6 +87,7 @@ options:
       - pulled
       - restarted
       - stopped
+      - created
   services:
     description:
       - When I(state) is C(present) run C(docker-compose up) resp. C(docker-compose stop) (with I(stopped)) resp. C(docker-compose restart) (with I(restarted))
@@ -786,6 +788,51 @@ class ComposeManager(object):
             env_file=env_file,
         )
 
+    def create(
+        self,
+        # Common arguments
+        files,  # type: List[Text]
+        content=None,  # type: Optional[Text]
+        project_name=None,  # type: Optional[Text]
+        project_directory=None,  # type: Optional[Text]
+        profiles=None,  # type: Optional[List[Text]]
+        env_file=None,  # type: Optional[Text]
+        # Specific arguments
+        services=None,  # type: Optional[List[Text]]
+        build=False,  # type: bool
+        force_recreate=False,  # type: bool
+        no_build=False,  # type: bool
+        no_recreate=False,  # type: bool
+        pull=None,  # type: Optional[Union[Literal['always'], Literal['missing'], Literal['never']]]
+    ):
+        # type: (...) -> Tuple[int, Text, Text, List[ResourceEvent]]
+        if profiles is None:
+            profiles = []
+        if services is None:
+            services = []
+        subcommand = ['create']
+        if build:
+            subcommand.append('--build')
+        if force_recreate:
+            subcommand.append('--force-recreate')
+        if no_build:
+            subcommand.append('--no-build')
+        if no_recreate:
+            subcommand.append('--no-recreate')
+        if pull:
+            subcommand.extend(['--pull', pull])
+        for service in services:
+            subcommand.append(service)
+        return self._run_subcommand(
+            subcommand,
+            files,
+            content,
+            project_name=project_name,
+            project_directory=project_directory,
+            profiles=profiles,
+            env_file=env_file,
+        )
+
 
 def main():
     module = AnsibleModule(
@@ -796,7 +843,7 @@ def main():
             env_file=dict(type='path'),
             files=dict(type='list', elements='path'),
             profiles=dict(type='list', elements='str'),
-            state=dict(type='str', default='present', choices=['absent', 'present', 'built', 'pulled', 'restarted', 'stopped']),
+            state=dict(type='str', default='present', choices=['absent', 'present', 'built', 'pulled', 'restarted', 'stopped', 'created']),
             definition=dict(type='dict'),
             recreate=dict(type='str', default='smart', choices=['always', 'never', 'smart']),
             build=dict(type='bool', default=False),
@@ -890,6 +937,15 @@ def main():
             rmi=module.params['remove_images'],
             volumes=module.params['remove_volumes'],
             timeout=module.params['timeout'],
+            **common_kwargs
+        )
+    elif module.params['state'] == 'created':
+        rc, out, err, events = compose.create(
+            *common_args,
+            services=module.params['services'] or [],
+            pull='always' if module.params['pull'] else None,
+            force_recreate=module.params['recreate'] == "always",
+            no_recreate=module.params['recreate'] == "never",
             **common_kwargs
         )
     else:
