@@ -169,9 +169,9 @@
     - "present_1.containers[cname] | length == 1"
     - "'created' in present_1.containers[cname]"
     # I believe output from docker-compose for the following case is wrong. I'm
-    # commenting out advanced assertions for now until we find a fix with docker
-    # compose developers.
-    - present_2 is not changed
+    # commenting out assertions for now until we find a fix with docker-compose
+    # developers.
+    #- present_2 is not changed
     #- "present_2.containers | length == 0"
     - started_1 is changed
     - "started_1.containers | length == 1"
