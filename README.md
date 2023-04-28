@@ -26,7 +26,7 @@ Some modules and plugins require Docker CLI, or other external, programs. Some r
 
 Installing the Docker SDK for Python also installs the requirements for the modules and plugins that use `requests`. If you want to directly install the Python libraries instead of the SDK, you need the following ones:
 
-- [requests](https://pypi.org/project/requests/);
+- [requests](https://pypi.org/project/requests/) (versions before 2.29.0);
 - [pywin32](https://pypi.org/project/pywin32/) when using named pipes on Windows with the Windows 32 API;
 - [paramiko](https://pypi.org/project/paramiko/) when using SSH to connect to the Docker daemon with `use_ssh_client=false`;
 - [pyOpenSSL](https://pypi.org/project/pyOpenSSL/) when using TLS to connect to the Docker daemon;

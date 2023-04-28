@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 docker
-requests
+requests < 2.29  # TODO see https://github.com/ansible-collections/community.docker/issues/611
 paramiko
 
 # We assume that EEs are not based on Windows, and have Python >= 3.5.
