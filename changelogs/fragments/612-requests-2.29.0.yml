@@ -1,4 +1,4 @@
 known_issues:
   - "The modules and plugins using the vendored code from Docker SDK for Python currently do not work with requests 2.29.0. The same is currently true for the latest version of Docker SDK for Python itself (https://github.com/ansible-collections/community.docker/issues/611, https://github.com/ansible-collections/community.docker/pull/612)."
 minor_changes:
-  - "Restrict requests to versions before 2.29.0. This is necessary until the vendored code from Docker SDK for Python has been fully adjusted to work with a feature of urllib3 that is used since requests 2.29.0 (https://github.com/ansible-collections/community.docker/issues/611, https://github.com/ansible-collections/community.docker/pull/612)."
+  - "Restrict requests to versions before 2.29.0, and urllib3 to versions before 2.0.0. This is necessary until the vendored code from Docker SDK for Python has been fully adjusted to work with a feature of urllib3 that is used since requests 2.29.0 (https://github.com/ansible-collections/community.docker/issues/611, https://github.com/ansible-collections/community.docker/pull/612)."
