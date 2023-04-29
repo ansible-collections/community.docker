@@ -184,7 +184,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span id="ansible-collections-community-docker-docker-api-connection-requirements"></span><h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h2>
 <p>The below requirements are needed on the local controller node that executes this connection.</p>
 <ul class="simple">
-<li><p>requests</p></li>
+<li><p>requests &lt; 2.29.0 (see <a class="reference external" href="https://github.com/ansible-collections/community.docker/issues/611">https://github.com/ansible-collections/community.docker/issues/611</a>)</p></li>
 <li><p>pywin32 (when using named pipes on Windows 32)</p></li>
 <li><p>paramiko (when using SSH with <em>use_ssh_client=false</em>)</p></li>
 <li><p>pyOpenSSL (when using TLS)</p></li>
