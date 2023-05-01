@@ -5,6 +5,24 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.4.4
+======
+
+Release Summary
+---------------
+
+Maintenance release with updated EE requirements and updated documentation.
+
+Minor Changes
+-------------
+
+- Restrict requests to versions before 2.29.0, and urllib3 to versions before 2.0.0. This is necessary until the vendored code from Docker SDK for Python has been fully adjusted to work with a feature of urllib3 that is used since requests 2.29.0 (https://github.com/ansible-collections/community.docker/issues/611, https://github.com/ansible-collections/community.docker/pull/612).
+
+Known Issues
+------------
+
+- The modules and plugins using the vendored code from Docker SDK for Python currently do not work with requests 2.29.0 and/or urllib3 2.0.0. The same is currently true for the latest version of Docker SDK for Python itself (https://github.com/ansible-collections/community.docker/issues/611, https://github.com/ansible-collections/community.docker/pull/612).
+
 v3.4.3
 ======
 
