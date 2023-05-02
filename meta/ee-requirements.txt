@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 docker
-urllib3 < 2.0  # TODO see https://github.com/ansible-collections/community.docker/issues/611
+urllib3
 requests
 paramiko
 
