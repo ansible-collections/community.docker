@@ -18,7 +18,7 @@ from ansible.module_utils.six.moves import http_client as httplib
 from .basehttpadapter import BaseHTTPAdapter
 from .. import constants
 
-from .._import_helper import HTTPAdapter, urllib3
+from .._import_helper import HTTPAdapter, urllib3, urllib3_connection
 
 
 RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
@@ -35,7 +35,7 @@ class UnixHTTPResponse(httplib.HTTPResponse, object):
         super(UnixHTTPResponse, self).__init__(sock, *args, **kwargs)
 
 
-class UnixHTTPConnection(httplib.HTTPConnection, object):
+class UnixHTTPConnection(urllib3_connection.HTTPConnection, object):
 
     def __init__(self, base_url, unix_socket, timeout=60):
         super(UnixHTTPConnection, self).__init__(

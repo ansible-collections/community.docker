@@ -10,24 +10,18 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from ansible.module_utils.six import PY3
 from ansible.module_utils.six.moves.queue import Empty
 
 from .. import constants
-from .._import_helper import HTTPAdapter, urllib3
+from .._import_helper import HTTPAdapter, urllib3, urllib3_connection
 
 from .basehttpadapter import BaseHTTPAdapter
 from .npipesocket import NpipeSocket
 
-if PY3:
-    import http.client as httplib
-else:
-    import httplib
-
 RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
 
 
-class NpipeHTTPConnection(httplib.HTTPConnection, object):
+class NpipeHTTPConnection(urllib3_connection.HTTPConnection, object):
     def __init__(self, npipe_path, timeout=60):
         super(NpipeHTTPConnection, self).__init__(
             'localhost', timeout=timeout

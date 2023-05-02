@@ -42,13 +42,18 @@ except ImportError:
 
 try:
     from requests.packages import urllib3
+    from requests.packages.urllib3 import connection as urllib3_connection  # pylint: disable=unused-import
 except ImportError:
     try:
         import urllib3
+        from urllib3 import connection as urllib3_connection  # pylint: disable=unused-import
     except ImportError:
         URLLIB3_IMPORT_ERROR = traceback.format_exc()
 
         class _HTTPConnectionPool(object):
+            pass
+
+        class _HTTPConnection(object):
             pass
 
         class FakeURLLIB3(object):
@@ -63,7 +68,12 @@ except ImportError:
                 self.match_hostname = object()
                 self.HTTPConnectionPool = _HTTPConnectionPool
 
+        class FakeURLLIB3Connection(object):
+            def __init__(self):
+                self.HTTPConnection = _HTTPConnection
+
         urllib3 = FakeURLLIB3()
+        urllib3_connection = FakeURLLIB3Connection()
 
 
 # Monkey-patching match_hostname with a version that supports
