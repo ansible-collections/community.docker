@@ -24,12 +24,7 @@ from ansible.module_utils.six.moves.urllib_parse import urlparse
 from .basehttpadapter import BaseHTTPAdapter
 from .. import constants
 
-if PY3:
-    import http.client as httplib
-else:
-    import httplib
-
-from .._import_helper import HTTPAdapter, urllib3
+from .._import_helper import HTTPAdapter, urllib3, urllib3_connection
 
 PARAMIKO_IMPORT_ERROR = None
 try:
@@ -120,7 +115,7 @@ class SSHSocket(socket.socket):
         self.proc.terminate()
 
 
-class SSHConnection(httplib.HTTPConnection, object):
+class SSHConnection(urllib3_connection.HTTPConnection, object):
     def __init__(self, ssh_transport=None, timeout=60, host=None):
         super(SSHConnection, self).__init__(
             'localhost', timeout=timeout

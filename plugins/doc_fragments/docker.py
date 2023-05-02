@@ -289,7 +289,7 @@ notes:
     communicate with the Docker daemon. It uses code derived from the Docker SDK or Python that is included in this
     collection.
 requirements:
-  - requests < 2.29.0 (see U(https://github.com/ansible-collections/community.docker/issues/611))
+  - requests
   - pywin32 (when using named pipes on Windows 32)
   - paramiko (when using SSH with I(use_ssh_client=false))
   - pyOpenSSL (when using TLS)
