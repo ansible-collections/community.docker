@@ -1,0 +1,2 @@
+bugfixes:
+  - "Make vendored Docker SDK for Python code compatible with requests 2.29.0 and urllib3 2.0 (https://github.com/ansible-collections/community.docker/pull/613)."
