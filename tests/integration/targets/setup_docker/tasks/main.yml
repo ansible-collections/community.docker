@@ -80,18 +80,13 @@
         state: "{{ 'latest' if force_docker_sdk_for_python_pypi | default(false) else 'present' }}"
       notify: cleanup docker
 
-    # Detect docker CLI, API and docker-py versions
+    # Detect docker CLI and docker-py versions
     - name: Check Docker CLI version
       command: "docker version -f {% raw %}'{{.Client.Version}}'{% endraw %}"
       register: docker_cli_version_stdout
       ignore_errors: true
 
-    - name: Check Docker API version
-      command: "{{ ansible_python.executable }} -c 'import docker; print(docker.from_env().version()[\"ApiVersion\"])'"
-      register: docker_api_version_stdout
-      ignore_errors: true
-
-    - name: Check docker-py API version
+    - name: Check docker-py version
       command: "{{ ansible_python.executable }} -c 'import docker; print(docker.__version__)'"
       register: docker_py_version_stdout
       ignore_errors: true
