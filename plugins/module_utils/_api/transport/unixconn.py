@@ -13,7 +13,6 @@ __metaclass__ = type
 import socket
 
 from ansible.module_utils.six import PY2
-from ansible.module_utils.six.moves import http_client as httplib
 
 from .basehttpadapter import BaseHTTPAdapter
 from .. import constants
@@ -22,17 +21,6 @@ from .._import_helper import HTTPAdapter, urllib3, urllib3_connection
 
 
 RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
-
-
-class UnixHTTPResponse(httplib.HTTPResponse, object):
-    def __init__(self, sock, *args, **kwargs):
-        disable_buffering = kwargs.pop('disable_buffering', False)
-        if PY2:
-            # FIXME: We may need to disable buffering on Py3 as well,
-            # but there's no clear way to do it at the moment. See:
-            # https://github.com/docker/docker-py/issues/1799
-            kwargs['buffering'] = not disable_buffering
-        super(UnixHTTPResponse, self).__init__(sock, *args, **kwargs)
 
 
 class UnixHTTPConnection(urllib3_connection.HTTPConnection, object):
@@ -58,10 +46,13 @@ class UnixHTTPConnection(urllib3_connection.HTTPConnection, object):
             self.disable_buffering = True
 
     def response_class(self, sock, *args, **kwargs):
-        if self.disable_buffering:
-            kwargs['disable_buffering'] = True
+        if PY2:
+            # FIXME: We may need to disable buffering on Py3 as well,
+            # but there's no clear way to do it at the moment. See:
+            # https://github.com/docker/docker-py/issues/1799
+            kwargs['buffering'] = not self.disable_buffering
 
-        return UnixHTTPResponse(sock, *args, **kwargs)
+        return super(UnixHTTPConnection, self).response_class(sock, *args, **kwargs)
 
 
 class UnixHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
