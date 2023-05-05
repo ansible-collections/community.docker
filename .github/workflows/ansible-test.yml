@@ -101,6 +101,10 @@ jobs:
           - ''
         target:
           - ''
+        extra-constraints:
+          # Specifying this other than '' likely destroys change detection, but at least it will make
+          # CI pass when necessary...
+          - ''
         exclude:
           - ansible: ''
         include:
@@ -117,6 +121,7 @@ jobs:
             docker: alpine3
             python: ''
             target: azp/4/
+            extra-constraints: urllib3 < 2.0.0
           - ansible: '2.11'
             docker: alpine3
             python: ''
@@ -144,6 +149,9 @@ jobs:
             git clone --depth=1 --single-branch https://github.com/ansible-collections/community.crypto.git ../../community/crypto
             ;
             git clone --depth=1 --single-branch https://github.com/ansible-collections/community.general.git ../../community/general
+            ${{ matrix.extra-constraints && format('; echo ''{0}'' >> tests/utils/constraints.txt', matrix.extra-constraints) || '' }}
+            ;
+            cat tests/utils/constraints.txt
           pull-request-change-detection: 'true'
           target: ${{ matrix.target }}
           target-python-version: ${{ matrix.python }}
