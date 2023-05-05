@@ -1164,3 +1164,14 @@ releases:
     - 3.4.4.yml
     - 612-requests-2.29.0.yml
     release_date: '2023-05-01'
+  3.4.5:
+    changes:
+      bugfixes:
+      - Make vendored Docker SDK for Python code compatible with requests 2.29.0 and
+        urllib3 2.0 (https://github.com/ansible-collections/community.docker/pull/613).
+      release_summary: Maintenance release which adds compatibility with requests
+        2.29.0 and 2.30.0 and urllib3 2.0.
+    fragments:
+    - 3.4.5.yml
+    - 613-requests.yml
+    release_date: '2023-05-05'

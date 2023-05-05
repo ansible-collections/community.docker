@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.4.5
+======
+
+Release Summary
+---------------
+
+Maintenance release which adds compatibility with requests 2.29.0 and 2.30.0 and urllib3 2.0.
+
+Bugfixes
+--------
+
+- Make vendored Docker SDK for Python code compatible with requests 2.29.0 and urllib3 2.0 (https://github.com/ansible-collections/community.docker/pull/613).
+
 v3.4.4
 ======
 
