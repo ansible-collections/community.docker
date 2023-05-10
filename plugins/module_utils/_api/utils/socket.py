@@ -15,6 +15,7 @@ import os
 import select
 import socket as pysocket
 import struct
+import sys
 
 from ansible.module_utils.six import PY3, binary_type
 
@@ -42,7 +43,13 @@ def read(socket, n=4096):
     recoverable_errors = (errno.EINTR, errno.EDEADLK, errno.EWOULDBLOCK)
 
     if PY3 and not isinstance(socket, NpipeSocket):
-        select.select([socket], [], [])
+        if sys.platform == 'win32':
+            # Limited to 1024
+            select.select([socket], [], [])
+        else:
+            poll = select.poll()
+            poll.register(socket)
+            poll.poll()
 
     try:
         if hasattr(socket, 'recv'):

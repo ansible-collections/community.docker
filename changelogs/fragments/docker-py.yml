@@ -1,2 +1,3 @@
 bugfixes:
   - "vendored Docker SDK for Python code - fix for errors on pipe close in Windows."
+  - "vendored Docker SDK for Python code - use ``poll()`` instead of ``select()`` except on Windows."
