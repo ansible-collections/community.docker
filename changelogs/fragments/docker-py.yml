@@ -1,4 +1,4 @@
 bugfixes:
-  - "vendored Docker SDK for Python code - fix for errors on pipe close in Windows."
-  - "vendored Docker SDK for Python code - use ``poll()`` instead of ``select()`` except on Windows."
-  - "vendored Docker SDK for Python code - respect timeouts on Windows named pipes."
+  - "vendored Docker SDK for Python code - fix for errors on pipe close in Windows (https://github.com/ansible-collections/community.docker/pull/619)."
+  - "vendored Docker SDK for Python code - use ``poll()`` instead of ``select()`` except on Windows (https://github.com/ansible-collections/community.docker/pull/619)."
+  - "vendored Docker SDK for Python code - respect timeouts on Windows named pipes (https://github.com/ansible-collections/community.docker/pull/619)."
