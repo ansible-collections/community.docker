@@ -17,6 +17,9 @@ description:
       directly with the Docker daemon instead of using the Docker CLI. Use the
       R(community.docker.docker,ansible_collections.community.docker.docker_connection)
       connection plugin if you want to use the Docker CLI.
+notes:
+    - Does B(not work with TCP TLS sockets)! This is caused by the inability to send C(close_notify) without closing the connection
+      with Python's C(SSLSocket)s. See U(https://github.com/ansible-collections/community.docker/issues/605) for more information.
 extends_documentation_fragment:
     - community.docker.docker.api_documentation
     - community.docker.docker.var_names
