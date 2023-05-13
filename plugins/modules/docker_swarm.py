@@ -129,22 +129,24 @@ options:
   heartbeat_tick:
     description:
       - Amount of ticks (in seconds) between each heartbeat.
-      - Docker default value is C(1s).
+      - Docker default value is C(1) seconds.
     type: int
   election_tick:
     description:
       - Amount of ticks (in seconds) needed without a leader to trigger a new election.
-      - Docker default value is C(10s).
+      - Docker default value is C(10) seconds.
     type: int
   dispatcher_heartbeat_period:
     description:
-      - The delay for an agent to send a heartbeat to the dispatcher.
-      - Docker default value is C(5s).
+      - The delay (in nanoseconds) for an agent to send a heartbeat to the dispatcher.
+      - Docker default value is 5 seconds, which corresponds to a value of C(5000000000).
+      # DefaultHeartBeatPeriod in https://github.com/moby/moby/blob/master/vendor/github.com/moby/swarmkit/v2/manager/dispatcher/dispatcher.go#L32
     type: int
   node_cert_expiry:
     description:
-      - Automatic expiry for nodes certificates.
-      - Docker default value is C(3months).
+      - Automatic expiry for nodes certificates, given in nanoseconds.
+      - Docker default value is 90 days, which corresponds to a value of C(7776000000000000).
+      # DefaultNodeCertExpiration in https://github.com/moby/moby/blob/master/vendor/github.com/moby/swarmkit/v2/ca/certificates.go#L56
     type: int
   name:
     description:
