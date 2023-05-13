@@ -103,8 +103,6 @@ EXAMPLES = '''
       Docker in Swarm mode: {{ result.docker_swarm_active }}
       This is a Manager node: {{ result.docker_swarm_manager }}
 
-- block:
-
 - name: Get info on Docker Swarm and list of registered nodes
   community.docker.docker_swarm_info:
     nodes: true
@@ -123,7 +121,8 @@ EXAMPLES = '''
       name: mynode
   register: result
 
-- ansible.builtin.debug:
+- name: Show swarm facts
+  ansible.builtin.debug:
     var: result.swarm_facts
 
 - name: Get the swarm unlock key
@@ -131,7 +130,8 @@ EXAMPLES = '''
     unlock_key: true
   register: result
 
-- ansible.builtin.debug:
+- name: Print swarm unlock key
+  ansible.builtin.debug:
     var: result.swarm_unlock_key
 
 '''

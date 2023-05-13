@@ -208,7 +208,8 @@ EXAMPLES = '''
         project_src: flask
       register: output
 
-    - ansible.builtin.debug:
+    - name: Show results
+      ansible.builtin.debug:
         var: output
 
     - name: Run `docker-compose up` again
@@ -217,7 +218,8 @@ EXAMPLES = '''
         build: false
       register: output
 
-    - ansible.builtin.debug:
+    - name: Show results
+      ansible.builtin.debug:
         var: output
 
     - ansible.builtin.assert:
@@ -230,10 +232,12 @@ EXAMPLES = '''
         stopped: true
       register: output
 
-    - ansible.builtin.debug:
+    - name: Show results
+      ansible.builtin.debug:
         var: output
 
-    - ansible.builtin.assert:
+    - name: Verify that web and db service are running
+      ansible.builtin.assert:
         that:
           - "not output.services.web.flask_web_1.state.running"
           - "not output.services.db.flask_db_1.state.running"
@@ -245,10 +249,12 @@ EXAMPLES = '''
         restarted: true
       register: output
 
-    - ansible.builtin.debug:
+    - name: Show results
+      ansible.builtin.debug:
         var: output
 
-    - ansible.builtin.assert:
+    - name: Verify that web and db service are running
+      ansible.builtin.assert:
         that:
           - "output.services.web.flask_web_1.state.running"
           - "output.services.db.flask_db_1.state.running"
@@ -257,13 +263,15 @@ EXAMPLES = '''
   hosts: localhost
   gather_facts: false
   tasks:
-    - community.docker.docker_compose:
+    - name: Scale the web service to 2
+      community.docker.docker_compose:
         project_src: flask
         scale:
           web: 2
       register: output
 
-    - ansible.builtin.debug:
+    - name: Show results
+      ansible.builtin.debug:
         var: output
 
 - name: Run with inline Compose file version 2
@@ -271,11 +279,13 @@ EXAMPLES = '''
   hosts: localhost
   gather_facts: false
   tasks:
-    - community.docker.docker_compose:
+    - name: Remove flask project
+      community.docker.docker_compose:
         project_src: flask
         state: absent
 
-    - community.docker.docker_compose:
+    - name: Start flask project with inline definition
+      community.docker.docker_compose:
         project_name: flask
         definition:
           version: '2'
@@ -293,10 +303,12 @@ EXAMPLES = '''
                 - db
       register: output
 
-    - ansible.builtin.debug:
+    - name: Show results
+      ansible.builtin.debug:
         var: output
 
-    - ansible.builtin.assert:
+    - name: Verify that the db and web services are running
+      ansible.builtin.assert:
         that:
           - "output.services.web.flask_web_1.state.running"
           - "output.services.db.flask_db_1.state.running"
@@ -306,11 +318,13 @@ EXAMPLES = '''
   hosts: localhost
   gather_facts: false
   tasks:
-    - community.docker.docker_compose:
+    - name: Remove flask project
+      community.docker.docker_compose:
         project_src: flask
         state: absent
 
-    - community.docker.docker_compose:
+    - name: Start flask project with inline definition
+      community.docker.docker_compose:
         project_name: flask
         definition:
             db:
@@ -326,10 +340,12 @@ EXAMPLES = '''
                 - db
       register: output
 
-    - ansible.builtin.debug:
+    - name: Show results
+      ansible.builtin.debug:
         var: output
 
-    - ansible.builtin.assert:
+    - name: Verify that web and db services are running
+      ansible.builtin.assert:
         that:
           - "output.services.web.flask_web_1.state.running"
           - "output.services.db.flask_db_1.state.running"
