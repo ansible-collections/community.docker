@@ -36,6 +36,10 @@ def _empty_writer(msg):
 
 
 def shutdown_writing(sock, log=_empty_writer):
+    # FIXME: This does **not work with SSLSocket**! Apparently SSLSocket does not allow to send
+    #        a close_notify TLS alert without completely shutting down the connection.
+    #        Calling sock.shutdown(pysocket.SHUT_WR) simply turns of TLS encryption and from that
+    #        point on the raw encrypted data is returned when sock.recv() is called. :-(
     if hasattr(sock, 'shutdown_write'):
         sock.shutdown_write()
     elif hasattr(sock, 'shutdown'):

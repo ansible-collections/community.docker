@@ -44,6 +44,9 @@ options:
               R(docker_api connection plugin,ansible_collections.community.docker.docker_api_connection).
             - When C(docker-api) is used, all Docker daemon configuration values are passed from the inventory plugin
               to the connection plugin. This can be controlled with I(configure_docker_daemon).
+            - Note that the R(docker_api connection plugin,ansible_collections.community.docker.docker_api_connection)
+              does B(not work with TCP TLS sockets)! See U(https://github.com/ansible-collections/community.docker/issues/605)
+              for more information.
         type: str
         default: docker-api
         choices:
