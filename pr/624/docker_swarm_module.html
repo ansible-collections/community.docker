@@ -327,8 +327,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-dispatcher_heartbeat_period"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-module-parameter-dispatcher-heartbeat-period"><strong>dispatcher_heartbeat_period</strong></p>
 <a class="ansibleOptionLink" href="#parameter-dispatcher_heartbeat_period" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>The delay for an agent to send a heartbeat to the dispatcher.</p>
-<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">5s</span></code>.</p>
+<td><div class="ansible-option-cell"><p>The delay (in nanoseconds) for an agent to send a heartbeat to the dispatcher.</p>
+<p>Docker default value is 5 seconds, which corresponds to a value of <code class="docutils literal notranslate"><span class="pre">5000000000</span></code>.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -347,7 +347,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-election_tick" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Amount of ticks (in seconds) needed without a leader to trigger a new election.</p>
-<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">10s</span></code>.</p>
+<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">10</span></code> seconds.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -368,7 +368,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-heartbeat_tick" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Amount of ticks (in seconds) between each heartbeat.</p>
-<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">1s</span></code>.</p>
+<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">1</span></code> seconds.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -426,8 +426,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-node_cert_expiry"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-module-parameter-node-cert-expiry"><strong>node_cert_expiry</strong></p>
 <a class="ansibleOptionLink" href="#parameter-node_cert_expiry" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Automatic expiry for nodes certificates.</p>
-<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">3months</span></code>.</p>
+<td><div class="ansible-option-cell"><p>Automatic expiry for nodes certificates, given in nanoseconds.</p>
+<p>Docker default value is 90 days, which corresponds to a value of <code class="docutils literal notranslate"><span class="pre">7776000000000000</span></code>.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
