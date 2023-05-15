@@ -236,7 +236,7 @@ EXAMPLES = '''
       ansible.builtin.debug:
         var: output
 
-    - name: Verify that web and db service are running
+    - name: Verify that web and db services are running
       ansible.builtin.assert:
         that:
           - "not output.services.web.flask_web_1.state.running"
@@ -253,7 +253,7 @@ EXAMPLES = '''
       ansible.builtin.debug:
         var: output
 
-    - name: Verify that web and db service are running
+    - name: Verify that web and db services are running
       ansible.builtin.assert:
         that:
           - "output.services.web.flask_web_1.state.running"
@@ -263,7 +263,7 @@ EXAMPLES = '''
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Scale the web service to 2
+    - name: Scale the web service to two instances
       community.docker.docker_compose:
         project_src: flask
         scale:
