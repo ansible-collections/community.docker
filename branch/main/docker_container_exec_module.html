@@ -493,6 +493,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p>Does not support <code class="docutils literal notranslate"><span class="pre">check_mode</span></code>.</p></li>
+<li><p>Does <strong>not work with TCP TLS sockets</strong> when using <em>stdin</em>. This is caused by the inability to send <code class="docutils literal notranslate"><span class="pre">close_notify</span></code> without closing the connection with Python’s <code class="docutils literal notranslate"><span class="pre">SSLSocket</span></code>s. See <a class="reference external" href="https://github.com/ansible-collections/community.docker/issues/605">https://github.com/ansible-collections/community.docker/issues/605</a> for more information.</p></li>
 <li><p>Connect to the Docker daemon by providing parameters with each task or by defining environment variables. You can define <code class="docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code> and <code class="docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code>. If you are using docker machine, run the script shipped with the product that sets up the environment. It will set these variables for you. See <a class="reference external" href="https://docs.docker.com/machine/reference/env/">https://docs.docker.com/machine/reference/env/</a> for more details.</p></li>
 <li><p>This module does <strong>not</strong> use the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a> to communicate with the Docker daemon. It uses code derived from the Docker SDK or Python that is included in this collection.</p></li>
 </ul>
@@ -508,7 +509,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">  </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Print stdout</span>
-<span class="w">  </span><span class="nt">debug</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result.stdout</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run a simple command (argv)</span>
@@ -522,7 +523,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">  </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Print stderr lines</span>
-<span class="w">  </span><span class="nt">debug</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result.stderr_lines</span>
 </pre></div>
 </div>
