@@ -103,7 +103,7 @@ EXAMPLES = '''
   register: result
 
 - name: Print stdout
-  debug:
+  ansible.builtin.debug:
     var: result.stdout
 
 - name: Run a simple command (argv)
@@ -117,7 +117,7 @@ EXAMPLES = '''
   register: result
 
 - name: Print stderr lines
-  debug:
+  ansible.builtin.debug:
     var: result.stderr_lines
 '''
 

@@ -143,7 +143,8 @@ EXAMPLES = '''
         - key2=value2
   register: result
 
-- ansible.builtin.debug:
+- name: Show host information
+  ansible.builtin.debug:
     var: result.host_info
 
 '''
