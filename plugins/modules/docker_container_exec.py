@@ -95,7 +95,7 @@ options:
 
 notes:
   - Does not support C(check_mode).
-  - Does B(not work with TCP TLS sockets) when I(stdin) is used! This is caused by the inability to send C(close_notify) without closing the connection
+  - Does B(not work with TCP TLS sockets) when using I(stdin). This is caused by the inability to send C(close_notify) without closing the connection
     with Python's C(SSLSocket)s. See U(https://github.com/ansible-collections/community.docker/issues/605) for more information.
 author:
   - "Felix Fontein (@felixfontein)"
