@@ -1,0 +1,2 @@
+bugfixes:
+  - "socket_handler module utils - make sure this fully works when Docker SDK for Python is not available (https://github.com/ansible-collections/community.docker/pull/620)."

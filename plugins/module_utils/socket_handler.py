@@ -9,15 +9,11 @@ __metaclass__ = type
 import os
 import os.path
 import socket as pysocket
+import struct
 
 from ansible.module_utils.six import PY2
 
-try:
-    from docker.utils import socket as docker_socket
-    import struct
-except Exception:
-    # missing Docker SDK for Python handled in ansible_collections.community.docker.plugins.module_utils.common
-    pass
+from ansible_collections.community.docker.plugins.module_utils._api.utils import socket as docker_socket
 
 from ansible_collections.community.docker.plugins.module_utils.socket_helper import (
     make_unblocking,
