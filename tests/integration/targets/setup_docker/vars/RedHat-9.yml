@@ -11,7 +11,7 @@ docker_prereq_packages:
   - iptables
 
 docker_packages:
-  - docker-ce # -19.03.13
-  - docker-ce-cli # -19.03.13
+  - docker-ce-23.0.6
+  - docker-ce-cli-23.0.6
 docker_cli_packages:
-  - docker-ce-cli # -19.03.13
+  - docker-ce-cli-23.0.6

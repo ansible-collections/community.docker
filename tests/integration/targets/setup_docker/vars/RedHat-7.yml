@@ -11,3 +11,9 @@ docker_prereq_packages:
 
 docker_pip_extra_packages:
   - requests==2.6.0
+
+docker_packages:
+  - docker-ce-23.0.6
+  - docker-ce-cli-23.0.6
+docker_cli_packages:
+  - docker-ce-cli-23.0.6
