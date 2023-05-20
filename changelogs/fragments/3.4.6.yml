@@ -1,0 +1,1 @@
+release_summary: Bugfix release with documentation warnings about using certain functionality when connecting to the Docker daemon with TCP TLS.
