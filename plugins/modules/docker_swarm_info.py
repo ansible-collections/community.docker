@@ -326,7 +326,7 @@ class DockerSwarmManager(DockerBaseClass):
             # Number of replicas have to be updated in calling method or may be left as None
             object_essentials['Replicas'] = None
         object_essentials['Image'] = item['Spec']['TaskTemplate']['ContainerSpec']['Image']
-        if 'Ports' in item['Spec']['EndpointSpec']:
+        if item['Spec'].get('EndpointSpec') and 'Ports' in item['Spec']['EndpointSpec']:
             object_essentials['Ports'] = item['Spec']['EndpointSpec']['Ports']
         else:
             object_essentials['Ports'] = []
