@@ -72,17 +72,6 @@ stages:
               test: '2.13/sanity/1'
             - name: Units
               test: '2.13/units/1'
-  - stage: Ansible_2_12
-    displayName: Sanity & Units 2.12
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          targets:
-            - name: Sanity
-              test: '2.12/sanity/1'
-            - name: Units
-              test: '2.12/units/1'
 
 ### Docker
   - stage: Docker_2_14
@@ -124,23 +113,6 @@ stages:
               test: opensuse15py2
             - name: Alpine 3
               test: alpine3
-          groups:
-            - 4
-            - 5
-  - stage: Docker_2_12
-    displayName: Docker 2.12
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.12/linux/{0}
-          targets:
-            - name: CentOS 8
-              test: centos8
-            - name: Fedora 34
-              test: fedora34
-            - name: Ubuntu 18.04
-              test: ubuntu1804
           groups:
             - 4
             - 5
@@ -198,22 +170,6 @@ stages:
             - 3
             - 4
             - 5
-  - stage: Remote_2_12
-    displayName: Remote 2.12
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          nameFormat: RHEL {0}
-          testFormat: 2.12/rhel/{0}
-          targets:
-            - test: '8.4'
-          groups:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
 
   ## Finally
 
@@ -222,13 +178,10 @@ stages:
     dependsOn:
       - Ansible_2_14
       - Ansible_2_13
-      - Ansible_2_12
       - Remote_2_14
       - Remote_2_13
-      - Remote_2_12
       - Docker_2_14
       - Docker_2_13
-      - Docker_2_12
       - Docker_community_2_14
     jobs:
       - template: templates/coverage.yml
