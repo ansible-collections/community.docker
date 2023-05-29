@@ -30,6 +30,7 @@ jobs:
       matrix:
         ansible:
           - '2.11'
+          - '2.12'
     # Ansible-test on various stable branches does not yet work well with cgroups v2.
     # Since ubuntu-latest now uses Ubuntu 22.04, we need to fall back to the ubuntu-20.04
     # image for these stable branches. The list of branches where this is necessary will
@@ -66,6 +67,7 @@ jobs:
       matrix:
         ansible:
           - '2.11'
+          - '2.12'
 
     steps:
       - name: >-
@@ -124,6 +126,31 @@ jobs:
             extra-constraints: urllib3 < 2.0.0
           - ansible: '2.11'
             docker: alpine3
+            python: ''
+            target: azp/5/
+          # 2.12
+          - ansible: '2.12'
+            docker: fedora33
+            python: ''
+            target: azp/4/
+          - ansible: '2.12'
+            docker: fedora33
+            python: ''
+            target: azp/5/
+          - ansible: '2.12'
+            docker: fedora34
+            python: ''
+            target: azp/4/
+          - ansible: '2.12'
+            docker: fedora34
+            python: ''
+            target: azp/5/
+          - ansible: '2.12'
+            docker: ubuntu1804
+            python: ''
+            target: azp/4/
+          - ansible: '2.12'
+            docker: ubuntu1804
             python: ''
             target: azp/5/
 
