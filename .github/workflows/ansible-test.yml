@@ -30,6 +30,7 @@ jobs:
       matrix:
         ansible:
           - '2.11'
+          - '2.12'
     # Ansible-test on various stable branches does not yet work well with cgroups v2.
     # Since ubuntu-latest now uses Ubuntu 22.04, we need to fall back to the ubuntu-20.04
     # image for these stable branches. The list of branches where this is necessary will
@@ -43,7 +44,7 @@ jobs:
       - name: Perform sanity testing
         uses: felixfontein/ansible-test-gh-action@main
         with:
-          ansible-core-github-repository-slug: felixfontein/ansible
+          ansible-core-github-repository-slug: ${{ contains(fromJson('["2.10", "2.11"]'), matrix.ansible) && 'felixfontein/ansible' || 'ansible/ansible' }}
           ansible-core-version: stable-${{ matrix.ansible }}
           coverage: ${{ github.event_name == 'schedule' && 'always' || 'never' }}
           pull-request-change-detection: 'true'
@@ -66,6 +67,7 @@ jobs:
       matrix:
         ansible:
           - '2.11'
+          - '2.12'
 
     steps:
       - name: >-
@@ -73,7 +75,7 @@ jobs:
           Ansible version ${{ matrix.ansible }}
         uses: felixfontein/ansible-test-gh-action@main
         with:
-          ansible-core-github-repository-slug: felixfontein/ansible
+          ansible-core-github-repository-slug: ${{ contains(fromJson('["2.10", "2.11"]'), matrix.ansible) && 'felixfontein/ansible' || 'ansible/ansible' }}
           ansible-core-version: stable-${{ matrix.ansible }}
           coverage: ${{ github.event_name == 'schedule' && 'always' || 'never' }}
           pull-request-change-detection: 'true'
@@ -126,6 +128,31 @@ jobs:
             docker: alpine3
             python: ''
             target: azp/5/
+          # 2.12
+          - ansible: '2.12'
+            docker: fedora33
+            python: ''
+            target: azp/4/
+          - ansible: '2.12'
+            docker: fedora33
+            python: ''
+            target: azp/5/
+          - ansible: '2.12'
+            docker: fedora34
+            python: ''
+            target: azp/4/
+          - ansible: '2.12'
+            docker: fedora34
+            python: ''
+            target: azp/5/
+          - ansible: '2.12'
+            docker: ubuntu1804
+            python: ''
+            target: azp/4/
+          - ansible: '2.12'
+            docker: ubuntu1804
+            python: ''
+            target: azp/5/
 
     steps:
       - name: >-
@@ -134,7 +161,7 @@ jobs:
           under Python ${{ matrix.python }}
         uses: felixfontein/ansible-test-gh-action@main
         with:
-          ansible-core-github-repository-slug: felixfontein/ansible
+          ansible-core-github-repository-slug: ${{ contains(fromJson('["2.10", "2.11"]'), matrix.ansible) && 'felixfontein/ansible' || 'ansible/ansible' }}
           ansible-core-version: stable-${{ matrix.ansible }}
           coverage: ${{ github.event_name == 'schedule' && 'always' || 'never' }}
           docker-image: ${{ matrix.docker }}
