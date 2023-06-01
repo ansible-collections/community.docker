@@ -42,12 +42,12 @@ options:
     description:
       - The command to execute.
       - Since this is a list of arguments, no quoting is needed.
-      - Exactly one of I(argv) and I(command) must be specified.
+      - Exactly one of I(argv) or I(command) must be specified.
   command:
     type: str
     description:
       - The command to execute.
-      - Exactly one of I(argv) and I(command) must be specified.
+      - Exactly one of I(argv) or I(command) must be specified.
   chdir:
     type: str
     description:
