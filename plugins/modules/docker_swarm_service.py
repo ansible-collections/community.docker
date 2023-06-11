@@ -143,8 +143,9 @@ options:
       - Configure a check that is run to determine whether or not containers for this service are "healthy".
         See the docs for the L(HEALTHCHECK Dockerfile instruction,https://docs.docker.com/engine/reference/builder/#healthcheck)
         for details on how healthchecks work.
-      - "O(healthcheck.interval), O(healthcheck.timeout), and O(healthcheck.start_period) are specified as durations. They accept duration as a string in a format
-        that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
+      - "O(healthcheck.interval), O(healthcheck.timeout), and O(healthcheck.start_period) are specified as durations.
+        They accept duration as a string in a format that look like: V(5h34m56s), V(1m30s), and so on.
+        The supported units are V(us), V(ms), V(s), V(m) and V(h)."
     type: dict
     suboptions:
       test:
