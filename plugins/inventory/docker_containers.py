@@ -27,7 +27,7 @@ description:
 options:
     plugin:
         description:
-            - The name of this plugin, it should always be set to C(community.docker.docker_containers)
+            - The name of this plugin, it should always be set to V(community.docker.docker_containers)
               for this plugin to recognize it as it's own.
         type: str
         required: true
@@ -36,17 +36,14 @@ options:
     connection_type:
         description:
             - Which connection type to use the containers.
-            - One way to connect to containers is to use SSH (C(ssh)). For this, the options I(default_ip) and
-              I(private_ssh_port) are used. This requires that a SSH daemon is running inside the containers.
-            - Alternatively, C(docker-cli) selects the
-              R(docker connection plugin,ansible_collections.community.docker.docker_connection),
-              and C(docker-api) (default) selects the
-              R(docker_api connection plugin,ansible_collections.community.docker.docker_api_connection).
-            - When C(docker-api) is used, all Docker daemon configuration values are passed from the inventory plugin
-              to the connection plugin. This can be controlled with I(configure_docker_daemon).
-            - Note that the R(docker_api connection plugin,ansible_collections.community.docker.docker_api_connection)
-              does B(not work with TCP TLS sockets)! See U(https://github.com/ansible-collections/community.docker/issues/605)
-              for more information.
+            - One way to connect to containers is to use SSH (V(ssh)). For this, the options O(default_ip) and
+              O(private_ssh_port) are used. This requires that a SSH daemon is running inside the containers.
+            - Alternatively, V(docker-cli) selects the P(community.docker.docker#connection) connection plugin,
+              and V(docker-api) (default) selects the P(community.docker.docker_api#connection) connection plugin.
+            - When V(docker-api) is used, all Docker daemon configuration values are passed from the inventory plugin
+              to the connection plugin. This can be controlled with O(configure_docker_daemon).
+            - Note that the P(community.docker.docker_api#connection) does B(not work with TCP TLS sockets)!
+              See U(https://github.com/ansible-collections/community.docker/issues/605) for more information.
         type: str
         default: docker-api
         choices:
@@ -57,7 +54,7 @@ options:
     configure_docker_daemon:
         description:
             - Whether to pass all Docker daemon configuration from the inventory plugin to the connection plugin.
-            - Only used when I(connection_type=docker-api).
+            - Only used when O(connection_type=docker-api).
         type: bool
         default: true
         version_added: 1.8.0
@@ -67,8 +64,8 @@ options:
             - Toggle to (not) include all available inspection metadata.
             - Note that all top-level keys will be transformed to the format C(docker_xxx).
               For example, C(HostConfig) is converted to C(docker_hostconfig).
-            - If this is C(false), these values can only be used during I(constructed), I(groups), and I(keyed_groups).
-            - The C(docker) inventory script always added these variables, so for compatibility set this to C(true).
+            - If this is V(false), these values can only be used during O(compose), O(groups), and O(keyed_groups).
+            - The C(docker) inventory script always added these variables, so for compatibility set this to V(true).
         type: bool
         default: false
 
@@ -76,14 +73,14 @@ options:
         description:
             - The IP address to assign to ansible_host when the container's SSH port is mapped to interface
               '0.0.0.0'.
-            - Only used if I(connection_type) is C(ssh).
+            - Only used if O(connection_type) is V(ssh).
         type: str
         default: 127.0.0.1
 
     private_ssh_port:
         description:
             - The port containers use for SSH.
-            - Only used if I(connection_type) is C(ssh).
+            - Only used if O(connection_type) is V(ssh).
         type: int
         default: 22
 
@@ -96,11 +93,11 @@ options:
             - "C(image_<image name>): contains the containers that have the image C(<image name>)."
             - "C(stack_<stack name>): contains the containers that belong to the stack C(<stack name>)."
             - "C(service_<service name>): contains the containers that belong to the service C(<service name>)"
-            - "C(<docker_host>): contains the containers which belong to the Docker daemon I(docker_host).
+            - "C(<docker_host>): contains the containers which belong to the Docker daemon O(docker_host).
               Useful if you run this plugin against multiple Docker daemons."
             - "C(running): contains all containers that are running."
             - "C(stopped): contains all containers that are not running."
-            - If this is not set to C(true), you should use keyed groups to add the containers to groups.
+            - If this is not set to V(true), you should use keyed groups to add the containers to groups.
               See the examples for how to do that.
         type: bool
         default: false

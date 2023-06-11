@@ -32,11 +32,11 @@ options:
     description:
       - Externally reachable address advertised to other nodes.
       - This can either be an address/port combination
-          in the form C(192.168.1.1:4567), or an interface followed by a
-          port number, like C(eth0:4567).
+          in the form V(192.168.1.1:4567), or an interface followed by a
+          port number, like V(eth0:4567).
       - If the port number is omitted,
           the port number from the listen address is used.
-      - If I(advertise_addr) is not specified, it will be automatically
+      - If O(advertise_addr) is not specified, it will be automatically
           detected when possible.
       - Only used when swarm is initialised or joined. Because of this it's not
         considered for idempotency checking.
@@ -60,8 +60,8 @@ options:
     description:
       - Listen address used for inter-manager communication.
       - This can either be an address/port combination in the form
-          C(192.168.1.1:4567), or an interface followed by a port number,
-          like C(eth0:4567).
+          V(192.168.1.1:4567), or an interface followed by a port number,
+          like V(eth0:4567).
       - If the port number is omitted, the default swarm listening port
           is used.
       - Only used when swarm is initialised or joined. Because of this it's not
@@ -70,16 +70,16 @@ options:
     default: 0.0.0.0:2377
   force:
     description:
-      - Use with state C(present) to force creating a new Swarm, even if already part of one.
-      - Use with state C(absent) to Leave the swarm even if this node is a manager.
+      - Use with state V(present) to force creating a new Swarm, even if already part of one.
+      - Use with state V(absent) to Leave the swarm even if this node is a manager.
     type: bool
     default: false
   state:
     description:
-      - Set to C(present), to create/update a new cluster.
-      - Set to C(join), to join an existing cluster.
-      - Set to C(absent), to leave an existing cluster.
-      - Set to C(remove), to remove an absent node from the cluster.
+      - Set to V(present), to create/update a new cluster.
+      - Set to V(join), to join an existing cluster.
+      - Set to V(absent), to leave an existing cluster.
+      - Set to V(remove), to remove an absent node from the cluster.
         Note that removing requires Docker SDK for Python >= 2.4.0.
       - M(community.docker.docker_node) can be used to demote a manager before removal.
     type: str
@@ -92,35 +92,35 @@ options:
   node_id:
     description:
       - Swarm id of the node to remove.
-      - Used with I(state=remove).
+      - Used with O(state=remove).
     type: str
   join_token:
     description:
       - Swarm token used to join a swarm cluster.
-      - Used with I(state=join).
+      - Used with O(state=join).
       - If this value is specified, the corresponding value in the return values will be censored by Ansible.
         This is a side-effect of this value not being logged.
     type: str
   remote_addrs:
     description:
       - Remote address of one or more manager nodes of an existing Swarm to connect to.
-      - Used with I(state=join).
+      - Used with O(state=join).
     type: list
     elements: str
   task_history_retention_limit:
     description:
       - Maximum number of tasks history stored.
-      - Docker default value is C(5).
+      - Docker default value is V(5).
     type: int
   snapshot_interval:
     description:
       - Number of logs entries between snapshot.
-      - Docker default value is C(10000).
+      - Docker default value is V(10000).
     type: int
   keep_old_snapshots:
     description:
       - Number of snapshots to keep beyond the current snapshot.
-      - Docker default value is C(0).
+      - Docker default value is V(0).
     type: int
   log_entries_for_slow_followers:
     description:
@@ -129,23 +129,23 @@ options:
   heartbeat_tick:
     description:
       - Amount of ticks (in seconds) between each heartbeat.
-      - Docker default value is C(1) seconds.
+      - Docker default value is V(1) seconds.
     type: int
   election_tick:
     description:
       - Amount of ticks (in seconds) needed without a leader to trigger a new election.
-      - Docker default value is C(10) seconds.
+      - Docker default value is V(10) seconds.
     type: int
   dispatcher_heartbeat_period:
     description:
       - The delay (in nanoseconds) for an agent to send a heartbeat to the dispatcher.
-      - Docker default value is 5 seconds, which corresponds to a value of C(5000000000).
+      - Docker default value is 5 seconds, which corresponds to a value of V(5000000000).
       # DefaultHeartBeatPeriod in https://github.com/moby/moby/blob/master/vendor/github.com/moby/swarmkit/v2/manager/dispatcher/dispatcher.go#L32
     type: int
   node_cert_expiry:
     description:
       - Automatic expiry for nodes certificates, given in nanoseconds.
-      - Docker default value is 90 days, which corresponds to a value of C(7776000000000000).
+      - Docker default value is 90 days, which corresponds to a value of V(7776000000000000).
       # DefaultNodeCertExpiration in https://github.com/moby/moby/blob/master/vendor/github.com/moby/swarmkit/v2/ca/certificates.go#L56
     type: int
   name:
@@ -175,13 +175,13 @@ options:
     description:
       - An integer whose purpose is to force swarm to generate a new signing CA certificate and key,
           if none have been specified.
-      - Docker default value is C(0).
+      - Docker default value is V(0).
       - Requires API version >= 1.30.
     type: int
   autolock_managers:
     description:
       - If set, generate a key and use it to lock data stored on the managers.
-      - Docker default value is C(false).
+      - Docker default value is V(false).
       - M(community.docker.docker_swarm_info) can be used to retrieve the unlock key.
     type: bool
   rotate_worker_token:
@@ -195,8 +195,8 @@ options:
   data_path_addr:
     description:
       - Address or interface to use for data path traffic.
-      - This can either be an address in the form C(192.168.1.1), or an interface,
-          like C(eth0).
+      - This can either be an address in the form V(192.168.1.1), or an interface,
+          like V(eth0).
       - Only used when swarm is initialised or joined. Because of this it is not
         considered for idempotency checking.
     type: str
@@ -204,7 +204,7 @@ options:
   data_path_port:
     description:
       - Port to use for data path traffic.
-      - This needs to be a port number like C(9789).
+      - This needs to be a port number like V(9789).
       - Only used when swarm is initialised. Because of this it is not
         considered for idempotency checking.
     type: int
@@ -276,8 +276,8 @@ swarm_facts:
               Worker:
                   description:
                     - Token to join the cluster as a new *worker* node.
-                    - "B(Note:) if this value has been specified as I(join_token), the value here will not
-                       be the token, but C(VALUE_SPECIFIED_IN_NO_LOG_PARAMETER). If you pass I(join_token),
+                    - "B(Note:) if this value has been specified as O(join_token), the value here will not
+                       be the token, but C(VALUE_SPECIFIED_IN_NO_LOG_PARAMETER). If you pass O(join_token),
                        make sure your playbook/role does not depend on this return value!"
                   returned: success
                   type: str
@@ -285,16 +285,16 @@ swarm_facts:
               Manager:
                   description:
                     - Token to join the cluster as a new *manager* node.
-                    - "B(Note:) if this value has been specified as I(join_token), the value here will not
-                       be the token, but C(VALUE_SPECIFIED_IN_NO_LOG_PARAMETER). If you pass I(join_token),
+                    - "B(Note:) if this value has been specified as O(join_token), the value here will not
+                       be the token, but C(VALUE_SPECIFIED_IN_NO_LOG_PARAMETER). If you pass O(join_token),
                        make sure your playbook/role does not depend on this return value!"
                   returned: success
                   type: str
                   example: SWMTKN-1--xxxxx
       UnlockKey:
-          description: The swarm unlock-key if I(autolock_managers) is C(true).
-          returned: on success if I(autolock_managers) is C(true)
-            and swarm is initialised, or if I(autolock_managers) has changed.
+          description: The swarm unlock-key if O(autolock_managers=true).
+          returned: on success if O(autolock_managers=true)
+            and swarm is initialised, or if O(autolock_managers) has changed.
           type: str
           example: SWMKEY-1-xxx
 

@@ -19,7 +19,7 @@ version_added: 3.4.0
 description:
   - Copy a file into a Docker container.
   - Similar to C(docker cp).
-  - To copy files in a non-running container, you must provide the I(owner_id) and I(group_id) options.
+  - To copy files in a non-running container, you must provide the O(owner_id) and O(group_id) options.
     This is also necessary if the container does not contain a C(/bin/sh) shell with an C(id) tool.
 
 attributes:
@@ -41,19 +41,19 @@ options:
   path:
     description:
       - Path to a file on the managed node.
-      - Mutually exclusive with I(content). One of I(content) and I(path) is required.
+      - Mutually exclusive with O(content). One of O(content) and O(path) is required.
     type: path
   content:
     description:
       - The file's content.
-      - If you plan to provide binary data, provide it pre-encoded to base64, and set I(content_is_b64=true).
-      - Mutually exclusive with I(path). One of I(content) and I(path) is required.
+      - If you plan to provide binary data, provide it pre-encoded to base64, and set O(content_is_b64=true).
+      - Mutually exclusive with O(path). One of O(content) and O(path) is required.
     type: str
   content_is_b64:
     description:
-      - If set to C(true), the content in I(content) is assumed to be Base64 encoded and
+      - If set to V(true), the content in O(content) is assumed to be Base64 encoded and
         will be decoded before being used.
-      - To use binary I(content), it is better to keep it Base64 encoded and let it
+      - To use binary O(content), it is better to keep it Base64 encoded and let it
         be decoded by this option. Otherwise you risk the data to be interpreted as
         UTF-8 and corrupted.
     type: bool
@@ -77,7 +77,7 @@ options:
   owner_id:
     description:
       - The owner ID to use when writing the file to disk.
-      - If provided, I(group_id) must also be provided.
+      - If provided, O(group_id) must also be provided.
       - If not provided, the module will try to determine the user and group ID for the current user in the container.
         This will only work if C(/bin/sh) is present in the container and the C(id) binary or shell builtin is available.
         Also the container must be running.
@@ -85,7 +85,7 @@ options:
   group_id:
     description:
       - The group ID to use when writing the file to disk.
-      - If provided, I(owner_id) must also be provided.
+      - If provided, O(owner_id) must also be provided.
       - If not provided, the module will try to determine the user and group ID for the current user in the container.
         This will only work if C(/bin/sh) is present in the container and the C(id) binary or shell builtin is available.
         Also the container must be running.
@@ -97,8 +97,8 @@ options:
     type: int
   force:
     description:
-      - If set to C(true), force writing the file (without performing any idempotency checks).
-      - If set to C(false), only write the file if it does not exist on the target. If a filesystem object exists at
+      - If set to V(true), force writing the file (without performing any idempotency checks).
+      - If set to V(false), only write the file if it does not exist on the target. If a filesystem object exists at
         the destination, the module will not do any change.
       - If this option is not specified, the module will be idempotent. To verify idempotency, it will try to get information
         on the filesystem object in the container, and if everything seems to match will download the file from the container
@@ -138,7 +138,7 @@ RETURN = '''
 container_path:
   description:
     - The actual path in the container.
-    - Can only be different from I(container_path) when I(follow=true).
+    - Can only be different from O(container_path) when O(follow=true).
   type: str
   returned: success
 '''

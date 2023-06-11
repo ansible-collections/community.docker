@@ -38,10 +38,10 @@ options:
 
   state:
     description:
-      - C(absent) remove the plugin.
-      - C(present) install the plugin, if it does not already exist.
-      - C(enable) enable the plugin.
-      - C(disable) disable the plugin.
+      - V(absent) remove the plugin.
+      - V(present) install the plugin, if it does not already exist.
+      - V(enable) enable the plugin.
+      - V(disable) disable the plugin.
     default: present
     choices:
       - absent
@@ -121,7 +121,7 @@ plugin:
 actions:
     description:
       - List of actions performed during task execution.
-    returned: when I(state!=absent)
+    returned: when O(state) is not V(absent)
     type: list
 '''
 

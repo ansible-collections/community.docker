@@ -61,8 +61,8 @@ options:
 
   force:
     description:
-      - With state C(absent) forces disconnecting all containers from the
-        network prior to deleting the network. With state C(present) will
+      - With state V(absent) forces disconnecting all containers from the
+        network prior to deleting the network. With state V(present) will
         disconnect all containers, delete the network and re-create the
         network.
       - This option is required if you have changed the IPAM or driver options
@@ -73,7 +73,7 @@ options:
   appends:
     description:
       - By default the connected list is canonical, meaning containers not on the list are removed from the network.
-      - Use I(appends) to leave existing containers connected.
+      - Use O(appends) to leave existing containers connected.
     type: bool
     default: false
     aliases:
@@ -98,7 +98,7 @@ options:
     description:
       - List of IPAM config blocks. Consult
         L(Docker docs,https://docs.docker.com/compose/compose-file/compose-file-v2/#ipam) for valid options and values.
-        Note that I(iprange) is spelled differently here (we use the notation from the Docker SDK for Python).
+        Note that O(ipam_config.iprange) is spelled differently here (we use the notation from the Docker SDK for Python).
     type: list
     elements: dict
     suboptions:
@@ -121,14 +121,14 @@ options:
 
   state:
     description:
-      - C(absent) deletes the network. If a network has connected containers, it
-        cannot be deleted. Use the I(force) option to disconnect all containers
+      - V(absent) deletes the network. If a network has connected containers, it
+        cannot be deleted. Use the O(force) option to disconnect all containers
         and delete the network.
-      - C(present) creates the network, if it does not already exist with the
+      - V(present) creates the network, if it does not already exist with the
         specified parameters, and connects the list of containers provided via
         the connected parameter. Containers not on the list will be disconnected.
         An empty list will leave no containers connected to the network. Use the
-        I(appends) option to leave existing containers connected. Use the I(force)
+        O(appends) option to leave existing containers connected. Use the O(force)
         options to force re-creation of the network.
     type: str
     default: present
@@ -163,7 +163,7 @@ options:
 
 notes:
   - When network options are changed, the module disconnects all containers from the network, deletes the network, and re-creates the network.
-    It does not try to reconnect containers, except the ones listed in (I(connected), and even for these, it does not consider specific
+    It does not try to reconnect containers, except the ones listed in (O(connected), and even for these, it does not consider specific
     connection options like fixed IP addresses or MAC addresses. If you need more control over how the containers are connected to the
     network, loop the M(community.docker.docker_container) module to loop over your containers to make sure they are connected properly.
   - The module does not support Docker Swarm. This means that it will not try to disconnect or reconnect services. If services are connected to the

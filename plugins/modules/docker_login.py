@@ -46,12 +46,12 @@ options:
   username:
     description:
       - The username for the registry account.
-      - Required when I(state) is C(present).
+      - Required when O(state=present).
     type: str
   password:
     description:
       - The plaintext password for the registry account.
-      - Required when I(state) is C(present).
+      - Required when O(state=present).
     type: str
   reauthorize:
     description:
@@ -69,7 +69,7 @@ options:
       - dockercfg_path
   state:
     description:
-      - This controls the current state of the user. C(present) will login in a user, C(absent) will log them out.
+      - This controls the current state of the user. V(present) will login in a user, V(absent) will log them out.
       - To logout you only need the registry server, which defaults to DockerHub.
       - Before 2.1 you could ONLY log in.
       - Docker does not support 'logout' with a custom config file.
@@ -112,7 +112,7 @@ EXAMPLES = '''
 RETURN = '''
 login_results:
     description: Results from the login.
-    returned: when I(state=present)
+    returned: when O(state=present)
     type: dict
     sample: {
         "serveraddress": "localhost:5000",

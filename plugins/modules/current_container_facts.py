@@ -58,10 +58,10 @@ ansible_facts:
             description:
               - The detected container environment.
               - Contains an empty string if no container was detected, or a non-empty string identifying the container environment.
-              - C(docker) indicates that the module ran inside a regular Docker container.
-              - C(azure_pipelines) indicates that the module ran on Azure Pipelines. This seems to no longer be reported.
-              - C(github_actions) indicates that the module ran inside a Docker container on GitHub Actions. It is supported since community.docker 2.4.0.
-              - C(podman) indicates that the module ran inside a regular Podman container. It is supported since community.docker 3.3.0.
+              - V(docker) indicates that the module ran inside a regular Docker container.
+              - V(azure_pipelines) indicates that the module ran on Azure Pipelines. This seems to no longer be reported.
+              - V(github_actions) indicates that the module ran inside a Docker container on GitHub Actions. It is supported since community.docker 2.4.0.
+              - V(podman) indicates that the module ran inside a regular Podman container. It is supported since community.docker 3.3.0.
             returned: always
             type: str
             choices:

@@ -39,19 +39,19 @@ options:
     labels:
         description:
             - User-defined key/value metadata that will be assigned as node attribute.
-            - Label operations in this module apply to the docker swarm node specified by I(hostname).
+            - Label operations in this module apply to the docker swarm node specified by O(hostname).
               Use M(community.docker.docker_swarm) module to add/modify/remove swarm cluster labels.
             - The actual state of labels assigned to the node when module completes its work depends on
-              I(labels_state) and I(labels_to_remove) parameters values. See description below.
+              O(labels_state) and O(labels_to_remove) parameters values. See description below.
         type: dict
     labels_state:
         description:
-            - It defines the operation on the labels assigned to node and labels specified in I(labels) option.
-            - Set to C(merge) to combine labels provided in I(labels) with those already assigned to the node.
+            - It defines the operation on the labels assigned to node and labels specified in O(labels) option.
+            - Set to V(merge) to combine labels provided in O(labels) with those already assigned to the node.
               If no labels are assigned then it will add listed labels. For labels that are already assigned
-              to the node, it will update their values. The labels not specified in I(labels) will remain unchanged.
-              If I(labels) is empty then no changes will be made.
-            - Set to C(replace) to replace all assigned labels with provided ones. If I(labels) is empty then
+              to the node, it will update their values. The labels not specified in O(labels) will remain unchanged.
+              If O(labels) is empty then no changes will be made.
+            - Set to V(replace) to replace all assigned labels with provided ones. If O(labels) is empty then
               all labels assigned to the node will be removed.
         type: str
         default: 'merge'
@@ -63,10 +63,10 @@ options:
             - List of labels that will be removed from the node configuration. The list has to contain only label
               names, not their values.
             - If the label provided on the list is not assigned to the node, the entry is ignored.
-            - If the label is both on the I(labels_to_remove) and I(labels), then value provided in I(labels) remains
+            - If the label is both on the O(labels_to_remove) and O(labels), then value provided in O(labels) remains
               assigned to the node.
-            - If I(labels_state) is C(replace) and I(labels) is not provided or empty then all labels assigned to
-              node are removed and I(labels_to_remove) is ignored.
+            - If O(labels_state=replace) and O(labels) is not provided or empty then all labels assigned to
+              node are removed and O(labels_to_remove) is ignored.
         type: list
         elements: str
     availability:

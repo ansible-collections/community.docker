@@ -18,7 +18,7 @@ description:
   - Create and remove Docker secrets in a Swarm environment. Similar to C(docker secret create) and C(docker secret rm).
   - Adds to the metadata of new secrets C(ansible_key), an encrypted hash representation of the data, which is then used
     in future runs to test if a secret has changed. If C(ansible_key) is not present, then a secret will not be updated
-    unless the I(force) option is set.
+    unless the O(force) option is set.
   - Updates to secrets are performed by removing the secret and creating it again.
 
 extends_documentation_fragment:
@@ -37,20 +37,20 @@ options:
   data:
     description:
       - The value of the secret.
-      - Mutually exclusive with I(data_src). One of I(data) and I(data_src) is required if I(state=present).
+      - Mutually exclusive with O(data_src). One of O(data) and O(data_src) is required if O(state=present).
     type: str
   data_is_b64:
     description:
-      - If set to C(true), the data is assumed to be Base64 encoded and will be
+      - If set to V(true), the data is assumed to be Base64 encoded and will be
         decoded before being used.
-      - To use binary I(data), it is better to keep it Base64 encoded and let it
+      - To use binary O(data), it is better to keep it Base64 encoded and let it
         be decoded by this option.
     type: bool
     default: false
   data_src:
     description:
       - The file on the target from which to read the secret.
-      - Mutually exclusive with I(data). One of I(data) and I(data_src) is required if I(state=present).
+      - Mutually exclusive with O(data). One of O(data) and O(data_src) is required if O(state=present).
     type: path
     version_added: 1.10.0
   labels:
@@ -60,22 +60,22 @@ options:
     type: dict
   force:
     description:
-      - Use with state C(present) to always remove and recreate an existing secret.
-      - If C(true), an existing secret will be replaced, even if it has not changed.
+      - Use with O(state=present) to always remove and recreate an existing secret.
+      - If V(true), an existing secret will be replaced, even if it has not changed.
     type: bool
     default: false
   rolling_versions:
     description:
-      - If set to C(true), secrets are created with an increasing version number appended to their name.
+      - If set to V(true), secrets are created with an increasing version number appended to their name.
       - Adds a label containing the version number to the managed secrets with the name C(ansible_version).
     type: bool
     default: false
     version_added: 2.2.0
   versions_to_keep:
     description:
-      - When using I(rolling_versions), the number of old versions of the secret to keep.
+      - When using O(rolling_versions), the number of old versions of the secret to keep.
       - Extraneous old secrets are deleted after the new one is created.
-      - Set to C(-1) to keep everything or to C(0) or C(1) to keep only the current one.
+      - Set to V(-1) to keep everything or to V(0) or V(1) to keep only the current one.
     type: int
     default: 5
     version_added: 2.2.0
@@ -86,7 +86,7 @@ options:
     required: true
   state:
     description:
-      - Set to C(present), if the secret should exist, and C(absent), if it should not.
+      - Set to V(present), if the secret should exist, and V(absent), if it should not.
     type: str
     default: present
     choices:
@@ -175,13 +175,13 @@ RETURN = '''
 secret_id:
   description:
     - The ID assigned by Docker to the secret object.
-  returned: success and I(state) is C(present)
+  returned: success and O(state=present)
   type: str
   sample: 'hzehrmyjigmcp2gb6nlhmjqcv'
 secret_name:
   description:
     - The name of the created secret object.
-  returned: success and I(state) is C(present)
+  returned: success and O(state=present)
   type: str
   sample: 'awesome_secret'
   version_added: 2.2.0

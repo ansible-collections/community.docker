@@ -21,12 +21,12 @@ DOCUMENTATION = '''
     description:
         - Reads inventories from the Docker swarm API.
         - Uses a YAML configuration file docker_swarm.[yml|yaml].
-        - "The plugin returns following groups of swarm nodes:  I(all) - all hosts; I(workers) - all worker nodes;
-          I(managers) - all manager nodes; I(leader) - the swarm leader node;
-          I(nonleaders) - all nodes except the swarm leader."
+        - "The plugin returns following groups of swarm nodes:  C(all) - all hosts; C(workers) - all worker nodes;
+          C(managers) - all manager nodes; C(leader) - the swarm leader node;
+          C(nonleaders) - all nodes except the swarm leader."
     options:
         plugin:
-            description: The name of this plugin, it should always be set to C(community.docker.docker_swarm)
+            description: The name of this plugin, it should always be set to V(community.docker.docker_swarm)
                          for this plugin to recognize it as it's own.
             type: str
             required: true
@@ -34,13 +34,13 @@ DOCUMENTATION = '''
         docker_host:
             description:
                 - Socket of a Docker swarm manager node (C(tcp), C(unix)).
-                - "Use C(unix://var/run/docker.sock) to connect via local socket."
+                - "Use V(unix://var/run/docker.sock) to connect via local socket."
             type: str
             required: true
             aliases: [ docker_url ]
         verbose_output:
             description: Toggle to (not) include all available nodes metadata (for example C(Platform), C(Architecture), C(OS),
-                         C(EngineVersion))
+                         C(EngineVersion)).
             type: bool
             default: true
         tls:
@@ -71,7 +71,9 @@ DOCUMENTATION = '''
                          the server.
             type: str
         ssl_version:
-            description: Provide a valid SSL version number. Default value determined by ssl.py module.
+            description:
+                - Provide a valid SSL version number. Default value determined
+                  by L(SSL Python module, https://docs.python.org/3/library/ssl.html).
             type: str
         api_version:
             description:
@@ -82,7 +84,7 @@ DOCUMENTATION = '''
         timeout:
             description:
                 - The maximum amount of time in seconds to wait on a response from the API.
-                - If the value is not specified in the task, the value of environment variable C(DOCKER_TIMEOUT)
+                - If the value is not specified in the task, the value of environment variable E(DOCKER_TIMEOUT).
                   will be used instead. If the environment variable is not set, the default value will be used.
             type: int
             default: 60
@@ -96,13 +98,13 @@ DOCUMENTATION = '''
             version_added: 1.5.0
         include_host_uri:
             description: Toggle to return the additional attribute C(ansible_host_uri) which contains the URI of the
-                         swarm leader in format of C(tcp://172.16.0.1:2376). This value may be used without additional
-                         modification as value of option I(docker_host) in Docker Swarm modules when connecting via API.
-                         The port always defaults to C(2376).
+                         swarm leader in format of V(tcp://172.16.0.1:2376). This value may be used without additional
+                         modification as value of option O(docker_host) in Docker Swarm modules when connecting via API.
+                         The port always defaults to V(2376).
             type: bool
             default: false
         include_host_uri_port:
-            description: Override the detected port number included in I(ansible_host_uri)
+            description: Override the detected port number included in C(ansible_host_uri).
             type: int
 '''
 

@@ -18,7 +18,7 @@ DOCUMENTATION = '''
         - Get inventory hosts from Docker Machine.
         - Uses a YAML configuration file that ends with docker_machine.(yml|yaml).
         - The plugin sets standard host variables C(ansible_host), C(ansible_port), C(ansible_user) and C(ansible_ssh_private_key).
-        - The plugin stores the Docker Machine 'env' output variables in I(dm_) prefixed host variables.
+        - The plugin stores the Docker Machine 'env' output variables in C(dm_) prefixed host variables.
 
     options:
         plugin:
@@ -28,12 +28,12 @@ DOCUMENTATION = '''
         daemon_env:
             description:
                 - Whether docker daemon connection environment variables should be fetched, and how to behave if they cannot be fetched.
-                - With C(require) and C(require-silently), fetch them and skip any host for which they cannot be fetched.
-                  A warning will be issued for any skipped host if the choice is C(require).
-                - With C(optional) and C(optional-silently), fetch them and not skip hosts for which they cannot be fetched.
-                  A warning will be issued for hosts where they cannot be fetched if the choice is C(optional).
-                - With C(skip), do not attempt to fetch the docker daemon connection environment variables.
-                - If fetched successfully, the variables will be prefixed with I(dm_) and stored as host variables.
+                - With V(require) and V(require-silently), fetch them and skip any host for which they cannot be fetched.
+                  A warning will be issued for any skipped host if the choice is V(require).
+                - With V(optional) and V(optional-silently), fetch them and not skip hosts for which they cannot be fetched.
+                  A warning will be issued for hosts where they cannot be fetched if the choice is V(optional).
+                - With V(skip), do not attempt to fetch the docker daemon connection environment variables.
+                - If fetched successfully, the variables will be prefixed with C(dm_) and stored as host variables.
             type: str
             choices:
                 - require
@@ -44,12 +44,12 @@ DOCUMENTATION = '''
             default: require
         running_required:
             description:
-                - When C(true), hosts which Docker Machine indicates are in a state other than C(running) will be skipped.
+                - When V(true), hosts which Docker Machine indicates are in a state other than C(running) will be skipped.
             type: bool
             default: true
         verbose_output:
             description:
-                - When C(true), include all available nodes metadata (for exmaple C(Image), C(Region), C(Size)) as a JSON object
+                - When V(true), include all available nodes metadata (for exmaple C(Image), C(Region), C(Size)) as a JSON object
                   named C(docker_machine_node_attributes).
             type: bool
             default: true
