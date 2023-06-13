@@ -111,6 +111,10 @@ For plugins, they have to be set for the environment Ansible itself runs in. For
 
     Secure the connection to the API by using TLS without verifying the authenticity of the Docker Host.
 
+.. envvar:: DOCKER_TLS_HOSTNAME
+
+    When verifying the authenticity of the Docker Host, uses this hostname to compare to the host's certificate.
+
 .. envvar:: DOCKER_TLS_VERIFY
 
     Secure the connection to the API by using TLS and verify the authenticity of the Docker Host.
