@@ -761,3 +761,14 @@ releases:
     - 593-docker_prune-changed.yml
     - remove-unneeded-imports.yml
     release_date: '2023-02-25'
+  2.7.6:
+    changes:
+      bugfixes:
+      - docker_swarm_info - if ``service=true`` is used, do not crash when a service
+        without an endpoint spec is encountered (https://github.com/ansible-collections/community.docker/issues/636,
+        https://github.com/ansible-collections/community.docker/pull/637).
+      release_summary: Bugfix release.
+    fragments:
+    - 2.7.6.yml
+    - 637-swarm_info-endpoint_spec.yml
+    release_date: '2023-06-15'
