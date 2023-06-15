@@ -1203,3 +1203,14 @@ releases:
     - docker-py.yml
     - tls-tcp-warn.yml
     release_date: '2023-05-20'
+  3.4.7:
+    changes:
+      bugfixes:
+      - docker_swarm_info - if ``service=true`` is used, do not crash when a service
+        without an endpoint spec is encountered (https://github.com/ansible-collections/community.docker/issues/636,
+        https://github.com/ansible-collections/community.docker/pull/637).
+      release_summary: Bugfix release.
+    fragments:
+    - 3.4.7.yml
+    - 637-swarm_info-endpoint_spec.yml
+    release_date: '2023-06-15'
