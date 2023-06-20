@@ -98,7 +98,7 @@ options:
     description:
       - List of IPAM config blocks. Consult
         L(Docker docs,https://docs.docker.com/compose/compose-file/compose-file-v2/#ipam) for valid options and values.
-        Note that O(ipam_config.iprange) is spelled differently here (we use the notation from the Docker SDK for Python).
+        Note that O(ipam_config[].iprange) is spelled differently here (we use the notation from the Docker SDK for Python).
     type: list
     elements: dict
     suboptions:
