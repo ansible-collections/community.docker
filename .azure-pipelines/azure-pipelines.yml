@@ -198,8 +198,11 @@ stages:
         parameters:
           testFormat: devel/{0}
           targets:
-            - name: RHEL 9.1 with latest Docker SDK from PyPi
-              test: rhel/9.1-pypi-latest
+            - name: RHEL 9.2 with latest Docker SDK from PyPi
+              test: rhel/9.2-pypi-latest
+            # Currently always hangs in group 2
+            # - name: RHEL 8.8
+            #   test: rhel/8.8
           groups:
             - 1
             - 2
@@ -214,6 +217,10 @@ stages:
         parameters:
           testFormat: 2.15/{0}
           targets:
+            - name: RHEL 9.1
+              test: rhel/9.1
+            - name: RHEL 8.7
+              test: rhel/8.7
             - name: RHEL 7.9
               test: rhel/7.9
           groups:
