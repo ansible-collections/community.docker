@@ -180,7 +180,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <li><p>Get inventory hosts from Docker Machine.</p></li>
 <li><p>Uses a YAML configuration file that ends with docker_machine.(yml|yaml).</p></li>
 <li><p>The plugin sets standard host variables <code class="docutils literal notranslate"><span class="pre">ansible_host</span></code>, <code class="docutils literal notranslate"><span class="pre">ansible_port</span></code>, <code class="docutils literal notranslate"><span class="pre">ansible_user</span></code> and <code class="docutils literal notranslate"><span class="pre">ansible_ssh_private_key</span></code>.</p></li>
-<li><p>The plugin stores the Docker Machine ‘env’ output variables in <em>dm_</em> prefixed host variables.</p></li>
+<li><p>The plugin stores the Docker Machine ‘env’ output variables in <code class="docutils literal notranslate"><span class="pre">dm_</span></code> prefixed host variables.</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -212,10 +212,10 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-daemon_env" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Whether docker daemon connection environment variables should be fetched, and how to behave if they cannot be fetched.</p>
-<p>With <code class="docutils literal notranslate"><span class="pre">require</span></code> and <code class="docutils literal notranslate"><span class="pre">require-silently</span></code>, fetch them and skip any host for which they cannot be fetched. A warning will be issued for any skipped host if the choice is <code class="docutils literal notranslate"><span class="pre">require</span></code>.</p>
-<p>With <code class="docutils literal notranslate"><span class="pre">optional</span></code> and <code class="docutils literal notranslate"><span class="pre">optional-silently</span></code>, fetch them and not skip hosts for which they cannot be fetched. A warning will be issued for hosts where they cannot be fetched if the choice is <code class="docutils literal notranslate"><span class="pre">optional</span></code>.</p>
-<p>With <code class="docutils literal notranslate"><span class="pre">skip</span></code>, do not attempt to fetch the docker daemon connection environment variables.</p>
-<p>If fetched successfully, the variables will be prefixed with <em>dm_</em> and stored as host variables.</p>
+<p>With <code class="ansible-value docutils literal notranslate"><span class="pre">require</span></code> and <code class="ansible-value docutils literal notranslate"><span class="pre">require-silently</span></code>, fetch them and skip any host for which they cannot be fetched. A warning will be issued for any skipped host if the choice is <code class="ansible-value docutils literal notranslate"><span class="pre">require</span></code>.</p>
+<p>With <code class="ansible-value docutils literal notranslate"><span class="pre">optional</span></code> and <code class="ansible-value docutils literal notranslate"><span class="pre">optional-silently</span></code>, fetch them and not skip hosts for which they cannot be fetched. A warning will be issued for hosts where they cannot be fetched if the choice is <code class="ansible-value docutils literal notranslate"><span class="pre">optional</span></code>.</p>
+<p>With <code class="ansible-value docutils literal notranslate"><span class="pre">skip</span></code>, do not attempt to fetch the docker daemon connection environment variables.</p>
+<p>If fetched successfully, the variables will be prefixed with <code class="docutils literal notranslate"><span class="pre">dm_</span></code> and stored as host variables.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">&quot;require&quot;</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -329,7 +329,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-running_required"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-running-required"><strong>running_required</strong></p>
 <a class="ansibleOptionLink" href="#parameter-running_required" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, hosts which Docker Machine indicates are in a state other than <code class="docutils literal notranslate"><span class="pre">running</span></code> will be skipped.</p>
+<td><div class="ansible-option-cell"><p>When <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code>, hosts which Docker Machine indicates are in a state other than <code class="docutils literal notranslate"><span class="pre">running</span></code> will be skipped.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
@@ -377,7 +377,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-verbose_output"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-verbose-output"><strong>verbose_output</strong></p>
 <a class="ansibleOptionLink" href="#parameter-verbose_output" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>When <code class="docutils literal notranslate"><span class="pre">true</span></code>, include all available nodes metadata (for exmaple <code class="docutils literal notranslate"><span class="pre">Image</span></code>, <code class="docutils literal notranslate"><span class="pre">Region</span></code>, <code class="docutils literal notranslate"><span class="pre">Size</span></code>) as a JSON object named <code class="docutils literal notranslate"><span class="pre">docker_machine_node_attributes</span></code>.</p>
+<td><div class="ansible-option-cell"><p>When <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code>, include all available nodes metadata (for exmaple <code class="docutils literal notranslate"><span class="pre">Image</span></code>, <code class="docutils literal notranslate"><span class="pre">Region</span></code>, <code class="docutils literal notranslate"><span class="pre">Size</span></code>) as a JSON object named <code class="docutils literal notranslate"><span class="pre">docker_machine_node_attributes</span></code>.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>

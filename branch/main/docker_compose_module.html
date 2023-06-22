@@ -184,7 +184,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Synopsis</a><a class="headerlink" href="#synopsis" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>Uses Docker Compose to start, shutdown and scale services. <strong>This module requires docker-compose &lt; 2.0.0.</strong></p></li>
-<li><p>Configuration can be read from a <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code> file or inline using the <em>definition</em> option.</p></li>
+<li><p>Configuration can be read from a <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code> file or inline using the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code> option.</p></li>
 <li><p>See the examples for more details.</p></li>
 <li><p>Supports check mode.</p></li>
 <li><p>This module was called <code class="docutils literal notranslate"><span class="pre">docker_service</span></code> before Ansible 2.8. The usage did not change.</p></li>
@@ -218,7 +218,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>The version of the Docker API running on the Docker Host.</p>
 <p>Defaults to the latest version of the API supported by Docker SDK for Python and the docker daemon.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_API_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code></p>
 </div></td>
 </tr>
@@ -226,11 +226,11 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-build"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-build"><strong>build</strong></p>
 <a class="ansibleOptionLink" href="#parameter-build" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Use with <em>state</em> <code class="docutils literal notranslate"><span class="pre">present</span></code> to always build images prior to starting the application.</p>
+<td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state=present</span></span></a></code> to always build images prior to starting the application.</p>
 <p>Same as running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> with the pull option.</p>
 <p>Images will only be rebuilt if Docker detects a change in the Dockerfile or build directory contents.</p>
-<p>Use the <em>nocache</em> option to ignore the image cache when performing the build.</p>
-<p>If an existing image is replaced, services using the image will be recreated unless <em>recreate</em> is <code class="docutils literal notranslate"><span class="pre">never</span></code>.</p>
+<p>Use the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-nocache"><span class="std std-ref"><span class="pre">nocache</span></span></a></strong></code> option to ignore the image cache when performing the build.</p>
+<p>If an existing image is replaced, services using the image will be recreated unless <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-recreate"><span class="std std-ref"><span class="pre">recreate=never</span></span></a></code>.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -246,7 +246,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use a CA certificate when performing server verification by providing the path to a CA certificate file.</p>
-<p>If the value is not specified in the task and the environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code> is set, the file <code class="docutils literal notranslate"><span class="pre">ca.pem</span></code> from the directory specified in the environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code> will be used.</p>
+<p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">ca.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -257,7 +257,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Path to the client’s TLS certificate file.</p>
-<p>If the value is not specified in the task and the environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code> is set, the file <code class="docutils literal notranslate"><span class="pre">cert.pem</span></code> from the directory specified in the environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code> will be used.</p>
+<p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">cert.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -268,7 +268,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Path to the client’s TLS key file.</p>
-<p>If the value is not specified in the task and the environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code> is set, the file <code class="docutils literal notranslate"><span class="pre">key.pem</span></code> from the directory specified in the environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code> will be used.</p>
+<p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">key.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -288,14 +288,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-definition" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Compose file describing one or more services, networks and volumes.</p>
-<p>Mutually exclusive with <em>project_src</em> and <em>files</em>.</p>
+<p>Mutually exclusive with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code> and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-files"><span class="std std-ref"><span class="pre">files</span></span></a></strong></code>.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-dependencies"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-dependencies"><strong>dependencies</strong></p>
 <a class="ansibleOptionLink" href="#parameter-dependencies" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>When <em>state</em> is <code class="docutils literal notranslate"><span class="pre">present</span></code> specify whether or not to include linked services.</p>
+<td><div class="ansible-option-cell"><p>When <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state</span></span></a></strong></code> is <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> specify whether or not to include linked services.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
@@ -309,8 +309,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-docker_host" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: docker_url</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>The URL or Unix socket path used to connect to the Docker API. To connect to a remote host, provide the TCP connection string. For example, <code class="docutils literal notranslate"><span class="pre">tcp://192.0.2.23:2376</span></code>. If TLS is used to encrypt the connection, the module will automatically replace <code class="docutils literal notranslate"><span class="pre">tcp</span></code> in the connection URL with <code class="docutils literal notranslate"><span class="pre">https</span></code>.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<td><div class="ansible-option-cell"><p>The URL or Unix socket path used to connect to the Docker API. To connect to a remote host, provide the TCP connection string. For example, <code class="ansible-value docutils literal notranslate"><span class="pre">tcp://192.0.2.23:2376</span></code>. If TLS is used to encrypt the connection, the module will automatically replace <code class="docutils literal notranslate"><span class="pre">tcp</span></code> in the connection URL with <code class="docutils literal notranslate"><span class="pre">https</span></code>.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;unix://var/run/docker.sock&quot;</span></code></p>
 </div></td>
 </tr>
@@ -319,18 +319,18 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-env_file" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 <p><span class="ansible-option-versionadded">added in community.docker 1.9.0</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>By default environment files are loaded from a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file located directly under the <em>project_src</em> directory.</p>
-<p><em>env_file</em> can be used to specify the path of a custom environment file instead.</p>
-<p>The path is relative to the <em>project_src</em> directory.</p>
+<td><div class="ansible-option-cell"><p>By default environment files are loaded from a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file located directly under the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code> directory.</p>
+<p><code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-env-file"><span class="std std-ref"><span class="pre">env_file</span></span></a></strong></code> can be used to specify the path of a custom environment file instead.</p>
+<p>The path is relative to the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code> directory.</p>
 <p>Requires <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> version 1.25.0 or greater.</p>
-<p>Note: <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> versions <code class="docutils literal notranslate"><span class="pre">&lt;=1.28</span></code> load the env file from the current working directory of the <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> command rather than <em>project_src</em>.</p>
+<p>Note: <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> versions <code class="docutils literal notranslate"><span class="pre">&lt;=1.28</span></code> load the env file from the current working directory of the <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> command rather than <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code>.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-files"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-files"><strong>files</strong></p>
 <a class="ansibleOptionLink" href="#parameter-files" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=path</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>List of Compose file names relative to <em>project_src</em>. Overrides <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code>.</p>
+<td><div class="ansible-option-cell"><p>List of Compose file names relative to <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code>. Overrides <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code>.</p>
 <p>Files are loaded and merged in the order given.</p>
 </div></td>
 </tr>
@@ -350,7 +350,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-nocache"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-nocache"><strong>nocache</strong></p>
 <a class="ansibleOptionLink" href="#parameter-nocache" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Use with the <em>build</em> option to ignore the cache during the image build process.</p>
+<td><div class="ansible-option-cell"><p>Use with the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-build"><span class="std std-ref"><span class="pre">build</span></span></a></strong></code> option to ignore the cache during the image build process.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -372,8 +372,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-project_name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-project-name"><strong>project_name</strong></p>
 <a class="ansibleOptionLink" href="#parameter-project_name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Provide a project name. If not provided, the project name is taken from the basename of <em>project_src</em>.</p>
-<p>Required when <em>definition</em> is provided.</p>
+<td><div class="ansible-option-cell"><p>Provide a project name. If not provided, the project name is taken from the basename of <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code>.</p>
+<p>Required when <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code> is provided.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -381,17 +381,17 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-project_src" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Path to a directory containing a <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code> file.</p>
-<p>Mutually exclusive with <em>definition</em>.</p>
-<p>Required when no <em>definition</em> is provided.</p>
+<p>Mutually exclusive with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code>.</p>
+<p>Required when no <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code> is provided.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-pull"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-pull"><strong>pull</strong></p>
 <a class="ansibleOptionLink" href="#parameter-pull" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Use with <em>state</em> <code class="docutils literal notranslate"><span class="pre">present</span></code> to always pull images prior to starting the application.</p>
+<td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state=present</span></span></a></code> to always pull images prior to starting the application.</p>
 <p>Same as running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">pull</span></code>.</p>
-<p>When a new image is pulled, services using the image will be recreated unless <em>recreate</em> is <code class="docutils literal notranslate"><span class="pre">never</span></code>.</p>
+<p>When a new image is pulled, services using the image will be recreated unless <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-recreate"><span class="std std-ref"><span class="pre">recreate=never</span></span></a></code>.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -404,8 +404,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-recreate" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>By default containers will be recreated when their configuration differs from the service definition.</p>
-<p>Setting to <code class="docutils literal notranslate"><span class="pre">never</span></code> ignores configuration differences and leaves existing containers unchanged.</p>
-<p>Setting to <code class="docutils literal notranslate"><span class="pre">always</span></code> forces recreation of all existing containers.</p>
+<p>Setting to <code class="ansible-value docutils literal notranslate"><span class="pre">never</span></code> ignores configuration differences and leaves existing containers unchanged.</p>
+<p>Setting to <code class="ansible-value docutils literal notranslate"><span class="pre">always</span></code> forces recreation of all existing containers.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code></p></li>
@@ -418,7 +418,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-remove_images"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-remove-images"><strong>remove_images</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remove_images" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Use with <em>state</em> <code class="docutils literal notranslate"><span class="pre">absent</span></code> to remove all images or only local images.</p>
+<td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state=absent</span></span></a></code> to remove all images or only local images.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code></p></li>
@@ -442,7 +442,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-remove_volumes"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-remove-volumes"><strong>remove_volumes</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remove_volumes" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Use with <em>state</em> <code class="docutils literal notranslate"><span class="pre">absent</span></code> to remove data volumes.</p>
+<td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state=absent</span></span></a></code> to remove data volumes.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -454,8 +454,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-restarted"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-restarted"><strong>restarted</strong></p>
 <a class="ansibleOptionLink" href="#parameter-restarted" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Use with <em>state</em> <code class="docutils literal notranslate"><span class="pre">present</span></code> to restart all containers defined in the Compose file.</p>
-<p>If <em>services</em> is defined, only the containers listed there will be restarted.</p>
+<td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state=present</span></span></a></code> to restart all containers defined in the Compose file.</p>
+<p>If <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-services"><span class="std std-ref"><span class="pre">services</span></span></a></strong></code> is defined, only the containers listed there will be restarted.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -467,23 +467,23 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-scale"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-scale"><strong>scale</strong></p>
 <a class="ansibleOptionLink" href="#parameter-scale" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>When <em>state</em> is <code class="docutils literal notranslate"><span class="pre">present</span></code> scale services. Provide a dictionary of key/value pairs where the key is the name of the service and the value is an integer count for the number of containers.</p>
+<td><div class="ansible-option-cell"><p>When <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state</span></span></a></strong></code> is <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> scale services. Provide a dictionary of key/value pairs where the key is the name of the service and the value is an integer count for the number of containers.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-services"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-services"><strong>services</strong></p>
 <a class="ansibleOptionLink" href="#parameter-services" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>When <em>state</em> is <code class="docutils literal notranslate"><span class="pre">present</span></code> run <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code> resp. <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">stop</span></code> (with <em>stopped</em>) resp. <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">restart</span></code> (with <em>restarted</em>) on a subset of services.</p>
-<p>If empty, which is the default, the operation will be performed on all services defined in the Compose file (or inline <em>definition</em>).</p>
+<td><div class="ansible-option-cell"><p>When <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state</span></span></a></strong></code> is <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> run <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code> resp. <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">stop</span></code> (with <code class="ansible-value docutils literal notranslate"><span class="pre">stopped</span></code>) resp. <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">restart</span></code> (with <code class="ansible-value docutils literal notranslate"><span class="pre">restarted</span></code>) on a subset of services.</p>
+<p>If empty, which is the default, the operation will be performed on all services defined in the Compose file (or inline <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code>).</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ssl_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-ssl-version"><strong>ssl_version</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ssl_version" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Provide a valid SSL version number. Default value determined by ssl.py module.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code> will be used instead.</p>
+<td><div class="ansible-option-cell"><p>Provide a valid SSL version number. Default value determined by <a class="reference external" href="https://docs.python.org/3/library/ssl.html">SSL Python module</a>.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_SSL_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code></a> will be used instead.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -491,8 +491,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Desired state of the project.</p>
-<p>Specifying <code class="docutils literal notranslate"><span class="pre">present</span></code> is the same as running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code> resp. <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">stop</span></code> (with <em>stopped</em>) resp. <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">restart</span></code> (with <em>restarted</em>).</p>
-<p>Specifying <code class="docutils literal notranslate"><span class="pre">absent</span></code> is the same as running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">down</span></code>.</p>
+<p>Specifying <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> is the same as running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code> resp. <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">stop</span></code> (with <code class="ansible-value docutils literal notranslate"><span class="pre">stopped</span></code>) resp. <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">restart</span></code> (with <code class="ansible-value docutils literal notranslate"><span class="pre">restarted</span></code>).</p>
+<p>Specifying <code class="ansible-value docutils literal notranslate"><span class="pre">absent</span></code> is the same as running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">down</span></code>.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;absent&quot;</span></code></p></li>
@@ -504,8 +504,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-stopped"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-stopped"><strong>stopped</strong></p>
 <a class="ansibleOptionLink" href="#parameter-stopped" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Use with <em>state</em> <code class="docutils literal notranslate"><span class="pre">present</span></code> to stop all containers defined in the Compose file.</p>
-<p>If <em>services</em> is defined, only the containers listed there will be stopped.</p>
+<td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state=present</span></span></a></code> to stop all containers defined in the Compose file.</p>
+<p>If <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-services"><span class="std std-ref"><span class="pre">services</span></span></a></strong></code> is defined, only the containers listed there will be stopped.</p>
 <p>Requires <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> version 1.17.0 or greater for full support. For older versions, the services will first be started and then stopped when the service is supposed to be created as stopped.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
@@ -519,15 +519,15 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Timeout in seconds for container shutdown when attached or when containers are already running.</p>
-<p>By default <code class="docutils literal notranslate"><span class="pre">compose</span></code> will use a <code class="docutils literal notranslate"><span class="pre">10s</span></code> timeout unless <code class="docutils literal notranslate"><span class="pre">default_grace_period</span></code> is defined for a particular service in the <em>project_src</em>.</p>
+<p>By default <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> will use a <code class="ansible-value docutils literal notranslate"><span class="pre">10</span></code> seconds timeout unless <code class="docutils literal notranslate"><span class="pre">default_grace_period</span></code> is defined for a particular service in the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code>.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS without verifying the authenticity of the Docker host server. Note that if <em>validate_certs</em> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code> as well, it will take precedence.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS without verifying the authenticity of the Docker host server. Note that if <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-validate-certs"><span class="std std-ref"><span class="pre">validate_certs</span></span></a></strong></code> is set to <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code> as well, it will take precedence.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -540,8 +540,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>When verifying the authenticity of the Docker Host server, provide the expected name of the server.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
-<p>Note that this option had a default value <code class="docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p>Note that this option had a default value <code class="ansible-value docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -564,7 +564,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS and verifying the authenticity of the Docker host server.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -617,9 +617,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>Connect to the Docker daemon by providing parameters with each task or by defining environment variables. You can define <code class="docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code> and <code class="docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code>. If you are using docker machine, run the script shipped with the product that sets up the environment. It will set these variables for you. See <a class="reference external" href="https://docs.docker.com/machine/reference/env/">https://docs.docker.com/machine/reference/env/</a> for more details.</p></li>
+<li><p>Connect to the Docker daemon by providing parameters with each task or by defining environment variables. You can define <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_API_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_SSL_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> and <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code></a>. If you are using docker machine, run the script shipped with the product that sets up the environment. It will set these variables for you. See <a class="reference external" href="https://docs.docker.com/machine/reference/env/">https://docs.docker.com/machine/reference/env/</a> for more details.</p></li>
 <li><p>When connecting to Docker daemon with TLS, you might need to install additional Python packages. For the Docker SDK for Python, version 2.4 or newer, this can be done by installing <code class="docutils literal notranslate"><span class="pre">docker[tls]</span></code> with <a class="reference external" href="https://docs.ansible.com/ansible/devel/collections/ansible/builtin/pip_module.html#ansible-collections-ansible-builtin-pip-module" title="(in Ansible vdevel)"><span class="xref std std-ref">ansible.builtin.pip</span></a>.</p></li>
-<li><p>Note that the Docker SDK for Python only allows to specify the path to the Docker configuration for very few functions. In general, it will use <code class="docutils literal notranslate"><span class="pre">$HOME/.docker/config.json</span></code> if the <code class="docutils literal notranslate"><span class="pre">DOCKER_CONFIG</span></code> environment variable is not specified, and use <code class="docutils literal notranslate"><span class="pre">$DOCKER_CONFIG/config.json</span></code> otherwise.</p></li>
+<li><p>Note that the Docker SDK for Python only allows to specify the path to the Docker configuration for very few functions. In general, it will use <code class="docutils literal notranslate"><span class="pre">$HOME/.docker/config.json</span></code> if the <code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CONFIG</span></code> environment variable is not specified, and use <code class="docutils literal notranslate"><span class="pre">$DOCKER_CONFIG/config.json</span></code> otherwise.</p></li>
 <li><p>This module uses the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a> to communicate with the Docker daemon.</p></li>
 </ul>
 </div>
@@ -802,7 +802,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#return-actions" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">complex</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Provides the actions to be taken on each service as determined by compose.</p>
-<p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> when in check mode or <em>debug</em> is <code class="docutils literal notranslate"><span class="pre">true</span></code></p>
+<p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> when in check mode or <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-debug"><span class="std std-ref"><span class="pre">debug=true</span></span></a></code></p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">

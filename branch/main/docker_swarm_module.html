@@ -210,9 +210,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-advertise_addr" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Externally reachable address advertised to other nodes.</p>
-<p>This can either be an address/port combination in the form <code class="docutils literal notranslate"><span class="pre">192.168.1.1:4567</span></code>, or an interface followed by a port number, like <code class="docutils literal notranslate"><span class="pre">eth0:4567</span></code>.</p>
+<p>This can either be an address/port combination in the form <code class="ansible-value docutils literal notranslate"><span class="pre">192.168.1.1:4567</span></code>, or an interface followed by a port number, like <code class="ansible-value docutils literal notranslate"><span class="pre">eth0:4567</span></code>.</p>
 <p>If the port number is omitted, the port number from the listen address is used.</p>
-<p>If <em>advertise_addr</em> is not specified, it will be automatically detected when possible.</p>
+<p>If <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-module-parameter-advertise-addr"><span class="std std-ref"><span class="pre">advertise_addr</span></span></a></strong></code> is not specified, it will be automatically detected when possible.</p>
 <p>Only used when swarm is initialised or joined. Because of this it’s not considered for idempotency checking.</p>
 </div></td>
 </tr>
@@ -224,7 +224,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>The version of the Docker API running on the Docker Host.</p>
 <p>Defaults to the latest version of the API supported by Docker SDK for Python and the docker daemon.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_API_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code></p>
 </div></td>
 </tr>
@@ -233,7 +233,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-autolock_managers" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>If set, generate a key and use it to lock data stored on the managers.</p>
-<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p>
+<p>Docker default value is <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code>.</p>
 <p><a class="reference internal" href="docker_swarm_info_module.html#ansible-collections-community-docker-docker-swarm-info-module"><span class="std std-ref">community.docker.docker_swarm_info</span></a> can be used to retrieve the unlock key.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
@@ -250,7 +250,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use a CA certificate when performing server verification by providing the path to a CA certificate file.</p>
-<p>If the value is not specified in the task and the environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code> is set, the file <code class="docutils literal notranslate"><span class="pre">ca.pem</span></code> from the directory specified in the environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code> will be used.</p>
+<p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">ca.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -258,7 +258,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-ca_force_rotate" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>An integer whose purpose is to force swarm to generate a new signing CA certificate and key, if none have been specified.</p>
-<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p>Docker default value is <code class="ansible-value docutils literal notranslate"><span class="pre">0</span></code>.</p>
 <p>Requires API version &gt;= 1.30.</p>
 </div></td>
 </tr>
@@ -270,7 +270,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Path to the client’s TLS certificate file.</p>
-<p>If the value is not specified in the task and the environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code> is set, the file <code class="docutils literal notranslate"><span class="pre">cert.pem</span></code> from the directory specified in the environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code> will be used.</p>
+<p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">cert.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -281,7 +281,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Path to the client’s TLS key file.</p>
-<p>If the value is not specified in the task and the environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code> is set, the file <code class="docutils literal notranslate"><span class="pre">key.pem</span></code> from the directory specified in the environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code> will be used.</p>
+<p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">key.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -290,7 +290,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p><span class="ansible-option-versionadded">added in community.docker 2.5.0</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Address or interface to use for data path traffic.</p>
-<p>This can either be an address in the form <code class="docutils literal notranslate"><span class="pre">192.168.1.1</span></code>, or an interface, like <code class="docutils literal notranslate"><span class="pre">eth0</span></code>.</p>
+<p>This can either be an address in the form <code class="ansible-value docutils literal notranslate"><span class="pre">192.168.1.1</span></code>, or an interface, like <code class="ansible-value docutils literal notranslate"><span class="pre">eth0</span></code>.</p>
 <p>Only used when swarm is initialised or joined. Because of this it is not considered for idempotency checking.</p>
 </div></td>
 </tr>
@@ -300,7 +300,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p><span class="ansible-option-versionadded">added in community.docker 3.1.0</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Port to use for data path traffic.</p>
-<p>This needs to be a port number like <code class="docutils literal notranslate"><span class="pre">9789</span></code>.</p>
+<p>This needs to be a port number like <code class="ansible-value docutils literal notranslate"><span class="pre">9789</span></code>.</p>
 <p>Only used when swarm is initialised. Because of this it is not considered for idempotency checking.</p>
 </div></td>
 </tr>
@@ -330,7 +330,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-dispatcher_heartbeat_period" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>The delay (in nanoseconds) for an agent to send a heartbeat to the dispatcher.</p>
-<p>Docker default value is 5 seconds, which corresponds to a value of <code class="docutils literal notranslate"><span class="pre">5000000000</span></code>.</p>
+<p>Docker default value is 5 seconds, which corresponds to a value of <code class="ansible-value docutils literal notranslate"><span class="pre">5000000000</span></code>.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -339,8 +339,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-docker_host" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: docker_url</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>The URL or Unix socket path used to connect to the Docker API. To connect to a remote host, provide the TCP connection string. For example, <code class="docutils literal notranslate"><span class="pre">tcp://192.0.2.23:2376</span></code>. If TLS is used to encrypt the connection, the module will automatically replace <code class="docutils literal notranslate"><span class="pre">tcp</span></code> in the connection URL with <code class="docutils literal notranslate"><span class="pre">https</span></code>.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<td><div class="ansible-option-cell"><p>The URL or Unix socket path used to connect to the Docker API. To connect to a remote host, provide the TCP connection string. For example, <code class="ansible-value docutils literal notranslate"><span class="pre">tcp://192.0.2.23:2376</span></code>. If TLS is used to encrypt the connection, the module will automatically replace <code class="docutils literal notranslate"><span class="pre">tcp</span></code> in the connection URL with <code class="docutils literal notranslate"><span class="pre">https</span></code>.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;unix://var/run/docker.sock&quot;</span></code></p>
 </div></td>
 </tr>
@@ -349,15 +349,15 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-election_tick" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Amount of ticks (in seconds) needed without a leader to trigger a new election.</p>
-<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">10</span></code> seconds.</p>
+<p>Docker default value is <code class="ansible-value docutils literal notranslate"><span class="pre">10</span></code> seconds.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-force"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-module-parameter-force"><strong>force</strong></p>
 <a class="ansibleOptionLink" href="#parameter-force" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Use with state <code class="docutils literal notranslate"><span class="pre">present</span></code> to force creating a new Swarm, even if already part of one.</p>
-<p>Use with state <code class="docutils literal notranslate"><span class="pre">absent</span></code> to Leave the swarm even if this node is a manager.</p>
+<td><div class="ansible-option-cell"><p>Use with state <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> to force creating a new Swarm, even if already part of one.</p>
+<p>Use with state <code class="ansible-value docutils literal notranslate"><span class="pre">absent</span></code> to Leave the swarm even if this node is a manager.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -370,7 +370,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-heartbeat_tick" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Amount of ticks (in seconds) between each heartbeat.</p>
-<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">1</span></code> seconds.</p>
+<p>Docker default value is <code class="ansible-value docutils literal notranslate"><span class="pre">1</span></code> seconds.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -378,7 +378,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-join_token" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Swarm token used to join a swarm cluster.</p>
-<p>Used with <em>state=join</em>.</p>
+<p>Used with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-module-parameter-state"><span class="std std-ref"><span class="pre">state=join</span></span></a></code>.</p>
 <p>If this value is specified, the corresponding value in the return values will be censored by Ansible. This is a side-effect of this value not being logged.</p>
 </div></td>
 </tr>
@@ -387,7 +387,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-keep_old_snapshots" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Number of snapshots to keep beyond the current snapshot.</p>
-<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<p>Docker default value is <code class="ansible-value docutils literal notranslate"><span class="pre">0</span></code>.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -404,7 +404,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-listen_addr" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Listen address used for inter-manager communication.</p>
-<p>This can either be an address/port combination in the form <code class="docutils literal notranslate"><span class="pre">192.168.1.1:4567</span></code>, or an interface followed by a port number, like <code class="docutils literal notranslate"><span class="pre">eth0:4567</span></code>.</p>
+<p>This can either be an address/port combination in the form <code class="ansible-value docutils literal notranslate"><span class="pre">192.168.1.1:4567</span></code>, or an interface followed by a port number, like <code class="ansible-value docutils literal notranslate"><span class="pre">eth0:4567</span></code>.</p>
 <p>If the port number is omitted, the default swarm listening port is used.</p>
 <p>Only used when swarm is initialised or joined. Because of this it’s not considered for idempotency checking.</p>
 <p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;0.0.0.0:2377&quot;</span></code></p>
@@ -429,7 +429,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-node_cert_expiry" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Automatic expiry for nodes certificates, given in nanoseconds.</p>
-<p>Docker default value is 90 days, which corresponds to a value of <code class="docutils literal notranslate"><span class="pre">7776000000000000</span></code>.</p>
+<p>Docker default value is 90 days, which corresponds to a value of <code class="ansible-value docutils literal notranslate"><span class="pre">7776000000000000</span></code>.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -437,7 +437,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-node_id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Swarm id of the node to remove.</p>
-<p>Used with <em>state=remove</em>.</p>
+<p>Used with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-module-parameter-state"><span class="std std-ref"><span class="pre">state=remove</span></span></a></code>.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -445,7 +445,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-remote_addrs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Remote address of one or more manager nodes of an existing Swarm to connect to.</p>
-<p>Used with <em>state=join</em>.</p>
+<p>Used with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-module-parameter-state"><span class="std std-ref"><span class="pre">state=join</span></span></a></code>.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -495,25 +495,25 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-snapshot_interval" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Number of logs entries between snapshot.</p>
-<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">10000</span></code>.</p>
+<p>Docker default value is <code class="ansible-value docutils literal notranslate"><span class="pre">10000</span></code>.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ssl_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-module-parameter-ssl-version"><strong>ssl_version</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ssl_version" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Provide a valid SSL version number. Default value determined by ssl.py module.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code> will be used instead.</p>
+<td><div class="ansible-option-cell"><p>Provide a valid SSL version number. Default value determined by <a class="reference external" href="https://docs.python.org/3/library/ssl.html">SSL Python module</a>.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_SSL_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code></a> will be used instead.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-state"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-module-parameter-state"><strong>state</strong></p>
 <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Set to <code class="docutils literal notranslate"><span class="pre">present</span></code>, to create/update a new cluster.</p>
-<p>Set to <code class="docutils literal notranslate"><span class="pre">join</span></code>, to join an existing cluster.</p>
-<p>Set to <code class="docutils literal notranslate"><span class="pre">absent</span></code>, to leave an existing cluster.</p>
-<p>Set to <code class="docutils literal notranslate"><span class="pre">remove</span></code>, to remove an absent node from the cluster. Note that removing requires Docker SDK for Python &gt;= 2.4.0.</p>
+<td><div class="ansible-option-cell"><p>Set to <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code>, to create/update a new cluster.</p>
+<p>Set to <code class="ansible-value docutils literal notranslate"><span class="pre">join</span></code>, to join an existing cluster.</p>
+<p>Set to <code class="ansible-value docutils literal notranslate"><span class="pre">absent</span></code>, to leave an existing cluster.</p>
+<p>Set to <code class="ansible-value docutils literal notranslate"><span class="pre">remove</span></code>, to remove an absent node from the cluster. Note that removing requires Docker SDK for Python &gt;= 2.4.0.</p>
 <p><a class="reference internal" href="docker_node_module.html#ansible-collections-community-docker-docker-node-module"><span class="std std-ref">community.docker.docker_node</span></a> can be used to demote a manager before removal.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
@@ -538,7 +538,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-task_history_retention_limit" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Maximum number of tasks history stored.</p>
-<p>Docker default value is <code class="docutils literal notranslate"><span class="pre">5</span></code>.</p>
+<p>Docker default value is <code class="ansible-value docutils literal notranslate"><span class="pre">5</span></code>.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -546,7 +546,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>The maximum amount of time in seconds to wait on a response from the API.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">60</span></code></p>
 </div></td>
 </tr>
@@ -554,8 +554,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-module-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS without verifying the authenticity of the Docker host server. Note that if <em>validate_certs</em> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code> as well, it will take precedence.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS without verifying the authenticity of the Docker host server. Note that if <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-module-parameter-validate-certs"><span class="std std-ref"><span class="pre">validate_certs</span></span></a></strong></code> is set to <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code> as well, it will take precedence.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -568,8 +568,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>When verifying the authenticity of the Docker Host server, provide the expected name of the server.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
-<p>Note that this option had a default value <code class="docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p>Note that this option had a default value <code class="ansible-value docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -593,7 +593,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS and verifying the authenticity of the Docker host server.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -646,9 +646,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>Connect to the Docker daemon by providing parameters with each task or by defining environment variables. You can define <code class="docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code> and <code class="docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code>. If you are using docker machine, run the script shipped with the product that sets up the environment. It will set these variables for you. See <a class="reference external" href="https://docs.docker.com/machine/reference/env/">https://docs.docker.com/machine/reference/env/</a> for more details.</p></li>
+<li><p>Connect to the Docker daemon by providing parameters with each task or by defining environment variables. You can define <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_API_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_SSL_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> and <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code></a>. If you are using docker machine, run the script shipped with the product that sets up the environment. It will set these variables for you. See <a class="reference external" href="https://docs.docker.com/machine/reference/env/">https://docs.docker.com/machine/reference/env/</a> for more details.</p></li>
 <li><p>When connecting to Docker daemon with TLS, you might need to install additional Python packages. For the Docker SDK for Python, version 2.4 or newer, this can be done by installing <code class="docutils literal notranslate"><span class="pre">docker[tls]</span></code> with <a class="reference external" href="https://docs.ansible.com/ansible/devel/collections/ansible/builtin/pip_module.html#ansible-collections-ansible-builtin-pip-module" title="(in Ansible vdevel)"><span class="xref std std-ref">ansible.builtin.pip</span></a>.</p></li>
-<li><p>Note that the Docker SDK for Python only allows to specify the path to the Docker configuration for very few functions. In general, it will use <code class="docutils literal notranslate"><span class="pre">$HOME/.docker/config.json</span></code> if the <code class="docutils literal notranslate"><span class="pre">DOCKER_CONFIG</span></code> environment variable is not specified, and use <code class="docutils literal notranslate"><span class="pre">$DOCKER_CONFIG/config.json</span></code> otherwise.</p></li>
+<li><p>Note that the Docker SDK for Python only allows to specify the path to the Docker configuration for very few functions. In general, it will use <code class="docutils literal notranslate"><span class="pre">$HOME/.docker/config.json</span></code> if the <code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CONFIG</span></code> environment variable is not specified, and use <code class="docutils literal notranslate"><span class="pre">$DOCKER_CONFIG/config.json</span></code> otherwise.</p></li>
 <li><p>This module uses the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a> to communicate with the Docker daemon.</p></li>
 </ul>
 </div>
@@ -738,7 +738,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#return-swarm_facts/JoinTokens/Manager" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Token to join the cluster as a new *manager* node.</p>
-<p><strong>Note:</strong> if this value has been specified as <em>join_token</em>, the value here will not be the token, but <code class="docutils literal notranslate"><span class="pre">VALUE_SPECIFIED_IN_NO_LOG_PARAMETER</span></code>. If you pass <em>join_token</em>, make sure your playbook/role does not depend on this return value!</p>
+<p><strong>Note:</strong> if this value has been specified as <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-module-parameter-join-token"><span class="std std-ref"><span class="pre">join_token</span></span></a></strong></code>, the value here will not be the token, but <code class="docutils literal notranslate"><span class="pre">VALUE_SPECIFIED_IN_NO_LOG_PARAMETER</span></code>. If you pass <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-module-parameter-join-token"><span class="std std-ref"><span class="pre">join_token</span></span></a></strong></code>, make sure your playbook/role does not depend on this return value!</p>
 <p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> success</p>
 <p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;SWMTKN-1--xxxxx&quot;</span></code></p>
 </div></td>
@@ -748,7 +748,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#return-swarm_facts/JoinTokens/Worker" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Token to join the cluster as a new *worker* node.</p>
-<p><strong>Note:</strong> if this value has been specified as <em>join_token</em>, the value here will not be the token, but <code class="docutils literal notranslate"><span class="pre">VALUE_SPECIFIED_IN_NO_LOG_PARAMETER</span></code>. If you pass <em>join_token</em>, make sure your playbook/role does not depend on this return value!</p>
+<p><strong>Note:</strong> if this value has been specified as <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-module-parameter-join-token"><span class="std std-ref"><span class="pre">join_token</span></span></a></strong></code>, the value here will not be the token, but <code class="docutils literal notranslate"><span class="pre">VALUE_SPECIFIED_IN_NO_LOG_PARAMETER</span></code>. If you pass <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-module-parameter-join-token"><span class="std std-ref"><span class="pre">join_token</span></span></a></strong></code>, make sure your playbook/role does not depend on this return value!</p>
 <p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> success</p>
 <p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;SWMTKN-1--xxxxx&quot;</span></code></p>
 </div></td>
@@ -757,8 +757,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="return-swarm_facts/UnlockKey"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-module-return-swarm-facts-unlockkey"><strong>UnlockKey</strong></p>
 <a class="ansibleOptionLink" href="#return-swarm_facts/UnlockKey" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The swarm unlock-key if <em>autolock_managers</em> is <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> on success if <em>autolock_managers</em> is <code class="docutils literal notranslate"><span class="pre">true</span></code> and swarm is initialised, or if <em>autolock_managers</em> has changed.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The swarm unlock-key if <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-module-parameter-autolock-managers"><span class="std std-ref"><span class="pre">autolock_managers=true</span></span></a></code>.</p>
+<p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> on success if <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-module-parameter-autolock-managers"><span class="std std-ref"><span class="pre">autolock_managers=true</span></span></a></code> and swarm is initialised, or if <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-module-parameter-autolock-managers"><span class="std std-ref"><span class="pre">autolock_managers</span></span></a></strong></code> has changed.</p>
 <p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;SWMKEY-1-xxx&quot;</span></code></p>
 </div></td>
 </tr>

@@ -205,7 +205,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-absent_retries"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-module-parameter-absent-retries"><strong>absent_retries</strong></p>
 <a class="ansibleOptionLink" href="#parameter-absent_retries" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>If <code class="docutils literal notranslate"><span class="pre">&gt;0</span></code> and <em>state</em> is <code class="docutils literal notranslate"><span class="pre">absent</span></code> the module will retry up to <em>absent_retries</em> times to delete the stack until all the resources have been effectively deleted. If the last try still reports the stack as not completely removed the module will fail.</p>
+<td><div class="ansible-option-cell"><p>If larger than <code class="ansible-value docutils literal notranslate"><span class="pre">0</span></code> and <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-stack-module-parameter-state"><span class="std std-ref"><span class="pre">state=absent</span></span></a></code> the module will retry up to <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-stack-module-parameter-absent-retries"><span class="std std-ref"><span class="pre">absent_retries</span></span></a></strong></code> times to delete the stack until all the resources have been effectively deleted. If the last try still reports the stack as not completely removed the module will fail.</p>
 <p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">0</span></code></p>
 </div></td>
 </tr>
@@ -213,7 +213,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-absent_retries_interval"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-module-parameter-absent-retries-interval"><strong>absent_retries_interval</strong></p>
 <a class="ansibleOptionLink" href="#parameter-absent_retries_interval" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Interval in seconds between consecutive <em>absent_retries</em>.</p>
+<td><div class="ansible-option-cell"><p>Interval in seconds between consecutive <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-stack-module-parameter-absent-retries"><span class="std std-ref"><span class="pre">absent_retries</span></span></a></strong></code>.</p>
 <p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">1</span></code></p>
 </div></td>
 </tr>

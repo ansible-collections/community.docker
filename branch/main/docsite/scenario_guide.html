@@ -227,25 +227,55 @@
 <h3>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this heading"></a></h3>
 <p>You can also control how the plugins and modules connect to the Docker API by setting the following environment variables.</p>
 <p>For plugins, they have to be set for the environment Ansible itself runs in. For modules, they have to be set for the environment the modules are executed in. For modules running on remote machines, the environment variables have to be set on that machine for the user used to execute the modules with.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>DOCKER_HOST</dt><dd><p>The URL or Unix socket path used to connect to the Docker API.</p>
-</dd>
-<dt>DOCKER_API_VERSION</dt><dd><p>The version of the Docker API running on the Docker Host. Defaults to the latest version of the API supported
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-DOCKER_HOST">
+<span class="sig-name descname"><span class="pre">DOCKER_HOST</span></span><a class="headerlink" href="#envvar-DOCKER_HOST" title="Permalink to this definition"></a></dt>
+<dd><p>The URL or Unix socket path used to connect to the Docker API.</p>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-DOCKER_API_VERSION">
+<span class="sig-name descname"><span class="pre">DOCKER_API_VERSION</span></span><a class="headerlink" href="#envvar-DOCKER_API_VERSION" title="Permalink to this definition"></a></dt>
+<dd><p>The version of the Docker API running on the Docker Host. Defaults to the latest version of the API supported
 by Docker SDK for Python.</p>
-</dd>
-<dt>DOCKER_TIMEOUT</dt><dd><p>The maximum amount of time in seconds to wait on a response from the API.</p>
-</dd>
-<dt>DOCKER_CERT_PATH</dt><dd><p>Path to the directory containing the client certificate, client key and CA certificate.</p>
-</dd>
-<dt>DOCKER_SSL_VERSION</dt><dd><p>Provide a valid SSL version number.</p>
-</dd>
-<dt>DOCKER_TLS</dt><dd><p>Secure the connection to the API by using TLS without verifying the authenticity of the Docker Host.</p>
-</dd>
-<dt>DOCKER_TLS_VERIFY</dt><dd><p>Secure the connection to the API by using TLS and verify the authenticity of the Docker Host.</p>
-</dd>
-</dl>
-</div></blockquote>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-DOCKER_TIMEOUT">
+<span class="sig-name descname"><span class="pre">DOCKER_TIMEOUT</span></span><a class="headerlink" href="#envvar-DOCKER_TIMEOUT" title="Permalink to this definition"></a></dt>
+<dd><p>The maximum amount of time in seconds to wait on a response from the API.</p>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-DOCKER_CERT_PATH">
+<span class="sig-name descname"><span class="pre">DOCKER_CERT_PATH</span></span><a class="headerlink" href="#envvar-DOCKER_CERT_PATH" title="Permalink to this definition"></a></dt>
+<dd><p>Path to the directory containing the client certificate, client key and CA certificate.</p>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-DOCKER_SSL_VERSION">
+<span class="sig-name descname"><span class="pre">DOCKER_SSL_VERSION</span></span><a class="headerlink" href="#envvar-DOCKER_SSL_VERSION" title="Permalink to this definition"></a></dt>
+<dd><p>Provide a valid SSL version number.</p>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-DOCKER_TLS">
+<span class="sig-name descname"><span class="pre">DOCKER_TLS</span></span><a class="headerlink" href="#envvar-DOCKER_TLS" title="Permalink to this definition"></a></dt>
+<dd><p>Secure the connection to the API by using TLS without verifying the authenticity of the Docker Host.</p>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-DOCKER_TLS_HOSTNAME">
+<span class="sig-name descname"><span class="pre">DOCKER_TLS_HOSTNAME</span></span><a class="headerlink" href="#envvar-DOCKER_TLS_HOSTNAME" title="Permalink to this definition"></a></dt>
+<dd><p>When verifying the authenticity of the Docker Host, uses this hostname to compare to the host’s certificate.</p>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-DOCKER_TLS_VERIFY">
+<span class="sig-name descname"><span class="pre">DOCKER_TLS_VERIFY</span></span><a class="headerlink" href="#envvar-DOCKER_TLS_VERIFY" title="Permalink to this definition"></a></dt>
+<dd><p>Secure the connection to the API by using TLS and verify the authenticity of the Docker Host.</p>
+</dd></dl>
+
 </section>
 </section>
 <section id="plain-docker-daemon-images-networks-volumes-and-containers">

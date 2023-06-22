@@ -178,7 +178,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <ul class="simple">
 <li><p>Reads inventories from the Docker swarm API.</p></li>
 <li><p>Uses a YAML configuration file docker_swarm.[yml|yaml].</p></li>
-<li><p>The plugin returns following groups of swarm nodes:  <em>all</em> - all hosts; <em>workers</em> - all worker nodes; <em>managers</em> - all manager nodes; <em>leader</em> - the swarm leader node; <em>nonleaders</em> - all nodes except the swarm leader.</p></li>
+<li><p>The plugin returns following groups of swarm nodes:  <code class="docutils literal notranslate"><span class="pre">all</span></code> - all hosts; <code class="docutils literal notranslate"><span class="pre">workers</span></code> - all worker nodes; <code class="docutils literal notranslate"><span class="pre">managers</span></code> - all manager nodes; <code class="docutils literal notranslate"><span class="pre">leader</span></code> - the swarm leader node; <code class="docutils literal notranslate"><span class="pre">nonleaders</span></code> - all nodes except the swarm leader.</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -253,7 +253,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Socket of a Docker swarm manager node (<code class="docutils literal notranslate"><span class="pre">tcp</span></code>, <code class="docutils literal notranslate"><span class="pre">unix</span></code>).</p>
-<p>Use <code class="docutils literal notranslate"><span class="pre">unix://var/run/docker.sock</span></code> to connect via local socket.</p>
+<p>Use <code class="ansible-value docutils literal notranslate"><span class="pre">unix://var/run/docker.sock</span></code> to connect via local socket.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -268,7 +268,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-include_host_uri"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-inventory-parameter-include-host-uri"><strong>include_host_uri</strong></p>
 <a class="ansibleOptionLink" href="#parameter-include_host_uri" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Toggle to return the additional attribute <code class="docutils literal notranslate"><span class="pre">ansible_host_uri</span></code> which contains the URI of the swarm leader in format of <code class="docutils literal notranslate"><span class="pre">tcp://172.16.0.1:2376</span></code>. This value may be used without additional modification as value of option <em>docker_host</em> in Docker Swarm modules when connecting via API. The port always defaults to <code class="docutils literal notranslate"><span class="pre">2376</span></code>.</p>
+<td><div class="ansible-option-cell"><p>Toggle to return the additional attribute <code class="docutils literal notranslate"><span class="pre">ansible_host_uri</span></code> which contains the URI of the swarm leader in format of <code class="ansible-value docutils literal notranslate"><span class="pre">tcp://172.16.0.1:2376</span></code>. This value may be used without additional modification as value of option <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-inventory-parameter-docker-host"><span class="std std-ref"><span class="pre">docker_host</span></span></a></strong></code> in Docker Swarm modules when connecting via API. The port always defaults to <code class="ansible-value docutils literal notranslate"><span class="pre">2376</span></code>.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -280,7 +280,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-include_host_uri_port"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-inventory-parameter-include-host-uri-port"><strong>include_host_uri_port</strong></p>
 <a class="ansibleOptionLink" href="#parameter-include_host_uri_port" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Override the detected port number included in <em>ansible_host_uri</em></p>
+<td><div class="ansible-option-cell"><p>Override the detected port number included in <code class="docutils literal notranslate"><span class="pre">ansible_host_uri</span></code>.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -366,7 +366,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-plugin"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-inventory-parameter-plugin"><strong>plugin</strong></p>
 <a class="ansibleOptionLink" href="#parameter-plugin" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>The name of this plugin, it should always be set to <code class="docutils literal notranslate"><span class="pre">community.docker.docker_swarm</span></code> for this plugin to recognize it as it’s own.</p>
+<td><div class="ansible-option-cell"><p>The name of this plugin, it should always be set to <code class="ansible-value docutils literal notranslate"><span class="pre">community.docker.docker_swarm</span></code> for this plugin to recognize it as it’s own.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;docker_swarm&quot;</span></code></p></li>
@@ -378,7 +378,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-ssl_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-inventory-parameter-ssl-version"><strong>ssl_version</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ssl_version" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Provide a valid SSL version number. Default value determined by ssl.py module.</p>
+<td><div class="ansible-option-cell"><p>Provide a valid SSL version number. Default value determined by <a class="reference external" href="https://docs.python.org/3/library/ssl.html">SSL Python module</a>.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -401,7 +401,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>The maximum amount of time in seconds to wait on a response from the API.</p>
-<p>If the value is not specified in the task, the value of environment variable <code class="docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code></a>. will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">60</span></code></p>
 </div></td>
 </tr>
@@ -479,7 +479,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-verbose_output"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-inventory-parameter-verbose-output"><strong>verbose_output</strong></p>
 <a class="ansibleOptionLink" href="#parameter-verbose_output" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Toggle to (not) include all available nodes metadata (for example <code class="docutils literal notranslate"><span class="pre">Platform</span></code>, <code class="docutils literal notranslate"><span class="pre">Architecture</span></code>, <code class="docutils literal notranslate"><span class="pre">OS</span></code>, <code class="docutils literal notranslate"><span class="pre">EngineVersion</span></code>)</p>
+<td><div class="ansible-option-cell"><p>Toggle to (not) include all available nodes metadata (for example <code class="docutils literal notranslate"><span class="pre">Platform</span></code>, <code class="docutils literal notranslate"><span class="pre">Architecture</span></code>, <code class="docutils literal notranslate"><span class="pre">OS</span></code>, <code class="docutils literal notranslate"><span class="pre">EngineVersion</span></code>).</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
