@@ -5,6 +5,29 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.4.8
+======
+
+Release Summary
+---------------
+
+Maintenance release with updated documentation.
+
+From this version on, community.docker is using the new `Ansible semantic markup
+<https://docs.ansible.com/ansible/devel/dev_guide/developing_modules_documenting.html#semantic-markup-within-module-documentation>`__
+in its documentation. If you look at documentation with the ansible-doc CLI tool
+from ansible-core before 2.15, please note that it does not render the markup
+correctly. You should be still able to read it in most cases, but you need
+ansible-core 2.15 or later to see it as it is intended. Alternatively you can
+look at `the devel docsite <https://docs.ansible.com/ansible/devel/collections/community/docker/>`__
+for the rendered HTML version of the documentation of the latest release.
+
+
+Known Issues
+------------
+
+- Ansible markup will show up in raw form on ansible-doc text output for ansible-core before 2.15. If you have trouble deciphering the documentation markup, please upgrade to ansible-core 2.15 (or newer), or read the HTML documentation on https://docs.ansible.com/ansible/devel/collections/community/docker/.
+
 v3.4.7
 ======
 
