@@ -19,8 +19,8 @@ description:
   - If an image does not exist locally, it will not appear in the results. If you want to check whether an image exists
     locally, you can call the module with the image name, then check whether the result list is empty (image does not
     exist) or has one element (the image exists locally).
-  - The module will not attempt to pull images from registries. Use M(community.docker.docker_image) with I(source) set to C(pull)
-    to ensure an image is pulled.
+  - The module will not attempt to pull images from registries. Use M(community.docker.docker_image) with
+    O(community.docker.docker_image#module:source=pull) to ensure an image is pulled.
 
 notes:
   - This module was called C(docker_image_facts) before Ansible 2.8. The usage did not change.
@@ -35,7 +35,7 @@ options:
   name:
     description:
       - An image name or a list of image names. Name format will be C(name[:tag]) or C(repository/name[:tag]),
-        where C(tag) is optional. If a tag is not provided, C(latest) will be used. Instead of image names, also
+        where C(tag) is optional. If a tag is not provided, V(latest) will be used. Instead of image names, also
         image IDs can be used.
       - If no name is provided, a list of all images will be returned.
     type: list

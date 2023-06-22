@@ -1,0 +1,15 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# The following `.. envvar::` directives are defined in the extra docsite docs:
+envvar_directives:
+  - DOCKER_HOST
+  - DOCKER_API_VERSION
+  - DOCKER_TIMEOUT
+  - DOCKER_CERT_PATH
+  - DOCKER_SSL_VERSION
+  - DOCKER_TLS
+  - DOCKER_TLS_HOSTNAME
+  - DOCKER_TLS_VERIFY

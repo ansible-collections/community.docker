@@ -64,7 +64,7 @@ options:
         required: true
       filename:
         description:
-          - Name of the file containing the config. Defaults to the I(config_name) if not specified.
+          - Name of the file containing the config. Defaults to the O(configs[].config_name) if not specified.
         type: str
       uid:
         description:
@@ -76,7 +76,7 @@ options:
         type: str
       mode:
         description:
-          - File access mode inside the container. Must be an octal number (like C(0644) or C(0444)).
+          - File access mode inside the container. Must be an octal number (like V(0644) or V(0444)).
         type: int
   container_labels:
     description:
@@ -114,7 +114,7 @@ options:
       - List or dictionary of the service environment variables.
       - If passed a list each items need to be in the format of C(KEY=VALUE).
       - If passed a dictionary values which might be parsed as numbers,
-        booleans or other types by the YAML parser must be quoted (for example C("true"))
+        booleans or other types by the YAML parser must be quoted (for example V("true"))
         in order to avoid data loss.
       - Corresponds to the C(--env) option of C(docker service create).
     type: raw
@@ -123,7 +123,7 @@ options:
       - List of paths to files, present on the target, containing environment variables C(FOO=BAR).
       - The order of the list is significant in determining the value assigned to a
         variable that shows up more than once.
-      - If variable also present in I(env), then I(env) value will override.
+      - If variable also present in O(env), then O(env) value will override.
     type: list
     elements: path
   force_update:
@@ -143,14 +143,15 @@ options:
       - Configure a check that is run to determine whether or not containers for this service are "healthy".
         See the docs for the L(HEALTHCHECK Dockerfile instruction,https://docs.docker.com/engine/reference/builder/#healthcheck)
         for details on how healthchecks work.
-      - "I(interval), I(timeout) and I(start_period) are specified as durations. They accept duration as a string in a format
-        that look like: C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
+      - "O(healthcheck.interval), O(healthcheck.timeout), and O(healthcheck.start_period) are specified as durations.
+        They accept duration as a string in a format that look like: V(5h34m56s), V(1m30s), and so on.
+        The supported units are V(us), V(ms), V(s), V(m) and V(h)."
     type: dict
     suboptions:
       test:
         description:
           - Command to run to check health.
-          - Must be either a string or a list. If it is a list, the first item must be one of C(NONE), C(CMD) or C(CMD-SHELL).
+          - Must be either a string or a list. If it is a list, the first item must be one of V(NONE), V(CMD) or V(CMD-SHELL).
         type: raw
       interval:
         description:
@@ -201,15 +202,15 @@ options:
     suboptions:
       cpus:
         description:
-          - Service CPU limit. C(0) equals no limit.
+          - Service CPU limit. V(0) equals no limit.
           - Corresponds to the C(--limit-cpu) option of C(docker service create).
         type: float
       memory:
         description:
           - "Service memory limit in format C(<number>[<unit>]). Number is a positive integer.
-            Unit can be C(B) (byte), C(K) (kibibyte, 1024B), C(M) (mebibyte), C(G) (gibibyte),
-            C(T) (tebibyte), or C(P) (pebibyte)."
-          - C(0) equals no limit.
+            Unit can be V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
+            V(T) (tebibyte), or V(P) (pebibyte)."
+          - V(0) equals no limit.
           - Omitting the unit defaults to bytes.
           - Corresponds to the C(--limit-memory) option of C(docker service create).
         type: str
@@ -249,7 +250,7 @@ options:
       source:
         description:
           - Mount source (for example a volume name or a host path).
-          - Must be specified if I(type) is not C(tmpfs).
+          - Must be specified if O(mounts[].type) is not V(tmpfs).
         type: str
       target:
         description:
@@ -259,7 +260,7 @@ options:
       type:
         description:
           - The mount type.
-          - Note that C(npipe) is only supported by Docker for Windows. Also note that C(npipe) was added in Ansible 2.9.
+          - Note that V(npipe) is only supported by Docker for Windows. Also note that V(npipe) was added in Ansible 2.9.
         type: str
         default: bind
         choices:
@@ -278,7 +279,7 @@ options:
       propagation:
         description:
           - The propagation mode to use.
-          - Can only be used when I(type) is C(bind).
+          - Can only be used when O(mounts[].type=bind).
         type: str
         choices:
           - shared
@@ -290,12 +291,12 @@ options:
       no_copy:
         description:
           - Disable copying of data from a container when a volume is created.
-          - Can only be used when I(type) is C(volume).
+          - Can only be used when O(mounts[].type=volume).
         type: bool
       driver_config:
         description:
           - Volume driver configuration.
-          - Can only be used when I(type) is C(volume).
+          - Can only be used when O(mounts[].type=volume).
         suboptions:
           name:
             description:
@@ -309,14 +310,14 @@ options:
       tmpfs_size:
         description:
           - "Size of the tmpfs mount in format C(<number>[<unit>]). Number is a positive integer.
-            Unit can be C(B) (byte), C(K) (kibibyte, 1024B), C(M) (mebibyte), C(G) (gibibyte),
-            C(T) (tebibyte), or C(P) (pebibyte)."
-          - Can only be used when I(type) is C(tmpfs).
+            Unit can be V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
+            V(T) (tebibyte), or V(P) (pebibyte)."
+          - Can only be used when O(mounts[].type=tmpfs).
         type: str
       tmpfs_mode:
         description:
           - File mode of the tmpfs in octal.
-          - Can only be used when I(type) is C(tmpfs).
+          - Can only be used when O(mounts[].type=tmpfs).
         type: int
   name:
     description:
@@ -327,8 +328,8 @@ options:
   networks:
     description:
       - List of the service networks names or dictionaries.
-      - When passed dictionaries valid sub-options are I(name), which is required, and
-        I(aliases) and I(options).
+      - When passed dictionaries valid sub-options are C(name), which is required, and
+        C(aliases) and C(options).
       - Prior to API version 1.29, updating and removing networks is not supported.
         If changes are made the service will then be removed and recreated.
       - Corresponds to the C(--network) option of C(docker service create).
@@ -399,9 +400,9 @@ options:
     type: bool
   replicas:
     description:
-      - Number of containers instantiated in the service. Valid only if I(mode) is C(replicated).
-      - If set to C(-1), and service is not present, service replicas will be set to C(1).
-      - If set to C(-1), and service is present, service replicas will be unchanged.
+      - Number of containers instantiated in the service. Valid only if O(mode=replicated).
+      - If set to V(-1), and service is not present, service replicas will be set to V(1).
+      - If set to V(-1), and service is present, service replicas will be unchanged.
       - Corresponds to the C(--replicas) option of C(docker service create).
     type: int
     default: -1
@@ -411,15 +412,15 @@ options:
     suboptions:
       cpus:
         description:
-          - Service CPU reservation. C(0) equals no reservation.
+          - Service CPU reservation. V(0) equals no reservation.
           - Corresponds to the C(--reserve-cpu) option of C(docker service create).
         type: float
       memory:
         description:
           - "Service memory reservation in format C(<number>[<unit>]). Number is a positive integer.
-            Unit can be C(B) (byte), C(K) (kibibyte, 1024B), C(M) (mebibyte), C(G) (gibibyte),
-            C(T) (tebibyte), or C(P) (pebibyte)."
-          - C(0) equals no reservation.
+            Unit can be V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
+            V(T) (tebibyte), or V(P) (pebibyte)."
+          - V(0) equals no reservation.
           - Omitting the unit defaults to bytes.
           - Corresponds to the C(--reserve-memory) option of C(docker service create).
         type: str
@@ -447,7 +448,7 @@ options:
         description:
           - Delay between restarts.
           - "Accepts a a string in a format that look like:
-            C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
+            V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
           - Corresponds to the C(--restart-delay) option of C(docker service create).
         type: str
       max_attempts:
@@ -459,7 +460,7 @@ options:
         description:
           - Restart policy evaluation window.
           - "Accepts a string in a format that look like:
-            C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
+            V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
           - Corresponds to the C(--restart-window) option of C(docker service create).
         type: str
     type: dict
@@ -477,7 +478,7 @@ options:
         description:
           - Delay between task rollbacks.
           - "Accepts a string in a format that look like:
-            C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
+            V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
           - Corresponds to the C(--rollback-delay) option of C(docker service create).
           - Requires API version >= 1.28.
         type: str
@@ -494,7 +495,7 @@ options:
         description:
           - Duration after each task rollback to monitor for failure.
           - "Accepts a string in a format that look like:
-            C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
+            V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
           - Corresponds to the C(--rollback-monitor) option of C(docker service create).
           - Requires API version >= 1.28.
         type: str
@@ -529,7 +530,7 @@ options:
         required: true
       filename:
         description:
-          - Name of the file containing the secret. Defaults to the I(secret_name) if not specified.
+          - Name of the file containing the secret. Defaults to the O(secrets[].secret_name) if not specified.
           - Corresponds to the C(target) key of C(docker service create --secret).
         type: str
       uid:
@@ -542,12 +543,12 @@ options:
         type: str
       mode:
         description:
-          - File access mode inside the container. Must be an octal number (like C(0644) or C(0444)).
+          - File access mode inside the container. Must be an octal number (like V(0644) or V(0444)).
         type: int
   state:
     description:
-      - C(absent) - A service matching the specified name will be removed and have its tasks stopped.
-      - C(present) - Asserts the existence of a service matching the name and provided configuration parameters.
+      - V(absent) - A service matching the specified name will be removed and have its tasks stopped.
+      - V(present) - Asserts the existence of a service matching the name and provided configuration parameters.
         Unspecified configuration parameters will be set to docker defaults.
     type: str
     default: present
@@ -558,7 +559,7 @@ options:
     description:
       - Time to wait before force killing a container.
       - "Accepts a duration as a string in a format that look like:
-        C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
+        V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
       - Corresponds to the C(--stop-grace-period) option of C(docker service create).
     type: str
   stop_signal:
@@ -584,14 +585,14 @@ options:
         description:
           - Rolling update delay.
           - "Accepts a string in a format that look like:
-            C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
+            V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
           - Corresponds to the C(--update-delay) option of C(docker service create).
         type: str
       failure_action:
         description:
           - Action to take in case of container failure.
           - Corresponds to the C(--update-failure-action) option of C(docker service create).
-          - Usage of I(rollback) requires API version >= 1.29.
+          - Usage of V(rollback) requires API version >= 1.29.
         type: str
         choices:
           - continue
@@ -601,7 +602,7 @@ options:
         description:
           - Time to monitor updated tasks for failures.
           - "Accepts a string in a format that look like:
-            C(5h34m56s), C(1m30s) etc. The supported units are C(us), C(ms), C(s), C(m) and C(h)."
+            V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
           - Corresponds to the C(--update-monitor) option of C(docker service create).
         type: str
       max_failure_ratio:
@@ -619,7 +620,7 @@ options:
   user:
     description:
       - Sets the username or UID used for the specified command.
-      - Before Ansible 2.8, the default value for this option was C(root).
+      - Before Ansible 2.8, the default value for this option was V(root).
       - The default has been removed so that the user defined in the image is used if no user is specified here.
       - Corresponds to the C(--user) option of C(docker service create).
     type: str
@@ -648,7 +649,7 @@ requirements:
   - "Docker API >= 1.25"
 notes:
   - "Images will only resolve to the latest digest when using Docker API >= 1.30 and Docker SDK for Python >= 3.2.0.
-     When using older versions use C(force_update: true) to trigger the swarm to resolve a new image."
+     When using older versions use O(force_update=true) to trigger the swarm to resolve a new image."
 '''
 
 RETURN = '''
@@ -661,7 +662,7 @@ swarm_service:
     - Note that facts are not part of registered vars but accessible directly.
     - Note that before Ansible 2.7.9, the return variable was documented as C(ansible_swarm_service),
       while the module actually returned a variable called C(ansible_docker_service). The variable
-      was renamed to C(swarm_service) in both code and documentation for Ansible 2.7.9 and Ansible 2.8.0.
+      was renamed to RV(swarm_service) in both code and documentation for Ansible 2.7.9 and Ansible 2.8.0.
       In Ansible 2.7.x, the old name C(ansible_docker_service) can still be used.
   sample: '{
     "args": [

@@ -86,27 +86,38 @@ You can also control how the plugins and modules connect to the Docker API by se
 
 For plugins, they have to be set for the environment Ansible itself runs in. For modules, they have to be set for the environment the modules are executed in. For modules running on remote machines, the environment variables have to be set on that machine for the user used to execute the modules with.
 
-    DOCKER_HOST
-        The URL or Unix socket path used to connect to the Docker API.
+.. envvar:: DOCKER_HOST
 
-    DOCKER_API_VERSION
-        The version of the Docker API running on the Docker Host. Defaults to the latest version of the API supported
-        by Docker SDK for Python.
+    The URL or Unix socket path used to connect to the Docker API.
 
-    DOCKER_TIMEOUT
-        The maximum amount of time in seconds to wait on a response from the API.
+.. envvar:: DOCKER_API_VERSION
 
-    DOCKER_CERT_PATH
-        Path to the directory containing the client certificate, client key and CA certificate.
+    The version of the Docker API running on the Docker Host. Defaults to the latest version of the API supported
+    by Docker SDK for Python.
 
-    DOCKER_SSL_VERSION
-        Provide a valid SSL version number.
+.. envvar:: DOCKER_TIMEOUT
 
-    DOCKER_TLS
-        Secure the connection to the API by using TLS without verifying the authenticity of the Docker Host.
+    The maximum amount of time in seconds to wait on a response from the API.
 
-    DOCKER_TLS_VERIFY
-        Secure the connection to the API by using TLS and verify the authenticity of the Docker Host.
+.. envvar:: DOCKER_CERT_PATH
+
+    Path to the directory containing the client certificate, client key and CA certificate.
+
+.. envvar:: DOCKER_SSL_VERSION
+
+    Provide a valid SSL version number.
+
+.. envvar:: DOCKER_TLS
+
+    Secure the connection to the API by using TLS without verifying the authenticity of the Docker Host.
+
+.. envvar:: DOCKER_TLS_HOSTNAME
+
+    When verifying the authenticity of the Docker Host, uses this hostname to compare to the host's certificate.
+
+.. envvar:: DOCKER_TLS_VERIFY
+
+    Secure the connection to the API by using TLS and verify the authenticity of the Docker Host.
 
 
 Plain Docker daemon: images, networks, volumes, and containers

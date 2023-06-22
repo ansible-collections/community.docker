@@ -38,12 +38,12 @@ options:
   source:
     description:
       - "Determines where the module will try to retrieve the image from."
-      - "Use C(build) to build the image from a C(Dockerfile). I(build.path) must
+      - "Use V(build) to build the image from a C(Dockerfile). O(build.path) must
          be specified when this value is used."
-      - "Use C(load) to load the image from a C(.tar) file. I(load_path) must
+      - "Use V(load) to load the image from a C(.tar) file. O(load_path) must
          be specified when this value is used."
-      - "Use C(pull) to pull the image from a registry."
-      - "Use C(local) to make sure that the image is already available on the local
+      - "Use V(pull) to pull the image from a registry."
+      - "Use V(local) to make sure that the image is already available on the local
          docker daemon. This means that the module does not try to build, pull or load the image."
     type: str
     choices:
@@ -63,8 +63,8 @@ options:
         elements: str
       dockerfile:
         description:
-          - Use with state C(present) and source C(build) to provide an alternate name for the Dockerfile to use when building an image.
-          - This can also include a relative path (relative to I(path)).
+          - Use with O(state=present) and O(source=build) to provide an alternate name for the Dockerfile to use when building an image.
+          - This can also include a relative path (relative to O(build.path)).
         type: str
       http_timeout:
         description:
@@ -117,7 +117,7 @@ options:
           memswap:
             description:
               - Total memory (memory + swap).
-              - Use C(-1) to disable swap.
+              - Use V(-1) to disable swap.
             type: int
           cpushares:
             description:
@@ -126,11 +126,11 @@ options:
           cpusetcpus:
             description:
               - CPUs in which to allow execution.
-              - For example, C(0-3) or C(0,1).
+              - For example, V(0-3) or V(0,1).
             type: str
       use_config_proxy:
         description:
-          - If set to C(true) and a proxy configuration is specified in the docker client configuration
+          - If set to V(true) and a proxy configuration is specified in the docker client configuration
             (by default C($HOME/.docker/config.json)), the corresponding environment variables will
             be set in the container being built.
         type: bool
@@ -146,35 +146,35 @@ options:
         version_added: 1.1.0
   archive_path:
     description:
-      - Use with state C(present) to archive an image to a .tar file.
+      - Use with O(state=present) to archive an image to a C(.tar) file.
     type: path
   load_path:
     description:
-      - Use with state C(present) to load an image from a .tar file.
-      - Set I(source) to C(load) if you want to load the image.
+      - Use with O(state=present) to load an image from a C(.tar) file.
+      - Set O(source=load) if you want to load the image.
     type: path
   force_source:
     description:
-      - Use with state C(present) to build, load or pull an image (depending on the
-        value of the I(source) option) when the image already exists.
+      - Use with O(state=present) to build, load or pull an image (depending on the
+        value of the O(source) option) when the image already exists.
     type: bool
     default: false
   force_absent:
     description:
-      - Use with state I(absent) to un-tag and remove all images matching the specified name.
+      - Use with O(state=absent) to un-tag and remove all images matching the specified name.
     type: bool
     default: false
   force_tag:
     description:
-      - Use with state C(present) to force tagging an image.
+      - Use with O(state=present) to force tagging an image.
     type: bool
     default: false
   name:
     description:
       - "Image name. Name format will be one of: C(name), C(repository/name), C(registry_server:port/name).
         When pushing or pulling an image the name can optionally include the tag by appending C(:tag_name)."
-      - Note that image IDs (hashes) are only supported for I(state=absent), for I(state=present) with I(source=load),
-        and for I(state=present) with I(source=local).
+      - Note that image IDs (hashes) are only supported for O(state=absent), for O(state=present) with O(source=load),
+        and for O(state=present) with O(source=local).
     type: str
     required: true
   pull:
@@ -191,23 +191,23 @@ options:
         type: str
   push:
     description:
-      - Push the image to the registry. Specify the registry as part of the I(name) or I(repository) parameter.
+      - Push the image to the registry. Specify the registry as part of the O(name) or O(repository) parameter.
     type: bool
     default: false
   repository:
     description:
-      - Use with state C(present) to tag the image.
-      - Expects format C(repository:tag). If no tag is provided, will use the value of the I(tag) parameter or C(latest).
-      - If I(push=true), I(repository) must either include a registry, or will be assumed to belong to the default
+      - Use with O(state=present) to tag the image.
+      - Expects format C(repository:tag). If no tag is provided, will use the value of the O(tag) parameter or V(latest).
+      - If O(push=true), O(repository) must either include a registry, or will be assumed to belong to the default
         registry (Docker Hub).
     type: str
   state:
     description:
       - Make assertions about the state of an image.
-      - When C(absent) an image will be removed. Use the force option to un-tag and remove all images
+      - When V(absent) an image will be removed. Use the force option to un-tag and remove all images
         matching the provided name.
-      - When C(present) check if an image exists using the provided name and tag. If the image is not found or the
-        force option is used, the image will either be pulled, built or loaded, depending on the I(source) option.
+      - When V(present) check if an image exists using the provided name and tag. If the image is not found or the
+        force option is used, the image will either be pulled, built or loaded, depending on the O(source) option.
     type: str
     default: present
     choices:
@@ -216,8 +216,8 @@ options:
   tag:
     description:
       - Used to select an image when pulling. Will be added to the image when pushing, tagging or building. Defaults to
-        I(latest).
-      - If I(name) parameter format is I(name:tag), then tag value from I(name) will take precedence.
+        V(latest).
+      - If O(name) parameter format is C(name:tag), then tag value from O(name) will take precedence.
     type: str
     default: latest
 

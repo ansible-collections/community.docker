@@ -33,14 +33,14 @@ options:
       - The list of nodes names to inspect.
       - If empty then return information of all nodes in Swarm cluster.
       - When identifying the node use either the hostname of the node (as registered in Swarm) or node ID.
-      - If I(self) is C(true) then this parameter is ignored.
+      - If O(self=true) then this parameter is ignored.
     type: list
     elements: str
   self:
     description:
-      - If C(true), queries the node (that is, the docker daemon) the module communicates with.
-      - If C(true) then I(name) is ignored.
-      - If C(false) then query depends on I(name) presence and value.
+      - If V(true), queries the node (that is, the docker daemon) the module communicates with.
+      - If V(true) then O(name) is ignored.
+      - If V(false) then query depends on O(name) presence and value.
     type: bool
     default: false
 
@@ -79,8 +79,8 @@ RETURN = '''
 nodes:
     description:
       - Facts representing the current state of the nodes. Matches the C(docker node inspect) output.
-      - Can contain multiple entries if more than one node provided in I(name), or I(name) is not provided.
-      - If I(name) contains a list of nodes, the output will provide information on all nodes registered
+      - Can contain multiple entries if more than one node provided in O(name), or O(name) is not provided.
+      - If O(name) contains a list of nodes, the output will provide information on all nodes registered
         at the swarm, including nodes that left the swarm but have not been removed from the cluster on swarm
         managers and nodes that are unreachable.
     returned: always

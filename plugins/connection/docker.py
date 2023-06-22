@@ -20,8 +20,7 @@ description:
     - Run commands or put/fetch files to an existing docker container.
     - Uses the Docker CLI to execute commands in the container. If you prefer
       to directly connect to the Docker daemon, use the
-      R(community.docker.docker_api,ansible_collections.community.docker.docker_api_connection)
-      connection plugin.
+      P(community.docker.docker_api#connection) connection plugin.
 options:
     remote_addr:
         description:

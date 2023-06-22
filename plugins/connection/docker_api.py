@@ -15,8 +15,7 @@ description:
     - Run commands or put/fetch files to an existing docker container.
     - Uses the L(requests library,https://pypi.org/project/requests/) to interact
       directly with the Docker daemon instead of using the Docker CLI. Use the
-      R(community.docker.docker,ansible_collections.community.docker.docker_connection)
-      connection plugin if you want to use the Docker CLI.
+      P(community.docker.docker#connection) connection plugin if you want to use the Docker CLI.
 notes:
     - Does B(not work with TCP TLS sockets)! This is caused by the inability to send C(close_notify) without closing the connection
       with Python's C(SSLSocket)s. See U(https://github.com/ansible-collections/community.docker/issues/605) for more information.

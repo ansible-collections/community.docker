@@ -38,7 +38,7 @@ options:
 
   driver:
     description:
-      - Specify the type of volume. Docker provides the C(local) driver, but 3rd party drivers can also be used.
+      - Specify the type of volume. Docker provides the V(local) driver, but 3rd party drivers can also be used.
     type: str
     default: local
 
@@ -56,13 +56,13 @@ options:
 
   recreate:
     description:
-      - Controls when a volume will be recreated when I(state) is C(present). Please
+      - Controls when a volume will be recreated when O(state=present). Please
         note that recreating an existing volume will cause B(any data in the existing volume
         to be lost!) The volume will be deleted and a new volume with the same name will be
         created.
-      - The value C(always) forces the volume to be always recreated.
-      - The value C(never) makes sure the volume will not be recreated.
-      - The value C(options-changed) makes sure the volume will be recreated if the volume
+      - The value V(always) forces the volume to be always recreated.
+      - The value V(never) makes sure the volume will not be recreated.
+      - The value V(options-changed) makes sure the volume will be recreated if the volume
         already exist and the driver, driver options or labels differ.
     type: str
     default: never
@@ -73,8 +73,8 @@ options:
 
   state:
     description:
-      - C(absent) deletes the volume.
-      - C(present) creates the volume, if it does not already exist.
+      - V(absent) deletes the volume.
+      - V(present) creates the volume, if it does not already exist.
     type: str
     default: present
     choices:
