@@ -17,7 +17,7 @@ short_description: manage Docker containers
 description:
   - Manage the life cycle of Docker containers.
   - Supports check mode. Run with C(--check) and C(--diff) to view config difference and list of actions to be taken.
-  - test.
+  - test. 
 
 notes:
   - For most config changes, the container needs to be recreated. This means that the existing container has to be destroyed and
