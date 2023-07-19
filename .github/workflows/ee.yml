@@ -46,6 +46,8 @@ jobs:
                 python_interpreter:
                   package_system: python3.11 python3.11-pip python3.11-wheel python3.11-cryptography
                   python_path: "/usr/bin/python3.11"
+                python:
+                  - PyYAML==5.3.1
             base_image: docker.io/redhat/ubi9:latest
             pre_base: '"#"'
           - name: ansible-core 2.15 @ Rocky Linux 9
