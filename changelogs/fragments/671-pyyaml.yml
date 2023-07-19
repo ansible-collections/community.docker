@@ -1,2 +1,2 @@
 bugfixes:
-  - "Execution Environment Python requirements - force ``PyYAML <= 5.3.1``, which is compatible to both docker-compose v1 (part of the community.docker 2.x.y EE requirements) and Cython 3.0.0 (https://github.com/ansible-collections/community.docker/pull/671)."
+  - "Execution Environment Python requirements - force ``PyYAML==5.3.1``, which is compatible to both docker-compose v1 (part of the community.docker 2.x.y EE requirements) and Cython 3.0.0 (https://github.com/ansible-collections/community.docker/pull/671)."
