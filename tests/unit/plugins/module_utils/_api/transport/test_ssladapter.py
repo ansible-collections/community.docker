@@ -20,14 +20,18 @@ if sys.version_info < (2, 7):
 
 from ansible_collections.community.docker.plugins.module_utils._api.transport import ssladapter
 
+HAS_MATCH_HOSTNAME = True
 try:
     from backports.ssl_match_hostname import (
         match_hostname, CertificateError
     )
 except ImportError:
-    from ssl import (
-        match_hostname, CertificateError
-    )
+    try:
+        from ssl import (
+            match_hostname, CertificateError
+        )
+    except ImportError:
+        HAS_MATCH_HOSTNAME = False
 
 try:
     from ssl import OP_NO_SSLv3, OP_NO_SSLv2, OP_NO_TLSv1
@@ -47,6 +51,7 @@ class SSLAdapterTest(unittest.TestCase):
         assert not ssl_context.options & OP_NO_TLSv1
 
 
+@pytest.mark.skipif(not HAS_MATCH_HOSTNAME, reason='match_hostname is not available')
 class MatchHostnameTest(unittest.TestCase):
     cert = {
         'issuer': (
