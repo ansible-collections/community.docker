@@ -236,7 +236,7 @@ EXAMPLES = '''
       ansible.builtin.debug:
         var: output
 
-    - name: Verify that web and db services are running
+    - name: Verify that web and db services are not running
       ansible.builtin.assert:
         that:
           - "not output.services.web.flask_web_1.state.running"
