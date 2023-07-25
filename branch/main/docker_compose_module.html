@@ -671,7 +671,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Verify that web and db services are running</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Verify that web and db services are not running</span>
 <span class="w">      </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">that</span><span class="p">:</span>
 <span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">output.services.web.flask_web_1.state.running&quot;</span>
