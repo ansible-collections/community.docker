@@ -1149,7 +1149,7 @@ def has_list_changed(new_list, old_list, sort_lists=True, sort_key=None):
     else:
         zip_data = zip(new_list, old_list)
     for new_item, old_item in zip_data:
-        is_same_type = type(new_item) == type(old_item)
+        is_same_type = type(new_item) == type(old_item)  # noqa: E721
         if not is_same_type:
             if isinstance(new_item, string_types) and isinstance(old_item, string_types):
                 # Even though the types are different between these items,
