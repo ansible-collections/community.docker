@@ -14,11 +14,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=7f41d439"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="community.docker.current_container_facts module – Return facts about whether the module runs in a container" href="../current_container_facts_module.html" />
@@ -164,7 +164,7 @@
            <div itemprop="articleBody">
              
   <section id="docker-guide">
-<span id="ansible-collections-community-docker-docsite-scenario-guide"></span><h1>Docker Guide<a class="headerlink" href="#docker-guide" title="Permalink to this heading"></a></h1>
+<span id="ansible-collections-community-docker-docsite-scenario-guide"></span><h1>Docker Guide<a class="headerlink" href="#docker-guide" title="Link to this heading"></a></h1>
 <p>The <a class="reference external" href="https://galaxy.ansible.com/community/docker">community.docker collection</a> offers several modules and plugins for orchestrating Docker containers and Docker Swarm.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
@@ -179,7 +179,7 @@
 </ul>
 </nav>
 <section id="requirements">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
 <p>Most of the modules and plugins in community.docker require the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a>. The SDK needs to be installed on the machines where the modules and plugins are executed, and for the Python version(s) with which the modules and plugins are executed. You can use the <a class="reference external" href="https://docs.ansible.com/ansible/devel/collections/community/general/python_requirements_info_module.html#ansible-collections-community-general-python-requirements-info-module" title="(in Ansible vdevel)"><span class="xref std std-ref">community.general.python_requirements_info module</span></a> to make sure that the Docker SDK for Python is installed on the correct machine and for the Python version used by Ansible.</p>
 <p>Note that plugins (inventory plugins and connection plugins) are always executed in the context of Ansible itself. If you use a plugin that requires the Docker SDK for Python, you need to install it on the machine running <code class="docutils literal notranslate"><span class="pre">ansible</span></code> or <code class="docutils literal notranslate"><span class="pre">ansible-playbook</span></code> and for the same Python interpreter used by Ansible. To see which Python is used, run <code class="docutils literal notranslate"><span class="pre">ansible</span> <span class="pre">--version</span></code>.</p>
 <p>You can install the Docker SDK for Python for Python 3.6 or later as follows:</p>
@@ -193,10 +193,10 @@
 <p>Note that the Docker SDK for Python was called <code class="docutils literal notranslate"><span class="pre">docker-py</span></code> on PyPi before version 2.0.0. Please avoid installing this really old version, and make sure to not install both <code class="docutils literal notranslate"><span class="pre">docker</span></code> and <code class="docutils literal notranslate"><span class="pre">docker-py</span></code>. Installing both will result in a broken installation. If this happens, Ansible will detect it and inform you about it. If that happens, you must uninstall both and reinstall the correct version. If in doubt, always install <code class="docutils literal notranslate"><span class="pre">docker</span></code> and never <code class="docutils literal notranslate"><span class="pre">docker-py</span></code>.</p>
 </section>
 <section id="connecting-to-the-docker-api">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Connecting to the Docker API</a><a class="headerlink" href="#connecting-to-the-docker-api" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Connecting to the Docker API</a><a class="headerlink" href="#connecting-to-the-docker-api" title="Link to this heading"></a></h2>
 <p>You can connect to a local or remote API using parameters passed to each task or by setting environment variables. The order of precedence is command line parameters and then environment variables. If neither a command line option nor an environment variable is found, Ansible uses the default value  provided under <a class="reference internal" href="#parameters">Parameters</a>.</p>
 <section id="parameters">
-<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
 <p>Most plugins and modules can be configured by the following parameters:</p>
 <blockquote>
 <div><dl class="simple">
@@ -224,62 +224,62 @@
 </div></blockquote>
 </section>
 <section id="environment-variables">
-<h3>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this heading"></a></h3>
+<h3>Environment variables<a class="headerlink" href="#environment-variables" title="Link to this heading"></a></h3>
 <p>You can also control how the plugins and modules connect to the Docker API by setting the following environment variables.</p>
 <p>For plugins, they have to be set for the environment Ansible itself runs in. For modules, they have to be set for the environment the modules are executed in. For modules running on remote machines, the environment variables have to be set on that machine for the user used to execute the modules with.</p>
 <dl class="std envvar">
 <dt class="sig sig-object std" id="envvar-DOCKER_HOST">
-<span class="sig-name descname"><span class="pre">DOCKER_HOST</span></span><a class="headerlink" href="#envvar-DOCKER_HOST" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DOCKER_HOST</span></span><a class="headerlink" href="#envvar-DOCKER_HOST" title="Link to this definition"></a></dt>
 <dd><p>The URL or Unix socket path used to connect to the Docker API.</p>
 </dd></dl>
 
 <dl class="std envvar">
 <dt class="sig sig-object std" id="envvar-DOCKER_API_VERSION">
-<span class="sig-name descname"><span class="pre">DOCKER_API_VERSION</span></span><a class="headerlink" href="#envvar-DOCKER_API_VERSION" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DOCKER_API_VERSION</span></span><a class="headerlink" href="#envvar-DOCKER_API_VERSION" title="Link to this definition"></a></dt>
 <dd><p>The version of the Docker API running on the Docker Host. Defaults to the latest version of the API supported
 by Docker SDK for Python.</p>
 </dd></dl>
 
 <dl class="std envvar">
 <dt class="sig sig-object std" id="envvar-DOCKER_TIMEOUT">
-<span class="sig-name descname"><span class="pre">DOCKER_TIMEOUT</span></span><a class="headerlink" href="#envvar-DOCKER_TIMEOUT" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DOCKER_TIMEOUT</span></span><a class="headerlink" href="#envvar-DOCKER_TIMEOUT" title="Link to this definition"></a></dt>
 <dd><p>The maximum amount of time in seconds to wait on a response from the API.</p>
 </dd></dl>
 
 <dl class="std envvar">
 <dt class="sig sig-object std" id="envvar-DOCKER_CERT_PATH">
-<span class="sig-name descname"><span class="pre">DOCKER_CERT_PATH</span></span><a class="headerlink" href="#envvar-DOCKER_CERT_PATH" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DOCKER_CERT_PATH</span></span><a class="headerlink" href="#envvar-DOCKER_CERT_PATH" title="Link to this definition"></a></dt>
 <dd><p>Path to the directory containing the client certificate, client key and CA certificate.</p>
 </dd></dl>
 
 <dl class="std envvar">
 <dt class="sig sig-object std" id="envvar-DOCKER_SSL_VERSION">
-<span class="sig-name descname"><span class="pre">DOCKER_SSL_VERSION</span></span><a class="headerlink" href="#envvar-DOCKER_SSL_VERSION" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DOCKER_SSL_VERSION</span></span><a class="headerlink" href="#envvar-DOCKER_SSL_VERSION" title="Link to this definition"></a></dt>
 <dd><p>Provide a valid SSL version number.</p>
 </dd></dl>
 
 <dl class="std envvar">
 <dt class="sig sig-object std" id="envvar-DOCKER_TLS">
-<span class="sig-name descname"><span class="pre">DOCKER_TLS</span></span><a class="headerlink" href="#envvar-DOCKER_TLS" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DOCKER_TLS</span></span><a class="headerlink" href="#envvar-DOCKER_TLS" title="Link to this definition"></a></dt>
 <dd><p>Secure the connection to the API by using TLS without verifying the authenticity of the Docker Host.</p>
 </dd></dl>
 
 <dl class="std envvar">
 <dt class="sig sig-object std" id="envvar-DOCKER_TLS_HOSTNAME">
-<span class="sig-name descname"><span class="pre">DOCKER_TLS_HOSTNAME</span></span><a class="headerlink" href="#envvar-DOCKER_TLS_HOSTNAME" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DOCKER_TLS_HOSTNAME</span></span><a class="headerlink" href="#envvar-DOCKER_TLS_HOSTNAME" title="Link to this definition"></a></dt>
 <dd><p>When verifying the authenticity of the Docker Host, uses this hostname to compare to the host’s certificate.</p>
 </dd></dl>
 
 <dl class="std envvar">
 <dt class="sig sig-object std" id="envvar-DOCKER_TLS_VERIFY">
-<span class="sig-name descname"><span class="pre">DOCKER_TLS_VERIFY</span></span><a class="headerlink" href="#envvar-DOCKER_TLS_VERIFY" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DOCKER_TLS_VERIFY</span></span><a class="headerlink" href="#envvar-DOCKER_TLS_VERIFY" title="Link to this definition"></a></dt>
 <dd><p>Secure the connection to the API by using TLS and verify the authenticity of the Docker Host.</p>
 </dd></dl>
 
 </section>
 </section>
 <section id="plain-docker-daemon-images-networks-volumes-and-containers">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Plain Docker daemon: images, networks, volumes, and containers</a><a class="headerlink" href="#plain-docker-daemon-images-networks-volumes-and-containers" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Plain Docker daemon: images, networks, volumes, and containers</a><a class="headerlink" href="#plain-docker-daemon-images-networks-volumes-and-containers" title="Link to this heading"></a></h2>
 <p>For working with a plain Docker daemon, that is without Swarm, there are connection plugins, an inventory plugin, and several modules available:</p>
 <blockquote>
 <div><dl>
@@ -316,25 +316,25 @@ by Docker SDK for Python.</p>
 </div></blockquote>
 </section>
 <section id="docker-compose">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Docker Compose</a><a class="headerlink" href="#docker-compose" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Docker Compose</a><a class="headerlink" href="#docker-compose" title="Link to this heading"></a></h2>
 <p>The <a class="reference internal" href="../docker_compose_module.html#ansible-collections-community-docker-docker-compose-module"><span class="std std-ref">community.docker.docker_compose module</span></a>
 allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
 Supports compose versions 1 and 2.</p>
 <p>Next to Docker SDK for Python, you need to install <a class="reference external" href="https://github.com/docker/compose">docker-compose</a> on the remote machines to use the module.</p>
 </section>
 <section id="docker-machine">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Docker Machine</a><a class="headerlink" href="#docker-machine" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Docker Machine</a><a class="headerlink" href="#docker-machine" title="Link to this heading"></a></h2>
 <p>The <a class="reference internal" href="../docker_machine_inventory.html#ansible-collections-community-docker-docker-machine-inventory"><span class="std std-ref">community.docker.docker_machine inventory plugin</span></a> allows you to dynamically add Docker Machine hosts to your Ansible inventory.</p>
 </section>
 <section id="docker-stack">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">Docker stack</a><a class="headerlink" href="#docker-stack" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Docker stack</a><a class="headerlink" href="#docker-stack" title="Link to this heading"></a></h2>
 <p>The <a class="reference internal" href="../docker_stack_module.html#ansible-collections-community-docker-docker-stack-module"><span class="std std-ref">community.docker.docker_stack module</span></a> module allows you to control Docker stacks. Information on stacks can be retrieved by the <a class="reference internal" href="../docker_stack_info_module.html#ansible-collections-community-docker-docker-stack-info-module"><span class="std std-ref">community.docker.docker_stack_info module</span></a>, and information on stack tasks can be retrieved by the <a class="reference internal" href="../docker_stack_task_info_module.html#ansible-collections-community-docker-docker-stack-task-info-module"><span class="std std-ref">community.docker.docker_stack_task_info module</span></a>.</p>
 </section>
 <section id="docker-swarm">
-<h2><a class="toc-backref" href="#id8" role="doc-backlink">Docker Swarm</a><a class="headerlink" href="#docker-swarm" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Docker Swarm</a><a class="headerlink" href="#docker-swarm" title="Link to this heading"></a></h2>
 <p>The community.docker collection provides multiple plugins and modules for managing Docker Swarms.</p>
 <section id="swarm-management">
-<h3>Swarm management<a class="headerlink" href="#swarm-management" title="Permalink to this heading"></a></h3>
+<h3>Swarm management<a class="headerlink" href="#swarm-management" title="Link to this heading"></a></h3>
 <p>One inventory plugin and several modules are provided to manage Docker Swarms:</p>
 <blockquote>
 <div><dl class="simple">
@@ -352,7 +352,7 @@ Supports compose versions 1 and 2.</p>
 </div></blockquote>
 </section>
 <section id="configuration-management">
-<h3>Configuration management<a class="headerlink" href="#configuration-management" title="Permalink to this heading"></a></h3>
+<h3>Configuration management<a class="headerlink" href="#configuration-management" title="Link to this heading"></a></h3>
 <p>The community.docker collection offers modules to manage Docker Swarm configurations and secrets:</p>
 <blockquote>
 <div><dl class="simple">
@@ -364,12 +364,12 @@ Supports compose versions 1 and 2.</p>
 </div></blockquote>
 </section>
 <section id="swarm-services">
-<h3>Swarm services<a class="headerlink" href="#swarm-services" title="Permalink to this heading"></a></h3>
+<h3>Swarm services<a class="headerlink" href="#swarm-services" title="Link to this heading"></a></h3>
 <p>Docker Swarm services can be created and updated with the <a class="reference internal" href="../docker_swarm_service_module.html#ansible-collections-community-docker-docker-swarm-service-module"><span class="std std-ref">community.docker.docker_swarm_service module</span></a>, and information on them can be queried by the <a class="reference internal" href="../docker_swarm_service_info_module.html#ansible-collections-community-docker-docker-swarm-service-info-module"><span class="std std-ref">community.docker.docker_swarm_service_info module</span></a>.</p>
 </section>
 </section>
 <section id="helpful-links">
-<h2><a class="toc-backref" href="#id9" role="doc-backlink">Helpful links</a><a class="headerlink" href="#helpful-links" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Helpful links</a><a class="headerlink" href="#helpful-links" title="Link to this heading"></a></h2>
 <p>Still using Dockerfile to build images? Check out <a class="reference external" href="https://github.com/ansible-community/ansible-bender">ansible-bender</a>, and start building images from your Ansible playbooks.</p>
 <p>Use <a class="reference external" href="https://learn.openshift.com/ansibleop/ansible-operator-overview/">Ansible Operator</a> to launch your docker-compose file on <a class="reference external" href="https://www.okd.io/">OpenShift</a>. Go from an app on your laptop to a fully scalable app in the cloud with Kubernetes in just a few moments.</p>
 </section>
