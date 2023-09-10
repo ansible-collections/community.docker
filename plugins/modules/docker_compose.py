@@ -74,8 +74,8 @@ options:
   state:
     description:
       - Desired state of the project.
-      - Specifying V(present) is the same as running C(docker-compose up) resp. C(docker-compose stop) (with V(stopped)) resp. C(docker-compose restart)
-        (with V(restarted)).
+      - Specifying V(present) is the same as running C(docker-compose up) resp. C(docker-compose stop) (with O(stopped=true)) resp. C(docker-compose restart)
+        (with O(restarted=true)).
       - Specifying V(absent) is the same as running C(docker-compose down).
     type: str
     default: present
@@ -84,8 +84,8 @@ options:
       - present
   services:
     description:
-      - When O(state) is V(present) run C(docker-compose up) resp. C(docker-compose stop) (with V(stopped)) resp. C(docker-compose restart) (with V(restarted))
-        on a subset of services.
+      - When O(state) is V(present) run C(docker-compose up) resp. C(docker-compose stop) (with O(stopped=true)) resp.
+        C(docker-compose restart) (with O(restarted=true)) on a subset of services.
       - If empty, which is the default, the operation will be performed on all services defined in the Compose file (or inline O(definition)).
     type: list
     elements: str
