@@ -66,6 +66,17 @@ stages:
               test: 'devel/sanity/extra'
             - name: Units
               test: 'devel/units/1'
+  - stage: Ansible_2_16
+    displayName: Sanity & Units 2.16
+    dependsOn: []
+    jobs:
+      - template: templates/matrix.yml
+        parameters:
+          targets:
+            - name: Sanity
+              test: '2.16/sanity/1'
+            - name: Units
+              test: '2.16/units/1'
   - stage: Ansible_2_15
     displayName: Sanity & Units 2.15
     dependsOn: []
@@ -88,17 +99,6 @@ stages:
               test: '2.14/sanity/1'
             - name: Units
               test: '2.14/units/1'
-  - stage: Ansible_2_13
-    displayName: Sanity & Units 2.13
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          targets:
-            - name: Sanity
-              test: '2.13/sanity/1'
-            - name: Units
-              test: '2.13/units/1'
 
 ### Docker
   - stage: Docker_devel
@@ -111,8 +111,8 @@ stages:
           targets:
             - name: CentOS 7
               test: centos7
-            - name: Fedora 38
-              test: fedora38
+            #- name: Fedora 38
+            #  test: fedora38
             - name: openSUSE 15
               test: opensuse15
             - name: Ubuntu 20.04
@@ -121,6 +121,19 @@ stages:
               test: ubuntu2204
             - name: Alpine 3
               test: alpine3
+          groups:
+            - 4
+            - 5
+  - stage: Docker_2_16
+    displayName: Docker 2.16
+    dependsOn: []
+    jobs:
+      - template: templates/matrix.yml
+        parameters:
+          testFormat: 2.16/linux/{0}
+          targets:
+            - name: Fedora 38
+              test: fedora38
           groups:
             - 4
             - 5
@@ -149,23 +162,6 @@ stages:
           targets:
             - name: Fedora 36
               test: fedora36
-          groups:
-            - 4
-            - 5
-  - stage: Docker_2_13
-    displayName: Docker 2.13
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.13/linux/{0}
-          targets:
-            - name: Fedora 35
-              test: fedora35
-            - name: openSUSE 15 py2
-              test: opensuse15py2
-            - name: Alpine 3
-              test: alpine3
           groups:
             - 4
             - 5
@@ -213,6 +209,22 @@ stages:
             - 3
             - 4
             - 5
+  - stage: Remote_2_16
+    displayName: Remote 2.16
+    dependsOn: []
+    jobs:
+      - template: templates/matrix.yml
+        parameters:
+          testFormat: 2.16/{0}
+          targets:
+            - name: RHEL 9.2
+              test: rhel/9.2
+          groups:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
   - stage: Remote_2_15
     displayName: Remote 2.15
     dependsOn: []
@@ -249,22 +261,6 @@ stages:
             - 3
             - 4
             - 5
-  - stage: Remote_2_13
-    displayName: Remote 2.13
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.13/{0}
-          targets:
-            - name: RHEL 8.5
-              test: rhel/8.5
-          groups:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
 
   ## Finally
 
@@ -272,17 +268,17 @@ stages:
     condition: succeededOrFailed()
     dependsOn:
       - Ansible_devel
+      - Ansible_2_16
       - Ansible_2_15
       - Ansible_2_14
-      - Ansible_2_13
       - Remote_devel
+      - Remote_2_16
       - Remote_2_15
       - Remote_2_14
-      - Remote_2_13
       - Docker_devel
+      - Docker_2_16
       - Docker_2_15
       - Docker_2_14
-      - Docker_2_13
       - Docker_community_devel
     jobs:
       - template: templates/coverage.yml
