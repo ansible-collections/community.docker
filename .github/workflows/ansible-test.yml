@@ -174,12 +174,14 @@ jobs:
             python: ''
             target: shippable/posix/group5/
           # 2.13
+          # NB: We originally wanted to use centos7, but that requires cgroups v1.
+          #     So we used alpine3 instead.
           - ansible: '2.13'
-            docker: centos7
+            docker: alpine3
             python: ''
             target: shippable/posix/group4/
           - ansible: '2.13'
-            docker: centos7
+            docker: alpine3
             python: ''
             target: shippable/posix/group5/
           - ansible: '2.13'
