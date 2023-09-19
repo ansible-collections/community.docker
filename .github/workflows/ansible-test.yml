@@ -26,6 +26,7 @@ jobs:
           - '2.10'
           - '2.11'
           - '2.12'
+          - '2.13'
     # Ansible-test on various stable branches does not yet work well with cgroups v2.
     # Since ubuntu-latest now uses Ubuntu 22.04, we need to fall back to the ubuntu-20.04
     # image for these stable branches. The list of branches where this is necessary will
@@ -65,6 +66,7 @@ jobs:
           - '2.10'
           - '2.11'
           - '2.12'
+          - '2.13'
 
     steps:
       - name: >-
@@ -169,6 +171,39 @@ jobs:
             target: shippable/posix/group4/
           - ansible: '2.12'
             docker: ubuntu1804
+            python: ''
+            target: shippable/posix/group5/
+          # 2.13
+          - ansible: '2.13'
+            docker: centos7
+            python: ''
+            target: shippable/posix/group4/
+          - ansible: '2.13'
+            docker: centos7
+            python: ''
+            target: shippable/posix/group5/
+          - ansible: '2.13'
+            docker: fedora35
+            python: ''
+            target: shippable/posix/group4/
+          - ansible: '2.13'
+            docker: fedora35
+            python: ''
+            target: shippable/posix/group5/
+          - ansible: '2.13'
+            docker: opensuse15py2
+            python: ''
+            target: shippable/posix/group4/
+          - ansible: '2.13'
+            docker: opensuse15py2
+            python: ''
+            target: shippable/posix/group5/
+          - ansible: '2.13'
+            docker: alpine3
+            python: ''
+            target: shippable/posix/group4/
+          - ansible: '2.13'
+            docker: alpine3
             python: ''
             target: shippable/posix/group5/
 
