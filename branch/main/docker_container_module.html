@@ -2,6 +2,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<meta content="2.4.0" name="antsibull-docs" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>community.docker.docker_container module – manage Docker containers &mdash; Community.Docker Collection  documentation</title>
@@ -164,6 +165,8 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/community/docker">community.docker collection</a> (version 3.5.0).</p>
+<p>It is not included in <code class="docutils literal notranslate"><span class="pre">ansible-core</span></code>.
+To check whether it is installed, run <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">list</span></code>.</p>
 <p>To install it, use: <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">install</span> <span class="pre">community.docker</span></code>.
 You need further requirements to be able to use this module,
 see <a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-requirements"><span class="std std-ref">Requirements</span></a> for details.</p>
@@ -201,7 +204,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </section>
 <section id="parameters">
 <h2><a class="toc-backref" href="#id3" role="doc-backlink">Parameters</a><a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
-<table class="ansible-option-table docutils align-default" style="width: 100%">
+<table class="longtable ansible-option-table docutils align-default" style="width: 100%">
 <thead>
 <tr class="row-odd"><th class="head"><p>Parameter</p></th>
 <th class="head"><p>Comments</p></th>
@@ -217,7 +220,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <td><div class="ansible-option-cell"><p>The version of the Docker API running on the Docker Host.</p>
 <p>Defaults to the latest version of the API supported by this collection and the docker daemon.</p>
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_API_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
-<p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code></p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code></p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -226,7 +229,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Enable auto-removal of the container on daemon side when the container’s process exits.</p>
 <p>If <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-container-default-behavior"><span class="std std-ref"><span class="pre">container_default_behavior=compatibility</span></span></a></code>, this option has a default of <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -269,7 +272,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-cgroup_parent"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-cgroup-parent"><strong>cgroup_parent</strong></p>
 <a class="ansibleOptionLink" href="#parameter-cgroup_parent" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p><span class="ansible-option-versionadded">added in community.docker 1.1.0</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 1.1.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Specify the parent cgroup for the container.</p>
 </div></td>
@@ -277,11 +280,11 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-cgroupns_mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-cgroupns-mode"><strong>cgroupns_mode</strong></p>
 <a class="ansibleOptionLink" href="#parameter-cgroupns_mode" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p><span class="ansible-option-versionadded">added in community.docker 3.0.0</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.0.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Specify the cgroup namespace mode for the container.</p>
 <p>The Docker CLI calls this simply <code class="docutils literal notranslate"><span class="pre">cgroupns</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;private&quot;</span></code></p></li>
@@ -293,9 +296,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-cleanup" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-detach"><span class="std std-ref"><span class="pre">detach=false</span></span></a></code> to remove the container after successful execution.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -334,16 +337,16 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-command_handling"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-command-handling"><strong>command_handling</strong></p>
 <a class="ansibleOptionLink" href="#parameter-command_handling" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p><span class="ansible-option-versionadded">added in community.docker 1.9.0</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 1.9.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>The default behavior for <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-command"><span class="std std-ref"><span class="pre">command</span></span></a></strong></code> (when provided as a list) and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-entrypoint"><span class="std std-ref"><span class="pre">entrypoint</span></span></a></strong></code> is to convert them to strings without considering shell quoting rules. (For comparing idempotency, the resulting string is split considering shell quoting rules.)</p>
 <p>Also, setting <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-command"><span class="std std-ref"><span class="pre">command</span></span></a></strong></code> to an empty list of string, and setting <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-entrypoint"><span class="std std-ref"><span class="pre">entrypoint</span></span></a></strong></code> to an empty list will be handled as if these options are not specified. This is different from idempotency handling for other container-config related options.</p>
 <p>When this is set to <code class="ansible-value docutils literal notranslate"><span class="pre">compatibility</span></code>, which was the default until community.docker 3.0.0, the current behavior will be kept.</p>
 <p>When this is set to <code class="ansible-value docutils literal notranslate"><span class="pre">correct</span></code>, these options are kept as lists, and an empty value or empty list will be handled correctly for idempotency checks. This has been the default since community.docker 3.0.0.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;compatibility&quot;</span></code></p></li>
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">&quot;correct&quot;</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;correct&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 </ul>
 </div></td>
 </tr>
@@ -367,10 +370,10 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <td><div class="ansible-option-cell"><p>In older versions of this module, various module options used to have default values. This caused problems with containers which use different values for these options.</p>
 <p>The default value is now <code class="ansible-value docutils literal notranslate"><span class="pre">no_defaults</span></code>. To restore the old behavior, set it to <code class="ansible-value docutils literal notranslate"><span class="pre">compatibility</span></code>, which will ensure that the default values are used when the values are not explicitly specified by the user.</p>
 <p>This affects the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-auto-remove"><span class="std std-ref"><span class="pre">auto_remove</span></span></a></strong></code>, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-detach"><span class="std std-ref"><span class="pre">detach</span></span></a></strong></code>, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-init"><span class="std std-ref"><span class="pre">init</span></span></a></strong></code>, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-interactive"><span class="std std-ref"><span class="pre">interactive</span></span></a></strong></code>, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-memory"><span class="std std-ref"><span class="pre">memory</span></span></a></strong></code>, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-paused"><span class="std std-ref"><span class="pre">paused</span></span></a></strong></code>, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-privileged"><span class="std std-ref"><span class="pre">privileged</span></span></a></strong></code>, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-read-only"><span class="std std-ref"><span class="pre">read_only</span></span></a></strong></code>, and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-tty"><span class="std std-ref"><span class="pre">tty</span></span></a></strong></code> options.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;compatibility&quot;</span></code></p></li>
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">&quot;no_defaults&quot;</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;no_defaults&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 </ul>
 </div></td>
 </tr>
@@ -424,9 +427,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-debug" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Debug mode</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -434,7 +437,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-default_host_ip"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-default-host-ip"><strong>default_host_ip</strong></p>
 <a class="ansibleOptionLink" href="#parameter-default_host_ip" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p><span class="ansible-option-versionadded">added in community.docker 1.2.0</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 1.2.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Define the default host IP to use.</p>
 <p>Must be an empty string, an IPv4 address, or an IPv6 address.</p>
@@ -449,7 +452,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <td><div class="ansible-option-cell"><p>Enable detached mode to leave the container running in background.</p>
 <p>If disabled, the task will reflect the status of the container run (failed if the command failed).</p>
 <p>If <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-container-default-behavior"><span class="std std-ref"><span class="pre">container_default_behavior=compatibility</span></span></a></code>, this option has a default of <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -504,7 +507,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-device_requests"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-device-requests"><strong>device_requests</strong></p>
 <a class="ansibleOptionLink" href="#parameter-device_requests" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
-<p><span class="ansible-option-versionadded">added in community.docker 0.1.0</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 0.1.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Allows to request additional resources, such as GPUs.</p>
 </div></td>
@@ -630,7 +633,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>The URL or Unix socket path used to connect to the Docker API. To connect to a remote host, provide the TCP connection string. For example, <code class="ansible-value docutils literal notranslate"><span class="pre">tcp://192.0.2.23:2376</span></code>. If TLS is used to encrypt the connection, the module will automatically replace <code class="docutils literal notranslate"><span class="pre">tcp</span></code> in the connection URL with <code class="docutils literal notranslate"><span class="pre">https</span></code>.</p>
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
-<p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;unix://var/run/docker.sock&quot;</span></code></p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;unix://var/run/docker.sock&quot;</span></code></p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -690,9 +693,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use the kill command when stopping a running container.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -767,9 +770,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <td><div class="ansible-option-cell"><p>When <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-state"><span class="std std-ref"><span class="pre">state</span></span></a></strong></code> is <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> or <code class="ansible-value docutils literal notranslate"><span class="pre">started</span></code>, the module compares the configuration of an existing container to requested configuration. The evaluation includes the image version. If the image version in the registry does not match the container, the container will be recreated. You can stop this behavior by setting <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-ignore-image"><span class="std std-ref"><span class="pre">ignore_image</span></span></a></strong></code> to <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code>.</p>
 <p><strong>Warning:</strong> This option is ignored if <code class="docutils literal notranslate"><span class="pre">image:</span> <span class="pre">ignore</span></code> or <code class="docutils literal notranslate"><span class="pre">*:</span> <span class="pre">ignore</span></code> is specified in the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-comparisons"><span class="std std-ref"><span class="pre">comparisons</span></span></a></strong></code> option.</p>
 <p>This option is deprecated since community.docker 3.2.0 and will be removed in community.docker 4.0.0. Use <code class="docutils literal notranslate"><span class="pre">image:</span> <span class="pre">ignore</span></code> in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-comparisons"><span class="std std-ref"><span class="pre">comparisons</span></span></a></strong></code> instead of <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-ignore-image"><span class="std std-ref"><span class="pre">ignore_image=true</span></span></a></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -785,15 +788,15 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-image_comparison"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-image-comparison"><strong>image_comparison</strong></p>
 <a class="ansibleOptionLink" href="#parameter-image_comparison" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p><span class="ansible-option-versionadded">added in community.docker 3.0.0</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.0.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Determines which image to use for idempotency checks that depend on image parameters.</p>
 <p>The default, <code class="ansible-value docutils literal notranslate"><span class="pre">desired-image</span></code>, will use the image that is provided to the module via the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-image"><span class="std std-ref"><span class="pre">image</span></span></a></strong></code> parameter.</p>
 <p><code class="ansible-value docutils literal notranslate"><span class="pre">current-image</span></code> will use the image that the container is currently using, if the container exists. It falls back to the image that is provided in case the container does not yet exist.</p>
 <p>This affects the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-env"><span class="std std-ref"><span class="pre">env</span></span></a></strong></code>, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-env-file"><span class="std std-ref"><span class="pre">env_file</span></span></a></strong></code>, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-exposed-ports"><span class="std std-ref"><span class="pre">exposed_ports</span></span></a></strong></code>, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-labels"><span class="std std-ref"><span class="pre">labels</span></span></a></strong></code>, and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-volumes"><span class="std std-ref"><span class="pre">volumes</span></span></a></strong></code> options.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">&quot;desired-image&quot;</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;desired-image&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;current-image&quot;</span></code></p></li>
 </ul>
 </div></td>
@@ -801,15 +804,15 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-image_label_mismatch"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-image-label-mismatch"><strong>image_label_mismatch</strong></p>
 <a class="ansibleOptionLink" href="#parameter-image_label_mismatch" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p><span class="ansible-option-versionadded">added in community.docker 2.6.0</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 2.6.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>How to handle labels inherited from the image that are not set explicitly.</p>
 <p>When <code class="ansible-value docutils literal notranslate"><span class="pre">ignore</span></code>, labels that are present in the image but not specified in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-labels"><span class="std std-ref"><span class="pre">labels</span></span></a></strong></code> will be ignored. This is useful to avoid having to specify the image labels in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-labels"><span class="std std-ref"><span class="pre">labels</span></span></a></strong></code> while keeping labels <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-comparisons"><span class="std std-ref"><span class="pre">comparisons</span></span></a></strong></code> <code class="ansible-value docutils literal notranslate"><span class="pre">strict</span></code>.</p>
 <p>When <code class="ansible-value docutils literal notranslate"><span class="pre">fail</span></code>, if there are labels present in the image which are not set from <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-labels"><span class="std std-ref"><span class="pre">labels</span></span></a></strong></code>, the module will fail. This prevents introducing unexpected labels from the base image.</p>
 <p><strong>Warning:</strong> This option is ignored unless <code class="docutils literal notranslate"><span class="pre">labels:</span> <span class="pre">strict</span></code> or <code class="docutils literal notranslate"><span class="pre">*:</span> <span class="pre">strict</span></code> is specified in the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-comparisons"><span class="std std-ref"><span class="pre">comparisons</span></span></a></strong></code> option.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">&quot;ignore&quot;</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;ignore&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;fail&quot;</span></code></p></li>
 </ul>
 </div></td>
@@ -817,16 +820,16 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-image_name_mismatch"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-image-name-mismatch"><strong>image_name_mismatch</strong></p>
 <a class="ansibleOptionLink" href="#parameter-image_name_mismatch" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p><span class="ansible-option-versionadded">added in community.docker 3.2.0</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.2.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Determines what the module does if the image matches, but the image name in the container’s configuration does not match the image name provided to the module.</p>
 <p>This is ignored if <code class="docutils literal notranslate"><span class="pre">image:</span> <span class="pre">ignore</span></code> is set in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-comparisons"><span class="std std-ref"><span class="pre">comparisons</span></span></a></strong></code>.</p>
 <p>If set to <code class="ansible-value docutils literal notranslate"><span class="pre">recreate</span></code> the container will be recreated.</p>
 <p>If set to <code class="ansible-value docutils literal notranslate"><span class="pre">ignore</span></code> the container will not be recreated because of this. It might still get recreated for other reasons. This has been the default behavior of the module for a long time, but might not be what users expect.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;recreate&quot;</span></code></p></li>
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">&quot;ignore&quot;</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;ignore&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 </ul>
 </div></td>
 </tr>
@@ -836,7 +839,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Run an init inside the container that forwards signals and reaps processes.</p>
 <p>If <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-container-default-behavior"><span class="std std-ref"><span class="pre">container_default_behavior=compatibility</span></span></a></code>, this option has a default of <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -849,7 +852,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Keep stdin open after a container is launched, even if not attached.</p>
 <p>If <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-container-default-behavior"><span class="std std-ref"><span class="pre">container_default_behavior=compatibility</span></span></a></code>, this option has a default of <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -869,10 +872,10 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-keep_volumes" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Retain anonymous volumes associated with a removed container.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">true</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">true</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 </ul>
 </div></td>
 </tr>
@@ -977,7 +980,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-mounts/consistency" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The consistency requirement for the mount.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;cached&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;consistent&quot;</span></code></p></li>
@@ -999,7 +1002,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>False if the volume should be populated with the data from the target. Only valid for the <code class="ansible-value docutils literal notranslate"><span class="pre">volume</span></code> type.</p>
 <p>The default value is <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -1011,7 +1014,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-mounts/propagation" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Propagation mode. Only valid for the <code class="ansible-value docutils literal notranslate"><span class="pre">bind</span></code> type.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;private&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;rprivate&quot;</span></code></p></li>
@@ -1027,7 +1030,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-mounts/read_only" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Whether the mount should be read-only.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -1072,12 +1075,12 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The mount type.</p>
 <p>Note that <code class="ansible-value docutils literal notranslate"><span class="pre">npipe</span></code> is only supported by Docker for Windows.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;bind&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;npipe&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;tmpfs&quot;</span></code></p></li>
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">&quot;volume&quot;</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;volume&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 </ul>
 </div></td>
 </tr>
@@ -1163,10 +1166,10 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>If <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-networks-cli-compatible"><span class="std std-ref"><span class="pre">networks_cli_compatible=true</span></span></a></code> (default), this module will behave as <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span> <span class="pre">--network</span></code> and will <strong>not</strong> add the default network if <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-networks"><span class="std std-ref"><span class="pre">networks</span></span></a></strong></code> is specified. If <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-networks"><span class="std std-ref"><span class="pre">networks</span></span></a></strong></code> is not specified, the default network will be attached.</p>
 <p>When <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-networks-cli-compatible"><span class="std std-ref"><span class="pre">networks_cli_compatible=false</span></span></a></code> and networks are provided to the module via the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-networks"><span class="std std-ref"><span class="pre">networks</span></span></a></strong></code> option, the module behaves differently than <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span> <span class="pre">--network</span></code>: <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span> <span class="pre">--network</span> <span class="pre">other</span></code> will create a container with network <code class="docutils literal notranslate"><span class="pre">other</span></code> attached, but the default network not attached. This module with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-networks"><span class="std std-ref"><span class="pre">networks</span></span></a></strong></code> set to <code class="docutils literal notranslate"><span class="pre">{name:</span> <span class="pre">other}</span></code> will create a container with both <code class="docutils literal notranslate"><span class="pre">default</span></code> and <code class="docutils literal notranslate"><span class="pre">other</span></code> attached. If <code class="docutils literal notranslate"><span class="pre">networks:</span> <span class="pre">strict</span></code> or <code class="docutils literal notranslate"><span class="pre">*:</span> <span class="pre">strict</span></code> is set in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-comparisons"><span class="std std-ref"><span class="pre">comparisons</span></span></a></strong></code>, the <code class="docutils literal notranslate"><span class="pre">default</span></code> network will be removed afterwards.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">true</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">true</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 </ul>
 </div></td>
 </tr>
@@ -1175,7 +1178,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-oom_killer" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Whether or not to disable OOM Killer for the container.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -1195,9 +1198,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>If set to true, output of the container command will be printed.</p>
 <p>Only effective when <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-log-driver"><span class="std std-ref"><span class="pre">log_driver</span></span></a></strong></code> is set to <code class="ansible-value docutils literal notranslate"><span class="pre">json-file</span></code>, <code class="ansible-value docutils literal notranslate"><span class="pre">journald</span></code>, or <code class="ansible-value docutils literal notranslate"><span class="pre">local</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -1208,7 +1211,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Use with the started state to pause running processes inside the container.</p>
 <p>If <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-container-default-behavior"><span class="std std-ref"><span class="pre">container_default_behavior=compatibility</span></span></a></code>, this option has a default of <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -1233,7 +1236,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-platform"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-platform"><strong>platform</strong></p>
 <a class="ansibleOptionLink" href="#parameter-platform" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p><span class="ansible-option-versionadded">added in community.docker 3.0.0</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.0.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Platform for the container in the format <code class="docutils literal notranslate"><span class="pre">os[/arch[/variant]]</span></code>.</p>
 <p>Please note that inspecting the container does not always return the exact platform string used to create the container. This can cause idempotency to break for this module. Use the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-comparisons"><span class="std std-ref"><span class="pre">comparisons</span></span></a></strong></code> option with <code class="docutils literal notranslate"><span class="pre">platform:</span> <span class="pre">ignore</span></code> to prevent accidental recreation of the container due to this.</p>
@@ -1245,7 +1248,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Give extended privileges to the container.</p>
 <p>If <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-container-default-behavior"><span class="std std-ref"><span class="pre">container_default_behavior=compatibility</span></span></a></code>, this option has a default of <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -1255,11 +1258,11 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-publish_all_ports"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-publish-all-ports"><strong>publish_all_ports</strong></p>
 <a class="ansibleOptionLink" href="#parameter-publish_all_ports" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
-<p><span class="ansible-option-versionadded">added in community.docker 1.8.0</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 1.8.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Publish all ports to the host.</p>
 <p>Any specified port bindings from <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-published-ports"><span class="std std-ref"><span class="pre">published_ports</span></span></a></strong></code> will remain intact when <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -1286,9 +1289,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>If true, always pull the latest version of an image. Otherwise, will only pull an image when missing.</p>
 <p><strong>Note:</strong> images are only pulled when specified by name. If the image is specified as a image ID (hash), it cannot be pulled.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -1300,9 +1303,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <td><div class="ansible-option-cell"><p>Remove the container from ALL networks not included in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-networks"><span class="std std-ref"><span class="pre">networks</span></span></a></strong></code> parameter.</p>
 <p>Any default networks such as <code class="docutils literal notranslate"><span class="pre">bridge</span></code>, if not found in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-networks"><span class="std std-ref"><span class="pre">networks</span></span></a></strong></code>, will be removed as well.</p>
 <p>This option is deprecated since community.docker 3.2.0 and will be removed in community.docker 4.0.0. Use <code class="docutils literal notranslate"><span class="pre">networks:</span> <span class="pre">strict</span></code> in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-comparisons"><span class="std std-ref"><span class="pre">comparisons</span></span></a></strong></code> instead of <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-purge-networks"><span class="std std-ref"><span class="pre">purge_networks=true</span></span></a></code> and make sure that <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-networks"><span class="std std-ref"><span class="pre">networks</span></span></a></strong></code> is specified. If you want to remove all networks, specify <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-networks"><span class="std std-ref"><span class="pre">networks</span></span></a></strong></code> as <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -1313,7 +1316,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Mount the container’s root file system as read-only.</p>
 <p>If <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-container-default-behavior"><span class="std std-ref"><span class="pre">container_default_behavior=compatibility</span></span></a></code>, this option has a default of <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -1325,9 +1328,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-recreate" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use with present and started states to force the re-creation of an existing container.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -1345,9 +1348,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-restart" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use with started state to force a matching container to be stopped and restarted.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -1358,7 +1361,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Container restart policy.</p>
 <p>Place quotes around <code class="ansible-value docutils literal notranslate"><span class="pre">no</span></code> option.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;no&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;on-failure&quot;</span></code></p></li>
@@ -1416,12 +1419,12 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Use the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-recreate"><span class="std std-ref"><span class="pre">recreate</span></span></a></strong></code> option to always force re-creation of a matching container, even if it is running.</p>
 <p>If the container should be killed instead of stopped in case it needs to be stopped for recreation, or because <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-state"><span class="std std-ref"><span class="pre">state</span></span></a></strong></code> is <code class="ansible-value docutils literal notranslate"><span class="pre">stopped</span></code>, please use the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-force-kill"><span class="std std-ref"><span class="pre">force_kill</span></span></a></strong></code> option. Use <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-keep-volumes"><span class="std std-ref"><span class="pre">keep_volumes</span></span></a></strong></code> to retain anonymous volumes associated with a removed container.</p>
 <p>Use <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-keep-volumes"><span class="std std-ref"><span class="pre">keep_volumes</span></span></a></strong></code> to retain anonymous volumes associated with a removed container.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;absent&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;present&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;stopped&quot;</span></code></p></li>
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">&quot;started&quot;</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;started&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 </ul>
 </div></td>
 </tr>
@@ -1443,7 +1446,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-storage_opts"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-storage-opts"><strong>storage_opts</strong></p>
 <a class="ansibleOptionLink" href="#parameter-storage_opts" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
-<p><span class="ansible-option-versionadded">added in community.docker 1.3.0</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 1.3.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Storage driver options for this container as a key-value mapping.</p>
 </div></td>
@@ -1461,7 +1464,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>The maximum amount of time in seconds to wait on a response from the API.</p>
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
-<p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">60</span></code></p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">60</span></code></p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -1470,9 +1473,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS without verifying the authenticity of the Docker host server. Note that if <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-validate-certs"><span class="std std-ref"><span class="pre">validate_certs</span></span></a></strong></code> is set to <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code> as well, it will take precedence.</p>
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -1499,7 +1502,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Allocate a pseudo-TTY.</p>
 <p>If <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-container-default-behavior"><span class="std std-ref"><span class="pre">container_default_behavior=compatibility</span></span></a></code>, this option has a default of <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code>.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
@@ -1516,12 +1519,12 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-use_ssh_client"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-use-ssh-client"><strong>use_ssh_client</strong></p>
 <a class="ansibleOptionLink" href="#parameter-use_ssh_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
-<p><span class="ansible-option-versionadded">added in community.docker 1.5.0</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 1.5.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>For SSH transports, use the <code class="docutils literal notranslate"><span class="pre">ssh</span></code> CLI tool instead of paramiko.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -1556,9 +1559,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS and verifying the authenticity of the Docker host server.</p>
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
-<p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">false</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
@@ -1600,7 +1603,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </section>
 <section id="attributes">
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Attributes</a><a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
-<table class="ansible-option-table docutils align-default" style="width: 100%">
+<table class="longtable ansible-option-table docutils align-default" style="width: 100%">
 <thead>
 <tr class="row-odd"><th class="head"><p>Attribute</p></th>
 <th class="head"><p>Support</p></th>
@@ -1611,7 +1614,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="attribute-action_group"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-attribute-action-group"><strong>action_group</strong></p>
 <a class="ansibleOptionLink" href="#attribute-action_group" title="Permalink to this attribute"></a></div></td>
-<td><div class="ansible-option-cell"><p><span class="ansible-attribute-support-property">Action groups:</span> <span class="ansible-attribute-support-full">community.docker.docker</span>, <span class="ansible-attribute-support-full">docker</span></p>
+<td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-property">Action groups:</strong> <strong class="ansible-attribute-support-full">community.docker.docker</strong>, <strong class="ansible-attribute-support-full">docker</strong></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use <code class="docutils literal notranslate"><span class="pre">group/docker</span></code> or <code class="docutils literal notranslate"><span class="pre">group/community.docker.docker</span></code> in <code class="docutils literal notranslate"><span class="pre">module_defaults</span></code> to set defaults for this module.</p>
 </div></td>
@@ -1619,7 +1622,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="attribute-check_mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-attribute-check-mode"><strong>check_mode</strong></p>
 <a class="ansibleOptionLink" href="#attribute-check_mode" title="Permalink to this attribute"></a></div></td>
-<td><div class="ansible-option-cell"><p><span class="ansible-attribute-support-label">Support: </span><span class="ansible-attribute-support-partial">partial</span></p>
+<td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-partial">partial</strong></p>
 <p>When trying to pull an image, the module assumes this is always changed in check mode.</p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Can run in <code class="docutils literal notranslate"><span class="pre">check_mode</span></code> and return changed status prediction without modifying target.</p>
@@ -1628,7 +1631,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="attribute-diff_mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-attribute-diff-mode"><strong>diff_mode</strong></p>
 <a class="ansibleOptionLink" href="#attribute-diff_mode" title="Permalink to this attribute"></a></div></td>
-<td><div class="ansible-option-cell"><p><span class="ansible-attribute-support-label">Support: </span><span class="ansible-attribute-support-full">full</span></p>
+<td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-full">full</strong></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Will return details on what has changed (or possibly needs changing in <code class="docutils literal notranslate"><span class="pre">check_mode</span></code>), when in diff mode.</p>
 </div></td>
@@ -1918,7 +1921,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <section id="return-values">
 <h2><a class="toc-backref" href="#id7" role="doc-backlink">Return Values</a><a class="headerlink" href="#return-values" title="Link to this heading"></a></h2>
 <p>Common return values are documented <a class="reference external" href="https://docs.ansible.com/ansible/devel/reference_appendices/common_return_values.html#common-return-values" title="(in Ansible vdevel)"><span class="xref std std-ref">here</span></a>, the following are the fields unique to this module:</p>
-<table class="ansible-option-table docutils align-default" style="width: 100%">
+<table class="longtable ansible-option-table docutils align-default" style="width: 100%">
 <thead>
 <tr class="row-odd"><th class="head"><p>Key</p></th>
 <th class="head"><p>Description</p></th>
@@ -1932,8 +1935,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <td><div class="ansible-option-cell"><p>Facts representing the current state of the container. Matches the docker inspection output.</p>
 <p>Empty if <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-state"><span class="std std-ref"><span class="pre">state=absent</span></span></a></code>.</p>
 <p>If <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-detach"><span class="std std-ref"><span class="pre">detach=false</span></span></a></code>, will include <code class="docutils literal notranslate"><span class="pre">Output</span></code> attribute containing any output from container run.</p>
-<p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> success; or when <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-state"><span class="std std-ref"><span class="pre">state=started</span></span></a></code> and <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-detach"><span class="std std-ref"><span class="pre">detach=false</span></span></a></code>, and when waiting for the container result did not fail</p>
-<p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;{</span> <span class="pre">\&quot;AppArmorProfile\&quot;:</span> <span class="pre">\&quot;\&quot;,</span> <span class="pre">\&quot;Args\&quot;:</span> <span class="pre">[],</span> <span class="pre">\&quot;Config\&quot;:</span> <span class="pre">{</span> <span class="pre">\&quot;AttachStderr\&quot;:</span> <span class="pre">false,</span> <span class="pre">\&quot;AttachStdin\&quot;:</span> <span class="pre">false,</span> <span class="pre">\&quot;AttachStdout\&quot;:</span> <span class="pre">false,</span> <span class="pre">\&quot;Cmd\&quot;:</span> <span class="pre">[</span> <span class="pre">\&quot;/usr/bin/supervisord\&quot;</span> <span class="pre">],</span> <span class="pre">\&quot;Domainname\&quot;:</span> <span class="pre">\&quot;\&quot;,</span> <span class="pre">\&quot;Entrypoint\&quot;:</span> <span class="pre">null,</span> <span class="pre">\&quot;Env\&quot;:</span> <span class="pre">[</span> <span class="pre">\&quot;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\&quot;</span> <span class="pre">],</span> <span class="pre">\&quot;ExposedPorts\&quot;:</span> <span class="pre">{</span> <span class="pre">\&quot;443/tcp\&quot;:</span> <span class="pre">{},</span> <span class="pre">\&quot;80/tcp\&quot;:</span> <span class="pre">{}</span> <span class="pre">},</span> <span class="pre">\&quot;Hostname\&quot;:</span> <span class="pre">\&quot;8e47bf643eb9\&quot;,</span> <span class="pre">\&quot;Image\&quot;:</span> <span class="pre">\&quot;lnmp_nginx:v1\&quot;,</span> <span class="pre">\&quot;Labels\&quot;:</span> <span class="pre">{},</span> <span class="pre">\&quot;OnBuild\&quot;:</span> <span class="pre">null,</span> <span class="pre">\&quot;OpenStdin\&quot;:</span> <span class="pre">false,</span> <span class="pre">\&quot;StdinOnce\&quot;:</span> <span class="pre">false,</span> <span class="pre">\&quot;Tty\&quot;:</span> <span class="pre">false,</span> <span class="pre">\&quot;User\&quot;:</span> <span class="pre">\&quot;\&quot;,</span> <span class="pre">\&quot;Volumes\&quot;:</span> <span class="pre">{</span> <span class="pre">\&quot;/tmp/lnmp/nginx-sites/logs/\&quot;:</span> <span class="pre">{}</span> <span class="pre">},</span> <span class="pre">...</span> <span class="pre">}&quot;</span></code></p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success; or when <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-state"><span class="std std-ref"><span class="pre">state=started</span></span></a></code> and <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-detach"><span class="std std-ref"><span class="pre">detach=false</span></span></a></code>, and when waiting for the container result did not fail</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;{</span> <span class="pre">\&quot;AppArmorProfile\&quot;:</span> <span class="pre">\&quot;\&quot;,</span> <span class="pre">\&quot;Args\&quot;:</span> <span class="pre">[],</span> <span class="pre">\&quot;Config\&quot;:</span> <span class="pre">{</span> <span class="pre">\&quot;AttachStderr\&quot;:</span> <span class="pre">false,</span> <span class="pre">\&quot;AttachStdin\&quot;:</span> <span class="pre">false,</span> <span class="pre">\&quot;AttachStdout\&quot;:</span> <span class="pre">false,</span> <span class="pre">\&quot;Cmd\&quot;:</span> <span class="pre">[</span> <span class="pre">\&quot;/usr/bin/supervisord\&quot;</span> <span class="pre">],</span> <span class="pre">\&quot;Domainname\&quot;:</span> <span class="pre">\&quot;\&quot;,</span> <span class="pre">\&quot;Entrypoint\&quot;:</span> <span class="pre">null,</span> <span class="pre">\&quot;Env\&quot;:</span> <span class="pre">[</span> <span class="pre">\&quot;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\&quot;</span> <span class="pre">],</span> <span class="pre">\&quot;ExposedPorts\&quot;:</span> <span class="pre">{</span> <span class="pre">\&quot;443/tcp\&quot;:</span> <span class="pre">{},</span> <span class="pre">\&quot;80/tcp\&quot;:</span> <span class="pre">{}</span> <span class="pre">},</span> <span class="pre">\&quot;Hostname\&quot;:</span> <span class="pre">\&quot;8e47bf643eb9\&quot;,</span> <span class="pre">\&quot;Image\&quot;:</span> <span class="pre">\&quot;lnmp_nginx:v1\&quot;,</span> <span class="pre">\&quot;Labels\&quot;:</span> <span class="pre">{},</span> <span class="pre">\&quot;OnBuild\&quot;:</span> <span class="pre">null,</span> <span class="pre">\&quot;OpenStdin\&quot;:</span> <span class="pre">false,</span> <span class="pre">\&quot;StdinOnce\&quot;:</span> <span class="pre">false,</span> <span class="pre">\&quot;Tty\&quot;:</span> <span class="pre">false,</span> <span class="pre">\&quot;User\&quot;:</span> <span class="pre">\&quot;\&quot;,</span> <span class="pre">\&quot;Volumes\&quot;:</span> <span class="pre">{</span> <span class="pre">\&quot;/tmp/lnmp/nginx-sites/logs/\&quot;:</span> <span class="pre">{}</span> <span class="pre">},</span> <span class="pre">...</span> <span class="pre">}&quot;</span></code></p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -1942,8 +1945,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>In case a container is started without detaching, this contains the exit code of the process in the container.</p>
 <p>Before community.docker 1.1.0, this was only returned when non-zero.</p>
-<p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> when <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-state"><span class="std std-ref"><span class="pre">state=started</span></span></a></code> and <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-detach"><span class="std std-ref"><span class="pre">detach=false</span></span></a></code>, and when waiting for the container result did not fail</p>
-<p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">0</span></code></p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> when <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-state"><span class="std std-ref"><span class="pre">state=started</span></span></a></code> and <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-detach"><span class="std std-ref"><span class="pre">detach=false</span></span></a></code>, and when waiting for the container result did not fail</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">0</span></code></p>
 </div></td>
 </tr>
 </tbody>
@@ -1964,13 +1967,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </section>
 <section id="collection-links">
 <h3>Collection links<a class="headerlink" href="#collection-links" title="Link to this heading"></a></h3>
-<p class="ansible-links">
-  <a href="https://github.com/ansible-collections/community.docker/issues" aria-role="button" target="_blank" rel="noopener external">Issue Tracker</a>
-  <a href="https://github.com/ansible-collections/community.docker" aria-role="button" target="_blank" rel="noopener external">Repository (Sources)</a>
-  <a href="https://github.com/ansible-collections/community.docker/issues/new?assignees=&amp;labels=&amp;template=bug_report.md" aria-role="button" target="_blank" rel="noopener external">Submit a bug report</a>
-  <a href="https://github.com/ansible-collections/community.docker/issues/new?assignees=&amp;labels=&amp;template=feature_request.md" aria-role="button" target="_blank" rel="noopener external">Request a feature</a>
-  <a href="./#communication-for-community-docker" aria-role="button" target="_blank">Communication</a>
-</p></section>
+<ul class="ansible-links">
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://github.com/ansible-collections/community.docker/issues" rel="noopener external" target="_blank">Issue Tracker</a></span></li>
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://github.com/ansible-collections/community.docker" rel="noopener external" target="_blank">Repository (Sources)</a></span></li>
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://github.com/ansible-collections/community.docker/issues/new?assignees=&amp;labels=&amp;template=bug_report.md" rel="noopener external" target="_blank">Submit a bug report</a></span></li>
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://github.com/ansible-collections/community.docker/issues/new?assignees=&amp;labels=&amp;template=feature_request.md" rel="noopener external" target="_blank">Request a feature</a></span></li>
+<li><span><a class="reference internal" href="index.html#communication-for-community-docker"><span class="std std-ref">Communication</span></a></span></li>
+</ul>
+</section>
 </section>
 </section>
 
