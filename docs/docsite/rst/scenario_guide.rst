@@ -8,7 +8,7 @@
 Docker Guide
 ============
 
-The `community.docker collection <https://galaxy.ansible.com/community/docker>`_ offers several modules and plugins for orchestrating Docker containers and Docker Swarm.
+The `community.docker collection <https://galaxy.ansible.com/ui/repo/published/community/docker/>`_ offers several modules and plugins for orchestrating Docker containers and Docker Swarm.
 
 .. contents::
    :local:
