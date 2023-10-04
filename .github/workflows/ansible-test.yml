@@ -155,7 +155,7 @@ jobs:
             docker: ubuntu1804
             python: ''
             target: azp/5/
-          # 2.12
+          # 2.13
           - ansible: '2.13'
             docker: fedora35
             python: ''
