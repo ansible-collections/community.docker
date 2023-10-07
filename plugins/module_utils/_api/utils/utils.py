@@ -160,6 +160,22 @@ def convert_volume_binds(binds):
             else:
                 mode = 'rw'
 
+            # NOTE: this is only relevant for Linux hosts
+            # (doesn't apply in Docker Desktop)
+            propagation_modes = [
+                'rshared',
+                'shared',
+                'rslave',
+                'slave',
+                'rprivate',
+                'private',
+            ]
+            if 'propagation' in v and v['propagation'] in propagation_modes:
+                if mode:
+                    mode = ','.join([mode, v['propagation']])
+                else:
+                    mode = v['propagation']
+
             result.append(
                 text_type('{0}:{1}:{2}').format(k, bind, mode)
             )
