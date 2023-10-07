@@ -22,9 +22,9 @@ extends_documentation_fragment:
   - community.docker.attributes.info_module
 seealso:
   - module: community.docker.docker_stack_task_info
-    description: >- 
-      To retrieve detailed information about the services under a specific 
-      stack use the M(community.docker.docker_stack_task_info) module
+    description: >-
+      To retrieve detailed information about the services under a specific
+      stack use the M(community.docker.docker_stack_task_info) module.
 '''
 
 RETURN = '''
