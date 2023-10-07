@@ -13,20 +13,24 @@ DOCUMENTATION = '''
 ---
 module: docker_stack_info
 author: "Jose Angel Munoz (@imjoseangel)"
-short_description: Return information on a docker stack
+short_description: Return information on all docker stacks
 description:
   - Retrieve information on docker stacks using the C(docker stack) command
     on the target node (see examples).
 extends_documentation_fragment:
   - community.docker.attributes
   - community.docker.attributes.info_module
+seealso:
+  - module: community.docker.docker_stack_task_info
+    description: >-
+      To retrieve detailed information about the services under a specific
+      stack use the M(community.docker.docker_stack_task_info) module.
 '''
 
 RETURN = '''
 results:
     description: |
-        List of dictionaries containing the list of stacks or tasks associated
-        to a stack name.
+        List of dictionaries containing the list of stacks on the target node
     sample:
         - {"name":"grafana","namespace":"default","orchestrator":"Kubernetes","services":"2"}
     returned: always
