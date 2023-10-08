@@ -12,6 +12,7 @@ __metaclass__ = type
 
 from ._import_helper import HTTPError as _HTTPError
 
+from ansible.module_utils.common.text.converters import to_native
 from ansible.module_utils.six import raise_from
 
 
@@ -32,7 +33,7 @@ def create_api_error_from_http_exception(e):
     try:
         explanation = response.json()['message']
     except ValueError:
-        explanation = (response.content or '').strip()
+        explanation = to_native((response.content or '').strip())
     cls = APIError
     if response.status_code == 404:
         if explanation and ('No such image' in str(explanation) or
