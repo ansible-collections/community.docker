@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.4.9
+======
+
+Release Summary
+---------------
+
+Maintenance release with updated documentation and vendored Docker SDK for Python code.
+
+Bugfixes
+--------
+
+- vendored Docker SDK for Python code - cherry-pick changes from the Docker SDK for Python code to align code. These changes should not affect the parts used by the collection's code (https://github.com/ansible-collections/community.docker/pull/694).
+
 v3.4.8
 ======
 

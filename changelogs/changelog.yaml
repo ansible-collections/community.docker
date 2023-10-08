@@ -1247,3 +1247,15 @@ releases:
     fragments:
     - 3.4.8.yml
     release_date: '2023-06-22'
+  3.4.9:
+    changes:
+      bugfixes:
+      - vendored Docker SDK for Python code - cherry-pick changes from the Docker
+        SDK for Python code to align code. These changes should not affect the parts
+        used by the collection's code (https://github.com/ansible-collections/community.docker/pull/694).
+      release_summary: Maintenance release with updated documentation and vendored
+        Docker SDK for Python code.
+    fragments:
+    - 3.4.9.yml
+    - 694-docker-py.yml
+    release_date: '2023-10-08'
