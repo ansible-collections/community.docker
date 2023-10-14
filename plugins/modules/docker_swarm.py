@@ -199,6 +199,7 @@ options:
           like V(eth0).
       - Only used when swarm is initialised or joined. Because of this it is not
         considered for idempotency checking.
+      - Requires API version >= 1.30.
     type: str
     version_added: 2.5.0
   data_path_port:
@@ -207,6 +208,7 @@ options:
       - This needs to be a port number like V(9789).
       - Only used when swarm is initialised. Because of this it is not
         considered for idempotency checking.
+      - Requires API version >= 1.40.
     type: int
     version_added: 3.1.0
 
@@ -534,7 +536,6 @@ class SwarmManager(DockerBaseClass):
             init_arguments = {
                 'advertise_addr': self.parameters.advertise_addr,
                 'listen_addr': self.parameters.listen_addr,
-                'data_path_addr': self.parameters.data_path_addr,
                 'force_new_cluster': self.force,
                 'swarm_spec': self.parameters.spec,
             }
@@ -542,6 +543,8 @@ class SwarmManager(DockerBaseClass):
                 init_arguments['default_addr_pool'] = self.parameters.default_addr_pool
             if self.parameters.subnet_size is not None:
                 init_arguments['subnet_size'] = self.parameters.subnet_size
+            if self.parameters.data_path_addr is not None:
+                init_arguments['data_path_addr'] = self.parameters.data_path_addr
             if self.parameters.data_path_port is not None:
                 init_arguments['data_path_port'] = self.parameters.data_path_port
             try:
@@ -595,11 +598,16 @@ class SwarmManager(DockerBaseClass):
             self.results['actions'].append("This node is already part of a swarm.")
             return
         if not self.check_mode:
+            join_arguments = {
+                'remote_addrs': self.parameters.remote_addrs,
+                'join_token': self.parameters.join_token,
+                'listen_addr': self.parameters.listen_addr,
+                'advertise_addr': self.parameters.advertise_addr,
+            }
+            if self.parameters.data_path_addr is not None:
+                join_arguments['data_path_addr'] = self.parameters.data_path_addr
             try:
-                self.client.join_swarm(
-                    remote_addrs=self.parameters.remote_addrs, join_token=self.parameters.join_token,
-                    listen_addr=self.parameters.listen_addr, advertise_addr=self.parameters.advertise_addr,
-                    data_path_addr=self.parameters.data_path_addr)
+                self.client.join_swarm(**join_arguments)
             except APIError as exc:
                 self.client.fail("Can not join the Swarm Cluster: %s" % to_native(exc))
         self.results['actions'].append("New node is added to swarm cluster")
