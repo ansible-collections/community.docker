@@ -13,7 +13,8 @@ DOCUMENTATION = '''
     requirements:
         - L(Docker Machine,https://docs.docker.com/machine/)
     extends_documentation_fragment:
-        - constructed
+        - ansible.builtin.constructed
+        - community.docker.inventory_filter
     description:
         - Get inventory hosts from Docker Machine.
         - Uses a YAML configuration file that ends with docker_machine.(yml|yaml).
@@ -53,6 +54,8 @@ DOCUMENTATION = '''
                   named C(docker_machine_node_attributes).
             type: bool
             default: true
+        filters:
+            version_added: 3.5.0
 '''
 
 EXAMPLES = '''
@@ -93,6 +96,8 @@ from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.common.process import get_bin_path
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable, Cacheable
 from ansible.utils.display import Display
+
+from ansible_collections.community.docker.plugins.plugin_utils.inventory_filter import parse_filters, filter_host
 
 import json
 import re
@@ -201,6 +206,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def _populate(self):
         daemon_env = self.get_option('daemon_env')
+        filters = parse_filters(self.get_option('filters'))
         try:
             for self.node in self._get_machine_names():
                 self.node_attrs = self._inspect_docker_machine_host(self.node)
@@ -208,6 +214,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     continue
 
                 machine_name = self.node_attrs['Driver']['MachineName']
+                if not filter_host(self, machine_name, self.node_attrs, filters):
+                    continue
 
                 # query `docker-machine env` to obtain remote Docker daemon connection settings in the form of commands
                 # that could be used to set environment variables to influence a local Docker client:
