@@ -266,7 +266,7 @@ EXAMPLES = '''
 
 RETURN = '''
 swarm_facts:
-  description: Informations about swarm.
+  description: Information about swarm.
   returned: success
   type: dict
   contains:
