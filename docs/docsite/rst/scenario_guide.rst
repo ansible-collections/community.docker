@@ -148,6 +148,9 @@ For working with a plain Docker daemon, that is without Swarm, there are connect
     docker_image module
         The :ansplugin:`community.docker.docker_image module <community.docker.docker_image#module>` provides full control over images, including: build, pull, push, tag and remove.
 
+    docker_image_load
+        The :ansplugin:`community.docker.docker_image_load module <community.docker.docker_image_load#module>` allows you to import one or multiple images from tarballs.
+
     docker_image_info module
         The :ansplugin:`community.docker.docker_image_info module <community.docker.docker_image_info#module>` allows you to list and inspect images.
 
@@ -166,8 +169,17 @@ For working with a plain Docker daemon, that is without Swarm, there are connect
     docker_container module
         The :ansplugin:`community.docker.docker_container module <community.docker.docker_container#module>` manages the container lifecycle by providing the ability to create, update, stop, start and destroy a Docker container.
 
+    docker_container_copy_into
+        The :ansplugin:`community.docker.docker_container_copy_into module <community.docker.docker_container_copy_into#module>` allows you to copy files from the control node into a container.
+
+    docker_container_exec
+        The :ansplugin:`community.docker.docker_container_exec module <community.docker.docker_container_exec#module>` allows you to execute commands in a running container.
+
     docker_container_info module
         The :ansplugin:`community.docker.docker_container_info module <community.docker.docker_container_info#module>` allows you to inspect a Docker container.
+
+    docker_plugin
+        The :ansplugin:`community.docker.docker_plugin module <community.docker.docker_plugin#module>` allows you to manage Docker plugins.
 
 
 Docker Compose
