@@ -261,7 +261,7 @@ class LoginManager(DockerBaseClass):
 
     def run(self):
         '''
-        Do the actuall work of this task here. This allows instantiation for partial
+        Do the actual work of this task here. This allows instantiation for partial
         testing.
         '''
 

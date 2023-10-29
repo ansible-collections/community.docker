@@ -455,7 +455,7 @@ class APIClient(
         return self._get_result_tty(stream, res, self._check_is_tty(container))
 
     def _get_result_tty(self, stream, res, is_tty):
-        # We should also use raw streaming (without keep-alives)
+        # We should also use raw streaming (without keep-alive)
         # if we're dealing with a tty-enabled container.
         if is_tty:
             return self._stream_raw_result(res) if stream else \

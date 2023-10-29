@@ -15,7 +15,7 @@ from ansible_collections.community.docker.plugins.module_utils._scramble import 
 
 
 class ActionModule(ActionBase):
-    # Set to True when transfering files to the remote
+    # Set to True when transferring files to the remote
     TRANSFERS_FILES = False
 
     def run(self, tmp=None, task_vars=None):

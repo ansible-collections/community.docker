@@ -49,7 +49,7 @@ DOCUMENTATION = '''
             default: true
         verbose_output:
             description:
-                - When V(true), include all available nodes metadata (for exmaple C(Image), C(Region), C(Size)) as a JSON object
+                - When V(true), include all available nodes metadata (for example C(Image), C(Region), C(Size)) as a JSON object
                   named C(docker_machine_node_attributes).
             type: bool
             default: true

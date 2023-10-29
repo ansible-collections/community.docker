@@ -18,7 +18,7 @@ The `community.docker collection <https://galaxy.ansible.com/ui/repo/published/c
 Requirements
 ------------
 
-Most of the modules and plugins in community.docker require the `Docker SDK for Python <https://docker-py.readthedocs.io/en/stable/>`_. The SDK needs to be installed on the machines where the modules and plugins are executed, and for the Python version(s) with which the modules and plugins are executed. You can use the :ref:`community.general.python_requirements_info module <ansible_collections.community.general.python_requirements_info_module>` to make sure that the Docker SDK for Python is installed on the correct machine and for the Python version used by Ansible.
+Most of the modules and plugins in community.docker require the `Docker SDK for Python <https://docker-py.readthedocs.io/en/stable/>`_. The SDK needs to be installed on the machines where the modules and plugins are executed, and for the Python version(s) with which the modules and plugins are executed. You can use the :ansplugin:`community.general.python_requirements_info module <community.general.python_requirements_info#module>` to make sure that the Docker SDK for Python is installed on the correct machine and for the Python version used by Ansible.
 
 Note that plugins (inventory plugins and connection plugins) are always executed in the context of Ansible itself. If you use a plugin that requires the Docker SDK for Python, you need to install it on the machine running ``ansible`` or ``ansible-playbook`` and for the same Python interpreter used by Ansible. To see which Python is used, run ``ansible --version``.
 
@@ -126,54 +126,66 @@ Plain Docker daemon: images, networks, volumes, and containers
 For working with a plain Docker daemon, that is without Swarm, there are connection plugins, an inventory plugin, and several modules available:
 
     docker connection plugin
-        The :ref:`community.docker.docker connection plugin <ansible_collections.community.docker.docker_connection>` uses the Docker CLI utility to connect to Docker containers and execute modules in them. It essentially wraps ``docker exec`` and ``docker cp``. This connection plugin is supported by the :ref:`ansible.posix.synchronize module <ansible_collections.ansible.posix.synchronize_module>`.
+        The :ansplugin:`community.docker.docker connection plugin <community.docker.docker#connection>` uses the Docker CLI utility to connect to Docker containers and execute modules in them. It essentially wraps ``docker exec`` and ``docker cp``. This connection plugin is supported by the :ansplugin:`ansible.posix.synchronize module <ansible.posix.synchronize#module>`.
 
     docker_api connection plugin
-        The :ref:`community.docker.docker_api connection plugin <ansible_collections.community.docker.docker_api_connection>` talks directly to the Docker daemon to connect to Docker containers and execute modules in them.
+        The :ansplugin:`community.docker.docker_api connection plugin <community.docker.docker_api#connection>` talks directly to the Docker daemon to connect to Docker containers and execute modules in them.
 
     docker_containers inventory plugin
-        The :ref:`community.docker.docker_containers inventory plugin <ansible_collections.community.docker.docker_containers_inventory>` allows you to dynamically add Docker containers from a Docker Daemon to your Ansible inventory. See :ref:`dynamic_inventory` for details on dynamic inventories.
+        The :ansplugin:`community.docker.docker_containers inventory plugin <community.docker.docker_containers#inventory>` allows you to dynamically add Docker containers from a Docker Daemon to your Ansible inventory. See :ref:`dynamic_inventory` for details on dynamic inventories.
 
         The `docker inventory script <https://github.com/ansible-community/contrib-scripts/blob/main/inventory/docker.py>`_ is deprecated. Please use the inventory plugin instead. The inventory plugin has several compatibility options. If you need to collect Docker containers from multiple Docker daemons, you need to add every Docker daemon as an individual inventory source.
 
     docker_host_info module
-        The :ref:`community.docker.docker_host_info module <ansible_collections.community.docker.docker_host_info_module>` allows you to retrieve information on a Docker daemon, such as all containers, images, volumes, networks and so on.
+        The :ansplugin:`community.docker.docker_host_info module <community.docker.docker_host_info#module>` allows you to retrieve information on a Docker daemon, such as all containers, images, volumes, networks and so on.
 
     docker_login module
-        The :ref:`community.docker.docker_login module <ansible_collections.community.docker.docker_login_module>` allows you to log in and out of a remote registry, such as Docker Hub or a private registry. It provides similar functionality to the ``docker login`` and ``docker logout`` CLI commands.
+        The :ansplugin:`community.docker.docker_login module <community.docker.docker_login#module>` allows you to log in and out of a remote registry, such as Docker Hub or a private registry. It provides similar functionality to the ``docker login`` and ``docker logout`` CLI commands.
 
     docker_prune module
-        The :ref:`community.docker.docker_prune module <ansible_collections.community.docker.docker_prune_module>` allows  you to prune no longer needed containers, images, volumes and so on. It provides similar functionality to the ``docker prune`` CLI command.
+        The :ansplugin:`community.docker.docker_prune module <community.docker.docker_prune#module>` allows  you to prune no longer needed containers, images, volumes and so on. It provides similar functionality to the ``docker prune`` CLI command.
 
     docker_image module
-        The :ref:`community.docker.docker_image module <ansible_collections.community.docker.docker_image_module>` provides full control over images, including: build, pull, push, tag and remove.
+        The :ansplugin:`community.docker.docker_image module <community.docker.docker_image#module>` provides full control over images, including: build, pull, push, tag and remove.
+
+    docker_image_load
+        The :ansplugin:`community.docker.docker_image_load module <community.docker.docker_image_load#module>` allows you to import one or multiple images from tarballs.
 
     docker_image_info module
-        The :ref:`community.docker.docker_image_info module <ansible_collections.community.docker.docker_image_info_module>` allows you to list and inspect images.
+        The :ansplugin:`community.docker.docker_image_info module <community.docker.docker_image_info#module>` allows you to list and inspect images.
 
     docker_network module
-        The :ref:`community.docker.docker_network module <ansible_collections.community.docker.docker_network_module>` provides full control over Docker networks.
+        The :ansplugin:`community.docker.docker_network module <community.docker.docker_network#module>` provides full control over Docker networks.
 
     docker_network_info module
-        The :ref:`community.docker.docker_network_info module <ansible_collections.community.docker.docker_network_info_module>` allows you to inspect Docker networks.
+        The :ansplugin:`community.docker.docker_network_info module <community.docker.docker_network_info#module>` allows you to inspect Docker networks.
 
     docker_volume_info module
-        The :ref:`community.docker.docker_volume_info module <ansible_collections.community.docker.docker_volume_info_module>` provides full control over Docker volumes.
+        The :ansplugin:`community.docker.docker_volume_info module <community.docker.docker_volume_info#module>` provides full control over Docker volumes.
 
     docker_volume module
-        The :ref:`community.docker.docker_volume module <ansible_collections.community.docker.docker_volume_module>` allows you to inspect Docker volumes.
+        The :ansplugin:`community.docker.docker_volume module <community.docker.docker_volume#module>` allows you to inspect Docker volumes.
 
     docker_container module
-        The :ref:`community.docker.docker_container module <ansible_collections.community.docker.docker_container_module>` manages the container lifecycle by providing the ability to create, update, stop, start and destroy a Docker container.
+        The :ansplugin:`community.docker.docker_container module <community.docker.docker_container#module>` manages the container lifecycle by providing the ability to create, update, stop, start and destroy a Docker container.
+
+    docker_container_copy_into
+        The :ansplugin:`community.docker.docker_container_copy_into module <community.docker.docker_container_copy_into#module>` allows you to copy files from the control node into a container.
+
+    docker_container_exec
+        The :ansplugin:`community.docker.docker_container_exec module <community.docker.docker_container_exec#module>` allows you to execute commands in a running container.
 
     docker_container_info module
-        The :ref:`community.docker.docker_container_info module <ansible_collections.community.docker.docker_container_info_module>` allows you to inspect a Docker container.
+        The :ansplugin:`community.docker.docker_container_info module <community.docker.docker_container_info#module>` allows you to inspect a Docker container.
+
+    docker_plugin
+        The :ansplugin:`community.docker.docker_plugin module <community.docker.docker_plugin#module>` allows you to manage Docker plugins.
 
 
 Docker Compose
 --------------
 
-The :ref:`community.docker.docker_compose module <ansible_collections.community.docker.docker_compose_module>`
+The :ansplugin:`community.docker.docker_compose module <community.docker.docker_compose#module>`
 allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
 Supports compose versions 1 and 2.
 
@@ -183,13 +195,13 @@ Next to Docker SDK for Python, you need to install `docker-compose <https://gith
 Docker Machine
 --------------
 
-The :ref:`community.docker.docker_machine inventory plugin <ansible_collections.community.docker.docker_machine_inventory>` allows you to dynamically add Docker Machine hosts to your Ansible inventory.
+The :ansplugin:`community.docker.docker_machine inventory plugin <community.docker.docker_machine#inventory>` allows you to dynamically add Docker Machine hosts to your Ansible inventory.
 
 
 Docker stack
 ------------
 
-The :ref:`community.docker.docker_stack module <ansible_collections.community.docker.docker_stack_module>` module allows you to control Docker stacks. Information on stacks can be retrieved by the :ref:`community.docker.docker_stack_info module <ansible_collections.community.docker.docker_stack_info_module>`, and information on stack tasks can be retrieved by the :ref:`community.docker.docker_stack_task_info module <ansible_collections.community.docker.docker_stack_task_info_module>`.
+The :ansplugin:`community.docker.docker_stack module <community.docker.docker_stack#module>` module allows you to control Docker stacks. Information on stacks can be retrieved by the :ansplugin:`community.docker.docker_stack_info module <community.docker.docker_stack_info#module>`, and information on stack tasks can be retrieved by the :ansplugin:`community.docker.docker_stack_task_info module <community.docker.docker_stack_task_info#module>`.
 
 
 Docker Swarm
@@ -203,19 +215,19 @@ Swarm management
 One inventory plugin and several modules are provided to manage Docker Swarms:
 
     docker_swarm inventory plugin
-        The :ref:`community.docker.docker_swarm inventory plugin <ansible_collections.community.docker.docker_swarm_inventory>` allows  you to dynamically add all Docker Swarm nodes to your Ansible inventory.
+        The :ansplugin:`community.docker.docker_swarm inventory plugin <community.docker.docker_swarm#inventory>` allows  you to dynamically add all Docker Swarm nodes to your Ansible inventory.
 
     docker_swarm module
-        The :ref:`community.docker.docker_swarm module <ansible_collections.community.docker.docker_swarm_module>` allows you to globally configure Docker Swarm manager nodes to join and leave swarms, and to change the Docker Swarm configuration.
+        The :ansplugin:`community.docker.docker_swarm module <community.docker.docker_swarm#module>` allows you to globally configure Docker Swarm manager nodes to join and leave swarms, and to change the Docker Swarm configuration.
 
     docker_swarm_info module
-        The :ref:`community.docker.docker_swarm_info module <ansible_collections.community.docker.docker_swarm_info_module>` allows  you to retrieve information on Docker Swarm.
+        The :ansplugin:`community.docker.docker_swarm_info module <community.docker.docker_swarm_info#module>` allows  you to retrieve information on Docker Swarm.
 
     docker_node module
-        The :ref:`community.docker.docker_node module <ansible_collections.community.docker.docker_node_module>` allows you to manage Docker Swarm nodes.
+        The :ansplugin:`community.docker.docker_node module <community.docker.docker_node#module>` allows you to manage Docker Swarm nodes.
 
     docker_node_info module
-        The :ref:`community.docker.docker_node_info module <ansible_collections.community.docker.docker_node_info_module>` allows you to retrieve information on Docker Swarm nodes.
+        The :ansplugin:`community.docker.docker_node_info module <community.docker.docker_node_info#module>` allows you to retrieve information on Docker Swarm nodes.
 
 Configuration management
 ........................
@@ -223,16 +235,16 @@ Configuration management
 The community.docker collection offers modules to manage Docker Swarm configurations and secrets:
 
     docker_config module
-        The :ref:`community.docker.docker_config module <ansible_collections.community.docker.docker_config_module>` allows you to create and modify Docker Swarm configs.
+        The :ansplugin:`community.docker.docker_config module <community.docker.docker_config#module>` allows you to create and modify Docker Swarm configs.
 
     docker_secret module
-        The :ref:`community.docker.docker_secret module <ansible_collections.community.docker.docker_secret_module>` allows you to create and modify Docker Swarm secrets.
+        The :ansplugin:`community.docker.docker_secret module <community.docker.docker_secret#module>` allows you to create and modify Docker Swarm secrets.
 
 
 Swarm services
 ..............
 
-Docker Swarm services can be created and updated with the :ref:`community.docker.docker_swarm_service module <ansible_collections.community.docker.docker_swarm_service_module>`, and information on them can be queried by the :ref:`community.docker.docker_swarm_service_info module <ansible_collections.community.docker.docker_swarm_service_info_module>`.
+Docker Swarm services can be created and updated with the :ansplugin:`community.docker.docker_swarm_service module <community.docker.docker_swarm_service#module>`, and information on them can be queried by the :ansplugin:`community.docker.docker_swarm_service_info module <community.docker.docker_swarm_service_info#module>`.
 
 
 Helpful links

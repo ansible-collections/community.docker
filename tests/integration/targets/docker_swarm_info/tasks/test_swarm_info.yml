@@ -14,7 +14,7 @@
     ignore_errors: true
     register: output
 
-  - name: assert failure when called when swarm is not in use or not run on mamager node
+  - name: assert failure when called when swarm is not in use or not run on manager node
     assert:
       that:
          - 'output is failed'
@@ -58,7 +58,7 @@
       nodes: true
     register: output
 
-  - name: assert reding swarm facts with list of nodes option
+  - name: assert reading swarm facts with list of nodes option
     assert:
       that:
          - 'output.swarm_facts.JoinTokens.Manager'

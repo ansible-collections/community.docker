@@ -132,7 +132,7 @@ class ContainerManager(DockerBaseClass):
             self.all_options['image'].comparison = 'ignore'
         if self.module.params['purge_networks']:
             self.all_options['networks'].comparison = 'strict'
-        # Process comparsions specified by user
+        # Process comparisons specified by user
         if self.module.params.get('comparisons'):
             # If '*' appears in comparisons, process it first
             if '*' in self.module.params['comparisons']:
