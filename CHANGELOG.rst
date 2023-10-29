@@ -5,6 +5,19 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.4.10
+=======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- docker_swarm - make init and join operations work again with Docker SDK for Python before 4.0.0 (https://github.com/ansible-collections/community.docker/issues/695, https://github.com/ansible-collections/community.docker/pull/696).
+
 v3.4.9
 ======
 

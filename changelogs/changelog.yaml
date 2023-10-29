@@ -1129,6 +1129,17 @@ releases:
     - fix-tmpfs_size-and-tmpfs_mode.yml
     - remove-unneeded-imports.yml
     release_date: '2023-02-20'
+  3.4.10:
+    changes:
+      bugfixes:
+      - docker_swarm - make init and join operations work again with Docker SDK for
+        Python before 4.0.0 (https://github.com/ansible-collections/community.docker/issues/695,
+        https://github.com/ansible-collections/community.docker/pull/696).
+      release_summary: Bugfix release.
+    fragments:
+    - 3.4.10.yml
+    - 696-docker_swarm-data_addr_path.yml
+    release_date: '2023-10-29'
   3.4.2:
     changes:
       bugfixes:
