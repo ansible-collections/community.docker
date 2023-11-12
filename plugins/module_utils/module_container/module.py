@@ -280,7 +280,7 @@ class ContainerManager(DockerBaseClass):
         # the container already runs or not; in the former case, in case the
         # container needs to be restarted, we use the existing container's
         # image ID.
-        image, comparison_image = self._get_image(container)
+        image, container_image, comparison_image = self._get_image(container)
         self.log(image, pretty_print=True)
         if not container.exists or container.removing:
             # New container
@@ -301,7 +301,7 @@ class ContainerManager(DockerBaseClass):
             container_created = True
         else:
             # Existing container
-            different, differences = self.has_different_configuration(container, comparison_image)
+            different, differences = self.has_different_configuration(container, container_image, comparison_image)
             image_different = False
             if self.all_options['image'].comparison == 'strict':
                 image_different = self._image_is_different(image, container)
@@ -333,7 +333,7 @@ class ContainerManager(DockerBaseClass):
                 comparison_image = image
 
         if container and container.exists:
-            container = self.update_limits(container, comparison_image)
+            container = self.update_limits(container, container_image, comparison_image)
             container = self.update_networks(container, container_created)
 
             if state == 'started' and not container.running:
@@ -400,9 +400,12 @@ class ContainerManager(DockerBaseClass):
 
     def _get_image(self, container):
         image_parameter = self.param_image
+        container_image = self._get_container_image(container)
+        self.log("current image")
+        self.log(container_image, pretty_print=True)
         if not image_parameter:
             self.log('No image specified')
-            return None, self._get_container_image(container)
+            return None, container_image, container_image
         if is_image_name_id(image_parameter):
             image = self.engine_driver.inspect_image_by_id(self.client, image_parameter)
         else:
@@ -431,12 +434,9 @@ class ContainerManager(DockerBaseClass):
 
         comparison_image = image
         if self.param_image_comparison == 'current-image':
-            comparison_image = self._get_container_image(container, image)
-            if comparison_image != image:
-                self.log("current image")
-                self.log(comparison_image, pretty_print=True)
+            comparison_image = container_image
 
-        return image, comparison_image
+        return image, container_image, comparison_image
 
     def _image_is_different(self, image, container):
         if image and image.get('Id'):
@@ -455,8 +455,9 @@ class ContainerManager(DockerBaseClass):
         params['Image'] = image
         return params
 
-    def _record_differences(self, differences, options, param_values, engine, container, image):
-        container_values = engine.get_value(self.module, container.raw, self.engine_driver.get_api_version(self.client), options.options)
+    def _record_differences(self, differences, options, param_values, engine, container, container_image, image):
+        container_values = engine.get_value(
+            self.module, container.raw, self.engine_driver.get_api_version(self.client), options.options, container_image)
         expected_values = engine.get_expected_values(
             self.module, self.client, self.engine_driver.get_api_version(self.client), options.options, image, param_values.copy())
         for option in options.options:
@@ -497,28 +498,28 @@ class ContainerManager(DockerBaseClass):
                             c = sorted(c, key=sort_key_fn)
                     differences.add(option.name, parameter=p, active=c)
 
-    def has_different_configuration(self, container, image):
+    def has_different_configuration(self, container, container_image, image):
         differences = DifferenceTracker()
         update_differences = DifferenceTracker()
         for options, param_values in self.parameters:
             engine = options.get_engine(self.engine_driver.name)
             if engine.can_update_value(self.engine_driver.get_api_version(self.client)):
-                self._record_differences(update_differences, options, param_values, engine, container, image)
+                self._record_differences(update_differences, options, param_values, engine, container, container_image, image)
             else:
-                self._record_differences(differences, options, param_values, engine, container, image)
+                self._record_differences(differences, options, param_values, engine, container, container_image, image)
         has_differences = not differences.empty
         # Only consider differences of properties that can be updated when there are also other differences
         if has_differences:
             differences.merge(update_differences)
         return has_differences, differences
 
-    def has_different_resource_limits(self, container, image):
+    def has_different_resource_limits(self, container, container_image, image):
         differences = DifferenceTracker()
         for options, param_values in self.parameters:
             engine = options.get_engine(self.engine_driver.name)
             if not engine.can_update_value(self.engine_driver.get_api_version(self.client)):
                 continue
-            self._record_differences(differences, options, param_values, engine, container, image)
+            self._record_differences(differences, options, param_values, engine, container, container_image, image)
         has_differences = not differences.empty
         return has_differences, differences
 
@@ -531,8 +532,8 @@ class ContainerManager(DockerBaseClass):
             engine.update_value(self.module, result, self.engine_driver.get_api_version(self.client), options.options, values)
         return result
 
-    def update_limits(self, container, image):
-        limits_differ, different_limits = self.has_different_resource_limits(container, image)
+    def update_limits(self, container, container_image, image):
+        limits_differ, different_limits = self.has_different_resource_limits(container, container_image, image)
         if limits_differ:
             self.log("limit differences:")
             self.log(different_limits.get_legacy_docker_container_diffs(), pretty_print=True)

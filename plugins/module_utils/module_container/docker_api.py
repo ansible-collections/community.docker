@@ -423,7 +423,7 @@ class DockerAPIEngine(Engine):
                     values[options[0].name] = value
             return values
 
-        def get_value(module, container, api_version, options):
+        def get_value(module, container, api_version, options, image):
             if len(options) != 1:
                 raise AssertionError('config_value can only be used for a single option')
             value = container['Config'].get(config_name, _SENTRY)
@@ -499,7 +499,7 @@ class DockerAPIEngine(Engine):
                     values[options[0].name] = value
             return values
 
-        def get_value(module, container, api_version, options):
+        def get_value(module, container, api_version, options, get_value):
             if len(options) != 1:
                 raise AssertionError('host_config_value can only be used for a single option')
             value = container['HostConfig'].get(host_config_name, _SENTRY)
@@ -585,7 +585,7 @@ def _get_default_host_ip(module, client):
     return ip
 
 
-def _get_value_detach_interactive(module, container, api_version, options):
+def _get_value_detach_interactive(module, container, api_version, options, image):
     attach_stdin = container['Config'].get('OpenStdin')
     attach_stderr = container['Config'].get('AttachStderr')
     attach_stdout = container['Config'].get('AttachStdout')
@@ -836,7 +836,7 @@ def _get_network_id(module, client, network_name):
         client.fail("Error getting network id for %s - %s" % (network_name, to_native(exc)))
 
 
-def _get_values_network(module, container, api_version, options):
+def _get_values_network(module, container, api_version, options, image):
     value = container['HostConfig'].get('NetworkMode', _SENTRY)
     if value is _SENTRY:
         return {}
@@ -852,7 +852,7 @@ def _set_values_network(module, data, api_version, options, values):
     data['HostConfig']['NetworkMode'] = value
 
 
-def _get_values_mounts(module, container, api_version, options):
+def _get_values_mounts(module, container, api_version, options, image):
     volumes = container['Config'].get('Volumes')
     binds = container['HostConfig'].get('Binds')
     # According to https://github.com/moby/moby/, support for HostConfig.Mounts
@@ -1017,7 +1017,7 @@ def _set_values_mounts(module, data, api_version, options, values):
         data['HostConfig']['Binds'] = values['volume_binds']
 
 
-def _get_values_log(module, container, api_version, options):
+def _get_values_log(module, container, api_version, options, image):
     log_config = container['HostConfig'].get('LogConfig') or {}
     return {
         'log_driver': log_config.get('Type'),
@@ -1037,7 +1037,7 @@ def _set_values_log(module, data, api_version, options, values):
     data['HostConfig']['LogConfig'] = log_config
 
 
-def _get_values_platform(module, container, api_version, options):
+def _get_values_platform(module, container, api_version, options, image):
     return {
         'platform': container.get('Platform'),
     }
@@ -1048,7 +1048,7 @@ def _set_values_platform(module, data, api_version, options, values):
         data['platform'] = values['platform']
 
 
-def _get_values_restart(module, container, api_version, options):
+def _get_values_restart(module, container, api_version, options, image):
     restart_policy = container['HostConfig'].get('RestartPolicy') or {}
     return {
         'restart_policy': restart_policy.get('Name'),
@@ -1077,7 +1077,7 @@ def _update_value_restart(module, data, api_version, options, values):
     }
 
 
-def _get_values_ports(module, container, api_version, options):
+def _get_values_ports(module, container, api_version, options, image):
     host_config = container['HostConfig']
     config = container['Config']
 

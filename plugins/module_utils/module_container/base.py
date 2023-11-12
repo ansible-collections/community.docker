@@ -168,7 +168,7 @@ class Engine(object):
     min_api_version_obj = None  # LooseVersion object or None
 
     @abc.abstractmethod
-    def get_value(self, module, container, api_version, options):
+    def get_value(self, module, container, api_version, options, image):
         pass
 
     @abc.abstractmethod
