@@ -772,3 +772,18 @@ releases:
     - 2.7.6.yml
     - 637-swarm_info-endpoint_spec.yml
     release_date: '2023-06-15'
+  2.7.7:
+    changes:
+      bugfixes:
+      - docker_swarm - make init and join operations work again with Docker SDK for
+        Python before 4.0.0 (https://github.com/ansible-collections/community.docker/issues/695,
+        https://github.com/ansible-collections/community.docker/pull/696).
+      - docker_volume - fix crash caused by accessing an empty dictionary. The ``has_different_config()``
+        was raising an ``AttributeError`` because the ``self.existing_volume["Labels"]``
+        dictionary was ``None`` (https://github.com/ansible-collections/community.docker/pull/702).
+      release_summary: Bugfix release.
+    fragments:
+    - 2.7.7.yml
+    - 696-docker_swarm-data_addr_path.yml
+    - 702-docker-volume-label-none.yaml
+    release_date: '2023-11-12'
