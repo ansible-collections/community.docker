@@ -214,7 +214,7 @@ class DockerVolumeManager(object):
                                         parameter=value,
                                         active=self.existing_volume['Options'].get(key))
         if self.parameters.labels:
-            existing_labels = self.existing_volume.get('Labels', {})
+            existing_labels = self.existing_volume.get('Labels') or {}
             for label in self.parameters.labels:
                 if existing_labels.get(label) != self.parameters.labels.get(label):
                     differences.add('labels.%s' % label,
