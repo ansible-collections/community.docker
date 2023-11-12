@@ -19,6 +19,7 @@ from ansible.module_utils.six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
     clean_dict_booleans_for_docker_api,
+    compare_generic,
     normalize_healthcheck,
     omit_none_from_dict,
 )
@@ -67,6 +68,7 @@ class Option(object):
         not_a_container_option=False,
         not_an_ansible_option=False,
         copy_comparison_from=None,
+        compare=None,
     ):
         self.name = name
         self.type = type
@@ -106,6 +108,9 @@ class Option(object):
         self.not_a_container_option = not_a_container_option
         self.not_an_ansible_option = not_an_ansible_option
         self.copy_comparison_from = copy_comparison_from
+        self.compare = compare or (
+            lambda param_value, container_value: compare_generic(param_value, container_value, self.comparison, self.comparison_type)
+        )
 
 
 class OptionGroup(object):
@@ -170,6 +175,9 @@ class Engine(object):
     @abc.abstractmethod
     def get_value(self, module, container, api_version, options, image):
         pass
+
+    def compare_value(self, option, param_value, container_value):
+        return option.compare(param_value, container_value)
 
     @abc.abstractmethod
     def set_value(self, module, data, api_version, options, values):

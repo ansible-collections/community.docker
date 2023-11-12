@@ -464,7 +464,7 @@ class ContainerManager(DockerBaseClass):
             if option.name in expected_values:
                 param_value = expected_values[option.name]
                 container_value = container_values.get(option.name)
-                match = compare_generic(param_value, container_value, option.comparison, option.comparison_type)
+                match = engine.compare_value(option, param_value, container_value)
 
                 if not match:
                     # No match.
