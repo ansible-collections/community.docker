@@ -1,2 +1,2 @@
 bugfixes:
-  - docker_volume - fix crash caused by accessing an empty dictionary. The ``has_different_config()`` was raising an ``AttributeError`` because the self.existing_volume["Labels"] dictionary was None.
+  - docker_volume - fix crash caused by accessing an empty dictionary. The ``has_different_config()`` was raising an ``AttributeError`` because the ``self.existing_volume["Labels"]`` dictionary was ``None`` (https://github.com/ansible-collections/community.docker/pull/702).
