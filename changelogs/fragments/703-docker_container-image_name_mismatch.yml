@@ -1,0 +1,5 @@
+deprecated_features:
+  - "docker_container - the default ``ignore`` for the ``image_name_mismatch`` parameter has been deprecated and will
+     switch to ``recreate`` in community.docker 4.0.0. A deprecation warning will be printed in situations where the
+     default value is used and where a behavior would change once the default changes
+     (https://github.com/ansible-collections/community.docker/pull/703)."

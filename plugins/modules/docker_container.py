@@ -455,13 +455,14 @@ options:
         does not match the image name provided to the module.
       - "This is ignored if C(image: ignore) is set in O(comparisons)."
       - If set to V(recreate) the container will be recreated.
-      - If set to V(ignore) the container will not be recreated because of this. It might still get recreated for other reasons.
+      - If set to V(ignore) (currently the default) the container will not be recreated because of this. It might still get recreated for other reasons.
         This has been the default behavior of the module for a long time, but might not be what users expect.
+      - Since community.docker 3.5.0, the default V(ignore) has been deprecated. If not specified, a deprecation warning
+        will be emitted if this setting would make a difference. The default will change to V(recreate) in community.docker 4.0.0.
     type: str
     choices:
       - recreate
       - ignore
-    default: ignore
     version_added: 3.2.0
   init:
     description:
