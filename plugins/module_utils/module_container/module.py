@@ -408,6 +408,8 @@ class ContainerManager(DockerBaseClass):
             return None, container_image, container_image
         if is_image_name_id(image_parameter):
             image = self.engine_driver.inspect_image_by_id(self.client, image_parameter)
+            if image is None:
+                self.client.fail("Cannot find image with ID %s" % (image_parameter, ))
         else:
             repository, tag = parse_repository_tag(image_parameter)
             if not tag:

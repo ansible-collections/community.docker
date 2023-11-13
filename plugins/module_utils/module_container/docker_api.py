@@ -216,7 +216,7 @@ class DockerAPIEngineDriver(EngineDriver):
         return client.get_container_by_id(container_id)
 
     def inspect_image_by_id(self, client, image_id):
-        return client.find_image_by_id(image_id)
+        return client.find_image_by_id(image_id, accept_missing_image=True)
 
     def inspect_image_by_name(self, client, repository, tag):
         return client.find_image(repository, tag)
