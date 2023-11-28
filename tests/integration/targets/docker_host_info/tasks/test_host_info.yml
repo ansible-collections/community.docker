@@ -91,7 +91,7 @@
 
   - name: assert container is returned when filters are matched (single label)
     assert:
-      that: "{{ output.containers | length }} == 1"
+      that: "output.containers | length == 1"
 
   - name: Get info on Docker host and list containers matching filters (multiple labels)
     docker_host_info:
@@ -104,7 +104,7 @@
 
   - name: assert container is returned when filters are matched (multiple labels)
     assert:
-      that: "{{ output.containers | length }} == 1"
+      that: "output.containers | length == 1"
 
   - name: Get info on Docker host and do not list containers which do not match filters
     docker_host_info:
@@ -118,7 +118,7 @@
 
   - name: assert no container is returned when filters are not matched
     assert:
-      that: "{{ output.containers | length }} == 0"
+      that: "output.containers | length == 0"
 
   - name: Get info on Docker host and list containers matching filters (single label, not all containers)
     docker_host_info:
@@ -139,8 +139,8 @@
   - name: assert one resp. two container is returned
     assert:
       that:
-        - "{{ output.containers | length }} == 1"
-        - "{{ output_all.containers | length }} == 2"
+        - "output.containers | length == 1"
+        - "output_all.containers | length == 2"
 
   - name: Get info on Docker host and list containers with verbose output
     docker_host_info:
