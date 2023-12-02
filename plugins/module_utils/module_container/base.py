@@ -175,7 +175,7 @@ class Engine(object):
     min_api_version_obj = None  # LooseVersion object or None
 
     @abc.abstractmethod
-    def get_value(self, module, container, api_version, options, image):
+    def get_value(self, module, container, api_version, options, image, host_info):
         pass
 
     def compare_value(self, option, param_value, container_value):
@@ -186,7 +186,7 @@ class Engine(object):
         pass
 
     @abc.abstractmethod
-    def get_expected_values(self, module, client, api_version, options, image, values):
+    def get_expected_values(self, module, client, api_version, options, image, values, host_info):
         pass
 
     @abc.abstractmethod
@@ -213,6 +213,10 @@ class Engine(object):
     def needs_container_image(self, values):
         pass
 
+    @abc.abstractmethod
+    def needs_host_info(self, values):
+        pass
+
 
 class EngineDriver(object):
     name = None  # string
@@ -220,6 +224,10 @@ class EngineDriver(object):
     @abc.abstractmethod
     def setup(self, argument_spec, mutually_exclusive=None, required_together=None, required_one_of=None, required_if=None, required_by=None):
         # Return (module, active_options, client)
+        pass
+
+    @abc.abstractmethod
+    def get_host_info(self, client):
         pass
 
     @abc.abstractmethod

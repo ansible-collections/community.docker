@@ -181,6 +181,9 @@ class DockerAPIEngineDriver(EngineDriver):
 
         return client.module, active_options, client
 
+    def get_host_info(self, client):
+        return client.info()
+
     def get_api_version(self, client):
         return client.docker_api_version
 
@@ -389,12 +392,13 @@ class DockerAPIEngine(Engine):
         min_api_version=None,
         compare_value=None,
         needs_container_image=None,
+        needs_host_info=None,
     ):
         self.min_api_version = min_api_version
         self.min_api_version_obj = None if min_api_version is None else LooseVersion(min_api_version)
         self.get_value = get_value
         self.set_value = set_value
-        self.get_expected_values = get_expected_values or (lambda module, client, api_version, options, image, values: values)
+        self.get_expected_values = get_expected_values or (lambda module, client, api_version, options, image, values, host_info: values)
         self.ignore_mismatching_result = ignore_mismatching_result or \
             (lambda module, client, api_version, option, image, container_value, expected_value: False)
         self.preprocess_value = preprocess_value or (lambda module, client, api_version, options, values: values)
@@ -402,6 +406,7 @@ class DockerAPIEngine(Engine):
         self.can_set_value = can_set_value or (lambda api_version: set_value is not None)
         self.can_update_value = can_update_value or (lambda api_version: update_value is not None)
         self.needs_container_image = needs_container_image or (lambda values: False)
+        self.needs_host_info = needs_host_info or (lambda values: False)
         if compare_value is not None:
             self.compare_value = compare_value
 
@@ -428,7 +433,7 @@ class DockerAPIEngine(Engine):
                     values[options[0].name] = value
             return values
 
-        def get_value(module, container, api_version, options, image):
+        def get_value(module, container, api_version, options, image, host_info):
             if len(options) != 1:
                 raise AssertionError('config_value can only be used for a single option')
             value = container['Config'].get(config_name, _SENTRY)
@@ -440,7 +445,7 @@ class DockerAPIEngine(Engine):
 
         get_expected_values_ = None
         if get_expected_value:
-            def get_expected_values_(module, client, api_version, options, image, values):
+            def get_expected_values_(module, client, api_version, options, image, values, host_info):
                 if len(options) != 1:
                     raise AssertionError('host_config_value can only be used for a single option')
                 value = values.get(options[0].name, _SENTRY)
@@ -504,7 +509,7 @@ class DockerAPIEngine(Engine):
                     values[options[0].name] = value
             return values
 
-        def get_value(module, container, api_version, options, get_value):
+        def get_value(module, container, api_version, options, get_value, host_info):
             if len(options) != 1:
                 raise AssertionError('host_config_value can only be used for a single option')
             value = container['HostConfig'].get(host_config_name, _SENTRY)
@@ -516,7 +521,7 @@ class DockerAPIEngine(Engine):
 
         get_expected_values_ = None
         if get_expected_value:
-            def get_expected_values_(module, client, api_version, options, image, values):
+            def get_expected_values_(module, client, api_version, options, image, values, host_info):
                 if len(options) != 1:
                     raise AssertionError('host_config_value can only be used for a single option')
                 value = values.get(options[0].name, _SENTRY)
@@ -590,7 +595,7 @@ def _get_default_host_ip(module, client):
     return ip
 
 
-def _get_value_detach_interactive(module, container, api_version, options, image):
+def _get_value_detach_interactive(module, container, api_version, options, image, host_info):
     attach_stdin = container['Config'].get('OpenStdin')
     attach_stderr = container['Config'].get('AttachStderr')
     attach_stdout = container['Config'].get('AttachStdout')
@@ -841,7 +846,7 @@ def _get_network_id(module, client, network_name):
         client.fail("Error getting network id for %s - %s" % (network_name, to_native(exc)))
 
 
-def _get_values_network(module, container, api_version, options, image):
+def _get_values_network(module, container, api_version, options, image, host_info):
     value = container['HostConfig'].get('NetworkMode', _SENTRY)
     if value is _SENTRY:
         return {}
@@ -857,7 +862,7 @@ def _set_values_network(module, data, api_version, options, values):
     data['HostConfig']['NetworkMode'] = value
 
 
-def _get_values_mounts(module, container, api_version, options, image):
+def _get_values_mounts(module, container, api_version, options, image, host_info):
     volumes = container['Config'].get('Volumes')
     binds = container['HostConfig'].get('Binds')
     # According to https://github.com/moby/moby/, support for HostConfig.Mounts
@@ -921,7 +926,7 @@ def _get_image_binds(volumes):
     return results
 
 
-def _get_expected_values_mounts(module, client, api_version, options, image, values):
+def _get_expected_values_mounts(module, client, api_version, options, image, values, host_info):
     expected_values = {}
 
     # binds
@@ -1022,7 +1027,7 @@ def _set_values_mounts(module, data, api_version, options, values):
         data['HostConfig']['Binds'] = values['volume_binds']
 
 
-def _get_values_log(module, container, api_version, options, image):
+def _get_values_log(module, container, api_version, options, image, host_info):
     log_config = container['HostConfig'].get('LogConfig') or {}
     return {
         'log_driver': log_config.get('Type'),
@@ -1042,7 +1047,7 @@ def _set_values_log(module, data, api_version, options, values):
     data['HostConfig']['LogConfig'] = log_config
 
 
-def _get_values_platform(module, container, api_version, options, image):
+def _get_values_platform(module, container, api_version, options, image, host_info):
     return {
         'platform': container.get('Platform'),
     }
@@ -1053,7 +1058,7 @@ def _set_values_platform(module, data, api_version, options, values):
         data['platform'] = values['platform']
 
 
-def _get_values_restart(module, container, api_version, options, image):
+def _get_values_restart(module, container, api_version, options, image, host_info):
     restart_policy = container['HostConfig'].get('RestartPolicy') or {}
     return {
         'restart_policy': restart_policy.get('Name'),
@@ -1082,7 +1087,7 @@ def _update_value_restart(module, data, api_version, options, values):
     }
 
 
-def _get_values_ports(module, container, api_version, options, image):
+def _get_values_ports(module, container, api_version, options, image, host_info):
     host_config = container['HostConfig']
     config = container['Config']
 
@@ -1099,7 +1104,7 @@ def _get_values_ports(module, container, api_version, options, image):
     }
 
 
-def _get_expected_values_ports(module, client, api_version, options, image, values):
+def _get_expected_values_ports(module, client, api_version, options, image, values, host_info):
     expected_values = {}
 
     if 'published_ports' in values:
