@@ -388,6 +388,7 @@ class DockerAPIEngine(Engine):
         can_update_value=None,
         min_api_version=None,
         compare_value=None,
+        needs_container_image=None,
     ):
         self.min_api_version = min_api_version
         self.min_api_version_obj = None if min_api_version is None else LooseVersion(min_api_version)
@@ -400,6 +401,7 @@ class DockerAPIEngine(Engine):
         self.update_value = update_value
         self.can_set_value = can_set_value or (lambda api_version: set_value is not None)
         self.can_update_value = can_update_value or (lambda api_version: update_value is not None)
+        self.needs_container_image = needs_container_image or (lambda values: False)
         if compare_value is not None:
             self.compare_value = compare_value
 

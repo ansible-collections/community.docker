@@ -207,6 +207,10 @@ class Engine(object):
     def can_update_value(self, api_version):
         pass
 
+    @abc.abstractmethod
+    def needs_container_image(self, values):
+        pass
+
 
 class EngineDriver(object):
     name = None  # string

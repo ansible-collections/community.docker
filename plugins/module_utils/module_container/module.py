@@ -268,6 +268,13 @@ class ContainerManager(DockerBaseClass):
             parameters.append((options, values))
         return parameters
 
+    def _needs_container_image(self):
+        for options, values in self.parameters:
+            engine = options.get_engine(self.engine_driver.name)
+            if engine.needs_container_image(values):
+                return True
+        return False
+
     def present(self, state):
         self.parameters = self._collect_params(self.options)
         container = self._get_container(self.param_name)
@@ -280,7 +287,8 @@ class ContainerManager(DockerBaseClass):
         # the container already runs or not; in the former case, in case the
         # container needs to be restarted, we use the existing container's
         # image ID.
-        image, container_image, comparison_image = self._get_image(container)
+        image, container_image, comparison_image = self._get_image(
+            container, needs_container_image=self._needs_container_image())
         self.log(image, pretty_print=True)
         if not container.exists or container.removing:
             # New container
@@ -398,11 +406,13 @@ class ContainerManager(DockerBaseClass):
             image = self.engine_driver.inspect_image_by_name(self.client, repository, tag)
         return image or fallback
 
-    def _get_image(self, container):
+    def _get_image(self, container, needs_container_image=False):
         image_parameter = self.param_image
-        container_image = self._get_container_image(container)
-        self.log("current image")
-        self.log(container_image, pretty_print=True)
+        get_container_image = needs_container_image or not image_parameter
+        container_image = self._get_container_image(container) if get_container_image else None
+        if container_image:
+            self.log("current image")
+            self.log(container_image, pretty_print=True)
         if not image_parameter:
             self.log('No image specified')
             return None, container_image, container_image
@@ -436,6 +446,8 @@ class ContainerManager(DockerBaseClass):
 
         comparison_image = image
         if self.param_image_comparison == 'current-image':
+            if not get_container_image:
+                container_image = self._get_container_image(container)
             comparison_image = container_image
 
         return image, container_image, comparison_image
