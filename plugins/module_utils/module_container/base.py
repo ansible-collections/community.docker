@@ -108,7 +108,9 @@ class Option(object):
         self.not_a_container_option = not_a_container_option
         self.not_an_ansible_option = not_an_ansible_option
         self.copy_comparison_from = copy_comparison_from
-        self.compare = compare or (
+        self.compare = (
+            lambda param_value, container_value: compare(self, param_value, container_value)
+        ) if compare else (
             lambda param_value, container_value: compare_generic(param_value, container_value, self.comparison, self.comparison_type)
         )
 
