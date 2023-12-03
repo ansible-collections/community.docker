@@ -732,9 +732,12 @@ options:
   platform:
     description:
       - Platform for the container in the format C(os[/arch[/variant]]).
-      - "Please note that inspecting the container does not always return the exact platform string used to
-         create the container. This can cause idempotency to break for this module. Use the O(comparisons) option
-         with C(platform: ignore) to prevent accidental recreation of the container due to this."
+      - "Note that since community.docker 3.5.0, the module uses both the image's metadata and the Docker
+         daemon's information to normalize platform strings similarly to how Docker itself is doing this.
+         If you notice idempotency problems, L(please create an issue in the community.docker GitHub repository,
+         https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md).
+         For older community.docker versions, you can use the O(comparisons) option with C(platform: ignore)
+         to prevent accidental recreation of the container due to this."
     type: str
     version_added: 3.0.0
   privileged:

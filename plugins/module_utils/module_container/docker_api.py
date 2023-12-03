@@ -17,6 +17,11 @@ from ansible_collections.community.docker.plugins.module_utils.common_api import
     RequestException,
 )
 
+from ansible_collections.community.docker.plugins.module_utils._platform import (
+    compose_platform_string,
+    normalize_platform_string,
+)
+
 from ansible_collections.community.docker.plugins.module_utils.module_container.base import (
     OPTION_AUTO_REMOVE,
     OPTION_BLKIO_WEIGHT,
@@ -1048,14 +1053,46 @@ def _set_values_log(module, data, api_version, options, values):
 
 
 def _get_values_platform(module, container, api_version, options, image, host_info):
+    if image and (image.get('Os') or image.get('Architecture') or image.get('Variant')):
+        return {
+            'platform': compose_platform_string(
+                os=image.get('Os'),
+                arch=image.get('Architecture'),
+                variant=image.get('Variant'),
+                daemon_os=host_info.get('OSType') if host_info else None,
+                daemon_arch=host_info.get('Architecture') if host_info else None,
+            )
+        }
     return {
         'platform': container.get('Platform'),
     }
 
 
+def _get_expected_values_platform(module, client, api_version, options, image, values, host_info):
+    expected_values = {}
+    if 'platform' in values:
+        try:
+            expected_values['platform'] = normalize_platform_string(
+                values['platform'],
+                daemon_os=host_info.get('OSType') if host_info else None,
+                daemon_arch=host_info.get('Architecture') if host_info else None,
+            )
+        except ValueError as exc:
+            module.fail_json(msg='Error while parsing platform parameer: %s' % (to_native(exc), ))
+    return expected_values
+
+
 def _set_values_platform(module, data, api_version, options, values):
     if 'platform' in values:
         data['platform'] = values['platform']
+
+
+def _needs_container_image_platform(values):
+    return 'platform' in values
+
+
+def _needs_host_info_platform(values):
+    return 'platform' in values
 
 
 def _get_values_restart(module, container, api_version, options, image, host_info):
@@ -1306,6 +1343,9 @@ OPTION_PIDS_LIMIT.add_engine('docker_api', DockerAPIEngine.host_config_value('Pi
 OPTION_PLATFORM.add_engine('docker_api', DockerAPIEngine(
     get_value=_get_values_platform,
     set_value=_set_values_platform,
+    get_expected_values=_get_expected_values_platform,
+    needs_container_image=_needs_container_image_platform,
+    needs_host_info=_needs_host_info_platform,
     min_api_version='1.41',
 ))
 
