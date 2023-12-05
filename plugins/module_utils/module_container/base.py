@@ -19,6 +19,7 @@ from ansible.module_utils.six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
     clean_dict_booleans_for_docker_api,
+    compare_generic,
     normalize_healthcheck,
     omit_none_from_dict,
 )
@@ -67,6 +68,7 @@ class Option(object):
         not_a_container_option=False,
         not_an_ansible_option=False,
         copy_comparison_from=None,
+        compare=None,
     ):
         self.name = name
         self.type = type
@@ -106,6 +108,11 @@ class Option(object):
         self.not_a_container_option = not_a_container_option
         self.not_an_ansible_option = not_an_ansible_option
         self.copy_comparison_from = copy_comparison_from
+        self.compare = (
+            lambda param_value, container_value: compare(self, param_value, container_value)
+        ) if compare else (
+            lambda param_value, container_value: compare_generic(param_value, container_value, self.comparison, self.comparison_type)
+        )
 
 
 class OptionGroup(object):
@@ -168,15 +175,18 @@ class Engine(object):
     min_api_version_obj = None  # LooseVersion object or None
 
     @abc.abstractmethod
-    def get_value(self, module, container, api_version, options):
+    def get_value(self, module, container, api_version, options, image, host_info):
         pass
+
+    def compare_value(self, option, param_value, container_value):
+        return option.compare(param_value, container_value)
 
     @abc.abstractmethod
     def set_value(self, module, data, api_version, options, values):
         pass
 
     @abc.abstractmethod
-    def get_expected_values(self, module, client, api_version, options, image, values):
+    def get_expected_values(self, module, client, api_version, options, image, values, host_info):
         pass
 
     @abc.abstractmethod
@@ -199,6 +209,14 @@ class Engine(object):
     def can_update_value(self, api_version):
         pass
 
+    @abc.abstractmethod
+    def needs_container_image(self, values):
+        pass
+
+    @abc.abstractmethod
+    def needs_host_info(self, values):
+        pass
+
 
 class EngineDriver(object):
     name = None  # string
@@ -206,6 +224,10 @@ class EngineDriver(object):
     @abc.abstractmethod
     def setup(self, argument_spec, mutually_exclusive=None, required_together=None, required_one_of=None, required_if=None, required_by=None):
         # Return (module, active_options, client)
+        pass
+
+    @abc.abstractmethod
+    def get_host_info(self, client):
         pass
 
     @abc.abstractmethod
