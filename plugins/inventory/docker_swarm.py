@@ -18,7 +18,7 @@ DOCUMENTATION = '''
         - L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0
     extends_documentation_fragment:
         - ansible.builtin.constructed
-        - community.docker.inventory_filter
+        - community.library_inventory_filtering_v1.inventory_filter
     description:
         - Reads inventories from the Docker swarm API.
         - Uses a YAML configuration file docker_swarm.[yml|yaml].
@@ -160,7 +160,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import updat
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
 from ansible.parsing.utils.addresses import parse_address
 
-from ansible_collections.community.docker.plugins.plugin_utils.inventory_filter import parse_filters, filter_host
+from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import parse_filters, filter_host
 
 try:
     import docker

@@ -18,6 +18,8 @@ license:
 #license_file: COPYING
 tags:
   - docker
+dependencies:
+  community.library_inventory_filtering_v1: '>=0.1.0'
 repository: https://github.com/ansible-collections/community.docker
 documentation: https://docs.ansible.com/ansible/latest/collections/community/docker/
 homepage: https://github.com/ansible-collections/community.docker

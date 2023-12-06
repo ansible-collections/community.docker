@@ -21,7 +21,7 @@ author:
 extends_documentation_fragment:
     - ansible.builtin.constructed
     - community.docker.docker.api_documentation
-    - community.docker.inventory_filter
+    - community.library_inventory_filtering_v1.inventory_filter
 description:
     - Reads inventories from the Docker API.
     - Uses a YAML configuration file that ends with C(docker.[yml|yaml]).
@@ -179,7 +179,7 @@ from ansible_collections.community.docker.plugins.plugin_utils.common_api import
 )
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException
-from ansible_collections.community.docker.plugins.plugin_utils.inventory_filter import parse_filters, filter_host
+from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import parse_filters, filter_host
 
 MIN_DOCKER_API = None
 

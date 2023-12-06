@@ -14,7 +14,7 @@ DOCUMENTATION = '''
         - L(Docker Machine,https://docs.docker.com/machine/)
     extends_documentation_fragment:
         - ansible.builtin.constructed
-        - community.docker.inventory_filter
+        - community.library_inventory_filtering_v1.inventory_filter
     description:
         - Get inventory hosts from Docker Machine.
         - Uses a YAML configuration file that ends with docker_machine.(yml|yaml).
@@ -97,7 +97,7 @@ from ansible.module_utils.common.process import get_bin_path
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable, Cacheable
 from ansible.utils.display import Display
 
-from ansible_collections.community.docker.plugins.plugin_utils.inventory_filter import parse_filters, filter_host
+from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import parse_filters, filter_host
 
 import json
 import re
