@@ -321,9 +321,20 @@ class ContainerManager(DockerBaseClass):
             image_different = False
             if self.all_options['image'].comparison == 'strict':
                 image_different = self._image_is_different(image, container)
-                if self.param_image_name_mismatch == 'recreate' and self.param_image is not None and self.param_image != container.image_name:
-                    different = True
-                    self.diff_tracker.add('image_name', parameter=self.param_image, active=container.image_name)
+                if self.param_image_name_mismatch != 'ignore' and self.param_image is not None and self.param_image != container.image_name:
+                    if self.param_image_name_mismatch == 'recreate':
+                        different = True
+                        self.diff_tracker.add('image_name', parameter=self.param_image, active=container.image_name)
+                    else:
+                        # The default has been deprecated!
+                        self.module.deprecate(
+                            'The default value "ignore" for image_name_mismatch has been deprecated and will change to "recreate"'
+                            ' in community.docker 4.0.0. In the current situation, this would cause the container to be recreated'
+                            ' since the current container\'s image name "{active}" does not match the desired image name "{parameter}".'.format(
+                                parameter=self.param_image, active=container.image_name),
+                            version='4.0.0',
+                            collection_name='community.docker',
+                        )
             if image_different or different or self.param_recreate:
                 self.diff_tracker.merge(differences)
                 self.diff['differences'] = differences.get_legacy_docker_container_diffs()
@@ -839,7 +850,7 @@ def run_module(engine_driver):
             image=dict(type='str'),
             image_comparison=dict(type='str', choices=['desired-image', 'current-image'], default='desired-image'),
             image_label_mismatch=dict(type='str', choices=['ignore', 'fail'], default='ignore'),
-            image_name_mismatch=dict(type='str', choices=['ignore', 'recreate'], default='ignore'),
+            image_name_mismatch=dict(type='str', choices=['ignore', 'recreate']),
             keep_volumes=dict(type='bool', default=True),
             kill_signal=dict(type='str'),
             name=dict(type='str', required=True),
