@@ -5,3 +5,4 @@
 
 dependencies:
   - setup_docker_registry
+  - setup_docker_python_deps

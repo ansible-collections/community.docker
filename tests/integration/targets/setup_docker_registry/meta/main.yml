@@ -5,5 +5,7 @@
 
 dependencies:
   #- setup_docker  -- done in setup.yml, to work around cleanup problems!
+  #- setup_docker_current_container_network_ip
+  - setup_docker_python_deps
   - setup_openssl
   - setup_remote_tmp_dir

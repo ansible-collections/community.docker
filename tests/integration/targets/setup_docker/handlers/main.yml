@@ -3,13 +3,6 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-- name: Remove pip packages
-  pip:
-    state: present
-    name: "{{ [docker_pip_package] | union(docker_pip_extra_packages) }}"
-  listen: cleanup docker
-  when: not docker_skip_cleanup | bool
-
 - name: Remove docker pagkages
   action: "{{ ansible_facts.pkg_mgr }}"
   args:
