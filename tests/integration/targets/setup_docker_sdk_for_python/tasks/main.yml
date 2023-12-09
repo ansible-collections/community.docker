@@ -1,0 +1,47 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+####################################################################
+# WARNING: These are designed specifically for Ansible tests       #
+# and should not be used as examples of how to write Ansible roles #
+####################################################################
+
+- name: Setup Docker SDK for Python
+  when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in  ['CentOS6', 'RedHat6']
+  block:
+    - name: Include distribution specific variables
+      include_vars: "{{ lookup('first_found', params) }}"
+      vars:
+        params:
+          files:
+            - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}.yml"
+            - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
+            - "{{ ansible_facts.distribution }}.yml"
+            - "{{ ansible_facts.os_family }}.yml"
+            - default.yml
+          paths:
+            - "{{ role_path }}/vars"
+
+    - name: Limit docker pypi package version to < 4.3.0
+      set_fact:
+        docker_pip_package_limit: '<4.3.0'
+      when: docker_api_version is version('1.39', '<')
+
+    - name: Install/upgrade Python requirements
+      pip:
+        name: "{{ [docker_pip_package ~ docker_pip_package_limit] + docker_pip_extra_packages }}"
+        extra_args: "-c {{ remote_constraints }}"
+        state: "{{ 'latest' if force_docker_sdk_for_python_pypi | default(false) else 'present' }}"
+
+    - name: Check docker-py version
+      command: "{{ ansible_python.executable }} -c 'import docker; print(docker.__version__)'"
+      register: docker_py_version_stdout
+      ignore_errors: true
+
+    - set_fact:
+        docker_py_version: "{{ docker_py_version_stdout.stdout | default('0.0') }}"
+
+    - debug:
+        msg: "Docker SDK for Python version: {{ docker_py_version }}"

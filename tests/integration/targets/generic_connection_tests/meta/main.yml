@@ -5,5 +5,7 @@
 
 dependencies:
   - setup_docker
+  - setup_docker_python_deps
+  - setup_docker_current_container_network_ip
   - setup_openssl
   - setup_remote_tmp_dir

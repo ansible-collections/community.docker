@@ -5,3 +5,5 @@
 
 dependencies:
   - setup_docker
+  - setup_docker_python_deps
+  - setup_docker_sdk_for_python  # for Swarm support

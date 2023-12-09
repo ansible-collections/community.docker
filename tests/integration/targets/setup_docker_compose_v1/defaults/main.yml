@@ -1,0 +1,15 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+skip_docker_compose: false
+
+docker_pip_extra_packages: []
+docker_pip_package: docker
+docker_pip_package_limit: '<7.0.0'
+
+docker_compose_packages:
+  - docker-compose
+docker_compose_pip_packages:
+  - docker-compose

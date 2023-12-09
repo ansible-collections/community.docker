@@ -122,6 +122,10 @@ jobs:
             python: ''
             target: azp/5/
           - ansible: '2.11'
+            docker: fedora32
+            python: ''
+            target: azp/6/
+          - ansible: '2.11'
             docker: alpine3
             python: ''
             target: azp/4/
@@ -130,6 +134,10 @@ jobs:
             docker: alpine3
             python: ''
             target: azp/5/
+          - ansible: '2.11'
+            docker: alpine3
+            python: ''
+            target: azp/6/
           # 2.12
           - ansible: '2.12'
             docker: fedora33
@@ -140,6 +148,10 @@ jobs:
             python: ''
             target: azp/5/
           - ansible: '2.12'
+            docker: fedora33
+            python: ''
+            target: azp/6/
+          - ansible: '2.12'
             docker: fedora34
             python: ''
             target: azp/4/
@@ -148,6 +160,10 @@ jobs:
             python: ''
             target: azp/5/
           - ansible: '2.12'
+            docker: fedora34
+            python: ''
+            target: azp/6/
+          - ansible: '2.12'
             docker: ubuntu1804
             python: ''
             target: azp/4/
@@ -155,6 +171,10 @@ jobs:
             docker: ubuntu1804
             python: ''
             target: azp/5/
+          - ansible: '2.12'
+            docker: ubuntu1804
+            python: ''
+            target: azp/6/
           # 2.13
           - ansible: '2.13'
             docker: fedora35
@@ -165,6 +185,10 @@ jobs:
             python: ''
             target: azp/5/
           - ansible: '2.13'
+            docker: fedora35
+            python: ''
+            target: azp/6/
+          - ansible: '2.13'
             docker: opensuse15py2
             python: ''
             target: azp/4/
@@ -173,6 +197,10 @@ jobs:
             python: ''
             target: azp/5/
           - ansible: '2.13'
+            docker: opensuse15py2
+            python: ''
+            target: azp/6/
+          - ansible: '2.13'
             docker: alpine3
             python: ''
             target: azp/4/
@@ -180,6 +208,10 @@ jobs:
             docker: alpine3
             python: ''
             target: azp/5/
+          - ansible: '2.13'
+            docker: alpine3
+            python: ''
+            target: azp/6/
 
     steps:
       - name: >-

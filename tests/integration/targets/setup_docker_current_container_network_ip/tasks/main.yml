@@ -1,0 +1,25 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+####################################################################
+# WARNING: These are designed specifically for Ansible tests       #
+# and should not be used as examples of how to write Ansible roles #
+####################################################################
+
+- name: Setup Docker
+  when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in  ['CentOS6', 'RedHat6']
+  block:
+    - name: Detect whether we are running inside a container
+      current_container_facts:
+
+    - name: Inspect current container
+      docker_container_info:
+        name: "{{ ansible_module_container_id }}"
+      register: current_container_info
+      when: ansible_module_running_in_container
+
+    - name: Determine network name
+      set_fact:
+        current_container_network_ip: "{{ (current_container_info.container.NetworkSettings.Networks | dictsort)[0].0 | default('') if ansible_module_running_in_container else '' }}"

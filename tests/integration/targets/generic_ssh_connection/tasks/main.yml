@@ -68,7 +68,6 @@
     docker_host: "ssh://root@localhost"
     use_ssh_client: true
   register: output
-  ignore_errors: true
 
 - name: Make sure we got information
   assert:
@@ -80,11 +79,3 @@
       - 'output.volumes is not defined'
       - 'output.images is not defined'
       - 'output.disk_usage is not defined'
-  when: docker_py_version is version('4.4.0', '>=')
-
-- name: Make sure we got information
-  assert:
-    that:
-      - output is failed
-      - "'use_ssh_client=True requires Docker SDK for Python 4.4.0 or newer' in output.msg"
-  when: docker_py_version is version('4.4.0', '<')
