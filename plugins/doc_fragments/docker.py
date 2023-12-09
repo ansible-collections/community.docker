@@ -29,6 +29,8 @@ options:
             - If the value is not specified in the task, the value of environment variable E(DOCKER_TLS_HOSTNAME) will
               be used instead. If the environment variable is not set, the default value will be used.
             - Note that this option had a default value V(localhost) in older versions. It was removed in community.docker 3.0.0.
+            - B(Note:) this option is no longer supported for Docker SDK for Python 7.0.0+. Specifying it with Docker SDK for
+              Python 7.0.0 or newer will lead to an error.
         type: str
     api_version:
         description:
