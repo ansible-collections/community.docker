@@ -184,7 +184,7 @@ options:
       - Currently ignored for this module, but might suddenly be supported later on.
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0"
+  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.8.0, < 7. Docker SDK for Python 7+ is incompatible to docker-compose v1."
   - "docker-compose >= 1.7.0, < 2.0.0"
   - "Docker API >= 1.25"
   - "PyYAML >= 3.11"
