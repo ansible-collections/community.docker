@@ -135,7 +135,7 @@ def _get_tls_config(fail_function, **kwargs):
             )
     if 'assert_hostname' in kwargs and LooseVersion(docker_version) >= LooseVersion('7.0.0b1'):
         assert_hostname = kwargs.pop('assert_hostname')
-        if assert_hostname is not None:
+        if assert_hostname is not None and assert_hostname != 'localhost':
             fail_function(
                 "tls_hostname is not compatible with Docker SDK for Python 7.0.0+. You are using"
                 " Docker SDK for Python {docker_py_version}. The tls_hostname option (value: {tls_hostname})"

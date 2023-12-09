@@ -31,7 +31,7 @@ options:
               2.0.0 to be a value computed from I(docker_host). Explicitly specify C(localhost) to make sure this value
               will still be used, and to disable the deprecation message which will be shown otherwise.
             - B(Note:) this option is no longer supported for Docker SDK for Python 7.0.0+. Specifying it with Docker SDK for
-              Python 7.0.0 or newer will lead to an error.
+              Python 7.0.0 or newer will lead to an error. The value C(localhost) will explicitly be ignored.
         type: str
     api_version:
         description:
