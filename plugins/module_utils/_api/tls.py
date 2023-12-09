@@ -39,8 +39,7 @@ class TLSConfig(object):
     ssl_version = None
 
     def __init__(self, client_cert=None, ca_cert=None, verify=None,
-                 ssl_version=None, assert_hostname=None,
-                 assert_fingerprint=None):
+                 ssl_version=None, assert_hostname=None):
         # Argument compatibility/mapping with
         # https://docs.docker.com/engine/articles/https/
         # This diverges from the Docker CLI in that users can specify 'tls'
@@ -48,7 +47,6 @@ class TLSConfig(object):
         # leaving verify=False
 
         self.assert_hostname = assert_hostname
-        self.assert_fingerprint = assert_fingerprint
 
         # If the user provides an SSL version, we should use their preference
         if ssl_version:
@@ -118,5 +116,4 @@ class TLSConfig(object):
         client.mount('https://', SSLHTTPAdapter(
             ssl_version=self.ssl_version,
             assert_hostname=self.assert_hostname,
-            assert_fingerprint=self.assert_fingerprint,
         ))
