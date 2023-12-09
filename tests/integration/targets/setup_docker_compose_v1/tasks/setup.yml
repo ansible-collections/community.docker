@@ -13,6 +13,7 @@
     name: "{{ docker_compose_pip_packages }}"
     extra_args: "-c {{ remote_constraints }}"
     virtualenv: "{{ docker_compose_venv_root }}"
+    virtualenv_site_packages: true
 
 - name: Register docker-compose version
   command: "{{ docker_compose_venv_root }}/bin/python -c 'import compose; print(compose.__version__)'"
