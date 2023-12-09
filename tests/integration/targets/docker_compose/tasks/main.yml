@@ -19,7 +19,10 @@
     msg: "Using container name prefix {{ cname_prefix }}"
 
 # Run the tests
-- block:
+- vars:
+    ansible_python_interpreter: "{{ docker_compose_venv_root }}/bin/python"
+
+  block:
   - include_tasks: run-test.yml
     with_fileglob:
     - "tests/*.yml"

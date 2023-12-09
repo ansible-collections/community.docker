@@ -3,57 +3,26 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-- name: Include distribution specific variables
-  include_vars: "{{ lookup('first_found', params) }}"
-  vars:
-    params:
-      files:
-        - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}-py{{ ansible_python.version.major }}.yml"
-        - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}-py{{ ansible_python.version.major }}.yml"
-        - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}.yml"
-        - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
-        - "{{ ansible_facts.distribution }}-py{{ ansible_python.version.major }}.yml"
-        - "{{ ansible_facts.os_family }}-py{{ ansible_python.version.major }}.yml"
-        - "{{ ansible_facts.distribution }}.yml"
-        - "{{ ansible_facts.os_family }}.yml"
-        - default.yml
-      paths:
-        - "{{ role_path }}/vars"
+- name: Select venv directory
+  set_fact:
+    docker_compose_venv_root: "{{ remote_tmp_dir }}/docker-compose-venv"
 
-- block:
-  - name: Include distribution specific tasks
-    include_tasks: "{{ lookup('first_found', params) }}"
-    vars:
-      params:
-        files:
-          - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}-py{{ ansible_python.version.major }}.yml"
-          - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}-py{{ ansible_python.version.major }}.yml"
-          - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}.yml"
-          - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
-          - "{{ ansible_facts.distribution }}-py{{ ansible_python.version.major }}.yml"
-          - "{{ ansible_facts.os_family }}-py{{ ansible_python.version.major }}.yml"
-          - "{{ ansible_facts.distribution }}.yml"
-          - "{{ ansible_facts.os_family }}.yml"
-        paths:
-          - "{{ role_path }}/tasks"
+- name: Install docker-compose
+  pip:
+    state: present
+    name: "{{ docker_compose_pip_packages }}"
+    extra_args: "-c {{ remote_constraints }}"
+    virtualenv: "{{ docker_compose_venv_root }}"
 
-  - name: Install docker-compose
-    pip:
-      state: present
-      name: "{{ docker_compose_pip_packages }}"
-      extra_args: "-c {{ remote_constraints }}"
+- name: Register docker-compose version
+  command: "{{ docker_compose_venv_root }}/bin/python -c 'import compose; print(compose.__version__)'"
+  register: docker_compose_version
+  ignore_errors: true
 
-  - name: Register docker-compose version
-    command: "{{ ansible_python.executable }} -c 'import compose; print(compose.__version__)'"
-    register: docker_compose_version
-    ignore_errors: true
+- name: Declare docker-compose version
+  set_fact:
+    docker_compose_version: "{{ docker_compose_version.stdout | default('0.0.0') }}"
 
-  - name: Declare docker-compose version
-    set_fact:
-      docker_compose_version: "{{ docker_compose_version.stdout | default('0.0.0') }}"
-
-  - name: Declare docker-compose as existing
-    set_fact:
-      has_docker_compose: true
-
-  when: not skip_docker_compose
+- name: Declare docker-compose as existing
+  set_fact:
+    has_docker_compose: true
