@@ -40,10 +40,10 @@
 - debug:
     msg: Using test registry name {{ docker_registry_container_name_registry }} and nginx frontend names {{ docker_registry_container_name_nginx }} and {{ docker_registry_container_name_nginx2 }}
 
-- fail: msg="Too old docker / docker-py version to set up docker registry!"
-  when: not(docker_py_version is version('1.8.0', '>=') and docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)
+- fail: msg="Too old docker version to set up docker registry!"
+  when: not(docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)
 
-- when: docker_py_version is version('1.8.0', '>=') and docker_api_version is version('1.25', '>=')
+- when: docker_api_version is version('1.25', '>=')
   block:
 
   # Set up registry container
