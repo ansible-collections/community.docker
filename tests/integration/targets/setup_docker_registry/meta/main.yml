@@ -1,4 +1,6 @@
 dependencies:
   #- setup_docker  -- done in setup.yml, to work around cleanup problems!
+  #- setup_docker_sdk_for_python
+  #- setup_docker_current_container_network_ip
   - setup_openssl
   - setup_remote_tmp_dir

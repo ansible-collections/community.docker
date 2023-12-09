@@ -12,6 +12,14 @@
   include_role:
     name: setup_docker
 
+- name: Setup Docker SDK for Python
+  include_role:
+    name: setup_docker_sdk_for_python
+
+- name: Figure out current container's network IP
+  include_role:
+    name: setup_docker_current_container_network_ip
+
 - name: Create random name prefix and test registry name
   set_fact:
     docker_registry_container_name_registry: '{{ ''ansible-docker-test-registry-%0x'' % ((2**32) | random) }}'

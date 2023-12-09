@@ -1,4 +1,5 @@
 ---
 dependencies:
   - setup_docker
+  - setup_docker_sdk_for_python
   - setup_remote_tmp_dir
