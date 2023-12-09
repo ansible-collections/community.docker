@@ -9,3 +9,5 @@ docker_compose_pip_packages:
   - PyYAML==5.3.1
   # Docker SDK for Python 7.0.0+ is no longer compatible
   - docker<7.0.0
+  # ansible-test needs the coverage module
+  - coverage
