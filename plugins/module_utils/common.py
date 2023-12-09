@@ -134,6 +134,8 @@ def _get_tls_config(fail_function, **kwargs):
                     ssl_version=ssl_version,
                 )
             )
+    # Filter out all None parameters
+    kwargs = {k: v for k, v in kwargs.items() if v is not None}
     try:
         tls_config = TLSConfig(**kwargs)
         return tls_config
