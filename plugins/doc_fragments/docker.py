@@ -72,6 +72,8 @@ options:
             - Provide a valid SSL version number. Default value determined by L(SSL Python module, https://docs.python.org/3/library/ssl.html).
             - If the value is not specified in the task, the value of environment variable E(DOCKER_SSL_VERSION) will be
               used instead.
+            - B(Note:) this option is no longer supported for Docker SDK for Python 7.0.0+. Specifying it with Docker SDK for
+              Python 7.0.0 or newer will lead to an error.
         type: str
     tls:
         description:

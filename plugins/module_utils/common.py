@@ -122,6 +122,18 @@ if not HAS_DOCKER_PY:
 
 
 def _get_tls_config(fail_function, **kwargs):
+    if 'ssl_version' in kwargs and LooseVersion(docker_version) >= LooseVersion('7.0.0b1'):
+        ssl_version = kwargs.pop('ssl_version')
+        if ssl_version is not None:
+            fail_function(
+                "ssl_version is not compatible with Docker SDK for Python 7.0.0+. You are using"
+                " Docker SDK for Python {docker_py_version}. The ssl_version option (value: {ssl_version})"
+                " has either been set directly or with the environment variable DOCKER_SSL_VERSION."
+                " Make sure it is not set, or switch to an older version of Docker SDK for Python.".format(
+                    docker_py_version=docker_version,
+                    ssl_version=ssl_version,
+                )
+            )
     try:
         tls_config = TLSConfig(**kwargs)
         return tls_config
