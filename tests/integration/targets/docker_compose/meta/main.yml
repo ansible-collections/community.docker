@@ -4,5 +4,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 dependencies:
-  - setup_docker_compose
+  - setup_docker_compose_v1
   - setup_remote_tmp_dir
