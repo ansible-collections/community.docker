@@ -27,15 +27,11 @@ PoolManager = urllib3.poolmanager.PoolManager
 class SSLHTTPAdapter(BaseHTTPAdapter):
     '''An HTTPS Transport Adapter that uses an arbitrary SSL version.'''
 
-    __attrs__ = HTTPAdapter.__attrs__ + ['assert_fingerprint',
-                                         'assert_hostname',
-                                         'ssl_version']
+    __attrs__ = HTTPAdapter.__attrs__ + ['assert_hostname', 'ssl_version']
 
-    def __init__(self, ssl_version=None, assert_hostname=None,
-                 assert_fingerprint=None, **kwargs):
+    def __init__(self, ssl_version=None, assert_hostname=None, **kwargs):
         self.ssl_version = ssl_version
         self.assert_hostname = assert_hostname
-        self.assert_fingerprint = assert_fingerprint
         super(SSLHTTPAdapter, self).__init__(**kwargs)
 
     def init_poolmanager(self, connections, maxsize, block=False):
@@ -43,9 +39,9 @@ class SSLHTTPAdapter(BaseHTTPAdapter):
             'num_pools': connections,
             'maxsize': maxsize,
             'block': block,
-            'assert_hostname': self.assert_hostname,
-            'assert_fingerprint': self.assert_fingerprint,
         }
+        if self.assert_hostname is not None:
+            kwargs['assert_hostname'] = self.assert_hostname
         if self.ssl_version and self.can_override_ssl_version():
             kwargs['ssl_version'] = self.ssl_version
 
@@ -60,7 +56,7 @@ class SSLHTTPAdapter(BaseHTTPAdapter):
         But we still need to take care of when there is a proxy poolmanager
         """
         conn = super(SSLHTTPAdapter, self).get_connection(*args, **kwargs)
-        if conn.assert_hostname != self.assert_hostname:
+        if self.assert_hostname is not None and conn.assert_hostname != self.assert_hostname:
             conn.assert_hostname = self.assert_hostname
         return conn
 
