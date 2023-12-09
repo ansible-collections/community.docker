@@ -1,0 +1,2 @@
+bugfixes:
+  - "Execution Environment requirements - restrict Docker SDK for Python to < 7.0.0, as 7.0.0 is incompatible with docker-compose (https://github.com/ansible-collections/community.docker/pull/719)."

@@ -33,20 +33,40 @@
         paths:
           - "{{ role_path }}/tasks"
 
+  - name: Limit docker pypi package version to < 4.3.0
+    set_fact:
+      docker_pip_package_limit: '<4.3.0'
+    when: docker_api_version is version('1.39', '<')
+
+  - name: Install/upgrade Docker SDK for Python
+    pip:
+      name: "{{ [docker_pip_package ~ docker_pip_package_limit] + docker_pip_extra_packages }}"
+      extra_args: "-c {{ remote_constraints }}"
+      state: present
+
   - name: Install docker-compose
     pip:
       state: present
       name: "{{ docker_compose_pip_packages }}"
       extra_args: "-c {{ remote_constraints }}"
 
+  - name: Check docker-py version
+    command: "{{ ansible_python.executable }} -c 'import docker; print(docker.__version__)'"
+    register: docker_py_version_stdout
+    ignore_errors: true
+
   - name: Register docker-compose version
     command: "{{ ansible_python.executable }} -c 'import compose; print(compose.__version__)'"
     register: docker_compose_version
     ignore_errors: true
 
-  - name: Declare docker-compose version
+  - name: Declare docker-py and docker-compose version
     set_fact:
+      docker_py_version: "{{ docker_py_version_stdout.stdout | default('0.0') }}"
       docker_compose_version: "{{ docker_compose_version.stdout | default('0.0.0') }}"
+
+  - debug:
+      msg: "Docker SDK for Python version: {{ docker_py_version }}; Docker Compose version: {{ docker_compose_version }}"
 
   - name: Declare docker-compose as existing
     set_fact:

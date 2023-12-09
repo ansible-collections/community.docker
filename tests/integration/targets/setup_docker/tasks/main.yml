@@ -64,41 +64,18 @@
       register: docker_api_version_stdout
       ignore_errors: yes
 
-    - name: Limit docker pypi package version to < 4.3.0
-      set_fact:
-        docker_pip_package_limit: '<4.3.0'
-      when: (docker_api_version_stdout.stdout | default('0.0')) is version('1.39', '<')
-
-    - name: Install/upgrade Python requirements
-      pip:
-        name: "{{ [docker_pip_package ~ docker_pip_package_limit] + docker_pip_extra_packages }}"
-        extra_args: "-c {{ remote_constraints }}"
-        state: "{{ 'latest' if force_docker_sdk_for_python_pypi | default(false) else 'present' }}"
-      notify: cleanup docker
-
-    # Detect docker CLI, API and docker-py versions
+    # Detect docker CLI version
     - name: Check Docker CLI version
       command: "docker version -f {% raw %}'{{.Client.Version}}'{% endraw %}"
       register: docker_cli_version_stdout
       ignore_errors: yes
 
-    - name: Check Docker API version
-      command: "{{ ansible_python.executable }} -c 'import docker; print(docker.from_env().version()[\"ApiVersion\"])'"
-      register: docker_api_version_stdout
-      ignore_errors: yes
-
-    - name: Check docker-py API version
-      command: "{{ ansible_python.executable }} -c 'import docker; print(docker.__version__)'"
-      register: docker_py_version_stdout
-      ignore_errors: yes
-
     - set_fact:
         docker_cli_version: "{{ docker_cli_version_stdout.stdout | default('0.0') }}"
         docker_api_version: "{{ docker_api_version_stdout.stdout | default('0.0') }}"
-        docker_py_version: "{{ docker_py_version_stdout.stdout | default('0.0') }}"
 
     - debug:
-        msg: "Docker CLI version: {{ docker_cli_version }}; Docker API version: {{ docker_api_version }}; docker-py library version: {{ docker_py_version }}"
+        msg: "Docker CLI version: {{ docker_cli_version }}; Docker API version: {{ docker_api_version }}"
 
     - block:
       # Cleanup docker daemon
@@ -163,13 +140,3 @@
             images: "{{ docker_images.stdout_lines | default([]) }}"
 
       when: docker_cli_version is version('0.0', '>')
-
-    - name: Inspect current container
-      docker_container_info:
-        name: "{{ ansible_module_container_id }}"
-      register: current_container_info
-      when: ansible_module_running_in_container
-
-    - name: Determine network name
-      set_fact:
-        current_container_network_ip: "{{ (current_container_info.container.NetworkSettings.Networks | dictsort)[0].0 | default('') if ansible_module_running_in_container else '' }}"

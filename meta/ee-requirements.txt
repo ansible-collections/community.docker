@@ -1,2 +1,2 @@
-docker
+docker<7.0.0
 docker-compose

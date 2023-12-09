@@ -8,3 +8,7 @@
     - name: Setup docker
       import_role:
         name: setup_docker
+
+    - name: Setup docker
+      import_role:
+        name: setup_docker_sdk_for_python

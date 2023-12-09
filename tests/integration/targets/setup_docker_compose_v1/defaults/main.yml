@@ -1,5 +1,10 @@
 ---
 skip_docker_compose: false
+
+docker_pip_extra_packages: []
+docker_pip_package: docker
+docker_pip_package_limit: '<7.0.0'
+
 docker_compose_packages:
   - docker-compose
 docker_compose_pip_packages:
