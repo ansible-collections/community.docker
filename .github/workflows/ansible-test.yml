@@ -114,6 +114,10 @@ jobs:
             docker: fedora31
             python: ''
             target: shippable/posix/group5/
+          - ansible: '2.9'
+            docker: fedora31
+            python: ''
+            target: shippable/posix/group6/
           # 2.10
           - ansible: '2.10'
             docker: fedora32
@@ -124,6 +128,10 @@ jobs:
             python: ''
             target: shippable/posix/group5/
           - ansible: '2.10'
+            docker: fedora32
+            python: ''
+            target: shippable/posix/group6/
+          - ansible: '2.10'
             docker: ubuntu1604
             python: ''
             target: shippable/posix/group4/
@@ -131,6 +139,10 @@ jobs:
             docker: ubuntu1604
             python: ''
             target: shippable/posix/group5/
+          - ansible: '2.10'
+            docker: ubuntu1604
+            python: ''
+            target: shippable/posix/group6/
           # 2.11
           - ansible: '2.11'
             docker: fedora33
@@ -141,6 +153,10 @@ jobs:
             python: ''
             target: shippable/posix/group5/
           - ansible: '2.11'
+            docker: fedora33
+            python: ''
+            target: shippable/posix/group6/
+          - ansible: '2.11'
             docker: alpine3
             python: ''
             target: shippable/posix/group4/
@@ -148,6 +164,10 @@ jobs:
             docker: alpine3
             python: ''
             target: shippable/posix/group5/
+          - ansible: '2.11'
+            docker: alpine3
+            python: ''
+            target: shippable/posix/group6/
           # 2.12
           - ansible: '2.12'
             docker: fedora33
@@ -158,6 +178,10 @@ jobs:
             python: ''
             target: shippable/posix/group5/
           - ansible: '2.12'
+            docker: fedora33
+            python: ''
+            target: shippable/posix/group6/
+          - ansible: '2.12'
             docker: fedora34
             python: ''
             target: shippable/posix/group4/
@@ -166,6 +190,10 @@ jobs:
             python: ''
             target: shippable/posix/group5/
           - ansible: '2.12'
+            docker: fedora34
+            python: ''
+            target: shippable/posix/group6/
+          - ansible: '2.12'
             docker: ubuntu1804
             python: ''
             target: shippable/posix/group4/
@@ -173,6 +201,10 @@ jobs:
             docker: ubuntu1804
             python: ''
             target: shippable/posix/group5/
+          - ansible: '2.12'
+            docker: ubuntu1804
+            python: ''
+            target: shippable/posix/group6/
           # 2.13
           # NB: We originally wanted to use centos7, but that requires cgroups v1.
           #     So we used alpine3 instead.
@@ -185,6 +217,10 @@ jobs:
             python: ''
             target: shippable/posix/group5/
           - ansible: '2.13'
+            docker: alpine3
+            python: ''
+            target: shippable/posix/group6/
+          - ansible: '2.13'
             docker: fedora35
             python: ''
             target: shippable/posix/group4/
@@ -192,6 +228,10 @@ jobs:
             docker: fedora35
             python: ''
             target: shippable/posix/group5/
+          - ansible: '2.13'
+            docker: fedora35
+            python: ''
+            target: shippable/posix/group6/
           - ansible: '2.13'
             docker: opensuse15py2
             python: ''
@@ -201,6 +241,10 @@ jobs:
             python: ''
             target: shippable/posix/group5/
           - ansible: '2.13'
+            docker: opensuse15py2
+            python: ''
+            target: shippable/posix/group6/
+          - ansible: '2.13'
             docker: alpine3
             python: ''
             target: shippable/posix/group4/
@@ -208,6 +252,10 @@ jobs:
             docker: alpine3
             python: ''
             target: shippable/posix/group5/
+          - ansible: '2.13'
+            docker: alpine3
+            python: ''
+            target: shippable/posix/group6/
 
     steps:
       - name: >-
