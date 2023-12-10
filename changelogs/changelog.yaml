@@ -787,3 +787,21 @@ releases:
     - 696-docker_swarm-data_addr_path.yml
     - 702-docker-volume-label-none.yaml
     release_date: '2023-11-12'
+  2.7.8:
+    changes:
+      bugfixes:
+      - Execution Environment requirements - restrict Docker SDK for Python to < 7.0.0,
+        as 7.0.0 is incompatible with docker-compose (https://github.com/ansible-collections/community.docker/pull/719).
+      - modules and plugins using the Docker SDK for Python - remove ``ssl_version``
+        from the parameters passed to Docker SDK for Python 7.0.0+. Explicitly fail
+        with a nicer error message if it was explicitly set in this case (https://github.com/ansible-collections/community.docker/pull/715).
+      - modules and plugins using the Docker SDK for Python - remove ``tls_hostname``
+        from the parameters passed to Docker SDK for Python 7.0.0+. Explicitly fail
+        with a nicer error message if it was explicitly set in this case (https://github.com/ansible-collections/community.docker/pull/721).
+      release_summary: Bugfix release.
+    fragments:
+    - 2.7.8.yml
+    - 715-docker-7.yml
+    - 719-ee-reqs.yml
+    - 721-docker-7.yml
+    release_date: '2023-12-10'

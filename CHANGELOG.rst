@@ -5,6 +5,21 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v2.7.8
+======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- Execution Environment requirements - restrict Docker SDK for Python to < 7.0.0, as 7.0.0 is incompatible with docker-compose (https://github.com/ansible-collections/community.docker/pull/719).
+- modules and plugins using the Docker SDK for Python - remove ``ssl_version`` from the parameters passed to Docker SDK for Python 7.0.0+. Explicitly fail with a nicer error message if it was explicitly set in this case (https://github.com/ansible-collections/community.docker/pull/715).
+- modules and plugins using the Docker SDK for Python - remove ``tls_hostname`` from the parameters passed to Docker SDK for Python 7.0.0+. Explicitly fail with a nicer error message if it was explicitly set in this case (https://github.com/ansible-collections/community.docker/pull/721).
+
 v2.7.7
 ======
 
