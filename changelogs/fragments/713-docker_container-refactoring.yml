@@ -1,2 +1,0 @@
-minor_changes:
-  - "docker_container - internal refactorings which allow comparisons to use more information like details of the current image or the Docker host config (https://github.com/ansible-collections/community.docker/pull/713)."

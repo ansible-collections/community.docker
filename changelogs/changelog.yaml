@@ -1281,3 +1281,35 @@ releases:
     - 3.4.9.yml
     - 694-docker-py.yml
     release_date: '2023-10-08'
+  3.5.0:
+    changes:
+      bugfixes:
+      - modules and plugins using the Docker SDK for Python - remove ``ssl_version``
+        from the parameters passed to Docker SDK for Python 7.0.0+. Explicitly fail
+        with a nicer error message if it was explicitly set in this case (https://github.com/ansible-collections/community.docker/pull/715).
+      - modules and plugins using the Docker SDK for Python - remove ``tls_hostname``
+        from the parameters passed to Docker SDK for Python 7.0.0+. Explicitly fail
+        with a nicer error message if it was explicitly set in this case (https://github.com/ansible-collections/community.docker/pull/721).
+      - vendored Docker SDK for Python - avoid passing on ``ssl_version`` and ``tls_hostname``
+        if they were not provided by the user. Remove dead code. (https://github.com/ansible-collections/community.docker/pull/722).
+      deprecated_features:
+      - docker_container - the default ``ignore`` for the ``image_name_mismatch``
+        parameter has been deprecated and will switch to ``recreate`` in community.docker
+        4.0.0. A deprecation warning will be printed in situations where the default
+        value is used and where a behavior would change once the default changes (https://github.com/ansible-collections/community.docker/pull/703).
+      minor_changes:
+      - docker_container - implement better ``platform`` string comparisons to improve
+        idempotency (https://github.com/ansible-collections/community.docker/issues/654,
+        https://github.com/ansible-collections/community.docker/pull/705).
+      - docker_container - internal refactorings which allow comparisons to use more
+        information like details of the current image or the Docker host config (https://github.com/ansible-collections/community.docker/pull/713).
+      release_summary: Bugfix and feature release.
+    fragments:
+    - 3.5.0.yml
+    - 703-docker_container-image_name_mismatch.yml
+    - 705-docker_container-platform.yml
+    - 713-docker_container-refactoring.yml
+    - 715-docker-7.yml
+    - 721-docker-7.yml
+    - 722-tls.yml
+    release_date: '2023-12-10'
