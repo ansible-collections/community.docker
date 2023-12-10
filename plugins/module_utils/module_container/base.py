@@ -24,6 +24,10 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     omit_none_from_dict,
 )
 
+from ansible_collections.community.docker.plugins.module_utils._platform import (
+    compare_platform_strings,
+)
+
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
     parse_env_file,
 )
@@ -755,6 +759,15 @@ def _preprocess_ports(module, values):
     return values
 
 
+def _compare_platform(option, param_value, container_value):
+    if option.comparison == 'ignore':
+        return True
+    try:
+        return compare_platform_strings(param_value, container_value)
+    except ValueError:
+        return param_value == container_value
+
+
 OPTION_AUTO_REMOVE = (
     OptionGroup()
     .add_option('auto_remove', type='bool')
@@ -1031,7 +1044,7 @@ OPTION_PIDS_LIMIT = (
 
 OPTION_PLATFORM = (
     OptionGroup()
-    .add_option('platform', type='str')
+    .add_option('platform', type='str', compare=_compare_platform)
 )
 
 OPTION_PRIVILEGED = (

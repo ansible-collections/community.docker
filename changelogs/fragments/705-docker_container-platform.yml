@@ -1,0 +1,2 @@
+minor_changes:
+  - "docker_container - implement better ``platform`` string comparisons to improve idempotency (https://github.com/ansible-collections/community.docker/issues/654, https://github.com/ansible-collections/community.docker/pull/705)."

@@ -3564,15 +3564,36 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
   register: platform_1
   ignore_errors: true
 
-- name: platform (idempotency)
+- name: platform (idempotency with full name)
+  # Docker daemon only returns 'linux' as the platform for the container,
+  # so this has to be handled correctly by our additional code
   docker_container:
     image: hello-world:latest
     name: "{{ cname }}"
     state: present
-    # The container always reports 'linux' as platform instead of 'linux/amd64'...
-    platform: linux
+    platform: linux/amd64
     debug: true
   register: platform_2
+  ignore_errors: true
+
+- name: platform (idempotency with shorter name)
+  docker_container:
+    image: hello-world:latest
+    name: "{{ cname }}"
+    state: present
+    platform: linux
+    debug: true
+  register: platform_3
+  ignore_errors: true
+
+- name: platform (idempotency with shorter name)
+  docker_container:
+    image: hello-world:latest
+    name: "{{ cname }}"
+    state: present
+    platform: amd64
+    debug: true
+  register: platform_4
   ignore_errors: true
 
 - name: platform (changed)
@@ -3587,7 +3608,19 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     comparisons:
       # Do not restart because of the changed image ID
       image: ignore
-  register: platform_3
+  register: platform_5
+  ignore_errors: true
+
+- name: platform (idempotency)
+  docker_container:
+    image: hello-world:latest
+    name: "{{ cname }}"
+    state: present
+    pull: true
+    platform: 386
+    force_kill: true
+    debug: true
+  register: platform_6
   ignore_errors: true
 
 - name: cleanup
@@ -3601,7 +3634,10 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     that:
     - platform_1 is changed
     - platform_2 is not changed and platform_2 is not failed
-    - platform_3 is changed
+    - platform_3 is not changed and platform_3 is not failed
+    - platform_4 is not changed and platform_4 is not failed
+    - platform_5 is changed
+    - platform_6 is not changed and platform_6 is not failed
   when: docker_api_version is version('1.41', '>=')
 - assert:
     that:
