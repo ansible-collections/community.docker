@@ -112,13 +112,21 @@ options:
         suboptions:
           memory:
             description:
-              - Set memory limit for build.
-            type: int
+              - "Memory limit for build in format C(<number>[<unit>]). Number is a positive integer.
+                Unit can be V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
+                V(T) (tebibyte), or V(P) (pebibyte)."
+              - Omitting the unit defaults to bytes.
+              - Before community.docker 3.6.0, no units were allowed.
+            type: str
           memswap:
             description:
-              - Total memory (memory + swap).
-              - Use V(-1) to disable swap.
-            type: int
+              - "Total memory limit (memory + swap) for build in format C(<number>[<unit>]), or
+                the special values V(unlimited) or V(-1) for unlimited swap usage.
+                Number is a positive integer. Unit can be V(B) (byte), V(K) (kibibyte, 1024B),
+                V(M) (mebibyte), V(G) (gibibyte), V(T) (tebibyte), or V(P) (pebibyte)."
+              - Omitting the unit defaults to bytes.
+              - Before community.docker 3.6.0, no units were allowed, and neither was the special value V(unlimited).
+            type: str
           cpushares:
             description:
               - CPU shares (relative weight).
@@ -144,6 +152,19 @@ options:
           - Platform in the format C(os[/arch[/variant]]).
         type: str
         version_added: 1.1.0
+      shm_size:
+        description:
+          - "Size of C(/dev/shm) in format C(<number>[<unit>]). Number is positive integer.
+            Unit can be V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
+            V(T) (tebibyte), or V(P) (pebibyte)."
+          - Omitting the unit defaults to bytes. If you omit the size entirely, Docker daemon uses V(64M).
+        type: str
+        version_added: 3.6.0
+      labels:
+        description:
+          - Dictionary of key value pairs.
+        type: dict
+        version_added: 3.6.0
   archive_path:
     description:
       - Use with O(state=present) to archive an image to a C(.tar) file.
@@ -338,6 +359,7 @@ import os
 import traceback
 
 from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.formatters import human_to_bytes
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
@@ -377,6 +399,17 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.utils 
 )
 
 
+def convert_to_bytes(value, module, name, unlimited_value=None):
+    if value is None:
+        return value
+    try:
+        if unlimited_value is not None and value in ('unlimited', str(unlimited_value)):
+            return unlimited_value
+        return human_to_bytes(value)
+    except ValueError as exc:
+        module.fail_json(msg='Failed to convert %s to bytes: %s' % (name, to_native(exc)))
+
+
 class ImageManager(DockerBaseClass):
 
     def __init__(self, client, results):
@@ -402,6 +435,12 @@ class ImageManager(DockerBaseClass):
         self.archive_path = parameters['archive_path']
         self.cache_from = build.get('cache_from')
         self.container_limits = build.get('container_limits')
+        if self.container_limits and 'memory' in self.container_limits:
+            self.container_limits['memory'] = convert_to_bytes(
+                self.container_limits['memory'], self.client.module, 'build.container_limits.memory')
+        if self.container_limits and 'memswap' in self.container_limits:
+            self.container_limits['memswap'] = convert_to_bytes(
+                self.container_limits['memswap'], self.client.module, 'build.container_limits.memswap', unlimited_value=-1)
         self.dockerfile = build.get('dockerfile')
         self.force_source = parameters['force_source']
         self.force_absent = parameters['force_absent']
@@ -424,6 +463,8 @@ class ImageManager(DockerBaseClass):
         self.buildargs = build.get('args')
         self.build_platform = build.get('platform')
         self.use_config_proxy = build.get('use_config_proxy')
+        self.shm_size = convert_to_bytes(build.get('shm_size'), self.client.module, 'build.shm_size')
+        self.labels = clean_dict_booleans_for_docker_api(build.get('labels'))
 
         # If name contains a tag, it takes precedence over tag parameter.
         if not is_image_name_id(self.name):
@@ -825,6 +866,12 @@ class ImageManager(DockerBaseClass):
         if self.build_platform is not None:
             params['platform'] = self.build_platform
 
+        if self.shm_size is not None:
+            params['shmsize'] = self.shm_size
+
+        if self.labels:
+            params['labels'] = json.dumps(self.labels)
+
         if context is not None:
             headers['Content-Type'] = 'application/tar'
 
@@ -945,8 +992,8 @@ def main():
         build=dict(type='dict', options=dict(
             cache_from=dict(type='list', elements='str'),
             container_limits=dict(type='dict', options=dict(
-                memory=dict(type='int'),
-                memswap=dict(type='int'),
+                memory=dict(type='str'),
+                memswap=dict(type='str'),
                 cpushares=dict(type='int'),
                 cpusetcpus=dict(type='str'),
             )),
@@ -962,6 +1009,8 @@ def main():
             target=dict(type='str'),
             etc_hosts=dict(type='dict'),
             platform=dict(type='str'),
+            shm_size=dict(type='str'),
+            labels=dict(type='dict'),
         )),
         archive_path=dict(type='path'),
         force_source=dict(type='bool', default=False),

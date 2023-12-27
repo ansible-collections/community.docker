@@ -117,7 +117,7 @@
   register: fail_3
   ignore_errors: true
 
-- name: buildargs
+- name: Build image ID (must fail)
   docker_image:
     source: build
     name: "{{ present_1.image.Id }}"
