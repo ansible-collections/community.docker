@@ -19,7 +19,7 @@ license:
 tags:
   - docker
 repository: https://github.com/ansible-collections/community.docker
-#documentation: https://github.com/ansible-collection-migration/community.REPO_NAME/tree/main/docs
+documentation: https://docs.ansible.com/ansible/latest/collections/community/docker/
 homepage: https://github.com/ansible-collections/community.docker
 issues: https://github.com/ansible-collections/community.docker/issues
 build_ignore:
