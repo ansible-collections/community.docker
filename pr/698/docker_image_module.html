@@ -2,7 +2,7 @@
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta content="2.6.0" name="antsibull-docs" />
+<meta content="2.6.1" name="antsibull-docs" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>community.docker.docker_image module – Manage docker images &mdash; Community.Docker Collection  documentation</title>
@@ -275,17 +275,20 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-build/container_limits/memory"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-module-parameter-build-container-limits-memory"><strong>memory</strong></p>
-<a class="ansibleOptionLink" href="#parameter-build/container_limits/memory" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
+<a class="ansibleOptionLink" href="#parameter-build/container_limits/memory" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Set memory limit for build.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Memory limit for build in format <code class="docutils literal notranslate"><span class="pre">&lt;number&gt;[&lt;unit&gt;]</span></code>. Number is a positive integer. Unit can be <code class="ansible-value docutils literal notranslate"><span class="pre">B</span></code> (byte), <code class="ansible-value docutils literal notranslate"><span class="pre">K</span></code> (kibibyte, 1024B), <code class="ansible-value docutils literal notranslate"><span class="pre">M</span></code> (mebibyte), <code class="ansible-value docutils literal notranslate"><span class="pre">G</span></code> (gibibyte), <code class="ansible-value docutils literal notranslate"><span class="pre">T</span></code> (tebibyte), or <code class="ansible-value docutils literal notranslate"><span class="pre">P</span></code> (pebibyte).</p>
+<p>Omitting the unit defaults to bytes.</p>
+<p>Before community.docker 3.6.0, no units were allowed.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-build/container_limits/memswap"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-module-parameter-build-container-limits-memswap"><strong>memswap</strong></p>
-<a class="ansibleOptionLink" href="#parameter-build/container_limits/memswap" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
+<a class="ansibleOptionLink" href="#parameter-build/container_limits/memswap" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Total memory (memory + swap).</p>
-<p>Use <code class="ansible-value docutils literal notranslate"><span class="pre">-1</span></code> to disable swap.</p>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Total memory limit (memory + swap) for build in format <code class="docutils literal notranslate"><span class="pre">&lt;number&gt;[&lt;unit&gt;]</span></code>, or the special values <code class="ansible-value docutils literal notranslate"><span class="pre">unlimited</span></code> or <code class="ansible-value docutils literal notranslate"><span class="pre">-1</span></code> for unlimited swap usage. Number is a positive integer. Unit can be <code class="ansible-value docutils literal notranslate"><span class="pre">B</span></code> (byte), <code class="ansible-value docutils literal notranslate"><span class="pre">K</span></code> (kibibyte, 1024B), <code class="ansible-value docutils literal notranslate"><span class="pre">M</span></code> (mebibyte), <code class="ansible-value docutils literal notranslate"><span class="pre">G</span></code> (gibibyte), <code class="ansible-value docutils literal notranslate"><span class="pre">T</span></code> (tebibyte), or <code class="ansible-value docutils literal notranslate"><span class="pre">P</span></code> (pebibyte).</p>
+<p>Omitting the unit defaults to bytes.</p>
+<p>Before community.docker 3.6.0, no units were allowed, and neither was the special value <code class="ansible-value docutils literal notranslate"><span class="pre">unlimited</span></code>.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -311,13 +314,21 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-build/labels"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-module-parameter-build-labels"><strong>labels</strong></p>
+<a class="ansibleOptionLink" href="#parameter-build/labels" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Dictionary of key value pairs.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-build/network"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-module-parameter-build-network"><strong>network</strong></p>
 <a class="ansibleOptionLink" href="#parameter-build/network" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The network to use for <code class="docutils literal notranslate"><span class="pre">RUN</span></code> build instructions.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-build/nocache"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-module-parameter-build-nocache"><strong>nocache</strong></p>
 <a class="ansibleOptionLink" href="#parameter-build/nocache" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -329,14 +340,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-build/path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-module-parameter-build-path"><strong>path</strong></p>
 <a class="ansibleOptionLink" href="#parameter-build/path" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Use with state ‘present’ to build an image. Will be the path to a directory containing the context and Dockerfile for building an image.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-build/platform"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-module-parameter-build-platform"><strong>platform</strong></p>
 <a class="ansibleOptionLink" href="#parameter-build/platform" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 1.1.0</em></p>
@@ -344,7 +355,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Platform in the format <code class="docutils literal notranslate"><span class="pre">os[/arch[/variant]]</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-build/pull"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-module-parameter-build-pull"><strong>pull</strong></p>
 <a class="ansibleOptionLink" href="#parameter-build/pull" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -356,7 +367,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-build/rm"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-module-parameter-build-rm"><strong>rm</strong></p>
 <a class="ansibleOptionLink" href="#parameter-build/rm" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -366,6 +377,15 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">true</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 </ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-build/shm_size"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-module-parameter-build-shm-size"><strong>shm_size</strong></p>
+<a class="ansibleOptionLink" href="#parameter-build/shm_size" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Size of <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code> in format <code class="docutils literal notranslate"><span class="pre">&lt;number&gt;[&lt;unit&gt;]</span></code>. Number is positive integer. Unit can be <code class="ansible-value docutils literal notranslate"><span class="pre">B</span></code> (byte), <code class="ansible-value docutils literal notranslate"><span class="pre">K</span></code> (kibibyte, 1024B), <code class="ansible-value docutils literal notranslate"><span class="pre">M</span></code> (mebibyte), <code class="ansible-value docutils literal notranslate"><span class="pre">G</span></code> (gibibyte), <code class="ansible-value docutils literal notranslate"><span class="pre">T</span></code> (tebibyte), or <code class="ansible-value docutils literal notranslate"><span class="pre">P</span></code> (pebibyte).</p>
+<p>Omitting the unit defaults to bytes. If you omit the size entirely, Docker daemon uses <code class="ansible-value docutils literal notranslate"><span class="pre">64M</span></code>.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
