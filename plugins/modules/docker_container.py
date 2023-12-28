@@ -156,7 +156,8 @@ options:
     type: float
   cpuset_cpus:
     description:
-      - CPUs in which to allow execution V(1,3) or V(1-3).
+      - CPUs in which to allow execution.
+      - For example V(1,3) or V(1-3).
     type: str
   cpuset_mems:
     description:

@@ -76,7 +76,7 @@
     build:
       path: "{{ remote_tmp_dir }}/files"
       container_limits:
-        memory: 4000
+        memory: 4KB
       pull: false
     source: build
   ignore_errors: true
@@ -88,8 +88,8 @@
     build:
       path: "{{ remote_tmp_dir }}/files"
       container_limits:
-        memory: 7000000
-        memswap: 8000000
+        memory: 7MB
+        memswap: 8MB
       pull: false
     source: build
   register: container_limits_2
@@ -444,3 +444,61 @@
 - assert:
     that:
       - path_1 is changed
+
+####################################################################
+## build.shm_size ##################################################
+####################################################################
+
+- name: Build image with custom shm_size
+  docker_image:
+    name: "{{ iname }}"
+    build:
+      path: "{{ remote_tmp_dir }}/files"
+      dockerfile: "MyDockerfile"
+      pull: false
+      shm_size: 128MB
+    source: build
+  register: path_1
+
+- name: cleanup
+  docker_image:
+    name: "{{ iname }}"
+    state: absent
+    force_absent: true
+
+- assert:
+    that:
+      - path_1 is changed
+
+####################################################################
+## build.labels ####################################################
+####################################################################
+
+- name: Build image with labels
+  docker_image:
+    name: "{{ iname }}"
+    build:
+      path: "{{ remote_tmp_dir }}/files"
+      dockerfile: "MyDockerfile"
+      pull: false
+      labels:
+        FOO: BAR
+        this is a label: this is the label's value
+    source: build
+  register: labels_1
+
+- name: cleanup
+  docker_image:
+    name: "{{ iname }}"
+    state: absent
+    force_absent: true
+
+- name: Show image information
+  debug:
+    var: labels_1.image
+
+- assert:
+    that:
+      - labels_1 is changed
+      - labels_1.image.Config.Labels.FOO == 'BAR'
+      - labels_1.image.Config.Labels["this is a label"] == "this is the label's value"
