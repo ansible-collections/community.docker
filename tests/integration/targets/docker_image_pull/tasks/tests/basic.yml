@@ -1,0 +1,63 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- name: Make sure image is not there
+  docker_image:
+    name: "{{ docker_test_image_hello_world }}"
+    state: absent
+    force_absent: true
+
+- name: Pull image
+  docker_image_pull:
+    name: "{{ docker_test_image_hello_world }}"
+    platform: amd64
+  register: present_1
+
+- name: Pull image (idempotent 1)
+  docker_image_pull:
+    name: "{{ docker_test_image_hello_world }}"
+    platform: amd64
+    pull: always
+  register: present_2
+
+- name: Pull image (idempotent 2)
+  docker_image_pull:
+    name: "{{ docker_test_image_hello_world }}"
+    platform: amd64
+    pull: not_present
+  register: present_3
+
+- assert:
+    that:
+    - present_1 is changed
+    - present_1.actions | length == 1
+    - present_1.actions[0] == 'Pulled image ' ~ docker_test_image_hello_world
+    - present_2 is not changed
+    - present_2.actions | length == 1
+    - present_2.actions[0] == 'Pulled image ' ~ docker_test_image_hello_world
+    - present_3 is not changed
+    - present_3.actions | length == 0
+
+- name: Pull image ID (must fail)
+  docker_image_pull:
+    name: "{{ present_1.image.Id }}"
+  register: fail_1
+  ignore_errors: true
+
+- name: Pull invalid tag (must fail)
+  docker_image_pull:
+    name: "{{ docker_test_image_hello_world }}"
+    tag: foo/bar
+  register: fail_2
+  ignore_errors: true
+
+- assert:
+    that:
+    - fail_1 is failed
+    - >-
+      'Cannot pull an image by ID' == fail_1.msg
+    - fail_2 is failed
+    - >-
+      '"foo/bar" is not a valid docker tag!' == fail_2.msg
