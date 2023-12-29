@@ -3,42 +3,73 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-- name: Make sure image is not there
-  docker_image:
-    name: "{{ docker_test_image_hello_world }}"
-    state: absent
-    force_absent: true
+- name: Basic pull tests
+  vars:
+    image_name: "{{ docker_test_image_hello_world_platform }}"
+  block:
+    - name: Make sure image is not there
+      docker_image:
+        name: "{{ image_name }}"
+        state: absent
+        force_absent: true
 
-- name: Pull image
-  docker_image_pull:
-    name: "{{ docker_test_image_hello_world }}"
-    platform: amd64
-  register: present_1
+    - name: Pull image
+      docker_image_pull:
+        name: "{{ image_name }}"
+        platform: amd64
+      register: present_1
 
-- name: Pull image (idempotent 1)
-  docker_image_pull:
-    name: "{{ docker_test_image_hello_world }}"
-    platform: amd64
-    pull: always
-  register: present_2
+    - name: Pull image (idempotent 1)
+      docker_image_pull:
+        name: "{{ image_name }}"
+        platform: amd64
+        pull: always
+      register: present_2
 
-- name: Pull image (idempotent 2)
-  docker_image_pull:
-    name: "{{ docker_test_image_hello_world }}"
-    platform: amd64
-    pull: not_present
-  register: present_3
+    - name: Pull image (change)
+      docker_image_pull:
+        name: "{{ image_name }}"
+        platform: arm64
+        pull: always
+      register: present_3
 
-- assert:
-    that:
-    - present_1 is changed
-    - present_1.actions | length == 1
-    - present_1.actions[0] == 'Pulled image ' ~ docker_test_image_hello_world
-    - present_2 is not changed
-    - present_2.actions | length == 1
-    - present_2.actions[0] == 'Pulled image ' ~ docker_test_image_hello_world
-    - present_3 is not changed
-    - present_3.actions | length == 0
+    - name: Pull image (idempotent 2)
+      docker_image_pull:
+        name: "{{ image_name }}"
+        platform: arm64
+        pull: not_present
+      register: present_4
+
+    - name: Pull image (change)
+      docker_image_pull:
+        name: "{{ image_name }}"
+        platform: amd64
+        pull: not_present
+      register: present_5
+
+    - assert:
+        that:
+        - present_1 is changed
+        - present_1.actions | length == 1
+        - present_1.actions[0] == 'Pulled image ' ~ image_name
+        - present_2 is not changed
+        - present_2.actions | length == 1
+        - present_2.actions[0] == 'Pulled image ' ~ image_name
+        - present_3 is changed
+        - present_3.actions | length == 1
+        - present_3.actions[0] == 'Pulled image ' ~ image_name
+        - present_4 is not changed
+        - present_4.actions | length == 0
+        - present_5 is changed
+        - present_5.actions | length == 1
+        - present_5.actions[0] == 'Pulled image ' ~ image_name
+
+  always:
+    - name: cleanup
+      docker_image:
+        name: "{{ image_name }}"
+        state: absent
+        force_absent: true
 
 - name: Pull image ID (must fail)
   docker_image_pull:

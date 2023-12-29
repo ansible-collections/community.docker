@@ -45,14 +45,13 @@ options:
   platform:
     description:
       - Ask for this specific platform when pulling.
-      - Note that this value is not used to determine whether the image needs to be pulled. This might change
-        in the future in a minor release, though.
     type: str
   pull:
     description:
       - Determines when to pull an image.
       - If V(always), will always pull the image.
-      - If V(not_present), will only pull the image if no image of the name exists on the current Docker daemon.
+      - If V(not_present), will only pull the image if no image of the name exists on the current Docker daemon,
+        or if O(platform) does not match.
     type: str
     choices:
       - always
@@ -102,6 +101,12 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.utils 
     parse_repository_tag,
 )
 
+from ansible_collections.community.docker.plugins.module_utils._platform import (
+    normalize_platform_string,
+    compare_platform_strings,
+    compose_platform_string,
+)
+
 
 class ImagePuller(DockerBaseClass):
     def __init__(self, client):
@@ -136,7 +141,23 @@ class ImagePuller(DockerBaseClass):
         )
 
         if image and self.pull_mode == 'not_present':
-            return results
+            if self.platform is None:
+                return results
+            host_info = self.client.info()
+            wanted_platform = normalize_platform_string(
+                self.platform,
+                daemon_os=host_info.get('OSType'),
+                daemon_arch=host_info.get('Architecture'),
+            )
+            image_platform = compose_platform_string(
+                os=image.get('Os'),
+                arch=image.get('Architecture'),
+                variant=image.get('Variant'),
+                daemon_os=host_info.get('OSType'),
+                daemon_arch=host_info.get('Architecture'),
+            )
+            if compare_platform_strings(wanted_platform, image_platform):
+                return results
 
         results['actions'].append('Pulled image %s:%s' % (self.name, self.tag))
         if self.check_mode:
