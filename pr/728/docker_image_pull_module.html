@@ -292,7 +292,6 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-platform" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Ask for this specific platform when pulling.</p>
-<p>Note that this value is not used to determine whether the image needs to be pulled. This might change in the future in a minor release, though.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -301,7 +300,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Determines when to pull an image.</p>
 <p>If <code class="ansible-value docutils literal notranslate"><span class="pre">always</span></code>, will always pull the image.</p>
-<p>If <code class="ansible-value docutils literal notranslate"><span class="pre">not_present</span></code>, will only pull the image if no image of the name exists on the current Docker daemon.</p>
+<p>If <code class="ansible-value docutils literal notranslate"><span class="pre">not_present</span></code>, will only pull the image if no image of the name exists on the current Docker daemon, or if <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-pull-module-parameter-platform"><span class="std std-ref"><span class="pre">platform</span></span></a></strong></code> does not match.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;always&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
