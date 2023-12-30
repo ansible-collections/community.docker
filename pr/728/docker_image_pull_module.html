@@ -410,6 +410,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#attribute-check_mode" title="Permalink to this attribute"></a></div></td>
 <td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-partial">partial</strong></p>
 <p>When trying to pull an image with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-pull-module-parameter-pull"><span class="std std-ref"><span class="pre">pull=always</span></span></a></code>, the module assumes this is always changed in check mode.</p>
+<p>When check mode is combined with diff mode, the pulled image’s ID is always shown as <code class="ansible-value docutils literal notranslate"><span class="pre">unknown</span></code> in the diff.</p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Can run in <code class="docutils literal notranslate"><span class="pre">check_mode</span></code> and return changed status prediction without modifying target.</p>
 </div></td>
