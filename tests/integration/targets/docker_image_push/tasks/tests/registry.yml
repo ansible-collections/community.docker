@@ -25,14 +25,11 @@
         inames: "{{ inames + [image_name_base ~ ':' ~ image_tag, image_name_base2 ~ ':' ~ image_tag] }}"
 
     - name: Tag first image
-      docker_image:
+      docker_image_tag:
         name: "{{ docker_test_image_hello_world }}"
-        repository: "{{ item }}"
-        source: local
-        force_tag: true
-      loop:
-        - "{{ image_name_base }}:{{ image_tag }}"
-        - "{{ image_name_base2 }}:{{ image_tag }}"
+        repository:
+          - "{{ image_name_base }}:{{ image_tag }}"
+          - "{{ image_name_base2 }}:{{ image_tag }}"
 
     - name: Push first image
       docker_image_push:
@@ -45,11 +42,10 @@
       register: push_2
 
     - name: Tag second image
-      docker_image:
+      docker_image_tag:
         name: "{{ docker_test_image_alpine }}"
-        repository: "{{ image_name_base }}:{{ image_tag }}"
-        source: local
-        force_tag: true
+        repository:
+          - "{{ image_name_base }}:{{ image_tag }}"
 
     - name: Push second image with same name
       docker_image_push:
