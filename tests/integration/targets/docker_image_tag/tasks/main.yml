@@ -40,6 +40,16 @@
         state: absent
       loop: "{{ image_names }}"
 
+    - name: Tag image 1 (check mode)
+      docker_image_tag:
+        name: "{{ image_1 }}"
+        repository:
+          - "{{ iname_prefix }}-tagged-1:latest"
+          - "{{ iname_prefix }}-tagged-1:foo"
+      register: tag_1_check
+      diff: true
+      check_mode: true
+
     - name: Tag image 1
       docker_image_tag:
         name: "{{ image_1 }}"
@@ -67,6 +77,17 @@
           - info_1.images | length == 2
           - info_1.images[0].Id == pulled_images.results[0].image.Id
           - info_1.images[1].Id == pulled_images.results[0].image.Id
+          - tag_1_check == tag_1
+
+    - name: Tag image 1 (idempotent, check mode)
+      docker_image_tag:
+        name: "{{ image_1 }}"
+        repository:
+          - "{{ iname_prefix }}-tagged-1:latest"
+          - "{{ iname_prefix }}-tagged-1:foo"
+      register: tag_2_check
+      diff: true
+      check_mode: true
 
     - name: Tag image 1 (idempotent)
       docker_image_tag:
@@ -82,6 +103,18 @@
           - tag_2 is not changed
           - tag_2.diff.before == tag_2.diff.after
           - tag_2.diff.before.images | length == 2
+          - tag_2_check == tag_2
+
+    - name: Tag image 1 (idempotent, different input format, check mode)
+      docker_image_tag:
+        name: "{{ image_1 }}"
+        tag: foo
+        repository:
+          - "{{ iname_prefix }}-tagged-1:latest"
+          - "{{ iname_prefix }}-tagged-1"
+      register: tag_3_check
+      diff: true
+      check_mode: true
 
     - name: Tag image 1 (idempotent, different input format)
       docker_image_tag:
@@ -98,6 +131,18 @@
           - tag_3 is not changed
           - tag_3.diff.before == tag_3.diff.after
           - tag_3.diff.before.images | length == 2
+          - tag_3_check == tag_3
+
+    - name: Tag image 1 (one more, check mode)
+      docker_image_tag:
+        name: "{{ image_1 }}"
+        repository:
+          - "{{ iname_prefix }}-tagged-1:latest"
+          - "{{ iname_prefix }}-tagged-1:foo"
+          - "{{ iname_prefix }}-tagged-2:baz"
+      register: tag_4_check
+      diff: true
+      check_mode: true
 
     - name: Tag image 1 (one more)
       docker_image_tag:
@@ -129,6 +174,19 @@
           - info_4.images[0].Id == pulled_images.results[0].image.Id
           - info_4.images[1].Id == pulled_images.results[0].image.Id
           - info_4.images[2].Id == pulled_images.results[0].image.Id
+          - tag_4_check == tag_4
+
+    - name: Tag image 2 (only change missing one, check mode)
+      docker_image_tag:
+        name: "{{ image_2 }}"
+        existing_images: keep
+        repository:
+          - "{{ iname_prefix }}-tagged-1:latest"
+          - "{{ iname_prefix }}-tagged-1:foo"
+          - "{{ iname_prefix }}-tagged-1:bar"
+      register: tag_5_check
+      diff: true
+      check_mode: true
 
     - name: Tag image 2 (only change missing one)
       docker_image_tag:
@@ -162,6 +220,19 @@
           - info_5.images[1].Id == pulled_images.results[0].image.Id
           - info_5.images[2].Id == pulled_images.results[1].image.Id
           - info_5.images[3].Id == pulled_images.results[0].image.Id
+          - tag_5_check == tag_5
+
+    - name: Tag image 2 (idempotent, check mode)
+      docker_image_tag:
+        name: "{{ image_2 }}"
+        existing_images: keep
+        repository:
+          - "{{ iname_prefix }}-tagged-1:latest"
+          - "{{ iname_prefix }}-tagged-1:foo"
+          - "{{ iname_prefix }}-tagged-1:bar"
+      register: tag_6_check
+      diff: true
+      check_mode: true
 
     - name: Tag image 2 (idempotent)
       docker_image_tag:
@@ -179,6 +250,19 @@
           - tag_6 is not changed
           - tag_6.diff.before == tag_6.diff.after
           - tag_6.diff.before.images | length == 3
+          - tag_6_check == tag_6
+
+    - name: Tag image 2 (only change wrong ones, check mode)
+      docker_image_tag:
+        name: "{{ image_2 }}"
+        existing_images: overwrite
+        repository:
+          - "{{ iname_prefix }}-tagged-1:latest"
+          - "{{ iname_prefix }}-tagged-1:foo"
+          - "{{ iname_prefix }}-tagged-1:bar"
+      register: tag_7_check
+      diff: true
+      check_mode: true
 
     - name: Tag image 2 (only change wrong ones)
       docker_image_tag:
@@ -213,6 +297,19 @@
           - info_7.images[1].Id == pulled_images.results[1].image.Id
           - info_7.images[2].Id == pulled_images.results[1].image.Id
           - info_7.images[3].Id == pulled_images.results[0].image.Id
+          - tag_7_check == tag_7
+
+    - name: Tag image 2 (idempotent, check mode)
+      docker_image_tag:
+        name: "{{ image_2 }}"
+        existing_images: overwrite
+        repository:
+          - "{{ iname_prefix }}-tagged-1:latest"
+          - "{{ iname_prefix }}-tagged-1:foo"
+          - "{{ iname_prefix }}-tagged-1:bar"
+      register: tag_8_check
+      diff: true
+      check_mode: true
 
     - name: Tag image 2 (idempotent)
       docker_image_tag:
@@ -230,6 +327,7 @@
           - tag_8 is not changed
           - tag_8.diff.before == tag_8.diff.after
           - tag_8.diff.before.images | length == 3
+          - tag_8_check == tag_8
 
   always:
     - name: Remove tagged images

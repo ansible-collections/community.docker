@@ -207,8 +207,6 @@ class ImageTagger(DockerBaseClass):
                     raise Exception("Tag operation failed.")
             except Exception as exc:
                 self.fail("Error: failed to tag image as %s:%s - %s" % (name, tag, to_native(exc)))
-        else:
-            msg += " (not actually, since in check mode)"
 
         return True, msg, tagged_image
 
