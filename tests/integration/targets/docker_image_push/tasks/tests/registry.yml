@@ -1,0 +1,87 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- name: Run registry tests only when registry is present
+  when: registry_address is defined
+  block:
+    - name: Pull images
+      docker_image:
+        name: "{{ item }}"
+        source: pull
+      loop:
+        - "{{ docker_test_image_hello_world }}"
+        - "{{ docker_test_image_alpine }}"
+      register: pulled_images
+
+    - name: Determining pushed image names
+      set_fact:
+        image_name_base: "{{ registry_address }}/test/{{ name_prefix }}"
+        image_name_base2: "{{ registry_frontend2_address }}/test/{{ name_prefix }}"
+        image_tag: latest
+
+    - name: Registering image name
+      set_fact:
+        inames: "{{ inames + [image_name_base ~ ':' ~ image_tag, image_name_base2 ~ ':' ~ image_tag] }}"
+
+    - name: Tag first image
+      docker_image:
+        name: "{{ docker_test_image_hello_world }}"
+        repository: "{{ item }}"
+        source: local
+        force_tag: true
+      loop:
+        - "{{ image_name_base }}:{{ image_tag }}"
+        - "{{ image_name_base2 }}:{{ image_tag }}"
+
+    - name: Push first image
+      docker_image_push:
+        name: "{{ image_name_base }}:{{ image_tag }}"
+      register: push_1
+
+    - name: Push first image (idempotent)
+      docker_image_push:
+        name: "{{ image_name_base }}:{{ image_tag }}"
+      register: push_2
+
+    - name: Tag second image
+      docker_image:
+        name: "{{ docker_test_image_alpine }}"
+        repository: "{{ image_name_base }}:{{ image_tag }}"
+        source: local
+        force_tag: true
+
+    - name: Push second image with same name
+      docker_image_push:
+        name: "{{ image_name_base }}:{{ image_tag }}"
+      register: push_3
+
+    - assert:
+        that:
+          - push_1 is changed
+          - push_1.image.Id == pulled_images.results[0].image.Id
+          - push_2 is not changed
+          - push_2.image.Id == pulled_images.results[0].image.Id
+          - push_3 is changed
+          - push_3.image.Id == pulled_images.results[1].image.Id
+
+    - when: registry_frontend2_address != 'n/a'
+      block:
+        - name: Make sure we are logged out from registry
+          docker_login:
+            registry_url: "{{ registry_frontend2_address }}"
+            username: testuser
+            password: hunter2
+            state: absent
+
+        - name: Push image (unauthenticated)
+          docker_image_push:
+            name: "{{ image_name_base2 }}:{{ image_tag }}"
+          register: push_4
+          ignore_errors: true
+
+        - assert:
+            that:
+              - push_4 is failed
+              - push_4.msg == 'Error pushing image ' ~ image_name_base2 ~ ':' ~ image_tag ~ ': no basic auth credentials'
