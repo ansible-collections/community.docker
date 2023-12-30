@@ -34,13 +34,13 @@ options:
   name:
     description:
       - "Image name. Name format must be one of V(name), V(repository/name), or V(registry_server:port/name).
-        The name can optionally include the tag by appending V(:tag_name)."
+      - The name can optionally include the tag by appending V(:tag_name), or it can contain a digest by appending V(@hash:digest)."
     type: str
     required: true
   tag:
     description:
       - Used to select an image when pulling. Defaults to V(latest).
-      - If O(name) parameter format is C(name:tag), then tag value from O(name) will take precedence.
+      - If O(name) parameter format is C(name:tag) or C(image@hash:digest), then O(tag) will be ignored.
     type: str
     default: latest
   platform:
