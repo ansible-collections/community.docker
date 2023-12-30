@@ -26,8 +26,9 @@ attributes:
     support: partial
     details:
       - When trying to pull an image with O(pull=always), the module assumes this is always changed in check mode.
+      - When check mode is combined with diff mode, the pulled image's ID is always shown as V(unknown) in the diff.
   diff_mode:
-    support: none
+    support: full
 
 options:
   name:
@@ -108,6 +109,15 @@ from ansible_collections.community.docker.plugins.module_utils._platform import 
 )
 
 
+def image_info(image):
+    result = {}
+    if image:
+        result['id'] = image['Id']
+    else:
+        result['exists'] = False
+    return result
+
+
 class ImagePuller(DockerBaseClass):
     def __init__(self, client):
         super(ImagePuller, self).__init__()
@@ -138,6 +148,7 @@ class ImagePuller(DockerBaseClass):
             changed=False,
             actions=[],
             image=image or {},
+            diff=dict(before=image_info(image), after=image_info(image)),
         )
 
         if image and self.pull_mode == 'not_present':
@@ -162,9 +173,11 @@ class ImagePuller(DockerBaseClass):
         results['actions'].append('Pulled image %s:%s' % (self.name, self.tag))
         if self.check_mode:
             results['changed'] = True
+            results['diff']['after'] = image_info(dict(Id='unknown'))
         else:
             results['image'], not_changed = self.client.pull_image(self.name, tag=self.tag, platform=self.platform)
             results['changed'] = not not_changed
+            results['diff']['after'] = image_info(results['image'])
 
         return results
 

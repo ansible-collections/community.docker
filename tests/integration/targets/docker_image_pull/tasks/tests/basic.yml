@@ -13,11 +13,35 @@
         state: absent
         force_absent: true
 
+    - name: Pull image (check mode)
+      docker_image_pull:
+        name: "{{ image_name }}"
+        platform: amd64
+      register: present_1_check
+      check_mode: true
+
+    - debug:
+        var: present_1_check.diff
+
     - name: Pull image
       docker_image_pull:
         name: "{{ image_name }}"
         platform: amd64
       register: present_1
+
+    - debug:
+        var: present_1.diff
+
+    - name: Pull image (idempotent 1, check mode)
+      docker_image_pull:
+        name: "{{ image_name }}"
+        platform: amd64
+        pull: always
+      register: present_2_check
+      check_mode: true
+
+    - debug:
+        var: present_2_check.diff
 
     - name: Pull image (idempotent 1)
       docker_image_pull:
@@ -26,12 +50,40 @@
         pull: always
       register: present_2
 
+    - debug:
+        var: present_2.diff
+
+    - name: Pull image (change, check mode)
+      docker_image_pull:
+        name: "{{ image_name }}"
+        platform: arm64
+        pull: always
+      register: present_3_check
+      check_mode: true
+
+    - debug:
+        var: present_3_check.diff
+
     - name: Pull image (change)
       docker_image_pull:
         name: "{{ image_name }}"
         platform: arm64
         pull: always
       register: present_3
+
+    - debug:
+        var: present_3.diff
+
+    - name: Pull image (idempotent 2, check mode)
+      docker_image_pull:
+        name: "{{ image_name }}"
+        platform: arm64
+        pull: not_present
+      register: present_4_check
+      check_mode: true
+
+    - debug:
+        var: present_4_check.diff
 
     - name: Pull image (idempotent 2)
       docker_image_pull:
@@ -40,6 +92,20 @@
         pull: not_present
       register: present_4
 
+    - debug:
+        var: present_4.diff
+
+    - name: Pull image (change, check mode)
+      docker_image_pull:
+        name: "{{ image_name }}"
+        platform: amd64
+        pull: not_present
+      register: present_5_check
+      check_mode: true
+
+    - debug:
+        var: present_5_check.diff
+
     - name: Pull image (change)
       docker_image_pull:
         name: "{{ image_name }}"
@@ -47,22 +113,60 @@
         pull: not_present
       register: present_5
 
+    - debug:
+        var: present_5.diff
+
     - assert:
         that:
+        - present_1_check is changed
+        - present_1_check.actions | length == 1
+        - present_1_check.actions[0] == 'Pulled image ' ~ image_name
+        - present_1_check.diff.before.exists is false
+        - present_1_check.diff.after.id == 'unknown'
         - present_1 is changed
         - present_1.actions | length == 1
         - present_1.actions[0] == 'Pulled image ' ~ image_name
+        - present_1.diff.before.exists is false
+        - present_1.diff.after.id is string
+        - present_2_check is changed
+        - present_2_check.actions | length == 1
+        - present_2_check.actions[0] == 'Pulled image ' ~ image_name
+        - present_2_check.diff.before.id == present_1.diff.after.id
+        - present_2_check.diff.after.id == 'unknown'
         - present_2 is not changed
         - present_2.actions | length == 1
         - present_2.actions[0] == 'Pulled image ' ~ image_name
+        - present_2.diff.before.id == present_1.diff.after.id
+        - present_2.diff.after.id == present_1.diff.after.id
+        - present_3_check is changed
+        - present_3_check.actions | length == 1
+        - present_3_check.actions[0] == 'Pulled image ' ~ image_name
+        - present_3_check.diff.before.id == present_1.diff.after.id
+        - present_3_check.diff.after.id == 'unknown'
         - present_3 is changed
         - present_3.actions | length == 1
         - present_3.actions[0] == 'Pulled image ' ~ image_name
+        - present_3.diff.before.id == present_1.diff.after.id
+        - present_3.diff.after.id != present_1.diff.after.id
+        - present_3.diff.after.id is string
+        - present_4_check is not changed
+        - present_4_check.actions | length == 0
+        - present_4_check.diff.before.id == present_3.diff.after.id
+        - present_4_check.diff.after.id == present_3.diff.after.id
         - present_4 is not changed
         - present_4.actions | length == 0
+        - present_4.diff.before.id == present_3.diff.after.id
+        - present_4.diff.after.id == present_3.diff.after.id
+        - present_5_check is changed
+        - present_5_check.actions | length == 1
+        - present_5_check.actions[0] == 'Pulled image ' ~ image_name
+        - present_5_check.diff.before.id == present_3.diff.after.id
+        - present_5_check.diff.after.id == 'unknown'
         - present_5 is changed
         - present_5.actions | length == 1
         - present_5.actions[0] == 'Pulled image ' ~ image_name
+        - present_5.diff.before.id == present_3.diff.after.id
+        - present_5.diff.after.id == present_1.diff.after.id
 
   always:
     - name: cleanup
