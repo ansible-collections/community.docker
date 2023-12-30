@@ -17,6 +17,7 @@
       set_fact:
         image_1: "{{ docker_test_image_hello_world }}"
         image_2: "{{ docker_test_image_alpine }}"
+        image_3: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
         image_names:
           - "{{ iname_prefix }}-tagged-1:latest"
           - "{{ iname_prefix }}-tagged-1:foo"
@@ -30,6 +31,7 @@
       loop:
         - "{{ image_1 }}"
         - "{{ image_2 }}"
+        - "{{ image_3 }}"
       register: pulled_images
       diff: true
 
@@ -328,6 +330,68 @@
           - tag_8.diff.before == tag_8.diff.after
           - tag_8.diff.before.images | length == 3
           - tag_8_check == tag_8
+
+    - name: Tag image 3 (source image has digest)
+      docker_image_tag:
+        name: "{{ image_3 }}"
+        existing_images: overwrite
+        repository:
+          - "{{ iname_prefix }}-tagged-2:baz"
+      register: tag_9
+      diff: true
+
+    - assert:
+        that:
+          - tag_9 is changed
+          - tag_9.diff.before.images | length == 1
+          - tag_9.diff.before.images[0].id == pulled_images.results[0].image.Id
+          - tag_9.diff.after.images[0].id == pulled_images.results[2].image.Id
+
+    - name: Tag image 3 (source image is ID)
+      docker_image_tag:
+        name: "{{ pulled_images.results[2].image.Id }}"
+        existing_images: overwrite
+        repository:
+          - "{{ iname_prefix }}-tagged-1:foo"
+      register: tag_10
+      diff: true
+
+    - assert:
+        that:
+          - tag_10 is changed
+          - tag_10.diff.before.images | length == 1
+          - tag_10.diff.before.images[0].id == pulled_images.results[1].image.Id
+          - tag_10.diff.after.images[0].id == pulled_images.results[2].image.Id
+
+    - name: Tag image 3 (fail because of digest)
+      docker_image_tag:
+        name: "{{ image_3 }}"
+        existing_images: overwrite
+        repository:
+          - "{{ iname_prefix }}-tagged-2@sha256:{{ docker_test_image_digest_v1 }}"
+      register: tag_11
+      ignore_errors: true
+
+    - assert:
+        that:
+          - tag_11 is failed
+          - >-
+            tag_11.msg == 'repository[1] must not have a digest; got: ' ~ iname_prefix ~ '-tagged-2@sha256:' ~ docker_test_image_digest_v1
+
+    - name: Tag image 3 (fail because of image ID)
+      docker_image_tag:
+        name: "{{ image_3 }}"
+        existing_images: overwrite
+        repository:
+          - "sha256:{{ docker_test_image_digest_v1 }}"
+      register: tag_12
+      ignore_errors: true
+
+    - assert:
+        that:
+          - tag_12 is failed
+          - >-
+            tag_12.msg == 'repository[1] must not be an image ID; got: sha256:' ~ docker_test_image_digest_v1
 
   always:
     - name: Remove tagged images

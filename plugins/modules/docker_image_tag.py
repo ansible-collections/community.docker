@@ -169,6 +169,8 @@ class ImageTagger(DockerBaseClass):
             repo, repo_tag = parse_repository_tag(repository)
             if not repo_tag:
                 repo_tag = parameters['tag']
+            elif not is_valid_tag(repo_tag, allow_empty=False):
+                self.fail("repository[%d] must not have a digest; got: %s" % (i + 1, repository))
             self.repositories.append((repo, repo_tag))
 
     def fail(self, msg):
