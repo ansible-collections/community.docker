@@ -1,0 +1,125 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- name: Run registry tests only when registry is present
+  when: registry_address is defined
+  block:
+    - name: Registering image name
+      set_fact:
+        iname: "{{ name_prefix ~ '-options' }}"
+
+    - name: Determining pushed image names
+      set_fact:
+        hello_world_image_base: "{{ registry_address }}/test/hello-world"
+
+    - name: Registering image name
+      set_fact:
+        inames: "{{ inames + [iname, hello_world_image_base ~ ':latest'] }}"
+
+    - name: Make sure image is not there
+      docker_image:
+        name: "{{ hello_world_image_base }}:latest"
+        state: absent
+        force_absent: true
+
+    - name: Make sure we have {{ docker_test_image_hello_world }}
+      docker_image_pull:
+        name: "{{ docker_test_image_hello_world }}"
+      diff: true
+
+    - name: Push image to test registry
+      docker_image:
+        name: "{{ docker_test_image_hello_world }}"
+        repository: "{{ hello_world_image_base }}:latest"
+        push: true
+        source: local
+
+    - name: Get facts of local image
+      docker_image_info:
+        name: "{{ hello_world_image_base }}:latest"
+      register: facts_1
+
+    - name: Make sure image is not there
+      docker_image:
+        name: "{{ hello_world_image_base }}:latest"
+        state: absent
+        force_absent: true
+
+    - name: Get facts of local image (not there)
+      docker_image_info:
+        name: "{{ hello_world_image_base }}:latest"
+      register: facts_2
+
+    - name: Pull image from test registry (check mode)
+      docker_image_pull:
+        name: "{{ hello_world_image_base }}:latest"
+      register: pull_1_check
+      diff: true
+      check_mode: true
+
+    - name: Pull image from test registry
+      docker_image_pull:
+        name: "{{ hello_world_image_base }}:latest"
+      register: pull_1
+      diff: true
+
+    - name: Pull image from test registry (idempotency, not pulling, check mode)
+      docker_image_pull:
+        name: "{{ hello_world_image_base }}:latest"
+        pull: not_present
+      register: pull_2_check
+      diff: true
+      check_mode: true
+
+    - name: Pull image from test registry (idempotency, not pulling)
+      docker_image_pull:
+        name: "{{ hello_world_image_base }}:latest"
+        pull: not_present
+      register: pull_2
+      diff: true
+
+    - name: Pull image from test registry (idempotency, pulling, check mode)
+      docker_image_pull:
+        name: "{{ hello_world_image_base }}:latest"
+        pull: always
+      register: pull_3_check
+      diff: true
+      check_mode: true
+
+    - name: Pull image from test registry (idempotency, pulling)
+      docker_image_pull:
+        name: "{{ hello_world_image_base }}:latest"
+        pull: always
+      register: pull_3
+      diff: true
+
+    - name: Get facts of local image (present)
+      docker_image_info:
+        name: "{{ hello_world_image_base }}:latest"
+      register: facts_3
+
+    - assert:
+        that:
+        - pull_1_check is changed
+        - pull_1_check.diff.before.exists is false
+        - pull_1_check.diff.after.id == 'unknown'
+        - pull_1 is changed
+        - pull_1.diff.before.exists is false
+        - pull_1.diff.after.id == facts_1.images[0].Id
+        - pull_2_check is not changed
+        - pull_2_check.diff.before.id == facts_1.images[0].Id
+        - pull_2_check.diff.before == pull_2.diff.after
+        - pull_2 is not changed
+        - pull_2.diff.before.id == facts_1.images[0].Id
+        - pull_2.diff.before == pull_2.diff.after
+        - pull_3_check is changed
+        - pull_3_check.diff.before.id == facts_1.images[0].Id
+        - pull_3_check.diff.after.id == 'unknown'
+        - pull_3 is not changed
+        - pull_3.diff.before.id == facts_1.images[0].Id
+        - pull_3.diff.before == pull_2.diff.after
+        - facts_1.images | length == 1
+        - facts_2.images | length == 0
+        - facts_3.images | length == 1

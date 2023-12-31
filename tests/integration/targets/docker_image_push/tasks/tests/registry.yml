@@ -7,9 +7,8 @@
   when: registry_address is defined
   block:
     - name: Pull images
-      docker_image:
+      docker_image_pull:
         name: "{{ item }}"
-        source: pull
       loop:
         - "{{ docker_test_image_hello_world }}"
         - "{{ docker_test_image_alpine }}"

@@ -16,6 +16,7 @@ action_groups:
     - docker_image
     - docker_image_info
     - docker_image_load
+    - docker_image_pull
     - docker_image_push
     - docker_login
     - docker_network
