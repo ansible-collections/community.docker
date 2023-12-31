@@ -10,9 +10,8 @@
       - "{{ docker_test_image_alpine }}"
 
 - name: Make sure images are there
-  docker_image:
+  docker_image_pull:
     name: "{{ item }}"
-    source: pull
   register: images
   loop: "{{ image_names }}"
 

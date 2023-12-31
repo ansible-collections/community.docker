@@ -29,12 +29,15 @@
         name: "{{ docker_test_image_hello_world }}"
       diff: true
 
-    - name: Push image to test registry
-      docker_image:
+    - name: Tag image
+      docker_image_tag:
         name: "{{ docker_test_image_hello_world }}"
-        repository: "{{ hello_world_image_base }}:latest"
-        push: true
-        source: local
+        repository:
+          - "{{ hello_world_image_base }}:latest"
+
+    - name: Push image to test registry
+      docker_image_push:
+        name: "{{ hello_world_image_base }}:latest"
 
     - name: Get facts of local image
       docker_image_info:

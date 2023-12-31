@@ -46,6 +46,9 @@ requirements:
 
 author:
   - Felix Fontein (@felixfontein)
+
+seealso:
+  - module: community.docker.docker_image_tag
 '''
 
 EXAMPLES = '''

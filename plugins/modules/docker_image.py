@@ -254,7 +254,7 @@ seealso:
   - module: community.docker.docker_image_info
   - module: community.docker.docker_image_load
   - module: community.docker.docker_image_pull
-  - module: community.docker.docker_image_push
+  - module: community.docker.docker_image_tag
 '''
 
 EXAMPLES = '''
