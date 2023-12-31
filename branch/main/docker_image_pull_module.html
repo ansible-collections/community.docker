@@ -96,6 +96,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#attributes">Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See Also</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#return-values">Return Values</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#authors">Authors</a></li>
@@ -105,6 +106,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image_push_module.html">community.docker.docker_image_push module – Push Docker images to registries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_remove_module.html">community.docker.docker_image_remove module – Remove Docker images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image_tag_module.html">community.docker.docker_image_tag module – Tag Docker images with new names and/or tags</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_login_module.html">community.docker.docker_login module – Log into a Docker registry.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_network_module.html">community.docker.docker_network module – Manage Docker networks</a></li>
@@ -183,8 +185,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <li><p><a class="reference internal" href="#parameters" id="id3">Parameters</a></p></li>
 <li><p><a class="reference internal" href="#attributes" id="id4">Attributes</a></p></li>
 <li><p><a class="reference internal" href="#notes" id="id5">Notes</a></p></li>
-<li><p><a class="reference internal" href="#examples" id="id6">Examples</a></p></li>
-<li><p><a class="reference internal" href="#return-values" id="id7">Return Values</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id6">See Also</a></p></li>
+<li><p><a class="reference internal" href="#examples" id="id7">Examples</a></p></li>
+<li><p><a class="reference internal" href="#return-values" id="id8">Return Values</a></p></li>
 </ul>
 </nav>
 <section id="synopsis">
@@ -438,8 +441,22 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div>
 </section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">See Also</a><a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#ansible-collections-community-docker-docker-image-pull-module"><span class="std std-ref">community.docker.docker_image_pull</span></a></dt><dd><p>Pull Docker images from registries.</p>
+</dd>
+<dt><a class="reference internal" href="docker_image_remove_module.html#ansible-collections-community-docker-docker-image-remove-module"><span class="std std-ref">community.docker.docker_image_remove</span></a></dt><dd><p>Remove Docker images.</p>
+</dd>
+<dt><a class="reference internal" href="docker_image_tag_module.html#ansible-collections-community-docker-docker-image-tag-module"><span class="std std-ref">community.docker.docker_image_tag</span></a></dt><dd><p>Tag Docker images with new names and/or tags.</p>
+</dd>
+</dl>
+</div>
+</section>
 <section id="examples">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pull an image</span>
 <span class="w">  </span><span class="nt">community.docker.docker_image_pull</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pacur/centos-7</span>
@@ -449,7 +466,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div>
 </section>
 <section id="return-values">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">Return Values</a><a class="headerlink" href="#return-values" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Return Values</a><a class="headerlink" href="#return-values" title="Link to this heading"></a></h2>
 <p>Common return values are documented <a class="reference external" href="https://docs.ansible.com/ansible/devel/reference_appendices/common_return_values.html#common-return-values" title="(in Ansible vdevel)"><span class="xref std std-ref">here</span></a>, the following are the fields unique to this module:</p>
 <table class="longtable ansible-option-table docutils align-default" style="width: 100%">
 <thead>
