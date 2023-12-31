@@ -14,6 +14,8 @@ module: docker_image_remove
 
 short_description: Remove Docker images
 
+version_added: 3.6.0
+
 description:
   - Remove Docker images from the Docker daemon.
 

@@ -11,8 +11,11 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: docker_image_pull
-version_added: 3.6.0
+
 short_description: Pull Docker images from registries
+
+version_added: 3.6.0
+
 description:
   - Pulls a Docker image from a registry.
 

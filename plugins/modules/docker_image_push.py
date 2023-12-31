@@ -11,8 +11,11 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: docker_image_push
-version_added: 3.6.0
+
 short_description: Push Docker images to registries
+
+version_added: 3.6.0
+
 description:
   - Pushes a Docker image to a registry.
 
