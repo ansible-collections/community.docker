@@ -19,10 +19,9 @@
         inames: "{{ inames + [iname, hello_world_image_base ~ ':latest'] }}"
 
     - name: Make sure image is not there
-      docker_image:
+      docker_image_remove:
         name: "{{ hello_world_image_base }}:latest"
-        state: absent
-        force_absent: true
+        force: true
 
     - name: Make sure we have {{ docker_test_image_hello_world }}
       docker_image_pull:
@@ -45,10 +44,9 @@
       register: facts_1
 
     - name: Make sure image is not there
-      docker_image:
+      docker_image_remove:
         name: "{{ hello_world_image_base }}:latest"
-        state: absent
-        force_absent: true
+        force: true
 
     - name: Get facts of local image (not there)
       docker_image_info:

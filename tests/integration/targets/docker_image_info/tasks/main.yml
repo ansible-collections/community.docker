@@ -10,9 +10,8 @@
 
 - block:
   - name: Make sure image is not there
-    docker_image:
+    docker_image_remove:
       name: "{{ docker_test_image_alpine_different }}"
-      state: absent
 
   - name: Inspect a non-available image
     docker_image_info:

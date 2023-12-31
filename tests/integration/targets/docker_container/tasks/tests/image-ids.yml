@@ -11,9 +11,8 @@
     cnames: "{{ cnames + [cname] }}"
 
 - name: Pull images
-  docker_image:
+  docker_image_pull:
     name: "{{ image }}"
-    source: pull
   loop:
     - "{{ docker_test_image_hello_world }}"
     - "{{ docker_test_image_alpine }}"
@@ -69,10 +68,9 @@
 
 - name: Untag image
   # Image will not be deleted since the container still uses it
-  docker_image:
+  docker_image_remove:
     name: "{{ docker_test_image_alpine }}"
-    force_absent: true
-    state: absent
+    force: true
 
 - name: Create container with {{ docker_test_image_alpine }} image via name (check mode, will pull, same image)
   docker_container:

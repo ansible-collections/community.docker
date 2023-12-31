@@ -36,7 +36,7 @@ options:
     required: true
   tag:
     description:
-      - Used to select an image when pulling. Defaults to V(latest).
+      - Select which image to push. Defaults to V(latest).
       - If O(name) parameter format is C(name:tag) or C(image@hash:digest), then O(tag) will be ignored.
     type: str
     default: latest
@@ -48,6 +48,8 @@ author:
   - Felix Fontein (@felixfontein)
 
 seealso:
+  - module: community.docker.docker_image_pull
+  - module: community.docker.docker_image_remove
   - module: community.docker.docker_image_tag
 '''
 

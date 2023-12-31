@@ -42,10 +42,9 @@
 # All images by IDs
 
 - name: Remove all images
-  docker_image:
+  docker_image_remove:
     name: "{{ item }}"
-    state: absent
-    force_absent: true
+    force: true
   loop: "{{ all_images }}"
   ignore_errors: true
   register: remove_all_images
@@ -66,10 +65,9 @@
   when: remove_all_images is failed
 
 - name: Remove all images (after pruning)
-  docker_image:
+  docker_image_remove:
     name: "{{ item }}"
-    state: absent
-    force_absent: true
+    force: true
   loop: "{{ all_images }}"
   when: remove_all_images is failed
 
@@ -106,9 +104,8 @@
 # Mixed images and IDs
 
 - name: Remove all images
-  docker_image:
+  docker_image_remove:
     name: "{{ item }}"
-    state: absent
   loop: "{{ all_images }}"
 
 - name: Load all images (mixed images and IDs)
@@ -136,9 +133,8 @@
 # Same image twice
 
 - name: Remove all images
-  docker_image:
+  docker_image_remove:
     name: "{{ item }}"
-    state: absent
   loop: "{{ all_images }}"
 
 - name: Load all images (same image twice)
@@ -161,9 +157,8 @@
 # Single image by ID
 
 - name: Remove all images
-  docker_image:
+  docker_image_remove:
     name: "{{ item }}"
-    state: absent
   loop: "{{ all_images }}"
 
 - name: Load all images (single image by ID)
@@ -196,9 +191,8 @@
 # All images by names
 
 - name: Remove all images
-  docker_image:
+  docker_image_remove:
     name: "{{ item }}"
-    state: absent
   loop: "{{ all_images }}"
 
 - name: Load all images (names)

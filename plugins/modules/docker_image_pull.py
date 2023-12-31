@@ -64,6 +64,11 @@ requirements:
 
 author:
   - Felix Fontein (@felixfontein)
+
+seealso:
+  - module: community.docker.docker_image_pull
+  - module: community.docker.docker_image_remove
+  - module: community.docker.docker_image_tag
 '''
 
 EXAMPLES = '''

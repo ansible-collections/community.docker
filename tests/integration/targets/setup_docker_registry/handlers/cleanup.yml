@@ -4,9 +4,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: "Make sure all images are removed"
-  docker_image:
+  docker_image_remove:
     name: "{{ item }}"
-    state: absent
   with_items: "{{ docker_registry_setup_inames }}"
 
 - name: "Get registry logs"

@@ -35,10 +35,8 @@
       diff: true
 
     - name: Remove tagged images
-      docker_image:
+      docker_image_remove:
         name: "{{ item }}"
-        source: local
-        state: absent
       loop: "{{ image_names }}"
 
     - name: Tag image 1 (check mode)
@@ -394,10 +392,8 @@
 
   always:
     - name: Remove tagged images
-      docker_image:
+      docker_image_remove:
         name: "{{ item }}"
-        source: local
-        state: absent
       loop: "{{ image_names }}"
 
   when: docker_api_version is version('1.25', '>=')
