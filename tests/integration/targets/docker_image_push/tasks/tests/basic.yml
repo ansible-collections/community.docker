@@ -1,0 +1,61 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- vars:
+    image_name: registry.example.com:5000/foo/bar:baz
+  block:
+    - name: Make sure image is not present
+      docker_image:
+        name: "{{ image_name }}"
+        state: absent
+
+    - name: Push non-existing image (must fail)
+      docker_image_push:
+        name: "{{ image_name }}"
+      register: fail_1
+      ignore_errors: true
+
+    - name: Push image ID (must fail)
+      docker_image_push:
+        name: "sha256:{{ docker_test_image_digest_v1_image_id }}"
+      register: fail_2
+      ignore_errors: true
+
+    - name: Push image with digest (must fail)
+      docker_image_push:
+        name: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
+      register: fail_3
+      ignore_errors: true
+
+    - name: Push invalid tag (must fail)
+      docker_image_push:
+        name: "{{ docker_test_image_hello_world }}"
+        tag: foo/bar
+      register: fail_4
+      ignore_errors: true
+
+    - name: Push invalid tag 2 (must fail)
+      docker_image_push:
+        name: "{{ docker_test_image_digest_base }}:foo bar"
+      register: fail_5
+      ignore_errors: true
+
+    - assert:
+        that:
+        - fail_1 is failed
+        - >-
+          'Cannot find image registry.example.com:5000/foo/bar:baz' == fail_1.msg
+        - fail_2 is failed
+        - >-
+          'Cannot push an image by ID' == fail_2.msg
+        - fail_3 is failed
+        - >-
+          'Cannot push an image by digest' == fail_3.msg
+        - fail_4 is failed
+        - >-
+          '"foo/bar" is not a valid docker tag!' == fail_4.msg
+        - fail_5 is failed
+        - >-
+          '"foo bar" is not a valid docker tag!' == fail_5.msg
