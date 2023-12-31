@@ -25,8 +25,7 @@
           - "{{ iname_prefix }}-tagged-2:baz"
 
     - name: Make sure images we work with are there
-      docker_image:
-        source: pull
+      docker_image_pull:
         name: "{{ item }}"
       loop:
         - "{{ image_1 }}"

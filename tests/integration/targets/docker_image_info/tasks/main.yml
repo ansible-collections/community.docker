@@ -24,10 +24,8 @@
       - "result.images|length == 0"
 
   - name: Make sure images are there
-    docker_image:
+    docker_image_pull:
       name: "{{ item }}"
-      source: pull
-      state: present
     loop:
     - "{{ docker_test_image_hello_world }}"
     - "{{ docker_test_image_alpine }}"
