@@ -7,9 +7,8 @@
     image_name: registry.example.com:5000/foo/bar:baz
   block:
     - name: Make sure image is not present
-      docker_image:
+      docker_image_remove:
         name: "{{ image_name }}"
-        state: absent
 
     - name: Push non-existing image (must fail)
       docker_image_push:

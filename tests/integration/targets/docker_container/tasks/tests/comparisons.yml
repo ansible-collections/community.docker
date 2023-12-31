@@ -384,9 +384,8 @@
 
 - name: Pull {{ docker_test_image_hello_world }} image to make sure wildcard_2 test succeeds
   # If the image isn't there, it will pull it and return 'changed'.
-  docker_image:
+  docker_image_pull:
     name: "{{ docker_test_image_hello_world }}"
-    source: pull
 
 - name: wildcard
   docker_container:

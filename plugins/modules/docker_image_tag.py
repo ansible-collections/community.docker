@@ -70,6 +70,7 @@ author:
 
 seealso:
   - module: community.docker.docker_image_push
+  - module: community.docker.docker_image_remove
 '''
 
 EXAMPLES = '''

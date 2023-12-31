@@ -2235,9 +2235,8 @@
 
 - name: Pull images to make sure ignore_image test succeeds
   # If the image isn't there, it will pull it and return 'changed'.
-  docker_image:
+  docker_image_pull:
     name: "{{ item }}"
-    source: pull
   loop:
     - "{{ docker_test_image_hello_world }}"
     - "{{ docker_test_image_registry_nginx }}"
@@ -2456,9 +2455,8 @@
   diff: false
 
 - name: cleanup image
-  docker_image:
+  docker_image_remove:
     name: "{{ iname_labels }}"
-    state: absent
   diff: false
 
 - assert:
@@ -2486,9 +2484,8 @@
 
 - name: Pull images to make sure ignore_image test succeeds
   # If the image isn't there, it will pull it and return 'changed'.
-  docker_image:
+  docker_image_pull:
     name: "{{ item }}"
-    source: pull
   loop:
     - "{{ docker_test_image_hello_world }}"
     - "{{ docker_test_image_registry_nginx }}"
@@ -2577,9 +2574,8 @@
     inames: "{{ inames + [iname_name_mismatch] }}"
 
 - name: Tag hello world image (pulled earlier) with new name
-  docker_image:
+  docker_image_tag:
     name: "{{ docker_test_image_registry_nginx }}"
-    source: local
     repository: "{{ iname_name_mismatch }}:latest"
 
 - name: image_name_mismatch
@@ -2617,9 +2613,8 @@
   diff: false
 
 - name: Cleanup image
-  docker_image:
+  docker_image_remove:
     name: "{{ iname_name_mismatch }}"
-    state: absent
   diff: false
 
 - assert:
@@ -3549,9 +3544,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
 ####################################################################
 
 - name: Remove hello-world image
-  docker_image:
+  docker_image_remove:
     name: hello-world:latest
-    state: absent
 
 - name: platform
   docker_container:

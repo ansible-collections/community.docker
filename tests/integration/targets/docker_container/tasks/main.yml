@@ -47,9 +47,8 @@
     with_items: "{{ cnames }}"
     diff: false
   - name: "Make sure all images are removed"
-    docker_image:
+    docker_image_remove:
       name: "{{ item }}"
-      state: absent
     with_items: "{{ inames }}"
   - name: "Make sure all networks are removed"
     docker_network:

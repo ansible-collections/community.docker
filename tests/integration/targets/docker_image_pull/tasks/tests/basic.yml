@@ -8,10 +8,9 @@
     image_name: "{{ docker_test_image_hello_world_platform }}"
   block:
     - name: Make sure image is not there
-      docker_image:
+      docker_image_remove:
         name: "{{ image_name }}"
-        state: absent
-        force_absent: true
+        force: true
 
     - name: Pull image (check mode)
       docker_image_pull:
@@ -170,10 +169,9 @@
 
   always:
     - name: cleanup
-      docker_image:
+      docker_image_remove:
         name: "{{ image_name }}"
-        state: absent
-        force_absent: true
+        force: true
 
 - name: Pull image ID (must fail)
   docker_image_pull:
