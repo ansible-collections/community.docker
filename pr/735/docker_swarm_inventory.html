@@ -261,7 +261,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Socket of a Docker swarm manager node (<code class="docutils literal notranslate"><span class="pre">tcp</span></code>, <code class="docutils literal notranslate"><span class="pre">unix</span></code>).</p>
-<p>Use <code class="ansible-value docutils literal notranslate"><span class="pre">unix://var/run/docker.sock</span></code> to connect via local socket.</p>
+<p>Use <code class="ansible-value docutils literal notranslate"><span class="pre">unix:///var/run/docker.sock</span></code> to connect via local socket.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -502,7 +502,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="c1"># Minimal example using local docker</span>
 <span class="nt">plugin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">community.docker.docker_swarm</span>
-<span class="nt">docker_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unix://var/run/docker.sock</span>
+<span class="nt">docker_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unix:///var/run/docker.sock</span>
 
 <span class="c1"># Minimal example using remote docker</span>
 <span class="nt">plugin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">community.docker.docker_swarm</span>
