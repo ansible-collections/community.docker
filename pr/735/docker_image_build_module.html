@@ -5,7 +5,7 @@
 <meta content="2.6.1" name="antsibull-docs" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>community.docker.docker_image_build module – Build Docker images using Docker BuildKit &mdash; Community.Docker Collection  documentation</title>
+  <title>community.docker.docker_image_build module – Build Docker images using Docker buildx &mdash; Community.Docker Collection  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5707b69d" />
       <link rel="stylesheet" type="text/css" href="_static/css/ansible.css?v=c5b67dd2" />
       <link rel="stylesheet" type="text/css" href="_static/antsibull-minimal.css" />
@@ -88,7 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="docker_container_info_module.html">community.docker.docker_container_info module – Retrieves facts about docker container</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_host_info_module.html">community.docker.docker_host_info module – Retrieves facts about docker host and lists of objects of the services.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image_module.html">community.docker.docker_image module – Manage docker images</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">community.docker.docker_image_build module – Build Docker images using Docker BuildKit</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">community.docker.docker_image_build module – Build Docker images using Docker buildx</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a></li>
@@ -153,7 +153,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">community.docker.docker_image_build module – Build Docker images using Docker BuildKit</li>
+      <li class="breadcrumb-item active">community.docker.docker_image_build module – Build Docker images using Docker buildx</li>
       <li class="wy-breadcrumbs-aside">
               <!-- User defined GitHub URL -->
               <a href="https://github.com/ansible-collections/community.docker/edit/main/plugins/modules/docker_image_build.py?description=%23%23%23%23%23%20SUMMARY%0A%3C!—%20Your%20description%20here%20–%3E%0A%0A%0A%23%23%23%23%23%20ISSUE%20TYPE%0A-%20Docs%20Pull%20Request%0A%0A%2Blabel:%20docsite_pr" class="fa fa-github"> Edit on GitHub</a>
@@ -166,8 +166,8 @@
   
            <div itemprop="articleBody">
              
-  <span class="target" id="ansible-collections-community-docker-docker-image-build-module"></span><section id="community-docker-docker-image-build-module-build-docker-images-using-docker-buildkit">
-<h1>community.docker.docker_image_build module – Build Docker images using Docker BuildKit<a class="headerlink" href="#community-docker-docker-image-build-module-build-docker-images-using-docker-buildkit" title="Link to this heading"></a></h1>
+  <span class="target" id="ansible-collections-community-docker-docker-image-build-module"></span><section id="community-docker-docker-image-build-module-build-docker-images-using-docker-buildx">
+<h1>community.docker.docker_image_build module – Build Docker images using Docker buildx<a class="headerlink" href="#community-docker-docker-image-build-module-build-docker-images-using-docker-buildx" title="Link to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/community/docker/">community.docker collection</a> (version 3.6.0).</p>
@@ -194,14 +194,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <section id="synopsis">
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Synopsis</a><a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>This module allos to build Docker images using Docker’s BuildX plugin (BuildKit).</p></li>
+<li><p>This module allos to build Docker images using Docker’s buildx plugin (BuildKit).</p></li>
 </ul>
 </section>
 <section id="requirements">
 <span id="ansible-collections-community-docker-docker-image-build-module-requirements"></span><h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
 <p>The below requirements are needed on the host that executes this module.</p>
 <ul class="simple">
-<li><p>Docker CLI with Docker BuildX plugin</p></li>
+<li><p>Docker CLI with Docker buildx plugin</p></li>
 </ul>
 </section>
 <section id="parameters">
