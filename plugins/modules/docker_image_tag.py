@@ -75,7 +75,7 @@ seealso:
 
 EXAMPLES = '''
 - name: Tag Python 3.12 image with two new names
-  community.docker.docker_image:
+  community.docker.docker_image_tag:
     name: python:3.12
     repository:
       - python-3:3.12
