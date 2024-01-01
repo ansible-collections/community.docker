@@ -106,7 +106,7 @@ options:
 EXAMPLES = '''
 # Minimal example using local Docker daemon
 plugin: community.docker.docker_containers
-docker_host: unix://var/run/docker.sock
+docker_host: unix:///var/run/docker.sock
 
 # Minimal example using remote Docker daemon
 plugin: community.docker.docker_containers

@@ -34,7 +34,7 @@ DOCUMENTATION = '''
         docker_host:
             description:
                 - Socket of a Docker swarm manager node (C(tcp), C(unix)).
-                - "Use V(unix://var/run/docker.sock) to connect via local socket."
+                - "Use V(unix:///var/run/docker.sock) to connect via local socket."
             type: str
             required: true
             aliases: [ docker_url ]
@@ -111,7 +111,7 @@ DOCUMENTATION = '''
 EXAMPLES = '''
 # Minimal example using local docker
 plugin: community.docker.docker_swarm
-docker_host: unix://var/run/docker.sock
+docker_host: unix:///var/run/docker.sock
 
 # Minimal example using remote docker
 plugin: community.docker.docker_swarm
