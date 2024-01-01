@@ -21,7 +21,7 @@ options:
             - If the value is not specified in the task, the value of environment variable E(DOCKER_HOST) will be used
               instead. If the environment variable is not set, the default value will be used.
         type: str
-        default: unix://var/run/docker.sock
+        default: unix:///var/run/docker.sock
         aliases: [ docker_url ]
     tls_hostname:
         description:
@@ -198,7 +198,7 @@ options:
             - If the value is not specified in the task, the value of environment variable E(DOCKER_HOST) will be used
               instead. If the environment variable is not set, the default value will be used.
         type: str
-        default: unix://var/run/docker.sock
+        default: unix:///var/run/docker.sock
         aliases: [ docker_url ]
     tls_hostname:
         description:

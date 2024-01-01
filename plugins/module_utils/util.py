@@ -14,7 +14,7 @@ from ansible.module_utils.common.collections import is_sequence
 from ansible.module_utils.six.moves.urllib.parse import urlparse
 
 
-DEFAULT_DOCKER_HOST = 'unix://var/run/docker.sock'
+DEFAULT_DOCKER_HOST = 'unix:///var/run/docker.sock'
 DEFAULT_TLS = False
 DEFAULT_TLS_VERIFY = False
 DEFAULT_TLS_HOSTNAME = 'localhost'  # deprecated
