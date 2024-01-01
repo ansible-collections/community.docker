@@ -1,0 +1,204 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- name: Registering image name
+  set_fact:
+    iname: "{{ name_prefix ~ '-options' }}"
+
+- name: Registering image name
+  set_fact:
+    inames: "{{ inames + [iname] }}"
+
+####################################################################
+## args ############################################################
+####################################################################
+
+- name: cleanup
+  docker_image_remove:
+    name: "{{ iname }}"
+
+- name: buildargs
+  docker_image_build:
+    name: "{{ iname }}"
+    path: "{{ remote_tmp_dir }}/files"
+    dockerfile: "ArgsDockerfile"
+    args:
+      IMAGE: "{{ docker_test_image_busybox }}"
+      TEST1: val1
+      TEST2: val2
+      TEST3: "True"
+    pull: false
+  register: buildargs_1
+
+- name: buildargs (idempotency)
+  docker_image_build:
+    name: "{{ iname }}"
+    path: "{{ remote_tmp_dir }}/files"
+    dockerfile: "ArgsDockerfile"
+    args:
+      IMAGE: "{{ docker_test_image_busybox }}"
+      TEST1: val1
+      TEST2: val2
+      TEST3: "True"
+    pull: false
+  register: buildargs_2
+
+- name: cleanup
+  docker_image_remove:
+    name: "{{ iname }}"
+
+- assert:
+    that:
+    - buildargs_1 is changed
+    - buildargs_2 is not changed
+
+####################################################################
+## dockerfile ######################################################
+####################################################################
+
+- name: dockerfile
+  docker_image_build:
+    name: "{{ iname }}"
+    path: "{{ remote_tmp_dir }}/files"
+    dockerfile: "MyDockerfile"
+    pull: false
+  register: dockerfile_1
+
+- name: cleanup
+  docker_image_remove:
+    name: "{{ iname }}"
+
+- assert:
+    that:
+    - dockerfile_1 is changed
+    - "('FROM ' ~ docker_test_image_alpine) in dockerfile_1.stderr"
+    - dockerfile_1['image']['Config']['WorkingDir'] == '/newdata'
+
+####################################################################
+## platform ########################################################
+####################################################################
+
+- name: cleanup
+  docker_image_remove:
+    name: "{{ iname }}"
+
+- name: platform
+  docker_image_build:
+    name: "{{ iname }}"
+    path: "{{ remote_tmp_dir }}/files"
+    platform: linux
+    pull: false
+  register: platform_1
+
+- name: platform (idempotency)
+  docker_image_build:
+    name: "{{ iname }}"
+    path: "{{ remote_tmp_dir }}/files"
+    platform: linux
+    pull: false
+  register: platform_2
+
+- name: cleanup
+  docker_image_remove:
+    name: "{{ iname }}"
+
+- assert:
+    that:
+    - platform_1 is changed
+    - platform_2 is not changed
+
+####################################################################
+## target ##########################################################
+####################################################################
+
+- name: Build multi-stage image
+  docker_image_build:
+    name: "{{ iname }}"
+    path: "{{ remote_tmp_dir }}/files"
+    dockerfile: "StagedDockerfile"
+    target: first
+    pull: false
+  register: dockerfile_2
+
+- name: cleanup
+  docker_image_remove:
+    name: "{{ iname }}"
+
+- assert:
+    that:
+    - dockerfile_2 is changed
+    - dockerfile_2.image.Config.WorkingDir == '/first'
+
+####################################################################
+## etc_hosts #######################################################
+####################################################################
+
+- name: Build image with custom etc_hosts
+  docker_image_build:
+    name: "{{ iname }}"
+    path: "{{ remote_tmp_dir }}/files"
+    dockerfile: "EtcHostsDockerfile"
+    pull: false
+    etc_hosts:
+      some-custom-host: "127.0.0.1"
+  register: path_1
+
+- name: cleanup
+  docker_image_remove:
+    name: "{{ iname }}"
+
+- assert:
+    that:
+      - path_1 is changed
+
+####################################################################
+## shm_size ########################################################
+####################################################################
+
+- name: Build image with custom shm_size
+  docker_image_build:
+    name: "{{ iname }}"
+    path: "{{ remote_tmp_dir }}/files"
+    dockerfile: "MyDockerfile"
+    pull: false
+    shm_size: 128MB
+  register: path_1
+
+- name: cleanup
+  docker_image_remove:
+    name: "{{ iname }}"
+
+- assert:
+    that:
+      - path_1 is changed
+
+####################################################################
+## labels ##########################################################
+####################################################################
+
+- name: Build image with labels
+  docker_image_build:
+    name: "{{ iname }}"
+    path: "{{ remote_tmp_dir }}/files"
+    dockerfile: "MyDockerfile"
+    pull: false
+    labels:
+      FOO: BAR
+      this is a label: this is the label's value
+  register: labels_1
+
+- name: cleanup
+  docker_image_remove:
+    name: "{{ iname }}"
+
+- name: Show image information
+  debug:
+    var: labels_1.image
+
+- assert:
+    that:
+      - labels_1 is changed
+      - labels_1.image.Config.Labels.FOO == 'BAR'
+      - labels_1.image.Config.Labels["this is a label"] == "this is the label's value"

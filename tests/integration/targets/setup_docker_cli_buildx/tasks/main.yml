@@ -1,0 +1,49 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+####################################################################
+# WARNING: These are designed specifically for Ansible tests       #
+# and should not be used as examples of how to write Ansible roles #
+####################################################################
+
+- name: Setup Docker
+  when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in  ['CentOS6', 'RedHat6']
+  block:
+    - name:
+      debug:
+        msg: |-
+          OS family: {{ ansible_facts.os_family }}
+          Distribution: {{ ansible_facts.distribution }}
+          Distribution major version: {{ ansible_facts.distribution_major_version }}
+          Distribution full version: {{ ansible_facts.distribution_version }}
+
+    - name: Set facts for Docker features to defaults
+      set_fact:
+        docker_has_buildx: true
+
+    - name: Include distribution specific variables
+      include_vars: "{{ lookup('first_found', params) }}"
+      vars:
+        params:
+          files:
+            - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}.yml"
+            - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
+            - "{{ ansible_facts.distribution }}.yml"
+            - "{{ ansible_facts.os_family }}.yml"
+            - default.yml
+          paths:
+            - "{{ role_path }}/vars"
+
+    - name: Include distribution specific tasks
+      include_tasks: "{{ lookup('first_found', params) }}"
+      vars:
+        params:
+          files:
+            - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_major_version }}.yml"
+            - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
+            - "{{ ansible_facts.distribution }}.yml"
+            - "{{ ansible_facts.os_family }}.yml"
+          paths:
+            - "{{ role_path }}/tasks"

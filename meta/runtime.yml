@@ -14,6 +14,7 @@ action_groups:
     - docker_container_info
     - docker_host_info
     - docker_image
+    - docker_image_build
     - docker_image_info
     - docker_image_load
     - docker_image_pull
