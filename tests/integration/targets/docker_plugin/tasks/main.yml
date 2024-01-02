@@ -17,16 +17,18 @@
   register: dev_fuse_stat
 
 - block:
-  - include_tasks: run-test.yml
-    with_fileglob:
-    - "tests/*.yml"
+    - include_tasks: run-test.yml
+      with_fileglob:
+        - "tests/*.yml"
+      loop_control:
+        loop_var: test_name
 
   always:
-  - name: "Make sure plugin is removed"
-    docker_plugin:
-      plugin_name: "{{ item }}"
-      state: absent
-    with_items: "{{ plugin_names }}"
+    - name: "Make sure plugin is removed"
+      docker_plugin:
+        plugin_name: "{{ item }}"
+        state: absent
+      with_items: "{{ plugin_names }}"
 
   when: docker_api_version is version('1.25', '>=') and dev_fuse_stat.stat.exists
 

@@ -14,9 +14,11 @@
     - docker_api_version is version('1.25', '>=')
 
   block:
-    - include_tasks: "{{ item }}"
+    - include_tasks: run-test.yml
       with_fileglob:
-        - 'tests/*.yml'
+        - "tests/*.yml"
+      loop_control:
+        loop_var: test_name
 
   always:
     - import_tasks: cleanup.yml
