@@ -368,11 +368,11 @@ options:
         type: bool
         default: false
         aliases: [ tls_verify ]
-    debug:
-        description:
-            - Debug mode
-        type: bool
-        default: false
+    # debug:
+    #     description:
+    #         - Debug mode
+    #     type: bool
+    #     default: false
     cli_context:
         description:
             - The Docker CLI context to use.

@@ -6,6 +6,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 
+import json
 import re
 from datetime import timedelta
 
@@ -85,6 +86,19 @@ def sanitize_result(data):
         return data
 
 
+def log_debug(msg, pretty_print=False):
+    """Write a log message to docker.log.
+
+    If ``pretty_print=True``, the message will be pretty-printed as JSON.
+    """
+    with open('docker.log', 'a') as log_file:
+        if pretty_print:
+            log_file.write(json.dumps(msg, sort_keys=True, indent=4, separators=(',', ': ')))
+            log_file.write(u'\n')
+        else:
+            log_file.write(msg + u'\n')
+
+
 class DockerBaseClass(object):
     def __init__(self):
         self.debug = False
@@ -92,12 +106,7 @@ class DockerBaseClass(object):
     def log(self, msg, pretty_print=False):
         pass
         # if self.debug:
-        #     log_file = open('docker.log', 'a')
-        #     if pretty_print:
-        #         log_file.write(json.dumps(msg, sort_keys=True, indent=4, separators=(',', ': ')))
-        #         log_file.write(u'\n')
-        #     else:
-        #         log_file.write(msg + u'\n')
+        #     log_debug(msg, pretty_print=pretty_print)
 
 
 def update_tls_hostname(result, old_behavior=False, deprecate_function=None, uses_tls=True):

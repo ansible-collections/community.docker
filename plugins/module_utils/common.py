@@ -260,12 +260,8 @@ class AnsibleDockerClientBase(Client):
     def log(self, msg, pretty_print=False):
         pass
         # if self.debug:
-        #     log_file = open('docker.log', 'a')
-        #     if pretty_print:
-        #         log_file.write(json.dumps(msg, sort_keys=True, indent=4, separators=(',', ': ')))
-        #         log_file.write(u'\n')
-        #     else:
-        #         log_file.write(msg + u'\n')
+        #     from .util import log_debug
+        #     log_debug(msg, pretty_print=pretty_print)
 
     @abc.abstractmethod
     def fail(self, msg, **kwargs):
