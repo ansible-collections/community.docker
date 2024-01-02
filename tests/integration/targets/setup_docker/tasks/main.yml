@@ -25,6 +25,14 @@
           set_fact:
             needs_docker_daemon: '{{ not ansible_module_running_in_container }}'
 
+        - name:
+          debug:
+            msg: |-
+              OS family: {{ ansible_facts.os_family }}
+              Distribution: {{ ansible_facts.distribution }}
+              Distribution major version: {{ ansible_facts.distribution_major_version }}
+              Distribution full version: {{ ansible_facts.distribution_version }}
+
         - name: Include distribution specific variables
           include_vars: "{{ lookup('first_found', params) }}"
           vars:

@@ -396,7 +396,7 @@ class AnsibleDockerClientBase(Client):
                     images = self._image_lookup(lookup, tag)
 
         if len(images) > 1:
-            self.fail("Registry returned more than one result for %s:%s" % (name, tag))
+            self.fail("Daemon returned more than one result for %s:%s" % (name, tag))
 
         if len(images) == 1:
             try:

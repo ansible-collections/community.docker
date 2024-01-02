@@ -20,6 +20,7 @@ description:
 
 notes:
   - Building images is done using Docker daemon's API. It is not possible to use BuildKit / buildx this way.
+    Use M(community.docker.docker_image_build) to build images with BuildKit.
 
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
@@ -251,6 +252,7 @@ author:
   - Sorin Sbarnea (@ssbarnea)
 
 seealso:
+  - module: community.docker.docker_image_build
   - module: community.docker.docker_image_info
   - module: community.docker.docker_image_load
   - module: community.docker.docker_image_pull

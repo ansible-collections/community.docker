@@ -3,9 +3,8 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-- name: Install docker
-  apk:
-    name:
-      - docker
-    update_cache: true
-  notify: cleanup docker
+dependencies:
+  - setup_docker_cli_buildx
+  # The Python dependencies are needed for the other modules
+  - setup_docker_python_deps
+  - setup_remote_tmp_dir
