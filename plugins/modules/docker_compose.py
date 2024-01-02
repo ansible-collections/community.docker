@@ -12,12 +12,13 @@ DOCUMENTATION = '''
 
 module: docker_compose
 
-short_description: Manage multi-container Docker applications with Docker Compose.
+short_description: Manage multi-container Docker applications with Docker Compose V1
 
 author: "Chris Houseknecht (@chouseknecht)"
 
 description:
   - Uses Docker Compose to start, shutdown and scale services. B(This module requires docker-compose < 2.0.0.)
+    Use the M(community.docker.docker_compose_v2) module for using the modern Docker compose CLI plugin.
   - Configuration can be read from a C(docker-compose.yml) or C(docker-compose.yaml) file or inline using the O(definition) option.
   - See the examples for more details.
   - Supports check mode.
@@ -188,6 +189,9 @@ requirements:
   - "docker-compose >= 1.7.0, < 2.0.0"
   - "Docker API >= 1.25"
   - "PyYAML >= 3.11"
+
+seealso:
+  - module: community.docker.docker_compose_v2
 '''
 
 EXAMPLES = '''

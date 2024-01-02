@@ -7,6 +7,7 @@ requires_ansible: '>=2.11.0'
 action_groups:
   docker:
     - docker_compose
+    - docker_compose_v2
     - docker_config
     - docker_container
     - docker_container_copy_into
