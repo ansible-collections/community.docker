@@ -331,13 +331,6 @@ options:
         type: str
         default: auto
         aliases: [ docker_api_version ]
-    timeout:
-        description:
-            - The maximum amount of time in seconds to wait on a response from the API.
-            - If the value is not specified in the task, the value of environment variable E(DOCKER_TIMEOUT) will be used
-              instead. If the environment variable is not set, the default value will be used.
-        type: int
-        default: 60
     ca_cert:
         description:
             - Use a CA certificate when performing server verification by providing the path to a CA certificate file.
