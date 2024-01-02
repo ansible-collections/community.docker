@@ -38,7 +38,7 @@ DOCKER_COMMON_ARGS = dict(
     client_key=dict(type='path', aliases=['tls_client_key', 'key_path']),
     tls=dict(type='bool', default=DEFAULT_TLS, fallback=(env_fallback, ['DOCKER_TLS'])),
     validate_certs=dict(type='bool', default=DEFAULT_TLS_VERIFY, fallback=(env_fallback, ['DOCKER_TLS_VERIFY']), aliases=['tls_verify']),
-    debug=dict(type='bool', default=False),
+    # debug=dict(type='bool', default=False),
     cli_context=dict(type='str'),
 )
 
@@ -89,12 +89,8 @@ class AnsibleDockerClientBase(object):
     def log(self, msg, pretty_print=False):
         pass
         # if self.debug:
-        #     log_file = open('docker.log', 'a')
-        #     if pretty_print:
-        #         log_file.write(json.dumps(msg, sort_keys=True, indent=4, separators=(',', ': ')))
-        #         log_file.write(u'\n')
-        #     else:
-        #         log_file.write(msg + u'\n')
+        #     from .util import log_debug
+        #     log_debug(msg, pretty_print=pretty_print)
 
     def get_cli(self):
         return self._cli
@@ -299,7 +295,7 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
             required_by=required_by or {},
         )
 
-        self.debug = self.module.params['debug']
+        self.debug = False  # self.module.params['debug']
         self.check_mode = self.module.check_mode
         self.diff = self.module._diff
 
