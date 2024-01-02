@@ -113,6 +113,15 @@ requirements:
 author:
   - Felix Fontein (@felixfontein)
 
+notes:
+  - |-
+    The Docker compose CLI plugin has no stable output format (see for example U(https://github.com/docker/compose/issues/10872)),
+    and for the main operations also no machine friendly output format. The module tries to accomodate this with various
+    version-dependent behavior adjustments and with testing older and newer versions of the Docker compose CLI plugin.
+
+    Currently the module is tested with multiple plugin versions between 2.18.1 and 2.23.3. The exact list of plugin versions
+    will change over time. New releases of the Docker compose CLI plugin can break this module at any time.
+
 seealso:
   - module: community.docker.docker_compose
 '''
@@ -505,6 +514,7 @@ class ContainerManager(DockerBaseClass):
     def get_base_args(self):
         args = ['compose', '--ansi', 'never']
         if self.compose_version >= LooseVersion('2.19.0'):
+            # https://github.com/docker/compose/pull/10690
             args.extend(['--progress', 'plain'])
         args.extend(['--project-directory', self.project_src])
         if self.project_name:
@@ -518,6 +528,7 @@ class ContainerManager(DockerBaseClass):
     def list_containers_raw(self):
         args = self.get_base_args() + ['ps', '--format', 'json', '--all']
         if self.compose_version >= LooseVersion('2.23.0'):
+            # https://github.com/docker/compose/pull/11038
             args.append('--no-trunc')
         kwargs = dict(cwd=self.project_src, check_rc=True)
         if self.compose_version >= LooseVersion('2.21.0'):
