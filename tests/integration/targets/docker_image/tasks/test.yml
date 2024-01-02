@@ -31,22 +31,24 @@
     - StagedDockerfile
 
 - block:
-  - include_tasks: run-test.yml
-    with_fileglob:
-    - "tests/*.yml"
+    - include_tasks: run-test.yml
+      with_fileglob:
+        - "tests/*.yml"
+      loop_control:
+        loop_var: test_name
 
   always:
-  - name: "Make sure all images are removed"
-    docker_image:
-      name: "{{ item }}"
-      state: absent
-    with_items: "{{ inames }}"
-  - name: "Make sure all containers are removed"
-    docker_container:
-      name: "{{ item }}"
-      state: absent
-      force_kill: true
-    with_items: "{{ cnames }}"
+    - name: "Make sure all images are removed"
+      docker_image:
+        name: "{{ item }}"
+        state: absent
+      with_items: "{{ inames }}"
+    - name: "Make sure all containers are removed"
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+        force_kill: true
+      with_items: "{{ cnames }}"
 
   when: docker_api_version is version('1.25', '>=')
 
