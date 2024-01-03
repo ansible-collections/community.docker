@@ -80,7 +80,8 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="current_container_facts_module.html">community.docker.current_container_facts module – Return facts about whether the module runs in a container</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docker_compose_module.html">community.docker.docker_compose module – Manage multi-container Docker applications with Docker Compose.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_compose_module.html">community.docker.docker_compose module – Manage multi-container Docker applications with Docker Compose V1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_compose_v2_module.html">community.docker.docker_compose_v2 module – Manage multi-container Docker applications with Docker Compose CLI plugin</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_config_module.html">community.docker.docker_config module – Manage docker configs.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_container_module.html">community.docker.docker_container module – manage Docker containers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_container_copy_into_module.html">community.docker.docker_container_copy_into module – Copy a file into a Docker container</a></li>
@@ -88,8 +89,13 @@
 <li class="toctree-l1"><a class="reference internal" href="docker_container_info_module.html">community.docker.docker_container_info module – Retrieves facts about docker container</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_host_info_module.html">community.docker.docker_host_info module – Retrieves facts about docker host and lists of objects of the services.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image_module.html">community.docker.docker_image module – Manage docker images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_build_module.html">community.docker.docker_image_build module – Build Docker images using Docker buildx</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image_info_module.html">community.docker.docker_image_info module – Inspect docker images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image_load_module.html">community.docker.docker_image_load module – Load docker image(s) from archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_pull_module.html">community.docker.docker_image_pull module – Pull Docker images from registries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_push_module.html">community.docker.docker_image_push module – Push Docker images to registries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_remove_module.html">community.docker.docker_image_remove module – Remove Docker images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_tag_module.html">community.docker.docker_image_tag module – Tag Docker images with new names and/or tags</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_login_module.html">community.docker.docker_login module – Log into a Docker registry.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_network_module.html">community.docker.docker_network module – Manage Docker networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_network_info_module.html">community.docker.docker_network_info module – Retrieves facts about docker network</a></li>
@@ -346,7 +352,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>The URL or Unix socket path used to connect to the Docker API. To connect to a remote host, provide the TCP connection string. For example, <code class="ansible-value docutils literal notranslate"><span class="pre">tcp://192.0.2.23:2376</span></code>. If TLS is used to encrypt the connection, the module will automatically replace <code class="docutils literal notranslate"><span class="pre">tcp</span></code> in the connection URL with <code class="docutils literal notranslate"><span class="pre">https</span></code>.</p>
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
-<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;unix://var/run/docker.sock&quot;</span></code></p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;unix:///var/run/docker.sock&quot;</span></code></p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
