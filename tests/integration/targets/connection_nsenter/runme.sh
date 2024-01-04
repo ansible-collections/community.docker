@@ -8,6 +8,7 @@ set -euo pipefail
 [[ -n "${DEBUG:-}" || -n "${ANSIBLE_DEBUG:-}" ]] && set -x
 
 readonly IMAGE="quay.io/ansible/ansible-runner:devel"
+# shellcheck disable=SC2155
 readonly PYTHON="$(command -v python3 python | head -n1)"
 
 # Determine collection root
@@ -18,6 +19,7 @@ while true; do
     fi
     COLLECTION_ROOT="${COLLECTION_ROOT}../"
 done
+# shellcheck disable=SC2155
 readonly COLLECTION_ROOT="$(cd ${COLLECTION_ROOT} ; pwd)"
 
 # Setup phase
