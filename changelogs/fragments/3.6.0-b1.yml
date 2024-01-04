@@ -1,5 +1,5 @@
 release_summary: |
-  Bugfix and feature release.
+  Prerelease of the upcoming 3.6.0 bugfix and feature release.
 
   The collection now includes a bunch of new ``docker_image_*`` modules that move features out of the
   rather complex ``docker_image`` module. These new modules are easier to use and can better declare whether
