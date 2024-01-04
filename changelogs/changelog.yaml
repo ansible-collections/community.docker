@@ -1313,3 +1313,66 @@ releases:
     - 721-docker-7.yml
     - 722-tls.yml
     release_date: '2023-12-10'
+  3.6.0-b1:
+    changes:
+      bugfixes:
+      - Use ``unix:///var/run/docker.sock`` instead of the legacy ``unix://var/run/docker.sock``
+        as default for ``docker_host`` (https://github.com/ansible-collections/community.docker/pull/736).
+      minor_changes:
+      - docker_image - allow to specify labels and ``/dev/shm`` size when building
+        images (https://github.com/ansible-collections/community.docker/issues/726,
+        https://github.com/ansible-collections/community.docker/pull/727).
+      - docker_image - allow to specify memory size and swap memory size in other
+        units than bytes (https://github.com/ansible-collections/community.docker/pull/727).
+      release_summary: 'Prerelease of the upcoming 3.6.0 bugfix and feature release.
+
+
+        The collection now includes a bunch of new ``docker_image_*`` modules that
+        move features out of the
+
+        rather complex ``docker_image`` module. These new modules are easier to use
+        and can better declare whether
+
+        they support check mode, diff mode, or none of them.
+
+
+        This version also features modules that support the Docker CLI plugins ``buildx``
+        and ``compose``.
+
+        The ``docker_image_build`` module uses the ``docker buildx`` command under
+        the hood, and the ``docker_compose_v2``
+
+        module uses the ``docker compose`` command. Both these modules use the Docker
+        CLI instead of directly talking
+
+        to the API. The modules support mostly the same interface as the API based
+        modules, so the main difference is that
+
+        instead of some Python requirements, they depend on the Docker CLI tool ``docker``.
+
+        '
+    fragments:
+    - 3.6.0-b1.yml
+    - 727-docker_image-build.yml
+    - host.yml
+    modules:
+    - description: Manage multi-container Docker applications with Docker Compose
+        CLI plugin
+      name: docker_compose_v2
+      namespace: ''
+    - description: Build Docker images using Docker buildx
+      name: docker_image_build
+      namespace: ''
+    - description: Pull Docker images from registries
+      name: docker_image_pull
+      namespace: ''
+    - description: Push Docker images to registries
+      name: docker_image_push
+      namespace: ''
+    - description: Remove Docker images
+      name: docker_image_remove
+      namespace: ''
+    - description: Tag Docker images with new names and/or tags
+      name: docker_image_tag
+      namespace: ''
+    release_date: '2024-01-04'

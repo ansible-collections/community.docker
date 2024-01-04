@@ -5,6 +5,46 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.6.0-b1
+=========
+
+Release Summary
+---------------
+
+Prerelease of the upcoming 3.6.0 bugfix and feature release.
+
+The collection now includes a bunch of new ``docker_image_*`` modules that move features out of the
+rather complex ``docker_image`` module. These new modules are easier to use and can better declare whether
+they support check mode, diff mode, or none of them.
+
+This version also features modules that support the Docker CLI plugins ``buildx`` and ``compose``.
+The ``docker_image_build`` module uses the ``docker buildx`` command under the hood, and the ``docker_compose_v2``
+module uses the ``docker compose`` command. Both these modules use the Docker CLI instead of directly talking
+to the API. The modules support mostly the same interface as the API based modules, so the main difference is that
+instead of some Python requirements, they depend on the Docker CLI tool ``docker``.
+
+
+Minor Changes
+-------------
+
+- docker_image - allow to specify labels and ``/dev/shm`` size when building images (https://github.com/ansible-collections/community.docker/issues/726, https://github.com/ansible-collections/community.docker/pull/727).
+- docker_image - allow to specify memory size and swap memory size in other units than bytes (https://github.com/ansible-collections/community.docker/pull/727).
+
+Bugfixes
+--------
+
+- Use ``unix:///var/run/docker.sock`` instead of the legacy ``unix://var/run/docker.sock`` as default for ``docker_host`` (https://github.com/ansible-collections/community.docker/pull/736).
+
+New Modules
+-----------
+
+- docker_compose_v2 - Manage multi-container Docker applications with Docker Compose CLI plugin
+- docker_image_build - Build Docker images using Docker buildx
+- docker_image_pull - Pull Docker images from registries
+- docker_image_push - Push Docker images to registries
+- docker_image_remove - Remove Docker images
+- docker_image_tag - Tag Docker images with new names and/or tags
+
 v3.5.0
 ======
 
