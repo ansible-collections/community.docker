@@ -81,6 +81,50 @@ Most plugins and modules can be configured by the following parameters:
         This option is not available for the CLI based plugins. It is mainly needed for legacy systems and should be avoided.
 
 
+Module default group
+....................
+
+To avoid having to specify common parameters for all the modules in every task, you can use the ``community.docker.docker`` :ref:`module defaults group <module_defaults_groups>`, or its short name ``docker``. Please note that the Docker Stack modules (:ansplugin:`community.docker.docker_stack#module`, :ansplugin:`community.docker.docker_stack_info#module`, and :ansplugin:`community.docker.docker_stack_task_info#module`) are not part of the defaults group.
+
+.. code-block:: yaml+jinja
+
+    ---
+    - name: Pull and image and start the container
+      hosts: localhost
+      gather_facts: false
+      module_defaults:
+        group/community.docker.docker:
+          # Select Docker Daemon on other host
+          docker_host: tcp://192.0.2.23:2376
+          # Configure TLS
+          tls: true
+          validate_certs: true
+          tls_hostname: docker.example.com
+          cacert_path: /path/to/cacert.pem
+          # Increase timeout
+          timeout: 120
+      tasks:
+        - name: Pull image
+          community.docker.docker_image_pull:
+            name: python
+            tag: 3.12
+
+        - name: Start container
+          community.docker.docker_container:
+            cleanup: true
+            command: python --version
+            detach: false
+            image: python:3.12
+            name: my-python-container
+            output_logs: true
+
+        - name: Show output
+          ansible.builtin.debug:
+            msg: "{{ output.container.Output }}"
+
+Here the two ``community.docker`` tasks will use the options set for the module defaults group.
+
+
 Environment variables
 .....................
 
