@@ -86,6 +86,12 @@ Module default group
 
 To avoid having to specify common parameters for all the modules in every task, you can use the ``community.docker.docker`` :ref:`module defaults group <module_defaults_groups>`, or its short name ``docker``. Please note that the Docker Swarm stack modules (:ansplugin:`community.docker.docker_stack#module`, :ansplugin:`community.docker.docker_stack_info#module`, and :ansplugin:`community.docker.docker_stack_task_info#module`) are not part of the defaults group.
 
+.. note::
+
+  Module default groups only work for modules, not for plugins (connection and inventory plugins).
+
+The following example shows how the module default group can be used in a playbook:
+
 .. code-block:: yaml+jinja
 
     ---
