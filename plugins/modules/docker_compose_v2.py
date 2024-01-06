@@ -69,6 +69,20 @@ options:
       - stopped
       - restarted
       - present
+  pull:
+    description:
+      - Whether to pull images before running. This is used when C(docker compose up) is ran.
+      - V(always) ensures that the images are always pulled, even when already present on the Docker daemon.
+      - V(missing) only pulls them when they are not present on the Docker daemon.
+      - V(never) never pulls images. If they are not present, the module will fail when trying to create the containers that need them.
+      - V(policy) use the C(pull_policy) defined for the service to figure out what to do.
+    type: str
+    choices:
+      - always
+      - missing
+      - never
+      - policy
+    default: policy
   dependencies:
     description:
       - When O(state) is V(present) or V(restarted), specify whether or not to include linked services.
@@ -90,8 +104,8 @@ options:
       - Use with O(state=absent) to remove all images or only local images.
     type: str
     choices:
-      - 'all'
-      - 'local'
+      - all
+      - local
   remove_volumes:
     description:
       - Use with O(state=absent) to remove data volumes.
@@ -482,6 +496,7 @@ class ContainerManager(DockerBaseClass):
         self.profiles = parameters['profiles']
         self.state = parameters['state']
         self.dependencies = parameters['dependencies']
+        self.pull = parameters['pull']
         self.recreate = parameters['recreate']
         self.remove_images = parameters['remove_images']
         self.remove_volumes = parameters['remove_volumes']
@@ -638,6 +653,8 @@ class ContainerManager(DockerBaseClass):
 
     def get_up_cmd(self, dry_run, no_start=False):
         args = self.get_base_args() + ['up', '--detach', '--no-color']
+        if self.pull != 'policy':
+            args.extend(['--pull', self.pull])
         if self.remove_orphans:
             args.append('--remove-orphans')
         if self.recreate == 'always':
@@ -762,6 +779,7 @@ def main():
         profiles=dict(type='list', elements='str'),
         state=dict(type='str', default='present', choices=['absent', 'present', 'stopped', 'restarted']),
         dependencies=dict(type='bool', default=True),
+        pull=dict(type='str', choices=['always', 'missing', 'never', 'policy'], default='policy'),
         recreate=dict(type='str', default='auto', choices=['always', 'never', 'auto']),
         remove_images=dict(type='str', choices=['all', 'local']),
         remove_volumes=dict(type='bool', default=False),
