@@ -84,7 +84,7 @@ Most plugins and modules can be configured by the following parameters:
 Module default group
 ....................
 
-To avoid having to specify common parameters for all the modules in every task, you can use the ``community.docker.docker`` :ref:`module defaults group <module_defaults_groups>`, or its short name ``docker``. Please note that the Docker Stack modules (:ansplugin:`community.docker.docker_stack#module`, :ansplugin:`community.docker.docker_stack_info#module`, and :ansplugin:`community.docker.docker_stack_task_info#module`) are not part of the defaults group.
+To avoid having to specify common parameters for all the modules in every task, you can use the ``community.docker.docker`` :ref:`module defaults group <module_defaults_groups>`, or its short name ``docker``. Please note that the Docker Swarm stack modules (:ansplugin:`community.docker.docker_stack#module`, :ansplugin:`community.docker.docker_stack_info#module`, and :ansplugin:`community.docker.docker_stack_task_info#module`) are not part of the defaults group.
 
 .. code-block:: yaml+jinja
 
@@ -243,17 +243,19 @@ For working with a plain Docker daemon, that is without Swarm, there are connect
         The :ansplugin:`community.docker.docker_plugin module <community.docker.docker_plugin#module>` allows you to manage Docker plugins.
 
 
+Docker Compose
+--------------
+
 Docker Compose v2
------------------
+.................
 
 The :ansplugin:`community.docker.docker_compose_v2 module <community.docker.docker_compose_v2#module>`
 allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
 This module uses the Docker CLI "compose" plugin (``docker compose``), and thus needs access to the Docker CLI tool.
 No further requirements next to to the CLI tool and its Docker Compose plugin are needed.
 
-
 Docker Compose v1
------------------
+.................
 
 The :ansplugin:`community.docker.docker_compose module <community.docker.docker_compose#module>`
 allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
@@ -269,10 +271,10 @@ Docker Machine
 The :ansplugin:`community.docker.docker_machine inventory plugin <community.docker.docker_machine#inventory>` allows you to dynamically add Docker Machine hosts to your Ansible inventory.
 
 
-Docker stack
-------------
+Docker Swarm stack
+------------------
 
-The :ansplugin:`community.docker.docker_stack module <community.docker.docker_stack#module>` module allows you to control Docker stacks. Information on stacks can be retrieved by the :ansplugin:`community.docker.docker_stack_info module <community.docker.docker_stack_info#module>`, and information on stack tasks can be retrieved by the :ansplugin:`community.docker.docker_stack_task_info module <community.docker.docker_stack_task_info#module>`.
+The :ansplugin:`community.docker.docker_stack module <community.docker.docker_stack#module>` module allows you to control Docker Swarm stacks. Information on Swarm stacks can be retrieved by the :ansplugin:`community.docker.docker_stack_info module <community.docker.docker_stack_info#module>`, and information on Swarm stack tasks can be retrieved by the :ansplugin:`community.docker.docker_stack_task_info module <community.docker.docker_stack_task_info#module>`.
 
 
 Docker Swarm
