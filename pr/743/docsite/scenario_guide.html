@@ -84,17 +84,19 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#plain-docker-daemon-images-networks-volumes-and-containers">Plain Docker daemon: images, networks, volumes, and containers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#docker-compose-v2">Docker Compose v2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#docker-compose-v1">Docker Compose v1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-compose">Docker Compose</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#docker-compose-v2">Docker Compose v2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-compose-v1">Docker Compose v1</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#docker-machine">Docker Machine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#docker-stack">Docker stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-swarm-stack">Docker Swarm stack</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#docker-swarm">Docker Swarm</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#swarm-management">Swarm management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#configuration-management">Configuration management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#swarm-services">Swarm services</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#helpful-links">Helpful links</a></li>
 </ul>
 </li>
 </ul>
@@ -179,12 +181,10 @@
 <li><p><a class="reference internal" href="#requirements" id="id1">Requirements</a></p></li>
 <li><p><a class="reference internal" href="#connecting-to-the-docker-api" id="id2">Connecting to the Docker API</a></p></li>
 <li><p><a class="reference internal" href="#plain-docker-daemon-images-networks-volumes-and-containers" id="id3">Plain Docker daemon: images, networks, volumes, and containers</a></p></li>
-<li><p><a class="reference internal" href="#docker-compose-v2" id="id4">Docker Compose v2</a></p></li>
-<li><p><a class="reference internal" href="#docker-compose-v1" id="id5">Docker Compose v1</a></p></li>
-<li><p><a class="reference internal" href="#docker-machine" id="id6">Docker Machine</a></p></li>
-<li><p><a class="reference internal" href="#docker-stack" id="id7">Docker stack</a></p></li>
-<li><p><a class="reference internal" href="#docker-swarm" id="id8">Docker Swarm</a></p></li>
-<li><p><a class="reference internal" href="#helpful-links" id="id9">Helpful links</a></p></li>
+<li><p><a class="reference internal" href="#docker-compose" id="id4">Docker Compose</a></p></li>
+<li><p><a class="reference internal" href="#docker-machine" id="id5">Docker Machine</a></p></li>
+<li><p><a class="reference internal" href="#docker-swarm-stack" id="id6">Docker Swarm stack</a></p></li>
+<li><p><a class="reference internal" href="#docker-swarm" id="id7">Docker Swarm</a></p></li>
 </ul>
 </nav>
 <section id="requirements">
@@ -235,7 +235,7 @@
 </section>
 <section id="module-default-group">
 <h3>Module default group<a class="headerlink" href="#module-default-group" title="Link to this heading"></a></h3>
-<p>To avoid having to specify common parameters for all the modules in every task, you can use the <code class="docutils literal notranslate"><span class="pre">community.docker.docker</span></code> <a class="reference external" href="https://docs.ansible.com/ansible/devel/playbook_guide/playbooks_module_defaults.html#module-defaults-groups" title="(in Ansible vdevel)"><span class="xref std std-ref">module defaults group</span></a>, or its short name <code class="docutils literal notranslate"><span class="pre">docker</span></code>. Please note that the Docker Stack modules (<a class="reference internal" href="../docker_stack_module.html#ansible-collections-community-docker-docker-stack-module"><span class="std std-ref">community.docker.docker_stack</span></a>, <a class="reference internal" href="../docker_stack_info_module.html#ansible-collections-community-docker-docker-stack-info-module"><span class="std std-ref">community.docker.docker_stack_info</span></a>, and <a class="reference internal" href="../docker_stack_task_info_module.html#ansible-collections-community-docker-docker-stack-task-info-module"><span class="std std-ref">community.docker.docker_stack_task_info</span></a>) are not part of the defaults group.</p>
+<p>To avoid having to specify common parameters for all the modules in every task, you can use the <code class="docutils literal notranslate"><span class="pre">community.docker.docker</span></code> <a class="reference external" href="https://docs.ansible.com/ansible/devel/playbook_guide/playbooks_module_defaults.html#module-defaults-groups" title="(in Ansible vdevel)"><span class="xref std std-ref">module defaults group</span></a>, or its short name <code class="docutils literal notranslate"><span class="pre">docker</span></code>. Please note that the Docker Swarm stack modules (<a class="reference internal" href="../docker_stack_module.html#ansible-collections-community-docker-docker-stack-module"><span class="std std-ref">community.docker.docker_stack</span></a>, <a class="reference internal" href="../docker_stack_info_module.html#ansible-collections-community-docker-docker-stack-info-module"><span class="std std-ref">community.docker.docker_stack_info</span></a>, and <a class="reference internal" href="../docker_stack_task_info_module.html#ansible-collections-community-docker-docker-stack-task-info-module"><span class="std std-ref">community.docker.docker_stack_task_info</span></a>) are not part of the defaults group.</p>
 <div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pull and image and start the container</span>
 <span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
@@ -383,31 +383,34 @@ by Docker SDK for Python.</p>
 </dl>
 </div></blockquote>
 </section>
+<section id="docker-compose">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Docker Compose</a><a class="headerlink" href="#docker-compose" title="Link to this heading"></a></h2>
 <section id="docker-compose-v2">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Docker Compose v2</a><a class="headerlink" href="#docker-compose-v2" title="Link to this heading"></a></h2>
+<h3>Docker Compose v2<a class="headerlink" href="#docker-compose-v2" title="Link to this heading"></a></h3>
 <p>The <a class="reference internal" href="../docker_compose_v2_module.html#ansible-collections-community-docker-docker-compose-v2-module"><span class="std std-ref">community.docker.docker_compose_v2 module</span></a>
 allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
 This module uses the Docker CLI “compose” plugin (<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code>), and thus needs access to the Docker CLI tool.
 No further requirements next to to the CLI tool and its Docker Compose plugin are needed.</p>
 </section>
 <section id="docker-compose-v1">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Docker Compose v1</a><a class="headerlink" href="#docker-compose-v1" title="Link to this heading"></a></h2>
+<h3>Docker Compose v1<a class="headerlink" href="#docker-compose-v1" title="Link to this heading"></a></h3>
 <p>The <a class="reference internal" href="../docker_compose_module.html#ansible-collections-community-docker-docker-compose-module"><span class="std std-ref">community.docker.docker_compose module</span></a>
 allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
 This module uses the out-dated and End of Life version 1.x of Docker Compose. It should mainly be used for legacy systems
 which still have to use that version of Docker Compose.</p>
 <p>You need to install the <a class="reference external" href="https://pypi.org/project/docker-compose/">old Python docker-compose</a> on the remote machines to use the module.</p>
 </section>
+</section>
 <section id="docker-machine">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Docker Machine</a><a class="headerlink" href="#docker-machine" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Docker Machine</a><a class="headerlink" href="#docker-machine" title="Link to this heading"></a></h2>
 <p>The <a class="reference internal" href="../docker_machine_inventory.html#ansible-collections-community-docker-docker-machine-inventory"><span class="std std-ref">community.docker.docker_machine inventory plugin</span></a> allows you to dynamically add Docker Machine hosts to your Ansible inventory.</p>
 </section>
-<section id="docker-stack">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">Docker stack</a><a class="headerlink" href="#docker-stack" title="Link to this heading"></a></h2>
-<p>The <a class="reference internal" href="../docker_stack_module.html#ansible-collections-community-docker-docker-stack-module"><span class="std std-ref">community.docker.docker_stack module</span></a> module allows you to control Docker stacks. Information on stacks can be retrieved by the <a class="reference internal" href="../docker_stack_info_module.html#ansible-collections-community-docker-docker-stack-info-module"><span class="std std-ref">community.docker.docker_stack_info module</span></a>, and information on stack tasks can be retrieved by the <a class="reference internal" href="../docker_stack_task_info_module.html#ansible-collections-community-docker-docker-stack-task-info-module"><span class="std std-ref">community.docker.docker_stack_task_info module</span></a>.</p>
+<section id="docker-swarm-stack">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Docker Swarm stack</a><a class="headerlink" href="#docker-swarm-stack" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="../docker_stack_module.html#ansible-collections-community-docker-docker-stack-module"><span class="std std-ref">community.docker.docker_stack module</span></a> module allows you to control Docker Swarm stacks. Information on Swarm stacks can be retrieved by the <a class="reference internal" href="../docker_stack_info_module.html#ansible-collections-community-docker-docker-stack-info-module"><span class="std std-ref">community.docker.docker_stack_info module</span></a>, and information on Swarm stack tasks can be retrieved by the <a class="reference internal" href="../docker_stack_task_info_module.html#ansible-collections-community-docker-docker-stack-task-info-module"><span class="std std-ref">community.docker.docker_stack_task_info module</span></a>.</p>
 </section>
 <section id="docker-swarm">
-<h2><a class="toc-backref" href="#id8" role="doc-backlink">Docker Swarm</a><a class="headerlink" href="#docker-swarm" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Docker Swarm</a><a class="headerlink" href="#docker-swarm" title="Link to this heading"></a></h2>
 <p>The community.docker collection provides multiple plugins and modules for managing Docker Swarms.</p>
 <section id="swarm-management">
 <h3>Swarm management<a class="headerlink" href="#swarm-management" title="Link to this heading"></a></h3>
@@ -443,11 +446,6 @@ which still have to use that version of Docker Compose.</p>
 <h3>Swarm services<a class="headerlink" href="#swarm-services" title="Link to this heading"></a></h3>
 <p>Docker Swarm services can be created and updated with the <a class="reference internal" href="../docker_swarm_service_module.html#ansible-collections-community-docker-docker-swarm-service-module"><span class="std std-ref">community.docker.docker_swarm_service module</span></a>, and information on them can be queried by the <a class="reference internal" href="../docker_swarm_service_info_module.html#ansible-collections-community-docker-docker-swarm-service-info-module"><span class="std std-ref">community.docker.docker_swarm_service_info module</span></a>.</p>
 </section>
-</section>
-<section id="helpful-links">
-<h2><a class="toc-backref" href="#id9" role="doc-backlink">Helpful links</a><a class="headerlink" href="#helpful-links" title="Link to this heading"></a></h2>
-<p>Still using Dockerfile to build images? Check out <a class="reference external" href="https://github.com/ansible-community/ansible-bender">ansible-bender</a>, and start building images from your Ansible playbooks.</p>
-<p>Use <a class="reference external" href="https://learn.openshift.com/ansibleop/ansible-operator-overview/">Ansible Operator</a> to launch your docker-compose file on <a class="reference external" href="https://www.okd.io/">OpenShift</a>. Go from an app on your laptop to a fully scalable app in the cloud with Kubernetes in just a few moments.</p>
 </section>
 </section>
 
