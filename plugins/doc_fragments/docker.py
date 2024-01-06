@@ -48,13 +48,15 @@ options:
               instead. If the environment variable is not set, the default value will be used.
         type: int
         default: 60
-    ca_cert:
+    ca_path:
         description:
             - Use a CA certificate when performing server verification by providing the path to a CA certificate file.
             - If the value is not specified in the task and the environment variable E(DOCKER_CERT_PATH) is set,
               the file C(ca.pem) from the directory specified in the environment variable E(DOCKER_CERT_PATH) will be used.
+            - This option was called O(ca_cert) and got renamed to O(ca_path) in community.docker 3.6.0. The old name has
+              been added as an alias and can still be used.
         type: path
-        aliases: [ tls_ca_cert, cacert_path ]
+        aliases: [ ca_cert, tls_ca_cert, cacert_path ]
     client_cert:
         description:
             - Path to the client's TLS certificate file.
@@ -135,9 +137,11 @@ options:
     timeout:
         vars:
             - name: ansible_docker_timeout
-    ca_cert:
+    ca_path:
         vars:
             - name: ansible_docker_ca_cert
+            - name: ansible_docker_ca_path
+              version_added: 3.6.0
     client_cert:
         vars:
             - name: ansible_docker_client_cert
@@ -223,13 +227,15 @@ options:
               instead. If the environment variable is not set, the default value will be used.
         type: int
         default: 60
-    ca_cert:
+    ca_path:
         description:
             - Use a CA certificate when performing server verification by providing the path to a CA certificate file.
             - If the value is not specified in the task and the environment variable E(DOCKER_CERT_PATH) is set,
               the file C(ca.pem) from the directory specified in the environment variable E(DOCKER_CERT_PATH) will be used.
+            - This option was called O(ca_cert) and got renamed to O(ca_path) in community.docker 3.6.0. The old name has
+              been added as an alias and can still be used.
         type: path
-        aliases: [ tls_ca_cert, cacert_path ]
+        aliases: [ ca_cert, tls_ca_cert, cacert_path ]
     client_cert:
         description:
             - Path to the client's TLS certificate file.
@@ -330,13 +336,13 @@ options:
         type: str
         default: auto
         aliases: [ docker_api_version ]
-    ca_cert:
+    ca_path:
         description:
             - Use a CA certificate when performing server verification by providing the path to a CA certificate file.
             - If the value is not specified in the task and the environment variable E(DOCKER_CERT_PATH) is set,
               the file C(ca.pem) from the directory specified in the environment variable E(DOCKER_CERT_PATH) will be used.
         type: path
-        aliases: [ tls_ca_cert, cacert_path ]
+        aliases: [ ca_cert, tls_ca_cert, cacert_path ]
     client_cert:
         description:
             - Path to the client's TLS certificate file.

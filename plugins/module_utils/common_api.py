@@ -202,7 +202,7 @@ class AnsibleDockerClientBase(Client):
                                          'DOCKER_TLS_HOSTNAME', None, type='str'),
             api_version=self._get_value('api_version', params['api_version'], 'DOCKER_API_VERSION',
                                         'auto', type='str'),
-            cacert_path=self._get_value('cacert_path', params['ca_cert'], 'DOCKER_CERT_PATH', None, type='str'),
+            cacert_path=self._get_value('cacert_path', params['ca_path'], 'DOCKER_CERT_PATH', None, type='str'),
             cert_path=self._get_value('cert_path', params['client_cert'], 'DOCKER_CERT_PATH', None, type='str'),
             key_path=self._get_value('key_path', params['client_key'], 'DOCKER_CERT_PATH', None, type='str'),
             ssl_version=self._get_value('ssl_version', params['ssl_version'], 'DOCKER_SSL_VERSION', None, type='str'),

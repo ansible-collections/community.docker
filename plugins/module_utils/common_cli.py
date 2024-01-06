@@ -33,7 +33,7 @@ DOCKER_COMMON_ARGS = dict(
     docker_host=dict(type='str', default=DEFAULT_DOCKER_HOST, fallback=(env_fallback, ['DOCKER_HOST']), aliases=['docker_url']),
     tls_hostname=dict(type='str', fallback=(env_fallback, ['DOCKER_TLS_HOSTNAME'])),
     api_version=dict(type='str', default='auto', fallback=(env_fallback, ['DOCKER_API_VERSION']), aliases=['docker_api_version']),
-    ca_cert=dict(type='path', aliases=['tls_ca_cert', 'cacert_path']),
+    ca_path=dict(type='path', aliases=['ca_cert', 'tls_ca_cert', 'cacert_path']),
     client_cert=dict(type='path', aliases=['tls_client_cert', 'cert_path']),
     client_key=dict(type='path', aliases=['tls_client_key', 'key_path']),
     tls=dict(type='bool', default=DEFAULT_TLS, fallback=(env_fallback, ['DOCKER_TLS'])),
@@ -67,8 +67,8 @@ class AnsibleDockerClientBase(object):
             self._cli_base.append('--tlsverify')
         elif common_args['tls']:
             self._cli_base.append('--tls')
-        if common_args['ca_cert']:
-            self._cli_base.extend(['--tlscacert', common_args['ca_cert']])
+        if common_args['ca_path']:
+            self._cli_base.extend(['--tlscacert', common_args['ca_path']])
         if common_args['client_cert']:
             self._cli_base.extend(['--tlscert', common_args['client_cert']])
         if common_args['client_key']:

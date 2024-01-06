@@ -26,7 +26,7 @@ DOCKER_COMMON_ARGS = dict(
     tls_hostname=dict(type='str', fallback=(env_fallback, ['DOCKER_TLS_HOSTNAME'])),
     api_version=dict(type='str', default='auto', fallback=(env_fallback, ['DOCKER_API_VERSION']), aliases=['docker_api_version']),
     timeout=dict(type='int', default=DEFAULT_TIMEOUT_SECONDS, fallback=(env_fallback, ['DOCKER_TIMEOUT'])),
-    ca_cert=dict(type='path', aliases=['tls_ca_cert', 'cacert_path']),
+    ca_path=dict(type='path', aliases=['ca_cert', 'tls_ca_cert', 'cacert_path']),
     client_cert=dict(type='path', aliases=['tls_client_cert', 'cert_path']),
     client_key=dict(type='path', aliases=['tls_client_key', 'key_path']),
     ssl_version=dict(type='str', fallback=(env_fallback, ['DOCKER_SSL_VERSION'])),

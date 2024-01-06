@@ -57,11 +57,13 @@ DOCUMENTATION = '''
             description: Path to the client's TLS key file.
             type: path
             aliases: [ tls_client_key, key_path ]
-        ca_cert:
-            description: Use a CA certificate when performing server verification by providing the path to a CA
-                         certificate file.
+        ca_path:
+            description:
+              - Use a CA certificate when performing server verification by providing the path to a CA certificate file.
+              - This option was called O(ca_cert) and got renamed to O(ca_path) in community.docker 3.6.0. The old name has
+                been added as an alias and can still be used.
             type: path
-            aliases: [ tls_ca_cert, cacert_path ]
+            aliases: [ ca_cert, tls_ca_cert, cacert_path ]
         client_cert:
             description: Path to the client's TLS certificate file.
             type: path
@@ -126,7 +128,7 @@ tls: true
 plugin: community.docker.docker_swarm
 docker_host: tcp://my-docker-host:2376
 validate_certs: true
-ca_cert: /somewhere/ca.pem
+ca_path: /somewhere/ca.pem
 client_key: /somewhere/key.pem
 client_cert: /somewhere/cert.pem
 
@@ -176,7 +178,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             tls=self.get_option('tls'),
             tls_verify=self.get_option('validate_certs'),
             key_path=self.get_option('client_key'),
-            cacert_path=self.get_option('ca_cert'),
+            cacert_path=self.get_option('ca_path'),
             cert_path=self.get_option('client_cert'),
             tls_hostname=self.get_option('tls_hostname'),
             api_version=self.get_option('api_version'),
