@@ -605,6 +605,11 @@ class ContainerManager(DockerBaseClass):
 
         result['containers'] = self.list_containers()
         result['images'] = self.list_images()
+        if not result.get('failed'):
+            # Only return stdout and stderr if it's not empty
+            for res in ('stdout', 'stderr'):
+                if result.get(res) == '':
+                    result.pop(res)
         return result
 
     def parse_events(self, stderr, dry_run=False):
@@ -784,6 +789,8 @@ class ContainerManager(DockerBaseClass):
         self.emit_warnings(events)
         result['changed'] = self.has_changes(events)
         result['actions'] = self.extract_actions(events)
+        result['stdout'] = to_native(stdout)
+        result['stderr'] = to_native(stderr)
         self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
@@ -801,6 +808,10 @@ class ContainerManager(DockerBaseClass):
             if container['State'] not in ('created', 'exited', 'stopped', 'killed'):
                 return False
         return True
+
+    @staticmethod
+    def _combine_output(*outputs):
+        return b'\n'.join(out for out in outputs if out)
 
     def cmd_stop(self):
         # Since 'docker compose stop' **always** claims its stopping containers, even if they are already
@@ -826,6 +837,8 @@ class ContainerManager(DockerBaseClass):
         # Compose result
         result['changed'] = self.has_changes(events_1) or self.has_changes(events_2)
         result['actions'] = self.extract_actions(events_1) + self.extract_actions(events_2)
+        result['stdout'] = to_native(self._combine_output(stdout_1, stdout_2))
+        result['stderr'] = to_native(self._combine_output(stderr_1, stderr_2))
         self.update_failed(
             result,
             events_1 + events_2,
@@ -855,6 +868,8 @@ class ContainerManager(DockerBaseClass):
         self.emit_warnings(events)
         result['changed'] = self.has_changes(events)
         result['actions'] = self.extract_actions(events)
+        result['stdout'] = to_native(stdout)
+        result['stderr'] = to_native(stderr)
         self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
@@ -881,6 +896,8 @@ class ContainerManager(DockerBaseClass):
         self.emit_warnings(events)
         result['changed'] = self.has_changes(events)
         result['actions'] = self.extract_actions(events)
+        result['stdout'] = to_native(stdout)
+        result['stderr'] = to_native(stderr)
         self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
