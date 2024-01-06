@@ -415,6 +415,8 @@ DOCKER_STATUS_DONE = frozenset((
     'Removed',
     # An extra, specific to containers
     'Recreated',
+    # Extras for pull events
+    'Pulled',
 ))
 DOCKER_STATUS_WORKING = frozenset((
     'Creating',
@@ -426,11 +428,17 @@ DOCKER_STATUS_WORKING = frozenset((
     'Removing',
     # An extra, specific to containers
     'Recreate',
+    # Extras for pull events
+    'Pulling',
+))
+DOCKER_STATUS_PULL = frozenset((
+    'Pulled',
+    'Pulling',
 ))
 DOCKER_STATUS_ERROR = frozenset((
     'Error',
 ))
-DOCKER_STATUS = frozenset(DOCKER_STATUS_DONE | DOCKER_STATUS_WORKING | DOCKER_STATUS_ERROR)
+DOCKER_STATUS = frozenset(DOCKER_STATUS_DONE | DOCKER_STATUS_WORKING | DOCKER_STATUS_PULL | DOCKER_STATUS_ERROR)
 
 
 class ResourceType(object):
@@ -438,6 +446,7 @@ class ResourceType(object):
     IMAGE = "image"
     VOLUME = "volume"
     CONTAINER = "container"
+    SERVICE = "service"
 
     @classmethod
     def from_docker_compose_event(cls, resource_type):
@@ -456,6 +465,8 @@ ResourceEvent = namedtuple(
 )
 
 
+_DRY_RUN_MARKER = 'DRY-RUN MODE -'
+
 _RE_RESOURCE_EVENT = re.compile(
     r'^'
     r'\s*'
@@ -468,18 +479,15 @@ _RE_RESOURCE_EVENT = re.compile(
     r'$'
 )
 
-_RE_RESOURCE_EVENT_DRY_RUN = re.compile(
+_RE_PULL_EVENT = re.compile(
     r'^'
     r'\s*'
-    r'DRY-RUN MODE -'
+    r'(?P<service>\S+)'
     r'\s+'
-    r'(?P<resource_type>Network|Image|Volume|Container)'
-    r'\s+'
-    r'(?P<resource_id>\S+)'
-    r'\s+'
-    r'(?P<status>\S(?:|.*\S))'
+    r'(?P<status>%s)'
     r'\s*'
     r'$'
+    % '|'.join(re.escape(status) for status in DOCKER_STATUS_PULL)
 )
 
 
@@ -587,7 +595,20 @@ class ContainerManager(DockerBaseClass):
         events = []
         for line in stderr.splitlines():
             line = to_native(line.strip())
-            match = (_RE_RESOURCE_EVENT_DRY_RUN if dry_run else _RE_RESOURCE_EVENT).match(line)
+            if not line:
+                continue
+            if dry_run:
+                if line.startswith(_DRY_RUN_MARKER):
+                    line = line[len(_DRY_RUN_MARKER):].lstrip()
+                else:
+                    # This could be a bug, a change of docker compose's output format, ...
+                    # Tell the user to report it to us :-)
+                    self.client.warn(
+                        'Event line is missing dry-run mode marker: {0!r}. Please report this at '
+                        'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
+                        .format(line)
+                    )
+            match = _RE_RESOURCE_EVENT.match(line)
             if match is not None:
                 status = match.group('status')
                 msg = None
@@ -601,14 +622,25 @@ class ContainerManager(DockerBaseClass):
                         msg,
                     )
                 )
-            else:
-                # This could be a bug, a change of docker compose's output format, ...
-                # Tell the user to report it to us :-)
-                self.client.warn(
-                    'Cannot parse event from line: {0!r}. Please report this at '
-                    'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
-                    .format(line)
+                continue
+            match = _RE_PULL_EVENT.match(line)
+            if match:
+                events.append(
+                    ResourceEvent(
+                        ResourceType.SERVICE,
+                        match.group('service'),
+                        match.group('status'),
+                        None,
+                    )
                 )
+                continue
+            # This could be a bug, a change of docker compose's output format, ...
+            # Tell the user to report it to us :-)
+            self.client.warn(
+                'Cannot parse event from line: {0!r}. Please report this at '
+                'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
+                .format(line)
+            )
         return events
 
     def has_changes(self, events):
@@ -652,7 +684,7 @@ class ContainerManager(DockerBaseClass):
             result['msg'] = '\n'.join(errors)
 
     def get_up_cmd(self, dry_run, no_start=False):
-        args = self.get_base_args() + ['up', '--detach', '--no-color']
+        args = self.get_base_args() + ['up', '--detach', '--no-color', '--quiet-pull']
         if self.pull != 'policy':
             args.extend(['--pull', self.pull])
         if self.remove_orphans:
