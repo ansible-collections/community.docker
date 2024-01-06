@@ -78,6 +78,8 @@ Most plugins and modules can be configured by the following parameters:
     ssl_version
         Provide a valid SSL version number. The default value is determined by the Docker SDK for Python.
 
+        This option is not available for the CLI based plugins. It is mainly needed for legacy systems and should be avoided.
+
 
 Environment variables
 .....................
