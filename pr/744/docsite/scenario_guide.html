@@ -219,7 +219,7 @@
 </dd>
 <dt>validate_certs</dt><dd><p>Secure the connection to the API by using TLS and verifying the authenticity of the Docker host server. Default is <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p>
 </dd>
-<dt>cacert_path</dt><dd><p>Use a CA certificate when performing server verification by providing the path to a CA certificate file.</p>
+<dt>ca_path</dt><dd><p>Use a CA certificate when performing server verification by providing the path to a CA certificate file.</p>
 </dd>
 <dt>cert_path</dt><dd><p>Path to the client’s TLS certificate file.</p>
 </dd>
@@ -253,7 +253,7 @@
 <span class="w">      </span><span class="nt">tls</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">      </span><span class="nt">validate_certs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">      </span><span class="nt">tls_hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker.example.com</span>
-<span class="w">      </span><span class="nt">cacert_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/cacert.pem</span>
+<span class="w">      </span><span class="nt">ca_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/cacert.pem</span>
 <span class="w">      </span><span class="c1"># Increase timeout</span>
 <span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120</span>
 <span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
