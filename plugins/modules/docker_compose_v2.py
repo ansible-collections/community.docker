@@ -375,16 +375,17 @@ actions:
       description:
         - The status change that happened.
       type: str
-      sample: Created
+      sample: Creating
       choices:
-        - Started
-        - Exited
-        - Restarted
-        - Created
-        - Stopped
-        - Killed
-        - Removed
-        - Recreated
+        - Starting
+        - Exiting
+        - Restarting
+        - Creating
+        - Stopping
+        - Killing
+        - Removing
+        - Recreating
+        - Pulling
 '''
 
 import os
