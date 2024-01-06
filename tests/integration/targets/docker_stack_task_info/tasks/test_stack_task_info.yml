@@ -18,7 +18,7 @@
     assert:
       that:
         - 'output is failed'
-        - '"Error running docker stack" in output.msg'
+        - '"Error response from daemon: This node is not a swarm manager" in output.msg'
 
   - name: Create a swarm cluster
     docker_swarm:
