@@ -317,9 +317,3 @@ Swarm services
 ..............
 
 Docker Swarm services can be created and updated with the :ansplugin:`community.docker.docker_swarm_service module <community.docker.docker_swarm_service#module>`, and information on them can be queried by the :ansplugin:`community.docker.docker_swarm_service_info module <community.docker.docker_swarm_service_info#module>`.
-
-
-Helpful links
--------------
-
-Still using Dockerfile to build images? Check out `ansible-bender <https://github.com/ansible-community/ansible-bender>`_, and start building images from your Ansible playbooks.
