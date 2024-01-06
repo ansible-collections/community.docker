@@ -148,11 +148,26 @@ For working with a plain Docker daemon, that is without Swarm, there are connect
     docker_image module
         The :ansplugin:`community.docker.docker_image module <community.docker.docker_image#module>` provides full control over images, including: build, pull, push, tag and remove.
 
-    docker_image_load
-        The :ansplugin:`community.docker.docker_image_load module <community.docker.docker_image_load#module>` allows you to import one or multiple images from tarballs.
+    docker_image_build
+        The :ansplugin:`community.docker.docker_image_build module <community.docker.docker_image_build#module>` allows you to build a Docker image using Docker buildx.
 
     docker_image_info module
         The :ansplugin:`community.docker.docker_image_info module <community.docker.docker_image_info#module>` allows you to list and inspect images.
+
+    docker_image_load
+        The :ansplugin:`community.docker.docker_image_load module <community.docker.docker_image_load#module>` allows you to import one or multiple images from tarballs.
+
+    docker_image_pull
+        The :ansplugin:`community.docker.docker_image_pull module <community.docker.docker_image_pull#module>` allows you to pull a Docker image from a registry.
+
+    docker_image_push
+        The :ansplugin:`community.docker.docker_image_push module <community.docker.docker_image_push#module>` allows you to push a Docker image to a registry.
+
+    docker_image_remove
+        The :ansplugin:`community.docker.docker_image_remove module <community.docker.docker_image_remove#module>` allows you to remove and/or untag a Docker image from the Docker daemon.
+
+    docker_image_tag
+        The :ansplugin:`community.docker.docker_image_tag module <community.docker.docker_image_tag#module>` allows you to tag a Docker image with additional names and/or tags.
 
     docker_network module
         The :ansplugin:`community.docker.docker_network module <community.docker.docker_network#module>` provides full control over Docker networks.
@@ -182,14 +197,24 @@ For working with a plain Docker daemon, that is without Swarm, there are connect
         The :ansplugin:`community.docker.docker_plugin module <community.docker.docker_plugin#module>` allows you to manage Docker plugins.
 
 
-Docker Compose
---------------
+Docker Compose v2
+-----------------
+
+The :ansplugin:`community.docker.docker_compose_v2 module <community.docker.docker_compose_v2#module>`
+allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
+This module uses the Docker CLI "compose" plugin (``docker compose``), and thus needs access to the Docker CLI tool.
+No further requirements next to to the CLI tool and its Docker Compose plugin are needed.
+
+
+Docker Compose v1
+-----------------
 
 The :ansplugin:`community.docker.docker_compose module <community.docker.docker_compose#module>`
 allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
-Supports compose versions 1 and 2.
+This module uses the out-dated and End of Life version 1.x of Docker Compose. It should mainly be used for legacy systems
+which still have to use that version of Docker Compose.
 
-Next to Docker SDK for Python, you need to install `docker-compose <https://github.com/docker/compose>`_ on the remote machines to use the module.
+You need to install the `old Python docker-compose <https://pypi.org/project/docker-compose/>`_ on the remote machines to use the module.
 
 
 Docker Machine
@@ -239,7 +264,6 @@ The community.docker collection offers modules to manage Docker Swarm configurat
 
     docker_secret module
         The :ansplugin:`community.docker.docker_secret module <community.docker.docker_secret#module>` allows you to create and modify Docker Swarm secrets.
-
 
 Swarm services
 ..............
