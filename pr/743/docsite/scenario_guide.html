@@ -236,6 +236,11 @@
 <section id="module-default-group">
 <h3>Module default group<a class="headerlink" href="#module-default-group" title="Link to this heading"></a></h3>
 <p>To avoid having to specify common parameters for all the modules in every task, you can use the <code class="docutils literal notranslate"><span class="pre">community.docker.docker</span></code> <a class="reference external" href="https://docs.ansible.com/ansible/devel/playbook_guide/playbooks_module_defaults.html#module-defaults-groups" title="(in Ansible vdevel)"><span class="xref std std-ref">module defaults group</span></a>, or its short name <code class="docutils literal notranslate"><span class="pre">docker</span></code>. Please note that the Docker Swarm stack modules (<a class="reference internal" href="../docker_stack_module.html#ansible-collections-community-docker-docker-stack-module"><span class="std std-ref">community.docker.docker_stack</span></a>, <a class="reference internal" href="../docker_stack_info_module.html#ansible-collections-community-docker-docker-stack-info-module"><span class="std std-ref">community.docker.docker_stack_info</span></a>, and <a class="reference internal" href="../docker_stack_task_info_module.html#ansible-collections-community-docker-docker-stack-task-info-module"><span class="std std-ref">community.docker.docker_stack_task_info</span></a>) are not part of the defaults group.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Module default groups only work for modules, not for plugins (connection and inventory plugins).</p>
+</div>
+<p>The following example shows how the module default group can be used in a playbook:</p>
 <div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pull and image and start the container</span>
 <span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
