@@ -360,10 +360,12 @@ actions:
       type: str
       sample: container
       choices:
-        - network
-        - image
-        - volume
         - container
+        - image
+        - network
+        - service
+        - unknown
+        - volume
     id:
       description:
         - The ID of the resource that was changed.
@@ -391,6 +393,7 @@ import traceback
 from collections import namedtuple
 
 from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.six.moves import shlex_quote
 
 from ansible_collections.community.docker.plugins.module_utils.common_cli import (
     AnsibleModuleDockerClient,
@@ -442,6 +445,7 @@ DOCKER_STATUS = frozenset(DOCKER_STATUS_DONE | DOCKER_STATUS_WORKING | DOCKER_ST
 
 
 class ResourceType(object):
+    UNKNOWN = "unknown"
     NETWORK = "network"
     IMAGE = "image"
     VOLUME = "volume"
@@ -488,6 +492,17 @@ _RE_PULL_EVENT = re.compile(
     r'\s*'
     r'$'
     % '|'.join(re.escape(status) for status in DOCKER_STATUS_PULL)
+)
+
+_RE_ERROR_EVENT = re.compile(
+    r'^'
+    r'\s*'
+    r'(?P<resource_id>\S+)'
+    r'\s+'
+    r'(?P<status>%s)'
+    r'\s*'
+    r'$'
+    % '|'.join(re.escape(status) for status in DOCKER_STATUS_ERROR)
 )
 
 
@@ -593,6 +608,7 @@ class ContainerManager(DockerBaseClass):
 
     def parse_events(self, stderr, dry_run=False):
         events = []
+        error_event = None
         for line in stderr.splitlines():
             line = to_native(line.strip())
             if not line:
@@ -600,7 +616,7 @@ class ContainerManager(DockerBaseClass):
             if dry_run:
                 if line.startswith(_DRY_RUN_MARKER):
                     line = line[len(_DRY_RUN_MARKER):].lstrip()
-                else:
+                elif error_event is None:
                     # This could be a bug, a change of docker compose's output format, ...
                     # Tell the user to report it to us :-)
                     self.client.warn(
@@ -614,14 +630,17 @@ class ContainerManager(DockerBaseClass):
                 msg = None
                 if status not in DOCKER_STATUS:
                     status, msg = msg, status
-                events.append(
-                    ResourceEvent(
-                        ResourceType.from_docker_compose_event(match.group('resource_type')),
-                        match.group('resource_id'),
-                        status,
-                        msg,
-                    )
+                event = ResourceEvent(
+                    ResourceType.from_docker_compose_event(match.group('resource_type')),
+                    match.group('resource_id'),
+                    status,
+                    msg,
                 )
+                events.append(event)
+                if status in DOCKER_STATUS_ERROR:
+                    error_event = event
+                else:
+                    error_event = None
                 continue
             match = _RE_PULL_EVENT.match(line)
             if match:
@@ -633,6 +652,37 @@ class ContainerManager(DockerBaseClass):
                         None,
                     )
                 )
+                error_event = None
+                continue
+            match = _RE_ERROR_EVENT.match(line)
+            if match:
+                error_event = ResourceEvent(
+                    ResourceType.UNKNOWN,
+                    match.group('resource_id'),
+                    match.group('status'),
+                    None,
+                )
+                events.append(error_event)
+                continue
+            if error_event is not None:
+                # Unparsable line that apparently belongs to the previous error event
+                error_event = ResourceEvent(
+                    error_event.resource_type,
+                    error_event.resource_id,
+                    error_event.status,
+                    '\n'.join(msg for msg in [error_event.msg, line] if msg is not None),
+                )
+                events[-1] = error_event
+                continue
+            if line.startswith('Error '):
+                # Error message that is independent of an error event
+                error_event = ResourceEvent(
+                    ResourceType.UNKNOWN,
+                    '',
+                    'Error',
+                    line,
+                )
+                events.append(error_event)
                 continue
             # This could be a bug, a change of docker compose's output format, ...
             # Tell the user to report it to us :-)
@@ -670,18 +720,39 @@ class ContainerManager(DockerBaseClass):
                     msg=event.msg,
                 ))
 
-    def update_failed(self, result, events):
+    def is_failed(self, events, rc):
+        if rc:
+            return True
+        for event in events:
+            if event.status in DOCKER_STATUS_ERROR:
+                return True
+        return False
+
+    def update_failed(self, result, events, args, stdout, stderr, rc):
         errors = []
         for event in events:
             if event.status in DOCKER_STATUS_ERROR:
-                errors.append('Error when processing {resource_type} {resource_id}: {status}'.format(
+                msg = 'Error when processing {resource_type} {resource_id}: '
+                if event.resource_type == 'unknown':
+                    msg = 'Error when processing {resource_id}: '
+                    if event.resource_id == '':
+                        msg = 'General error: '
+                msg += '{status}' if event.msg is None else '{msg}'
+                errors.append(msg.format(
                     resource_type=event.resource_type,
                     resource_id=event.resource_id,
                     status=event.status,
+                    msg=event.msg,
                 ))
-        if errors:
+        if errors or rc:
+            if not errors:
+                errors.append('Return code {code} is non-zero'.format(code=rc))
             result['failed'] = True
             result['msg'] = '\n'.join(errors)
+            result['cmd'] = ' '.join(shlex_quote(arg) for arg in [self.client.get_cli()] + args)
+            result['stdout'] = to_native(stdout)
+            result['stderr'] = to_native(stderr)
+            result['rc'] = rc
 
     def get_up_cmd(self, dry_run, no_start=False):
         args = self.get_base_args() + ['up', '--detach', '--no-color', '--quiet-pull']
@@ -707,12 +778,12 @@ class ContainerManager(DockerBaseClass):
     def cmd_up(self):
         result = dict()
         args = self.get_up_cmd(self.check_mode)
-        dummy, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src, check_rc=True)
+        rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode)
         self.emit_warnings(events)
         result['changed'] = self.has_changes(events)
         result['actions'] = self.extract_actions(events)
-        self.update_failed(result, events)
+        self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
     def get_stop_cmd(self, dry_run):
@@ -736,22 +807,32 @@ class ContainerManager(DockerBaseClass):
 
         result = dict()
         # Make sure all containers are created
-        args = self.get_up_cmd(self.check_mode, no_start=True)
-        dummy, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src, check_rc=True)
-        events_1 = self.parse_events(stderr, dry_run=self.check_mode)
+        args_1 = self.get_up_cmd(self.check_mode, no_start=True)
+        rc_1, stdout_1, stderr_1 = self.client.call_cli(*args_1, cwd=self.project_src)
+        events_1 = self.parse_events(stderr_1, dry_run=self.check_mode)
         self.emit_warnings(events_1)
-        if not self._are_containers_stopped():
+        is_failed_1 = self.is_failed(events_1, rc_1)
+        if not is_failed_1 and not self._are_containers_stopped():
             # Make sure all containers are stopped
-            args = self.get_stop_cmd(self.check_mode)
-            dummy, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src, check_rc=True)
-            events_2 = self.parse_events(stderr, dry_run=self.check_mode)
+            args_2 = self.get_stop_cmd(self.check_mode)
+            rc_2, stdout_2, stderr_2 = self.client.call_cli(*args_2, cwd=self.project_src)
+            events_2 = self.parse_events(stderr_2, dry_run=self.check_mode)
             self.emit_warnings(events_2)
         else:
+            args_2 = []
+            rc_2, stdout_2, stderr_2 = 0, b'', b''
             events_2 = []
         # Compose result
         result['changed'] = self.has_changes(events_1) or self.has_changes(events_2)
         result['actions'] = self.extract_actions(events_1) + self.extract_actions(events_2)
-        self.update_failed(result, events_1 + events_2)
+        self.update_failed(
+            result,
+            events_1 + events_2,
+            args_1 if is_failed_1 else args_2,
+            stdout_1 if is_failed_1 else stdout_2,
+            stderr_1 if is_failed_1 else stderr_2,
+            rc_1 if is_failed_1 else rc_2,
+        )
         return result
 
     def get_restart_cmd(self, dry_run):
@@ -768,12 +849,12 @@ class ContainerManager(DockerBaseClass):
     def cmd_restart(self):
         result = dict()
         args = self.get_restart_cmd(self.check_mode)
-        dummy, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src, check_rc=True)
+        rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode)
         self.emit_warnings(events)
         result['changed'] = self.has_changes(events)
         result['actions'] = self.extract_actions(events)
-        self.update_failed(result, events)
+        self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
     def get_down_cmd(self, dry_run):
@@ -794,12 +875,12 @@ class ContainerManager(DockerBaseClass):
     def cmd_down(self):
         result = dict()
         args = self.get_down_cmd(self.check_mode)
-        dummy, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src, check_rc=True)
+        rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode)
         self.emit_warnings(events)
         result['changed'] = self.has_changes(events)
         result['actions'] = self.extract_actions(events)
-        self.update_failed(result, events)
+        self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
 
