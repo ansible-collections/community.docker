@@ -320,7 +320,6 @@ options:
             - When verifying the authenticity of the Docker Host server, provide the expected name of the server.
             - If the value is not specified in the task, the value of environment variable E(DOCKER_TLS_HOSTNAME) will
               be used instead. If the environment variable is not set, the default value will be used.
-            - Note that this option had a default value V(localhost) in older versions. It was removed in community.docker 3.0.0.
         type: str
     api_version:
         description:
