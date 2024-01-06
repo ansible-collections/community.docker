@@ -121,7 +121,7 @@ tls: true
 plugin: community.docker.docker_containers
 docker_host: tcp://my-docker-host:2376
 validate_certs: true
-ca_cert: /somewhere/ca.pem
+ca_path: /somewhere/ca.pem
 client_key: /somewhere/key.pem
 client_cert: /somewhere/cert.pem
 
