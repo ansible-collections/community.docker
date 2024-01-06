@@ -79,20 +79,24 @@
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#connecting-to-the-docker-api">Connecting to the Docker API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#parameters">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-default-group">Module default group</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#environment-variables">Environment variables</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#plain-docker-daemon-images-networks-volumes-and-containers">Plain Docker daemon: images, networks, volumes, and containers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#docker-compose">Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-compose">Docker Compose</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#docker-compose-v2">Docker Compose v2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-compose-v1">Docker Compose v1</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#docker-machine">Docker Machine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#docker-stack">Docker stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-swarm-stack">Docker Swarm stack</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#docker-swarm">Docker Swarm</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#swarm-management">Swarm management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#configuration-management">Configuration management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#swarm-services">Swarm services</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#helpful-links">Helpful links</a></li>
 </ul>
 </li>
 </ul>
@@ -174,18 +178,17 @@
 <p>The <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/community/docker/">community.docker collection</a> offers several modules and plugins for orchestrating Docker containers and Docker Swarm.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#requirements" id="id2">Requirements</a></p></li>
-<li><p><a class="reference internal" href="#connecting-to-the-docker-api" id="id3">Connecting to the Docker API</a></p></li>
-<li><p><a class="reference internal" href="#plain-docker-daemon-images-networks-volumes-and-containers" id="id4">Plain Docker daemon: images, networks, volumes, and containers</a></p></li>
-<li><p><a class="reference internal" href="#docker-compose" id="id5">Docker Compose</a></p></li>
-<li><p><a class="reference internal" href="#docker-machine" id="id6">Docker Machine</a></p></li>
-<li><p><a class="reference internal" href="#docker-stack" id="id7">Docker stack</a></p></li>
-<li><p><a class="reference internal" href="#docker-swarm" id="id8">Docker Swarm</a></p></li>
-<li><p><a class="reference internal" href="#helpful-links" id="id9">Helpful links</a></p></li>
+<li><p><a class="reference internal" href="#requirements" id="id1">Requirements</a></p></li>
+<li><p><a class="reference internal" href="#connecting-to-the-docker-api" id="id2">Connecting to the Docker API</a></p></li>
+<li><p><a class="reference internal" href="#plain-docker-daemon-images-networks-volumes-and-containers" id="id3">Plain Docker daemon: images, networks, volumes, and containers</a></p></li>
+<li><p><a class="reference internal" href="#docker-compose" id="id4">Docker Compose</a></p></li>
+<li><p><a class="reference internal" href="#docker-machine" id="id5">Docker Machine</a></p></li>
+<li><p><a class="reference internal" href="#docker-swarm-stack" id="id6">Docker Swarm stack</a></p></li>
+<li><p><a class="reference internal" href="#docker-swarm" id="id7">Docker Swarm</a></p></li>
 </ul>
 </nav>
 <section id="requirements">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
 <p>Most of the modules and plugins in community.docker require the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a>. The SDK needs to be installed on the machines where the modules and plugins are executed, and for the Python version(s) with which the modules and plugins are executed. You can use the <a class="reference external" href="https://docs.ansible.com/ansible/devel/collections/community/general/python_requirements_info_module.html#ansible-collections-community-general-python-requirements-info-module" title="(in Ansible vdevel)"><span>community.general.python_requirements_info module</span></a> to make sure that the Docker SDK for Python is installed on the correct machine and for the Python version used by Ansible.</p>
 <p>Note that plugins (inventory plugins and connection plugins) are always executed in the context of Ansible itself. If you use a plugin that requires the Docker SDK for Python, you need to install it on the machine running <code class="docutils literal notranslate"><span class="pre">ansible</span></code> or <code class="docutils literal notranslate"><span class="pre">ansible-playbook</span></code> and for the same Python interpreter used by Ansible. To see which Python is used, run <code class="docutils literal notranslate"><span class="pre">ansible</span> <span class="pre">--version</span></code>.</p>
 <p>You can install the Docker SDK for Python for Python 3.6 or later as follows:</p>
@@ -199,14 +202,14 @@
 <p>Note that the Docker SDK for Python was called <code class="docutils literal notranslate"><span class="pre">docker-py</span></code> on PyPi before version 2.0.0. Please avoid installing this really old version, and make sure to not install both <code class="docutils literal notranslate"><span class="pre">docker</span></code> and <code class="docutils literal notranslate"><span class="pre">docker-py</span></code>. Installing both will result in a broken installation. If this happens, Ansible will detect it and inform you about it. If that happens, you must uninstall both and reinstall the correct version. If in doubt, always install <code class="docutils literal notranslate"><span class="pre">docker</span></code> and never <code class="docutils literal notranslate"><span class="pre">docker-py</span></code>.</p>
 </section>
 <section id="connecting-to-the-docker-api">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Connecting to the Docker API</a><a class="headerlink" href="#connecting-to-the-docker-api" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Connecting to the Docker API</a><a class="headerlink" href="#connecting-to-the-docker-api" title="Link to this heading"></a></h2>
 <p>You can connect to a local or remote API using parameters passed to each task or by setting environment variables. The order of precedence is command line parameters and then environment variables. If neither a command line option nor an environment variable is found, Ansible uses the default value  provided under <a class="reference internal" href="#parameters">Parameters</a>.</p>
 <section id="parameters">
 <h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
 <p>Most plugins and modules can be configured by the following parameters:</p>
 <blockquote>
-<div><dl class="simple">
-<dt>docker_host</dt><dd><p>The URL or Unix socket path used to connect to the Docker API. Defaults to <code class="docutils literal notranslate"><span class="pre">unix://var/run/docker.sock</span></code>. To connect to a remote host, provide the TCP connection string (for example: <code class="docutils literal notranslate"><span class="pre">tcp://192.0.2.23:2376</span></code>). If TLS is used to encrypt the connection to the API, then the module will automatically replace ‘tcp’ in the connection URL with ‘https’.</p>
+<div><dl>
+<dt>docker_host</dt><dd><p>The URL or Unix socket path used to connect to the Docker API. Defaults to <code class="docutils literal notranslate"><span class="pre">unix:///var/run/docker.sock</span></code>. To connect to a remote host, provide the TCP connection string (for example: <code class="docutils literal notranslate"><span class="pre">tcp://192.0.2.23:2376</span></code>). If TLS is used to encrypt the connection to the API, then the module will automatically replace <code class="docutils literal notranslate"><span class="pre">tcp</span></code> in the connection URL with <code class="docutils literal notranslate"><span class="pre">https</span></code>.</p>
 </dd>
 <dt>api_version</dt><dd><p>The version of the Docker API running on the Docker Host. Defaults to the latest version of the API supported by the Docker SDK for Python installed.</p>
 </dd>
@@ -225,9 +228,55 @@
 <dt>tls_hostname</dt><dd><p>When verifying the authenticity of the Docker Host server, provide the expected name of the server. Defaults to <code class="docutils literal notranslate"><span class="pre">localhost</span></code>.</p>
 </dd>
 <dt>ssl_version</dt><dd><p>Provide a valid SSL version number. The default value is determined by the Docker SDK for Python.</p>
+<p>This option is not available for the CLI based plugins. It is mainly needed for legacy systems and should be avoided.</p>
 </dd>
 </dl>
 </div></blockquote>
+</section>
+<section id="module-default-group">
+<h3>Module default group<a class="headerlink" href="#module-default-group" title="Link to this heading"></a></h3>
+<p>To avoid having to specify common parameters for all the modules in every task, you can use the <code class="docutils literal notranslate"><span class="pre">community.docker.docker</span></code> <a class="reference external" href="https://docs.ansible.com/ansible/devel/playbook_guide/playbooks_module_defaults.html#module-defaults-groups" title="(in Ansible vdevel)"><span class="xref std std-ref">module defaults group</span></a>, or its short name <code class="docutils literal notranslate"><span class="pre">docker</span></code>. Please note that the Docker Swarm stack modules (<a class="reference internal" href="../docker_stack_module.html#ansible-collections-community-docker-docker-stack-module"><span class="std std-ref">community.docker.docker_stack</span></a>, <a class="reference internal" href="../docker_stack_info_module.html#ansible-collections-community-docker-docker-stack-info-module"><span class="std std-ref">community.docker.docker_stack_info</span></a>, and <a class="reference internal" href="../docker_stack_task_info_module.html#ansible-collections-community-docker-docker-stack-task-info-module"><span class="std std-ref">community.docker.docker_stack_task_info</span></a>) are not part of the defaults group.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Module default groups only work for modules, not for plugins (connection and inventory plugins).</p>
+</div>
+<p>The following example shows how the module default group can be used in a playbook:</p>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pull and image and start the container</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">module_defaults</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">group/community.docker.docker</span><span class="p">:</span>
+<span class="w">      </span><span class="c1"># Select Docker Daemon on other host</span>
+<span class="w">      </span><span class="nt">docker_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tcp://192.0.2.23:2376</span>
+<span class="w">      </span><span class="c1"># Configure TLS</span>
+<span class="w">      </span><span class="nt">tls</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">validate_certs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">tls_hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker.example.com</span>
+<span class="w">      </span><span class="nt">cacert_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/cacert.pem</span>
+<span class="w">      </span><span class="c1"># Increase timeout</span>
+<span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120</span>
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pull image</span>
+<span class="w">      </span><span class="nt">community.docker.docker_image_pull</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python</span>
+<span class="w">        </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.12</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Start container</span>
+<span class="w">      </span><span class="nt">community.docker.docker_container</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">cleanup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python --version</span>
+<span class="w">        </span><span class="nt">detach</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python:3.12</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-python-container</span>
+<span class="w">        </span><span class="nt">output_logs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show output</span>
+<span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">msg</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">output.container.Output</span> <span class="cp">}}</span><span class="s">&quot;</span>
+</pre></div>
+</div>
+<p>Here the two <code class="docutils literal notranslate"><span class="pre">community.docker</span></code> tasks will use the options set for the module defaults group.</p>
 </section>
 <section id="environment-variables">
 <h3>Environment variables<a class="headerlink" href="#environment-variables" title="Link to this heading"></a></h3>
@@ -285,7 +334,7 @@ by Docker SDK for Python.</p>
 </section>
 </section>
 <section id="plain-docker-daemon-images-networks-volumes-and-containers">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Plain Docker daemon: images, networks, volumes, and containers</a><a class="headerlink" href="#plain-docker-daemon-images-networks-volumes-and-containers" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Plain Docker daemon: images, networks, volumes, and containers</a><a class="headerlink" href="#plain-docker-daemon-images-networks-volumes-and-containers" title="Link to this heading"></a></h2>
 <p>For working with a plain Docker daemon, that is without Swarm, there are connection plugins, an inventory plugin, and several modules available:</p>
 <blockquote>
 <div><dl>
@@ -304,9 +353,19 @@ by Docker SDK for Python.</p>
 </dd>
 <dt>docker_image module</dt><dd><p>The <a class="reference internal" href="../docker_image_module.html#ansible-collections-community-docker-docker-image-module"><span class="std std-ref">community.docker.docker_image module</span></a> provides full control over images, including: build, pull, push, tag and remove.</p>
 </dd>
-<dt>docker_image_load</dt><dd><p>The <a class="reference internal" href="../docker_image_load_module.html#ansible-collections-community-docker-docker-image-load-module"><span class="std std-ref">community.docker.docker_image_load module</span></a> allows you to import one or multiple images from tarballs.</p>
+<dt>docker_image_build</dt><dd><p>The <a class="reference internal" href="../docker_image_build_module.html#ansible-collections-community-docker-docker-image-build-module"><span class="std std-ref">community.docker.docker_image_build module</span></a> allows you to build a Docker image using Docker buildx.</p>
 </dd>
 <dt>docker_image_info module</dt><dd><p>The <a class="reference internal" href="../docker_image_info_module.html#ansible-collections-community-docker-docker-image-info-module"><span class="std std-ref">community.docker.docker_image_info module</span></a> allows you to list and inspect images.</p>
+</dd>
+<dt>docker_image_load</dt><dd><p>The <a class="reference internal" href="../docker_image_load_module.html#ansible-collections-community-docker-docker-image-load-module"><span class="std std-ref">community.docker.docker_image_load module</span></a> allows you to import one or multiple images from tarballs.</p>
+</dd>
+<dt>docker_image_pull</dt><dd><p>The <a class="reference internal" href="../docker_image_pull_module.html#ansible-collections-community-docker-docker-image-pull-module"><span class="std std-ref">community.docker.docker_image_pull module</span></a> allows you to pull a Docker image from a registry.</p>
+</dd>
+<dt>docker_image_push</dt><dd><p>The <a class="reference internal" href="../docker_image_push_module.html#ansible-collections-community-docker-docker-image-push-module"><span class="std std-ref">community.docker.docker_image_push module</span></a> allows you to push a Docker image to a registry.</p>
+</dd>
+<dt>docker_image_remove</dt><dd><p>The <a class="reference internal" href="../docker_image_remove_module.html#ansible-collections-community-docker-docker-image-remove-module"><span class="std std-ref">community.docker.docker_image_remove module</span></a> allows you to remove and/or untag a Docker image from the Docker daemon.</p>
+</dd>
+<dt>docker_image_tag</dt><dd><p>The <a class="reference internal" href="../docker_image_tag_module.html#ansible-collections-community-docker-docker-image-tag-module"><span class="std std-ref">community.docker.docker_image_tag module</span></a> allows you to tag a Docker image with additional names and/or tags.</p>
 </dd>
 <dt>docker_network module</dt><dd><p>The <a class="reference internal" href="../docker_network_module.html#ansible-collections-community-docker-docker-network-module"><span class="std std-ref">community.docker.docker_network module</span></a> provides full control over Docker networks.</p>
 </dd>
@@ -330,22 +389,33 @@ by Docker SDK for Python.</p>
 </div></blockquote>
 </section>
 <section id="docker-compose">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Docker Compose</a><a class="headerlink" href="#docker-compose" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Docker Compose</a><a class="headerlink" href="#docker-compose" title="Link to this heading"></a></h2>
+<section id="docker-compose-v2">
+<h3>Docker Compose v2<a class="headerlink" href="#docker-compose-v2" title="Link to this heading"></a></h3>
+<p>The <a class="reference internal" href="../docker_compose_v2_module.html#ansible-collections-community-docker-docker-compose-v2-module"><span class="std std-ref">community.docker.docker_compose_v2 module</span></a>
+allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
+This module uses the Docker CLI “compose” plugin (<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code>), and thus needs access to the Docker CLI tool.
+No further requirements next to to the CLI tool and its Docker Compose plugin are needed.</p>
+</section>
+<section id="docker-compose-v1">
+<h3>Docker Compose v1<a class="headerlink" href="#docker-compose-v1" title="Link to this heading"></a></h3>
 <p>The <a class="reference internal" href="../docker_compose_module.html#ansible-collections-community-docker-docker-compose-module"><span class="std std-ref">community.docker.docker_compose module</span></a>
 allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
-Supports compose versions 1 and 2.</p>
-<p>Next to Docker SDK for Python, you need to install <a class="reference external" href="https://github.com/docker/compose">docker-compose</a> on the remote machines to use the module.</p>
+This module uses the out-dated and End of Life version 1.x of Docker Compose. It should mainly be used for legacy systems
+which still have to use that version of Docker Compose.</p>
+<p>You need to install the <a class="reference external" href="https://pypi.org/project/docker-compose/">old Python docker-compose</a> on the remote machines to use the module.</p>
+</section>
 </section>
 <section id="docker-machine">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Docker Machine</a><a class="headerlink" href="#docker-machine" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Docker Machine</a><a class="headerlink" href="#docker-machine" title="Link to this heading"></a></h2>
 <p>The <a class="reference internal" href="../docker_machine_inventory.html#ansible-collections-community-docker-docker-machine-inventory"><span class="std std-ref">community.docker.docker_machine inventory plugin</span></a> allows you to dynamically add Docker Machine hosts to your Ansible inventory.</p>
 </section>
-<section id="docker-stack">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">Docker stack</a><a class="headerlink" href="#docker-stack" title="Link to this heading"></a></h2>
-<p>The <a class="reference internal" href="../docker_stack_module.html#ansible-collections-community-docker-docker-stack-module"><span class="std std-ref">community.docker.docker_stack module</span></a> module allows you to control Docker stacks. Information on stacks can be retrieved by the <a class="reference internal" href="../docker_stack_info_module.html#ansible-collections-community-docker-docker-stack-info-module"><span class="std std-ref">community.docker.docker_stack_info module</span></a>, and information on stack tasks can be retrieved by the <a class="reference internal" href="../docker_stack_task_info_module.html#ansible-collections-community-docker-docker-stack-task-info-module"><span class="std std-ref">community.docker.docker_stack_task_info module</span></a>.</p>
+<section id="docker-swarm-stack">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Docker Swarm stack</a><a class="headerlink" href="#docker-swarm-stack" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="../docker_stack_module.html#ansible-collections-community-docker-docker-stack-module"><span class="std std-ref">community.docker.docker_stack module</span></a> module allows you to control Docker Swarm stacks. Information on Swarm stacks can be retrieved by the <a class="reference internal" href="../docker_stack_info_module.html#ansible-collections-community-docker-docker-stack-info-module"><span class="std std-ref">community.docker.docker_stack_info module</span></a>, and information on Swarm stack tasks can be retrieved by the <a class="reference internal" href="../docker_stack_task_info_module.html#ansible-collections-community-docker-docker-stack-task-info-module"><span class="std std-ref">community.docker.docker_stack_task_info module</span></a>.</p>
 </section>
 <section id="docker-swarm">
-<h2><a class="toc-backref" href="#id8" role="doc-backlink">Docker Swarm</a><a class="headerlink" href="#docker-swarm" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Docker Swarm</a><a class="headerlink" href="#docker-swarm" title="Link to this heading"></a></h2>
 <p>The community.docker collection provides multiple plugins and modules for managing Docker Swarms.</p>
 <section id="swarm-management">
 <h3>Swarm management<a class="headerlink" href="#swarm-management" title="Link to this heading"></a></h3>
@@ -381,11 +451,6 @@ Supports compose versions 1 and 2.</p>
 <h3>Swarm services<a class="headerlink" href="#swarm-services" title="Link to this heading"></a></h3>
 <p>Docker Swarm services can be created and updated with the <a class="reference internal" href="../docker_swarm_service_module.html#ansible-collections-community-docker-docker-swarm-service-module"><span class="std std-ref">community.docker.docker_swarm_service module</span></a>, and information on them can be queried by the <a class="reference internal" href="../docker_swarm_service_info_module.html#ansible-collections-community-docker-docker-swarm-service-info-module"><span class="std std-ref">community.docker.docker_swarm_service_info module</span></a>.</p>
 </section>
-</section>
-<section id="helpful-links">
-<h2><a class="toc-backref" href="#id9" role="doc-backlink">Helpful links</a><a class="headerlink" href="#helpful-links" title="Link to this heading"></a></h2>
-<p>Still using Dockerfile to build images? Check out <a class="reference external" href="https://github.com/ansible-community/ansible-bender">ansible-bender</a>, and start building images from your Ansible playbooks.</p>
-<p>Use <a class="reference external" href="https://learn.openshift.com/ansibleop/ansible-operator-overview/">Ansible Operator</a> to launch your docker-compose file on <a class="reference external" href="https://www.okd.io/">OpenShift</a>. Go from an app on your laptop to a fully scalable app in the cloud with Kubernetes in just a few moments.</p>
 </section>
 </section>
 
