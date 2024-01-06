@@ -49,7 +49,7 @@ Parameters
 Most plugins and modules can be configured by the following parameters:
 
     docker_host
-        The URL or Unix socket path used to connect to the Docker API. Defaults to ``unix://var/run/docker.sock``. To connect to a remote host, provide the TCP connection string (for example: ``tcp://192.0.2.23:2376``). If TLS is used to encrypt the connection to the API, then the module will automatically replace 'tcp' in the connection URL with 'https'.
+        The URL or Unix socket path used to connect to the Docker API. Defaults to ``unix:///var/run/docker.sock``. To connect to a remote host, provide the TCP connection string (for example: ``tcp://192.0.2.23:2376``). If TLS is used to encrypt the connection to the API, then the module will automatically replace ``tcp`` in the connection URL with ``https``.
 
     api_version
         The version of the Docker API running on the Docker Host. Defaults to the latest version of the API supported by the Docker SDK for Python installed.
