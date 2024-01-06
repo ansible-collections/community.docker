@@ -63,7 +63,7 @@ Most plugins and modules can be configured by the following parameters:
     validate_certs
         Secure the connection to the API by using TLS and verifying the authenticity of the Docker host server. Default is ``false``.
 
-    cacert_path
+    ca_path
         Use a CA certificate when performing server verification by providing the path to a CA certificate file.
 
     cert_path
@@ -106,7 +106,7 @@ The following example shows how the module default group can be used in a playbo
           tls: true
           validate_certs: true
           tls_hostname: docker.example.com
-          cacert_path: /path/to/cacert.pem
+          ca_path: /path/to/cacert.pem
           # Increase timeout
           timeout: 120
       tasks:
