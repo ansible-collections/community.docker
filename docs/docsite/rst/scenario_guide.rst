@@ -49,7 +49,7 @@ Parameters
 Most plugins and modules can be configured by the following parameters:
 
     docker_host
-        The URL or Unix socket path used to connect to the Docker API. Defaults to ``unix://var/run/docker.sock``. To connect to a remote host, provide the TCP connection string (for example: ``tcp://192.0.2.23:2376``). If TLS is used to encrypt the connection to the API, then the module will automatically replace 'tcp' in the connection URL with 'https'.
+        The URL or Unix socket path used to connect to the Docker API. Defaults to ``unix:///var/run/docker.sock``. To connect to a remote host, provide the TCP connection string (for example: ``tcp://192.0.2.23:2376``). If TLS is used to encrypt the connection to the API, then the module will automatically replace ``tcp`` in the connection URL with ``https``.
 
     api_version
         The version of the Docker API running on the Docker Host. Defaults to the latest version of the API supported by the Docker SDK for Python installed.
@@ -77,6 +77,58 @@ Most plugins and modules can be configured by the following parameters:
 
     ssl_version
         Provide a valid SSL version number. The default value is determined by the Docker SDK for Python.
+
+        This option is not available for the CLI based plugins. It is mainly needed for legacy systems and should be avoided.
+
+
+Module default group
+....................
+
+To avoid having to specify common parameters for all the modules in every task, you can use the ``community.docker.docker`` :ref:`module defaults group <module_defaults_groups>`, or its short name ``docker``. Please note that the Docker Swarm stack modules (:ansplugin:`community.docker.docker_stack#module`, :ansplugin:`community.docker.docker_stack_info#module`, and :ansplugin:`community.docker.docker_stack_task_info#module`) are not part of the defaults group.
+
+.. note::
+
+  Module default groups only work for modules, not for plugins (connection and inventory plugins).
+
+The following example shows how the module default group can be used in a playbook:
+
+.. code-block:: yaml+jinja
+
+    ---
+    - name: Pull and image and start the container
+      hosts: localhost
+      gather_facts: false
+      module_defaults:
+        group/community.docker.docker:
+          # Select Docker Daemon on other host
+          docker_host: tcp://192.0.2.23:2376
+          # Configure TLS
+          tls: true
+          validate_certs: true
+          tls_hostname: docker.example.com
+          cacert_path: /path/to/cacert.pem
+          # Increase timeout
+          timeout: 120
+      tasks:
+        - name: Pull image
+          community.docker.docker_image_pull:
+            name: python
+            tag: 3.12
+
+        - name: Start container
+          community.docker.docker_container:
+            cleanup: true
+            command: python --version
+            detach: false
+            image: python:3.12
+            name: my-python-container
+            output_logs: true
+
+        - name: Show output
+          ansible.builtin.debug:
+            msg: "{{ output.container.Output }}"
+
+Here the two ``community.docker`` tasks will use the options set for the module defaults group.
 
 
 Environment variables
@@ -148,11 +200,26 @@ For working with a plain Docker daemon, that is without Swarm, there are connect
     docker_image module
         The :ansplugin:`community.docker.docker_image module <community.docker.docker_image#module>` provides full control over images, including: build, pull, push, tag and remove.
 
-    docker_image_load
-        The :ansplugin:`community.docker.docker_image_load module <community.docker.docker_image_load#module>` allows you to import one or multiple images from tarballs.
+    docker_image_build
+        The :ansplugin:`community.docker.docker_image_build module <community.docker.docker_image_build#module>` allows you to build a Docker image using Docker buildx.
 
     docker_image_info module
         The :ansplugin:`community.docker.docker_image_info module <community.docker.docker_image_info#module>` allows you to list and inspect images.
+
+    docker_image_load
+        The :ansplugin:`community.docker.docker_image_load module <community.docker.docker_image_load#module>` allows you to import one or multiple images from tarballs.
+
+    docker_image_pull
+        The :ansplugin:`community.docker.docker_image_pull module <community.docker.docker_image_pull#module>` allows you to pull a Docker image from a registry.
+
+    docker_image_push
+        The :ansplugin:`community.docker.docker_image_push module <community.docker.docker_image_push#module>` allows you to push a Docker image to a registry.
+
+    docker_image_remove
+        The :ansplugin:`community.docker.docker_image_remove module <community.docker.docker_image_remove#module>` allows you to remove and/or untag a Docker image from the Docker daemon.
+
+    docker_image_tag
+        The :ansplugin:`community.docker.docker_image_tag module <community.docker.docker_image_tag#module>` allows you to tag a Docker image with additional names and/or tags.
 
     docker_network module
         The :ansplugin:`community.docker.docker_network module <community.docker.docker_network#module>` provides full control over Docker networks.
@@ -185,11 +252,23 @@ For working with a plain Docker daemon, that is without Swarm, there are connect
 Docker Compose
 --------------
 
+Docker Compose v2
+.................
+
+The :ansplugin:`community.docker.docker_compose_v2 module <community.docker.docker_compose_v2#module>`
+allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
+This module uses the Docker CLI "compose" plugin (``docker compose``), and thus needs access to the Docker CLI tool.
+No further requirements next to to the CLI tool and its Docker Compose plugin are needed.
+
+Docker Compose v1
+.................
+
 The :ansplugin:`community.docker.docker_compose module <community.docker.docker_compose#module>`
 allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
-Supports compose versions 1 and 2.
+This module uses the out-dated and End of Life version 1.x of Docker Compose. It should mainly be used for legacy systems
+which still have to use that version of Docker Compose.
 
-Next to Docker SDK for Python, you need to install `docker-compose <https://github.com/docker/compose>`_ on the remote machines to use the module.
+You need to install the `old Python docker-compose <https://pypi.org/project/docker-compose/>`_ on the remote machines to use the module.
 
 
 Docker Machine
@@ -198,10 +277,10 @@ Docker Machine
 The :ansplugin:`community.docker.docker_machine inventory plugin <community.docker.docker_machine#inventory>` allows you to dynamically add Docker Machine hosts to your Ansible inventory.
 
 
-Docker stack
-------------
+Docker Swarm stack
+------------------
 
-The :ansplugin:`community.docker.docker_stack module <community.docker.docker_stack#module>` module allows you to control Docker stacks. Information on stacks can be retrieved by the :ansplugin:`community.docker.docker_stack_info module <community.docker.docker_stack_info#module>`, and information on stack tasks can be retrieved by the :ansplugin:`community.docker.docker_stack_task_info module <community.docker.docker_stack_task_info#module>`.
+The :ansplugin:`community.docker.docker_stack module <community.docker.docker_stack#module>` module allows you to control Docker Swarm stacks. Information on Swarm stacks can be retrieved by the :ansplugin:`community.docker.docker_stack_info module <community.docker.docker_stack_info#module>`, and information on Swarm stack tasks can be retrieved by the :ansplugin:`community.docker.docker_stack_task_info module <community.docker.docker_stack_task_info#module>`.
 
 
 Docker Swarm
@@ -240,16 +319,7 @@ The community.docker collection offers modules to manage Docker Swarm configurat
     docker_secret module
         The :ansplugin:`community.docker.docker_secret module <community.docker.docker_secret#module>` allows you to create and modify Docker Swarm secrets.
 
-
 Swarm services
 ..............
 
 Docker Swarm services can be created and updated with the :ansplugin:`community.docker.docker_swarm_service module <community.docker.docker_swarm_service#module>`, and information on them can be queried by the :ansplugin:`community.docker.docker_swarm_service_info module <community.docker.docker_swarm_service_info#module>`.
-
-
-Helpful links
--------------
-
-Still using Dockerfile to build images? Check out `ansible-bender <https://github.com/ansible-community/ansible-bender>`_, and start building images from your Ansible playbooks.
-
-Use `Ansible Operator <https://learn.openshift.com/ansibleop/ansible-operator-overview/>`_ to launch your docker-compose file on `OpenShift <https://www.okd.io/>`_. Go from an app on your laptop to a fully scalable app in the cloud with Kubernetes in just a few moments.
