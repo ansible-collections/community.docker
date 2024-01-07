@@ -329,6 +329,24 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-pull"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-pull"><strong>pull</strong></p>
+<a class="ansibleOptionLink" href="#parameter-pull" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Whether to pull images before running. This is used when <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span></code> is ran.</p>
+<p><code class="ansible-value docutils literal notranslate"><span class="pre">always</span></code> ensures that the images are always pulled, even when already present on the Docker daemon.</p>
+<p><code class="ansible-value docutils literal notranslate"><span class="pre">missing</span></code> only pulls them when they are not present on the Docker daemon.</p>
+<p><code class="ansible-value docutils literal notranslate"><span class="pre">never</span></code> never pulls images. If they are not present, the module will fail when trying to create the containers that need them.</p>
+<p><code class="ansible-value docutils literal notranslate"><span class="pre">policy</span></code> use the <code class="docutils literal notranslate"><span class="pre">pull_policy</span></code> defined for the service to figure out what to do.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;missing&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;policy&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-recreate"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-recreate"><strong>recreate</strong></p>
 <a class="ansibleOptionLink" href="#parameter-recreate" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -343,7 +361,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-remove_images"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-remove-images"><strong>remove_images</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remove_images" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -355,7 +373,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-remove_orphans"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-remove-orphans"><strong>remove_orphans</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remove_orphans" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -367,7 +385,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-remove_volumes"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-remove-volumes"><strong>remove_volumes</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remove_volumes" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -379,7 +397,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-state"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-state"><strong>state</strong></p>
 <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -397,14 +415,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-timeout"><strong>timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Timeout in seconds for container shutdown when attached or when containers are already running.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -417,7 +435,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-tls-hostname"><strong>tls_hostname</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -425,7 +443,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-compose-v2-module-parameter-tls-verify"></span><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
@@ -610,16 +628,17 @@ will change over time. New releases of the Docker compose CLI plugin can break t
 <p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Can only return:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Started&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Exited&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Restarted&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Created&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Stopped&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Killed&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Removed&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Recreated&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Starting&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Exiting&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Restarting&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Creating&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Stopping&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Killing&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Removing&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Recreating&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Pulling&quot;</span></code></p></li>
 </ul>
-<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;Created&quot;</span></code></p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;Creating&quot;</span></code></p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -630,10 +649,12 @@ will change over time. New releases of the Docker compose CLI plugin can break t
 <p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Can only return:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;network&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;image&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;volume&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;container&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;image&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;network&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;service&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;unknown&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;volume&quot;</span></code></p></li>
 </ul>
 <p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;container&quot;</span></code></p>
 </div></td>
