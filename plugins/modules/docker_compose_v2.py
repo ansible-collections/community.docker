@@ -22,6 +22,7 @@ description:
   - Uses Docker Compose to start or shutdown services.
 
 extends_documentation_fragment:
+  - community.docker.compose_v2
   - community.docker.docker.cli_documentation
   - community.docker.attributes
   - community.docker.attributes.actiongroup_docker
@@ -33,28 +34,6 @@ attributes:
     support: none
 
 options:
-  project_src:
-    description:
-      - Path to a directory containing a C(docker-compose.yml) or C(docker-compose.yaml) file.
-    type: path
-    required: true
-  project_name:
-    description:
-      - Provide a project name. If not provided, the project name is taken from the basename of O(project_src).
-    type: str
-  env_files:
-    description:
-      - By default environment files are loaded from a C(.env) file located directly under the O(project_src) directory.
-      - O(env_files) can be used to specify the path of one or multiple custom environment files instead.
-      - The path is relative to the O(project_src) directory.
-    type: list
-    elements: path
-  profiles:
-    description:
-      - List of profiles to enable when starting services.
-      - Equivalent to C(docker compose --profile).
-    type: list
-    elements: str
   state:
     description:
       - Desired state of the project.
@@ -388,7 +367,6 @@ actions:
         - Pulling
 '''
 
-import os
 import traceback
 
 from ansible.module_utils.common.text.converters import to_native
@@ -399,33 +377,20 @@ from ansible_collections.community.docker.plugins.module_utils.common_cli import
 )
 
 from ansible_collections.community.docker.plugins.module_utils.compose_v2 import (
-    parse_events,
-    has_changes,
-    extract_actions,
-    emit_warnings,
+    BaseComposeManager,
+    common_compose_argspec,
     is_failed,
-    update_failed,
 )
-
-from ansible_collections.community.docker.plugins.module_utils.util import DockerBaseClass
-from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 
 DOCKER_COMPOSE_MINIMAL_VERSION = '2.18.0'
-DOCKER_COMPOSE_FILES = 'docker-compose.yml', 'docker-compose.yaml'
 
 
-class ContainerManager(DockerBaseClass):
+class ServicesManager(BaseComposeManager):
     def __init__(self, client):
-        super(ContainerManager, self).__init__()
-        self.client = client
-        self.check_mode = self.client.check_mode
+        super(ServicesManager, self).__init__(client, min_version=DOCKER_COMPOSE_MINIMAL_VERSION)
         parameters = self.client.module.params
 
-        self.project_src = parameters['project_src']
-        self.project_name = parameters['project_name']
-        self.env_files = parameters['env_files']
-        self.profiles = parameters['profiles']
         self.state = parameters['state']
         self.dependencies = parameters['dependencies']
         self.pull = parameters['pull']
@@ -434,72 +399,6 @@ class ContainerManager(DockerBaseClass):
         self.remove_volumes = parameters['remove_volumes']
         self.remove_orphans = parameters['remove_orphans']
         self.timeout = parameters['timeout']
-
-        compose = self.client.get_client_plugin_info('compose')
-        if compose is None:
-            self.client.fail('Docker CLI {0} does not have the compose plugin installed'.format(self.client.get_cli()))
-        compose_version = compose['Version'].lstrip('v')
-        self.compose_version = LooseVersion(compose_version)
-        if self.compose_version < LooseVersion(DOCKER_COMPOSE_MINIMAL_VERSION):
-            self.client.fail('Docker CLI {cli} has the compose plugin with version {version}; need version {min_version} or later'.format(
-                cli=self.client.get_cli(),
-                version=compose_version,
-                min_version=DOCKER_COMPOSE_MINIMAL_VERSION,
-            ))
-
-        if not os.path.isdir(self.project_src):
-            self.client.fail('"{0}" is not a directory'.format(self.project_src))
-
-        if all(not os.path.isfile(os.path.join(self.project_src, f)) for f in DOCKER_COMPOSE_FILES):
-            self.client.fail('"{0}" does not contain {1}'.format(self.project_src, ' or '.join(DOCKER_COMPOSE_FILES)))
-
-    def get_base_args(self):
-        args = ['compose', '--ansi', 'never']
-        if self.compose_version >= LooseVersion('2.19.0'):
-            # https://github.com/docker/compose/pull/10690
-            args.extend(['--progress', 'plain'])
-        args.extend(['--project-directory', self.project_src])
-        if self.project_name:
-            args.extend(['--project-name', self.project_name])
-        for env_file in self.env_files or []:
-            args.extend(['--env-file', env_file])
-        for profile in self.profiles or []:
-            args.extend(['--profile', profile])
-        return args
-
-    def list_containers_raw(self):
-        args = self.get_base_args() + ['ps', '--format', 'json', '--all']
-        if self.compose_version >= LooseVersion('2.23.0'):
-            # https://github.com/docker/compose/pull/11038
-            args.append('--no-trunc')
-        kwargs = dict(cwd=self.project_src, check_rc=True)
-        if self.compose_version >= LooseVersion('2.21.0'):
-            # Breaking change in 2.21.0: https://github.com/docker/compose/pull/10918
-            dummy, containers, dummy = self.client.call_cli_json_stream(*args, **kwargs)
-        else:
-            dummy, containers, dummy = self.client.call_cli_json(*args, **kwargs)
-        return containers
-
-    def list_containers(self):
-        result = []
-        for container in self.list_containers_raw():
-            labels = {}
-            if container.get('Labels'):
-                for part in container['Labels'].split(','):
-                    label_value = part.split('=', 1)
-                    labels[label_value[0]] = label_value[1] if len(label_value) > 1 else ''
-            container['Labels'] = labels
-            container['Names'] = container.get('Names', container['Name']).split(',')
-            container['Networks'] = container.get('Networks', '').split(',')
-            container['Publishers'] = container.get('Publishers') or []
-            result.append(container)
-        return result
-
-    def list_images(self):
-        args = self.get_base_args() + ['images', '--format', 'json']
-        kwargs = dict(cwd=self.project_src, check_rc=True)
-        dummy, images, dummy = self.client.call_cli_json(*args, **kwargs)
-        return images
 
     def run(self):
         if self.state == 'present':
@@ -513,29 +412,8 @@ class ContainerManager(DockerBaseClass):
 
         result['containers'] = self.list_containers()
         result['images'] = self.list_images()
-        if not result.get('failed'):
-            # Only return stdout and stderr if it's not empty
-            for res in ('stdout', 'stderr'):
-                if result.get(res) == '':
-                    result.pop(res)
+        self.cleanup_result(result)
         return result
-
-    def parse_events(self, stderr, dry_run=False):
-        return parse_events(stderr, dry_run=dry_run, warn_function=self.client.warn)
-
-    def emit_warnings(self, events):
-        emit_warnings(events, warn_function=self.client.warn)
-
-    def update_failed(self, result, events, args, stdout, stderr, rc):
-        return update_failed(
-            result,
-            events,
-            args=args,
-            stdout=stdout,
-            stderr=stderr,
-            rc=rc,
-            cli=self.client.get_cli(),
-        )
 
     def get_up_cmd(self, dry_run, no_start=False):
         args = self.get_base_args() + ['up', '--detach', '--no-color', '--quiet-pull']
@@ -564,10 +442,7 @@ class ContainerManager(DockerBaseClass):
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode)
         self.emit_warnings(events)
-        result['changed'] = has_changes(events)
-        result['actions'] = extract_actions(events)
-        result['stdout'] = to_native(stdout)
-        result['stderr'] = to_native(stderr)
+        self.update_result(result, events, stdout, stderr)
         self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
@@ -586,10 +461,6 @@ class ContainerManager(DockerBaseClass):
                 return False
         return True
 
-    @staticmethod
-    def _combine_output(*outputs):
-        return b'\n'.join(out for out in outputs if out)
-
     def cmd_stop(self):
         # Since 'docker compose stop' **always** claims its stopping containers, even if they are already
         # stopped, we have to do this a bit more complicated.
@@ -600,6 +471,7 @@ class ContainerManager(DockerBaseClass):
         rc_1, stdout_1, stderr_1 = self.client.call_cli(*args_1, cwd=self.project_src)
         events_1 = self.parse_events(stderr_1, dry_run=self.check_mode)
         self.emit_warnings(events_1)
+        self.update_result(result, events_1, stdout_1, stderr_1)
         is_failed_1 = is_failed(events_1, rc_1)
         if not is_failed_1 and not self._are_containers_stopped():
             # Make sure all containers are stopped
@@ -607,15 +479,12 @@ class ContainerManager(DockerBaseClass):
             rc_2, stdout_2, stderr_2 = self.client.call_cli(*args_2, cwd=self.project_src)
             events_2 = self.parse_events(stderr_2, dry_run=self.check_mode)
             self.emit_warnings(events_2)
+            self.update_result(result, events_2, stdout_2, stderr_2)
         else:
             args_2 = []
             rc_2, stdout_2, stderr_2 = 0, b'', b''
             events_2 = []
         # Compose result
-        result['changed'] = has_changes(events_1) or has_changes(events_2)
-        result['actions'] = extract_actions(events_1) + extract_actions(events_2)
-        result['stdout'] = to_native(self._combine_output(stdout_1, stdout_2))
-        result['stderr'] = to_native(self._combine_output(stderr_1, stderr_2))
         self.update_failed(
             result,
             events_1 + events_2,
@@ -643,10 +512,7 @@ class ContainerManager(DockerBaseClass):
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode)
         self.emit_warnings(events)
-        result['changed'] = has_changes(events)
-        result['actions'] = extract_actions(events)
-        result['stdout'] = to_native(stdout)
-        result['stderr'] = to_native(stderr)
+        self.update_result(result, events, stdout, stderr)
         self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
@@ -671,20 +537,13 @@ class ContainerManager(DockerBaseClass):
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode)
         self.emit_warnings(events)
-        result['changed'] = has_changes(events)
-        result['actions'] = extract_actions(events)
-        result['stdout'] = to_native(stdout)
-        result['stderr'] = to_native(stderr)
+        self.update_result(result, events, stdout, stderr)
         self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
 
 def main():
     argument_spec = dict(
-        project_src=dict(type='path', required=True),
-        project_name=dict(type='str'),
-        env_files=dict(type='list', elements='path'),
-        profiles=dict(type='list', elements='str'),
         state=dict(type='str', default='present', choices=['absent', 'present', 'stopped', 'restarted']),
         dependencies=dict(type='bool', default=True),
         pull=dict(type='str', choices=['always', 'missing', 'never', 'policy'], default='policy'),
@@ -694,6 +553,7 @@ def main():
         remove_orphans=dict(type='bool', default=False),
         timeout=dict(type='int'),
     )
+    argument_spec.update(common_compose_argspec())
 
     client = AnsibleModuleDockerClient(
         argument_spec=argument_spec,
@@ -701,7 +561,7 @@ def main():
     )
 
     try:
-        result = ContainerManager(client).run()
+        result = ServicesManager(client).run()
         client.module.exit_json(**result)
     except DockerException as e:
         client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
