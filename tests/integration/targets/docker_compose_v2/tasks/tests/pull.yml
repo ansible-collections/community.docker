@@ -1,0 +1,211 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- vars:
+    pname: "{{ name_prefix }}-pull"
+    cname: "{{ name_prefix }}-cont"
+    non_existing_image: does-not-exist:latest
+    project_src: "{{ remote_tmp_dir }}/{{ pname }}"
+    test_service_non_existing: |
+      version: '3'
+      services:
+        {{ cname }}:
+          image: {{ non_existing_image }}
+    test_service_alpine: |
+      version: '3'
+      services:
+        {{ cname }}:
+          image: {{ docker_test_image_alpine }}
+          command: /bin/sh -c 'sleep 10m'
+          stop_grace_period: 1s
+
+  block:
+    - name: Registering container name
+      set_fact:
+        cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
+        dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
+
+    - name: Create project directory
+      file:
+        path: '{{ project_src }}'
+        state: directory
+
+    - name: Make sure images are not around
+      docker_image_remove:
+        name: '{{ item }}'
+      loop:
+        - '{{ non_existing_image }}'
+        - '{{ docker_test_image_alpine }}'
+
+####################################################################
+## Missing image ###################################################
+####################################################################
+
+    - name: Template project file with non-existing image
+      copy:
+        dest: '{{ project_src }}/docker-compose.yml'
+        content: '{{ test_service_non_existing }}'
+
+    - name: Present with pull=never (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        pull: never
+      check_mode: true
+      register: present_1_check
+      ignore_errors: true
+
+    - name: Present with pull=never
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        pull: never
+      register: present_1
+      ignore_errors: true
+
+    - name: Present without explicit pull (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+      check_mode: true
+      register: present_2_check
+      ignore_errors: true
+
+    - name: Present without explicit pull
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+      register: present_2
+      ignore_errors: true
+
+    - assert:
+        that:
+          - present_1_check is failed or present_1_check is changed
+          - present_1_check is changed or present_1_check.msg.startswith('General error:')
+          - present_1 is failed
+          - present_1.msg.startswith('General error:')
+          - present_2_check is failed
+          - present_2_check.msg.startswith('Error when processing ' ~ cname ~ ':')
+          - present_2 is failed
+          - present_2.msg.startswith('Error when processing ' ~ cname ~ ':')
+
+####################################################################
+## Regular image ###################################################
+####################################################################
+
+    - name: Template project file with Alpine image
+      copy:
+        dest: '{{ project_src }}/docker-compose.yml'
+        content: '{{ test_service_alpine }}'
+
+    - name: Present with pull=missing (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        pull: missing
+      check_mode: true
+      register: present_1_check
+
+    - name: Present with pull=missing
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        pull: missing
+      register: present_1
+
+    - name: Present with pull=missing (idempotent, check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        pull: missing
+      check_mode: true
+      register: present_2_check
+
+    - name: Present with pull=missing (idempotent)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        pull: missing
+      register: present_2
+
+    - name: Present with pull=always (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        pull: always
+      check_mode: true
+      register: present_3_check
+
+    - name: Present with pull=always
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        pull: always
+      register: present_3
+
+    - name: Stopping service
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: absent
+
+    - name: Present with pull=never (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        pull: missing
+      check_mode: true
+      register: present_4_check
+
+    - name: Present with pull=never
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        pull: missing
+      register: present_4
+
+    - name: Present with pull=never (idempotent, check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        pull: missing
+      check_mode: true
+      register: present_5_check
+
+    - name: Present with pull=never (idempotent)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        pull: missing
+      register: present_5
+
+    - name: Cleanup
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: absent
+
+    - assert:
+        that:
+          - present_1_check is changed
+          - present_1_check.actions | selectattr('status', 'eq', 'Pulling') | first
+          - present_1_check.actions | selectattr('status', 'eq', 'Creating') | first
+          - present_1 is changed
+          - present_1.actions | selectattr('status', 'eq', 'Pulling') | first
+          - present_1.actions | selectattr('status', 'eq', 'Creating') | first
+          - present_2_check is not changed
+          - present_2 is not changed
+          - present_3_check is changed
+          - present_3_check.actions | selectattr('status', 'eq', 'Pulling') | first
+          - present_3_check.actions | selectattr('status', 'eq', 'Creating') | length == 0
+          - present_3_check.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+          - present_3 is changed
+          - present_3.actions | selectattr('status', 'eq', 'Pulling') | first
+          - present_3.actions | selectattr('status', 'eq', 'Creating') | length == 0
+          - present_3.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+          - present_4_check is changed
+          - present_4_check.actions | selectattr('status', 'eq', 'Pulling') | length == 0
+          - present_4 is changed
+          - present_4.actions | selectattr('status', 'eq', 'Pulling') | length == 0
+          - present_5_check is not changed
+          - present_5 is not changed
