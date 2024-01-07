@@ -71,8 +71,8 @@ class ResourceType(object):
         }[resource_type]
 
 
-ResourceEvent = namedtuple(
-    'ResourceEvent',
+Event = namedtuple(
+    'Event',
     ['resource_type', 'resource_id', 'status', 'msg']
 )
 
@@ -138,7 +138,7 @@ def parse_events(stderr, dry_run=False, warn_function=None):
             msg = None
             if status not in DOCKER_STATUS:
                 status, msg = msg, status
-            event = ResourceEvent(
+            event = Event(
                 ResourceType.from_docker_compose_event(match.group('resource_type')),
                 match.group('resource_id'),
                 status,
@@ -153,7 +153,7 @@ def parse_events(stderr, dry_run=False, warn_function=None):
         match = _RE_PULL_EVENT.match(line)
         if match:
             events.append(
-                ResourceEvent(
+                Event(
                     ResourceType.SERVICE,
                     match.group('service'),
                     match.group('status'),
@@ -164,7 +164,7 @@ def parse_events(stderr, dry_run=False, warn_function=None):
             continue
         match = _RE_ERROR_EVENT.match(line)
         if match:
-            error_event = ResourceEvent(
+            error_event = Event(
                 ResourceType.UNKNOWN,
                 match.group('resource_id'),
                 match.group('status'),
@@ -174,7 +174,7 @@ def parse_events(stderr, dry_run=False, warn_function=None):
             continue
         if error_event is not None:
             # Unparsable line that apparently belongs to the previous error event
-            error_event = ResourceEvent(
+            error_event = Event(
                 error_event.resource_type,
                 error_event.resource_id,
                 error_event.status,
@@ -184,7 +184,7 @@ def parse_events(stderr, dry_run=False, warn_function=None):
             continue
         if line.startswith('Error '):
             # Error message that is independent of an error event
-            error_event = ResourceEvent(
+            error_event = Event(
                 ResourceType.UNKNOWN,
                 '',
                 'Error',

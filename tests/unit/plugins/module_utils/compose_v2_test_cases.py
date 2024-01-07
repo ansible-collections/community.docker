@@ -6,7 +6,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 from ansible_collections.community.docker.plugins.module_utils.compose_v2 import (
-    ResourceEvent,
+    Event,
 )
 
 
@@ -26,37 +26,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-dba91fb6-start-stop_default  Removing\n'
         ' Network ansible-docker-test-dba91fb6-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Removed',
@@ -77,37 +77,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-dba91fb6-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-dba91fb6-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 None,
@@ -128,37 +128,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-dba91fb6-pull_default  Removing\n'
         ' Network ansible-docker-test-dba91fb6-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-pull_default',
                 'Removed',
@@ -179,37 +179,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-dba91fb6-start-stop_default  Removing\n'
         ' Network ansible-docker-test-dba91fb6-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Removed',
@@ -232,49 +232,49 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Starting\n'
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-container',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-container',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Started',
@@ -293,25 +293,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 9121995872d_ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Starting\n'
         ' DRY-RUN MODE -  Container 9121995872d_ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '9121995872d_ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '9121995872d_ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Started',
@@ -330,25 +330,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Starting\n'
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Started',
@@ -371,49 +371,49 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-container',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-container',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Started',
@@ -429,7 +429,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Running',
@@ -445,7 +445,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Running',
@@ -464,25 +464,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Creating\n'
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Created',
@@ -501,25 +501,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Created',
@@ -537,19 +537,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-dba91fb6-cont Pulled \n'
         ' Container ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Running',
@@ -570,37 +570,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 002a15404ac_ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container 002a15404ac_ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '002a15404ac_ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '002a15404ac_ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Started',
@@ -621,37 +621,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Starting\n'
         ' Container ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Started',
@@ -672,37 +672,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Started',
@@ -718,7 +718,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Running',
@@ -734,7 +734,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Running',
@@ -755,37 +755,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Starting\n'
         ' Container ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Started',
@@ -804,25 +804,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Creating\n'
         'Error response from daemon: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -843,37 +843,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Started',
@@ -894,37 +894,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Started',
@@ -940,7 +940,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Running',
@@ -956,7 +956,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Running',
@@ -974,13 +974,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-dba91fb6-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-dba91fb6-cont',
                 'Error',
@@ -998,13 +998,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-dba91fb6-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-dba91fb6-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-dba91fb6-cont',
                 'Error',
@@ -1021,13 +1021,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Restarting\n'
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Started',
@@ -1044,13 +1044,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Restarting\n'
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Started',
@@ -1067,13 +1067,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Started',
@@ -1090,13 +1090,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Started',
@@ -1113,13 +1113,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Starting\n'
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Started',
@@ -1136,13 +1136,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Started',
@@ -1158,7 +1158,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Running',
@@ -1174,7 +1174,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Running',
@@ -1193,19 +1193,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Stopping\n'
         ' Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Stopped',
@@ -1224,19 +1224,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-start-stop-ansible-docker-test-dba91fb6-container-1',
                 'Stopped',
@@ -1257,37 +1257,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-dba91fb6-pull_default  Removing\n'
         ' Network ansible-docker-test-dba91fb6-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-dba91fb6-pull-ansible-docker-test-dba91fb6-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-dba91fb6-pull_default',
                 'Removed',
@@ -1311,37 +1311,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-19ffba88-start-stop_default  Removing\n'
         ' Network ansible-docker-test-19ffba88-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Removed',
@@ -1362,37 +1362,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-1f1d0d58-start-stop_default  Removing\n'
         ' Network ansible-docker-test-1f1d0d58-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Removed',
@@ -1413,37 +1413,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-2460e737-start-stop_default  Removing\n'
         ' Network ansible-docker-test-2460e737-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Removed',
@@ -1464,37 +1464,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-4baa7139-start-stop_default  Removing\n'
         ' Network ansible-docker-test-4baa7139-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Removed',
@@ -1515,37 +1515,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-5f3d2e16-start-stop_default  Removing\n'
         ' Network ansible-docker-test-5f3d2e16-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Removed',
@@ -1566,37 +1566,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-601188b1-start-stop_default  Removing\n'
         ' Network ansible-docker-test-601188b1-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Removed',
@@ -1617,37 +1617,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-64d917f4-start-stop_default  Removing\n'
         ' Network ansible-docker-test-64d917f4-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Removed',
@@ -1668,37 +1668,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-6aaaa304-start-stop_default  Removing\n'
         ' Network ansible-docker-test-6aaaa304-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Removed',
@@ -1719,37 +1719,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-ce1fa4d7-start-stop_default  Removing\n'
         ' Network ansible-docker-test-ce1fa4d7-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Removed',
@@ -1770,37 +1770,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-d1d30700-start-stop_default  Removing\n'
         ' Network ansible-docker-test-d1d30700-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Removed',
@@ -1821,37 +1821,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-d6ae094c-start-stop_default  Removing\n'
         ' Network ansible-docker-test-d6ae094c-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Removed',
@@ -1872,37 +1872,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-19ffba88-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-19ffba88-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 None,
@@ -1923,37 +1923,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-1f1d0d58-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-1f1d0d58-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 None,
@@ -1974,37 +1974,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-2460e737-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-2460e737-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 None,
@@ -2025,37 +2025,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-4baa7139-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-4baa7139-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 None,
@@ -2076,37 +2076,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-5f3d2e16-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-5f3d2e16-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 None,
@@ -2127,37 +2127,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-601188b1-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-601188b1-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 None,
@@ -2178,37 +2178,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-64d917f4-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-64d917f4-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 None,
@@ -2229,37 +2229,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-6aaaa304-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-6aaaa304-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 None,
@@ -2280,37 +2280,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-ce1fa4d7-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-ce1fa4d7-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 None,
@@ -2331,37 +2331,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-d1d30700-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-d1d30700-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 None,
@@ -2382,37 +2382,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-d6ae094c-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-d6ae094c-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 None,
@@ -2433,37 +2433,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-19ffba88-pull_default  Removing\n'
         ' Network ansible-docker-test-19ffba88-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-pull_default',
                 'Removed',
@@ -2484,37 +2484,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-19ffba88-start-stop_default  Removing\n'
         ' Network ansible-docker-test-19ffba88-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Removed',
@@ -2535,37 +2535,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-1f1d0d58-pull_default  Removing\n'
         ' Network ansible-docker-test-1f1d0d58-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-pull_default',
                 'Removed',
@@ -2586,37 +2586,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-1f1d0d58-start-stop_default  Removing\n'
         ' Network ansible-docker-test-1f1d0d58-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Removed',
@@ -2637,37 +2637,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-2460e737-pull_default  Removing\n'
         ' Network ansible-docker-test-2460e737-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-pull_default',
                 'Removed',
@@ -2688,37 +2688,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-2460e737-start-stop_default  Removing\n'
         ' Network ansible-docker-test-2460e737-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Removed',
@@ -2739,37 +2739,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-4baa7139-pull_default  Removing\n'
         ' Network ansible-docker-test-4baa7139-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-pull_default',
                 'Removed',
@@ -2790,37 +2790,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-4baa7139-start-stop_default  Removing\n'
         ' Network ansible-docker-test-4baa7139-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Removed',
@@ -2841,37 +2841,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-5f3d2e16-pull_default  Removing\n'
         ' Network ansible-docker-test-5f3d2e16-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-pull_default',
                 'Removed',
@@ -2892,37 +2892,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-5f3d2e16-start-stop_default  Removing\n'
         ' Network ansible-docker-test-5f3d2e16-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Removed',
@@ -2943,37 +2943,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-601188b1-pull_default  Removing\n'
         ' Network ansible-docker-test-601188b1-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-pull_default',
                 'Removed',
@@ -2994,37 +2994,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-601188b1-start-stop_default  Removing\n'
         ' Network ansible-docker-test-601188b1-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Removed',
@@ -3045,37 +3045,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-64d917f4-pull_default  Removing\n'
         ' Network ansible-docker-test-64d917f4-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-pull_default',
                 'Removed',
@@ -3096,37 +3096,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-64d917f4-start-stop_default  Removing\n'
         ' Network ansible-docker-test-64d917f4-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Removed',
@@ -3147,37 +3147,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-6aaaa304-pull_default  Removing\n'
         ' Network ansible-docker-test-6aaaa304-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-pull_default',
                 'Removed',
@@ -3198,37 +3198,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-6aaaa304-start-stop_default  Removing\n'
         ' Network ansible-docker-test-6aaaa304-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Removed',
@@ -3249,37 +3249,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-ce1fa4d7-pull_default  Removing\n'
         ' Network ansible-docker-test-ce1fa4d7-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-pull_default',
                 'Removed',
@@ -3300,37 +3300,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-ce1fa4d7-start-stop_default  Removing\n'
         ' Network ansible-docker-test-ce1fa4d7-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Removed',
@@ -3351,37 +3351,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-d1d30700-pull_default  Removing\n'
         ' Network ansible-docker-test-d1d30700-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-pull_default',
                 'Removed',
@@ -3402,37 +3402,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-d1d30700-start-stop_default  Removing\n'
         ' Network ansible-docker-test-d1d30700-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Removed',
@@ -3453,37 +3453,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-d6ae094c-pull_default  Removing\n'
         ' Network ansible-docker-test-d6ae094c-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-pull_default',
                 'Removed',
@@ -3504,37 +3504,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-d6ae094c-start-stop_default  Removing\n'
         ' Network ansible-docker-test-d6ae094c-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Removed',
@@ -3555,37 +3555,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Starting\n'
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Started',
@@ -3606,37 +3606,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Starting\n'
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Started',
@@ -3657,37 +3657,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Starting\n'
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Started',
@@ -3708,37 +3708,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Starting\n'
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Started',
@@ -3759,37 +3759,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Starting\n'
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Started',
@@ -3810,37 +3810,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Starting\n'
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Started',
@@ -3861,37 +3861,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Starting\n'
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Started',
@@ -3912,37 +3912,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Starting\n'
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Started',
@@ -3963,37 +3963,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Starting\n'
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Started',
@@ -4014,37 +4014,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Starting\n'
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Started',
@@ -4065,37 +4065,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Starting\n'
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Started',
@@ -4114,25 +4114,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 71e7a319c23_ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Starting\n'
         ' DRY-RUN MODE -  Container 71e7a319c23_ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '71e7a319c23_ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '71e7a319c23_ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Started',
@@ -4151,25 +4151,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 26bf8ff1675_ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Starting\n'
         ' DRY-RUN MODE -  Container 26bf8ff1675_ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '26bf8ff1675_ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '26bf8ff1675_ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Started',
@@ -4188,25 +4188,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 6dc8d091c94_ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Starting\n'
         ' DRY-RUN MODE -  Container 6dc8d091c94_ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '6dc8d091c94_ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '6dc8d091c94_ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Started',
@@ -4225,25 +4225,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 71b893893dc_ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Starting\n'
         ' DRY-RUN MODE -  Container 71b893893dc_ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '71b893893dc_ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '71b893893dc_ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Started',
@@ -4262,25 +4262,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container f6416652e13_ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Starting\n'
         ' DRY-RUN MODE -  Container f6416652e13_ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'f6416652e13_ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'f6416652e13_ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Started',
@@ -4299,25 +4299,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container efe8857a191_ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Starting\n'
         ' DRY-RUN MODE -  Container efe8857a191_ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'efe8857a191_ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'efe8857a191_ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Started',
@@ -4336,25 +4336,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 4b568108657_ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Starting\n'
         ' DRY-RUN MODE -  Container 4b568108657_ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '4b568108657_ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '4b568108657_ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Started',
@@ -4373,25 +4373,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 78e827e6673_ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Starting\n'
         ' DRY-RUN MODE -  Container 78e827e6673_ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '78e827e6673_ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '78e827e6673_ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Started',
@@ -4410,25 +4410,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container e508faa8323_ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Starting\n'
         ' DRY-RUN MODE -  Container e508faa8323_ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'e508faa8323_ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'e508faa8323_ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Started',
@@ -4447,25 +4447,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 0a77f424a61_ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Starting\n'
         ' DRY-RUN MODE -  Container 0a77f424a61_ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '0a77f424a61_ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '0a77f424a61_ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Started',
@@ -4484,25 +4484,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container dea4aafe907_ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Starting\n'
         ' DRY-RUN MODE -  Container dea4aafe907_ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'dea4aafe907_ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'dea4aafe907_ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Started',
@@ -4521,25 +4521,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Starting\n'
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Started',
@@ -4558,25 +4558,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Starting\n'
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Started',
@@ -4595,25 +4595,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Starting\n'
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Started',
@@ -4632,25 +4632,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Starting\n'
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Started',
@@ -4669,25 +4669,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Starting\n'
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Started',
@@ -4706,25 +4706,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Starting\n'
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Started',
@@ -4743,25 +4743,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Starting\n'
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Started',
@@ -4780,25 +4780,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Starting\n'
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Started',
@@ -4817,25 +4817,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Starting\n'
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Started',
@@ -4854,25 +4854,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Starting\n'
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Started',
@@ -4891,25 +4891,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Starting\n'
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Started',
@@ -4930,37 +4930,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Started',
@@ -4981,37 +4981,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Started',
@@ -5032,37 +5032,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Started',
@@ -5083,37 +5083,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Started',
@@ -5134,37 +5134,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Started',
@@ -5185,37 +5185,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Started',
@@ -5236,37 +5236,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Started',
@@ -5287,37 +5287,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Started',
@@ -5338,37 +5338,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Started',
@@ -5389,37 +5389,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Started',
@@ -5440,37 +5440,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Started',
@@ -5486,7 +5486,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Running',
@@ -5502,7 +5502,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Running',
@@ -5518,7 +5518,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Running',
@@ -5534,7 +5534,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Running',
@@ -5550,7 +5550,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Running',
@@ -5566,7 +5566,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Running',
@@ -5582,7 +5582,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Running',
@@ -5598,7 +5598,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Running',
@@ -5614,7 +5614,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Running',
@@ -5630,7 +5630,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Running',
@@ -5646,7 +5646,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Running',
@@ -5662,7 +5662,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Running',
@@ -5678,7 +5678,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Running',
@@ -5694,7 +5694,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Running',
@@ -5710,7 +5710,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Running',
@@ -5726,7 +5726,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Running',
@@ -5742,7 +5742,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Running',
@@ -5758,7 +5758,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Running',
@@ -5774,7 +5774,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Running',
@@ -5790,7 +5790,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Running',
@@ -5806,7 +5806,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Running',
@@ -5822,7 +5822,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Running',
@@ -5841,25 +5841,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Creating\n'
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Created',
@@ -5878,25 +5878,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Creating\n'
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Created',
@@ -5915,25 +5915,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Creating\n'
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Created',
@@ -5952,25 +5952,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Creating\n'
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Created',
@@ -5989,25 +5989,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Creating\n'
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Created',
@@ -6026,25 +6026,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Creating\n'
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Created',
@@ -6063,25 +6063,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Creating\n'
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Created',
@@ -6100,25 +6100,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Creating\n'
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Created',
@@ -6137,25 +6137,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Creating\n'
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Created',
@@ -6174,25 +6174,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Creating\n'
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Created',
@@ -6211,25 +6211,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Creating\n'
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Created',
@@ -6248,25 +6248,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Created',
@@ -6285,25 +6285,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Created',
@@ -6322,25 +6322,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Created',
@@ -6359,25 +6359,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Created',
@@ -6396,25 +6396,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Created',
@@ -6433,25 +6433,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Created',
@@ -6470,25 +6470,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Created',
@@ -6507,25 +6507,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Created',
@@ -6544,25 +6544,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Created',
@@ -6581,25 +6581,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Created',
@@ -6618,25 +6618,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Created',
@@ -6654,19 +6654,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-19ffba88-cont Pulled \n'
         ' Container ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-19ffba88-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-19ffba88-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Running',
@@ -6684,19 +6684,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-1f1d0d58-cont Pulled \n'
         ' Container ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-1f1d0d58-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-1f1d0d58-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Running',
@@ -6714,19 +6714,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-2460e737-cont Pulled \n'
         ' Container ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-2460e737-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-2460e737-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Running',
@@ -6744,19 +6744,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-4baa7139-cont Pulled \n'
         ' Container ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-4baa7139-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-4baa7139-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Running',
@@ -6774,19 +6774,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-5f3d2e16-cont Pulled \n'
         ' Container ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-5f3d2e16-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-5f3d2e16-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Running',
@@ -6804,19 +6804,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-601188b1-cont Pulled \n'
         ' Container ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-601188b1-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-601188b1-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Running',
@@ -6834,19 +6834,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-64d917f4-cont Pulled \n'
         ' Container ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-64d917f4-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-64d917f4-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Running',
@@ -6864,19 +6864,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-6aaaa304-cont Pulled \n'
         ' Container ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-6aaaa304-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-6aaaa304-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Running',
@@ -6894,19 +6894,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-ce1fa4d7-cont Pulled \n'
         ' Container ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-ce1fa4d7-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-ce1fa4d7-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Running',
@@ -6924,19 +6924,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-d1d30700-cont Pulled \n'
         ' Container ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d1d30700-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d1d30700-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Running',
@@ -6954,19 +6954,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-d6ae094c-cont Pulled \n'
         ' Container ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d6ae094c-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d6ae094c-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Running',
@@ -6987,37 +6987,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container fa8f62dfced_ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container fa8f62dfced_ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-19ffba88-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-19ffba88-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'fa8f62dfced_ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'fa8f62dfced_ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Started',
@@ -7038,37 +7038,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 0d5362bac93_ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container 0d5362bac93_ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-1f1d0d58-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-1f1d0d58-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '0d5362bac93_ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '0d5362bac93_ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Started',
@@ -7089,37 +7089,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container f48d54a75fb_ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container f48d54a75fb_ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-2460e737-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-2460e737-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'f48d54a75fb_ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'f48d54a75fb_ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Started',
@@ -7140,37 +7140,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ecd243ea972_ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container ecd243ea972_ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-4baa7139-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-4baa7139-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ecd243ea972_ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ecd243ea972_ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Started',
@@ -7191,37 +7191,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container c9d730c2613_ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container c9d730c2613_ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-5f3d2e16-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-5f3d2e16-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'c9d730c2613_ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'c9d730c2613_ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Started',
@@ -7242,37 +7242,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 611a044106b_ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container 611a044106b_ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-601188b1-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-601188b1-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '611a044106b_ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '611a044106b_ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Started',
@@ -7293,37 +7293,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 8bec416e98d_ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container 8bec416e98d_ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-64d917f4-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-64d917f4-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '8bec416e98d_ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '8bec416e98d_ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Started',
@@ -7344,37 +7344,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 5d30320650e_ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container 5d30320650e_ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-6aaaa304-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-6aaaa304-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '5d30320650e_ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '5d30320650e_ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Started',
@@ -7395,37 +7395,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 61bd1b13d9c_ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container 61bd1b13d9c_ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-ce1fa4d7-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-ce1fa4d7-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '61bd1b13d9c_ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '61bd1b13d9c_ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Started',
@@ -7446,37 +7446,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 3d7b7be6dbe_ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container 3d7b7be6dbe_ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d1d30700-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d1d30700-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '3d7b7be6dbe_ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '3d7b7be6dbe_ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Started',
@@ -7497,37 +7497,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container b78faf8a742_ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container b78faf8a742_ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d6ae094c-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d6ae094c-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'b78faf8a742_ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'b78faf8a742_ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Started',
@@ -7548,37 +7548,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Starting\n'
         ' Container ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-19ffba88-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-19ffba88-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Started',
@@ -7599,37 +7599,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Starting\n'
         ' Container ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-1f1d0d58-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-1f1d0d58-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Started',
@@ -7650,37 +7650,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Starting\n'
         ' Container ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-2460e737-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-2460e737-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Started',
@@ -7701,37 +7701,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Starting\n'
         ' Container ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-4baa7139-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-4baa7139-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Started',
@@ -7752,37 +7752,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Starting\n'
         ' Container ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-5f3d2e16-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-5f3d2e16-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Started',
@@ -7803,37 +7803,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Starting\n'
         ' Container ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-601188b1-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-601188b1-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Started',
@@ -7854,37 +7854,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Starting\n'
         ' Container ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-64d917f4-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-64d917f4-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Started',
@@ -7905,37 +7905,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Starting\n'
         ' Container ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-6aaaa304-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-6aaaa304-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Started',
@@ -7956,37 +7956,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Starting\n'
         ' Container ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-ce1fa4d7-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-ce1fa4d7-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Started',
@@ -8007,37 +8007,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Starting\n'
         ' Container ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d1d30700-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d1d30700-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Started',
@@ -8058,37 +8058,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Starting\n'
         ' Container ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d6ae094c-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d6ae094c-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Started',
@@ -8109,37 +8109,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-19ffba88-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-19ffba88-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Started',
@@ -8160,37 +8160,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-1f1d0d58-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-1f1d0d58-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Started',
@@ -8211,37 +8211,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-2460e737-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-2460e737-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Started',
@@ -8262,37 +8262,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-4baa7139-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-4baa7139-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Started',
@@ -8313,37 +8313,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-5f3d2e16-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-5f3d2e16-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Started',
@@ -8364,37 +8364,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-601188b1-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-601188b1-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Started',
@@ -8415,37 +8415,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-64d917f4-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-64d917f4-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Started',
@@ -8466,37 +8466,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-6aaaa304-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-6aaaa304-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Started',
@@ -8517,37 +8517,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-ce1fa4d7-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-ce1fa4d7-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Started',
@@ -8568,37 +8568,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d1d30700-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d1d30700-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Started',
@@ -8619,37 +8619,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d6ae094c-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d6ae094c-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Started',
@@ -8665,7 +8665,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Running',
@@ -8681,7 +8681,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Running',
@@ -8697,7 +8697,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Running',
@@ -8713,7 +8713,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Running',
@@ -8729,7 +8729,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Running',
@@ -8745,7 +8745,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Running',
@@ -8761,7 +8761,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Running',
@@ -8777,7 +8777,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Running',
@@ -8793,7 +8793,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Running',
@@ -8809,7 +8809,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Running',
@@ -8825,7 +8825,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Running',
@@ -8841,7 +8841,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Running',
@@ -8857,7 +8857,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Running',
@@ -8873,7 +8873,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Running',
@@ -8889,7 +8889,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Running',
@@ -8905,7 +8905,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Running',
@@ -8921,7 +8921,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Running',
@@ -8937,7 +8937,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Running',
@@ -8953,7 +8953,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Running',
@@ -8969,7 +8969,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Running',
@@ -8985,7 +8985,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Running',
@@ -9001,7 +9001,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Running',
@@ -9022,37 +9022,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Starting\n'
         ' Container ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Started',
@@ -9071,25 +9071,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Creating\n'
         'Error response from daemon: no such image: does-not-exist:latest: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -9110,37 +9110,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Starting\n'
         ' Container ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Started',
@@ -9159,25 +9159,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Creating\n'
         'Error response from daemon: no such image: does-not-exist:latest: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -9198,37 +9198,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Starting\n'
         ' Container ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Started',
@@ -9247,25 +9247,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Creating\n'
         'Error response from daemon: no such image: does-not-exist:latest: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -9286,37 +9286,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Starting\n'
         ' Container ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Started',
@@ -9335,25 +9335,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Creating\n'
         'Error response from daemon: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -9374,37 +9374,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Starting\n'
         ' Container ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Started',
@@ -9423,25 +9423,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Creating\n'
         'Error response from daemon: no such image: does-not-exist:latest: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -9462,37 +9462,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Starting\n'
         ' Container ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Started',
@@ -9511,25 +9511,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Creating\n'
         'Error response from daemon: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -9550,37 +9550,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Starting\n'
         ' Container ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Started',
@@ -9599,25 +9599,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Creating\n'
         'Error response from daemon: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -9638,37 +9638,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Starting\n'
         ' Container ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Started',
@@ -9687,25 +9687,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Creating\n'
         'Error response from daemon: no such image: does-not-exist:latest: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -9726,37 +9726,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Starting\n'
         ' Container ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Started',
@@ -9775,25 +9775,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Creating\n'
         'Error response from daemon: no such image: does-not-exist:latest: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -9814,37 +9814,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Starting\n'
         ' Container ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Started',
@@ -9863,25 +9863,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Creating\n'
         'Error response from daemon: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -9902,37 +9902,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Starting\n'
         ' Container ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Started',
@@ -9951,25 +9951,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Creating\n'
         'Error response from daemon: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -9990,37 +9990,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Started',
@@ -10041,37 +10041,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Started',
@@ -10092,37 +10092,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Started',
@@ -10143,37 +10143,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Started',
@@ -10194,37 +10194,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Started',
@@ -10245,37 +10245,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Started',
@@ -10296,37 +10296,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Started',
@@ -10347,37 +10347,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Started',
@@ -10398,37 +10398,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Started',
@@ -10449,37 +10449,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Started',
@@ -10500,37 +10500,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Started',
@@ -10551,37 +10551,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Started',
@@ -10602,37 +10602,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Started',
@@ -10653,37 +10653,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Started',
@@ -10704,37 +10704,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Started',
@@ -10755,37 +10755,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Started',
@@ -10806,37 +10806,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Started',
@@ -10857,37 +10857,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Started',
@@ -10908,37 +10908,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Started',
@@ -10959,37 +10959,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Started',
@@ -11010,37 +11010,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Started',
@@ -11061,37 +11061,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Started',
@@ -11107,7 +11107,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Running',
@@ -11123,7 +11123,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Running',
@@ -11139,7 +11139,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Running',
@@ -11155,7 +11155,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Running',
@@ -11171,7 +11171,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Running',
@@ -11187,7 +11187,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Running',
@@ -11203,7 +11203,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Running',
@@ -11219,7 +11219,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Running',
@@ -11235,7 +11235,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Running',
@@ -11251,7 +11251,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Running',
@@ -11267,7 +11267,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Running',
@@ -11283,7 +11283,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Running',
@@ -11299,7 +11299,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Running',
@@ -11315,7 +11315,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Running',
@@ -11331,7 +11331,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Running',
@@ -11347,7 +11347,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Running',
@@ -11363,7 +11363,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Running',
@@ -11379,7 +11379,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Running',
@@ -11395,7 +11395,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Running',
@@ -11411,7 +11411,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Running',
@@ -11427,7 +11427,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Running',
@@ -11443,7 +11443,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Running',
@@ -11461,13 +11461,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-19ffba88-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-19ffba88-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-19ffba88-cont',
                 'Error',
@@ -11485,13 +11485,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-1f1d0d58-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-1f1d0d58-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-1f1d0d58-cont',
                 'Error',
@@ -11509,13 +11509,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-2460e737-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-2460e737-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-2460e737-cont',
                 'Error',
@@ -11533,13 +11533,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-4baa7139-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-4baa7139-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-4baa7139-cont',
                 'Error',
@@ -11557,13 +11557,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-5f3d2e16-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-5f3d2e16-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-5f3d2e16-cont',
                 'Error',
@@ -11581,13 +11581,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-601188b1-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-601188b1-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-601188b1-cont',
                 'Error',
@@ -11605,13 +11605,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-64d917f4-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-64d917f4-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-64d917f4-cont',
                 'Error',
@@ -11629,13 +11629,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-6aaaa304-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-6aaaa304-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-6aaaa304-cont',
                 'Error',
@@ -11653,13 +11653,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-ce1fa4d7-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-ce1fa4d7-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-ce1fa4d7-cont',
                 'Error',
@@ -11677,13 +11677,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-d1d30700-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d1d30700-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-d1d30700-cont',
                 'Error',
@@ -11701,13 +11701,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-d6ae094c-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d6ae094c-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-d6ae094c-cont',
                 'Error',
@@ -11725,13 +11725,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-19ffba88-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-19ffba88-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-19ffba88-cont',
                 'Error',
@@ -11749,13 +11749,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-1f1d0d58-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-1f1d0d58-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-1f1d0d58-cont',
                 'Error',
@@ -11773,13 +11773,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-2460e737-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-2460e737-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-2460e737-cont',
                 'Error',
@@ -11797,13 +11797,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-4baa7139-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-4baa7139-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-4baa7139-cont',
                 'Error',
@@ -11821,13 +11821,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-5f3d2e16-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-5f3d2e16-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-5f3d2e16-cont',
                 'Error',
@@ -11845,13 +11845,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-601188b1-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-601188b1-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-601188b1-cont',
                 'Error',
@@ -11869,13 +11869,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-64d917f4-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-64d917f4-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-64d917f4-cont',
                 'Error',
@@ -11893,13 +11893,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-6aaaa304-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-6aaaa304-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-6aaaa304-cont',
                 'Error',
@@ -11917,13 +11917,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-ce1fa4d7-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-ce1fa4d7-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-ce1fa4d7-cont',
                 'Error',
@@ -11941,13 +11941,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-d1d30700-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d1d30700-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-d1d30700-cont',
                 'Error',
@@ -11965,13 +11965,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-d6ae094c-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-d6ae094c-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-d6ae094c-cont',
                 'Error',
@@ -11988,13 +11988,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Restarting\n'
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Started',
@@ -12011,13 +12011,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Restarting\n'
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Started',
@@ -12034,13 +12034,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Restarting\n'
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Started',
@@ -12057,13 +12057,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Restarting\n'
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Started',
@@ -12080,13 +12080,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Restarting\n'
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Started',
@@ -12103,13 +12103,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Restarting\n'
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Started',
@@ -12126,13 +12126,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Restarting\n'
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Started',
@@ -12149,13 +12149,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Restarting\n'
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Started',
@@ -12172,13 +12172,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Restarting\n'
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Started',
@@ -12195,13 +12195,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Restarting\n'
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Started',
@@ -12218,13 +12218,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Restarting\n'
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Started',
@@ -12241,13 +12241,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Restarting\n'
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Started',
@@ -12264,13 +12264,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Restarting\n'
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Started',
@@ -12287,13 +12287,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Restarting\n'
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Started',
@@ -12310,13 +12310,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Restarting\n'
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Started',
@@ -12333,13 +12333,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Restarting\n'
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Started',
@@ -12356,13 +12356,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Restarting\n'
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Started',
@@ -12379,13 +12379,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Restarting\n'
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Started',
@@ -12402,13 +12402,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Restarting\n'
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Started',
@@ -12425,13 +12425,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Restarting\n'
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Started',
@@ -12448,13 +12448,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Restarting\n'
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Started',
@@ -12471,13 +12471,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Restarting\n'
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Started',
@@ -12494,13 +12494,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Started',
@@ -12517,13 +12517,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Started',
@@ -12540,13 +12540,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Started',
@@ -12563,13 +12563,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Started',
@@ -12586,13 +12586,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Started',
@@ -12609,13 +12609,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Started',
@@ -12632,13 +12632,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Started',
@@ -12655,13 +12655,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Started',
@@ -12678,13 +12678,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Started',
@@ -12701,13 +12701,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Started',
@@ -12724,13 +12724,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Started',
@@ -12747,13 +12747,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Started',
@@ -12770,13 +12770,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Started',
@@ -12793,13 +12793,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Started',
@@ -12816,13 +12816,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Started',
@@ -12839,13 +12839,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Started',
@@ -12862,13 +12862,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Started',
@@ -12885,13 +12885,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Started',
@@ -12908,13 +12908,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Started',
@@ -12931,13 +12931,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Started',
@@ -12954,13 +12954,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Started',
@@ -12977,13 +12977,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Started',
@@ -13000,13 +13000,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Starting\n'
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Started',
@@ -13023,13 +13023,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Starting\n'
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Started',
@@ -13046,13 +13046,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Starting\n'
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Started',
@@ -13069,13 +13069,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Starting\n'
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Started',
@@ -13092,13 +13092,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Starting\n'
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Started',
@@ -13115,13 +13115,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Starting\n'
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Started',
@@ -13138,13 +13138,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Starting\n'
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Started',
@@ -13161,13 +13161,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Starting\n'
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Started',
@@ -13184,13 +13184,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Starting\n'
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Started',
@@ -13207,13 +13207,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Starting\n'
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Started',
@@ -13230,13 +13230,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Starting\n'
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Started',
@@ -13253,13 +13253,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Started',
@@ -13276,13 +13276,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Started',
@@ -13299,13 +13299,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Started',
@@ -13322,13 +13322,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Started',
@@ -13345,13 +13345,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Started',
@@ -13368,13 +13368,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Started',
@@ -13391,13 +13391,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Started',
@@ -13414,13 +13414,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Started',
@@ -13437,13 +13437,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Started',
@@ -13460,13 +13460,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Started',
@@ -13483,13 +13483,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Started',
@@ -13505,7 +13505,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Running',
@@ -13521,7 +13521,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Running',
@@ -13537,7 +13537,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Running',
@@ -13553,7 +13553,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Running',
@@ -13569,7 +13569,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Running',
@@ -13585,7 +13585,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Running',
@@ -13601,7 +13601,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Running',
@@ -13617,7 +13617,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Running',
@@ -13633,7 +13633,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Running',
@@ -13649,7 +13649,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Running',
@@ -13665,7 +13665,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Running',
@@ -13681,7 +13681,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Running',
@@ -13697,7 +13697,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Running',
@@ -13713,7 +13713,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Running',
@@ -13729,7 +13729,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Running',
@@ -13745,7 +13745,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Running',
@@ -13761,7 +13761,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Running',
@@ -13777,7 +13777,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Running',
@@ -13793,7 +13793,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Running',
@@ -13809,7 +13809,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Running',
@@ -13825,7 +13825,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Running',
@@ -13841,7 +13841,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Running',
@@ -13860,19 +13860,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Stopping\n'
         ' Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Stopped',
@@ -13891,19 +13891,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Stopping\n'
         ' Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Stopped',
@@ -13922,19 +13922,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Stopping\n'
         ' Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Stopped',
@@ -13953,19 +13953,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Stopping\n'
         ' Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Stopped',
@@ -13984,19 +13984,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Stopping\n'
         ' Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Stopped',
@@ -14015,19 +14015,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Stopping\n'
         ' Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Stopped',
@@ -14046,19 +14046,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Stopping\n'
         ' Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Stopped',
@@ -14077,19 +14077,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Stopping\n'
         ' Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Stopped',
@@ -14108,19 +14108,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Stopping\n'
         ' Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Stopped',
@@ -14139,19 +14139,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Stopping\n'
         ' Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Stopped',
@@ -14170,19 +14170,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Stopping\n'
         ' Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Stopped',
@@ -14201,19 +14201,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-start-stop-ansible-docker-test-19ffba88-container-1',
                 'Stopped',
@@ -14232,19 +14232,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-1f1d0d58-container-1',
                 'Stopped',
@@ -14263,19 +14263,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-start-stop-ansible-docker-test-2460e737-container-1',
                 'Stopped',
@@ -14294,19 +14294,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-start-stop-ansible-docker-test-4baa7139-container-1',
                 'Stopped',
@@ -14325,19 +14325,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-start-stop-ansible-docker-test-5f3d2e16-container-1',
                 'Stopped',
@@ -14356,19 +14356,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-start-stop-ansible-docker-test-601188b1-container-1',
                 'Stopped',
@@ -14387,19 +14387,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-start-stop-ansible-docker-test-64d917f4-container-1',
                 'Stopped',
@@ -14418,19 +14418,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-start-stop-ansible-docker-test-6aaaa304-container-1',
                 'Stopped',
@@ -14449,19 +14449,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-start-stop-ansible-docker-test-ce1fa4d7-container-1',
                 'Stopped',
@@ -14480,19 +14480,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-start-stop-ansible-docker-test-d1d30700-container-1',
                 'Stopped',
@@ -14511,19 +14511,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-start-stop-ansible-docker-test-d6ae094c-container-1',
                 'Stopped',
@@ -14544,37 +14544,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-19ffba88-pull_default  Removing\n'
         ' Network ansible-docker-test-19ffba88-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-19ffba88-pull-ansible-docker-test-19ffba88-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-19ffba88-pull_default',
                 'Removed',
@@ -14595,37 +14595,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-1f1d0d58-pull_default  Removing\n'
         ' Network ansible-docker-test-1f1d0d58-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-1f1d0d58-pull-ansible-docker-test-1f1d0d58-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-1f1d0d58-pull_default',
                 'Removed',
@@ -14646,37 +14646,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-2460e737-pull_default  Removing\n'
         ' Network ansible-docker-test-2460e737-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-2460e737-pull-ansible-docker-test-2460e737-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-2460e737-pull_default',
                 'Removed',
@@ -14697,37 +14697,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-4baa7139-pull_default  Removing\n'
         ' Network ansible-docker-test-4baa7139-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-4baa7139-pull-ansible-docker-test-4baa7139-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-4baa7139-pull_default',
                 'Removed',
@@ -14748,37 +14748,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-5f3d2e16-pull_default  Removing\n'
         ' Network ansible-docker-test-5f3d2e16-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-5f3d2e16-pull-ansible-docker-test-5f3d2e16-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-5f3d2e16-pull_default',
                 'Removed',
@@ -14799,37 +14799,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-601188b1-pull_default  Removing\n'
         ' Network ansible-docker-test-601188b1-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-601188b1-pull-ansible-docker-test-601188b1-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-601188b1-pull_default',
                 'Removed',
@@ -14850,37 +14850,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-64d917f4-pull_default  Removing\n'
         ' Network ansible-docker-test-64d917f4-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-64d917f4-pull-ansible-docker-test-64d917f4-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-64d917f4-pull_default',
                 'Removed',
@@ -14901,37 +14901,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-6aaaa304-pull_default  Removing\n'
         ' Network ansible-docker-test-6aaaa304-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-6aaaa304-pull-ansible-docker-test-6aaaa304-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-6aaaa304-pull_default',
                 'Removed',
@@ -14952,37 +14952,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-ce1fa4d7-pull_default  Removing\n'
         ' Network ansible-docker-test-ce1fa4d7-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-ce1fa4d7-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-ce1fa4d7-pull_default',
                 'Removed',
@@ -15003,37 +15003,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-d1d30700-pull_default  Removing\n'
         ' Network ansible-docker-test-d1d30700-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d1d30700-pull-ansible-docker-test-d1d30700-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d1d30700-pull_default',
                 'Removed',
@@ -15054,37 +15054,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-d6ae094c-pull_default  Removing\n'
         ' Network ansible-docker-test-d6ae094c-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-d6ae094c-pull-ansible-docker-test-d6ae094c-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-d6ae094c-pull_default',
                 'Removed',
@@ -15108,37 +15108,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-bc362ba-start-stop_default  Removing\n'
         ' Network ansible-docker-test-bc362ba-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Removed',
@@ -15159,37 +15159,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Network ansible-docker-test-bc362ba-start-stop_default  Removing\n'
         ' DRY-RUN MODE -  Network ansible-docker-test-bc362ba-start-stop_default  Resource is still in use\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 None,
@@ -15210,37 +15210,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-bc362ba-pull_default  Removing\n'
         ' Network ansible-docker-test-bc362ba-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-pull_default',
                 'Removed',
@@ -15261,37 +15261,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-bc362ba-start-stop_default  Removing\n'
         ' Network ansible-docker-test-bc362ba-start-stop_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Removed',
@@ -15312,37 +15312,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Starting\n'
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Started',
@@ -15361,25 +15361,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container df477f7889c_ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Starting\n'
         ' DRY-RUN MODE -  Container df477f7889c_ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'df477f7889c_ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'df477f7889c_ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Started',
@@ -15398,25 +15398,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Starting\n'
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Started',
@@ -15437,37 +15437,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Started',
@@ -15483,7 +15483,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Running',
@@ -15499,7 +15499,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Running',
@@ -15518,25 +15518,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Creating\n'
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Created',
@@ -15555,25 +15555,25 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Creating\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Created\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-start-stop_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Created',
@@ -15591,19 +15591,19 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-bc362ba-cont Pulled \n'
         ' Container ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-bc362ba-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-bc362ba-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Running',
@@ -15624,37 +15624,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container 9f33f2ddb62_ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container 9f33f2ddb62_ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-bc362ba-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-bc362ba-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Recreate',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Recreated',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '9f33f2ddb62_ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 '9f33f2ddb62_ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Started',
@@ -15675,37 +15675,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Starting\n'
         ' Container ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-bc362ba-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-bc362ba-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Started',
@@ -15726,37 +15726,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-bc362ba-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-bc362ba-cont',
                 'Pulled',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Started',
@@ -15772,7 +15772,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Running',
@@ -15788,7 +15788,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Running',
@@ -15809,37 +15809,37 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Starting\n'
         ' Container ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Started',
@@ -15858,25 +15858,25 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Creating\n'
         'Error response from daemon: no such image: does-not-exist:latest: No such image: does-not-exist:latest\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 '',
                 'Error',
@@ -15897,37 +15897,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Started',
@@ -15948,37 +15948,37 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container nsible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Starting\n'
         ' DRY-RUN MODE -  Container nsible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-pull_default',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-pull_default',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Creating',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Created',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'nsible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Started',
@@ -15994,7 +15994,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Running',
@@ -16010,7 +16010,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Running',
@@ -16028,13 +16028,13 @@ EVENT_TEST_CASES = [
         ' ansible-docker-test-bc362ba-cont Error \n'
         "Error response from daemon: pull access denied for does-not-exist, repository does not exist or may require 'docker login': denied: requested access to the resource is denied\n",  # noqa: E501
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-bc362ba-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-bc362ba-cont',
                 'Error',
@@ -16052,13 +16052,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  ansible-docker-test-bc362ba-cont Error \n'
         'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
         [
-            ResourceEvent(
+            Event(
                 'service',
                 'ansible-docker-test-bc362ba-cont',
                 'Pulling',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'unknown',
                 'ansible-docker-test-bc362ba-cont',
                 'Error',
@@ -16075,13 +16075,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Restarting\n'
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Started',
@@ -16098,13 +16098,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Restarting\n'
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Started',
@@ -16121,13 +16121,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Started',
@@ -16144,13 +16144,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Restarting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Restarting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Started',
@@ -16167,13 +16167,13 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Starting\n'
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Started',
@@ -16190,13 +16190,13 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Starting\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Started\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Starting',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Started',
@@ -16212,7 +16212,7 @@ EVENT_TEST_CASES = [
         True,
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Running',
@@ -16228,7 +16228,7 @@ EVENT_TEST_CASES = [
         False,
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Running\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Running',
@@ -16247,19 +16247,19 @@ EVENT_TEST_CASES = [
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Stopping\n'
         ' Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Stopped',
@@ -16278,19 +16278,19 @@ EVENT_TEST_CASES = [
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Stopping\n'
         ' DRY-RUN MODE -  Container ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1  Stopped\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Running',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-start-stop-ansible-docker-test-bc362ba-container-1',
                 'Stopped',
@@ -16311,37 +16311,37 @@ EVENT_TEST_CASES = [
         ' Network ansible-docker-test-bc362ba-pull_default  Removing\n'
         ' Network ansible-docker-test-bc362ba-pull_default  Removed\n',
         [
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Stopping',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Stopped',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'container',
                 'ansible-docker-test-bc362ba-pull-ansible-docker-test-bc362ba-cont-1',
                 'Removed',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-pull_default',
                 'Removing',
                 None,
             ),
-            ResourceEvent(
+            Event(
                 'network',
                 'ansible-docker-test-bc362ba-pull_default',
                 'Removed',
