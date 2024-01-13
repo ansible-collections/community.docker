@@ -96,7 +96,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          # Currently requirements-parser is incompatible with Python 3.12
+          # (https://github.com/madpah/requirements-parser/issues/88), so we
+          # have to stick to Python 3.11 for now...
+          python-version: '3.11'
 
       - name: Install ansible-core devel
         run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
@@ -108,6 +111,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: collection-build-${{ github.sha }}
+
+      - name: List files
+        shell: bash
+        run: |
+          ls -la
 
       - name: Install collection dependencies
         shell: bash
