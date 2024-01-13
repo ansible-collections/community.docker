@@ -301,7 +301,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Whether to pull images before running. This is used when <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span></code> is ran.</p>
 <p><code class="ansible-value docutils literal notranslate"><span class="pre">always</span></code> ensures that the images are always pulled, even when already present on the Docker daemon.</p>
-<p><code class="ansible-value docutils literal notranslate"><span class="pre">missing</span></code> only pulls them when they are not present on the Docker daemon.</p>
+<p><code class="ansible-value docutils literal notranslate"><span class="pre">missing</span></code> only pulls them when they are not present on the Docker daemon. This is only supported since Docker Compose 2.22.0.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;always&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
