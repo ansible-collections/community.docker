@@ -17,7 +17,8 @@ DOCUMENTATION = '''
         - python >= 2.7
         - L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0
     extends_documentation_fragment:
-        - constructed
+        - ansible.builtin.constructed
+        - community.library_inventory_filtering_v1.inventory_filter
     description:
         - Reads inventories from the Docker swarm API.
         - Uses a YAML configuration file docker_swarm.[yml|yaml].
@@ -108,6 +109,8 @@ DOCUMENTATION = '''
         include_host_uri_port:
             description: Override the detected port number included in C(ansible_host_uri).
             type: int
+        filters:
+            version_added: 3.5.0
 '''
 
 EXAMPLES = '''
@@ -157,6 +160,8 @@ from ansible_collections.community.docker.plugins.module_utils.util import updat
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
 from ansible.parsing.utils.addresses import parse_address
 
+from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import parse_filters, filter_host
+
 try:
     import docker
     HAS_DOCKER = True
@@ -196,6 +201,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         self.inventory.add_group('leader')
         self.inventory.add_group('nonleaders')
 
+        filters = parse_filters(self.get_option('filters'))
+
         if self.get_option('include_host_uri'):
             if self.get_option('include_host_uri_port'):
                 host_uri_port = str(self.get_option('include_host_uri_port'))
@@ -208,6 +215,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             self.nodes = self.client.nodes.list()
             for self.node in self.nodes:
                 self.node_attrs = self.client.nodes.get(self.node.id).attrs
+                if not filter_host(self, self.node_attrs['ID'], self.node_attrs, filters):
+                    continue
                 self.inventory.add_host(self.node_attrs['ID'])
                 self.inventory.add_host(self.node_attrs['ID'], group=self.node_attrs['Spec']['Role'])
                 self.inventory.set_variable(self.node_attrs['ID'], 'ansible_host',
