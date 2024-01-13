@@ -15,7 +15,9 @@ EVENT_TEST_CASES = [
     # ## Docker Compose 2.18.1 ##############################################################################################
     # #######################################################################################################################
     # docker_compose_v2: "Absent" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in 2.12-ubuntu1804
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-absent',
         '2.18.1',
@@ -67,6 +69,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Absent (check)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-absent-(check)',
         '2.18.1',
@@ -118,7 +121,9 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Cleanup" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.12-ubuntu1804
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-cleanup',
         '2.18.1',
@@ -170,6 +175,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present',
         '2.18.1',
@@ -234,6 +240,43 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in 2.12-ubuntu1804
+    (
+        '2.18.1-2.12-ubuntu1804-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.18.1',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 80c52c26780_ansible-docker-test-7c5458ac-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container 80c52c26780_ansible-docker-test-7c5458ac-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '80c52c26780_ansible-docker-test-7c5458ac-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '80c52c26780_ansible-docker-test-7c5458ac-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present (changed check)" on 2024-01-07 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-(changed-check)',
@@ -272,6 +315,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present (changed)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-(changed)',
         '2.18.1',
@@ -302,6 +346,71 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in 2.12-ubuntu1804
+    (
+        '2.18.1-2.12-ubuntu1804-2024-01-13-docker_compose_v2-present-(check)',
+        '2.18.1',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-container Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-container Pulled \n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-7c5458ac-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-7c5458ac-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-container',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-container',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-7c5458ac-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-7c5458ac-start-stop-ansible-docker-test-01234567-container-1',
                 'Started',
                 None,
             ),
@@ -374,7 +483,9 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in 2.12-ubuntu1804
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-(idempotent-check)',
         '2.18.1',
@@ -391,7 +502,9 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present (idempotent)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in 2.12-ubuntu1804
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-(idempotent)',
         '2.18.1',
@@ -408,6 +521,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present stopped" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-stopped',
         '2.18.1',
@@ -445,6 +559,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present stopped (check)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-stopped-(check)',
         '2.18.1',
@@ -482,6 +597,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=always" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-with-pull=always',
         '2.18.1',
@@ -562,7 +678,59 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in 2.12-ubuntu1804
+    (
+        '2.18.1-2.12-ubuntu1804-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.18.1',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container ec060c7b341_ansible-docker-test-7c5458ac-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container ec060c7b341_ansible-docker-test-7c5458ac-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                'ec060c7b341_ansible-docker-test-7c5458ac-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'ec060c7b341_ansible-docker-test-7c5458ac-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present with pull=missing" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-with-pull=missing',
         '2.18.1',
@@ -607,6 +775,57 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in 2.12-ubuntu1804
+    (
+        '2.18.1-2.12-ubuntu1804-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.18.1',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-7c5458ac-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-7c5458ac-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-7c5458ac-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-7c5458ac-pull-ansible-docker-test-01234567-cont-1',
                 'Started',
                 None,
             ),
@@ -665,7 +884,9 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in 2.12-ubuntu1804
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-with-pull=missing-(idempotent)',
         '2.18.1',
@@ -682,7 +903,9 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in 2.12-ubuntu1804
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-with-pull=missing-(idempotent,-check)',
         '2.18.1',
@@ -699,6 +922,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-with-pull=never',
         '2.18.1',
@@ -750,6 +974,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-with-pull=never',
         '2.18.1',
@@ -782,6 +1007,58 @@ EVENT_TEST_CASES = [
                 '',
                 'Error',
                 'Error response from daemon: No such image: does-not-exist:latest',
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.12-ubuntu1804
+    (
+        '2.18.1-2.12-ubuntu1804-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.18.1',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-7c5458ac-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-7c5458ac-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-7c5458ac-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-7c5458ac-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
             ),
         ],
         [],
@@ -839,6 +1116,8 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present without explicit pull" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-without-explicit-pull',
         '2.18.1',
@@ -863,6 +1142,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-present-without-explicit-pull-(check)',
         '2.18.1',
@@ -888,6 +1168,8 @@ EVENT_TEST_CASES = [
     ),
     # docker_compose_v2: "Restarted" on 2024-01-07 in 2.12-ubuntu1804
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-restarted',
         '2.18.1',
@@ -912,6 +1194,8 @@ EVENT_TEST_CASES = [
     ),
     # docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.12-ubuntu1804
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-restarted-(check)',
         '2.18.1',
@@ -935,6 +1219,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Started" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-started',
         '2.18.1',
@@ -958,6 +1243,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Started (check)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-started-(check)',
         '2.18.1',
@@ -981,6 +1267,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Stopped" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-stopped',
         '2.18.1',
@@ -1012,6 +1299,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Stopped (check)" on 2024-01-07 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in 2.12-ubuntu1804
     (
         '2.18.1-2.12-ubuntu1804-2024-01-07-docker_compose_v2-stopped-(check)',
         '2.18.1',
@@ -1042,31 +1330,197 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in 2.12-ubuntu1804
+    (
+        '2.18.1-2.12-ubuntu1804-2024-01-13-docker_compose_v2_pull-pull-(check)',
+        '2.18.1',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Error \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont  - Pull error for image: does-not-exist:latest \n'
+        'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'unknown',
+                'ansible-docker-test-01234567-cont',
+                'Error',
+                'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed',
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in 2.12-ubuntu1804
+    (
+        '2.18.1-2.12-ubuntu1804-2024-01-13-docker_compose_v2_pull-pull-with-policy=always',
+        '2.18.1',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' 486039affc0a Pulling fs layer \n'
+        ' 486039affc0a Downloading [>                                                  ]  32.16kB/2.207MB\n'
+        ' 486039affc0a Verifying Checksum \n'
+        ' 486039affc0a Download complete \n'
+        ' 486039affc0a Extracting [>                                                  ]  32.77kB/2.207MB\n'
+        ' 486039affc0a Extracting [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Pull complete \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pulling fs layer',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Verifying Checksum',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Download complete',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pull complete',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always (again)" on 2024-01-13 in 2.12-ubuntu1804
+    (
+        '2.18.1-2.12-ubuntu1804-2024-01-13-docker_compose_v2_pull-pull-with-policy=always-(again)',
+        '2.18.1',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always (again, check)" on 2024-01-13 in 2.12-ubuntu1804
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in 2.12-ubuntu1804
+    (
+        '2.18.1-2.12-ubuntu1804-2024-01-13-docker_compose_v2_pull-pull-with-policy=always-(again,-check)',
+        '2.18.1',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
     # #######################################################################################################################
     # ## Docker Compose 2.21.0 ##############################################################################################
     # #######################################################################################################################
     # docker_compose_v2: "Absent" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Absent" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Absent" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Absent" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Absent" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Absent" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Absent" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Absent" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Absent" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Absent" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Absent" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in devel-ubuntu2204
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-absent',
         '2.21.0',
@@ -1118,16 +1572,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Absent (check)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-absent-(check)',
         '2.21.0',
@@ -1179,27 +1644,49 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Cleanup" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in devel-ubuntu2204
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-cleanup',
         '2.21.0',
@@ -1251,16 +1738,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present',
         '2.21.0',
@@ -1311,6 +1809,43 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in 2.16-rhel9.2
+    (
+        '2.21.0-2.16-rhel9.2-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 054e03eb5ea_ansible-docker-test-b2745d99-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container 054e03eb5ea_ansible-docker-test-b2745d99-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '054e03eb5ea_ansible-docker-test-b2745d99-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '054e03eb5ea_ansible-docker-test-b2745d99-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present (changed check)" on 2024-01-07 in 2.16-rhel9.2
     (
         '2.21.0-2.16-rhel9.2-2024-01-07-docker_compose_v2-present-(changed-check)',
@@ -1348,6 +1883,43 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in devel-ubuntu2004
+    (
+        '2.21.0-devel-ubuntu2004-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 0e165a36533_ansible-docker-test-e700ac20-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container 0e165a36533_ansible-docker-test-e700ac20-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '0e165a36533_ansible-docker-test-e700ac20-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '0e165a36533_ansible-docker-test-e700ac20-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present (changed check)" on 2024-01-07 in devel-ubuntu2204
     (
         '2.21.0-devel-ubuntu2204-2024-01-07-docker_compose_v2-present-(changed-check)',
@@ -1379,6 +1951,43 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 '26bf8ff1675_ansible-docker-test-1f1d0d58-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in 2.15-rhel9.1
+    (
+        '2.21.0-2.15-rhel9.1-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 27c209a84a5_ansible-docker-test-d616c3a5-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container 27c209a84a5_ansible-docker-test-d616c3a5-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '27c209a84a5_ansible-docker-test-d616c3a5-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '27c209a84a5_ansible-docker-test-d616c3a5-start-stop-ansible-docker-test-01234567-container-1',
                 'Started',
                 None,
             ),
@@ -1570,6 +2179,228 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in devel-debian-bookworm
+    (
+        '2.21.0-devel-debian-bookworm-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 7971b0c189d_ansible-docker-test-51914faa-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container 7971b0c189d_ansible-docker-test-51914faa-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '7971b0c189d_ansible-docker-test-51914faa-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '7971b0c189d_ansible-docker-test-51914faa-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in devel-rhel9.3
+    (
+        '2.21.0-devel-rhel9.3-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 7b8d91093c9_ansible-docker-test-d2caf0c9-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container 7b8d91093c9_ansible-docker-test-d2caf0c9-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '7b8d91093c9_ansible-docker-test-d2caf0c9-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '7b8d91093c9_ansible-docker-test-d2caf0c9-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in 2.16-centos7
+    (
+        '2.21.0-2.16-centos7-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 7bedd9b4513_ansible-docker-test-1ba2643a-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container 7bedd9b4513_ansible-docker-test-1ba2643a-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '7bedd9b4513_ansible-docker-test-1ba2643a-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '7bedd9b4513_ansible-docker-test-1ba2643a-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in 2.15-rhel7.9
+    (
+        '2.21.0-2.15-rhel7.9-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 87873e68934_ansible-docker-test-ad622acd-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container 87873e68934_ansible-docker-test-ad622acd-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '87873e68934_ansible-docker-test-ad622acd-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '87873e68934_ansible-docker-test-ad622acd-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in 2.14-rhel9.0
+    (
+        '2.21.0-2.14-rhel9.0-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container a81dce9774b_ansible-docker-test-4fcbaf1e-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container a81dce9774b_ansible-docker-test-4fcbaf1e-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                'a81dce9774b_ansible-docker-test-4fcbaf1e-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'a81dce9774b_ansible-docker-test-4fcbaf1e-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in 2.15-centos7
+    (
+        '2.21.0-2.15-centos7-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container d28b7978587_ansible-docker-test-971ad57c-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container d28b7978587_ansible-docker-test-971ad57c-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                'd28b7978587_ansible-docker-test-971ad57c-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'd28b7978587_ansible-docker-test-971ad57c-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present (changed check)" on 2024-01-07 in 2.15-rhel9.1
     (
         '2.21.0-2.15-rhel9.1-2024-01-07-docker_compose_v2-present-(changed-check)',
@@ -1644,6 +2475,43 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in devel-ubuntu2204
+    (
+        '2.21.0-devel-ubuntu2204-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container ef57cb7913f_ansible-docker-test-ede01681-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container ef57cb7913f_ansible-docker-test-ede01681-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                'ef57cb7913f_ansible-docker-test-ede01681-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'ef57cb7913f_ansible-docker-test-ede01681-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present (changed check)" on 2024-01-07 in 2.15-rhel7.9
     (
         '2.21.0-2.15-rhel7.9-2024-01-07-docker_compose_v2-present-(changed-check)',
@@ -1675,6 +2543,43 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 'efe8857a191_ansible-docker-test-601188b1-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in devel-debian-bullseye
+    (
+        '2.21.0-devel-debian-bullseye-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container f0de40ba686_ansible-docker-test-834c1a9b-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container f0de40ba686_ansible-docker-test-834c1a9b-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                'f0de40ba686_ansible-docker-test-834c1a9b-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'f0de40ba686_ansible-docker-test-834c1a9b-start-stop-ansible-docker-test-01234567-container-1',
                 'Started',
                 None,
             ),
@@ -1719,16 +2624,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present (changed)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-(changed)',
         '2.21.0',
@@ -1810,6 +2726,57 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 'nsible-docker-test-19ffba88-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in 2.16-centos7
+    (
+        '2.21.0-2.16-centos7-2024-01-13-docker_compose_v2-present-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-1ba2643a-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-1ba2643a-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-1ba2643a-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-1ba2643a-start-stop-ansible-docker-test-01234567-container-1',
                 'Started',
                 None,
             ),
@@ -1963,6 +2930,108 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 'nsible-docker-test-4baa7139-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in 2.14-rhel9.0
+    (
+        '2.21.0-2.14-rhel9.0-2024-01-13-docker_compose_v2-present-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-4fcbaf1e-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-4fcbaf1e-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-4fcbaf1e-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-4fcbaf1e-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in devel-debian-bookworm
+    (
+        '2.21.0-devel-debian-bookworm-2024-01-13-docker_compose_v2-present-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-51914faa-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-51914faa-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-51914faa-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-51914faa-start-stop-ansible-docker-test-01234567-container-1',
                 'Started',
                 None,
             ),
@@ -2173,6 +3242,210 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in devel-debian-bullseye
+    (
+        '2.21.0-devel-debian-bullseye-2024-01-13-docker_compose_v2-present-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-834c1a9b-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-834c1a9b-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-834c1a9b-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-834c1a9b-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in 2.15-centos7
+    (
+        '2.21.0-2.15-centos7-2024-01-13-docker_compose_v2-present-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-971ad57c-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-971ad57c-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-971ad57c-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-971ad57c-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in 2.15-rhel7.9
+    (
+        '2.21.0-2.15-rhel7.9-2024-01-13-docker_compose_v2-present-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-ad622acd-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-ad622acd-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-ad622acd-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-ad622acd-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in 2.16-rhel9.2
+    (
+        '2.21.0-2.16-rhel9.2-2024-01-13-docker_compose_v2-present-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-b2745d99-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-b2745d99-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-b2745d99-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-b2745d99-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present (check)" on 2024-01-07 in 2.15-centos7
     (
         '2.21.0-2.15-centos7-2024-01-07-docker_compose_v2-present-(check)',
@@ -2275,6 +3548,108 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in devel-rhel9.3
+    (
+        '2.21.0-devel-rhel9.3-2024-01-13-docker_compose_v2-present-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-d2caf0c9-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-d2caf0c9-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-d2caf0c9-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-d2caf0c9-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in 2.15-rhel9.1
+    (
+        '2.21.0-2.15-rhel9.1-2024-01-13-docker_compose_v2-present-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-d616c3a5-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-d616c3a5-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-d616c3a5-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-d616c3a5-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present (check)" on 2024-01-07 in 2.15-rhel9.1
     (
         '2.21.0-2.15-rhel9.1-2024-01-07-docker_compose_v2-present-(check)',
@@ -2326,28 +3701,152 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in devel-ubuntu2004
+    (
+        '2.21.0-devel-ubuntu2004-2024-01-13-docker_compose_v2-present-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-e700ac20-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-e700ac20-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-e700ac20-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-e700ac20-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in devel-ubuntu2204
+    (
+        '2.21.0-devel-ubuntu2204-2024-01-13-docker_compose_v2-present-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-ede01681-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-ede01681-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-ede01681-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-ede01681-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in devel-ubuntu2204
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-(idempotent-check)',
         '2.21.0',
@@ -2364,27 +3863,49 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present (idempotent)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in devel-ubuntu2204
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-(idempotent)',
         '2.21.0',
@@ -2401,16 +3922,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present stopped" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-stopped',
         '2.21.0',
@@ -2448,16 +3980,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present stopped (check)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-stopped-(check)',
         '2.21.0',
@@ -2495,16 +4038,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=always" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-with-pull=always',
         '2.21.0',
@@ -2529,6 +4083,57 @@ EVENT_TEST_CASES = [
                 'container',
                 'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
                 'Running',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in devel-debian-bookworm
+    (
+        '2.21.0-devel-debian-bookworm-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 0b4286904e0_ansible-docker-test-51914faa-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container 0b4286904e0_ansible-docker-test-51914faa-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '0b4286904e0_ansible-docker-test-51914faa-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '0b4286904e0_ansible-docker-test-51914faa-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
                 None,
             ),
         ],
@@ -2630,6 +4235,57 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 '3d7b7be6dbe_ansible-docker-test-d1d30700-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in 2.16-centos7
+    (
+        '2.21.0-2.16-centos7-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 49ff7fef052_ansible-docker-test-1ba2643a-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container 49ff7fef052_ansible-docker-test-1ba2643a-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '49ff7fef052_ansible-docker-test-1ba2643a-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '49ff7fef052_ansible-docker-test-1ba2643a-pull-ansible-docker-test-01234567-cont-1',
                 'Started',
                 None,
             ),
@@ -2738,6 +4394,57 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in devel-ubuntu2004
+    (
+        '2.21.0-devel-ubuntu2004-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 61802a08aa6_ansible-docker-test-e700ac20-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container 61802a08aa6_ansible-docker-test-e700ac20-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '61802a08aa6_ansible-docker-test-e700ac20-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '61802a08aa6_ansible-docker-test-e700ac20-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present with pull=always (check)" on 2024-01-07 in 2.15-centos7
     (
         '2.21.0-2.15-centos7-2024-01-07-docker_compose_v2-present-with-pull=always-(check)',
@@ -2783,6 +4490,159 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 '61bd1b13d9c_ansible-docker-test-ce1fa4d7-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in devel-rhel9.3
+    (
+        '2.21.0-devel-rhel9.3-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 769aec9cd4d_ansible-docker-test-d2caf0c9-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container 769aec9cd4d_ansible-docker-test-d2caf0c9-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '769aec9cd4d_ansible-docker-test-d2caf0c9-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '769aec9cd4d_ansible-docker-test-d2caf0c9-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in devel-ubuntu2204
+    (
+        '2.21.0-devel-ubuntu2204-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 813ca227a6f_ansible-docker-test-ede01681-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container 813ca227a6f_ansible-docker-test-ede01681-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '813ca227a6f_ansible-docker-test-ede01681-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '813ca227a6f_ansible-docker-test-ede01681-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in devel-debian-bullseye
+    (
+        '2.21.0-devel-debian-bullseye-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 8a586ed91d6_ansible-docker-test-834c1a9b-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container 8a586ed91d6_ansible-docker-test-834c1a9b-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '8a586ed91d6_ansible-docker-test-834c1a9b-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '8a586ed91d6_ansible-docker-test-834c1a9b-pull-ansible-docker-test-01234567-cont-1',
                 'Started',
                 None,
             ),
@@ -2840,6 +4700,108 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in 2.16-rhel9.2
+    (
+        '2.21.0-2.16-rhel9.2-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container 906450ba6e7_ansible-docker-test-b2745d99-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container 906450ba6e7_ansible-docker-test-b2745d99-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                '906450ba6e7_ansible-docker-test-b2745d99-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                '906450ba6e7_ansible-docker-test-b2745d99-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in 2.15-rhel9.1
+    (
+        '2.21.0-2.15-rhel9.1-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container a99ed30c7d6_ansible-docker-test-d616c3a5-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container a99ed30c7d6_ansible-docker-test-d616c3a5-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                'a99ed30c7d6_ansible-docker-test-d616c3a5-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'a99ed30c7d6_ansible-docker-test-d616c3a5-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present with pull=always (check)" on 2024-01-07 in 2.15-rhel9.1
     (
         '2.21.0-2.15-rhel9.1-2024-01-07-docker_compose_v2-present-with-pull=always-(check)',
@@ -2891,6 +4853,57 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in 2.15-centos7
+    (
+        '2.21.0-2.15-centos7-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container be1b2a9ca28_ansible-docker-test-971ad57c-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container be1b2a9ca28_ansible-docker-test-971ad57c-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                'be1b2a9ca28_ansible-docker-test-971ad57c-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'be1b2a9ca28_ansible-docker-test-971ad57c-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present with pull=always (check)" on 2024-01-07 in devel-debian-bookworm
     (
         '2.21.0-devel-debian-bookworm-2024-01-07-docker_compose_v2-present-with-pull=always-(check)',
@@ -2936,6 +4949,108 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 'c9d730c2613_ansible-docker-test-5f3d2e16-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in 2.15-rhel7.9
+    (
+        '2.21.0-2.15-rhel7.9-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container da16aa68f6f_ansible-docker-test-ad622acd-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container da16aa68f6f_ansible-docker-test-ad622acd-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                'da16aa68f6f_ansible-docker-test-ad622acd-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'da16aa68f6f_ansible-docker-test-ad622acd-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in 2.14-rhel9.0
+    (
+        '2.21.0-2.14-rhel9.0-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container dff4b309c58_ansible-docker-test-4fcbaf1e-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container dff4b309c58_ansible-docker-test-4fcbaf1e-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                'dff4b309c58_ansible-docker-test-4fcbaf1e-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'dff4b309c58_ansible-docker-test-4fcbaf1e-pull-ansible-docker-test-01234567-cont-1',
                 'Started',
                 None,
             ),
@@ -3096,16 +5211,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=missing" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-with-pull=missing',
         '2.21.0',
@@ -3201,6 +5327,57 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 'nsible-docker-test-19ffba88-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in 2.16-centos7
+    (
+        '2.21.0-2.16-centos7-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-1ba2643a-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-1ba2643a-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-1ba2643a-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-1ba2643a-pull-ansible-docker-test-01234567-cont-1',
                 'Started',
                 None,
             ),
@@ -3354,6 +5531,108 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 'nsible-docker-test-4baa7139-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in 2.14-rhel9.0
+    (
+        '2.21.0-2.14-rhel9.0-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-4fcbaf1e-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-4fcbaf1e-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-4fcbaf1e-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-4fcbaf1e-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in devel-debian-bookworm
+    (
+        '2.21.0-devel-debian-bookworm-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-51914faa-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-51914faa-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-51914faa-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-51914faa-pull-ansible-docker-test-01234567-cont-1',
                 'Started',
                 None,
             ),
@@ -3564,6 +5843,210 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in devel-debian-bullseye
+    (
+        '2.21.0-devel-debian-bullseye-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-834c1a9b-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-834c1a9b-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-834c1a9b-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-834c1a9b-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in 2.15-centos7
+    (
+        '2.21.0-2.15-centos7-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-971ad57c-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-971ad57c-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-971ad57c-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-971ad57c-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in 2.15-rhel7.9
+    (
+        '2.21.0-2.15-rhel7.9-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-ad622acd-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-ad622acd-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-ad622acd-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-ad622acd-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in 2.16-rhel9.2
+    (
+        '2.21.0-2.16-rhel9.2-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-b2745d99-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-b2745d99-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-b2745d99-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-b2745d99-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-07 in 2.15-centos7
     (
         '2.21.0-2.15-centos7-2024-01-07-docker_compose_v2-present-with-pull=missing-(check)',
@@ -3666,6 +6149,108 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in devel-rhel9.3
+    (
+        '2.21.0-devel-rhel9.3-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-d2caf0c9-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-d2caf0c9-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-d2caf0c9-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-d2caf0c9-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in 2.15-rhel9.1
+    (
+        '2.21.0-2.15-rhel9.1-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-d616c3a5-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-d616c3a5-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-d616c3a5-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-d616c3a5-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-07 in 2.15-rhel9.1
     (
         '2.21.0-2.15-rhel9.1-2024-01-07-docker_compose_v2-present-with-pull=missing-(check)',
@@ -3717,28 +6302,152 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in devel-ubuntu2004
+    (
+        '2.21.0-devel-ubuntu2004-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-e700ac20-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-e700ac20-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-e700ac20-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-e700ac20-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in devel-ubuntu2204
+    (
+        '2.21.0-devel-ubuntu2204-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-ede01681-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-ede01681-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-ede01681-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-ede01681-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in devel-ubuntu2204
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-with-pull=missing-(idempotent)',
         '2.21.0',
@@ -3755,27 +6464,49 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in devel-ubuntu2204
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-with-pull=missing-(idempotent,-check)',
         '2.21.0',
@@ -3792,16 +6523,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-with-pull=never',
         '2.21.0',
@@ -3853,10 +6595,15 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in devel-rhel9.3
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-with-pull=never',
         '2.21.0',
@@ -3894,11 +6641,17 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.15-centos7-2024-01-07-docker_compose_v2-present-with-pull=never',
         '2.21.0',
@@ -3981,6 +6734,58 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 'nsible-docker-test-19ffba88-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.16-centos7
+    (
+        '2.21.0-2.16-centos7-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-1ba2643a-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-1ba2643a-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-1ba2643a-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-1ba2643a-pull-ansible-docker-test-01234567-cont-1',
                 'Started',
                 None,
             ),
@@ -4137,6 +6942,110 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 'nsible-docker-test-4baa7139-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.14-rhel9.0
+    (
+        '2.21.0-2.14-rhel9.0-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-4fcbaf1e-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-4fcbaf1e-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-4fcbaf1e-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-4fcbaf1e-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in devel-debian-bookworm
+    (
+        '2.21.0-devel-debian-bookworm-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-51914faa-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-51914faa-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-51914faa-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-51914faa-pull-ansible-docker-test-01234567-cont-1',
                 'Started',
                 None,
             ),
@@ -4351,6 +7260,214 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in devel-debian-bullseye
+    (
+        '2.21.0-devel-debian-bullseye-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-834c1a9b-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-834c1a9b-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-834c1a9b-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-834c1a9b-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.15-centos7
+    (
+        '2.21.0-2.15-centos7-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-971ad57c-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-971ad57c-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-971ad57c-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-971ad57c-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.15-rhel7.9
+    (
+        '2.21.0-2.15-rhel7.9-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-ad622acd-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-ad622acd-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-ad622acd-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-ad622acd-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.16-rhel9.2
+    (
+        '2.21.0-2.16-rhel9.2-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-b2745d99-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-b2745d99-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-b2745d99-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-b2745d99-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present with pull=never (check)" on 2024-01-07 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-07 in 2.15-centos7
     (
@@ -4455,6 +7572,110 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in devel-rhel9.3
+    (
+        '2.21.0-devel-rhel9.3-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-d2caf0c9-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-d2caf0c9-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-d2caf0c9-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-d2caf0c9-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in 2.15-rhel9.1
+    (
+        '2.21.0-2.15-rhel9.1-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-d616c3a5-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-d616c3a5-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-d616c3a5-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-d616c3a5-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present with pull=never (check)" on 2024-01-07 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-07 in 2.15-rhel9.1
     (
@@ -4507,17 +7728,143 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in devel-ubuntu2004
+    (
+        '2.21.0-devel-ubuntu2004-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-e700ac20-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-e700ac20-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-e700ac20-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-e700ac20-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in devel-ubuntu2204
+    (
+        '2.21.0-devel-ubuntu2204-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-ede01681-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-ede01681-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-ede01681-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-ede01681-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present without explicit pull" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in 2.15-centos7
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in 2.16-centos7
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-without-explicit-pull',
         '2.21.0',
@@ -4542,16 +7889,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-present-without-explicit-pull-(check)',
         '2.21.0',
@@ -4577,26 +7935,48 @@ EVENT_TEST_CASES = [
     ),
     # docker_compose_v2: "Restarted" on 2024-01-07 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in devel-ubuntu2204
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-restarted',
         '2.21.0',
@@ -4621,26 +8001,48 @@ EVENT_TEST_CASES = [
     ),
     # docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in devel-ubuntu2204
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-restarted-(check)',
         '2.21.0',
@@ -4664,16 +8066,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Started" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Started" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Started" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Started" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Started" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Started" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Started" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Started" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Started" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Started" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Started" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-started',
         '2.21.0',
@@ -4697,16 +8110,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Started (check)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-started-(check)',
         '2.21.0',
@@ -4730,16 +8154,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Stopped" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-stopped',
         '2.21.0',
@@ -4771,16 +8206,27 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Stopped (check)" on 2024-01-07 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in 2.14-rhel9.0
     # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-07 in 2.15-centos7
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in 2.15-centos7
     # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-07 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in 2.15-rhel7.9
     # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-07 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in 2.15-rhel9.1
     # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-07 in 2.16-centos7
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in 2.16-centos7
     # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-07 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in 2.16-rhel9.2
     # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-07 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in devel-debian-bookworm
     # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-07 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in devel-debian-bullseye
     # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-07 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in devel-rhel9.3
     # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-07 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in devel-ubuntu2004
     # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-07 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in devel-ubuntu2204
     (
         '2.21.0-2.14-rhel9.0-2024-01-07-docker_compose_v2-stopped-(check)',
         '2.21.0',
@@ -4811,11 +8257,881 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in 2.15-centos7
+    # Duplicated in: docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in 2.16-centos7
+    # Duplicated in: docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in devel-ubuntu2204
+    (
+        '2.21.0-2.14-rhel9.0-2024-01-13-docker_compose_v2_pull-pull-(check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Error \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont  - Pull error for image: does-not-exist:latest \n'
+        'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'unknown',
+                'ansible-docker-test-01234567-cont',
+                'Error',
+                'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed',
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in 2.15-rhel7.9
+    (
+        '2.21.0-2.15-rhel7.9-2024-01-13-docker_compose_v2_pull-pull-with-policy=always',
+        '2.21.0',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' 486039affc0a Pulling fs layer \n'
+        ' 486039affc0a Downloading [>                                                  ]   34.2kB/2.207MB\n'
+        ' 486039affc0a Verifying Checksum \n'
+        ' 486039affc0a Download complete \n'
+        ' 486039affc0a Extracting [>                                                  ]  32.77kB/2.207MB\n'
+        ' 486039affc0a Extracting [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Pull complete \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pulling fs layer',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Verifying Checksum',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Download complete',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pull complete',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in 2.15-rhel9.1
+    (
+        '2.21.0-2.15-rhel9.1-2024-01-13-docker_compose_v2_pull-pull-with-policy=always',
+        '2.21.0',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' 486039affc0a Pulling fs layer \n'
+        ' 486039affc0a Downloading [>                                                  ]  32.12kB/2.207MB\n'
+        ' 486039affc0a Download complete \n'
+        ' 486039affc0a Extracting [>                                                  ]  32.77kB/2.207MB\n'
+        ' 486039affc0a Extracting [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Pull complete \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pulling fs layer',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Download complete',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pull complete',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in 2.16-rhel9.2
+    (
+        '2.21.0-2.16-rhel9.2-2024-01-13-docker_compose_v2_pull-pull-with-policy=always',
+        '2.21.0',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' 486039affc0a Pulling fs layer \n'
+        ' 486039affc0a Downloading [>                                                  ]  32.12kB/2.207MB\n'
+        ' 486039affc0a Downloading [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Download complete \n'
+        ' 486039affc0a Extracting [>                                                  ]  32.77kB/2.207MB\n'
+        ' 486039affc0a Extracting [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Pull complete \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pulling fs layer',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Download complete',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pull complete',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in devel-rhel9.3
+    (
+        '2.21.0-2.14-rhel9.0-2024-01-13-docker_compose_v2_pull-pull-with-policy=always',
+        '2.21.0',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' 486039affc0a Pulling fs layer \n'
+        ' 486039affc0a Downloading [>                                                  ]  32.16kB/2.207MB\n'
+        ' 486039affc0a Verifying Checksum \n'
+        ' 486039affc0a Download complete \n'
+        ' 486039affc0a Extracting [>                                                  ]  32.77kB/2.207MB\n'
+        ' 486039affc0a Extracting [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Pull complete \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pulling fs layer',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Verifying Checksum',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Download complete',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pull complete',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in 2.16-centos7
+    (
+        '2.21.0-2.16-centos7-2024-01-13-docker_compose_v2_pull-pull-with-policy=always',
+        '2.21.0',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' 486039affc0a Pulling fs layer \n'
+        ' 486039affc0a Downloading [>                                                  ]  32.16kB/2.207MB\n'
+        ' 486039affc0a Verifying Checksum \n'
+        ' 486039affc0a Download complete \n'
+        ' 486039affc0a Extracting [>                                                  ]  32.77kB/2.207MB\n'
+        ' 486039affc0a Extracting [================================================>  ]   2.13MB/2.207MB\n'
+        ' 486039affc0a Extracting [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Pull complete \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pulling fs layer',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Verifying Checksum',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Download complete',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pull complete',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in devel-ubuntu2204
+    (
+        '2.21.0-devel-ubuntu2204-2024-01-13-docker_compose_v2_pull-pull-with-policy=always',
+        '2.21.0',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' 486039affc0a Pulling fs layer \n'
+        ' 486039affc0a Downloading [>                                                  ]  32.16kB/2.207MB\n'
+        ' 486039affc0a Verifying Checksum \n'
+        ' 486039affc0a Download complete \n'
+        ' 486039affc0a Extracting [>                                                  ]  32.77kB/2.207MB\n'
+        ' 486039affc0a Extracting [===============================================>   ]  2.097MB/2.207MB\n'
+        ' 486039affc0a Extracting [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Pull complete \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pulling fs layer',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Verifying Checksum',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Download complete',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pull complete',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in devel-debian-bookworm
+    (
+        '2.21.0-devel-debian-bookworm-2024-01-13-docker_compose_v2_pull-pull-with-policy=always',
+        '2.21.0',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' 486039affc0a Pulling fs layer \n'
+        ' 486039affc0a Downloading [>                                                  ]  32.16kB/2.207MB\n'
+        ' 486039affc0a Verifying Checksum \n'
+        ' 486039affc0a Download complete \n'
+        ' 486039affc0a Extracting [>                                                  ]  32.77kB/2.207MB\n'
+        ' 486039affc0a Extracting [==============================================>    ]  2.032MB/2.207MB\n'
+        ' 486039affc0a Extracting [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Pull complete \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pulling fs layer',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Verifying Checksum',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Download complete',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pull complete',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in devel-ubuntu2004
+    (
+        '2.21.0-devel-ubuntu2004-2024-01-13-docker_compose_v2_pull-pull-with-policy=always',
+        '2.21.0',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' 486039affc0a Pulling fs layer \n'
+        ' 486039affc0a Downloading [>                                                  ]  32.16kB/2.207MB\n'
+        ' 486039affc0a Verifying Checksum \n'
+        ' 486039affc0a Download complete \n'
+        ' 486039affc0a Extracting [>                                                  ]  32.77kB/2.207MB\n'
+        ' 486039affc0a Extracting [============================================>      ]  1.966MB/2.207MB\n'
+        ' 486039affc0a Extracting [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Pull complete \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pulling fs layer',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Verifying Checksum',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Download complete',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pull complete',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in 2.15-centos7
+    (
+        '2.21.0-2.15-centos7-2024-01-13-docker_compose_v2_pull-pull-with-policy=always',
+        '2.21.0',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' 486039affc0a Pulling fs layer \n'
+        ' 486039affc0a Downloading [>                                                  ]  32.16kB/2.207MB\n'
+        ' 486039affc0a Verifying Checksum \n'
+        ' 486039affc0a Download complete \n'
+        ' 486039affc0a Extracting [>                                                  ]  32.77kB/2.207MB\n'
+        ' 486039affc0a Extracting [=======================================>           ]  1.737MB/2.207MB\n'
+        ' 486039affc0a Extracting [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Pull complete \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pulling fs layer',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Verifying Checksum',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Download complete',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pull complete',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in devel-debian-bullseye
+    (
+        '2.21.0-devel-debian-bullseye-2024-01-13-docker_compose_v2_pull-pull-with-policy=always',
+        '2.21.0',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' 486039affc0a Pulling fs layer \n'
+        ' 486039affc0a Downloading [>                                                  ]  32.16kB/2.207MB\n'
+        ' 486039affc0a Verifying Checksum \n'
+        ' 486039affc0a Download complete \n'
+        ' 486039affc0a Extracting [>                                                  ]  32.77kB/2.207MB\n'
+        ' 486039affc0a Extracting [=====================================>             ]  1.638MB/2.207MB\n'
+        ' 486039affc0a Extracting [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Pull complete \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pulling fs layer',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Verifying Checksum',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Download complete',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pull complete',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always (again)" on 2024-01-13 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again)" on 2024-01-13 in 2.15-centos7
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again)" on 2024-01-13 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again)" on 2024-01-13 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again)" on 2024-01-13 in 2.16-centos7
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again)" on 2024-01-13 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again)" on 2024-01-13 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again)" on 2024-01-13 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again)" on 2024-01-13 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again)" on 2024-01-13 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again)" on 2024-01-13 in devel-ubuntu2204
+    (
+        '2.21.0-2.14-rhel9.0-2024-01-13-docker_compose_v2_pull-pull-with-policy=always-(again)',
+        '2.21.0',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always (again, check)" on 2024-01-13 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again, check)" on 2024-01-13 in 2.15-centos7
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again, check)" on 2024-01-13 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again, check)" on 2024-01-13 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again, check)" on 2024-01-13 in 2.16-centos7
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again, check)" on 2024-01-13 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again, check)" on 2024-01-13 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again, check)" on 2024-01-13 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again, check)" on 2024-01-13 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again, check)" on 2024-01-13 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (again, check)" on 2024-01-13 in devel-ubuntu2204
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in 2.14-rhel9.0
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in 2.15-centos7
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in 2.15-rhel7.9
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in 2.15-rhel9.1
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in 2.16-centos7
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in 2.16-rhel9.2
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in devel-debian-bookworm
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in devel-debian-bullseye
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in devel-rhel9.3
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in devel-ubuntu2004
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in devel-ubuntu2204
+    (
+        '2.21.0-2.14-rhel9.0-2024-01-13-docker_compose_v2_pull-pull-with-policy=always-(again,-check)',
+        '2.21.0',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
     # #######################################################################################################################
     # ## Docker Compose 2.23.3 ##############################################################################################
     # #######################################################################################################################
     # docker_compose_v2: "Absent" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Absent" on 2024-01-13 in devel-archlinux
     # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-absent',
         '2.23.3',
@@ -4867,6 +9183,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Absent (check)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Absent (check)" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-absent-(check)',
         '2.23.3',
@@ -4918,7 +9235,9 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Cleanup" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Cleanup" on 2024-01-13 in devel-archlinux
     # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Stopping service" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-cleanup',
         '2.23.3',
@@ -4970,6 +9289,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present',
         '2.23.3',
@@ -5057,7 +9377,45 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present (changed check)" on 2024-01-13 in devel-archlinux
+    (
+        '2.23.3-devel-archlinux-2024-01-13-docker_compose_v2-present-(changed-check)',
+        '2.23.3',
+        True,
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Recreated\n'
+        ' DRY-RUN MODE -  Container e3161c3ca1e_ansible-docker-test-26fefc5c-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container e3161c3ca1e_ansible-docker-test-26fefc5c-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                'e3161c3ca1e_ansible-docker-test-26fefc5c-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'e3161c3ca1e_ansible-docker-test-26fefc5c-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present (changed)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present (changed)" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-(changed)',
         '2.23.3',
@@ -5088,6 +9446,57 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present (check)" on 2024-01-13 in devel-archlinux
+    (
+        '2.23.3-devel-archlinux-2024-01-13-docker_compose_v2-present-(check)',
+        '2.23.3',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-start-stop_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-26fefc5c-start-stop-ansible-docker-test-01234567-container-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-26fefc5c-start-stop-ansible-docker-test-01234567-container-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-start-stop_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-26fefc5c-start-stop-ansible-docker-test-01234567-container-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-26fefc5c-start-stop-ansible-docker-test-01234567-container-1',
                 'Started',
                 None,
             ),
@@ -5146,7 +9555,9 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present (idempotent check)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present (idempotent check)" on 2024-01-13 in devel-archlinux
     # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Started (idempotent check)" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-(idempotent-check)',
         '2.23.3',
@@ -5163,7 +9574,9 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present (idempotent)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present (idempotent)" on 2024-01-13 in devel-archlinux
     # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Started (idempotent)" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-(idempotent)',
         '2.23.3',
@@ -5180,6 +9593,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present stopped" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present stopped" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-stopped',
         '2.23.3',
@@ -5217,6 +9631,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present stopped (check)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present stopped (check)" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-stopped-(check)',
         '2.23.3',
@@ -5254,6 +9669,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=always" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present with pull=always" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-with-pull=always',
         '2.23.3',
@@ -5334,7 +9750,59 @@ EVENT_TEST_CASES = [
         ],
         [],
     ),
+    # docker_compose_v2: "Present with pull=always (check)" on 2024-01-13 in devel-archlinux
+    (
+        '2.23.3-devel-archlinux-2024-01-13-docker_compose_v2-present-with-pull=always-(check)',
+        '2.23.3',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreate\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Recreated\n'
+        ' DRY-RUN MODE -  Container e6dd7e14964_ansible-docker-test-26fefc5c-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container e6dd7e14964_ansible-docker-test-26fefc5c-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreate',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Recreated',
+                None,
+            ),
+            Event(
+                'container',
+                'e6dd7e14964_ansible-docker-test-26fefc5c-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'e6dd7e14964_ansible-docker-test-26fefc5c-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
     # docker_compose_v2: "Present with pull=missing" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present with pull=missing" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-with-pull=missing',
         '2.23.3',
@@ -5379,6 +9847,57 @@ EVENT_TEST_CASES = [
             Event(
                 'container',
                 'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=missing (check)" on 2024-01-13 in devel-archlinux
+    (
+        '2.23.3-devel-archlinux-2024-01-13-docker_compose_v2-present-with-pull=missing-(check)',
+        '2.23.3',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-26fefc5c-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-26fefc5c-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-26fefc5c-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-26fefc5c-pull-ansible-docker-test-01234567-cont-1',
                 'Started',
                 None,
             ),
@@ -5437,7 +9956,9 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent)" on 2024-01-13 in devel-archlinux
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent)" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-with-pull=missing-(idempotent)',
         '2.23.3',
@@ -5454,7 +9975,9 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present with pull=missing (idempotent, check)" on 2024-01-13 in devel-archlinux
     # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present with pull=never (idempotent, check)" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-with-pull=missing-(idempotent,-check)',
         '2.23.3',
@@ -5471,6 +9994,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=never" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-with-pull=never',
         '2.23.3',
@@ -5522,6 +10046,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present with pull=never" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present with pull=never" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-with-pull=never',
         '2.23.3',
@@ -5554,6 +10079,58 @@ EVENT_TEST_CASES = [
                 '',
                 'Error',
                 'Error response from daemon: no such image: does-not-exist:latest: No such image: does-not-exist:latest',
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present with pull=never (check)" on 2024-01-13 in devel-archlinux
+    (
+        '2.23.3-devel-archlinux-2024-01-13-docker_compose_v2-present-with-pull=never-(check)',
+        '2.23.3',
+        True,
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Creating\n'
+        ' DRY-RUN MODE -  Network ansible-docker-test-01234567-pull_default  Created\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Creating\n'
+        ' DRY-RUN MODE -  Container ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1  Created\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-26fefc5c-pull-ansible-docker-test-01234567-cont-1  Starting\n'
+        ' DRY-RUN MODE -  Container nsible-docker-test-26fefc5c-pull-ansible-docker-test-01234567-cont-1  Started\n',
+        [
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'ansible-docker-test-01234567-pull_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'ansible-docker-test-01234567-pull-ansible-docker-test-01234567-cont-1',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-26fefc5c-pull-ansible-docker-test-01234567-cont-1',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'nsible-docker-test-26fefc5c-pull-ansible-docker-test-01234567-cont-1',
+                'Started',
+                None,
             ),
         ],
         [],
@@ -5611,6 +10188,8 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present without explicit pull" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present without explicit pull" on 2024-01-13 in devel-archlinux
+    # Duplicated in: docker_compose_v2_pull: "Pull" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-without-explicit-pull',
         '2.23.3',
@@ -5635,6 +10214,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Present without explicit pull (check)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Present without explicit pull (check)" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-present-without-explicit-pull-(check)',
         '2.23.3',
@@ -5660,6 +10240,8 @@ EVENT_TEST_CASES = [
     ),
     # docker_compose_v2: "Restarted" on 2024-01-07 in devel-archlinux
     # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Restarted" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-restarted',
         '2.23.3',
@@ -5684,6 +10266,8 @@ EVENT_TEST_CASES = [
     ),
     # docker_compose_v2: "Restarted (check)" on 2024-01-07 in devel-archlinux
     # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Restarted (check)" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-restarted-(check)',
         '2.23.3',
@@ -5707,6 +10291,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Started" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Started" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-started',
         '2.23.3',
@@ -5730,6 +10315,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Started (check)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Started (check)" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-started-(check)',
         '2.23.3',
@@ -5753,6 +10339,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Stopped" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Stopped" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-stopped',
         '2.23.3',
@@ -5784,6 +10371,7 @@ EVENT_TEST_CASES = [
         [],
     ),
     # docker_compose_v2: "Stopped (check)" on 2024-01-07 in devel-archlinux
+    # Duplicated in: docker_compose_v2: "Stopped (check)" on 2024-01-13 in devel-archlinux
     (
         '2.23.3-devel-archlinux-2024-01-07-docker_compose_v2-stopped-(check)',
         '2.23.3',
@@ -5810,6 +10398,189 @@ EVENT_TEST_CASES = [
                 'ansible-docker-test-01234567-start-stop-ansible-docker-test-01234567-container-1',
                 'Stopped',
                 None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull (check)" on 2024-01-13 in devel-archlinux
+    (
+        '2.23.3-devel-archlinux-2024-01-13-docker_compose_v2_pull-pull-(check)',
+        '2.23.3',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Error \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont  - Pull error for image: does-not-exist:latest \n'
+        'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'unknown',
+                'ansible-docker-test-01234567-cont',
+                'Error',
+                'pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed',
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always" on 2024-01-13 in devel-archlinux
+    (
+        '2.23.3-devel-archlinux-2024-01-13-docker_compose_v2_pull-pull-with-policy=always',
+        '2.23.3',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=always (check)" on 2024-01-13 in devel-archlinux
+    # Duplicated in: docker_compose_v2_pull: "Pull with policy=missing (check)" on 2024-01-13 in devel-archlinux
+    (
+        '2.23.3-devel-archlinux-2024-01-13-docker_compose_v2_pull-pull-with-policy=always-(check)',
+        '2.23.3',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulling \n'
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=missing" on 2024-01-13 in devel-archlinux
+    (
+        '2.23.3-devel-archlinux-2024-01-13-docker_compose_v2_pull-pull-with-policy=missing',
+        '2.23.3',
+        False,
+        ' ansible-docker-test-01234567-cont Pulling \n'
+        ' 486039affc0a Pulling fs layer \n'
+        ' 486039affc0a Downloading [>                                                  ]  32.16kB/2.207MB\n'
+        ' 486039affc0a Verifying Checksum \n'
+        ' 486039affc0a Download complete \n'
+        ' 486039affc0a Extracting [>                                                  ]  32.77kB/2.207MB\n'
+        ' 486039affc0a Extracting [==========================================>        ]  1.868MB/2.207MB\n'
+        ' 486039affc0a Extracting [==================================================>]  2.207MB/2.207MB\n'
+        ' 486039affc0a Pull complete \n'
+        ' ansible-docker-test-01234567-cont Pulled \n',
+        [
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pulling fs layer',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Verifying Checksum',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Download complete',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '486039affc0a',
+                'Pull complete',
+                None,
+            ),
+            Event(
+                'service',
+                'ansible-docker-test-01234567-cont',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=missing (idempotent)" on 2024-01-13 in devel-archlinux
+    (
+        '2.23.3-devel-archlinux-2024-01-13-docker_compose_v2_pull-pull-with-policy=missing-(idempotent)',
+        '2.23.3',
+        False,
+        ' ansible-docker-test-01234567-cont Skipped - Image is already present locally \n',
+        [
+            Event(
+                'unknown',
+                'ansible-docker-test-01234567-cont',
+                'Skipped',
+                'Image is already present locally',
+            ),
+        ],
+        [],
+    ),
+    # docker_compose_v2_pull: "Pull with policy=missing (idempotent, check)" on 2024-01-13 in devel-archlinux
+    (
+        '2.23.3-devel-archlinux-2024-01-13-docker_compose_v2_pull-pull-with-policy=missing-(idempotent,-check)',
+        '2.23.3',
+        True,
+        ' DRY-RUN MODE -  ansible-docker-test-01234567-cont Skipped - Image is already present locally \n',
+        [
+            Event(
+                'unknown',
+                'ansible-docker-test-01234567-cont',
+                'Skipped',
+                'Image is already present locally',
             ),
         ],
         [],
