@@ -77,62 +77,111 @@
         dest: '{{ project_src }}/docker-compose.yml'
         content: '{{ test_service_alpine }}'
 
-    - name: Pull with policy=missing (check)
-      docker_compose_v2_pull:
-        project_src: '{{ project_src }}'
-        policy: missing
-      check_mode: true
-      register: pull_1_check
+    - when: docker_compose_version is version('2.22.0', '>=')
+      block:
+        - name: Pull with policy=missing (check)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: missing
+          check_mode: true
+          register: pull_1_check
 
-    - name: Pull with policy=missing
-      docker_compose_v2_pull:
-        project_src: '{{ project_src }}'
-        policy: missing
-      register: pull_1
+        - name: Pull with policy=missing
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: missing
+          register: pull_1
 
-    - name: Pull with policy=missing (idempotent, check)
-      docker_compose_v2_pull:
-        project_src: '{{ project_src }}'
-        policy: missing
-      check_mode: true
-      register: pull_2_check
+        - name: Pull with policy=missing (idempotent, check)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: missing
+          check_mode: true
+          register: pull_2_check
 
-    - name: Pull with policy=missing (idempotent)
-      docker_compose_v2_pull:
-        project_src: '{{ project_src }}'
-        policy: missing
-      register: pull_2
+        - name: Pull with policy=missing (idempotent)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: missing
+          register: pull_2
 
-    - name: Pull with policy=always (check)
-      docker_compose_v2_pull:
-        project_src: '{{ project_src }}'
-        policy: always
-      check_mode: true
-      register: pull_3_check
+        - name: Pull with policy=always (check)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: always
+          check_mode: true
+          register: pull_3_check
 
-    - name: Pull with policy=always
-      docker_compose_v2_pull:
-        project_src: '{{ project_src }}'
-        policy: always
-      register: pull_3
+        - name: Pull with policy=always
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: always
+          register: pull_3
 
-    - assert:
-        that:
-          - pull_1_check is changed
-          - pull_1_check.actions | selectattr('status', 'eq', 'Pulling') | first
-          - pull_1_check.actions | selectattr('status', 'eq', 'Creating') | length == 0
-          - pull_1_check.actions | selectattr('status', 'eq', 'Recreating') | length == 0
-          - pull_1 is changed
-          - pull_1.actions | selectattr('status', 'eq', 'Pulling') | first
-          - pull_1.actions | selectattr('status', 'eq', 'Creating') | length == 0
-          - pull_1.actions | selectattr('status', 'eq', 'Recreating') | length == 0
-          - pull_2_check is not changed
-          - pull_2 is not changed
-          - pull_3_check is changed
-          - pull_3_check.actions | selectattr('status', 'eq', 'Pulling') | first
-          - pull_3_check.actions | selectattr('status', 'eq', 'Creating') | length == 0
-          - pull_3_check.actions | selectattr('status', 'eq', 'Recreating') | length == 0
-          - pull_3 is changed
-          - pull_3.actions | selectattr('status', 'eq', 'Pulling') | first
-          - pull_3.actions | selectattr('status', 'eq', 'Creating') | length == 0
-          - pull_3.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+        - assert:
+            that:
+              - pull_1_check is changed
+              - pull_1_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_1_check.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_1_check.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+              - pull_1 is changed
+              - pull_1.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_1.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_1.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+              - pull_2_check is not changed
+              - pull_2 is not changed
+              - pull_3_check is changed
+              - pull_3_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_3_check.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_3_check.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+              - pull_3 is changed
+              - pull_3.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_3.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_3.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+
+    - when: docker_compose_version is version('2.22.0', '<')
+      block:
+        - name: Pull with policy=always (check)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: always
+          check_mode: true
+          register: pull_1_check
+
+        - name: Pull with policy=always
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: always
+          register: pull_1
+
+        - name: Pull with policy=always (again, check)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: always
+          check_mode: true
+          register: pull_2_check
+
+        - name: Pull with policy=always (again)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: always
+          register: pull_2
+
+        - assert:
+            that:
+              - pull_1_check is changed
+              - pull_1_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_1_check.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_1_check.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+              - pull_1 is changed
+              - pull_1.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_1.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_1.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+              - pull_2_check is changed
+              - pull_2_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_2_check.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_2_check.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+              - pull_2 is changed
+              - pull_2.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_2.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_2.actions | selectattr('status', 'eq', 'Recreating') | length == 0

@@ -36,7 +36,7 @@ options:
     description:
       - Whether to pull images before running. This is used when C(docker compose up) is ran.
       - V(always) ensures that the images are always pulled, even when already present on the Docker daemon.
-      - V(missing) only pulls them when they are not present on the Docker daemon.
+      - V(missing) only pulls them when they are not present on the Docker daemon. This is only supported since Docker Compose 2.22.0.
     type: str
     choices:
       - always
@@ -324,6 +324,8 @@ from ansible_collections.community.docker.plugins.module_utils.compose_v2 import
     common_compose_argspec,
 )
 
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
+
 
 DOCKER_COMPOSE_MINIMAL_VERSION = '2.18.0'
 
@@ -335,8 +337,15 @@ class PullManager(BaseComposeManager):
 
         self.policy = parameters['policy']
 
+        if self.policy != 'always' and self.compose_version < LooseVersion('2.22.0'):
+            # https://github.com/docker/compose/pull/10981 - 2.22.0
+            self.client.fail('A pull policy other than always is only supported since Docker Compose 2.22.0. {0} has version {1}'.format(
+                self.client.get_cli(), self.compose_version))
+
     def get_pull_cmd(self, dry_run, no_start=False):
-        args = self.get_base_args() + ['pull', '--policy', self.policy]
+        args = self.get_base_args() + ['pull']
+        if self.policy != 'always':
+            args.extend(['--policy', self.policy])
         if dry_run:
             args.append('--dry-run')
         args.append('--')
