@@ -235,10 +235,11 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-ca_path"></div>
 <div class="ansibleOptionAnchor" id="parameter-ca_cert"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_ca_cert"></div>
-<div class="ansibleOptionAnchor" id="parameter-cacert_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-tls-ca-cert"><span id="ansible-collections-community-docker-docker-image-build-module-parameter-cacert-path"></span><span id="ansible-collections-community-docker-docker-image-build-module-parameter-ca-cert"></span><strong>ca_cert</strong></p>
-<a class="ansibleOptionLink" href="#parameter-ca_cert" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_ca_cert, cacert_path</span></p>
+<div class="ansibleOptionAnchor" id="parameter-cacert_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-tls-ca-cert"><span id="ansible-collections-community-docker-docker-image-build-module-parameter-cacert-path"></span><span id="ansible-collections-community-docker-docker-image-build-module-parameter-ca-path"></span><span id="ansible-collections-community-docker-docker-image-build-module-parameter-ca-cert"></span><strong>ca_path</strong></p>
+<a class="ansibleOptionLink" href="#parameter-ca_path" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: ca_cert, tls_ca_cert, cacert_path</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use a CA certificate when performing server verification by providing the path to a CA certificate file.</p>
@@ -429,7 +430,6 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>When verifying the authenticity of the Docker Host server, provide the expected name of the server.</p>
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
-<p>Note that this option had a default value <code class="ansible-value docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">

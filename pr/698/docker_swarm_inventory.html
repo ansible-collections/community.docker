@@ -218,13 +218,15 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-ca_path"></div>
 <div class="ansibleOptionAnchor" id="parameter-ca_cert"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_ca_cert"></div>
-<div class="ansibleOptionAnchor" id="parameter-cacert_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-inventory-parameter-tls-ca-cert"><span id="ansible-collections-community-docker-docker-swarm-inventory-parameter-cacert-path"></span><span id="ansible-collections-community-docker-docker-swarm-inventory-parameter-ca-cert"></span><strong>ca_cert</strong></p>
-<a class="ansibleOptionLink" href="#parameter-ca_cert" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_ca_cert, cacert_path</span></p>
+<div class="ansibleOptionAnchor" id="parameter-cacert_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-inventory-parameter-tls-ca-cert"><span id="ansible-collections-community-docker-docker-swarm-inventory-parameter-cacert-path"></span><span id="ansible-collections-community-docker-docker-swarm-inventory-parameter-ca-path"></span><span id="ansible-collections-community-docker-docker-swarm-inventory-parameter-ca-cert"></span><strong>ca_path</strong></p>
+<a class="ansibleOptionLink" href="#parameter-ca_path" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: ca_cert, tls_ca_cert, cacert_path</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use a CA certificate when performing server verification by providing the path to a CA certificate file.</p>
+<p>This option was called <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-inventory-parameter-ca-cert"><span class="std std-ref"><span class="pre">ca_cert</span></span></a></strong></code> and got renamed to <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-inventory-parameter-ca-path"><span class="std std-ref"><span class="pre">ca_path</span></span></a></strong></code> in community.docker 3.6.0. The old name has been added as an alias and can still be used.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -543,7 +545,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="nt">plugin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">community.docker.docker_swarm</span>
 <span class="nt">docker_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tcp://my-docker-host:2376</span>
 <span class="nt">validate_certs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="nt">ca_cert</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/somewhere/ca.pem</span>
+<span class="nt">ca_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/somewhere/ca.pem</span>
 <span class="nt">client_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/somewhere/key.pem</span>
 <span class="nt">client_cert</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/somewhere/cert.pem</span>
 
