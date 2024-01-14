@@ -393,9 +393,16 @@ by Docker SDK for Python.</p>
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Docker Compose</a><a class="headerlink" href="#docker-compose" title="Link to this heading"></a></h2>
 <section id="docker-compose-v2">
 <h3>Docker Compose v2<a class="headerlink" href="#docker-compose-v2" title="Link to this heading"></a></h3>
-<p>The <a class="reference internal" href="../docker_compose_v2_module.html#ansible-collections-community-docker-docker-compose-v2-module"><span class="std std-ref">community.docker.docker_compose_v2 module</span></a>
-allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
-This module uses the Docker CLI “compose” plugin (<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code>), and thus needs access to the Docker CLI tool.
+<p>There are two modules for working with Docker compose projects:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>community.docker.docker_compose_v2</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_module.html#ansible-collections-community-docker-docker-compose-v2-module"><span class="std std-ref">community.docker.docker_compose_v2 module</span></a> allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.</p>
+</dd>
+<dt>community.docker.docker_compose_v2_pull</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_pull_module.html#ansible-collections-community-docker-docker-compose-v2-pull-module"><span class="std std-ref">community.docker.docker_compose_v2_pull module</span></a> allows you to pull Docker compose projects.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>These modules use the Docker CLI “compose” plugin (<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code>), and thus needs access to the Docker CLI tool.
 No further requirements next to to the CLI tool and its Docker Compose plugin are needed.</p>
 </section>
 <section id="docker-compose-v1">
