@@ -255,9 +255,15 @@ Docker Compose
 Docker Compose v2
 .................
 
-The :ansplugin:`community.docker.docker_compose_v2 module <community.docker.docker_compose_v2#module>`
-allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
-This module uses the Docker CLI "compose" plugin (``docker compose``), and thus needs access to the Docker CLI tool.
+There are two modules for working with Docker compose projects:
+
+    community.docker.docker_compose_v2
+        The :ansplugin:`community.docker.docker_compose_v2 module <community.docker.docker_compose_v2#module>` allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
+
+    community.docker.docker_compose_v2_pull
+        The :ansplugin:`community.docker.docker_compose_v2_pull module <community.docker.docker_compose_v2_pull#module>` allows you to pull Docker compose projects.
+
+These modules use the Docker CLI "compose" plugin (``docker compose``), and thus needs access to the Docker CLI tool.
 No further requirements next to to the CLI tool and its Docker Compose plugin are needed.
 
 Docker Compose v1

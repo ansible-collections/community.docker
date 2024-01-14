@@ -79,6 +79,7 @@ If you use the Ansible package and do not update collections independently, use 
   * Docker Compose:
     - community.docker.docker_compose: manage Docker Compose files (legacy Docker Compose v1)
     - community.docker.docker_compose_v2: manage Docker Compose files (Docker compose CLI plugin)
+    - community.docker.docker_compose_v2_pull: pull a Docker compose project
   * Docker Swarm:
     - community.docker.docker_config: manage configurations
     - community.docker.docker_node: manage Docker Swarm nodes
