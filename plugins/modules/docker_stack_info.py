@@ -17,9 +17,37 @@ short_description: Return information on all docker stacks
 description:
   - Retrieve information on docker stacks using the C(docker stack) command
     on the target node (see examples).
+requirements:
+  - Docker CLI tool C(docker)
 extends_documentation_fragment:
+  - community.docker.docker.cli_documentation
   - community.docker.attributes
+  - community.docker.attributes.actiongroup_docker
   - community.docker.attributes.info_module
+attributes:
+  action_group:
+    version_added: 3.6.0
+options:
+  docker_cli:
+    version_added: 3.6.0
+  docker_host:
+    version_added: 3.6.0
+  tls_hostname:
+    version_added: 3.6.0
+  api_version:
+    version_added: 3.6.0
+  ca_path:
+    version_added: 3.6.0
+  client_cert:
+    version_added: 3.6.0
+  client_key:
+    version_added: 3.6.0
+  tls:
+    version_added: 3.6.0
+  validate_certs:
+    version_added: 3.6.0
+  cli_context:
+    version_added: 3.6.0
 seealso:
   - module: community.docker.docker_stack_task_info
     description: >-
@@ -29,8 +57,8 @@ seealso:
 
 RETURN = '''
 results:
-    description: |
-        List of dictionaries containing the list of stacks on the target node
+    description:
+        - List of dictionaries containing the list of stacks on the target node
     sample:
         - {"name":"grafana","namespace":"default","orchestrator":"Kubernetes","services":"2"}
     returned: always
@@ -49,7 +77,14 @@ EXAMPLES = '''
 '''
 
 import json
-from ansible.module_utils.basic import AnsibleModule
+import traceback
+
+from ansible.module_utils.common.text.converters import to_native
+
+from ansible_collections.community.docker.plugins.module_utils.common_cli import (
+    AnsibleModuleDockerClient,
+    DockerException,
+)
 
 
 def docker_stack_list(module):
@@ -61,31 +96,23 @@ def docker_stack_list(module):
 
 
 def main():
-    module = AnsibleModule(
+    client = AnsibleModuleDockerClient(
         argument_spec={
         },
-        supports_check_mode=True
+        supports_check_mode=True,
     )
 
-    rc, out, err = docker_stack_list(module)
-
-    if rc != 0:
-        module.fail_json(msg="Error running docker stack. {0}".format(err),
-                         rc=rc, stdout=out, stderr=err)
-    else:
-        if out:
-            ret = list(
-                json.loads(outitem)
-                for outitem in out.splitlines())
-
-        else:
-            ret = []
-
-        module.exit_json(changed=False,
-                         rc=rc,
-                         stdout=out,
-                         stderr=err,
-                         results=ret)
+    try:
+        rc, ret, stderr = client.call_cli_json_stream('stack', 'ls', '--format={{json .}}', check_rc=True)
+        client.module.exit_json(
+            changed=False,
+            rc=rc,
+            stdout='\n'.join([json.dumps(entry) for entry in ret]),
+            stderr=to_native(stderr).strip(),
+            results=ret,
+        )
+    except DockerException as e:
+        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
 
 
 if __name__ == "__main__":
