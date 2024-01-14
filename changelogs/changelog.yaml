@@ -1376,3 +1376,73 @@ releases:
       name: docker_image_tag
       namespace: ''
     release_date: '2024-01-04'
+  3.6.0-b2:
+    changes:
+      major_changes:
+      - The ``community.docker`` collection now depends on the ``community.library_inventory_filtering_v1``
+        collection. This utility collection provides host filtering functionality
+        for inventory plugins. If you use the Ansible community package, both collections
+        are included and you do not have to do anything special. If you install the
+        collection with ``ansible-galaxy collection install``, it will be installed
+        automatically. If you install the collection by copying the files of the collection
+        to a place where ansible-core can find it, for example by cloning the git
+        repository, you need to make sure that you also have to install the dependency
+        if you are using the inventory plugins (https://github.com/ansible-collections/community.docker/pull/698).
+      minor_changes:
+      - The ``ca_cert`` option available to almost all modules and plugins has been
+        renamed to ``ca_path``. The name ``ca_path`` is also used for similar options
+        in ansible-core and other collections. The old name has been added as an alias
+        and can still be used (https://github.com/ansible-collections/community.docker/pull/744).
+      - The ``docker_stack*`` modules now use the common CLI-based module code added
+        for the ``docker_image_build`` and ``docker_compose_v2`` modules. This means
+        that the modules now have various more configuration options with respect
+        to talking to the Docker Daemon, and now also are part of the ``community.docker.docker``
+        and ``docker`` module default groups (https://github.com/ansible-collections/community.docker/pull/745).
+      - inventory plugins - add ``filter`` option which allows to include and exclude
+        hosts based on Jinja2 conditions (https://github.com/ansible-collections/community.docker/pull/698,
+        https://github.com/ansible-collections/community.docker/issues/610).
+      release_summary: 'Second prerelease of the upcoming 3.6.0 bugfix and feature
+        release.
+
+
+        The collection now includes a bunch of new ``docker_image_*`` modules that
+        move features out of the
+
+        rather complex ``docker_image`` module. These new modules are easier to use
+        and can better declare whether
+
+        they support check mode, diff mode, or none of them.
+
+
+        This version also features modules that support the Docker CLI plugins ``buildx``
+        and ``compose``.
+
+        The ``docker_image_build`` module uses the ``docker buildx`` command under
+        the hood, and the ``docker_compose_v2``
+
+        and ``docker_compose_v2_pull`` modules uses the ``docker compose`` command.
+        All these modules use the Docker CLI
+
+        instead of directly talking to the API. The modules support mostly the same
+        interface as the API based modules,
+
+        so the main difference is that instead of some Python requirements, they depend
+        on the Docker CLI tool ``docker``.
+
+
+        Other changes to the collection since the last prerelease:
+
+
+        * docker_compose_v2 allows to specify the pull policy
+
+        '
+    fragments:
+    - 3.6.0-b2.yml
+    - 698-filter.yml
+    - 744-ca_path.yml
+    - 745-docker_stack.yml
+    modules:
+    - description: Pull a Docker compose project
+      name: docker_compose_v2_pull
+      namespace: ''
+    release_date: '2024-01-14'
