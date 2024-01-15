@@ -72,6 +72,11 @@ if [ "${test}" == "sanity/extra" ]; then
 fi
 
 # START: HACK
+
+retry git clone --depth=1 --single-branch --branch stable-1 https://github.com/ansible-collections/community.library_inventory_filtering.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/library_inventory_filtering_v1"
+# NOTE: we're installing with git to work around Galaxy being a huge PITA (https://github.com/ansible/galaxy/issues/2429)
+# retry ansible-galaxy -vvv collection install community.library_inventory_filtering_v1
+
 if [ "${test}" == "sanity/extra" ]; then
     # Nothing further should be added to this list.
     # This is to prevent modules or plugins in this collection having a runtime dependency on other collections.

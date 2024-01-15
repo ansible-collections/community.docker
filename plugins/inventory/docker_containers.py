@@ -21,6 +21,7 @@ author:
 extends_documentation_fragment:
     - ansible.builtin.constructed
     - community.docker.docker.api_documentation
+    - community.library_inventory_filtering_v1.inventory_filter
 description:
     - Reads inventories from the Docker API.
     - Uses a YAML configuration file that ends with C(docker.[yml|yaml]).
@@ -101,6 +102,9 @@ options:
               See the examples for how to do that.
         type: bool
         default: false
+
+    filters:
+        version_added: 3.5.0
 '''
 
 EXAMPLES = '''
@@ -144,6 +148,18 @@ connection_type: ssh
 compose:
   ansible_ssh_host: ansible_ssh_host | default(docker_name[1:], true)
   ansible_ssh_port: ansible_ssh_port | default(22, true)
+
+# Only consider containers which have a label 'foo', or whose name starts with 'a'
+plugin: community.docker.docker_containers
+filters:
+  # Accept all containers which have a label called 'foo'
+  - include: >-
+      "foo" in docker_config.Labels
+  # Next accept all containers whose inventory_hostname starts with 'a'
+  - include: >-
+      inventory_hostname.startswith("a")
+  # Exclude all containers that didn't match any of the above filters
+  - exclude: true
 '''
 
 import re
@@ -163,6 +179,7 @@ from ansible_collections.community.docker.plugins.plugin_utils.common_api import
 )
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException
+from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import parse_filters, filter_host
 
 MIN_DOCKER_API = None
 
@@ -209,6 +226,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 if value is not None:
                     extra_facts[var_name] = value
 
+        filters = parse_filters(self.get_option('filters'))
         for container in containers:
             id = container.get('Id')
             short_id = id[:13]
@@ -220,7 +238,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 name = short_id
                 full_name = id
 
-            self.inventory.add_host(name)
             facts = dict(
                 docker_name=name,
                 docker_short_id=short_id
@@ -238,25 +255,24 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
             running = state.get('Running')
 
+            groups = []
+
             # Add container to groups
             image_name = config.get('Image')
             if image_name and add_legacy_groups:
-                self.inventory.add_group('image_{0}'.format(image_name))
-                self.inventory.add_host(name, group='image_{0}'.format(image_name))
+                groups.append('image_{0}'.format(image_name))
 
             stack_name = labels.get('com.docker.stack.namespace')
             if stack_name:
                 full_facts['docker_stack'] = stack_name
                 if add_legacy_groups:
-                    self.inventory.add_group('stack_{0}'.format(stack_name))
-                    self.inventory.add_host(name, group='stack_{0}'.format(stack_name))
+                    groups.append('stack_{0}'.format(stack_name))
 
             service_name = labels.get('com.docker.swarm.service.name')
             if service_name:
                 full_facts['docker_service'] = service_name
                 if add_legacy_groups:
-                    self.inventory.add_group('service_{0}'.format(service_name))
-                    self.inventory.add_host(name, group='service_{0}'.format(service_name))
+                    groups.append('service_{0}'.format(service_name))
 
             if connection_type == 'ssh':
                 # Figure out ssh IP and Port
@@ -294,8 +310,16 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 fact_key = self._slugify(key)
                 full_facts[fact_key] = value
 
+            if not filter_host(self, name, full_facts, filters):
+                continue
+
             if verbose_output:
                 facts.update(full_facts)
+
+            self.inventory.add_host(name)
+            for group in groups:
+                self.inventory.add_group(group)
+                self.inventory.add_host(name, group=group)
 
             for key, value in facts.items():
                 self.inventory.set_variable(name, key, value)

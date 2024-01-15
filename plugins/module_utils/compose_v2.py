@@ -57,11 +57,24 @@ DOCKER_STATUS_ERROR = frozenset((
 ))
 DOCKER_STATUS = frozenset(DOCKER_STATUS_DONE | DOCKER_STATUS_WORKING | DOCKER_STATUS_PULL | DOCKER_STATUS_ERROR)
 
+DOCKER_PULL_PROGRESS_DONE = frozenset((
+    'Already exists',
+    'Download complete',
+    'Pull complete',
+))
+DOCKER_PULL_PROGRESS_WORKING = frozenset((
+    'Pulling fs layer',
+    'Downloading',
+    'Verifying Checksum',
+    'Extracting',
+))
+
 
 class ResourceType(object):
     UNKNOWN = "unknown"
     NETWORK = "network"
     IMAGE = "image"
+    IMAGE_LAYER = "image-layer"
     VOLUME = "volume"
     CONTAINER = "container"
     SERVICE = "service"
@@ -108,6 +121,18 @@ _RE_PULL_EVENT = re.compile(
     % '|'.join(re.escape(status) for status in DOCKER_STATUS_PULL)
 )
 
+_RE_PULL_PROGRESS = re.compile(
+    r'^'
+    r'\s*'
+    r'(?P<layer>\S+)'
+    r'\s+'
+    r'(?P<status>%s)'
+    r'\s*'
+    r'(?:|\s\[[^]]+\]\s+\S+\s*)'
+    r'$'
+    % '|'.join(re.escape(status) for status in sorted(DOCKER_PULL_PROGRESS_DONE | DOCKER_PULL_PROGRESS_WORKING))
+)
+
 _RE_ERROR_EVENT = re.compile(
     r'^'
     r'\s*'
@@ -119,74 +144,150 @@ _RE_ERROR_EVENT = re.compile(
     % '|'.join(re.escape(status) for status in DOCKER_STATUS_ERROR)
 )
 
+_RE_CONTINUE_EVENT = re.compile(
+    r'^'
+    r'\s*'
+    r'(?P<resource_id>\S+)'
+    r'\s+'
+    r'-'
+    r'\s*'
+    r'(?P<msg>\S(?:|.*\S))'
+    r'$'
+)
+
+_RE_SKIPPED_EVENT = re.compile(
+    r'^'
+    r'\s*'
+    r'(?P<resource_id>\S+)'
+    r'\s+'
+    r'Skipped -'
+    r'\s*'
+    r'(?P<msg>\S(?:|.*\S))'
+    r'$'
+)
+
+
+def _extract_event(line):
+    match = _RE_RESOURCE_EVENT.match(line)
+    if match is not None:
+        status = match.group('status')
+        msg = None
+        if status not in DOCKER_STATUS:
+            status, msg = msg, status
+        return Event(
+            ResourceType.from_docker_compose_event(match.group('resource_type')),
+            match.group('resource_id'),
+            status,
+            msg,
+        )
+    match = _RE_PULL_EVENT.match(line)
+    if match:
+        return Event(
+            ResourceType.SERVICE,
+            match.group('service'),
+            match.group('status'),
+            None,
+        )
+    match = _RE_ERROR_EVENT.match(line)
+    if match:
+        return Event(
+            ResourceType.UNKNOWN,
+            match.group('resource_id'),
+            match.group('status'),
+            None,
+        )
+    match = _RE_PULL_PROGRESS.match(line)
+    if match:
+        return Event(
+            ResourceType.IMAGE_LAYER,
+            match.group('layer'),
+            match.group('status'),
+            None,
+        )
+    match = _RE_SKIPPED_EVENT.match(line)
+    if match:
+        return Event(
+            ResourceType.UNKNOWN,
+            match.group('resource_id'),
+            'Skipped',
+            match.group('msg'),
+        )
+    return None
+
+
+def _warn_missing_dry_run_prefix(line, warn_missing_dry_run_prefix, warn_function):
+    if warn_missing_dry_run_prefix and warn_function:
+        # This could be a bug, a change of docker compose's output format, ...
+        # Tell the user to report it to us :-)
+        warn_function(
+            'Event line is missing dry-run mode marker: {0!r}. Please report this at '
+            'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
+            .format(line)
+        )
+
+
+def _warn_unparsable_line(line, warn_function):
+    # This could be a bug, a change of docker compose's output format, ...
+    # Tell the user to report it to us :-)
+    if warn_function:
+        warn_function(
+            'Cannot parse event from line: {0!r}. Please report this at '
+            'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
+            .format(line)
+        )
+
+
+def _find_last_event_for(events, resource_id):
+    for index, event in enumerate(reversed(events)):
+        if event.resource_id == resource_id:
+            return len(events) - 1 - index, event
+    return None
+
+
+def _concat_event_msg(event, append_msg):
+    return Event(
+        event.resource_type,
+        event.resource_id,
+        event.status,
+        '\n'.join(msg for msg in [event.msg, append_msg] if msg is not None),
+    )
+
 
 def parse_events(stderr, dry_run=False, warn_function=None):
     events = []
     error_event = None
-    for line in stderr.splitlines():
+    stderr_lines = stderr.splitlines()
+    if stderr_lines and stderr_lines[-1] == b'':
+        del stderr_lines[-1]
+    for line in stderr_lines:
         line = to_native(line.strip())
         if not line:
             continue
+        warn_missing_dry_run_prefix = False
         if dry_run:
             if line.startswith(_DRY_RUN_MARKER):
                 line = line[len(_DRY_RUN_MARKER):].lstrip()
-            elif error_event is None and warn_function:
-                # This could be a bug, a change of docker compose's output format, ...
-                # Tell the user to report it to us :-)
-                warn_function(
-                    'Event line is missing dry-run mode marker: {0!r}. Please report this at '
-                    'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
-                    .format(line)
-                )
-        match = _RE_RESOURCE_EVENT.match(line)
-        if match is not None:
-            status = match.group('status')
-            msg = None
-            if status not in DOCKER_STATUS:
-                status, msg = msg, status
-            event = Event(
-                ResourceType.from_docker_compose_event(match.group('resource_type')),
-                match.group('resource_id'),
-                status,
-                msg,
-            )
+            else:
+                warn_missing_dry_run_prefix = True
+        event = _extract_event(line)
+        if event is not None:
             events.append(event)
-            if status in DOCKER_STATUS_ERROR:
+            if event.status in DOCKER_STATUS_ERROR:
                 error_event = event
             else:
                 error_event = None
+            _warn_missing_dry_run_prefix(line, warn_missing_dry_run_prefix, warn_function)
             continue
-        match = _RE_PULL_EVENT.match(line)
+        match = _RE_CONTINUE_EVENT.match(line)
         if match:
-            events.append(
-                Event(
-                    ResourceType.SERVICE,
-                    match.group('service'),
-                    match.group('status'),
-                    None,
-                )
-            )
-            error_event = None
-            continue
-        match = _RE_ERROR_EVENT.match(line)
-        if match:
-            error_event = Event(
-                ResourceType.UNKNOWN,
-                match.group('resource_id'),
-                match.group('status'),
-                None,
-            )
-            events.append(error_event)
-            continue
+            # Continuing an existing event
+            index_event = _find_last_event_for(events, match.group('resource_id'))
+            if index_event is not None:
+                index, event = index_event
+                events[-1] = _concat_event_msg(event, match.group('msg'))
         if error_event is not None:
             # Unparsable line that apparently belongs to the previous error event
-            error_event = Event(
-                error_event.resource_type,
-                error_event.resource_id,
-                error_event.status,
-                '\n'.join(msg for msg in [error_event.msg, line] if msg is not None),
-            )
-            events[-1] = error_event
+            events[-1] = _concat_event_msg(error_event, line)
             continue
         if line.startswith('Error '):
             # Error message that is independent of an error event
@@ -198,14 +299,18 @@ def parse_events(stderr, dry_run=False, warn_function=None):
             )
             events.append(error_event)
             continue
-        # This could be a bug, a change of docker compose's output format, ...
-        # Tell the user to report it to us :-)
-        if warn_function:
-            warn_function(
-                'Cannot parse event from line: {0!r}. Please report this at '
-                'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
-                .format(line)
+        if len(stderr_lines) == 1:
+            # **Very likely** an error message that is independent of an error event
+            error_event = Event(
+                ResourceType.UNKNOWN,
+                '',
+                'Error',
+                line,
             )
+            events.append(error_event)
+            continue
+        _warn_missing_dry_run_prefix(line, warn_missing_dry_run_prefix, warn_function)
+        _warn_unparsable_line(line, warn_function)
     return events
 
 
@@ -218,8 +323,18 @@ def has_changes(events):
 
 def extract_actions(events):
     actions = []
+    pull_actions = set()
     for event in events:
-        if event.status in DOCKER_STATUS_WORKING:
+        if event.resource_type == ResourceType.IMAGE_LAYER and event.status in DOCKER_PULL_PROGRESS_WORKING:
+            pull_id = (event.resource_id, event.status)
+            if pull_id not in pull_actions:
+                pull_actions.add(pull_id)
+                actions.append({
+                    'what': event.resource_type,
+                    'id': event.resource_id,
+                    'status': event.status,
+                })
+        if event.resource_type != ResourceType.IMAGE_LAYER and event.status in DOCKER_STATUS_WORKING:
             actions.append({
                 'what': event.resource_type,
                 'id': event.resource_id,

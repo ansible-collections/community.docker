@@ -84,7 +84,7 @@ Most plugins and modules can be configured by the following parameters:
 Module default group
 ....................
 
-To avoid having to specify common parameters for all the modules in every task, you can use the ``community.docker.docker`` :ref:`module defaults group <module_defaults_groups>`, or its short name ``docker``. Please note that the Docker Swarm stack modules (:ansplugin:`community.docker.docker_stack#module`, :ansplugin:`community.docker.docker_stack_info#module`, and :ansplugin:`community.docker.docker_stack_task_info#module`) are not part of the defaults group.
+To avoid having to specify common parameters for all the modules in every task, you can use the ``community.docker.docker`` :ref:`module defaults group <module_defaults_groups>`, or its short name ``docker``.
 
 .. note::
 
@@ -255,9 +255,15 @@ Docker Compose
 Docker Compose v2
 .................
 
-The :ansplugin:`community.docker.docker_compose_v2 module <community.docker.docker_compose_v2#module>`
-allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
-This module uses the Docker CLI "compose" plugin (``docker compose``), and thus needs access to the Docker CLI tool.
+There are two modules for working with Docker compose projects:
+
+    community.docker.docker_compose_v2
+        The :ansplugin:`community.docker.docker_compose_v2 module <community.docker.docker_compose_v2#module>` allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
+
+    community.docker.docker_compose_v2_pull
+        The :ansplugin:`community.docker.docker_compose_v2_pull module <community.docker.docker_compose_v2_pull#module>` allows you to pull Docker compose projects.
+
+These modules use the Docker CLI "compose" plugin (``docker compose``), and thus needs access to the Docker CLI tool.
 No further requirements next to to the CLI tool and its Docker Compose plugin are needed.
 
 Docker Compose v1

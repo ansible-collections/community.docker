@@ -50,6 +50,8 @@ jobs:
           coverage: ${{ github.event_name == 'schedule' && 'always' || 'never' }}
           pull-request-change-detection: 'true'
           testing-type: sanity
+          pre-test-cmd: >-
+            git clone --depth=1 --single-branch --branch stable-1 https://github.com/ansible-collections/community.library_inventory_filtering.git ../../community/library_inventory_filtering_v1
 
   units:
     # Ansible-test on various stable branches does not yet work well with cgroups v2.
@@ -72,9 +74,7 @@ jobs:
           - '2.13'
 
     steps:
-      - name: >-
-          Perform unit testing against
-          Ansible version ${{ matrix.ansible }}
+      - name: Perform unit testing against Ansible version ${{ matrix.ansible }}
         uses: felixfontein/ansible-test-gh-action@main
         with:
           ansible-core-github-repository-slug: ${{ contains(fromJson('["2.10", "2.11"]'), matrix.ansible) && 'felixfontein/ansible' || 'ansible/ansible' }}
@@ -82,6 +82,8 @@ jobs:
           coverage: ${{ github.event_name == 'schedule' && 'always' || 'never' }}
           pull-request-change-detection: 'true'
           testing-type: units
+          pre-test-cmd: >-
+            git clone --depth=1 --single-branch --branch stable-1 https://github.com/ansible-collections/community.library_inventory_filtering.git ../../community/library_inventory_filtering_v1
 
   integration:
     # Ansible-test on various stable branches does not yet work well with cgroups v2.
@@ -214,10 +216,7 @@ jobs:
             target: azp/6/
 
     steps:
-      - name: >-
-          Perform integration testing against
-          Ansible version ${{ matrix.ansible }}
-          under Python ${{ matrix.python }}
+      - name: Perform integration testing against Ansible version ${{ matrix.ansible }} under Python ${{ matrix.python }}
         uses: felixfontein/ansible-test-gh-action@main
         with:
           ansible-core-github-repository-slug: ${{ contains(fromJson('["2.10", "2.11"]'), matrix.ansible) && 'felixfontein/ansible' || 'ansible/ansible' }}
@@ -235,6 +234,8 @@ jobs:
             git clone --depth=1 --single-branch https://github.com/ansible-collections/community.crypto.git ../../community/crypto
             ;
             git clone --depth=1 --single-branch https://github.com/ansible-collections/community.general.git ../../community/general
+            ;
+            git clone --depth=1 --single-branch --branch stable-1 https://github.com/ansible-collections/community.library_inventory_filtering.git ../../community/library_inventory_filtering_v1
             ${{ matrix.extra-constraints && format('; echo ''{0}'' >> tests/utils/constraints.txt', matrix.extra-constraints) || '' }}
             ;
             cat tests/utils/constraints.txt

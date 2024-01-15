@@ -30,6 +30,9 @@ action_groups:
     - docker_plugin
     - docker_prune
     - docker_secret
+    - docker_stack
+    - docker_stack_info
+    - docker_stack_task_info
     - docker_swarm
     - docker_swarm_info
     - docker_swarm_service

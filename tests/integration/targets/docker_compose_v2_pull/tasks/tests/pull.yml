@@ -1,0 +1,187 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- vars:
+    pname: "{{ name_prefix }}-pull"
+    cname: "{{ name_prefix }}-cont"
+    non_existing_image: does-not-exist:latest
+    project_src: "{{ remote_tmp_dir }}/{{ pname }}"
+    test_service_non_existing: |
+      version: '3'
+      services:
+        {{ cname }}:
+          image: {{ non_existing_image }}
+    test_service_alpine: |
+      version: '3'
+      services:
+        {{ cname }}:
+          image: {{ docker_test_image_alpine }}
+          command: /bin/sh -c 'sleep 10m'
+          stop_grace_period: 1s
+
+  block:
+    - name: Registering container name
+      set_fact:
+        cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
+        dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
+
+    - name: Create project directory
+      file:
+        path: '{{ project_src }}'
+        state: directory
+
+    - name: Make sure images are not around
+      docker_image_remove:
+        name: '{{ item }}'
+      loop:
+        - '{{ non_existing_image }}'
+        - '{{ docker_test_image_alpine }}'
+
+####################################################################
+## Missing image ###################################################
+####################################################################
+
+    - name: Template project file with non-existing image
+      copy:
+        dest: '{{ project_src }}/docker-compose.yml'
+        content: '{{ test_service_non_existing }}'
+
+    - name: Pull (check)
+      docker_compose_v2_pull:
+        project_src: '{{ project_src }}'
+      check_mode: true
+      register: pull_1_check
+      ignore_errors: true
+
+    - name: Pull
+      docker_compose_v2_pull:
+        project_src: '{{ project_src }}'
+      register: pull_1
+      ignore_errors: true
+
+    - assert:
+        that:
+          - pull_1_check is failed or pull_1_check is changed
+          - pull_1_check is changed or pull_1_check.msg.startswith('Error when processing ')
+          - pull_1 is failed
+          - pull_1.msg.startswith('Error when processing ')
+
+####################################################################
+## Regular image ###################################################
+####################################################################
+
+    - name: Template project file with Alpine image
+      copy:
+        dest: '{{ project_src }}/docker-compose.yml'
+        content: '{{ test_service_alpine }}'
+
+    - when: docker_compose_version is version('2.22.0', '>=')
+      block:
+        - name: Pull with policy=missing (check)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: missing
+          check_mode: true
+          register: pull_1_check
+
+        - name: Pull with policy=missing
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: missing
+          register: pull_1
+
+        - name: Pull with policy=missing (idempotent, check)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: missing
+          check_mode: true
+          register: pull_2_check
+
+        - name: Pull with policy=missing (idempotent)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: missing
+          register: pull_2
+
+        - name: Pull with policy=always (check)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: always
+          check_mode: true
+          register: pull_3_check
+
+        - name: Pull with policy=always
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: always
+          register: pull_3
+
+        - assert:
+            that:
+              - pull_1_check is changed
+              - pull_1_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_1_check.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_1_check.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+              - pull_1 is changed
+              - pull_1.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_1.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_1.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+              - pull_2_check is not changed
+              - pull_2 is not changed
+              - pull_3_check is changed
+              - pull_3_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_3_check.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_3_check.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+              - pull_3 is changed
+              - pull_3.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_3.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_3.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+
+    - when: docker_compose_version is version('2.22.0', '<')
+      block:
+        - name: Pull with policy=always (check)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: always
+          check_mode: true
+          register: pull_1_check
+
+        - name: Pull with policy=always
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: always
+          register: pull_1
+
+        - name: Pull with policy=always (again, check)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: always
+          check_mode: true
+          register: pull_2_check
+
+        - name: Pull with policy=always (again)
+          docker_compose_v2_pull:
+            project_src: '{{ project_src }}'
+            policy: always
+          register: pull_2
+
+        - assert:
+            that:
+              - pull_1_check is changed
+              - pull_1_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_1_check.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_1_check.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+              - pull_1 is changed
+              - pull_1.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_1.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_1.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+              - pull_2_check is changed
+              - pull_2_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_2_check.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_2_check.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+              - pull_2 is changed
+              - pull_2.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_2.actions | selectattr('status', 'eq', 'Creating') | length == 0
+              - pull_2.actions | selectattr('status', 'eq', 'Recreating') | length == 0
