@@ -99,6 +99,13 @@ options:
     description:
       - Timeout in seconds for container shutdown when attached or when containers are already running.
     type: int
+  services:
+    description:
+      - When O(state) is V(present) run C(docker compose up) resp. C(docker compose stop) (with O(stopped=true)) resp.
+        C(docker compose restart) (with O(restarted=true)) on a subset of services.
+      - If empty, which is the default, the operation will be performed on all services defined in the Compose file (or inline O(definition)).
+    type: list
+    elements: str
 
 requirements:
   - "Docker CLI with Docker compose plugin 2.18.0 or later"
@@ -399,6 +406,8 @@ class ServicesManager(BaseComposeManager):
         self.remove_volumes = parameters['remove_volumes']
         self.remove_orphans = parameters['remove_orphans']
         self.timeout = parameters['timeout']
+        self.services = parameters['services']
+        
 
     def run(self):
         if self.state == 'present':
@@ -433,6 +442,9 @@ class ServicesManager(BaseComposeManager):
             args.append('--no-start')
         if dry_run:
             args.append('--dry-run')
+        if self.services:
+            for service in self.services:
+               args.append(service)
         args.append('--')
         return args
 
@@ -452,6 +464,9 @@ class ServicesManager(BaseComposeManager):
             args.extend(['--timeout', '%d' % self.timeout])
         if dry_run:
             args.append('--dry-run')
+        if self.services:
+            for service in self.services:
+               args.append(service)
         args.append('--')
         return args
 
@@ -503,6 +518,9 @@ class ServicesManager(BaseComposeManager):
             args.extend(['--timeout', '%d' % self.timeout])
         if dry_run:
             args.append('--dry-run')
+        if self.services:
+            for service in self.services:
+               args.append(service)
         args.append('--')
         return args
 
@@ -528,6 +546,9 @@ class ServicesManager(BaseComposeManager):
             args.extend(['--timeout', '%d' % self.timeout])
         if dry_run:
             args.append('--dry-run')
+        if self.services:
+            for service in self.services:
+               args.append(service)
         args.append('--')
         return args
 
