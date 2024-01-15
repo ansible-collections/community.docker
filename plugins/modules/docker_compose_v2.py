@@ -570,6 +570,7 @@ def main():
         remove_volumes=dict(type='bool', default=False),
         remove_orphans=dict(type='bool', default=False),
         timeout=dict(type='int'),
+        services=dict(type='list', elements='str'),
     )
     argument_spec.update(common_compose_argspec())
 
