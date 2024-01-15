@@ -406,7 +406,6 @@ class ServicesManager(BaseComposeManager):
         self.timeout = parameters['timeout']
         self.services = parameters['services']
         
-
     def run(self):
         if self.state == 'present':
             result = self.cmd_up()
@@ -442,7 +441,7 @@ class ServicesManager(BaseComposeManager):
             args.append('--dry-run')
         if self.services:
             for service in self.services:
-               args.append(service)
+                args.append(service)
         args.append('--')
         return args
 
@@ -464,7 +463,7 @@ class ServicesManager(BaseComposeManager):
             args.append('--dry-run')
         if self.services:
             for service in self.services:
-               args.append(service)
+                args.append(service)
         args.append('--')
         return args
 
@@ -518,7 +517,7 @@ class ServicesManager(BaseComposeManager):
             args.append('--dry-run')
         if self.services:
             for service in self.services:
-               args.append(service)
+                args.append(service)
         args.append('--')
         return args
 
@@ -546,7 +545,7 @@ class ServicesManager(BaseComposeManager):
             args.append('--dry-run')
         if self.services:
             for service in self.services:
-               args.append(service)
+                args.append(service)
         args.append('--')
         return args
 
