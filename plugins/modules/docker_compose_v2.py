@@ -405,7 +405,7 @@ class ServicesManager(BaseComposeManager):
         self.remove_orphans = parameters['remove_orphans']
         self.timeout = parameters['timeout']
         self.services = parameters['services']
-        
+
     def run(self):
         if self.state == 'present':
             result = self.cmd_up()
