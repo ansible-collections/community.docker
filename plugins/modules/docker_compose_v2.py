@@ -101,9 +101,7 @@ options:
     type: int
   services:
     description:
-      - When O(state) is V(present) run C(docker compose up) resp. C(docker compose stop) (with O(stopped=true)) resp.
-        C(docker compose restart) (with O(restarted=true)) on a subset of services.
-      - If empty, which is the default, the operation will be performed on all services defined in the Compose file (or inline O(definition)).
+      - Specifies a subset of services to be targeted when the state is set to either V(present), V(stopped), or V
     type: list
     elements: str
 
