@@ -18,7 +18,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import Docke
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 
-DOCKER_COMPOSE_FILES = 'docker-compose.yml', 'docker-compose.yaml'
+DOCKER_COMPOSE_FILES = ('compose.yaml', 'compose.yml', 'docker-compose.yaml', 'docker-compose.yml')
 
 DOCKER_STATUS_DONE = frozenset((
     'Started',
@@ -436,8 +436,9 @@ class BaseComposeManager(DockerBaseClass):
         if not os.path.isdir(self.project_src):
             self.client.fail('"{0}" is not a directory'.format(self.project_src))
 
-        if all(not os.path.isfile(os.path.join(self.project_src, f)) for f in DOCKER_COMPOSE_FILES):
-            self.client.fail('"{0}" does not contain {1}'.format(self.project_src, ' or '.join(DOCKER_COMPOSE_FILES)))
+        if all(not os.path.exists(os.path.join(self.project_src, f)) for f in DOCKER_COMPOSE_FILES):
+            filenames = ', '.join(DOCKER_COMPOSE_FILES[:-1])
+            self.client.fail('"{0}" does not contain {1}, or {2}'.format(self.project_src, filenames, DOCKER_COMPOSE_FILES[-1]))
 
     def get_base_args(self):
         args = ['compose', '--ansi', 'never']
