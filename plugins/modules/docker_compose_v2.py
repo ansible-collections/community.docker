@@ -99,6 +99,11 @@ options:
     description:
       - Timeout in seconds for container shutdown when attached or when containers are already running.
     type: int
+  services:
+    description:
+      - Specifies a subset of services to be targeted.
+    type: list
+    elements: str
 
 requirements:
   - "Docker CLI with Docker compose plugin 2.18.0 or later"
@@ -399,6 +404,7 @@ class ServicesManager(BaseComposeManager):
         self.remove_volumes = parameters['remove_volumes']
         self.remove_orphans = parameters['remove_orphans']
         self.timeout = parameters['timeout']
+        self.services = parameters['services'] or []
 
     def run(self):
         if self.state == 'present':
@@ -433,6 +439,8 @@ class ServicesManager(BaseComposeManager):
             args.append('--no-start')
         if dry_run:
             args.append('--dry-run')
+        for service in self.services:
+            args.append(service)
         args.append('--')
         return args
 
@@ -452,6 +460,8 @@ class ServicesManager(BaseComposeManager):
             args.extend(['--timeout', '%d' % self.timeout])
         if dry_run:
             args.append('--dry-run')
+        for service in self.services:
+            args.append(service)
         args.append('--')
         return args
 
@@ -503,6 +513,8 @@ class ServicesManager(BaseComposeManager):
             args.extend(['--timeout', '%d' % self.timeout])
         if dry_run:
             args.append('--dry-run')
+        for service in self.services:
+            args.append(service)
         args.append('--')
         return args
 
@@ -528,6 +540,8 @@ class ServicesManager(BaseComposeManager):
             args.extend(['--timeout', '%d' % self.timeout])
         if dry_run:
             args.append('--dry-run')
+        for service in self.services:
+            args.append(service)
         args.append('--')
         return args
 
@@ -552,6 +566,7 @@ def main():
         remove_volumes=dict(type='bool', default=False),
         remove_orphans=dict(type='bool', default=False),
         timeout=dict(type='int'),
+        services=dict(type='list', elements='str'),
     )
     argument_spec.update(common_compose_argspec())
 
