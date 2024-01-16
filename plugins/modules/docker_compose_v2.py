@@ -54,11 +54,23 @@ options:
       - V(always) ensures that the images are always pulled, even when already present on the Docker daemon.
       - V(missing) only pulls them when they are not present on the Docker daemon.
       - V(never) never pulls images. If they are not present, the module will fail when trying to create the containers that need them.
-      - V(policy) use the C(pull_policy) defined for the service to figure out what to do.
+      - V(policy) use the Compose file's C(pull_policy) defined for the service to figure out what to do.
     type: str
     choices:
       - always
       - missing
+      - never
+      - policy
+    default: policy
+  build:
+    description:
+      - Whether to build images before starting containers. This is used when O(state=present).
+      - V(always) always builds before starting containers. This is equivalent to the C(--build) option of C(docker compose up).
+      - V(never) never builds before starting containers. This is equivalent to the C(--no-build) option of C(docker compose up).
+      - V(policy) uses the policy as defined in the Copose file.
+    type: str
+    choices:
+      - always
       - never
       - policy
     default: policy
@@ -399,6 +411,7 @@ class ServicesManager(BaseComposeManager):
         self.state = parameters['state']
         self.dependencies = parameters['dependencies']
         self.pull = parameters['pull']
+        self.build = parameters['build']
         self.recreate = parameters['recreate']
         self.remove_images = parameters['remove_images']
         self.remove_volumes = parameters['remove_volumes']
@@ -435,6 +448,10 @@ class ServicesManager(BaseComposeManager):
             args.append('--no-deps')
         if self.timeout is not None:
             args.extend(['--timeout', '%d' % self.timeout])
+        if self.build == 'always':
+            args.append('--build')
+        elif self.build == 'never':
+            args.append('--no-build')
         if no_start:
             args.append('--no-start')
         if dry_run:
@@ -561,6 +578,7 @@ def main():
         state=dict(type='str', default='present', choices=['absent', 'present', 'stopped', 'restarted']),
         dependencies=dict(type='bool', default=True),
         pull=dict(type='str', choices=['always', 'missing', 'never', 'policy'], default='policy'),
+        build=dict(type='str', choices=['always', 'never', 'policy'], default='policy'),
         recreate=dict(type='str', default='auto', choices=['always', 'never', 'auto']),
         remove_images=dict(type='str', choices=['all', 'local']),
         remove_volumes=dict(type='bool', default=False),
