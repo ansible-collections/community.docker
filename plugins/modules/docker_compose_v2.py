@@ -101,7 +101,7 @@ options:
     type: int
   services:
     description:
-      - Specifies a subset of services to be targeted when the state is set to either V(present), V(stopped), or V
+      - Specifies a subset of services to be targeted.
     type: list
     elements: str
 
@@ -404,7 +404,7 @@ class ServicesManager(BaseComposeManager):
         self.remove_volumes = parameters['remove_volumes']
         self.remove_orphans = parameters['remove_orphans']
         self.timeout = parameters['timeout']
-        self.services = parameters['services']
+        self.services = parameters['services'] or []
 
     def run(self):
         if self.state == 'present':
@@ -439,9 +439,8 @@ class ServicesManager(BaseComposeManager):
             args.append('--no-start')
         if dry_run:
             args.append('--dry-run')
-        if self.services:
-            for service in self.services:
-                args.append(service)
+        for service in self.services:
+            args.append(service)
         args.append('--')
         return args
 
@@ -461,9 +460,8 @@ class ServicesManager(BaseComposeManager):
             args.extend(['--timeout', '%d' % self.timeout])
         if dry_run:
             args.append('--dry-run')
-        if self.services:
-            for service in self.services:
-                args.append(service)
+        for service in self.services:
+            args.append(service)
         args.append('--')
         return args
 
@@ -515,9 +513,8 @@ class ServicesManager(BaseComposeManager):
             args.extend(['--timeout', '%d' % self.timeout])
         if dry_run:
             args.append('--dry-run')
-        if self.services:
-            for service in self.services:
-                args.append(service)
+        for service in self.services:
+            args.append(service)
         args.append('--')
         return args
 
@@ -543,9 +540,8 @@ class ServicesManager(BaseComposeManager):
             args.extend(['--timeout', '%d' % self.timeout])
         if dry_run:
             args.append('--dry-run')
-        if self.services:
-            for service in self.services:
-                args.append(service)
+        for service in self.services:
+            args.append(service)
         args.append('--')
         return args
 
