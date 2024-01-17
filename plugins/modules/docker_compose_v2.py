@@ -68,7 +68,7 @@ options:
       - Whether to build images before starting containers. This is used when O(state=present).
       - V(always) always builds before starting containers. This is equivalent to the C(--build) option of C(docker compose up).
       - V(never) never builds before starting containers. This is equivalent to the C(--no-build) option of C(docker compose up).
-      - V(policy) uses the policy as defined in the Copose file.
+      - V(policy) uses the policy as defined in the Compose file.
     type: str
     choices:
       - always
