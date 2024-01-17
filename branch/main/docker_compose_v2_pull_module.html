@@ -428,77 +428,16 @@ will change over time. New releases of the Docker compose CLI plugin can break t
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="docker_compose_module.html#ansible-collections-community-docker-docker-compose-module"><span class="std std-ref">community.docker.docker_compose</span></a></dt><dd><p>Manage multi-container Docker applications with Docker Compose V1.</p>
+<dt><a class="reference internal" href="docker_compose_v2_module.html#ansible-collections-community-docker-docker-compose-v2-module"><span class="std std-ref">community.docker.docker_compose_v2</span></a></dt><dd><p>Manage multi-container Docker applications with Docker Compose CLI plugin.</p>
 </dd>
 </dl>
 </div>
 </section>
 <section id="examples">
 <h2><a class="toc-backref" href="#id7" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
-<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="c1"># Examples use the django example at https://docs.docker.com/compose/django. Follow it to create the</span>
-<span class="c1"># flask directory</span>
-
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run using a project directory</span>
-<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
-<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Tear down existing services</span>
-<span class="w">      </span><span class="nt">community.docker.docker_compose_v2</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
-<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span>
-
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create and start services</span>
-<span class="w">      </span><span class="nt">community.docker.docker_compose_v2</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
-<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
-
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show results</span>
-<span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
-
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run `docker-compose up` again</span>
-<span class="w">      </span><span class="nt">community.docker.docker_compose_v2</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
-<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
-
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show results</span>
-<span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
-
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">that</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not output.changed</span>
-
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Stop all services</span>
-<span class="w">      </span><span class="nt">community.docker.docker_compose_v2</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
-<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stopped</span>
-<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
-
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show results</span>
-<span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
-
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Verify that web and db services are not running</span>
-<span class="w">      </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">that</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">output.services.web.flask_web_1.state.running&quot;</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">output.services.db.flask_db_1.state.running&quot;</span>
-
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Restart services</span>
-<span class="w">      </span><span class="nt">community.docker.docker_compose_v2</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
-<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">restarted</span>
-<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
-
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show results</span>
-<span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
-
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Verify that web and db services are running</span>
-<span class="w">      </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">that</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.web.flask_web_1.state.running&quot;</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.db.flask_db_1.state.running&quot;</span>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pull images for flask project</span>
+<span class="w">  </span><span class="nt">community.docker.docker_compose_v2_pull</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/flask</span>
 </pre></div>
 </div>
 </section>
@@ -537,17 +476,9 @@ will change over time. New releases of the Docker compose CLI plugin can break t
 <p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Can only return:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Starting&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Exiting&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Restarting&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Creating&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Stopping&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Killing&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Removing&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Recreating&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;Pulling&quot;</span></code></p></li>
 </ul>
-<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;Creating&quot;</span></code></p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;Pulling&quot;</span></code></p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -558,265 +489,10 @@ will change over time. New releases of the Docker compose CLI plugin can break t
 <p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Can only return:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;container&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;image&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;network&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;service&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;unknown&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;volume&quot;</span></code></p></li>
 </ul>
 <p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;container&quot;</span></code></p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers"><strong>containers</strong></p>
-<a class="ansibleOptionLink" href="#return-containers" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
-</div></td>
-<td><div class="ansible-option-cell"><p>A list of containers associated to the service.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Command"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-command"><strong>Command</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Command" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">any</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The container’s command.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/CreatedAt"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-createdat"><strong>CreatedAt</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/CreatedAt" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The timestamp when the container was created.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;2024-01-02</span> <span class="pre">12:20:41</span> <span class="pre">+0100</span> <span class="pre">CET&quot;</span></code></p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/ExitCode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-exitcode"><strong>ExitCode</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/ExitCode" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The container’s exit code.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Health"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-health"><strong>Health</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Health" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">any</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The container’s health check.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/ID"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-id"><strong>ID</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/ID" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The container’s ID.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;44a7d607219a60b7db0a4817fb3205dce46e91df2cb4b78a6100b6e27b0d3135&quot;</span></code></p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Image"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-image"><strong>Image</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Image" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The container’s image.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Labels"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-labels"><strong>Labels</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Labels" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Labels for this container.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/LocalVolumes"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-localvolumes"><strong>LocalVolumes</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/LocalVolumes" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The local volumes count.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Mounts"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-mounts"><strong>Mounts</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Mounts" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Mounts.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-name"><strong>Name</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Name" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The container’s primary name.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Names"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-names"><strong>Names</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Names" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of names of the container.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Networks"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-networks"><strong>Networks</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Networks" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of networks attached to this container.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Ports"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-ports"><strong>Ports</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Ports" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of port assignments as a string.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Publishers"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-publishers"><strong>Publishers</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Publishers" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of port assigments.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Publishers/Protocol"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-publishers-protocol"><strong>Protocol</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Publishers/Protocol" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The protocol.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-<p class="ansible-option-line"><strong class="ansible-option-choices">Can only return:</strong></p>
-<ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;tcp&quot;</span></code></p></li>
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;udp&quot;</span></code></p></li>
-</ul>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Publishers/PublishedPort"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-publishers-publishedport"><strong>PublishedPort</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Publishers/PublishedPort" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The port that is published.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Publishers/TargetPort"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-publishers-targetport"><strong>TargetPort</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Publishers/TargetPort" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The container’s port the published port maps to.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Publishers/URL"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-publishers-url"><strong>URL</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Publishers/URL" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Interface the port is bound to.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/RunningFor"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-runningfor"><strong>RunningFor</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/RunningFor" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Amount of time the container runs.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Service"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-service"><strong>Service</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Service" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The name of the service.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Size"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-size"><strong>Size</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Size" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The container’s size.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;0B&quot;</span></code></p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/State"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-state"><strong>State</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/State" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The container’s state.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;running&quot;</span></code></p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-containers/Status"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-containers-status"><strong>Status</strong></p>
-<a class="ansibleOptionLink" href="#return-containers/Status" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The container’s status.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;Up</span> <span class="pre">About</span> <span class="pre">a</span> <span class="pre">minute&quot;</span></code></p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-images"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-images"><strong>images</strong></p>
-<a class="ansibleOptionLink" href="#return-images" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
-</div></td>
-<td><div class="ansible-option-cell"><p>A list of images associated to the service.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-images/ContainerName"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-images-containername"><strong>ContainerName</strong></p>
-<a class="ansibleOptionLink" href="#return-images/ContainerName" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Name of the conainer this image is used by.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-images/ID"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-images-id"><strong>ID</strong></p>
-<a class="ansibleOptionLink" href="#return-images/ID" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The image’s ID.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;sha256:c8bccc0af9571ec0d006a43acb5a8d08c4ce42b6cc7194dd6eb167976f501ef1&quot;</span></code></p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-images/Repository"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-images-repository"><strong>Repository</strong></p>
-<a class="ansibleOptionLink" href="#return-images/Repository" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The repository where this image belongs to.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-images/Size"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-images-size"><strong>Size</strong></p>
-<a class="ansibleOptionLink" href="#return-images/Size" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The image’s size in bytes.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-images/Tag"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-return-images-tag"><strong>Tag</strong></p>
-<a class="ansibleOptionLink" href="#return-images/Tag" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The tag of the image.</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
 </div></td>
 </tr>
 </tbody>
