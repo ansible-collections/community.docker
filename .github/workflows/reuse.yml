@@ -23,10 +23,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          pip install reuse
-
-      - name: Check REUSE compliance
-        run: |
-          reuse lint
+      - name: REUSE Compliance Check
+        uses: fsfe/reuse-action@v2
