@@ -166,6 +166,9 @@ _RE_SKIPPED_EVENT = re.compile(
     r'$'
 )
 
+# The following needs to be kept in sync with the MINIMUM_VERSION compose_v2 docs fragment
+MINIMUM_COMPOSE_VERSION = '2.18.0'
+
 
 def _extract_event(line):
     match = _RE_RESOURCE_EVENT.match(line)
@@ -410,7 +413,7 @@ def combine_text_output(*outputs):
 
 
 class BaseComposeManager(DockerBaseClass):
-    def __init__(self, client, min_version='2.18.0'):
+    def __init__(self, client, min_version=MINIMUM_COMPOSE_VERSION):
         super(BaseComposeManager, self).__init__()
         self.client = client
         self.check_mode = self.client.check_mode
