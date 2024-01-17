@@ -21,6 +21,7 @@ description:
 
 extends_documentation_fragment:
   - community.docker.compose_v2
+  - community.docker.compose_v2.minimum_version
   - community.docker.docker.cli_documentation
   - community.docker.attributes
   - community.docker.attributes.actiongroup_docker
@@ -43,23 +44,11 @@ options:
       - missing
     default: always
 
-requirements:
-  - "Docker CLI with Docker compose plugin 2.18.0 or later"
-
 author:
   - Felix Fontein (@felixfontein)
 
-notes:
-  - |-
-    The Docker compose CLI plugin has no stable output format (see for example U(https://github.com/docker/compose/issues/10872)),
-    and for the main operations also no machine friendly output format. The module tries to accomodate this with various
-    version-dependent behavior adjustments and with testing older and newer versions of the Docker compose CLI plugin.
-
-    Currently the module is tested with multiple plugin versions between 2.18.1 and 2.23.3. The exact list of plugin versions
-    will change over time. New releases of the Docker compose CLI plugin can break this module at any time.
-
 seealso:
-  - module: community.docker.docker_compose
+  - module: community.docker.docker_compose_v2
 '''
 
 EXAMPLES = '''
@@ -327,12 +316,9 @@ from ansible_collections.community.docker.plugins.module_utils.compose_v2 import
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 
-DOCKER_COMPOSE_MINIMAL_VERSION = '2.18.0'
-
-
 class PullManager(BaseComposeManager):
     def __init__(self, client):
-        super(PullManager, self).__init__(client, min_version=DOCKER_COMPOSE_MINIMAL_VERSION)
+        super(PullManager, self).__init__(client)
         parameters = self.client.module.params
 
         self.policy = parameters['policy']
