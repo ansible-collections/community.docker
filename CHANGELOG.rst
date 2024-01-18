@@ -5,6 +5,31 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
+v3.6.0-rc1
+==========
+
+Release Summary
+---------------
+
+First release candidate of the latest bugfix and feature release.
+No more features will be added before the final release, which will likely happen on Sunday or Monday.
+
+The collection now includes a bunch of new ``docker_image_*`` modules that move features out of the
+rather complex ``docker_image`` module. These new modules are easier to use and can better declare whether
+they support check mode, diff mode, or none of them.
+
+This version also features modules that support the Docker CLI plugins ``buildx`` and ``compose``.
+The ``docker_image_build`` module uses the ``docker buildx`` command under the hood, and the ``docker_compose_v2``
+and ``docker_compose_v2_pull`` modules uses the ``docker compose`` command. All these modules use the Docker CLI
+instead of directly talking to the API. The modules support mostly the same interface as the API based modules,
+so the main difference is that instead of some Python requirements, they depend on the Docker CLI tool ``docker``.
+
+Changes since the last beta:
+* The ``docker_compose_v2*`` modules also checks for ``compose.yaml`` and ``compose.yml``, not only for ``docker-compose.yaml`` and ``docker-compose.yml``.
+* You can now specify ``services`` in the ``docker_compose_v2`` module.
+* You can now specify ``build`` in the ``docker_compose_v2`` module (allows to pass ``--build`` or ``--no-build`` depending on its value).
+
+
 v3.6.0-b2
 =========
 
