@@ -51,7 +51,7 @@ options:
       - present
   pull:
     description:
-      - Whether to pull images before running. This is used when C(docker compose up) is ran.
+      - Whether to pull images before running. This is used when C(docker compose up) is run.
       - V(always) ensures that the images are always pulled, even when already present on the Docker daemon.
       - V(missing) only pulls them when they are not present on the Docker daemon.
       - V(never) never pulls images. If they are not present, the module will fail when trying to create the containers that need them.
@@ -65,7 +65,7 @@ options:
     default: policy
   build:
     description:
-      - Whether to build images before starting containers. This is used when O(state=present).
+      - Whether to build images before starting containers. This is used when C(docker compose up) is run.
       - V(always) always builds before starting containers. This is equivalent to the C(--build) option of C(docker compose up).
       - V(never) never builds before starting containers. This is equivalent to the C(--no-build) option of C(docker compose up).
       - V(policy) uses the policy as defined in the Compose file.
