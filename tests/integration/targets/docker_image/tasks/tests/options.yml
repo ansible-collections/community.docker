@@ -298,6 +298,8 @@
     source: load
     api_version: "1.22"
   register: load_image_4
+  # Moby 25.0.0 (API version 1.44) dropped support for older API versions
+  when: docker_api_version is version('1.44', '<')
 
 - name: load image (ID, idempotency)
   docker_image:
@@ -316,9 +318,13 @@
       "The archive did not contain image 'foo:bar'. Instead, found '" ~ docker_test_image_hello_world ~ "'." == load_image_2.msg
     - load_image_3 is failed
     - '"Detected no loaded images. Archive potentially corrupt?" == load_image_3.msg'
+    - load_image_5 is not changed
+
+- when: docker_api_version is version('1.44', '<')
+  assert:
+    that:
     - load_image_4 is changed
     - "'The API version of your Docker daemon is < 1.23, which does not return the image loading result from the Docker daemon. Therefore, we cannot verify whether the expected image was loaded, whether multiple images where loaded, or whether the load actually succeeded. You should consider upgrading your Docker daemon.' in load_image_4.warnings"
-    - load_image_5 is not changed
 
 ####################################################################
 ## build.path ######################################################
