@@ -945,6 +945,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Container MAC address (for example, <code class="ansible-value docutils literal notranslate"><span class="pre">92:d0:c6:0a:29:33</span></code>).</p>
 <p>Note that the global container-wide MAC address is deprecated and no longer used since Docker API version 1.44.</p>
+<p>Use <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-networks-mac-address"><span class="std std-ref"><span class="pre">networks[].mac_address</span></span></a></strong></code> instead.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -1166,13 +1167,22 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-networks/mac_address"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-networks-mac-address"><strong>mac_address</strong></p>
+<a class="ansibleOptionLink" href="#parameter-networks/mac_address" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Endpoint MAC address (for example, <code class="ansible-value docutils literal notranslate"><span class="pre">92:d0:c6:0a:29:33</span></code>).</p>
+<p>This is only available for Docker API version 1.44 and later.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-networks/name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-networks-name"><strong>name</strong></p>
 <a class="ansibleOptionLink" href="#parameter-networks/name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The network’s name.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-networks_cli_compatible"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-networks-cli-compatible"><strong>networks_cli_compatible</strong></p>
 <a class="ansibleOptionLink" href="#parameter-networks_cli_compatible" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1185,7 +1195,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-oom_killer"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-oom-killer"><strong>oom_killer</strong></p>
 <a class="ansibleOptionLink" href="#parameter-oom_killer" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1197,14 +1207,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-oom_score_adj"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-oom-score-adj"><strong>oom_score_adj</strong></p>
 <a class="ansibleOptionLink" href="#parameter-oom_score_adj" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>An integer value containing the score given to the container in order to tune OOM killer preferences.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-output_logs"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-output-logs"><strong>output_logs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-output_logs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1217,7 +1227,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-paused"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-paused"><strong>paused</strong></p>
 <a class="ansibleOptionLink" href="#parameter-paused" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1230,14 +1240,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-pid_mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-pid-mode"><strong>pid_mode</strong></p>
 <a class="ansibleOptionLink" href="#parameter-pid_mode" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Set the PID namespace mode for the container.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-pids_limit"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-pids-limit"><strong>pids_limit</strong></p>
 <a class="ansibleOptionLink" href="#parameter-pids_limit" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -1245,7 +1255,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Set <code class="ansible-value docutils literal notranslate"><span class="pre">-1</span></code> for unlimited PIDs.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-platform"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-platform"><strong>platform</strong></p>
 <a class="ansibleOptionLink" href="#parameter-platform" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 3.0.0</em></p>
@@ -1254,7 +1264,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Note that since community.docker 3.5.0, the module uses both the image’s metadata and the Docker daemon’s information to normalize platform strings similarly to how Docker itself is doing this. If you notice idempotency problems, <a class="reference external" href="https://github.com/ansible-collections/community.docker/issues/new?assignees=&amp;labels=&amp;projects=&amp;template=bug_report.md">please create an issue in the community.docker GitHub repository</a>. For older community.docker versions, you can use the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-comparisons"><span class="std std-ref"><span class="pre">comparisons</span></span></a></strong></code> option with <code class="docutils literal notranslate"><span class="pre">platform:</span> <span class="pre">ignore</span></code> to prevent accidental recreation of the container due to this.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-privileged"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-privileged"><strong>privileged</strong></p>
 <a class="ansibleOptionLink" href="#parameter-privileged" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1267,7 +1277,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-publish_all_ports"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-publish-all-ports"><strong>publish_all_ports</strong></p>
 <a class="ansibleOptionLink" href="#parameter-publish_all_ports" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 1.8.0</em></p>
@@ -1281,7 +1291,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-published_ports"></div>
 <div class="ansibleOptionAnchor" id="parameter-ports"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-published-ports"><span id="ansible-collections-community-docker-docker-container-module-parameter-ports"></span><strong>published_ports</strong></p>
 <a class="ansibleOptionLink" href="#parameter-published_ports" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: ports</span></p>
@@ -1295,7 +1305,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>The value <code class="ansible-value docutils literal notranslate"><span class="pre">all</span></code> was allowed in earlier versions of this module. Support for it was removed in community.docker 3.0.0. Use the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-publish-all-ports"><span class="std std-ref"><span class="pre">publish_all_ports</span></span></a></strong></code> option instead.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-pull"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-pull"><strong>pull</strong></p>
 <a class="ansibleOptionLink" href="#parameter-pull" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1308,7 +1318,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-purge_networks"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-purge-networks"><strong>purge_networks</strong></p>
 <a class="ansibleOptionLink" href="#parameter-purge_networks" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1322,7 +1332,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-read_only"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-read-only"><strong>read_only</strong></p>
 <a class="ansibleOptionLink" href="#parameter-read_only" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1335,7 +1345,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-recreate"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-recreate"><strong>recreate</strong></p>
 <a class="ansibleOptionLink" href="#parameter-recreate" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1347,7 +1357,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-removal_wait_timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-removal-wait-timeout"><strong>removal_wait_timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-removal_wait_timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">float</span></p>
 </div></td>
@@ -1355,7 +1365,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>By setting this option, the module will wait at most this many seconds for the container to be removed. If the container is still in the removal phase after this many seconds, the module will fail.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-restart"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-restart"><strong>restart</strong></p>
 <a class="ansibleOptionLink" href="#parameter-restart" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1367,7 +1377,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-restart_policy"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-restart-policy"><strong>restart_policy</strong></p>
 <a class="ansibleOptionLink" href="#parameter-restart_policy" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1382,28 +1392,28 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-restart_retries"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-restart-retries"><strong>restart_retries</strong></p>
 <a class="ansibleOptionLink" href="#parameter-restart_retries" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use with restart policy to control maximum number of restart attempts.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-runtime"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-runtime"><strong>runtime</strong></p>
 <a class="ansibleOptionLink" href="#parameter-runtime" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Runtime to use for the container.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-security_opts"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-security-opts"><strong>security_opts</strong></p>
 <a class="ansibleOptionLink" href="#parameter-security_opts" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>List of security options in the form of <code class="docutils literal notranslate"><span class="pre">&quot;label:user:User&quot;</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-shm_size"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-shm-size"><strong>shm_size</strong></p>
 <a class="ansibleOptionLink" href="#parameter-shm_size" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1411,7 +1421,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Omitting the unit defaults to bytes. If you omit the size entirely, Docker daemon uses <code class="ansible-value docutils literal notranslate"><span class="pre">64M</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ssl_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-ssl-version"><strong>ssl_version</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ssl_version" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1419,7 +1429,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_SSL_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code></a> will be used instead.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-state"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-state"><strong>state</strong></p>
 <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1440,14 +1450,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-stop_signal"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-stop-signal"><strong>stop_signal</strong></p>
 <a class="ansibleOptionLink" href="#parameter-stop_signal" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Override default signal used to stop the container.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-stop_timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-stop-timeout"><strong>stop_timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-stop_timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -1455,7 +1465,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>When the container is stopped, will be used as a timeout for stopping the container. In case the container has a custom <code class="docutils literal notranslate"><span class="pre">StopTimeout</span></code> configuration, the behavior depends on the version of the docker daemon. New versions of the docker daemon will always use the container’s configured <code class="docutils literal notranslate"><span class="pre">StopTimeout</span></code> value if it has been configured.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-storage_opts"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-storage-opts"><strong>storage_opts</strong></p>
 <a class="ansibleOptionLink" href="#parameter-storage_opts" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 1.3.0</em></p>
@@ -1463,14 +1473,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <td><div class="ansible-option-cell"><p>Storage driver options for this container as a key-value mapping.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-sysctls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-sysctls"><strong>sysctls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-sysctls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Dictionary of key,value pairs.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-timeout"><strong>timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -1479,7 +1489,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">60</span></code></p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1492,7 +1502,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-tls-hostname"><strong>tls_hostname</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1501,14 +1511,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Note that this option had a default value <code class="ansible-value docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tmpfs"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-tmpfs"><strong>tmpfs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tmpfs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Mount a tmpfs directory.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tty"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-tty"><strong>tty</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tty" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1521,14 +1531,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ulimits"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-ulimits"><strong>ulimits</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ulimits" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>List of ulimit options. A ulimit is specified as <code class="ansible-value docutils literal notranslate"><span class="pre">nofile:262144:262144</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-use_ssh_client"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-use-ssh-client"><strong>use_ssh_client</strong></p>
 <a class="ansibleOptionLink" href="#parameter-use_ssh_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 1.5.0</em></p>
@@ -1541,7 +1551,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-user"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-user"><strong>user</strong></p>
 <a class="ansibleOptionLink" href="#parameter-user" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1549,21 +1559,21 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Can be of the forms <code class="docutils literal notranslate"><span class="pre">user</span></code>, <code class="docutils literal notranslate"><span class="pre">user:group</span></code>, <code class="docutils literal notranslate"><span class="pre">uid</span></code>, <code class="docutils literal notranslate"><span class="pre">uid:gid</span></code>, <code class="docutils literal notranslate"><span class="pre">user:gid</span></code> or <code class="docutils literal notranslate"><span class="pre">uid:group</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-userns_mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-userns-mode"><strong>userns_mode</strong></p>
 <a class="ansibleOptionLink" href="#parameter-userns_mode" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Set the user namespace mode for the container. Currently, the only valid value are <code class="ansible-value docutils literal notranslate"><span class="pre">host</span></code> and the empty string (<code class="ansible-value docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>).</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-uts"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-uts"><strong>uts</strong></p>
 <a class="ansibleOptionLink" href="#parameter-uts" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Set the UTS namespace mode for the container.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-container-module-parameter-tls-verify"></span><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
@@ -1578,14 +1588,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-volume_driver"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-volume-driver"><strong>volume_driver</strong></p>
 <a class="ansibleOptionLink" href="#parameter-volume_driver" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>The container volume driver.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-volumes"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-volumes"><strong>volumes</strong></p>
 <a class="ansibleOptionLink" href="#parameter-volumes" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
@@ -1596,14 +1606,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Note that Ansible 2.7 and earlier only supported one mode, which had to be one of <code class="ansible-value docutils literal notranslate"><span class="pre">ro</span></code>, <code class="ansible-value docutils literal notranslate"><span class="pre">rw</span></code>, <code class="ansible-value docutils literal notranslate"><span class="pre">z</span></code>, and <code class="ansible-value docutils literal notranslate"><span class="pre">Z</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-volumes_from"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-volumes-from"><strong>volumes_from</strong></p>
 <a class="ansibleOptionLink" href="#parameter-volumes_from" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>List of container names or IDs to get volumes from.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-working_dir"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-working-dir"><strong>working_dir</strong></p>
 <a class="ansibleOptionLink" href="#parameter-working_dir" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
