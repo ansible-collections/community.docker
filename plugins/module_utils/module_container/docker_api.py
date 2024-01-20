@@ -170,6 +170,8 @@ class DockerAPIEngineDriver(EngineDriver):
                 for option in options.options:
                     if not option.not_an_ansible_option:
                         option_minimal_versions[option.name] = {'docker_api_version': engine.min_api_version}
+            if engine.extra_option_minimal_versions:
+                option_minimal_versions.update(engine.extra_option_minimal_versions)
 
             active_options.append(options)
 
@@ -244,7 +246,13 @@ class DockerAPIEngineDriver(EngineDriver):
     def connect_container_to_network(self, client, container_id, network_id, parameters=None):
         parameters = (parameters or {}).copy()
         params = {}
-        for para, dest_para in {'ipv4_address': 'IPv4Address', 'ipv6_address': 'IPv6Address', 'links': 'Links', 'aliases': 'Aliases'}.items():
+        for para, dest_para in {
+            'ipv4_address': 'IPv4Address',
+            'ipv6_address': 'IPv6Address',
+            'links': 'Links',
+            'aliases': 'Aliases',
+            'mac_address': 'MacAddress',
+        }.items():
             value = parameters.pop(para, None)
             if value:
                 if para == 'links':
@@ -398,6 +406,7 @@ class DockerAPIEngine(Engine):
         compare_value=None,
         needs_container_image=None,
         needs_host_info=None,
+        extra_option_minimal_versions=None,
     ):
         self.min_api_version = min_api_version
         self.min_api_version_obj = None if min_api_version is None else LooseVersion(min_api_version)
@@ -414,6 +423,7 @@ class DockerAPIEngine(Engine):
         self.needs_host_info = needs_host_info or (lambda values: False)
         if compare_value is not None:
             self.compare_value = compare_value
+        self.extra_option_minimal_versions = extra_option_minimal_versions
 
     @classmethod
     def config_value(
@@ -1330,6 +1340,12 @@ OPTION_NETWORK.add_engine('docker_api', DockerAPIEngine(
     get_value=_get_values_network,
     set_value=_set_values_network,
     ignore_mismatching_result=_ignore_mismatching_network_result,
+    extra_option_minimal_versions={
+        'networks.mac_address': {
+            'docker_api_version': '1.44',
+            'detect_usage': lambda c: any(net_info.get('mac_address') is not None for net_info in (c.module.params['networks'] or [])),
+        },
+    },
 ))
 
 OPTION_OOM_KILLER.add_engine('docker_api', DockerAPIEngine.host_config_value('OomKillDisable'))

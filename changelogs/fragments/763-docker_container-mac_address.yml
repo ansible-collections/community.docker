@@ -1,0 +1,4 @@
+minor_changes:
+  - "docker_container - add ``networks[].mac_address`` option for Docker API 1.44+.
+     Note that Docker API 1.44 no longer uses the global ``mac_address`` option, this new option is the only way to set the MAC address for a container
+     (https://github.com/ansible-collections/community.docker/pull/763)."

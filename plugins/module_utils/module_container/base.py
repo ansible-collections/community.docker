@@ -177,6 +177,7 @@ class OptionGroup(object):
 class Engine(object):
     min_api_version = None  # string or None
     min_api_version_obj = None  # LooseVersion object or None
+    extra_option_minimal_versions = None  # dict[str, dict[str, Any]] or None
 
     @abc.abstractmethod
     def get_value(self, module, container, api_version, options, image, host_info):
@@ -509,6 +510,8 @@ def _preprocess_networks(module, values):
                         parsed_link = (link, link)
                     parsed_links.append(tuple(parsed_link))
                 network['links'] = parsed_links
+            if network['mac_address']:
+                network['mac_address'] = network['mac_address'].replace('-', ':')
 
     return values
 
@@ -945,7 +948,7 @@ OPTION_HOSTNAME = (
 )
 
 OPTION_IMAGE = (
-    OptionGroup(preprocess=_preprocess_networks)
+    OptionGroup()
     .add_option('image', type='str')
 )
 
@@ -1019,6 +1022,7 @@ OPTION_NETWORK = (
         ipv6_address=dict(type='str'),
         aliases=dict(type='list', elements='str'),
         links=dict(type='list', elements='str'),
+        mac_address=dict(type='str'),
     ))
 )
 
