@@ -469,6 +469,7 @@ options:
   mac_address:
     description:
       - Container MAC address (for example, C(92:d0:c6:0a:29:33)).
+      - Note that the global container-wide MAC address is deprecated and no longer used since Docker API version 1.44.
     type: str
   memory:
     description:
