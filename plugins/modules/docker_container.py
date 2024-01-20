@@ -525,6 +525,7 @@ options:
     description:
       - Container MAC address (for example, V(92:d0:c6:0a:29:33)).
       - Note that the global container-wide MAC address is deprecated and no longer used since Docker API version 1.44.
+      - Use O(networks[].mac_address) instead.
     type: str
   memory:
     description:
@@ -690,6 +691,12 @@ options:
             can be used in the network to reach this container.
         type: list
         elements: str
+      mac_address:
+        description:
+          - Endpoint MAC address (for example, V(92:d0:c6:0a:29:33)).
+          - This is only available for Docker API version 1.44 and later.
+        type: str
+        version_added: 3.6.0
   networks_cli_compatible:
     description:
       - "If O(networks_cli_compatible=true) (default), this module will behave as

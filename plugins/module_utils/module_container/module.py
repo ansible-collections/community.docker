@@ -614,6 +614,8 @@ class ContainerManager(DockerBaseClass):
                         expected_links.append("%s:%s" % (link, alias))
                     if not compare_generic(expected_links, network_info.get('Links'), 'allow_more_present', 'set'):
                         diff = True
+                if network.get('mac_address') and network['mac_address'] != network_info.get('MacAddress'):
+                    diff = True
                 if diff:
                     different = True
                     differences.append(dict(
@@ -623,7 +625,8 @@ class ContainerManager(DockerBaseClass):
                             ipv4_address=network_info_ipam.get('IPv4Address'),
                             ipv6_address=network_info_ipam.get('IPv6Address'),
                             aliases=network_info.get('Aliases'),
-                            links=network_info.get('Links')
+                            links=network_info.get('Links'),
+                            mac_address=network_info.get('MacAddress'),
                         )
                     ))
         return different, differences
