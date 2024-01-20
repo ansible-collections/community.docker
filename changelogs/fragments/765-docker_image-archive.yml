@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_image - fix archiving idempotency with Docker API 1.44 or later (https://github.com/ansible-collections/community.docker/pull/765)."

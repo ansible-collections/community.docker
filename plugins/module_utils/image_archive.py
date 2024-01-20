@@ -126,6 +126,12 @@ def archived_image_manifest(archive_path):
                         exc
                     )
 
+                for prefix in (
+                    'blobs/sha256/',  # Moby 25.0.0, Docker API 1.44
+                ):
+                    if image_id.startswith(prefix):
+                        image_id = image_id[len(prefix):]
+
                 try:
                     repo_tags = m0['RepoTags']
                 except KeyError as exc:
