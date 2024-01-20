@@ -3010,46 +3010,48 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
 ## mac_address #####################################################
 ####################################################################
 
-- name: mac_address
-  docker_container:
-    image: "{{ docker_test_image_alpine }}"
-    command: '/bin/sh -c "sleep 10m"'
-    name: "{{ cname }}"
-    mac_address: 92:d0:c6:0a:29:33
-    state: started
-  register: mac_address_1
+- when: docker_api_version is version('1.44', '<')
+  block:
+    - name: mac_address
+      docker_container:
+        image: "{{ docker_test_image_alpine }}"
+        command: '/bin/sh -c "sleep 10m"'
+        name: "{{ cname }}"
+        mac_address: 92:d0:c6:0a:29:33
+        state: started
+      register: mac_address_1
 
-- name: mac_address (idempotency)
-  docker_container:
-    image: "{{ docker_test_image_alpine }}"
-    command: '/bin/sh -c "sleep 10m"'
-    name: "{{ cname }}"
-    mac_address: 92:d0:c6:0a:29:33
-    state: started
-  register: mac_address_2
+    - name: mac_address (idempotency)
+      docker_container:
+        image: "{{ docker_test_image_alpine }}"
+        command: '/bin/sh -c "sleep 10m"'
+        name: "{{ cname }}"
+        mac_address: 92:d0:c6:0a:29:33
+        state: started
+      register: mac_address_2
 
-- name: mac_address (change)
-  docker_container:
-    image: "{{ docker_test_image_alpine }}"
-    command: '/bin/sh -c "sleep 10m"'
-    name: "{{ cname }}"
-    mac_address: 92:d0:c6:0a:29:44
-    state: started
-    force_kill: true
-  register: mac_address_3
+    - name: mac_address (change)
+      docker_container:
+        image: "{{ docker_test_image_alpine }}"
+        command: '/bin/sh -c "sleep 10m"'
+        name: "{{ cname }}"
+        mac_address: 92:d0:c6:0a:29:44
+        state: started
+        force_kill: true
+      register: mac_address_3
 
-- name: cleanup
-  docker_container:
-    name: "{{ cname }}"
-    state: absent
-    force_kill: true
-  diff: false
+    - name: cleanup
+      docker_container:
+        name: "{{ cname }}"
+        state: absent
+        force_kill: true
+      diff: false
 
-- assert:
-    that:
-    - mac_address_1 is changed
-    - mac_address_2 is not changed
-    - mac_address_3 is changed
+    - assert:
+        that:
+        - mac_address_1 is changed
+        - mac_address_2 is not changed
+        - mac_address_3 is changed
 
 ####################################################################
 ## memory ##########################################################
