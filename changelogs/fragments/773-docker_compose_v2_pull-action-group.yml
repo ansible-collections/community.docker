@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_compose_v2_pull - the module was documented as part of the ``community.docker.docker`` action group, but was not actually part of it. That has now been fixed (https://github.com/ansible-collections/community.docker/pull/773)."
