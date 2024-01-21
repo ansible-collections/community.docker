@@ -1313,6 +1313,47 @@ releases:
     - 721-docker-7.yml
     - 722-tls.yml
     release_date: '2023-12-10'
+  3.6.0:
+    changes:
+      bugfixes:
+      - docker_image - fix archiving idempotency with Docker API 1.44 or later (https://github.com/ansible-collections/community.docker/pull/765).
+      minor_changes:
+      - docker_container - add ``networks[].mac_address`` option for Docker API 1.44+.
+        Note that Docker API 1.44 no longer uses the global ``mac_address`` option,
+        this new option is the only way to set the MAC address for a container (https://github.com/ansible-collections/community.docker/pull/763).
+      release_summary: 'Bugfix and feature release.
+
+
+        The collection now includes a bunch of new ``docker_image_*`` modules that
+        move features out of the
+
+        rather complex ``docker_image`` module. These new modules are easier to use
+        and can better declare whether
+
+        they support check mode, diff mode, or none of them.
+
+
+        This version also features modules that support the Docker CLI plugins ``buildx``
+        and ``compose``.
+
+        The ``docker_image_build`` module uses the ``docker buildx`` command under
+        the hood, and the ``docker_compose_v2``
+
+        and ``docker_compose_v2_pull`` modules uses the ``docker compose`` command.
+        All these modules use the Docker CLI
+
+        instead of directly talking to the API. The modules support mostly the same
+        interface as the API based modules,
+
+        so the main difference is that instead of some Python requirements, they depend
+        on the Docker CLI tool ``docker``.
+
+        '
+    fragments:
+    - 3.6.0.yml
+    - 763-docker_container-mac_address.yml
+    - 765-docker_image-archive.yml
+    release_date: '2024-01-21'
   3.6.0-b1:
     changes:
       bugfixes:

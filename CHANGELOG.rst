@@ -5,14 +5,13 @@ Docker Community Collection Release Notes
 .. contents:: Topics
 
 
-v3.6.0-rc1
-==========
+v3.6.0
+======
 
 Release Summary
 ---------------
 
-First release candidate of the latest bugfix and feature release.
-No more features will be added before the final release, which will likely happen on Sunday or Monday.
+Bugfix and feature release.
 
 The collection now includes a bunch of new ``docker_image_*`` modules that move features out of the
 rather complex ``docker_image`` module. These new modules are easier to use and can better declare whether
@@ -23,34 +22,6 @@ The ``docker_image_build`` module uses the ``docker buildx`` command under the h
 and ``docker_compose_v2_pull`` modules uses the ``docker compose`` command. All these modules use the Docker CLI
 instead of directly talking to the API. The modules support mostly the same interface as the API based modules,
 so the main difference is that instead of some Python requirements, they depend on the Docker CLI tool ``docker``.
-
-Changes since the last beta:
-* The ``docker_compose_v2*`` modules also checks for ``compose.yaml`` and ``compose.yml``, not only for ``docker-compose.yaml`` and ``docker-compose.yml``.
-* You can now specify ``services`` in the ``docker_compose_v2`` module.
-* You can now specify ``build`` in the ``docker_compose_v2`` module (allows to pass ``--build`` or ``--no-build`` depending on its value).
-
-
-v3.6.0-b2
-=========
-
-Release Summary
----------------
-
-Second prerelease of the upcoming 3.6.0 bugfix and feature release.
-
-The collection now includes a bunch of new ``docker_image_*`` modules that move features out of the
-rather complex ``docker_image`` module. These new modules are easier to use and can better declare whether
-they support check mode, diff mode, or none of them.
-
-This version also features modules that support the Docker CLI plugins ``buildx`` and ``compose``.
-The ``docker_image_build`` module uses the ``docker buildx`` command under the hood, and the ``docker_compose_v2``
-and ``docker_compose_v2_pull`` modules uses the ``docker compose`` command. All these modules use the Docker CLI
-instead of directly talking to the API. The modules support mostly the same interface as the API based modules,
-so the main difference is that instead of some Python requirements, they depend on the Docker CLI tool ``docker``.
-
-Other changes to the collection since the last prerelease:
-
-* docker_compose_v2 allows to specify the pull policy
 
 
 Major Changes
@@ -63,47 +34,22 @@ Minor Changes
 
 - The ``ca_cert`` option available to almost all modules and plugins has been renamed to ``ca_path``. The name ``ca_path`` is also used for similar options in ansible-core and other collections. The old name has been added as an alias and can still be used (https://github.com/ansible-collections/community.docker/pull/744).
 - The ``docker_stack*`` modules now use the common CLI-based module code added for the ``docker_image_build`` and ``docker_compose_v2`` modules. This means that the modules now have various more configuration options with respect to talking to the Docker Daemon, and now also are part of the ``community.docker.docker`` and ``docker`` module default groups (https://github.com/ansible-collections/community.docker/pull/745).
-- inventory plugins - add ``filter`` option which allows to include and exclude hosts based on Jinja2 conditions (https://github.com/ansible-collections/community.docker/pull/698, https://github.com/ansible-collections/community.docker/issues/610).
-
-New Modules
------------
-
-- docker_compose_v2_pull - Pull a Docker compose project
-
-v3.6.0-b1
-=========
-
-Release Summary
----------------
-
-Prerelease of the upcoming 3.6.0 bugfix and feature release.
-
-The collection now includes a bunch of new ``docker_image_*`` modules that move features out of the
-rather complex ``docker_image`` module. These new modules are easier to use and can better declare whether
-they support check mode, diff mode, or none of them.
-
-This version also features modules that support the Docker CLI plugins ``buildx`` and ``compose``.
-The ``docker_image_build`` module uses the ``docker buildx`` command under the hood, and the ``docker_compose_v2``
-module uses the ``docker compose`` command. Both these modules use the Docker CLI instead of directly talking
-to the API. The modules support mostly the same interface as the API based modules, so the main difference is that
-instead of some Python requirements, they depend on the Docker CLI tool ``docker``.
-
-
-Minor Changes
--------------
-
+- docker_container - add ``networks[].mac_address`` option for Docker API 1.44+. Note that Docker API 1.44 no longer uses the global ``mac_address`` option, this new option is the only way to set the MAC address for a container (https://github.com/ansible-collections/community.docker/pull/763).
 - docker_image - allow to specify labels and ``/dev/shm`` size when building images (https://github.com/ansible-collections/community.docker/issues/726, https://github.com/ansible-collections/community.docker/pull/727).
 - docker_image - allow to specify memory size and swap memory size in other units than bytes (https://github.com/ansible-collections/community.docker/pull/727).
+- inventory plugins - add ``filter`` option which allows to include and exclude hosts based on Jinja2 conditions (https://github.com/ansible-collections/community.docker/pull/698, https://github.com/ansible-collections/community.docker/issues/610).
 
 Bugfixes
 --------
 
 - Use ``unix:///var/run/docker.sock`` instead of the legacy ``unix://var/run/docker.sock`` as default for ``docker_host`` (https://github.com/ansible-collections/community.docker/pull/736).
+- docker_image - fix archiving idempotency with Docker API 1.44 or later (https://github.com/ansible-collections/community.docker/pull/765).
 
 New Modules
 -----------
 
 - docker_compose_v2 - Manage multi-container Docker applications with Docker Compose CLI plugin
+- docker_compose_v2_pull - Pull a Docker compose project
 - docker_image_build - Build Docker images using Docker buildx
 - docker_image_pull - Pull Docker images from registries
 - docker_image_push - Push Docker images to registries
