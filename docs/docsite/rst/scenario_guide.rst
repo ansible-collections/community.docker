@@ -203,6 +203,9 @@ For working with a plain Docker daemon, that is without Swarm, there are connect
     docker_image_build
         The :ansplugin:`community.docker.docker_image_build module <community.docker.docker_image_build#module>` allows you to build a Docker image using Docker buildx.
 
+    docker_image_export module
+        The :ansplugin:`community.docker.docker_image_export module <community.docker.docker_image_export#module>` allows you to export (archive) images.
+
     docker_image_info module
         The :ansplugin:`community.docker.docker_image_info module <community.docker.docker_image_info#module>` allows you to list and inspect images.
 
