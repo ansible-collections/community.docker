@@ -15,7 +15,8 @@ class ModuleDocFragment(object):
 options:
     project_src:
         description:
-          - Path to a directory containing a Compose file (C(compose.yml), C(compose.yaml), C(docker-compose.yml), or C(docker-compose.yaml)).
+          - Path to a directory containing a Compose file
+            (C(compose.yml), C(compose.yaml), C(docker-compose.yml), or C(docker-compose.yaml)).
           - If O(files) is provided, will look for these files in this directory instead.
         type: path
         required: true
@@ -25,7 +26,8 @@ options:
         type: str
     files:
         description:
-          - List of Compose file names relative to O(project_src) to be used instead of the main Compose file (C(compose.yml), C(compose.yaml), C(docker-compose.yml), or C(docker-compose.yaml)).
+          - List of Compose file names relative to O(project_src) to be used instead of the main Compose file
+            (C(compose.yml), C(compose.yaml), C(docker-compose.yml), or C(docker-compose.yaml)).
           - Files are loaded and merged in the order given.
         type: list
         elements: path
