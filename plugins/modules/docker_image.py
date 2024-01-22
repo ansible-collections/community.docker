@@ -253,6 +253,7 @@ author:
 
 seealso:
   - module: community.docker.docker_image_build
+  - module: community.docker.docker_image_export
   - module: community.docker.docker_image_info
   - module: community.docker.docker_image_load
   - module: community.docker.docker_image_pull
