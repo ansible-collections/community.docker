@@ -49,6 +49,7 @@ author:
   - Felix Fontein (@felixfontein)
 
 seealso:
+  - module: community.docker.docker_image_export
   - module: community.docker.docker_image_push
   - module: community.docker.docker_image_remove
   - module: community.docker.docker_image_tag

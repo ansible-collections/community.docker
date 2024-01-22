@@ -1,0 +1,69 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- set_fact:
+    image_names:
+      - "{{ docker_test_image_hello_world }}"
+      - "{{ docker_test_image_alpine_different }}"
+      - "{{ docker_test_image_alpine }}"
+
+- name: Make sure images are there
+  docker_image_pull:
+    name: "{{ item }}"
+  register: images
+  loop: "{{ image_names }}"
+
+- vars:
+    image_ids: "{{ images.results | map(attribute='image') | map(attribute='Id') | list }}"
+    all_images: "{{ image_names + (images.results | map(attribute='image') | map(attribute='Id') | list) }}"
+    image_tasks:
+      - file: archive-1.tar
+        images: "{{ image_names }}"
+      - file: archive-2.tar
+        images: "{{ image_ids }}"
+      - file: archive-3.tar
+        images:
+          - "{{ image_names[0] }}"
+          - "{{ image_ids[1] }}"
+      - file: archive-4.tar
+        images:
+          - "{{ image_ids[0] }}"
+          - "{{ image_names[0] }}"
+      - file: archive-5.tar
+        images:
+          - "{{ image_ids[0] }}"
+
+  block:
+    - name: Create archives
+      docker_image_export:
+        names: "{{ item.images }}"
+        path: "{{ remote_tmp_dir }}/{{ item.file }}"
+      loop: "{{ image_tasks }}"
+      loop_control:
+        label: "{{ item.file }}"
+      register: result
+
+    - name: Extract manifest.json files
+      command: tar xvf "{{ remote_tmp_dir }}/{{ item.file }}" manifest.json --to-stdout
+      loop: "{{ image_tasks }}"
+      loop_control:
+        label: "{{ item.file }}"
+      register: manifests
+
+    - name: Do basic tests
+      assert:
+        that:
+          - item.0.images | length == item.1 | length
+          - item.1 | unique | length == item.2 | length
+          - manifest_json_images == export_image_ids
+      loop: "{{ image_tasks | zip(export_images, manifests_json) }}"
+      loop_control:
+        label: "{{ item.0.file }}"
+      vars:
+        filenames: "{{ image_tasks | map(attribute='file') }}"
+        export_images: "{{ result.results | map(attribute='images') | map('map', attribute='Id') }}"
+        manifests_json: "{{ manifests.results | map(attribute='stdout') | map('from_json') }}"
+        manifest_json_images: "{{ item.2 | map(attribute='Config') | map('regex_replace', '.json$', '') | map('regex_replace', '^blobs/sha256/', '') | sort }}"
+        export_image_ids: "{{ item.1 | map('regex_replace', '^sha256:', '') | unique | sort }}"

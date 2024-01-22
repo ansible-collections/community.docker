@@ -63,6 +63,7 @@ If you use the Ansible package and do not update collections independently, use 
     - community.docker.docker_host_info: retrieve information on the Docker daemon
     - community.docker.docker_image: manage Docker images
     - community.docker.docker_image_build: build Docker images using Docker buildx
+    - community.docker.docker_image_export: export (archive) Docker images
     - community.docker.docker_image_info: retrieve information on Docker images
     - community.docker.docker_image_load: load Docker images from archives
     - community.docker.docker_image_pull: pull Docker images from registries

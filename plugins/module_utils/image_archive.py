@@ -23,7 +23,7 @@ class ImageArchiveManifestSummary(object):
         :param image_id:  File name portion of Config entry, e.g. abcde12345 from abcde12345.json
         :type image_id: str
         :param repo_tags  Docker image names, e.g. ["hello-world:latest"]
-        :type repo_tags: list
+        :type repo_tags: list[str]
         '''
 
         self.image_id = image_id
@@ -60,13 +60,13 @@ def api_image_id(archive_image_id):
     return 'sha256:%s' % archive_image_id
 
 
-def archived_image_manifest(archive_path):
+def load_archived_image_manifest(archive_path):
     '''
-    Attempts to get Image.Id and image name from metadata stored in the image
+    Attempts to get image IDs and image names from metadata stored in the image
     archive tar file.
 
-    The tar should contain a file "manifest.json" with an array with a single entry,
-    and the entry should have a Config field with the image ID in its file name, as
+    The tar should contain a file "manifest.json" with an array with one or more entries,
+    and every entry should have a Config field with the image ID in its file name, as
     well as a RepoTags list, which typically has only one entry.
 
     :raises:
@@ -75,7 +75,7 @@ def archived_image_manifest(archive_path):
     :param archive_path: Tar file to read
     :type archive_path: str
 
-    :return: None, if no file at archive_path, or the extracted image ID, which will not have a sha256: prefix.
+    :return: None, if no file at archive_path, or a list of ImageArchiveManifestSummary objects.
     :rtype: ImageArchiveManifestSummary
     '''
 
@@ -100,50 +100,51 @@ def archived_image_manifest(archive_path):
                     # In Python 2.6, this does not have __exit__
                     ef.close()
 
-                if len(manifest) != 1:
+                if len(manifest) == 0:
                     raise ImageArchiveInvalidException(
-                        "Expected to have one entry in manifest.json but found %s" % len(manifest),
+                        "Expected to have at least one entry in manifest.json but found none",
                         None
                     )
 
-                m0 = manifest[0]
+                result = []
+                for index, meta in enumerate(manifest):
+                    try:
+                        config_file = meta['Config']
+                    except KeyError as exc:
+                        raise ImageArchiveInvalidException(
+                            "Failed to get Config entry from {0}th manifest in manifest.json: {1}".format(index + 1, to_native(exc)),
+                            exc
+                        )
 
-                try:
-                    config_file = m0['Config']
-                except KeyError as exc:
-                    raise ImageArchiveInvalidException(
-                        "Failed to get Config entry from manifest.json: %s" % to_native(exc),
-                        exc
-                    )
+                    # Extracts hash without 'sha256:' prefix
+                    try:
+                        # Strip off .json filename extension, leaving just the hash.
+                        image_id = os.path.splitext(config_file)[0]
+                    except Exception as exc:
+                        raise ImageArchiveInvalidException(
+                            "Failed to extract image id from config file name %s: %s" % (config_file, to_native(exc)),
+                            exc
+                        )
 
-                # Extracts hash without 'sha256:' prefix
-                try:
-                    # Strip off .json filename extension, leaving just the hash.
-                    image_id = os.path.splitext(config_file)[0]
-                except Exception as exc:
-                    raise ImageArchiveInvalidException(
-                        "Failed to extract image id from config file name %s: %s" % (config_file, to_native(exc)),
-                        exc
-                    )
+                    for prefix in (
+                        'blobs/sha256/',  # Moby 25.0.0, Docker API 1.44
+                    ):
+                        if image_id.startswith(prefix):
+                            image_id = image_id[len(prefix):]
 
-                for prefix in (
-                    'blobs/sha256/',  # Moby 25.0.0, Docker API 1.44
-                ):
-                    if image_id.startswith(prefix):
-                        image_id = image_id[len(prefix):]
+                    try:
+                        repo_tags = meta['RepoTags']
+                    except KeyError as exc:
+                        raise ImageArchiveInvalidException(
+                            "Failed to get RepoTags entry from {0}th manifest in manifest.json: {1}".format(index + 1, to_native(exc)),
+                            exc
+                        )
 
-                try:
-                    repo_tags = m0['RepoTags']
-                except KeyError as exc:
-                    raise ImageArchiveInvalidException(
-                        "Failed to get RepoTags entry from manifest.json: %s" % to_native(exc),
-                        exc
-                    )
-
-                return ImageArchiveManifestSummary(
-                    image_id=image_id,
-                    repo_tags=repo_tags
-                )
+                    result.append(ImageArchiveManifestSummary(
+                        image_id=image_id,
+                        repo_tags=repo_tags
+                    ))
+                return result
 
             except ImageArchiveInvalidException:
                 raise
@@ -161,3 +162,33 @@ def archived_image_manifest(archive_path):
         raise
     except Exception as exc:
         raise ImageArchiveInvalidException("Failed to open tar file %s: %s" % (archive_path, to_native(exc)), exc)
+
+
+def archived_image_manifest(archive_path):
+    '''
+    Attempts to get Image.Id and image name from metadata stored in the image
+    archive tar file.
+
+    The tar should contain a file "manifest.json" with an array with a single entry,
+    and the entry should have a Config field with the image ID in its file name, as
+    well as a RepoTags list, which typically has only one entry.
+
+    :raises:
+        ImageArchiveInvalidException: A file already exists at archive_path, but could not extract an image ID from it.
+
+    :param archive_path: Tar file to read
+    :type archive_path: str
+
+    :return: None, if no file at archive_path, or the extracted image ID, which will not have a sha256: prefix.
+    :rtype: ImageArchiveManifestSummary
+    '''
+
+    results = load_archived_image_manifest(archive_path)
+    if results is None:
+        return None
+    if len(results) == 1:
+        return results[0]
+    raise ImageArchiveInvalidException(
+        "Expected to have one entry in manifest.json but found %s" % len(results),
+        None
+    )

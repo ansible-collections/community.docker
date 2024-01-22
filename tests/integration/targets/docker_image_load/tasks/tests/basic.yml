@@ -21,7 +21,9 @@
     all_images: "{{ image_names + (images.results | map(attribute='image') | map(attribute='Id') | list) }}"
 
 - name: Create archives
-  command: docker save {{ item.images | join(' ') }} -o {{ remote_tmp_dir }}/{{ item.file }}
+  docker_image_export:
+    names: "{{ item.images }}"
+    path: "{{ remote_tmp_dir }}/{{ item.file }}"
   loop:
     - file: archive-1.tar
       images: "{{ image_names }}"
