@@ -399,6 +399,7 @@ def common_compose_argspec():
     return dict(
         project_src=dict(type='path', required=True),
         project_name=dict(type='str'),
+        files=dict(type='list', elements='path'),
         env_files=dict(type='list', elements='path'),
         profiles=dict(type='list', elements='str'),
     )
@@ -421,6 +422,7 @@ class BaseComposeManager(DockerBaseClass):
 
         self.project_src = parameters['project_src']
         self.project_name = parameters['project_name']
+        self.files = parameters['files']
         self.env_files = parameters['env_files']
         self.profiles = parameters['profiles']
 
@@ -439,7 +441,12 @@ class BaseComposeManager(DockerBaseClass):
         if not os.path.isdir(self.project_src):
             self.client.fail('"{0}" is not a directory'.format(self.project_src))
 
-        if all(not os.path.exists(os.path.join(self.project_src, f)) for f in DOCKER_COMPOSE_FILES):
+        if self.files:
+            for file in self.files:
+                path = os.path.join(self.project_src, file)
+                if not os.path.exists(path):
+                    self.client.fail('Cannot find Compose file "{0}" relative to project directory "{1}"'.format(file, self.project_src))
+        elif all(not os.path.exists(os.path.join(self.project_src, f)) for f in DOCKER_COMPOSE_FILES):
             filenames = ', '.join(DOCKER_COMPOSE_FILES[:-1])
             self.client.fail('"{0}" does not contain {1}, or {2}'.format(self.project_src, filenames, DOCKER_COMPOSE_FILES[-1]))
 
@@ -451,6 +458,8 @@ class BaseComposeManager(DockerBaseClass):
         args.extend(['--project-directory', self.project_src])
         if self.project_name:
             args.extend(['--project-name', self.project_name])
+        for file in self.files or []:
+            args.extend(['--file', file])
         for env_file in self.env_files or []:
             args.extend(['--env-file', env_file])
         for profile in self.profiles or []:
