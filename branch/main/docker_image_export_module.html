@@ -5,7 +5,7 @@
 <meta content="2.6.1" name="antsibull-docs" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>community.docker.docker_stack_info module – Return information on all docker stacks &mdash; Community.Docker Collection  documentation</title>
+  <title>community.docker.docker_image_export module – Export (archive) Docker images &mdash; Community.Docker Collection  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5707b69d" />
       <link rel="stylesheet" type="text/css" href="_static/css/ansible.css?v=c5b67dd2" />
       <link rel="stylesheet" type="text/css" href="_static/antsibull-minimal.css" />
@@ -24,8 +24,8 @@
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="community.docker.docker_stack_task_info module – Return information of the tasks on a docker stack" href="docker_stack_task_info_module.html" />
-    <link rel="prev" title="community.docker.docker_stack module – docker stack module" href="docker_stack_module.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
+    <link rel="next" title="community.docker.docker_image_info module – Inspect docker images" href="docker_image_info_module.html" />
+    <link rel="prev" title="community.docker.docker_image_build module – Build Docker images using Docker buildx" href="docker_image_build_module.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
 
 
 
@@ -91,7 +91,21 @@
 <li class="toctree-l1"><a class="reference internal" href="docker_host_info_module.html">community.docker.docker_host_info module – Retrieves facts about docker host and lists of objects of the services.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image_module.html">community.docker.docker_image module – Manage docker images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image_build_module.html">community.docker.docker_image_build module – Build Docker images using Docker buildx</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docker_image_export_module.html">community.docker.docker_image_export module – Export (archive) Docker images</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">community.docker.docker_image_export module – Export (archive) Docker images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#attributes">Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See Also</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#return-values">Return Values</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#authors">Authors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#collection-links">Collection links</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image_info_module.html">community.docker.docker_image_info module – Inspect docker images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image_load_module.html">community.docker.docker_image_load module – Load docker image(s) from archives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image_pull_module.html">community.docker.docker_image_pull module – Pull Docker images from registries</a></li>
@@ -107,21 +121,7 @@
 <li class="toctree-l1"><a class="reference internal" href="docker_prune_module.html">community.docker.docker_prune module – Allows to prune various docker objects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_secret_module.html">community.docker.docker_secret module – Manage docker secrets.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_stack_module.html">community.docker.docker_stack module – docker stack module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">community.docker.docker_stack_info module – Return information on all docker stacks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#synopsis">Synopsis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#attributes">Attributes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#see-also">See Also</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#return-values">Return Values</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#authors">Authors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#collection-links">Collection links</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="docker_stack_info_module.html">community.docker.docker_stack_info module – Return information on all docker stacks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_stack_task_info_module.html">community.docker.docker_stack_task_info module – Return information of the tasks on a docker stack</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_swarm_module.html">community.docker.docker_swarm module – Manage Swarm cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_swarm_info_module.html">community.docker.docker_swarm_info module – Retrieves facts about Docker Swarm cluster.</a></li>
@@ -156,10 +156,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">community.docker.docker_stack_info module – Return information on all docker stacks</li>
+      <li class="breadcrumb-item active">community.docker.docker_image_export module – Export (archive) Docker images</li>
       <li class="wy-breadcrumbs-aside">
               <!-- User defined GitHub URL -->
-              <a href="https://github.com/ansible-collections/community.docker/edit/main/plugins/modules/docker_stack_info.py?description=%23%23%23%23%23%20SUMMARY%0A%3C!—%20Your%20description%20here%20–%3E%0A%0A%0A%23%23%23%23%23%20ISSUE%20TYPE%0A-%20Docs%20Pull%20Request%0A%0A%2Blabel:%20docsite_pr" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/ansible-collections/community.docker/edit/main/plugins/modules/docker_image_export.py?description=%23%23%23%23%23%20SUMMARY%0A%3C!—%20Your%20description%20here%20–%3E%0A%0A%0A%23%23%23%23%23%20ISSUE%20TYPE%0A-%20Docs%20Pull%20Request%0A%0A%2Blabel:%20docsite_pr" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -169,8 +169,8 @@
   
            <div itemprop="articleBody">
              
-  <span class="target" id="ansible-collections-community-docker-docker-stack-info-module"></span><section id="community-docker-docker-stack-info-module-return-information-on-all-docker-stacks">
-<h1>community.docker.docker_stack_info module – Return information on all docker stacks<a class="headerlink" href="#community-docker-docker-stack-info-module-return-information-on-all-docker-stacks" title="Link to this heading"></a></h1>
+  <span class="target" id="ansible-collections-community-docker-docker-image-export-module"></span><section id="community-docker-docker-image-export-module-export-archive-docker-images">
+<h1>community.docker.docker_image_export module – Export (archive) Docker images<a class="headerlink" href="#community-docker-docker-image-export-module-export-archive-docker-images" title="Link to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/community/docker/">community.docker collection</a> (version 3.7.0).</p>
@@ -178,9 +178,10 @@
 To check whether it is installed, run <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">list</span></code>.</p>
 <p>To install it, use: <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">install</span> <span class="pre">community.docker</span></code>.
 You need further requirements to be able to use this module,
-see <a class="reference internal" href="#ansible-collections-community-docker-docker-stack-info-module-requirements"><span class="std std-ref">Requirements</span></a> for details.</p>
-<p>To use it in a playbook, specify: <code class="code docutils literal notranslate"><span class="pre">community.docker.docker_stack_info</span></code>.</p>
+see <a class="reference internal" href="#ansible-collections-community-docker-docker-image-export-module-requirements"><span class="std std-ref">Requirements</span></a> for details.</p>
+<p>To use it in a playbook, specify: <code class="code docutils literal notranslate"><span class="pre">community.docker.docker_image_export</span></code>.</p>
 </div>
+<p class="ansible-version-added">New in community.docker 3.7.0</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#synopsis" id="id1">Synopsis</a></p></li>
@@ -196,14 +197,20 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <section id="synopsis">
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Synopsis</a><a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>Retrieve information on docker stacks using the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">stack</span></code> command on the target node (see examples).</p></li>
+<li><p>Creates an archive (tarball) from one or more Docker images.</p></li>
+<li><p>This can be copied to another machine and loaded with <a class="reference internal" href="docker_image_load_module.html#ansible-collections-community-docker-docker-image-load-module"><span class="std std-ref">community.docker.docker_image_load</span></a>.</p></li>
 </ul>
 </section>
 <section id="requirements">
-<span id="ansible-collections-community-docker-docker-stack-info-module-requirements"></span><h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
+<span id="ansible-collections-community-docker-docker-image-export-module-requirements"></span><h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
 <p>The below requirements are needed on the host that executes this module.</p>
 <ul class="simple">
-<li><p>Docker CLI tool <code class="docutils literal notranslate"><span class="pre">docker</span></code></p></li>
+<li><p>Docker API &gt;= 1.25</p></li>
+<li><p>backports.ssl_match_hostname (when using TLS on Python 2)</p></li>
+<li><p>paramiko (when using SSH with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-export-module-parameter-use-ssh-client"><span class="std std-ref"><span class="pre">use_ssh_client=false</span></span></a></code>)</p></li>
+<li><p>pyOpenSSL (when using TLS)</p></li>
+<li><p>pywin32 (when using named pipes on Windows 32)</p></li>
+<li><p>requests</p></li>
 </ul>
 </section>
 <section id="parameters">
@@ -217,10 +224,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tbody>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-api_version"></div>
-<div class="ansibleOptionAnchor" id="parameter-docker_api_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-parameter-docker-api-version"><span id="ansible-collections-community-docker-docker-stack-info-module-parameter-api-version"></span><strong>api_version</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-docker_api_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-docker-api-version"><span id="ansible-collections-community-docker-docker-image-export-module-parameter-api-version"></span><strong>api_version</strong></p>
 <a class="ansibleOptionLink" href="#parameter-api_version" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: docker_api_version</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>The version of the Docker API running on the Docker Host.</p>
 <p>Defaults to the latest version of the API supported by this collection and the docker daemon.</p>
@@ -232,73 +238,120 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-ca_path"></div>
 <div class="ansibleOptionAnchor" id="parameter-ca_cert"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_ca_cert"></div>
-<div class="ansibleOptionAnchor" id="parameter-cacert_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-parameter-tls-ca-cert"><span id="ansible-collections-community-docker-docker-stack-info-module-parameter-cacert-path"></span><span id="ansible-collections-community-docker-docker-stack-info-module-parameter-ca-path"></span><span id="ansible-collections-community-docker-docker-stack-info-module-parameter-ca-cert"></span><strong>ca_path</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-cacert_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-tls-ca-cert"><span id="ansible-collections-community-docker-docker-image-export-module-parameter-cacert-path"></span><span id="ansible-collections-community-docker-docker-image-export-module-parameter-ca-path"></span><span id="ansible-collections-community-docker-docker-image-export-module-parameter-ca-cert"></span><strong>ca_path</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ca_path" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: ca_cert, tls_ca_cert, cacert_path</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
-<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use a CA certificate when performing server verification by providing the path to a CA certificate file.</p>
 <p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">ca.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
+<p>This option was called <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-export-module-parameter-ca-cert"><span class="std std-ref"><span class="pre">ca_cert</span></span></a></strong></code> and got renamed to <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-export-module-parameter-ca-path"><span class="std std-ref"><span class="pre">ca_path</span></span></a></strong></code> in community.docker 3.6.0. The old name has been added as an alias and can still be used.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-cli_context"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-parameter-cli-context"><strong>cli_context</strong></p>
-<a class="ansibleOptionLink" href="#parameter-cli_context" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
-</div></td>
-<td><div class="ansible-option-cell"><p>The Docker CLI context to use.</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-client_cert"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_client_cert"></div>
-<div class="ansibleOptionAnchor" id="parameter-cert_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-parameter-tls-client-cert"><span id="ansible-collections-community-docker-docker-stack-info-module-parameter-client-cert"></span><span id="ansible-collections-community-docker-docker-stack-info-module-parameter-cert-path"></span><strong>client_cert</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-cert_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-tls-client-cert"><span id="ansible-collections-community-docker-docker-image-export-module-parameter-client-cert"></span><span id="ansible-collections-community-docker-docker-image-export-module-parameter-cert-path"></span><strong>client_cert</strong></p>
 <a class="ansibleOptionLink" href="#parameter-client_cert" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_client_cert, cert_path</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
-<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Path to the client’s TLS certificate file.</p>
 <p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">cert.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-client_key"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_client_key"></div>
-<div class="ansibleOptionAnchor" id="parameter-key_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-parameter-tls-client-key"><span id="ansible-collections-community-docker-docker-stack-info-module-parameter-key-path"></span><span id="ansible-collections-community-docker-docker-stack-info-module-parameter-client-key"></span><strong>client_key</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-key_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-tls-client-key"><span id="ansible-collections-community-docker-docker-image-export-module-parameter-key-path"></span><span id="ansible-collections-community-docker-docker-image-export-module-parameter-client-key"></span><strong>client_key</strong></p>
 <a class="ansibleOptionLink" href="#parameter-client_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_client_key, key_path</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
-<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Path to the client’s TLS key file.</p>
 <p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">key.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-docker_cli"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-parameter-docker-cli"><strong>docker_cli</strong></p>
-<a class="ansibleOptionLink" href="#parameter-docker_cli" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
-<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-debug"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-debug"><strong>debug</strong></p>
+<a class="ansibleOptionLink" href="#parameter-debug" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Path to the Docker CLI. If not provided, will search for Docker CLI on the <code class="xref std std-envvar docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
+<td><div class="ansible-option-cell"><p>Debug mode</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-docker_host"></div>
-<div class="ansibleOptionAnchor" id="parameter-docker_url"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-parameter-docker-url"><span id="ansible-collections-community-docker-docker-stack-info-module-parameter-docker-host"></span><strong>docker_host</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-docker_url"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-docker-url"><span id="ansible-collections-community-docker-docker-image-export-module-parameter-docker-host"></span><strong>docker_host</strong></p>
 <a class="ansibleOptionLink" href="#parameter-docker_host" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: docker_url</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>The URL or Unix socket path used to connect to the Docker API. To connect to a remote host, provide the TCP connection string. For example, <code class="ansible-value docutils literal notranslate"><span class="pre">tcp://192.0.2.23:2376</span></code>. If TLS is used to encrypt the connection, the module will automatically replace <code class="docutils literal notranslate"><span class="pre">tcp</span></code> in the connection URL with <code class="docutils literal notranslate"><span class="pre">https</span></code>.</p>
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;unix:///var/run/docker.sock&quot;</span></code></p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-parameter-tls"><strong>tls</strong></p>
-<a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
-<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-force"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-force"><strong>force</strong></p>
+<a class="ansibleOptionLink" href="#parameter-force" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS without verifying the authenticity of the Docker host server. Note that if <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-stack-info-module-parameter-validate-certs"><span class="std std-ref"><span class="pre">validate_certs</span></span></a></strong></code> is set to <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code> as well, it will take precedence.</p>
+<td><div class="ansible-option-cell"><p>Export the image even if the <code class="docutils literal notranslate"><span class="pre">.tar</span></code> file already exists and seems to contain the right image.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-names"></div>
+<div class="ansibleOptionAnchor" id="parameter-name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-names"><span id="ansible-collections-community-docker-docker-image-export-module-parameter-name"></span><strong>names</strong></p>
+<a class="ansibleOptionLink" href="#parameter-names" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: name</span></p>
+<p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span> / <span class="ansible-option-required">required</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>One or more image names. Name format will be one of: <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">repository/name</span></code>, <code class="docutils literal notranslate"><span class="pre">registry_server:port/name</span></code>. When pushing or pulling an image the name can optionally include the tag by appending <code class="docutils literal notranslate"><span class="pre">:tag_name</span></code>.</p>
+<p>Note that image IDs (hashes) can also be used.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-path"><strong>path</strong></p>
+<a class="ansibleOptionLink" href="#parameter-path" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The <code class="docutils literal notranslate"><span class="pre">.tar</span></code> file the image should be exported to.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-ssl_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-ssl-version"><strong>ssl_version</strong></p>
+<a class="ansibleOptionLink" href="#parameter-ssl_version" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Provide a valid SSL version number. Default value determined by <a class="reference external" href="https://docs.python.org/3/library/ssl.html">SSL Python module</a>.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_SSL_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code></a> will be used instead.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-tag"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-tag"><strong>tag</strong></p>
+<a class="ansibleOptionLink" href="#parameter-tag" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Tag for the image name <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-export-module-parameter-name"><span class="std std-ref"><span class="pre">name</span></span></a></strong></code> that is to be tagged.</p>
+<p>If <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-export-module-parameter-name"><span class="std std-ref"><span class="pre">name</span></span></a></strong></code>‘s format is <code class="docutils literal notranslate"><span class="pre">name:tag</span></code>, then the tag value from <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-export-module-parameter-name"><span class="std std-ref"><span class="pre">name</span></span></a></strong></code> will take precedence.</p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;latest&quot;</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-timeout"><strong>timeout</strong></p>
+<a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The maximum amount of time in seconds to wait on a response from the API.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">60</span></code></p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-tls"><strong>tls</strong></p>
+<a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS without verifying the authenticity of the Docker host server. Note that if <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-export-module-parameter-validate-certs"><span class="std std-ref"><span class="pre">validate_certs</span></span></a></strong></code> is set to <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code> as well, it will take precedence.</p>
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
@@ -307,21 +360,33 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-parameter-tls-hostname"><strong>tls_hostname</strong></p>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-tls-hostname"><strong>tls_hostname</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>When verifying the authenticity of the Docker Host server, provide the expected name of the server.</p>
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p>Note that this option had a default value <code class="ansible-value docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-use_ssh_client"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-use-ssh-client"><strong>use_ssh_client</strong></p>
+<a class="ansibleOptionLink" href="#parameter-use_ssh_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 1.5.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>For SSH transports, use the <code class="docutils literal notranslate"><span class="pre">ssh</span></code> CLI tool instead of paramiko.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
-<div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-stack-info-module-parameter-tls-verify"></span><strong>validate_certs</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-image-export-module-parameter-tls-verify"></span><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
-<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS and verifying the authenticity of the Docker host server.</p>
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
@@ -346,28 +411,25 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </thead>
 <tbody>
 <tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="attribute-action_group"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-attribute-action-group"><strong>action_group</strong></p>
+<div class="ansibleOptionAnchor" id="attribute-action_group"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-attribute-action-group"><strong>action_group</strong></p>
 <a class="ansibleOptionLink" href="#attribute-action_group" title="Permalink to this attribute"></a></div></td>
 <td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-property">Action groups:</strong> <strong class="ansible-attribute-support-full">community.docker.docker</strong>, <strong class="ansible-attribute-support-full">docker</strong></p>
-<p><em class="ansible-option-versionadded">added in community.docker 3.6.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use <code class="docutils literal notranslate"><span class="pre">group/docker</span></code> or <code class="docutils literal notranslate"><span class="pre">group/community.docker.docker</span></code> in <code class="docutils literal notranslate"><span class="pre">module_defaults</span></code> to set defaults for this module.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="attribute-check_mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-attribute-check-mode"><strong>check_mode</strong></p>
+<div class="ansibleOptionAnchor" id="attribute-check_mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-attribute-check-mode"><strong>check_mode</strong></p>
 <a class="ansibleOptionLink" href="#attribute-check_mode" title="Permalink to this attribute"></a></div></td>
 <td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-full">full</strong></p>
-<p>This action does not modify state.</p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Can run in <code class="docutils literal notranslate"><span class="pre">check_mode</span></code> and return changed status prediction without modifying target.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="attribute-diff_mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-attribute-diff-mode"><strong>diff_mode</strong></p>
+<div class="ansibleOptionAnchor" id="attribute-diff_mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-attribute-diff-mode"><strong>diff_mode</strong></p>
 <a class="ansibleOptionLink" href="#attribute-diff_mode" title="Permalink to this attribute"></a></div></td>
-<td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong>      <span class="ansible-attribute-support-na">N/A</span></p>
-<p>This action does not modify state.</p>
+<td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-none">none</strong></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Will return details on what has changed (or possibly needs changing in <code class="docutils literal notranslate"><span class="pre">check_mode</span></code>), when in diff mode.</p>
 </div></td>
@@ -380,8 +442,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>Connect to the Docker daemon by providing parameters with each task or by defining environment variables. You can define <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_API_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> and <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code></a>. If you are using docker machine, run the script shipped with the product that sets up the environment. It will set these variables for you. See <a class="reference external" href="https://docs.docker.com/machine/reference/env/">https://docs.docker.com/machine/reference/env/</a> for more details.</p></li>
-<li><p>This module does <strong>not</strong> use the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a> to communicate with the Docker daemon. It directly calls the Docker CLI program.</p></li>
+<li><p>Connect to the Docker daemon by providing parameters with each task or by defining environment variables. You can define <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_API_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_SSL_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> and <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code></a>. If you are using docker machine, run the script shipped with the product that sets up the environment. It will set these variables for you. See <a class="reference external" href="https://docs.docker.com/machine/reference/env/">https://docs.docker.com/machine/reference/env/</a> for more details.</p></li>
+<li><p>This module does <strong>not</strong> use the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a> to communicate with the Docker daemon. It uses code derived from the Docker SDK or Python that is included in this collection.</p></li>
 </ul>
 </div>
 </section>
@@ -390,20 +452,28 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="docker_stack_task_info_module.html#ansible-collections-community-docker-docker-stack-task-info-module"><span class="std std-ref">community.docker.docker_stack_task_info</span></a></dt><dd><p>To retrieve detailed information about the services under a specific stack use the <a class="reference internal" href="docker_stack_task_info_module.html#ansible-collections-community-docker-docker-stack-task-info-module"><span class="std std-ref">community.docker.docker_stack_task_info</span></a> module.</p>
+<dt><a class="reference internal" href="docker_image_module.html#ansible-collections-community-docker-docker-image-module"><span class="std std-ref">community.docker.docker_image</span></a></dt><dd><p>Manage docker images.</p>
+</dd>
+<dt><a class="reference internal" href="docker_image_info_module.html#ansible-collections-community-docker-docker-image-info-module"><span class="std std-ref">community.docker.docker_image_info</span></a></dt><dd><p>Inspect docker images.</p>
+</dd>
+<dt><a class="reference internal" href="docker_image_load_module.html#ansible-collections-community-docker-docker-image-load-module"><span class="std std-ref">community.docker.docker_image_load</span></a></dt><dd><p>Load docker image(s) from archives.</p>
 </dd>
 </dl>
 </div>
 </section>
 <section id="examples">
 <h2><a class="toc-backref" href="#id7" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
-<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Shows stack info</span>
-<span class="w">  </span><span class="nt">community.docker.docker_stack_info</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result</span>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Export an image</span>
+<span class="w">  </span><span class="nt">community.docker.docker_image_export</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pacur/centos-7</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/centos-7.tar</span>
 
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show results</span>
-<span class="w">  </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">result.results</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Export multiple images</span>
+<span class="w">  </span><span class="nt">community.docker.docker_image_export</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">names</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world:latest</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pacur/centos-7:latest</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/various.tar</span>
 </pre></div>
 </div>
 </section>
@@ -418,12 +488,12 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </thead>
 <tbody>
 <tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-results"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-info-module-return-results"><strong>results</strong></p>
-<a class="ansibleOptionLink" href="#return-results" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
+<div class="ansibleOptionAnchor" id="return-images"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-return-images"><strong>images</strong></p>
+<a class="ansibleOptionLink" href="#return-images" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>List of dictionaries containing the list of stacks on the target node</p>
-<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> always</p>
-<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[{&quot;name&quot;:</span> <span class="pre">&quot;grafana&quot;,</span> <span class="pre">&quot;namespace&quot;:</span> <span class="pre">&quot;default&quot;,</span> <span class="pre">&quot;orchestrator&quot;:</span> <span class="pre">&quot;Kubernetes&quot;,</span> <span class="pre">&quot;services&quot;:</span> <span class="pre">&quot;2&quot;}]</span></code></p>
+<td><div class="ansible-option-cell"><p>Image inspection results for the affected images.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[]</span></code></p>
 </div></td>
 </tr>
 </tbody>
@@ -431,7 +501,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <section id="authors">
 <h3>Authors<a class="headerlink" href="#authors" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Jose Angel Munoz (&#64;imjoseangel)</p></li>
+<li><p>Felix Fontein (&#64;felixfontein)</p></li>
 </ul>
 </section>
 <section id="collection-links">
@@ -453,8 +523,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
           
 
 <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="docker_stack_module.html" class="btn btn-neutral float-left" title="community.docker.docker_stack module – docker stack module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="docker_stack_task_info_module.html" class="btn btn-neutral float-right" title="community.docker.docker_stack_task_info module – Return information of the tasks on a docker stack" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="docker_image_build_module.html" class="btn btn-neutral float-left" title="community.docker.docker_image_build module – Build Docker images using Docker buildx" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="docker_image_info_module.html" class="btn btn-neutral float-right" title="community.docker.docker_image_info module – Inspect docker images" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
