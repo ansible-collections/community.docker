@@ -47,6 +47,8 @@ DOCKER_STATUS_WORKING = frozenset((
     'Recreate',
     # Extras for pull events
     'Pulling',
+    # Extras for build start events
+    'Building',
 ))
 DOCKER_STATUS_PULL = frozenset((
     'Pulled',
@@ -166,6 +168,24 @@ _RE_SKIPPED_EVENT = re.compile(
     r'$'
 )
 
+_RE_BUILD_START_EVENT = re.compile(
+    r'^'
+    r'\s*'
+    r'build service'
+    r'\s+'
+    r'(?P<resource_id>\S+)'
+    r'$'
+)
+
+_RE_BUILD_PROGRESS_EVENT = re.compile(
+    r'^'
+    r'\s*'
+    r'==>'
+    r'\s+'
+    r'(?P<msg>.*)'
+    r'$'
+)
+
 # The following needs to be kept in sync with the MINIMUM_VERSION compose_v2 docs fragment
 MINIMUM_COMPOSE_VERSION = '2.18.0'
 
@@ -214,6 +234,14 @@ def _extract_event(line):
             match.group('resource_id'),
             'Skipped',
             match.group('msg'),
+        )
+    match = _RE_BUILD_START_EVENT.match(line)
+    if match:
+        return Event(
+            ResourceType.SERVICE,
+            match.group('resource_id'),
+            'Building',
+            None,
         )
     return None
 
@@ -280,6 +308,10 @@ def parse_events(stderr, dry_run=False, warn_function=None):
             else:
                 error_event = None
             _warn_missing_dry_run_prefix(line, warn_missing_dry_run_prefix, warn_function)
+            continue
+        match = _RE_BUILD_PROGRESS_EVENT.match(line)
+        if match:
+            # Ignore this
             continue
         match = _RE_CONTINUE_EVENT.match(line)
         if match:
