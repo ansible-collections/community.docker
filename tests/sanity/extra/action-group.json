@@ -1,0 +1,11 @@
+{
+    "include_symlinks": true,
+    "prefixes": [
+        "meta/runtime.yml",
+        "plugins/modules/"
+    ],
+    "output": "path-message",
+    "requirements": [
+        "pyyaml"
+    ]
+}
