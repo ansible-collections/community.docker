@@ -117,6 +117,13 @@ options:
       - Specifies a subset of services to be targeted.
     type: list
     elements: str
+  scale:
+    description:
+      - Define how to scale services when running C(docker compose up).
+      - Provide a dictionary of key/value pairs where the key is the name of the service
+        and the value is an integer count for the number of containers.
+    type: dict
+    version_added: 3.7.0
 
 author:
   - Felix Fontein (@felixfontein)
@@ -376,7 +383,9 @@ actions:
 
 import traceback
 
+from ansible.module_utils.common.validation import check_type_int
 from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.common_cli import (
     AnsibleModuleDockerClient,
@@ -405,6 +414,18 @@ class ServicesManager(BaseComposeManager):
         self.remove_orphans = parameters['remove_orphans']
         self.timeout = parameters['timeout']
         self.services = parameters['services'] or []
+        self.scale = parameters['scale'] or {}
+
+        for key, value in self.scale.items():
+            if not isinstance(key, string_types):
+                self.client.fail('The key %s for `scale` is not a string' % repr(key))
+            try:
+                value = check_type_int(value)
+            except TypeError as exc:
+                self.client.fail('The value %s for `scale[%s]` is not an integer' % (repr(value), repr(key)))
+            if value < 0:
+                self.client.fail('The value %s for `scale[%s]` is negative' % (repr(value), repr(key)))
+            self.scale[key] = value
 
     def run(self):
         if self.state == 'present':
@@ -439,6 +460,8 @@ class ServicesManager(BaseComposeManager):
             args.append('--build')
         elif self.build == 'never':
             args.append('--no-build')
+        for key, value in sorted(self.scale.items()):
+            args.extend(['--scale', '%s=%d' % (key, value)])
         if no_start:
             args.append('--no-start')
         if dry_run:
@@ -572,6 +595,7 @@ def main():
         remove_orphans=dict(type='bool', default=False),
         timeout=dict(type='int'),
         services=dict(type='list', elements='str'),
+        scale=dict(type='dict'),
     )
     argument_spec.update(common_compose_argspec())
 
