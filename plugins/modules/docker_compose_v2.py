@@ -379,6 +379,7 @@ actions:
         - Removing
         - Recreating
         - Pulling
+        - Building
 '''
 
 import traceback
