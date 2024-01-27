@@ -1,2 +1,0 @@
-bugfixes:
-  - "docker_compose_v2 - properly parse dry-run build events from ``stderr`` (https://github.com/ansible-collections/community.docker/issues/778, https://github.com/ansible-collections/community.docker/pull/779)."

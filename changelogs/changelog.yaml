@@ -1534,3 +1534,28 @@ releases:
     fragments:
     - 3.6.0-rc1.yml
     release_date: '2024-01-18'
+  3.7.0:
+    changes:
+      bugfixes:
+      - docker_compose_v2 - properly parse dry-run build events from ``stderr`` (https://github.com/ansible-collections/community.docker/issues/778,
+        https://github.com/ansible-collections/community.docker/pull/779).
+      - docker_compose_v2_pull - the module was documented as part of the ``community.docker.docker``
+        action group, but was not actually part of it. That has now been fixed (https://github.com/ansible-collections/community.docker/pull/773).
+      minor_changes:
+      - docker_compose_v2 - add ``scale`` option to allow to explicitly scale services
+        (https://github.com/ansible-collections/community.docker/pull/776).
+      - docker_compose_v2, docker_compose_v2_pull - support ``files`` parameter to
+        specify multiple Compose files (https://github.com/ansible-collections/community.docker/issues/772,
+        https://github.com/ansible-collections/community.docker/pull/775).
+      release_summary: Bugfix and feature release.
+    fragments:
+    - 3.7.0.yml
+    - 773-docker_compose_v2_pull-action-group.yml
+    - 775-docker_compose-files.yml
+    - 776-docker_compose-scale.yml
+    - 779-compose-v2-build.yml
+    modules:
+    - description: Export (archive) Docker images
+      name: docker_image_export
+      namespace: ''
+    release_date: '2024-01-27'
