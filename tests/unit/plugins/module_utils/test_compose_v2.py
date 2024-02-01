@@ -75,6 +75,106 @@ EXTRA_TEST_CASES = [
         ],
         [],
     ),
+    (
+        # https://github.com/ansible-collections/community.docker/issues/785
+        '2.20.0-manual-pull',
+        '2.20.0',
+        False,
+        '4f4fb700ef54 Waiting\n'
+        '238022553356 Downloading     541B/541B\n'
+        '972e292d3a60 Downloading    106kB/10.43MB\n'
+        'f2543dc9f0a9 Downloading  25.36kB/2.425MB\n'
+        '972e292d3a60 Downloading  5.925MB/10.43MB\n'
+        'f2543dc9f0a9 Downloading  2.219MB/2.425MB\n'
+        'f2543dc9f0a9 Extracting  32.77kB/2.425MB\n'
+        '4f4fb700ef54 Downloading      32B/32B\n'
+        'f2543dc9f0a9 Extracting  2.425MB/2.425MB\n'
+        '972e292d3a60 Extracting  131.1kB/10.43MB\n'
+        '972e292d3a60 Extracting  10.43MB/10.43MB\n'
+        '238022553356 Extracting     541B/541B\n'
+        '4f4fb700ef54 Extracting      32B/32B\n',
+        [
+            Event(
+                'image-layer',
+                '4f4fb700ef54',
+                'Waiting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '238022553356',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '972e292d3a60',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                'f2543dc9f0a9',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '972e292d3a60',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                'f2543dc9f0a9',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                'f2543dc9f0a9',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '4f4fb700ef54',
+                'Downloading',
+                None,
+            ),
+            Event(
+                'image-layer',
+                'f2543dc9f0a9',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '972e292d3a60',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '972e292d3a60',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '238022553356',
+                'Extracting',
+                None,
+            ),
+            Event(
+                'image-layer',
+                '4f4fb700ef54',
+                'Extracting',
+                None,
+            ),
+        ],
+        [],
+    ),
 ]
 
 _ALL_TEST_CASES = EVENT_TEST_CASES + EXTRA_TEST_CASES
