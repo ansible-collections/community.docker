@@ -66,6 +66,7 @@ DOCKER_PULL_PROGRESS_DONE = frozenset((
 ))
 DOCKER_PULL_PROGRESS_WORKING = frozenset((
     'Pulling fs layer',
+    'Waiting',
     'Downloading',
     'Verifying Checksum',
     'Extracting',
@@ -130,7 +131,7 @@ _RE_PULL_PROGRESS = re.compile(
     r'\s+'
     r'(?P<status>%s)'
     r'\s*'
-    r'(?:|\s\[[^]]+\]\s+\S+\s*)'
+    r'(?:|\s\[[^]]+\]\s+\S+\s*|\s+[0-9.kKmMgGbB]+/[0-9.kKmMgGbB]+\s*)'
     r'$'
     % '|'.join(re.escape(status) for status in sorted(DOCKER_PULL_PROGRESS_DONE | DOCKER_PULL_PROGRESS_WORKING))
 )
