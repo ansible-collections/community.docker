@@ -4,7 +4,6 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
-
 v2.7.8
 ======
 
@@ -688,7 +687,6 @@ Release Summary
 
 This is the first production (non-prerelease) release of ``community.docker``.
 
-
 Minor Changes
 -------------
 
@@ -705,7 +703,6 @@ Release Summary
 The ``community.docker`` continues the work on the Ansible docker modules and plugins from their state in ``community.general`` 1.2.0. The changes listed here are thus relative to the modules and plugins ``community.general.docker*``.
 
 All deprecation removals planned for ``community.general`` 2.0.0 have been applied. All deprecation removals scheduled for ``community.general`` 3.0.0 have been re-scheduled for ``community.docker`` 2.0.0.
-
 
 Minor Changes
 -------------
