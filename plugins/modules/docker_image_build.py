@@ -17,7 +17,7 @@ short_description: Build Docker images using Docker buildx
 version_added: 3.6.0
 
 description:
-  - This module allos to build Docker images using Docker's buildx plugin (BuildKit).
+  - This module allows you to build Docker images using Docker's buildx plugin (BuildKit).
 
 extends_documentation_fragment:
   - community.docker.docker.cli_documentation
