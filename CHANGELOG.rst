@@ -4,7 +4,6 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
-
 v3.7.0
 ======
 
@@ -47,7 +46,6 @@ The ``docker_image_build`` module uses the ``docker buildx`` command under the h
 and ``docker_compose_v2_pull`` modules uses the ``docker compose`` command. All these modules use the Docker CLI
 instead of directly talking to the API. The modules support mostly the same interface as the API based modules,
 so the main difference is that instead of some Python requirements, they depend on the Docker CLI tool ``docker``.
-
 
 Major Changes
 -------------
@@ -162,7 +160,6 @@ correctly. You should be still able to read it in most cases, but you need
 ansible-core 2.15 or later to see it as it is intended. Alternatively you can
 look at `the devel docsite <https://docs.ansible.com/ansible/devel/collections/community/docker/>`__
 for the rendered HTML version of the documentation of the latest release.
-
 
 Known Issues
 ------------
@@ -1077,7 +1074,6 @@ Release Summary
 
 This is the first production (non-prerelease) release of ``community.docker``.
 
-
 Minor Changes
 -------------
 
@@ -1094,7 +1090,6 @@ Release Summary
 The ``community.docker`` continues the work on the Ansible docker modules and plugins from their state in ``community.general`` 1.2.0. The changes listed here are thus relative to the modules and plugins ``community.general.docker*``.
 
 All deprecation removals planned for ``community.general`` 2.0.0 have been applied. All deprecation removals scheduled for ``community.general`` 3.0.0 have been re-scheduled for ``community.docker`` 2.0.0.
-
 
 Minor Changes
 -------------
