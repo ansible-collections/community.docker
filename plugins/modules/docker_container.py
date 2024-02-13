@@ -808,9 +808,9 @@ options:
     default: missing
   pull_check_mode_behavior:
     description:
-      - Allows to adjust the behavior when O(pull=true) in check mode.
+      - Allows to adjust the behavior when O(pull=always) or O(pull=true) in check mode.
       - Since the Docker daemon does not expose any functionality to test whether a pull will result
-        in a changed image, the module by default acts like O(pull=true) only results in a change when
+        in a changed image, the module by default acts like O(pull=always) only results in a change when
         the image is not present.
       - If set to V(image_not_present) (default), only report changes in check mode when the image is not present.
       - If set to V(always), always report changes in check mode.
