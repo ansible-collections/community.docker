@@ -78,6 +78,10 @@ class ContainerManager(DockerBaseClass):
         self.param_output_logs = self.module.params['output_logs']
         self.param_paused = self.module.params['paused']
         self.param_pull = self.module.params['pull']
+        if self.param_pull is True:
+            self.param_pull = 'always'
+        if self.param_pull is False:
+            self.param_pull = 'missing'
         self.param_pull_check_mode_behavior = self.module.params['pull_check_mode_behavior']
         self.param_recreate = self.module.params['recreate']
         self.param_removal_wait_timeout = self.module.params['removal_wait_timeout']
@@ -445,22 +449,28 @@ class ContainerManager(DockerBaseClass):
             if not tag:
                 tag = "latest"
             image = self.engine_driver.inspect_image_by_name(self.client, repository, tag)
-            if not image or self.param_pull:
+            if not image and self.param_pull == "never":
+                self.client.fail("Cannot find image with name %s:%s, and pull=never" % (repository, tag))
+            if not image or self.param_pull == "always":
                 if not self.check_mode:
                     self.log("Pull the image.")
                     image, alreadyToLatest = self.engine_driver.pull_image(
                         self.client, repository, tag, platform=self.module.params['platform'])
                     if alreadyToLatest:
                         self.results['changed'] = False
+                        self.results['actions'].append(dict(pulled_image="%s:%s" % (repository, tag), changed=False))
                     else:
                         self.results['changed'] = True
-                        self.results['actions'].append(dict(pulled_image="%s:%s" % (repository, tag)))
+                        self.results['actions'].append(dict(pulled_image="%s:%s" % (repository, tag), changed=True))
                 elif not image or self.param_pull_check_mode_behavior == 'always':
                     # If the image isn't there, or pull_check_mode_behavior == 'always', claim we'll
                     # pull. (Implicitly: if the image is there, claim it already was latest unless
                     # pull_check_mode_behavior == 'always'.)
                     self.results['changed'] = True
-                    self.results['actions'].append(dict(pulled_image="%s:%s" % (repository, tag)))
+                    action = dict(pulled_image="%s:%s" % (repository, tag))
+                    if not image:
+                        action['changed'] = True
+                    self.results['actions'].append(action)
 
         self.log("image")
         self.log(image, pretty_print=True)
@@ -862,7 +872,7 @@ def run_module(engine_driver):
             networks_cli_compatible=dict(type='bool', default=True),
             output_logs=dict(type='bool', default=False),
             paused=dict(type='bool'),
-            pull=dict(type='bool', default=False),
+            pull=dict(type='raw', choices=['never', 'missing', 'always', True, False], default='missing'),
             pull_check_mode_behavior=dict(type='str', choices=['image_not_present', 'always'], default='image_not_present'),
             purge_networks=dict(type='bool', default=False, removed_in_version='4.0.0', removed_from_collection='community.docker'),
             recreate=dict(type='bool', default=False),

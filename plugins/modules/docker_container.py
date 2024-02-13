@@ -789,12 +789,23 @@ options:
       - ports
   pull:
     description:
-      - If true, always pull the latest version of an image. Otherwise, will only pull an image
-        when missing.
+      - If set to V(never), will never try to pull an image. Will fail if the image is not available
+        on the Docker daemon.
+      - If set to V(missing) or V(false), only pull the image if it is not available on the Docker
+        daemon. This is the default behavior.
+      - If set to V(always) or V(true), always try to pull the latest version of the image.
       - "B(Note:) images are only pulled when specified by name. If the image is specified
-        as a image ID (hash), it cannot be pulled."
-    type: bool
-    default: false
+        as a image ID (hash), it cannot be pulled, and this option is ignored."
+      - "B(Note:) the values V(never), V(missing), and V(always) are only available since
+        community.docker 3.8.0. Earlier versions only support V(true) and V(false)."
+    type: raw
+    choices:
+      - never
+      - missing
+      - always
+      - true
+      - false
+    default: missing
   pull_check_mode_behavior:
     description:
       - Allows to adjust the behavior when O(pull=true) in check mode.
