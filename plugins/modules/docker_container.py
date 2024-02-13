@@ -35,7 +35,8 @@ attributes:
   check_mode:
     support: partial
     details:
-      - When trying to pull an image, the module assumes this is always changed in check mode.
+      - When trying to pull an image, the module assumes this is never changed in check mode except when the image is not present on the Docker daemon.
+      - This behavior can be configured with O(pull_check_mode_behavior).
   diff_mode:
     support: full
 
@@ -794,6 +795,20 @@ options:
         as a image ID (hash), it cannot be pulled."
     type: bool
     default: false
+  pull_check_mode_behavior:
+    description:
+      - Allows to adjust the behavior when O(pull=true) in check mode.
+      - Since the Docker daemon does not expose any functionality to test whether a pull will result
+        in a changed image, the module by default acts like O(pull=true) only results in a change when
+        the image is not present.
+      - If set to V(image_not_present) (default), only report changes in check mode when the image is not present.
+      - If set to V(always), always report changes in check mode.
+    type: str
+    default: image_not_present
+    choices:
+      - image_not_present
+      - always
+    version_added: 3.8.0
   purge_networks:
     description:
       - Remove the container from ALL networks not included in O(networks) parameter.

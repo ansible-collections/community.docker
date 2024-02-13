@@ -78,6 +78,7 @@ class ContainerManager(DockerBaseClass):
         self.param_output_logs = self.module.params['output_logs']
         self.param_paused = self.module.params['paused']
         self.param_pull = self.module.params['pull']
+        self.param_pull_check_mode_behavior = self.module.params['pull_check_mode_behavior']
         self.param_recreate = self.module.params['recreate']
         self.param_removal_wait_timeout = self.module.params['removal_wait_timeout']
         self.param_restart = self.module.params['restart']
@@ -454,9 +455,10 @@ class ContainerManager(DockerBaseClass):
                     else:
                         self.results['changed'] = True
                         self.results['actions'].append(dict(pulled_image="%s:%s" % (repository, tag)))
-                elif not image:
-                    # If the image isn't there, claim we'll pull.
-                    # (Implicitly: if the image is there, claim it already was latest.)
+                elif not image or self.param_pull_check_mode_behavior == 'always':
+                    # If the image isn't there, or pull_check_mode_behavior == 'always', claim we'll
+                    # pull. (Implicitly: if the image is there, claim it already was latest unless
+                    # pull_check_mode_behavior == 'always'.)
                     self.results['changed'] = True
                     self.results['actions'].append(dict(pulled_image="%s:%s" % (repository, tag)))
 
@@ -861,6 +863,7 @@ def run_module(engine_driver):
             output_logs=dict(type='bool', default=False),
             paused=dict(type='bool'),
             pull=dict(type='bool', default=False),
+            pull_check_mode_behavior=dict(type='str', choices=['image_not_present', 'always'], default='image_not_present'),
             purge_networks=dict(type='bool', default=False, removed_in_version='4.0.0', removed_from_collection='community.docker'),
             recreate=dict(type='bool', default=False),
             removal_wait_timeout=dict(type='float'),
