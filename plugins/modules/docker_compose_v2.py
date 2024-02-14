@@ -124,6 +124,18 @@ options:
         and the value is an integer count for the number of containers.
     type: dict
     version_added: 3.7.0
+  wait:
+    description:
+      - When running C(docker compose up), pass C(--wait) to wait for services to be running/healthy.
+      - A timeout can be set with the O(wait_timeout) option.
+    type: bool
+    default: false
+    version_added: 3.8.0
+  wait_timeout:
+    description:
+      - When O(wait=true), wait at most this amount of seconds.
+    type: int
+    version_added: 3.8.0
 
 author:
   - Felix Fontein (@felixfontein)
@@ -416,6 +428,8 @@ class ServicesManager(BaseComposeManager):
         self.timeout = parameters['timeout']
         self.services = parameters['services'] or []
         self.scale = parameters['scale'] or {}
+        self.wait = parameters['wait']
+        self.wait_timeout = parameters['wait_timeout']
 
         for key, value in self.scale.items():
             if not isinstance(key, string_types):
@@ -463,6 +477,10 @@ class ServicesManager(BaseComposeManager):
             args.append('--no-build')
         for key, value in sorted(self.scale.items()):
             args.extend(['--scale', '%s=%d' % (key, value)])
+        if self.wait:
+            args.append('--wait')
+            if self.wait_timeout is not None:
+                args.extend(['--wait-timeout', str(self.wait_timeout)])
         if no_start:
             args.append('--no-start')
         if dry_run:
@@ -597,6 +615,8 @@ def main():
         timeout=dict(type='int'),
         services=dict(type='list', elements='str'),
         scale=dict(type='dict'),
+        wait=dict(type='bool', default=False),
+        wait_timeout=dict(type='int'),
     )
     argument_spec.update(common_compose_argspec())
 
