@@ -3643,6 +3643,149 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
   when: docker_api_version is version('1.41', '<')
 
 ####################################################################
+## pull / pull_check_mode_behavior #################################
+####################################################################
+
+- name: Remove hello-world image
+  docker_image_remove:
+    name: "{{ docker_test_image_hello_world }}"
+
+- name: pull (pull=never)
+  docker_container:
+    image: "{{ docker_test_image_hello_world }}"
+    name: "{{ cname }}"
+    state: present
+    pull: never
+    debug: true
+  register: pull_1
+  ignore_errors: true
+
+- name: pull (pull=missing, check mode)
+  docker_container:
+    image: "{{ docker_test_image_hello_world }}"
+    name: "{{ cname }}"
+    state: present
+    pull: missing
+    debug: true
+  register: pull_2
+  check_mode: true
+  ignore_errors: true
+
+- name: pull (pull=missing)
+  docker_container:
+    image: "{{ docker_test_image_hello_world }}"
+    name: "{{ cname }}"
+    state: present
+    pull: missing
+    debug: true
+  register: pull_3
+  ignore_errors: true
+
+- name: pull (pull=missing, idempotent, check mode)
+  docker_container:
+    image: "{{ docker_test_image_hello_world }}"
+    name: "{{ cname }}"
+    state: present
+    pull: missing
+    debug: true
+  register: pull_4
+  check_mode: true
+  ignore_errors: true
+
+- name: pull (pull=missing, idempotent)
+  docker_container:
+    image: "{{ docker_test_image_hello_world }}"
+    name: "{{ cname }}"
+    state: present
+    pull: missing
+    debug: true
+  register: pull_5
+  ignore_errors: true
+
+- name: pull (pull=always, check mode, pull_check_mode_behavior=image_not_present)
+  docker_container:
+    image: "{{ docker_test_image_hello_world }}"
+    name: "{{ cname }}"
+    state: present
+    pull: always
+    pull_check_mode_behavior: image_not_present
+    debug: true
+  register: pull_6
+  check_mode: true
+  ignore_errors: true
+
+- name: pull (pull=always, check mode, pull_check_mode_behavior=always)
+  docker_container:
+    image: "{{ docker_test_image_hello_world }}"
+    name: "{{ cname }}"
+    state: present
+    pull: always
+    pull_check_mode_behavior: always
+    debug: true
+  register: pull_7
+  check_mode: true
+  ignore_errors: true
+
+- name: pull (pull=always)
+  docker_container:
+    image: "{{ docker_test_image_hello_world }}"
+    name: "{{ cname }}"
+    state: present
+    pull: always
+    debug: true
+  register: pull_8
+  ignore_errors: true
+
+- name: cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: true
+  diff: false
+
+- assert:
+    that:
+    - pull_1 is failed
+    - pull_1.msg == ("Cannot find image with name " ~ docker_test_image_hello_world ~ ", and pull=never")
+    - pull_2 is changed
+    - pulled_image_action not in pull_2.actions
+    - pulled_image_action_changed in pull_2.actions
+    - pulled_image_action_unchanged not in pull_2.actions
+    - pull_3 is changed
+    - pulled_image_action not in pull_3.actions
+    - pulled_image_action_changed in pull_3.actions
+    - pulled_image_action_unchanged not in pull_3.actions
+    - pull_4 is not changed
+    - pulled_image_action not in pull_4.actions
+    - pulled_image_action_changed not in pull_4.actions
+    - pulled_image_action_unchanged not in pull_4.actions
+    - pull_5 is not changed
+    - pulled_image_action not in pull_5.actions
+    - pulled_image_action_changed not in pull_5.actions
+    - pulled_image_action_unchanged not in pull_5.actions
+    - pull_6 is not changed
+    - pulled_image_action not in pull_6.actions
+    - pulled_image_action_changed not in pull_6.actions
+    - pulled_image_action_unchanged not in pull_6.actions
+    - pull_7 is changed
+    - pulled_image_action in pull_7.actions
+    - pulled_image_action_changed not in pull_7.actions
+    - pulled_image_action_unchanged not in pull_7.actions
+    - pull_8 is not changed
+    - pulled_image_action not in pull_8.actions
+    - pulled_image_action_changed not in pull_8.actions
+    - pulled_image_action_unchanged in pull_8.actions
+  vars:
+    pulled_image_action:
+      pulled_image: "{{ docker_test_image_hello_world }}"
+    pulled_image_action_changed:
+      pulled_image: "{{ docker_test_image_hello_world }}"
+      changed: true
+    pulled_image_action_unchanged:
+      pulled_image: "{{ docker_test_image_hello_world }}"
+      changed: false
+
+####################################################################
 ## privileged ######################################################
 ####################################################################
 

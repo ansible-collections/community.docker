@@ -35,7 +35,8 @@ attributes:
   check_mode:
     support: partial
     details:
-      - When trying to pull an image, the module assumes this is always changed in check mode.
+      - When trying to pull an image, the module assumes this is never changed in check mode except when the image is not present on the Docker daemon.
+      - This behavior can be configured with O(pull_check_mode_behavior).
   diff_mode:
     support: full
 
@@ -788,12 +789,37 @@ options:
       - ports
   pull:
     description:
-      - If true, always pull the latest version of an image. Otherwise, will only pull an image
-        when missing.
+      - If set to V(never), will never try to pull an image. Will fail if the image is not available
+        on the Docker daemon.
+      - If set to V(missing) or V(false), only pull the image if it is not available on the Docker
+        daemon. This is the default behavior.
+      - If set to V(always) or V(true), always try to pull the latest version of the image.
       - "B(Note:) images are only pulled when specified by name. If the image is specified
-        as a image ID (hash), it cannot be pulled."
-    type: bool
-    default: false
+        as a image ID (hash), it cannot be pulled, and this option is ignored."
+      - "B(Note:) the values V(never), V(missing), and V(always) are only available since
+        community.docker 3.8.0. Earlier versions only support V(true) and V(false)."
+    type: raw
+    choices:
+      - never
+      - missing
+      - always
+      - true
+      - false
+    default: missing
+  pull_check_mode_behavior:
+    description:
+      - Allows to adjust the behavior when O(pull=always) or O(pull=true) in check mode.
+      - Since the Docker daemon does not expose any functionality to test whether a pull will result
+        in a changed image, the module by default acts like O(pull=always) only results in a change when
+        the image is not present.
+      - If set to V(image_not_present) (default), only report changes in check mode when the image is not present.
+      - If set to V(always), always report changes in check mode.
+    type: str
+    default: image_not_present
+    choices:
+      - image_not_present
+      - always
+    version_added: 3.8.0
   purge_networks:
     description:
       - Remove the container from ALL networks not included in O(networks) parameter.
