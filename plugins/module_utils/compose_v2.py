@@ -303,6 +303,8 @@ def parse_events(stderr, dry_run=False, warn_function=None):
                 warn_missing_dry_run_prefix = True
         event = _extract_event(line)
         if event is not None:
+            if event.status == "Healthy":
+                events = [e for e in events if not (e.resource_id == event.resource_id and e.status == "Waiting")]
             events.append(event)
             if event.status in DOCKER_STATUS_ERROR:
                 error_event = event
