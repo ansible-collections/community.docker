@@ -17,6 +17,7 @@ version_added: 1.3.0
 description:
   - This module allows to install, delete, enable and disable Docker plugins.
   - Performs largely the same function as the C(docker plugin) CLI subcommand.
+notes:
   - The C(--grant-all-permissions) CLI flag is true by default in this module.
 
 extends_documentation_fragment:
