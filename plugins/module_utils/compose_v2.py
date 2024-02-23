@@ -350,9 +350,11 @@ def parse_events(stderr, dry_run=False, warn_function=None):
     return events
 
 
-def has_changes(events):
+def has_changes(events, ignore_service_pull_events=False):
     for event in events:
         if event.status in DOCKER_STATUS_WORKING:
+            if ignore_service_pull_events and event.status in DOCKER_STATUS_PULL:
+                continue
             return True
     return False
 
@@ -539,8 +541,8 @@ class BaseComposeManager(DockerBaseClass):
     def emit_warnings(self, events):
         emit_warnings(events, warn_function=self.client.warn)
 
-    def update_result(self, result, events, stdout, stderr):
-        result['changed'] = result.get('changed', False) or has_changes(events)
+    def update_result(self, result, events, stdout, stderr, ignore_service_pull_events=False):
+        result['changed'] = result.get('changed', False) or has_changes(events, ignore_service_pull_events=ignore_service_pull_events)
         result['actions'] = result.get('actions', []) + extract_actions(events)
         result['stdout'] = combine_text_output(result.get('stdout'), to_native(stdout))
         result['stderr'] = combine_text_output(result.get('stderr'), to_native(stderr))

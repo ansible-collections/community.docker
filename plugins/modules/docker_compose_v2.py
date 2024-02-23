@@ -496,7 +496,7 @@ class ServicesManager(BaseComposeManager):
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode)
         self.emit_warnings(events)
-        self.update_result(result, events, stdout, stderr)
+        self.update_result(result, events, stdout, stderr, ignore_service_pull_events=True)
         self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
@@ -527,7 +527,7 @@ class ServicesManager(BaseComposeManager):
         rc_1, stdout_1, stderr_1 = self.client.call_cli(*args_1, cwd=self.project_src)
         events_1 = self.parse_events(stderr_1, dry_run=self.check_mode)
         self.emit_warnings(events_1)
-        self.update_result(result, events_1, stdout_1, stderr_1)
+        self.update_result(result, events_1, stdout_1, stderr_1, ignore_service_pull_events=True)
         is_failed_1 = is_failed(events_1, rc_1)
         if not is_failed_1 and not self._are_containers_stopped():
             # Make sure all containers are stopped
