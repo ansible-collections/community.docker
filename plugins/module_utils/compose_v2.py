@@ -38,7 +38,6 @@ DOCKER_STATUS_DONE = frozenset((
 DOCKER_STATUS_WORKING = frozenset((
     'Creating',
     'Starting',
-    'Waiting',
     'Restarting',
     'Stopping',
     'Killing',
@@ -57,7 +56,10 @@ DOCKER_STATUS_PULL = frozenset((
 DOCKER_STATUS_ERROR = frozenset((
     'Error',
 ))
-DOCKER_STATUS = frozenset(DOCKER_STATUS_DONE | DOCKER_STATUS_WORKING | DOCKER_STATUS_PULL | DOCKER_STATUS_ERROR)
+DOCKER_STATUS_WAITING = frozenset((
+    'Waiting',
+))
+DOCKER_STATUS = frozenset(DOCKER_STATUS_DONE | DOCKER_STATUS_WORKING | DOCKER_STATUS_PULL | DOCKER_STATUS_ERROR | DOCKER_STATUS_WAITING)
 
 DOCKER_PULL_PROGRESS_DONE = frozenset((
     'Already exists',
