@@ -39,9 +39,6 @@ options:
     type: path
     required: true
 
-notes:
-  - Does not support C(check_mode).
-
 requirements:
   - "Docker API >= 1.25"
 
