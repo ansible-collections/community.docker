@@ -1,2 +1,0 @@
-bugfixes:
-  - "docker_compose_v2 - do not consider a ``Waiting`` event as an action/change (https://github.com/ansible-collections/community.docker/pull/804)."
