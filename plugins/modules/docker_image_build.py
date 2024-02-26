@@ -398,7 +398,7 @@ class ImageBuilder(DockerBaseClass):
                 try:
                     os.remove(temp_path)
                 except OSError as e:
-                    module.log(msg='Error cleaning up temporary file {0}: {1}'.format(temp_path, str(e)))
+                    self.fail(msg='Error cleaning up temporary file {0}: {1}'.format(temp_path, str(e)))
 
         return results
 
