@@ -349,7 +349,7 @@ class ImageBuilder(DockerBaseClass):
                         platforms = parsed
                     else:
                         platforms.append(parsed)
-                except (ValueError, getattr(json, 'JSONDecodeError', ValueError)):
+                except ValueError:
                     platforms.append(platform_param)
             else:
                 self.fail("Invalid platform format. Expected string, JSON list, or YAML list.")
