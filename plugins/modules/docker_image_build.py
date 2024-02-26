@@ -17,7 +17,8 @@ short_description: Build Docker images using Docker buildx
 version_added: "3.8.0"
 
 description:
-  - This module allows you to build Docker images using Docker's buildx plugin (BuildKit), supporting features like multi-platform builds, secrets, and conditional image loading or pushing.
+  - This module allows you to build Docker images using Docker's buildx plugin (BuildKit),
+    supporting features like multi-platform builds, secrets, and conditional image loading or pushing.
 
 extends_documentation_fragment:
   - community.docker.docker.cli_documentation
@@ -333,22 +334,22 @@ class ImageBuilder(DockerBaseClass):
             args.append('--push')
 
     def parse_platforms(self, platform_param):
-            platforms = []
-            if platform_param:
-                if isinstance(platform_param, list):
-                    platforms = platform_param
-                elif isinstance(platform_param, str):
-                    try:
-                        parsed = json.loads(platform_param)
-                        if isinstance(parsed, list):
-                            platforms = parsed
-                        else:
-                            platforms.append(parsed)
-                    except json.JSONDecodeError:
-                        platforms.append(platform_param)
-                else:
-                    self.fail("Invalid platform format. Expected string, JSON list, or YAML list.")
-            return platforms
+        platforms = []
+        if platform_param:
+            if isinstance(platform_param, list):
+                platforms = platform_param
+            elif isinstance(platform_param, str):
+                try:
+                    parsed = json.loads(platform_param)
+                    if isinstance(parsed, list):
+                        platforms = parsed
+                    else:
+                        platforms.append(parsed)
+                except json.JSONDecodeError:
+                    platforms.append(platform_param)
+            else:
+                self.fail("Invalid platform format. Expected string, JSON list, or YAML list.")
+        return platforms
 
     def handle_secrets(self):
         temp_files = []
@@ -359,14 +360,14 @@ class ImageBuilder(DockerBaseClass):
                     tmp.write(str(secret['value']))
                 secret['src'] = temp_path
                 temp_files.append(temp_path)
-    
+
             elif 'src' in secret and secret['type'] == 'file':
                 if not os.path.isfile(secret['src']):
                     self.fail("Secret file {} not found.".format(secret['src']))
-    
+
             else:
                 self.fail("Secret must include either a 'value' or a 'src' key.")
-    
+
         return temp_files
 
 
@@ -380,7 +381,7 @@ class ImageBuilder(DockerBaseClass):
                     results['image'] = image
                     return results
             results['changed'] = True
-    
+
             if not self.check_mode:
                 args = ['buildx', 'build', '--progress', 'plain']
                 self.add_args(args)
@@ -398,7 +399,7 @@ class ImageBuilder(DockerBaseClass):
                     os.remove(temp_path)
                 except OSError as e:
                     print('Error cleaning up temporary file {}: {}'.format(temp_path, str(e)))
-    
+
         return results
 
 
