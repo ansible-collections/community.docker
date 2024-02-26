@@ -345,11 +345,12 @@ class ImageBuilder(DockerBaseClass):
                         platforms = parsed
                     else:
                         platforms.append(parsed)
-                except json.JSONDecodeError:
+                except (ValueError, getattr(json, 'JSONDecodeError', ValueError)):
                     platforms.append(platform_param)
             else:
                 self.fail("Invalid platform format. Expected string, JSON list, or YAML list.")
         return platforms
+
 
     def handle_secrets(self):
         secrets = self.secret or []
