@@ -363,7 +363,7 @@ class ImageBuilder(DockerBaseClass):
 
             elif 'src' in secret and secret['type'] == 'file':
                 if not os.path.isfile(secret['src']):
-                    self.fail("Secret file {} not found.".format(secret['src']))
+                    self.fail("Secret file {0} not found.".format(secret['src']))
 
             else:
                 self.fail("Secret must include either a 'value' or a 'src' key.")
@@ -387,18 +387,18 @@ class ImageBuilder(DockerBaseClass):
                 self.add_args(args)
                 args.extend(['--', self.path])
                 rc, stdout, stderr = self.client.call_cli(*args)
-    
+
                 if rc != 0:
                     self.fail('Building %s:%s failed' % (self.name, self.tag), stdout=to_native(stdout), stderr=to_native(stderr))
 
                 results.update(stdout=to_native(stdout), stderr=to_native(stderr), image=self.client.find_image(self.name, self.tag) or {})
-        
+
         finally:
             for temp_path in temp_files:
                 try:
                     os.remove(temp_path)
                 except OSError as e:
-                    print('Error cleaning up temporary file {}: {}'.format(temp_path, str(e)))
+                    module.log(msg='Error cleaning up temporary file {0}: {1}'.format(temp_path, str(e)))
 
         return results
 
