@@ -365,7 +365,7 @@ class ImageBuilder(DockerBaseClass):
     
             elif 'src' in secret and secret['type'] == 'file':
                 if not os.path.isfile(secret['src']):
-                    self.fail(f"Secret file {secret['src']} not found.")
+                    self.fail("Secret file {0} not found.".format(secret['src']))
             else:
                 self.fail("Secret must include either a 'value' or a 'src' key.")
     
