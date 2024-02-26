@@ -266,6 +266,7 @@ class ImageBuilder(DockerBaseClass):
         self.secret = parameters['secret']
         self.load = parameters['load']
         self.push = parameters['push']
+
         if self.load and self.push:
             self.fail('The options "load" and "push" cannot be used together.')
 
@@ -336,6 +337,7 @@ class ImageBuilder(DockerBaseClass):
             args.append('--load')
         if self.push:
             args.append('--push')
+
 
     def parse_platforms(self, platform_param):
         platforms = []
