@@ -351,7 +351,6 @@ class ImageBuilder(DockerBaseClass):
                 self.fail("Invalid platform format. Expected string, JSON list, or YAML list.")
         return platforms
 
-
     def handle_secrets(self):
         secrets = self.secret or []
         temp_files = []
