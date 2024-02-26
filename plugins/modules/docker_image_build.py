@@ -338,7 +338,6 @@ class ImageBuilder(DockerBaseClass):
         if self.push:
             args.append('--push')
 
-
     def parse_platforms(self, platform_param):
         platforms = []
         if platform_param:
