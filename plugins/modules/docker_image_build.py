@@ -114,10 +114,25 @@ options:
       - always
     default: never
   secret:
-    description:
-      - Secrets to expose to the build as files in a tmpfs.
+    description: Secrets to expose to the build.
     type: list
     elements: dict
+    suboptions:
+      id:
+        description: The secret identifier.
+        type: str
+        required: True
+      src:
+        description: Source path of the secret.
+        type: str
+      value:
+        description: Value of the secret.
+        type: str
+      type:
+        description: Type of the secret.
+        type: str
+        choices: ['file', 'password']
+        required: True
   load:
     description:
       - Load the built image into Docker's local image store.
@@ -162,7 +177,7 @@ EXAMPLES = '''
     path: /path/to/context
     secret:
       - id: pass1
-        value: "{{ password_from_vault }}"
+        value: password_from_vault
         type: password
       - id: pass2
         src: /path/to/file_with_pass
@@ -192,6 +207,7 @@ import traceback
 import json
 import tempfile
 
+from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.common.text.converters import to_native
 from ansible.module_utils.common.text.formatters import human_to_bytes
 
@@ -407,7 +423,7 @@ def main():
         secret=dict(type='list', elements='dict', options=dict(
             id=dict(type='str', required=True),
             src=dict(type='str'),
-            value=dict(type='str'),
+            value=dict(type='str', no_log=True),
             type=dict(type='str', choices=['file', 'password'], required=True),
         )),
         load=dict(type='bool', default=True),
