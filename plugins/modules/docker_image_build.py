@@ -421,7 +421,7 @@ def main():
         shm_size=dict(type='str'),
         labels=dict(type='dict'),
         rebuild=dict(type='str', choices=['never', 'always'], default='never'),
-        secret=dict(type='list', elements='dict', options=dict(
+        secret=dict(type='list', elements='dict', no_log=True, options=dict(
             id=dict(type='str', required=True),
             src=dict(type='str'),
             value=dict(type='str', no_log=True),
