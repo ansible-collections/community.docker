@@ -353,6 +353,7 @@ class ImageBuilder(DockerBaseClass):
         return platforms
 
     def handle_secrets(self):
+        secret = self.secret or []
         temp_files = []
         for secret in self.secret:
             if 'value' in secret:
@@ -401,6 +402,7 @@ class ImageBuilder(DockerBaseClass):
                     self.fail(msg='Error cleaning up temporary file {0}: {1}'.format(temp_path, str(e)))
 
         return results
+
 
 def main():
     argument_spec = dict(
