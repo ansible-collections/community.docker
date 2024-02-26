@@ -208,7 +208,6 @@ import traceback
 import json
 import tempfile
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.common.text.converters import to_native
 from ansible.module_utils.common.text.formatters import human_to_bytes
 
@@ -242,7 +241,6 @@ def convert_to_bytes(value, module, name, unlimited_value=None):
 
 def dict_to_list(dictionary, concat='='):
     return ['%s%s%s' % (k, concat, v) for k, v in sorted(dictionary.items())]
-
 
 class ImageBuilder(DockerBaseClass):
     def __init__(self, client):
@@ -353,9 +351,8 @@ class ImageBuilder(DockerBaseClass):
         return platforms
 
     def handle_secrets(self):
-        secrets = self.secret or []
         temp_files = []
-        for secret in secrets:
+        for secret in self.secret:
             if 'value' in secret:
                 temp_fd, temp_path = tempfile.mkstemp()
                 with os.fdopen(temp_fd, 'w') as tmp:
@@ -366,10 +363,12 @@ class ImageBuilder(DockerBaseClass):
             elif 'src' in secret and secret['type'] == 'file':
                 if not os.path.isfile(secret['src']):
                     self.fail("Secret file {0} not found.".format(secret['src']))
+
             else:
                 self.fail("Secret must include either a 'value' or a 'src' key.")
 
         return temp_files
+
 
     def build_image(self):
         temp_files = self.handle_secrets()
@@ -398,9 +397,10 @@ class ImageBuilder(DockerBaseClass):
                 try:
                     os.remove(temp_path)
                 except OSError as e:
-                    self.fail(msg='Error cleaning up temporary file {0}: {1}'.format(temp_path, str(e)))
+                    module.log(msg='Error cleaning up temporary file {0}: {1}'.format(temp_path, str(e)))
 
         return results
+
 
 
 def main():
@@ -420,10 +420,10 @@ def main():
         shm_size=dict(type='str'),
         labels=dict(type='dict'),
         rebuild=dict(type='str', choices=['never', 'always'], default='never'),
-        secret=dict(type='list', elements='dict', no_log=True, options=dict(
+        secret=dict(type='list', elements='dict', options=dict(
             id=dict(type='str', required=True),
             src=dict(type='str'),
-            value=dict(type='str'),
+            value=dict(type='str', no_log=True),
             type=dict(type='str', choices=['file', 'password'], required=True),
         )),
         load=dict(type='bool', default=True),
