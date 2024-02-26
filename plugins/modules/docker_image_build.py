@@ -243,6 +243,7 @@ def convert_to_bytes(value, module, name, unlimited_value=None):
 def dict_to_list(dictionary, concat='='):
     return ['%s%s%s' % (k, concat, v) for k, v in sorted(dictionary.items())]
 
+
 class ImageBuilder(DockerBaseClass):
     def __init__(self, client):
         super(ImageBuilder, self).__init__()
@@ -370,7 +371,6 @@ class ImageBuilder(DockerBaseClass):
 
         return temp_files
 
-
     def build_image(self):
         temp_files = self.handle_secrets()
         try:
@@ -401,8 +401,6 @@ class ImageBuilder(DockerBaseClass):
                     self.fail(msg='Error cleaning up temporary file {0}: {1}'.format(temp_path, str(e)))
 
         return results
-
-
 
 def main():
     argument_spec = dict(
