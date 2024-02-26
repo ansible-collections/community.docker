@@ -362,13 +362,13 @@ class ImageBuilder(DockerBaseClass):
                     tmp.write(str(secret['value']))
                 secret['src'] = temp_path
                 temp_files.append(temp_path)
-    
+
             elif 'src' in secret and secret['type'] == 'file':
                 if not os.path.isfile(secret['src']):
                     self.fail("Secret file {0} not found.".format(secret['src']))
             else:
                 self.fail("Secret must include either a 'value' or a 'src' key.")
-    
+
         return temp_files
 
     def build_image(self):
