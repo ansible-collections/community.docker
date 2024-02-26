@@ -369,7 +369,6 @@ class ImageBuilder(DockerBaseClass):
                 args = ['buildx', 'build', '--progress', 'plain']
                 self.add_args(args)
                 args.extend(['--', self.path])
-                print("Executing command:", " ".join(args))
                 rc, stdout, stderr = self.client.call_cli(*args)
     
                 if rc != 0:
