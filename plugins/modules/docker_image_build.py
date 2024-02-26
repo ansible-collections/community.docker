@@ -353,23 +353,22 @@ class ImageBuilder(DockerBaseClass):
         return platforms
 
     def handle_secrets(self):
-        secret = self.secret or []
+        secrets = self.secret or []
         temp_files = []
-        for secret in self.secret:
+        for secret in secrets:
             if 'value' in secret:
                 temp_fd, temp_path = tempfile.mkstemp()
                 with os.fdopen(temp_fd, 'w') as tmp:
                     tmp.write(str(secret['value']))
                 secret['src'] = temp_path
                 temp_files.append(temp_path)
-
+    
             elif 'src' in secret and secret['type'] == 'file':
                 if not os.path.isfile(secret['src']):
-                    self.fail("Secret file {0} not found.".format(secret['src']))
-
+                    self.fail(f"Secret file {secret['src']} not found.")
             else:
                 self.fail("Secret must include either a 'value' or a 'src' key.")
-
+    
         return temp_files
 
     def build_image(self):
@@ -424,7 +423,7 @@ def main():
         secret=dict(type='list', elements='dict', no_log=True, options=dict(
             id=dict(type='str', required=True),
             src=dict(type='str'),
-            value=dict(type='str', no_log=True),
+            value=dict(type='str'),
             type=dict(type='str', choices=['file', 'password'], required=True),
         )),
         load=dict(type='bool', default=True),
