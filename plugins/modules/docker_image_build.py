@@ -137,11 +137,13 @@ options:
   load:
     description:
       - Load the built image into Docker's local image store.
+      - Cannot be used together with C(push).
     type: bool
     default: true
   push:
     description:
       - Push the built image to a Docker registry.
+      - Cannot be used together with C(load).
     type: bool
     default: false
 
@@ -332,6 +334,8 @@ class ImageBuilder(DockerBaseClass):
             args.append('--load')
         if self.push:
             args.append('--push')
+        if self.load and self.push:
+            self.fail('The options "load" and "push" cannot be used together.')
 
     def parse_platforms(self, platform_param):
         platforms = []
