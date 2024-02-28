@@ -91,7 +91,7 @@ options:
   platform:
     description:
       - Target platform(s) for the build, specified as a single string or a list of strings.
-      - Each platform string should be in the format "os/arch[/variant]".
+      - Each platform string should be in the format C(os/arch[/variant]).
       - Example single platform "linux/amd64".
       - Example multiple platforms ["linux/amd64", "linux/arm64/v8"].
     type: str
