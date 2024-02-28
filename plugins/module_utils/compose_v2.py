@@ -404,6 +404,8 @@ def is_failed(events, rc):
 
 
 def update_failed(result, events, args, stdout, stderr, rc, cli):
+    if not rc:
+        return False
     errors = []
     for event in events:
         if event.status in DOCKER_STATUS_ERROR:
@@ -419,8 +421,6 @@ def update_failed(result, events, args, stdout, stderr, rc, cli):
                 status=event.status,
                 msg=event.msg,
             ))
-    if not errors and not rc:
-        return False
     if not errors:
         errors.append('Return code {code} is non-zero'.format(code=rc))
     result['failed'] = True

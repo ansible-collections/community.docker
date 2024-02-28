@@ -1,0 +1,4 @@
+bugfixes:
+  - "docker_compose_v2 - do not fail when non-fatal errors occur. This can happen when pulling an image fails, but then the image can be built
+     for another service. Docker Compose emits an error in that case, but ``docker compose up`` still completes successfully
+     (https://github.com/ansible-collections/community.docker/issues/807, https://github.com/ansible-collections/community.docker/pull/810)."
