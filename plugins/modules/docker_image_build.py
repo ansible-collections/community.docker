@@ -17,8 +17,8 @@ short_description: Build Docker images using Docker buildx
 version_added: "3.8.0"
 
 description:
-  - This module allows you to build Docker images using Docker's buildx plugin (BuildKit),
-    supporting features like multi-platform builds, secrets, and conditional image loading or pushing.
+  - This module allows you to build Docker images using Docker's buildx plugin (BuildKit).
+    It supports features such as multi-platform builds, secrets, and conditional image loading or pushing.
 
 extends_documentation_fragment:
   - community.docker.docker.cli_documentation
