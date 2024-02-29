@@ -118,6 +118,7 @@ options:
     description: Secrets to expose to the build.
     type: list
     elements: dict
+    version_added: 3.9.0
     suboptions:
       id:
         description: The secret identifier.
