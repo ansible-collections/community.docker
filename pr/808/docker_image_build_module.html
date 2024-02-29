@@ -181,7 +181,7 @@ You need further requirements to be able to use this module,
 see <a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-requirements"><span class="std std-ref">Requirements</span></a> for details.</p>
 <p>To use it in a playbook, specify: <code class="code docutils literal notranslate"><span class="pre">community.docker.docker_image_build</span></code>.</p>
 </div>
-<p class="ansible-version-added">New in community.docker 3.8.0</p>
+<p class="ansible-version-added">New in community.docker 3.6.0</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#synopsis" id="id1">Synopsis</a></p></li>
@@ -197,7 +197,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <section id="synopsis">
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Synopsis</a><a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>This module allows you to build Docker images using Docker’s buildx plugin (BuildKit). It supports features such as multi-platform builds, secrets, and conditional image loading or pushing.</p></li>
+<li><p>This module allows you to build Docker images using Docker’s buildx plugin (BuildKit), supporting features like multi-platform builds, secrets, and conditional image loading or pushing.</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -327,13 +327,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-load"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-load"><strong>load</strong></p>
 <a class="ansibleOptionLink" href="#parameter-load" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.9.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Load the built image into Docker’s local image store.</p>
-<p>Cannot be used together with <code class="docutils literal notranslate"><span class="pre">push</span></code>.</p>
+<p>Cannot be used together with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-push"><span class="std std-ref"><span class="pre">push</span></span></a></strong></code>.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
-<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
-<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">true</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
 </ul>
 </div></td>
 </tr>
@@ -376,8 +377,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-platform" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Target platform(s) for the build, specified as a single string or a list of strings.</p>
-<p>Each platform string should be in the format <code class="docutils literal notranslate"><span class="pre">os/arch[/variant]</span></code>.</p>
-<p>For example, a single platform is <code class="docutils literal notranslate"><span class="pre">linux/amd64</span></code>.</p>
+<p>Each platform string should be in the format “os/arch[/variant]”.</p>
+<p>Example single platform “linux/amd64”.</p>
 <p>Example multiple platforms [“linux/amd64”, “linux/arm64/v8”].</p>
 </div></td>
 </tr>
@@ -396,9 +397,10 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-push"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-push"><strong>push</strong></p>
 <a class="ansibleOptionLink" href="#parameter-push" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.9.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Push the built image to a Docker registry.</p>
-<p>Cannot be used together with <code class="docutils literal notranslate"><span class="pre">load</span></code>.</p>
+<p>Cannot be used together with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-load"><span class="std std-ref"><span class="pre">load</span></span></a></strong></code>.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -421,7 +423,6 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-secret"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-secret"><strong>secret</strong></p>
 <a class="ansibleOptionLink" href="#parameter-secret" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
-<p><em class="ansible-option-versionadded">added in community.docker 3.9.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Secrets to expose to the build.</p>
 </div></td>
@@ -435,7 +436,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-secret/src"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-secret-src"><strong>src</strong></p>
-<a class="ansibleOptionLink" href="#parameter-secret/src" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+<a class="ansibleOptionLink" href="#parameter-secret/src" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Source path of the secret.</p>
 </div></td>
@@ -596,7 +597,6 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">    </span><span class="nt">platform</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linux/amd64</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linux/arm64/v8</span>
-<span class="w">    </span><span class="nt">load</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Build an image with secrets</span>
 <span class="w">  </span><span class="nt">community.docker.docker_image_build</span><span class="p">:</span>
@@ -609,9 +609,6 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pass2</span>
 <span class="w">        </span><span class="nt">src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/file_with_pass</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">file</span>
-<span class="w">    </span><span class="nt">nocache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="w">    </span><span class="nt">push</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="w">    </span><span class="nt">load</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 </section>
