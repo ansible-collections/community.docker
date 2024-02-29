@@ -258,22 +258,21 @@ def validate_secrets(secrets, module):
 
         if secret_type == 'file':
             if not src:
-                module.fail_json(msg=("Secret source (src) not specified for secret ID: {}. "
+                module.fail_json(msg=("Secret source (src) not specified for secret ID: {0}. "
                                       "Please specify using 'src'.").format(secret_id))
             elif not os.path.isfile(src):
-                module.fail_json(msg="Secret source '{}' not found for secret ID: {}.".format(src, secret_id))
+                module.fail_json(msg="Secret source '{}' not found for secret ID: {0}.".format(src, secret_id))
         elif secret_type == 'password':
             if src:
                 module.fail_json(msg=("Secret source (src) should not be provided for "
-                                      "this type with secret ID: {}. Use 'value' to "
+                                      "this type with secret ID: {0}. Use 'value' to "
                                       "specify the secret.").format(secret_id))
             if not value:
-                module.fail_json(msg=("Secret value not provided for secret ID: {}. "
+                module.fail_json(msg=("Secret value not provided for secret ID: {0}. "
                                       "Please specify the secret using 'value'.").format(secret_id))
         else:
-            module.fail_json(msg=("Invalid secret type '{}' for secret ID: {}. Type must be either "
+            module.fail_json(msg=("Invalid secret type '{0}' for secret ID: {1}. Type must be either "
                                   "'file' or 'password'.").format(secret_type, secret_id))
-
 
 
 class ImageBuilder(DockerBaseClass):
