@@ -261,7 +261,7 @@ def validate_secrets(secrets, module):
                 module.fail_json(msg=("Secret source (src) not specified for secret ID: {0}. "
                                       "Please specify using 'src'.").format(secret_id))
             elif not os.path.isfile(src):
-                module.fail_json(msg="Secret source '{}' not found for secret ID: {0}.".format(src, secret_id))
+                module.fail_json(msg="Secret source '{0}' not found for secret ID: {1}.".format(src, secret_id))
         elif secret_type == 'password':
             if src:
                 module.fail_json(msg=("Secret source (src) should not be provided for "
