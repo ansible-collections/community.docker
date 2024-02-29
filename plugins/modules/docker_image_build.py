@@ -258,16 +258,22 @@ def validate_secrets(secrets, module):
 
         if secret_type == 'file':
             if not src:
-                module.fail_json(msg="Secret source (src) not specified for secret ID: {}. Please specify using 'src'.".format(secret_id))
+                module.fail_json(msg=("Secret source (src) not specified for secret ID: {}. "
+                                      "Please specify using 'src'.").format(secret_id))
             elif not os.path.isfile(src):
                 module.fail_json(msg="Secret source '{}' not found for secret ID: {}.".format(src, secret_id))
         elif secret_type == 'password':
             if src:
-                module.fail_json(msg="Secret source (src) should not be provided for this type with secret ID: {}. Use 'value' to specify the secret.".format(secret_id))
+                module.fail_json(msg=("Secret source (src) should not be provided for "
+                                      "this type with secret ID: {}. Use 'value' to "
+                                      "specify the secret.").format(secret_id))
             if not value:
-                module.fail_json(msg="Secret value not provided for secret ID: {}. Please specify the secret using 'value'.".format(secret_id))
+                module.fail_json(msg=("Secret value not provided for secret ID: {}. "
+                                      "Please specify the secret using 'value'.").format(secret_id))
         else:
-            module.fail_json(msg="Invalid secret type '{}' for secret ID: {}. Type must be either 'file' or 'password'.".format(secret_type, secret_id))
+            module.fail_json(msg=("Invalid secret type '{}' for secret ID: {}. Type must be either "
+                                  "'file' or 'password'.").format(secret_type, secret_id))
+
 
 
 class ImageBuilder(DockerBaseClass):
@@ -373,14 +379,14 @@ class ImageBuilder(DockerBaseClass):
                         if isinstance(parsed, list):
                             return ','.join(parsed)
                         else:
-                            self.fail("Platform specifier must be a list, got: {}".format(type(parsed)))
+                            self.fail("Platform specifier must be a list, got: {0}".format(type(parsed)))
                     except (ValueError, SyntaxError) as e:
-                        self.fail("Failed to parse platform specifier: {}. Error: {}".format(platform_param, str(e)))
+                        self.fail("Failed to parse platform specifier: {0}. Error: {1}".format(platform_param, str(e)))
                 else:
                     return platform_param
             else:
-                self.fail("Invalid platform format. Expected string or list of strings, got: {}".format(type(platform_param)))
-            return '' 
+                self.fail("Invalid platform format. Expected string or list of strings, got: {0}".format(type(platform_param)))
+            return ''
 
     def handle_secrets(self):
         secrets = self.secret or []
@@ -407,7 +413,6 @@ class ImageBuilder(DockerBaseClass):
                 pass
 
         return temp_files
-
 
     def build_image(self):
         temp_files = self.handle_secrets()
