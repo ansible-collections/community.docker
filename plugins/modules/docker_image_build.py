@@ -208,7 +208,6 @@ image:
 import ast
 import os
 import traceback
-import json
 import tempfile
 
 from ansible.module_utils.common.text.converters import to_native
