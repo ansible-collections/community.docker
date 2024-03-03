@@ -186,6 +186,36 @@ EXTRA_TEST_CASES = [
             'a network with name influxNetwork exists but was not created for project "influxdb".\nSet `external: true` to use an existing network',
         ],
     ),
+    (
+        # https://github.com/ansible-collections/community.docker/issues/807
+        '2.20.3-image-warning-error',
+        '2.20.3',
+        False,
+        " dummy3 Warning \n"
+        " dummy2 Warning \n"
+        " dummy Error \n"
+        " dummy4 Warning Foo bar \n"
+        " dummy5 Error Bar baz bam \n",
+        [
+            Event(
+                'unknown',
+                'dummy',
+                'Error',
+                None,
+            ),
+            Event(
+                'unknown',
+                'dummy5',
+                'Error',
+                'Bar baz bam',
+            ),
+        ],
+        [
+            'Unspecified warning for dummy3',
+            'Unspecified warning for dummy2',
+            'dummy4: Foo bar',
+        ],
+    ),
 ]
 
 _ALL_TEST_CASES = EVENT_TEST_CASES + EXTRA_TEST_CASES
@@ -204,5 +234,8 @@ def test_parse_events(test_id, compose_version, dry_run, stderr, events, warning
 
     collected_events = parse_events(stderr, dry_run=dry_run, warn_function=collect_warning)
 
-    assert events == collected_events
-    assert warnings == collected_warnings
+    print(collected_events)
+    print(collected_warnings)
+
+    assert collected_events == events
+    assert collected_warnings == warnings
