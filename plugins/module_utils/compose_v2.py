@@ -16,6 +16,10 @@ from ansible.module_utils.six.moves import shlex_quote
 
 from ansible_collections.community.docker.plugins.module_utils.util import DockerBaseClass
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
+from ansible_collections.community.docker.plugins.module_utils._logfmt import (
+    InvalidLogFmt as _InvalidLogFmt,
+    parse_line as _parse_logfmt_line,
+)
 
 
 DOCKER_COMPOSE_FILES = ('compose.yaml', 'compose.yml', 'docker-compose.yaml', 'docker-compose.yml')
@@ -55,6 +59,9 @@ DOCKER_STATUS_PULL = frozenset((
 ))
 DOCKER_STATUS_ERROR = frozenset((
     'Error',
+))
+DOCKER_STATUS_WARNING = frozenset((
+    'Warning',
 ))
 DOCKER_STATUS_WAITING = frozenset((
     'Waiting',
@@ -145,8 +152,21 @@ _RE_ERROR_EVENT = re.compile(
     r'\s+'
     r'(?P<status>%s)'
     r'\s*'
+    r'(?P<msg>\S.*\S)?'
     r'$'
     % '|'.join(re.escape(status) for status in DOCKER_STATUS_ERROR)
+)
+
+_RE_WARNING_EVENT = re.compile(
+    r'^'
+    r'\s*'
+    r'(?P<resource_id>\S+)'
+    r'\s+'
+    r'(?P<status>%s)'
+    r'\s*'
+    r'(?P<msg>\S.*\S)?'
+    r'$'
+    % '|'.join(re.escape(status) for status in DOCKER_STATUS_WARNING)
 )
 
 _RE_CONTINUE_EVENT = re.compile(
@@ -193,7 +213,7 @@ _RE_BUILD_PROGRESS_EVENT = re.compile(
 MINIMUM_COMPOSE_VERSION = '2.18.0'
 
 
-def _extract_event(line):
+def _extract_event(line, warn_function=None):
     match = _RE_RESOURCE_EVENT.match(line)
     if match is not None:
         status = match.group('status')
@@ -205,7 +225,7 @@ def _extract_event(line):
             match.group('resource_id'),
             status,
             msg,
-        )
+        ), True
     match = _RE_PULL_EVENT.match(line)
     if match:
         return Event(
@@ -213,15 +233,24 @@ def _extract_event(line):
             match.group('service'),
             match.group('status'),
             None,
-        )
+        ), True
     match = _RE_ERROR_EVENT.match(line)
     if match:
         return Event(
             ResourceType.UNKNOWN,
             match.group('resource_id'),
             match.group('status'),
-            None,
-        )
+            match.group('msg') or None,
+        ), True
+    match = _RE_WARNING_EVENT.match(line)
+    if match:
+        if warn_function:
+            if match.group('msg'):
+                msg = '{rid}: {msg}'
+            else:
+                msg = 'Unspecified warning for {rid}'
+            warn_function(msg.format(rid=match.group('resource_id'), msg=match.group('msg')))
+        return None, True
     match = _RE_PULL_PROGRESS.match(line)
     if match:
         return Event(
@@ -229,7 +258,7 @@ def _extract_event(line):
             match.group('layer'),
             match.group('status'),
             None,
-        )
+        ), True
     match = _RE_SKIPPED_EVENT.match(line)
     if match:
         return Event(
@@ -237,7 +266,7 @@ def _extract_event(line):
             match.group('resource_id'),
             'Skipped',
             match.group('msg'),
-        )
+        ), True
     match = _RE_BUILD_START_EVENT.match(line)
     if match:
         return Event(
@@ -245,8 +274,23 @@ def _extract_event(line):
             match.group('resource_id'),
             'Building',
             None,
-        )
-    return None
+        ), True
+    return None, False
+
+
+def _extract_logfmt_event(line, warn_function=None):
+    try:
+        result = _parse_logfmt_line(line, logrus_mode=True)
+    except _InvalidLogFmt:
+        return None, False
+    if 'time' not in result or 'level' not in result or 'msg' not in result:
+        return None, False
+    if result['level'] == 'warning':
+        if warn_function:
+            warn_function(result['msg'])
+        return None, True
+    # TODO: no idea what to do with this
+    return None, False
 
 
 def _warn_missing_dry_run_prefix(line, warn_missing_dry_run_prefix, warn_function):
@@ -303,7 +347,7 @@ def parse_events(stderr, dry_run=False, warn_function=None):
                 line = line[len(_DRY_RUN_MARKER):].lstrip()
             else:
                 warn_missing_dry_run_prefix = True
-        event = _extract_event(line)
+        event, parsed = _extract_event(line, warn_function=warn_function)
         if event is not None:
             events.append(event)
             if event.status in DOCKER_STATUS_ERROR:
@@ -311,6 +355,8 @@ def parse_events(stderr, dry_run=False, warn_function=None):
             else:
                 error_event = None
             _warn_missing_dry_run_prefix(line, warn_missing_dry_run_prefix, warn_function)
+            continue
+        elif parsed:
             continue
         match = _RE_BUILD_PROGRESS_EVENT.match(line)
         if match:
@@ -323,6 +369,11 @@ def parse_events(stderr, dry_run=False, warn_function=None):
             if index_event is not None:
                 index, event = index_event
                 events[-1] = _concat_event_msg(event, match.group('msg'))
+        event, parsed = _extract_logfmt_event(line, warn_function=warn_function)
+        if event is not None:
+            events.append(event)
+        elif parsed:
+            continue
         if error_event is not None:
             # Unparsable line that apparently belongs to the previous error event
             events[-1] = _concat_event_msg(error_event, line)
@@ -397,9 +448,6 @@ def emit_warnings(events, warn_function):
 def is_failed(events, rc):
     if rc:
         return True
-    for event in events:
-        if event.status in DOCKER_STATUS_ERROR:
-            return True
     return False
 
 
