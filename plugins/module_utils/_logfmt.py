@@ -115,8 +115,8 @@ def parse_line(line, logrus_mode=False):
         k = ''.join(key)
         v = None if has_no_value else ''.join(value)
         result[k] = v
-        key.clear()
-        value.clear()
+        del key[:]
+        del value[:]
 
     def parse_garbage(cur):
         if _is_ident(cur):
