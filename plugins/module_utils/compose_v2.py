@@ -16,6 +16,10 @@ from ansible.module_utils.six.moves import shlex_quote
 
 from ansible_collections.community.docker.plugins.module_utils.util import DockerBaseClass
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
+from ansible_collections.community.docker.plugins.module_utils._logfmt import (
+    InvalidLogFmt as _InvalidLogFmt,
+    parse_line as _parse_logfmt_line,
+)
 
 
 DOCKER_COMPOSE_FILES = ('compose.yaml', 'compose.yml', 'docker-compose.yaml', 'docker-compose.yml')
@@ -249,6 +253,21 @@ def _extract_event(line):
     return None
 
 
+def _extract_logfmt_event(line, warn_function=None):
+    try:
+        result = _parse_logfmt_line(line, logrus_mode=True)
+    except _InvalidLogFmt:
+        return None, False
+    if 'time' not in result or 'level' not in result or 'msg' not in result:
+        return None, False
+    if result['level'] == 'warning':
+        if warn_function:
+            warn_function(result['msg'])
+        return None, True
+    # TODO: no idea what to do with this
+    return None, False
+
+
 def _warn_missing_dry_run_prefix(line, warn_missing_dry_run_prefix, warn_function):
     if warn_missing_dry_run_prefix and warn_function:
         # This could be a bug, a change of docker compose's output format, ...
@@ -323,6 +342,11 @@ def parse_events(stderr, dry_run=False, warn_function=None):
             if index_event is not None:
                 index, event = index_event
                 events[-1] = _concat_event_msg(event, match.group('msg'))
+        event, parsed = _extract_logfmt_event(line, warn_function=warn_function)
+        if event is not None:
+            events.append(event)
+        if parsed:
+            continue
         if error_event is not None:
             # Unparsable line that apparently belongs to the previous error event
             events[-1] = _concat_event_msg(error_event, line)
