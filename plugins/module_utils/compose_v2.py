@@ -421,9 +421,6 @@ def emit_warnings(events, warn_function):
 def is_failed(events, rc):
     if rc:
         return True
-    for event in events:
-        if event.status in DOCKER_STATUS_ERROR:
-            return True
     return False
 
 
