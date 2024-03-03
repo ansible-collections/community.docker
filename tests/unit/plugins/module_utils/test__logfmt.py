@@ -15,14 +15,36 @@ from ansible_collections.community.docker.plugins.module_utils._logfmt import (
 
 SUCCESS_TEST_CASES = [
     (
-        'time="2024-02-02T08:14:10+01:00" level=warning msg="a network with name influxNetwork exists but was not created for project \\"influxdb\\".\\nSet `external: true` to use an existing network"',
+        'time="2024-02-02T08:14:10+01:00" level=warning msg="a network with name influxNetwork exists but was not'
+        ' created for project \\"influxdb\\".\\nSet `external: true` to use an existing network"',
         {},
-        {'time': '2024-02-02T08:14:10+01:00', 'level': 'warning', 'msg': 'a network with name influxNetwork exists but was not created for project "influxdb".\nSet `external: true` to use an existing network'},
+        {
+            'time': '2024-02-02T08:14:10+01:00',
+            'level': 'warning',
+            'msg': 'a network with name influxNetwork exists but was not created for project "influxdb".\nSet `external: true` to use an existing network',
+        },
+    ),
+    (
+        'time="2024-02-02T08:14:10+01:00" level=warning msg="a network with name influxNetwork exists but was not'
+        ' created for project \\"influxdb\\".\\nSet `external: true` to use an existing network"',
+        {'logrus_mode': True},
+        {
+            'time': '2024-02-02T08:14:10+01:00',
+            'level': 'warning',
+            'msg': 'a network with name influxNetwork exists but was not created for project "influxdb".\nSet `external: true` to use an existing network',
+        },
     ),
     (
         'foo=bar a=14 baz="hello kitty" cool%story=bro f %^asdf',
         {},
-        {'foo': 'bar', 'a': '14', 'baz': 'hello kitty', 'cool%story': 'bro', 'f': None, '%^asdf': None},
+        {
+            'foo': 'bar',
+            'a': '14',
+            'baz': 'hello kitty',
+            'cool%story': 'bro',
+            'f': None,
+            '%^asdf': None,
+        },
     ),
     (
         '{"foo":"bar"}',

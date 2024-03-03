@@ -180,7 +180,8 @@ EXTRA_TEST_CASES = [
         '2.20.3-logrus-warn',
         '2.20.3',
         False,
-        'time="2024-02-02T08:14:10+01:00" level=warning msg="a network with name influxNetwork exists but was not created for project \\"influxdb\\".\\nSet `external: true` to use an existing network"\n',
+        'time="2024-02-02T08:14:10+01:00" level=warning msg="a network with name influxNetwork exists but was not'
+        ' created for project \\"influxdb\\".\\nSet `external: true` to use an existing network"\n',
         [],
         [
             'a network with name influxNetwork exists but was not created for project "influxdb".\nSet `external: true` to use an existing network',
