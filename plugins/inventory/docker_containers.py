@@ -167,6 +167,7 @@ import re
 from ansible.errors import AnsibleError
 from ansible.module_utils.common.text.converters import to_native
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
+from ansible.utils.unsafe_proxy import wrap_var as make_unsafe
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     RequestException,
@@ -239,8 +240,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 full_name = id
 
             facts = dict(
-                docker_name=name,
-                docker_short_id=short_id
+                docker_name=make_unsafe(name),
+                docker_short_id=make_unsafe(short_id),
             )
             full_facts = dict()
 
@@ -310,6 +311,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 fact_key = self._slugify(key)
                 full_facts[fact_key] = value
 
+            full_facts = make_unsafe(full_facts)
+
             if not filter_host(self, name, full_facts, filters):
                 continue
 
@@ -322,7 +325,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 self.inventory.add_host(name, group=group)
 
             for key, value in facts.items():
-                self.inventory.set_variable(name, key, value)
+                self.inventory.set_variable(name, key, make_unsafe(value))
 
             # Use constructed if applicable
             # Composed variables
