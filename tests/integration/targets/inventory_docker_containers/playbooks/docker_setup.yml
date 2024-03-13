@@ -13,6 +13,10 @@
       import_role:
         name: setup_docker
 
+    - name: Setup Docker Python deps
+      import_role:
+        name: setup_docker_python_deps
+
     - name: Start containers
       docker_container:
         name: "{{ item.name }}"

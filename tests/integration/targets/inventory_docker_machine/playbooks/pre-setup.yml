@@ -10,6 +10,10 @@
       include_role:
         name: setup_docker
 
+    - name: Setup Docker Python deps
+      import_role:
+        name: setup_docker_python_deps
+
     # There seems to be no better way to install docker-machine. At least I couldn't find any packages for RHEL7/8.
     - name: Download docker-machine binary
       vars:
