@@ -29,6 +29,10 @@ extends_documentation_fragment:
 attributes:
   check_mode:
     support: full
+    details:
+      - If O(policy=always), the module will always indicate a change.
+        Docker Compose does not give any information whether pulling would
+        update the image or not.
   diff_mode:
     support: none
 
@@ -131,7 +135,7 @@ class PullManager(BaseComposeManager):
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode)
         self.emit_warnings(events)
-        self.update_result(result, events, stdout, stderr)
+        self.update_result(result, events, stdout, stderr, ignore_service_pull_events=self.policy != 'missing' and not self.check_mode)
         self.update_failed(result, events, args, stdout, stderr, rc)
         self.cleanup_result(result)
         return result

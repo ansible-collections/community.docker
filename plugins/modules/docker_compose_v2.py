@@ -31,6 +31,8 @@ extends_documentation_fragment:
 attributes:
   check_mode:
     support: full
+    details:
+      - In check mode, pulling the image does not result in a changed result.
   diff_mode:
     support: none
 

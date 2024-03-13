@@ -409,6 +409,8 @@ def has_changes(events, ignore_service_pull_events=False):
             if ignore_service_pull_events and event.status in DOCKER_STATUS_PULL:
                 continue
             return True
+        if event.resource_type == ResourceType.IMAGE_LAYER and event.status in DOCKER_PULL_PROGRESS_WORKING:
+            return True
     return False
 
 
