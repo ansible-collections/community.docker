@@ -9,6 +9,10 @@
       import_role:
         name: setup_docker
 
+    - name: Setup Docker Python deps
+      import_role:
+        name: setup_docker_sdk_for_python
+
     - name: Start containers
       docker_container:
         name: "{{ item.name }}"
