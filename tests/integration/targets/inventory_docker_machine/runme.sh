@@ -23,14 +23,14 @@ SAVED_PATH="$PATH"
 cleanup() {
     PATH="${SAVED_PATH}"
     echo "Cleanup"
-    ansible-playbook -i teardown.docker_machine.yml playbooks/teardown.yml
+    ansible-playbook -i teardown.docker_machine.yml playbooks/teardown.yml "$@"
     echo "Done"
 }
 
 trap cleanup INT TERM EXIT
 
 echo "Pre-setup (install docker, docker-machine)"
-ANSIBLE_ROLES_PATH=.. ansible-playbook playbooks/pre-setup.yml
+ANSIBLE_ROLES_PATH=.. ansible-playbook playbooks/pre-setup.yml "$@"
 
 echo "Print docker-machine version"
 docker-machine --version
@@ -43,10 +43,10 @@ echo "Test that the docker_machine inventory plugin is being loaded"
 ANSIBLE_DEBUG=yes ansible-inventory -i inventory_1.docker_machine.yml --list | grep -F "Loading InventoryModule 'docker_machine'"
 
 echo "Setup"
-ansible-playbook playbooks/setup.yml
+ansible-playbook playbooks/setup.yml "$@"
 
 echo "Test docker_machine inventory 1"
-ansible-playbook -i inventory_1.docker_machine.yml playbooks/test_inventory_1.yml
+ansible-playbook -i inventory_1.docker_machine.yml playbooks/test_inventory_1.yml "$@"
 
 echo "Activate Docker Machine mock"
 PATH=${SCRIPT_DIR}:$PATH
