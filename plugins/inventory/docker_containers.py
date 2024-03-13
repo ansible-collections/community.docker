@@ -275,6 +275,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 if add_legacy_groups:
                     groups.append('service_{0}'.format(service_name))
 
+            ansible_connection = None
             if connection_type == 'ssh':
                 # Figure out ssh IP and Port
                 try:
@@ -297,14 +298,14 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             elif connection_type == 'docker-cli':
                 facts.update(dict(
                     ansible_host=full_name,
-                    ansible_connection='community.docker.docker',
                 ))
+                ansible_connection = 'community.docker.docker'
             elif connection_type == 'docker-api':
                 facts.update(dict(
                     ansible_host=full_name,
-                    ansible_connection='community.docker.docker_api',
                 ))
                 facts.update(extra_facts)
+                ansible_connection = 'community.docker.docker_api'
 
             full_facts.update(facts)
             for key, value in inspect.items():
@@ -312,6 +313,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 full_facts[fact_key] = value
 
             full_facts = make_unsafe(full_facts)
+
+            if ansible_connection:
+                for d in (facts, full_facts):
+                    if 'ansible_connection' not in d:
+                        d['ansible_connection'] = ansible_connection
 
             if not filter_host(self, name, full_facts, filters):
                 continue
@@ -325,7 +331,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 self.inventory.add_host(name, group=group)
 
             for key, value in facts.items():
-                self.inventory.set_variable(name, key, make_unsafe(value))
+                self.inventory.set_variable(name, key, value)
 
             # Use constructed if applicable
             # Composed variables
