@@ -25,7 +25,6 @@
         # will be other containers.
         - inventory_hostname.startswith('ansible-docker-test-docker-inventory-container-')
       block:
-
       - name: Run raw command
         raw: ls /
         register: output
