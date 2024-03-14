@@ -151,6 +151,7 @@ from ansible_collections.community.docker.plugins.module_utils.common import get
 from ansible_collections.community.docker.plugins.module_utils.util import update_tls_hostname
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
 from ansible.parsing.utils.addresses import parse_address
+from ansible.utils.unsafe_proxy import wrap_var as make_unsafe
 
 try:
     import docker
@@ -201,48 +202,49 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
         try:
             self.nodes = self.client.nodes.list()
-            for self.node in self.nodes:
-                self.node_attrs = self.client.nodes.get(self.node.id).attrs
-                self.inventory.add_host(self.node_attrs['ID'])
-                self.inventory.add_host(self.node_attrs['ID'], group=self.node_attrs['Spec']['Role'])
-                self.inventory.set_variable(self.node_attrs['ID'], 'ansible_host',
-                                            self.node_attrs['Status']['Addr'])
+            for node in self.nodes:
+                node_attrs = self.client.nodes.get(node.id).attrs
+                unsafe_node_attrs = make_unsafe(node_attrs)
+                self.inventory.add_host(unsafe_node_attrs['ID'])
+                self.inventory.add_host(unsafe_node_attrs['ID'], group=unsafe_node_attrs['Spec']['Role'])
+                self.inventory.set_variable(unsafe_node_attrs['ID'], 'ansible_host',
+                                            unsafe_node_attrs['Status']['Addr'])
                 if self.get_option('include_host_uri'):
-                    self.inventory.set_variable(self.node_attrs['ID'], 'ansible_host_uri',
-                                                'tcp://' + self.node_attrs['Status']['Addr'] + ':' + host_uri_port)
+                    self.inventory.set_variable(unsafe_node_attrs['ID'], 'ansible_host_uri',
+                                                make_unsafe('tcp://' + unsafe_node_attrs['Status']['Addr'] + ':' + host_uri_port))
                 if self.get_option('verbose_output'):
-                    self.inventory.set_variable(self.node_attrs['ID'], 'docker_swarm_node_attributes', self.node_attrs)
-                if 'ManagerStatus' in self.node_attrs:
-                    if self.node_attrs['ManagerStatus'].get('Leader'):
+                    self.inventory.set_variable(unsafe_node_attrs['ID'], 'docker_swarm_node_attributes', unsafe_node_attrs)
+                if 'ManagerStatus' in unsafe_node_attrs:
+                    if unsafe_node_attrs['ManagerStatus'].get('Leader'):
                         # This is workaround of bug in Docker when in some cases the Leader IP is 0.0.0.0
                         # Check moby/moby#35437 for details
-                        swarm_leader_ip = parse_address(self.node_attrs['ManagerStatus']['Addr'])[0] or \
-                            self.node_attrs['Status']['Addr']
+                        swarm_leader_ip = parse_address(node_attrs['ManagerStatus']['Addr'])[0] or \
+                            unsafe_node_attrs['Status']['Addr']
                         if self.get_option('include_host_uri'):
-                            self.inventory.set_variable(self.node_attrs['ID'], 'ansible_host_uri',
-                                                        'tcp://' + swarm_leader_ip + ':' + host_uri_port)
-                        self.inventory.set_variable(self.node_attrs['ID'], 'ansible_host', swarm_leader_ip)
-                        self.inventory.add_host(self.node_attrs['ID'], group='leader')
+                            self.inventory.set_variable(unsafe_node_attrs['ID'], 'ansible_host_uri',
+                                                        make_unsafe('tcp://' + swarm_leader_ip + ':' + host_uri_port))
+                        self.inventory.set_variable(unsafe_node_attrs['ID'], 'ansible_host', make_unsafe(swarm_leader_ip))
+                        self.inventory.add_host(unsafe_node_attrs['ID'], group='leader')
                     else:
-                        self.inventory.add_host(self.node_attrs['ID'], group='nonleaders')
+                        self.inventory.add_host(unsafe_node_attrs['ID'], group='nonleaders')
                 else:
-                    self.inventory.add_host(self.node_attrs['ID'], group='nonleaders')
+                    self.inventory.add_host(unsafe_node_attrs['ID'], group='nonleaders')
                 # Use constructed if applicable
                 strict = self.get_option('strict')
                 # Composed variables
                 self._set_composite_vars(self.get_option('compose'),
-                                         self.node_attrs,
-                                         self.node_attrs['ID'],
+                                         unsafe_node_attrs,
+                                         unsafe_node_attrs['ID'],
                                          strict=strict)
                 # Complex groups based on jinja2 conditionals, hosts that meet the conditional are added to group
                 self._add_host_to_composed_groups(self.get_option('groups'),
-                                                  self.node_attrs,
-                                                  self.node_attrs['ID'],
+                                                  unsafe_node_attrs,
+                                                  unsafe_node_attrs['ID'],
                                                   strict=strict)
                 # Create groups based on variable values and add the corresponding hosts to it
                 self._add_host_to_keyed_groups(self.get_option('keyed_groups'),
-                                               self.node_attrs,
-                                               self.node_attrs['ID'],
+                                               unsafe_node_attrs,
+                                               unsafe_node_attrs['ID'],
                                                strict=strict)
         except Exception as e:
             raise AnsibleError('Unable to fetch hosts from Docker swarm API, this was the original exception: %s' %
