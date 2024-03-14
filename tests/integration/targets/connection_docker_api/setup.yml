@@ -9,6 +9,6 @@
       import_role:
         name: setup_docker
 
-    - name: Setup docker
+    - name: Setup docker Python deps
       import_role:
         name: setup_docker_sdk_for_python
