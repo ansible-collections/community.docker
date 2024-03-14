@@ -43,3 +43,13 @@
         # When the integration tests are run inside a docker container, there
         # will be other containers.
         - inventory_hostname.startswith('ansible-docker-test-docker-inventory-container-')
+    - name: Write labels into file
+      copy:
+        dest: "/tmp/{{ inventory_hostname }}-labels.txt"
+        content: |-
+          {{ docker_config.Labels }}
+      delegate_to: localhost
+      when:
+        # When the integration tests are run inside a docker container, there
+        # will be other containers.
+        - inventory_hostname.startswith('ansible-docker-test-docker-inventory-container-')

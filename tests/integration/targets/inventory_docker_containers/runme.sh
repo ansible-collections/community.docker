@@ -19,4 +19,10 @@ echo "Test docker_containers inventory 1"
 ansible-playbook -i inventory_1.docker.yml playbooks/test_inventory_1.yml "$@"
 
 echo "Test docker_containers inventory 2"
+rm -f /tmp/ansible-docker-test-docker-inventory-container-*-labels.txt
 ansible-playbook -i inventory_2.docker.yml playbooks/test_inventory_2.yml "$@"
+
+echo "Validate that 'EVALUATED' does not appear in the labels"
+for FILENAME in /tmp/ansible-docker-test-docker-inventory-container-*-labels.txt; do
+  grep -qv EVALUATED "${FILENAME}" || ( echo "${FILENAME} contains EVALUATED!" && exit 1 )
+done
