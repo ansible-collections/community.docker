@@ -805,3 +805,16 @@ releases:
     - 719-ee-reqs.yml
     - 721-docker-7.yml
     release_date: '2023-12-10'
+  2.7.9:
+    changes:
+      release_summary: Bugfix release.
+      security_fixes:
+      - docker_containers, docker_machine, and docker_swarm inventory plugins - make
+        sure all data received from the Docker daemon / Docker machine is marked as
+        unsafe, so remote code execution by obtaining texts that can be evaluated
+        as templates is not possible (https://www.die-welt.net/2024/03/remote-code-execution-in-ansible-dynamic-inventory-plugins/,
+        https://github.com/ansible-collections/community.docker/pull/815).
+    fragments:
+    - 2.7.9.yml
+    - inventory-rce.yml
+    release_date: '2024-03-16'
