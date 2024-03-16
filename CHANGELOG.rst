@@ -4,6 +4,27 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v3.8.1
+======
+
+Release Summary
+---------------
+
+Bugfix release
+
+Security Fixes
+--------------
+
+- docker_containers, docker_machine, and docker_swarm inventory plugins - make sure all data received from the Docker daemon / Docker machine is marked as unsafe, so remote code execution by obtaining texts that can be evaluated as templates is not possible (https://www.die-welt.net/2024/03/remote-code-execution-in-ansible-dynamic-inventory-plugins/, https://github.com/ansible-collections/community.docker/pull/815).
+
+Bugfixes
+--------
+
+- docker_compose_v2 - do not fail when non-fatal errors occur. This can happen when pulling an image fails, but then the image can be built for another service. Docker Compose emits an error in that case, but ``docker compose up`` still completes successfully (https://github.com/ansible-collections/community.docker/issues/807, https://github.com/ansible-collections/community.docker/pull/810, https://github.com/ansible-collections/community.docker/pull/811).
+- docker_compose_v2* modules - correctly parse ``Warning`` events emitted by Docker Compose (https://github.com/ansible-collections/community.docker/issues/807, https://github.com/ansible-collections/community.docker/pull/811).
+- docker_compose_v2* modules - parse ``logfmt`` warnings emitted by Docker Compose (https://github.com/ansible-collections/community.docker/issues/787, https://github.com/ansible-collections/community.docker/pull/811).
+- docker_compose_v2_pull - fixing idempotence by checking actual pull progress events instead of service-level pull request when ``policy=always``. This stops the module from reporting ``changed=true`` if no actual change happened when pulling. In check mode, it has to assume that a change happens though (https://github.com/ansible-collections/community.docker/issues/813, https://github.com/ansible-collections/community.docker/pull/814).
+
 v3.8.0
 ======
 
