@@ -115,8 +115,8 @@ stages:
               test: ubuntu2004
             - name: Ubuntu 22.04
               test: ubuntu2204
-            - name: Alpine 3
-              test: alpine3
+            - name: Alpine 3.19
+              test: alpine319
           groups:
             - 4
             - 5
@@ -135,6 +135,8 @@ stages:
               test: centos7
             - name: openSUSE 15
               test: opensuse15
+            - name: Alpine 3
+              test: alpine3
           groups:
             - 4
             - 5
