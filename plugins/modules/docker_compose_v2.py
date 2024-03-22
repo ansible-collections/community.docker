@@ -20,6 +20,7 @@ version_added: 3.6.0
 
 description:
   - Uses Docker Compose to start or shutdown services.
+  - test
 
 extends_documentation_fragment:
   - community.docker.compose_v2
