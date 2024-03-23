@@ -13,7 +13,7 @@ from ansible_collections.community.docker.plugins.module_utils.copy import (
 
 
 def _simple_generator(sequence):
-    for elt in sequence:
+    for elt in sequence:  # pylint: disable=use-yield-from
         yield elt
 
 

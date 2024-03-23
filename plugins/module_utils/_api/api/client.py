@@ -327,7 +327,7 @@ class APIClient(
 
         if response.raw._fp.chunked:
             if decode:
-                for chunk in json_stream.json_stream(self._stream_helper(response, False)):
+                for chunk in json_stream.json_stream(self._stream_helper(response, False)):  # pylint: disable=use-yield-from
                     yield chunk
             else:
                 reader = response.raw
@@ -390,7 +390,7 @@ class APIClient(
         socket = self._get_raw_response_socket(response)
         self._disable_socket_timeout(socket)
 
-        for out in response.iter_content(chunk_size, decode):
+        for out in response.iter_content(chunk_size, decode):  # pylint: disable=use-yield-from
             yield out
 
     def _read_from_socket(self, response, stream, tty=True, demux=False):
