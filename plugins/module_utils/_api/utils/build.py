@@ -225,7 +225,7 @@ class PatternMatcher(object):
                             break
                     if skip:
                         continue
-                for sub in rec_walk(cur):  # pylint: disable=use-yield-from
+                for sub in rec_walk(cur):
                     yield sub
 
         return rec_walk(root)
