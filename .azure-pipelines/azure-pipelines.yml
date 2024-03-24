@@ -212,7 +212,7 @@ stages:
             - 3
             - 4
             - 5
-            - 6
+            # - 6  -- Docker 26 no longer works with docker-compose v1
   - stage: Remote_2_16
     displayName: Remote 2.16
     dependsOn: []
