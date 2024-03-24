@@ -124,7 +124,7 @@ stages:
             - 3
             - 4
             - 5
-            - 6
+            # - 6 -- Docker 26 (used on RHEL 9) no longer works with docker-compose v1
 
   ## Finally
 
