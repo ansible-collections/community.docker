@@ -17,7 +17,8 @@ short_description: Build Docker images using Docker buildx
 version_added: 3.6.0
 
 description:
-  - This module allows you to build Docker images using Docker's buildx plugin (BuildKit).
+  - This module allows you to build Docker images using Docker's buildx plugin (BuildKit),
+    supporting features like multi-platform builds, secrets, and conditional image loading or pushing.
 
 extends_documentation_fragment:
   - community.docker.docker.cli_documentation
@@ -89,7 +90,10 @@ options:
     type: str
   platform:
     description:
-      - Platform in the format C(os[/arch[/variant]]).
+      - Target platform(s) for the build, specified as a single string or a list of strings.
+      - Each platform string should be in the format "os/arch[/variant]".
+      - Example single platform "linux/amd64".
+      - Example multiple platforms ["linux/amd64", "linux/arm64/v8"].
     type: str
   shm_size:
     description:
@@ -110,6 +114,42 @@ options:
       - never
       - always
     default: never
+  secret:
+    description: Secrets to expose to the build.
+    type: list
+    elements: dict
+    suboptions:
+      id:
+        description: The secret identifier.
+        type: str
+        required: true
+      src:
+        description: Source path of the secret.
+        type: path
+      value:
+        description: Value of the secret.
+        type: str
+      type:
+        description: Type of the secret.
+        type: str
+        choices:
+          - file
+          - password
+        required: true
+  load:
+    description:
+      - Load the built image into Docker's local image store.
+      - Cannot be used together with O(push).
+    type: bool
+    default: false
+    version_added: 3.9.0
+  push:
+    description:
+      - Push the built image to a Docker registry.
+      - Cannot be used together with O(load).
+    type: bool
+    default: false
+    version_added: 3.9.0
 
 requirements:
   - "Docker CLI with Docker buildx plugin"
@@ -128,6 +168,26 @@ EXAMPLES = '''
     name: localhost/python/3.12:latest
     path: /home/user/images/python
     dockerfile: Dockerfile-3.12
+
+- name: Build a multi-platform image
+  your_module_name:
+    name: my-multi-platform-image
+    path: /path/to/context
+    platform:
+      - linux/amd64
+      - linux/arm64/v8
+
+- name: Build an image with secrets
+  community.docker.docker_image_build:
+    name: mysecretimage
+    path: /path/to/context
+    secret:
+      - id: pass1
+        value: password_from_vault
+        type: password
+      - id: pass2
+        src: /path/to/file_with_pass
+        type: file
 '''
 
 RETURN = '''
@@ -136,10 +196,19 @@ image:
     returned: success
     type: dict
     sample: {}
+    contains:
+        id:
+            description: The ID of the image.
+            type: str
+        name:
+            description: The name and tag of the image.
+            type: str
 '''
 
+import ast
 import os
 import traceback
+import tempfile
 
 from ansible.module_utils.common.text.converters import to_native
 from ansible.module_utils.common.text.formatters import human_to_bytes
@@ -176,6 +245,35 @@ def dict_to_list(dictionary, concat='='):
     return ['%s%s%s' % (k, concat, v) for k, v in sorted(dictionary.items())]
 
 
+def validate_secrets(secrets, module):
+    if not secrets:
+        return
+
+    for secret in secrets:
+        secret_type = secret.get('type')
+        src = secret.get('src')
+        value = secret.get('value')
+        secret_id = secret.get('id')
+
+        if secret_type == 'file':
+            if not src:
+                module.fail_json(msg=("Secret source (src) not specified for secret ID: {0}. "
+                                      "Please specify using 'src'.").format(secret_id))
+            elif not os.path.isfile(src):
+                module.fail_json(msg="Secret source '{0}' not found for secret ID: {1}.".format(src, secret_id))
+        elif secret_type == 'password':
+            if src:
+                module.fail_json(msg=("Secret source (src) should not be provided for "
+                                      "this type with secret ID: {0}. Use 'value' to "
+                                      "specify the secret.").format(secret_id))
+            if not value:
+                module.fail_json(msg=("Secret value not provided for secret ID: {0}. "
+                                      "Please specify the secret using 'value'.").format(secret_id))
+        else:
+            module.fail_json(msg=("Invalid secret type '{0}' for secret ID: {1}. Type must be either "
+                                  "'file' or 'password'.").format(secret_type, secret_id))
+
+
 class ImageBuilder(DockerBaseClass):
     def __init__(self, client):
         super(ImageBuilder, self).__init__()
@@ -190,10 +288,16 @@ class ImageBuilder(DockerBaseClass):
         self.etc_hosts = clean_dict_booleans_for_docker_api(parameters['etc_hosts'])
         self.args = clean_dict_booleans_for_docker_api(parameters['args'])
         self.target = parameters['target']
-        self.platform = parameters['platform']
+        self.platform = self.parse_platforms(parameters['platform'])
         self.shm_size = convert_to_bytes(parameters['shm_size'], self.client.module, 'shm_size')
         self.labels = clean_dict_booleans_for_docker_api(parameters['labels'])
         self.rebuild = parameters['rebuild']
+        self.secret = parameters['secret']
+        self.load = parameters['load']
+        self.push = parameters['push']
+
+        if self.load and self.push:
+            self.fail('The options "load" and "push" cannot be used together.')
 
         buildx = self.client.get_client_plugin_info('buildx')
         if buildx is None:
@@ -213,7 +317,6 @@ class ImageBuilder(DockerBaseClass):
         if is_image_name_id(self.name):
             self.fail('Image name must not be a digest')
 
-        # If name contains a tag, it takes precedence over tag parameter.
         repo, repo_tag = parse_repository_tag(self.name)
         if repo_tag:
             self.name = repo
@@ -253,30 +356,90 @@ class ImageBuilder(DockerBaseClass):
             args.extend(['--shm-size', str(self.shm_size)])
         if self.labels:
             self.add_list_arg(args, '--label', dict_to_list(self.labels))
+        if self.secret:
+            for secret in self.secret:
+                secret_str = 'id={id},src={src}'.format(id=secret["id"], src=secret["src"])
+                args.extend(['--secret', secret_str])
+        if self.load:
+            args.append('--load')
+        if self.push:
+            args.append('--push')
+
+    def parse_platforms(self, platform_param):
+        platforms = []
+        if platform_param:
+            if isinstance(platform_param, list):
+                platforms = ','.join(platform_param)
+            elif isinstance(platform_param, str):
+                if platform_param.startswith('[') and platform_param.endswith(']'):
+                    try:
+                        parsed = ast.literal_eval(platform_param)
+                        if isinstance(parsed, list):
+                            return ','.join(parsed)
+                        else:
+                            self.fail("Platform specifier must be a list, got: {0}".format(type(parsed)))
+                    except (ValueError, SyntaxError) as e:
+                        self.fail("Failed to parse platform specifier: {0}. Error: {1}".format(platform_param, str(e)))
+                else:
+                    return platform_param
+            else:
+                self.fail("Invalid platform format. Expected string or list of strings, got: {0}".format(type(platform_param)))
+            return ''
+
+    def handle_secrets(self):
+        secrets = self.secret or []
+        temp_files = []
+
+        for secret in secrets:
+            temp_path = None
+
+            if 'value' in secret and secret['value'] is not None:
+                temp_fd, temp_path = tempfile.mkstemp()
+                with open(temp_path, 'w') as tmp:
+                    tmp.write(str(secret['value']))
+                os.close(temp_fd)
+
+                secret['src'] = temp_path
+                temp_files.append(temp_path)
+
+            if temp_path is not None:
+                self.client.module.add_cleanup_file(temp_path)
+
+            if 'src' in secret:
+                pass
+            else:
+                pass
+
+        return temp_files
 
     def build_image(self):
-        image = self.client.find_image(self.name, self.tag)
-        results = dict(
-            changed=False,
-            actions=[],
-            image=image or {},
-        )
+        temp_files = self.handle_secrets()
+        try:
+            results = dict(changed=False, actions=[], image={})
+            image = self.client.find_image(self.name, self.tag)
+            if image:
+                if self.rebuild == 'never':
+                    results['image'] = image
+                    return results
+            results['changed'] = True
 
-        if image:
-            if self.rebuild == 'never':
-                return results
+            if not self.check_mode:
+                args = ['buildx', 'build', '--progress', 'plain']
+                self.add_args(args)
+                args.extend(['--', self.path])
+                rc, stdout, stderr = self.client.call_cli(*args)
 
-        results['changed'] = True
-        if not self.check_mode:
-            args = ['buildx', 'build', '--progress', 'plain']
-            self.add_args(args)
-            args.extend(['--', self.path])
-            rc, stdout, stderr = self.client.call_cli(*args)
-            if rc != 0:
-                self.fail('Building %s:%s failed' % (self.name, self.tag), stdout=to_native(stdout), stderr=to_native(stderr))
-            results['stdout'] = to_native(stdout)
-            results['stderr'] = to_native(stderr)
-            results['image'] = self.client.find_image(self.name, self.tag) or {}
+                if rc != 0:
+                    self.fail('Building %s:%s failed' % (self.name, self.tag), stdout=to_native(stdout), stderr=to_native(stderr))
+
+                results.update(stdout=to_native(stdout), stderr=to_native(stderr), image=self.client.find_image(self.name, self.tag) or {})
+
+        finally:
+            for temp_path in temp_files:
+                try:
+                    os.remove(temp_path)
+                except OSError as e:
+                    self.fail(msg='Error cleaning up temporary file {0}: {1}'.format(temp_path, str(e)))
 
         return results
 
@@ -298,6 +461,14 @@ def main():
         shm_size=dict(type='str'),
         labels=dict(type='dict'),
         rebuild=dict(type='str', choices=['never', 'always'], default='never'),
+        secret=dict(type='list', elements='dict', no_log=True, options=dict(
+            id=dict(type='str', required=True),
+            src=dict(type='path'),
+            value=dict(type='str'),
+            type=dict(type='str', choices=['file', 'password'], required=True),
+        )),
+        load=dict(type='bool', default=False),
+        push=dict(type='bool', default=False),
     )
 
     client = AnsibleModuleDockerClient(
@@ -306,10 +477,16 @@ def main():
     )
 
     try:
-        results = ImageBuilder(client).build_image()
+        validate_secrets(client.module.params.get('secret', []), client.module)
+    except ValueError as e:
+        client.fail_json(msg=str(e))
+
+    try:
+        builder = ImageBuilder(client)
+        results = builder.build_image()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail_json(msg='An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
 
 
 if __name__ == '__main__':
