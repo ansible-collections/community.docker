@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_compose_v2* modules - abort with a nice error message instead of crash when the Docker Compose CLI plugin version is ``dev`` (https://github.com/ansible-collections/community.docker/issues/825, https://github.com/ansible-collections/community.docker/pull/826)."
