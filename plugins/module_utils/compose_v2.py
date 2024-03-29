@@ -516,6 +516,12 @@ class BaseComposeManager(DockerBaseClass):
         compose = self.client.get_client_plugin_info('compose')
         if compose is None:
             self.client.fail('Docker CLI {0} does not have the compose plugin installed'.format(self.client.get_cli()))
+        if compose['Version'] == 'dev':
+            self.client.fail(
+                'Docker CLI {0} has a compose plugin installed, but it reports version "dev".'
+                ' Please use a version of the plugin that returns a proper version.'
+                .format(self.client.get_cli())
+            )
         compose_version = compose['Version'].lstrip('v')
         self.compose_version = LooseVersion(compose_version)
         if self.compose_version < LooseVersion(min_version):
