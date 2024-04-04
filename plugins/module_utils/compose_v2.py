@@ -507,7 +507,7 @@ class BaseComposeManager(DockerBaseClass):
         self.check_mode = self.client.check_mode
         parameters = self.client.module.params
 
-        self.project_src = parameters['project_src']
+        self.project_src = os.path.abspath(parameters['project_src'])
         self.project_name = parameters['project_name']
         self.files = parameters['files']
         self.env_files = parameters['env_files']
