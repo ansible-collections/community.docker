@@ -6,6 +6,7 @@ docker
 urllib3
 requests
 paramiko
+pyyaml
 
 # We assume that EEs are not based on Windows, and have Python >= 3.5.
 # (ansible-builder does not support conditionals, it will simply add
