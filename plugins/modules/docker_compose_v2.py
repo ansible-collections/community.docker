@@ -626,7 +626,7 @@ def main():
     client = AnsibleModuleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        **argspec_ex,
+        **argspec_ex
     )
 
     try:
