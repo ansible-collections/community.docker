@@ -41,3 +41,10 @@ action_groups:
     - docker_swarm_service_info
     - docker_volume
     - docker_volume_info
+
+plugin_routing:
+  modules:
+    docker_compose:
+      deprecation:
+        removal_version: 4.0.0
+        warning_text: This module uses docker-compose v1, which is End of Life since July 2022. Please migrate to community.docker.docker_compose_v2.

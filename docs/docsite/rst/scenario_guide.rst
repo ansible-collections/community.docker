@@ -272,12 +272,13 @@ No further requirements next to to the CLI tool and its Docker Compose plugin ar
 Docker Compose v1
 .................
 
-The :ansplugin:`community.docker.docker_compose module <community.docker.docker_compose#module>`
+The deprecated :ansplugin:`community.docker.docker_compose module <community.docker.docker_compose#module>`
 allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
 This module uses the out-dated and End of Life version 1.x of Docker Compose. It should mainly be used for legacy systems
-which still have to use that version of Docker Compose.
+which still have to use that version of Docker Compose. **The module is deprecated and will be removed from community.docker 4.0.0.**
+Please use the Docker Compose v2 modules instead.
 
-You need to install the `old Python docker-compose <https://pypi.org/project/docker-compose/>`_ on the remote machines to use the module.
+You need to install the `old Python docker-compose <https://pypi.org/project/docker-compose/>`_ on the remote machines to use the Docker Compose v1 module.
 
 
 Docker Machine
