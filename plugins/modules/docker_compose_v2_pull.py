@@ -102,7 +102,7 @@ from ansible_collections.community.docker.plugins.module_utils.common_cli import
 
 from ansible_collections.community.docker.plugins.module_utils.compose_v2 import (
     BaseComposeManager,
-    common_compose_argspec,
+    common_compose_argspec_ex,
 )
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
@@ -117,7 +117,7 @@ class PullManager(BaseComposeManager):
 
         if self.policy != 'always' and self.compose_version < LooseVersion('2.22.0'):
             # https://github.com/docker/compose/pull/10981 - 2.22.0
-            self.client.fail('A pull policy other than always is only supported since Docker Compose 2.22.0. {0} has version {1}'.format(
+            self.fail('A pull policy other than always is only supported since Docker Compose 2.22.0. {0} has version {1}'.format(
                 self.client.get_cli(), self.compose_version))
 
     def get_pull_cmd(self, dry_run, no_start=False):
@@ -145,15 +145,19 @@ def main():
     argument_spec = dict(
         policy=dict(type='str', choices=['always', 'missing'], default='always'),
     )
-    argument_spec.update(common_compose_argspec())
+    argspec_ex = common_compose_argspec_ex()
+    argument_spec.update(argspec_ex.pop('argspec'))
 
     client = AnsibleModuleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
+        **argspec_ex,
     )
 
     try:
-        result = PullManager(client).run()
+        manager = PullManager(client)
+        result = manager.run()
+        manager.cleanup()
         client.module.exit_json(**result)
     except DockerException as e:
         client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
