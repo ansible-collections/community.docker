@@ -205,6 +205,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>The below requirements are needed on the host that executes this module.</p>
 <ul class="simple">
 <li><p>Docker CLI with Docker compose plugin 2.18.0 or later</p></li>
+<li><p>PyYAML if <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code> is used</p></li>
 </ul>
 </section>
 <section id="parameters">
@@ -286,6 +287,17 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-definition"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-definition"><strong>definition</strong></p>
+<a class="ansibleOptionLink" href="#parameter-definition" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.9.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Compose file describing one or more services, networks and volumes.</p>
+<p>Mutually exclusive with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code> and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-parameter-files"><span class="std std-ref"><span class="pre">files</span></span></a></strong></code>.</p>
+<p>If provided, PyYAML must be available to this module, and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-parameter-project-name"><span class="std std-ref"><span class="pre">project_name</span></span></a></strong></code> must be specified.</p>
+<p>Note that a temporary directory will be created and deleted afterwards when using this option.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-dependencies"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-dependencies"><strong>dependencies</strong></p>
 <a class="ansibleOptionLink" href="#parameter-dependencies" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -297,14 +309,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-docker_cli"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-docker-cli"><strong>docker_cli</strong></p>
 <a class="ansibleOptionLink" href="#parameter-docker_cli" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Path to the Docker CLI. If not provided, will search for Docker CLI on the <code class="xref std std-envvar docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-docker_host"></div>
 <div class="ansibleOptionAnchor" id="parameter-docker_url"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-docker-url"><span id="ansible-collections-community-docker-docker-compose-v2-module-parameter-docker-host"></span><strong>docker_host</strong></p>
 <a class="ansibleOptionLink" href="#parameter-docker_host" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: docker_url</span></p>
@@ -315,7 +327,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;unix:///var/run/docker.sock&quot;</span></code></p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-env_files"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-env-files"><strong>env_files</strong></p>
 <a class="ansibleOptionLink" href="#parameter-env_files" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=path</span></p>
 </div></td>
@@ -324,16 +336,17 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>The path is relative to the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code> directory.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-files"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-files"><strong>files</strong></p>
 <a class="ansibleOptionLink" href="#parameter-files" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=path</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 3.7.0</em></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>List of Compose file names relative to <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code> to be used instead of the main Compose file (<code class="docutils literal notranslate"><span class="pre">compose.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">compose.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code>, or <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code>).</p>
 <p>Files are loaded and merged in the order given.</p>
+<p>Mutually exclusive with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code>.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-profiles"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-profiles"><strong>profiles</strong></p>
 <a class="ansibleOptionLink" href="#parameter-profiles" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
@@ -341,22 +354,24 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Equivalent to <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">--profile</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-project_name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-project-name"><strong>project_name</strong></p>
 <a class="ansibleOptionLink" href="#parameter-project_name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Provide a project name. If not provided, the project name is taken from the basename of <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code>.</p>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-project_src"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-project-src"><strong>project_src</strong></p>
-<a class="ansibleOptionLink" href="#parameter-project_src" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span> / <span class="ansible-option-required">required</span></p>
-</div></td>
-<td><div class="ansible-option-cell"><p>Path to a directory containing a Compose file (<code class="docutils literal notranslate"><span class="pre">compose.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">compose.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code>, or <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code>).</p>
-<p>If <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-parameter-files"><span class="std std-ref"><span class="pre">files</span></span></a></strong></code> is provided, will look for these files in this directory instead.</p>
+<p>Required when <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code> is provided.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-project_src"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-project-src"><strong>project_src</strong></p>
+<a class="ansibleOptionLink" href="#parameter-project_src" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Path to a directory containing a Compose file (<code class="docutils literal notranslate"><span class="pre">compose.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">compose.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code>, or <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code>).</p>
+<p>If <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-parameter-files"><span class="std std-ref"><span class="pre">files</span></span></a></strong></code> is provided, will look for these files in this directory instead.</p>
+<p>Mutually exclusive with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code>.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-pull"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-pull"><strong>pull</strong></p>
 <a class="ansibleOptionLink" href="#parameter-pull" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -374,7 +389,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-recreate"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-recreate"><strong>recreate</strong></p>
 <a class="ansibleOptionLink" href="#parameter-recreate" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -389,7 +404,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-remove_images"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-remove-images"><strong>remove_images</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remove_images" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -401,7 +416,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-remove_orphans"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-remove-orphans"><strong>remove_orphans</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remove_orphans" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -413,7 +428,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-remove_volumes"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-remove-volumes"><strong>remove_volumes</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remove_volumes" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -425,7 +440,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-scale"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-scale"><strong>scale</strong></p>
 <a class="ansibleOptionLink" href="#parameter-scale" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 3.7.0</em></p>
@@ -434,14 +449,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Provide a dictionary of key/value pairs where the key is the name of the service and the value is an integer count for the number of containers.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-services"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-services"><strong>services</strong></p>
 <a class="ansibleOptionLink" href="#parameter-services" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Specifies a subset of services to be targeted.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-state"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-state"><strong>state</strong></p>
 <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -459,14 +474,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-timeout"><strong>timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Timeout in seconds for container shutdown when attached or when containers are already running.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -479,7 +494,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-tls-hostname"><strong>tls_hostname</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -487,7 +502,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-compose-v2-module-parameter-tls-verify"></span><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
@@ -502,7 +517,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-wait"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-wait"><strong>wait</strong></p>
 <a class="ansibleOptionLink" href="#parameter-wait" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 3.8.0</em></p>
@@ -516,7 +531,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-wait_timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-module-parameter-wait-timeout"><strong>wait_timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-wait_timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 3.8.0</em></p>
