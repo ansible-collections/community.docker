@@ -83,6 +83,10 @@ options:
       - Dictionary of key value pairs.
       - Corresponds to the C(--container-label) option of C(docker service create).
     type: dict
+  sysctls:
+    description:
+      - Dictionary of key,value pairs.
+    type: dict
   dns:
     description:
       - List of custom DNS servers.
@@ -681,6 +685,7 @@ swarm_service:
       "engine.labels.operatingsystem == ubuntu 14.04"
     ],
     "container_labels": null,
+    "sysctls": null,
     "dns": null,
     "dns_options": null,
     "dns_search": null,
@@ -1226,6 +1231,7 @@ class DockerService(DockerBaseClass):
         self.log_driver_options = None
         self.labels = None
         self.container_labels = None
+        self.sysctls = None
         self.limit_cpu = None
         self.limit_memory = None
         self.reserve_cpu = None
@@ -1292,6 +1298,7 @@ class DockerService(DockerBaseClass):
             'placement_preferences': self.placement_preferences,
             'labels': self.labels,
             'container_labels': self.container_labels,
+            'sysctls': self.sysctls,
             'mode': self.mode,
             'replicas': self.replicas,
             'endpoint_mode': self.endpoint_mode,
@@ -1539,6 +1546,7 @@ class DockerService(DockerBaseClass):
         s.tty = ap['tty']
         s.labels = ap['labels']
         s.container_labels = ap['container_labels']
+        s.sysctls = ap['sysctls']
         s.mode = ap['mode']
         s.stop_signal = ap['stop_signal']
         s.user = ap['user']
@@ -1740,6 +1748,8 @@ class DockerService(DockerBaseClass):
             differences.add('reserve_memory', parameter=self.reserve_memory, active=os.reserve_memory)
         if self.container_labels is not None and self.container_labels != (os.container_labels or {}):
             differences.add('container_labels', parameter=self.container_labels, active=os.container_labels)
+        if self.sysctls is not None and self.sysctls != (os.sysctls or {}):
+            differences.add('sysctls', parameter=self.sysctls, active=os.sysctls)
         if self.stop_signal is not None and self.stop_signal != os.stop_signal:
             differences.add('stop_signal', parameter=self.stop_signal, active=os.stop_signal)
         if self.stop_grace_period is not None and self.stop_grace_period != os.stop_grace_period:
@@ -1934,6 +1944,8 @@ class DockerService(DockerBaseClass):
             container_spec_args['user'] = self.user
         if self.container_labels is not None:
             container_spec_args['labels'] = self.container_labels
+        if self.sysctls is not None:
+            container_spec_args['sysctls'] = self.sysctls
         if self.healthcheck is not None:
             container_spec_args['healthcheck'] = types.Healthcheck(**self.healthcheck)
         elif self.healthcheck_disabled:
@@ -2163,6 +2175,7 @@ class DockerServiceManager(object):
         ds.read_only = task_template_data['ContainerSpec'].get('ReadOnly')
         ds.cap_add = task_template_data['ContainerSpec'].get('CapabilityAdd')
         ds.cap_drop = task_template_data['ContainerSpec'].get('CapabilityDrop')
+        ds.sysctls = task_template_data['ContainerSpec'].get('Sysctls')
 
         healthcheck_data = task_template_data['ContainerSpec'].get('Healthcheck')
         if healthcheck_data:
@@ -2676,6 +2689,7 @@ def main():
         hosts=dict(type='dict'),
         labels=dict(type='dict'),
         container_labels=dict(type='dict'),
+        sysctls=dict(type='dict'),
         mode=dict(
             type='str',
             default='replicated',
