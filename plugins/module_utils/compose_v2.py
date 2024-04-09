@@ -9,8 +9,12 @@ __metaclass__ = type
 
 import os
 import re
+import shutil
+import tempfile
+import traceback
 from collections import namedtuple
 
+from ansible.module_utils.basic import missing_required_lib
 from ansible.module_utils.common.text.converters import to_native
 from ansible.module_utils.six.moves import shlex_quote
 
@@ -20,6 +24,19 @@ from ansible_collections.community.docker.plugins.module_utils._logfmt import (
     InvalidLogFmt as _InvalidLogFmt,
     parse_line as _parse_logfmt_line,
 )
+
+try:
+    import yaml
+    try:
+        # use C version if possible for speedup
+        from yaml import CSafeDumper as _SafeDumper
+    except ImportError:
+        from yaml import SafeDumper as _SafeDumper
+    HAS_PYYAML = True
+    PYYAML_IMPORT_ERROR = None
+except ImportError:
+    HAS_PYYAML = False
+    PYYAML_IMPORT_ERROR = traceback.format_exc()
 
 
 DOCKER_COMPOSE_FILES = ('compose.yaml', 'compose.yml', 'docker-compose.yaml', 'docker-compose.yml')
@@ -484,11 +501,25 @@ def update_failed(result, events, args, stdout, stderr, rc, cli):
 
 def common_compose_argspec():
     return dict(
-        project_src=dict(type='path', required=True),
+        project_src=dict(type='path'),
         project_name=dict(type='str'),
         files=dict(type='list', elements='path'),
+        definition=dict(type='dict'),
         env_files=dict(type='list', elements='path'),
         profiles=dict(type='list', elements='str'),
+    )
+
+
+def common_compose_argspec_ex():
+    return dict(
+        argspec=common_compose_argspec(),
+        mutually_exclusive=[
+            ('definition', 'project_src'),
+            ('definition', 'files')
+        ],
+        required_by={
+            'definition': ('project_name', ),
+        },
     )
 
 
@@ -505,19 +536,38 @@ class BaseComposeManager(DockerBaseClass):
         super(BaseComposeManager, self).__init__()
         self.client = client
         self.check_mode = self.client.check_mode
+        self.cleanup_dirs = set()
         parameters = self.client.module.params
 
-        self.project_src = os.path.abspath(parameters['project_src'])
+        if parameters['definition'] is not None and not HAS_PYYAML:
+            self.fail(
+                missing_required_lib('PyYAML'),
+                exception=PYYAML_IMPORT_ERROR
+            )
+
         self.project_name = parameters['project_name']
+        if parameters['definition'] is not None:
+            self.project_src = tempfile.mkdtemp(prefix='ansible')
+            self.cleanup_dirs.add(self.project_src)
+            compose_file = os.path.join(self.project_src, 'compose.yaml')
+            self.client.module.add_cleanup_file(compose_file)
+            try:
+                with open(compose_file, 'wb') as f:
+                    yaml.dump(parameters['definition'], f, encoding="utf-8", Dumper=_SafeDumper)
+            except Exception as exc:
+                self.fail("Error writing to %s - %s" % (compose_file, to_native(exc)))
+        else:
+            self.project_src = os.path.abspath(parameters['project_src'])
+
         self.files = parameters['files']
         self.env_files = parameters['env_files']
         self.profiles = parameters['profiles']
 
         compose = self.client.get_client_plugin_info('compose')
         if compose is None:
-            self.client.fail('Docker CLI {0} does not have the compose plugin installed'.format(self.client.get_cli()))
+            self.fail('Docker CLI {0} does not have the compose plugin installed'.format(self.client.get_cli()))
         if compose['Version'] == 'dev':
-            self.client.fail(
+            self.fail(
                 'Docker CLI {0} has a compose plugin installed, but it reports version "dev".'
                 ' Please use a version of the plugin that returns a proper version.'
                 .format(self.client.get_cli())
@@ -525,23 +575,27 @@ class BaseComposeManager(DockerBaseClass):
         compose_version = compose['Version'].lstrip('v')
         self.compose_version = LooseVersion(compose_version)
         if self.compose_version < LooseVersion(min_version):
-            self.client.fail('Docker CLI {cli} has the compose plugin with version {version}; need version {min_version} or later'.format(
+            self.fail('Docker CLI {cli} has the compose plugin with version {version}; need version {min_version} or later'.format(
                 cli=self.client.get_cli(),
                 version=compose_version,
                 min_version=min_version,
             ))
 
         if not os.path.isdir(self.project_src):
-            self.client.fail('"{0}" is not a directory'.format(self.project_src))
+            self.fail('"{0}" is not a directory'.format(self.project_src))
 
         if self.files:
             for file in self.files:
                 path = os.path.join(self.project_src, file)
                 if not os.path.exists(path):
-                    self.client.fail('Cannot find Compose file "{0}" relative to project directory "{1}"'.format(file, self.project_src))
+                    self.fail('Cannot find Compose file "{0}" relative to project directory "{1}"'.format(file, self.project_src))
         elif all(not os.path.exists(os.path.join(self.project_src, f)) for f in DOCKER_COMPOSE_FILES):
             filenames = ', '.join(DOCKER_COMPOSE_FILES[:-1])
-            self.client.fail('"{0}" does not contain {1}, or {2}'.format(self.project_src, filenames, DOCKER_COMPOSE_FILES[-1]))
+            self.fail('"{0}" does not contain {1}, or {2}'.format(self.project_src, filenames, DOCKER_COMPOSE_FILES[-1]))
+
+    def fail(self, msg, **kwargs):
+        self.cleanup()
+        self.client.fail(msg, **kwargs)
 
     def get_base_args(self):
         args = ['compose', '--ansi', 'never']
@@ -622,3 +676,11 @@ class BaseComposeManager(DockerBaseClass):
             for res in ('stdout', 'stderr'):
                 if result.get(res) == '':
                     result.pop(res)
+
+    def cleanup(self):
+        for dir in self.cleanup_dirs:
+            try:
+                shutil.rmtree(dir, True)
+            except Exception:
+                # shouldn't happen, but simply ignore to be on the safe side
+                pass

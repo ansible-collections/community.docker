@@ -18,20 +18,30 @@ options:
           - Path to a directory containing a Compose file
             (C(compose.yml), C(compose.yaml), C(docker-compose.yml), or C(docker-compose.yaml)).
           - If O(files) is provided, will look for these files in this directory instead.
+          - Mutually exclusive with O(definition).
         type: path
-        required: true
     project_name:
         description:
           - Provide a project name. If not provided, the project name is taken from the basename of O(project_src).
+          - Required when O(definition) is provided.
         type: str
     files:
         description:
           - List of Compose file names relative to O(project_src) to be used instead of the main Compose file
             (C(compose.yml), C(compose.yaml), C(docker-compose.yml), or C(docker-compose.yaml)).
           - Files are loaded and merged in the order given.
+          - Mutually exclusive with O(definition).
         type: list
         elements: path
         version_added: 3.7.0
+    definition:
+        description:
+          - Compose file describing one or more services, networks and volumes.
+          - Mutually exclusive with O(project_src) and O(files).
+          - If provided, PyYAML must be available to this module, and O(project_name) must be specified.
+          - Note that a temporary directory will be created and deleted afterwards when using this option.
+        type: dict
+        version_added: 3.9.0
     env_files:
         description:
           - By default environment files are loaded from a C(.env) file located directly under the O(project_src) directory.
@@ -45,6 +55,8 @@ options:
           - Equivalent to C(docker compose --profile).
         type: list
         elements: str
+requirements:
+  - "PyYAML if O(definition) is used"
 notes:
   - |-
     The Docker compose CLI plugin has no stable output format (see for example U(https://github.com/docker/compose/issues/10872)),
