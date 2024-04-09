@@ -4,5 +4,5 @@ minor_changes:
      (https://github.com/ansible-collections/community.docker/issues/829, https://github.com/ansible-collections/community.docker/pull/832)."
   - "The EE requirements now include PyYAML, since the ``docker_compose_v2*`` modules depend on it
      when the ``definition`` option is used. This should not have a noticable effect on generated EEs
-     since ansible-core itself depends on PyYAML as well
+     since ansible-core itself depends on PyYAML as well, and ansible-builder explicitly ignores this dependency
      (https://github.com/ansible-collections/community.docker/pull/832)."
