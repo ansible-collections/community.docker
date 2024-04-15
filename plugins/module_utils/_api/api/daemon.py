@@ -11,12 +11,9 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 import os
-from datetime import datetime
 
 from .. import auth
-from ..utils.utils import datetime_to_timestamp, convert_filters
 from ..utils.decorators import minimum_version
-from ..types.daemon import CancellableStream
 
 
 class DaemonApiMixin(object):
@@ -35,65 +32,6 @@ class DaemonApiMixin(object):
         """
         url = self._url('/system/df')
         return self._result(self._get(url), True)
-
-    def events(self, since=None, until=None, filters=None, decode=None):
-        """
-        Get real-time events from the server. Similar to the ``docker events``
-        command.
-
-        Args:
-            since (UTC datetime or int): Get events from this point
-            until (UTC datetime or int): Get events until this point
-            filters (dict): Filter the events by event time, container or image
-            decode (bool): If set to true, stream will be decoded into dicts on
-                the fly. False by default.
-
-        Returns:
-            A :py:class:`docker.types.daemon.CancellableStream` generator
-
-        Raises:
-            :py:class:`docker.errors.APIError`
-                If the server returns an error.
-
-        Example:
-
-            >>> for event in client.events(decode=True)
-            ...   print(event)
-            {u'from': u'image/with:tag',
-             u'id': u'container-id',
-             u'status': u'start',
-             u'time': 1423339459}
-            ...
-
-            or
-
-            >>> events = client.events()
-            >>> for event in events:
-            ...   print(event)
-            >>> # and cancel from another thread
-            >>> events.close()
-        """
-
-        if isinstance(since, datetime):
-            since = datetime_to_timestamp(since)
-
-        if isinstance(until, datetime):
-            until = datetime_to_timestamp(until)
-
-        if filters:
-            filters = convert_filters(filters)
-
-        params = {
-            'since': since,
-            'until': until,
-            'filters': filters
-        }
-        url = self._url('/events')
-
-        response = self._get(url, params=params, stream=True, timeout=None)
-        stream = self._stream_helper(response, decode=decode)
-
-        return CancellableStream(stream, response)
 
     def info(self):
         """

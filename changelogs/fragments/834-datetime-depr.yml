@@ -1,0 +1,2 @@
+minor_changes:
+  - "vendored Docker SDK for Python - remove unused code that relies on functionality deprecated in Python 3.12 (https://github.com/ansible-collections/community.docker/pull/834)."

@@ -35,7 +35,6 @@ if sys.version_info < (2, 7):
 from ansible_collections.community.docker.plugins.module_utils._api import constants, errors
 from ansible_collections.community.docker.plugins.module_utils._api.api.client import APIClient
 from ansible_collections.community.docker.plugins.module_utils._api.constants import DEFAULT_DOCKER_API_VERSION
-from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import convert_filters
 from requests.packages import urllib3
 
 from .. import fake_api
@@ -245,56 +244,6 @@ class DockerApiTest(BaseAPIClientTest):
             'username': 'sakuya',
             'serveraddress': None,
         }
-
-    def test_events(self):
-        self.client.events()
-
-        fake_request.assert_called_with(
-            'GET',
-            url_prefix + 'events',
-            params={'since': None, 'until': None, 'filters': None},
-            stream=True,
-            timeout=None
-        )
-
-    def test_events_with_since_until(self):
-        ts = 1356048000
-        now = datetime.datetime.utcfromtimestamp(ts)
-        since = now - datetime.timedelta(seconds=10)
-        until = now + datetime.timedelta(seconds=10)
-
-        self.client.events(since=since, until=until)
-
-        fake_request.assert_called_with(
-            'GET',
-            url_prefix + 'events',
-            params={
-                'since': ts - 10,
-                'until': ts + 10,
-                'filters': None
-            },
-            stream=True,
-            timeout=None
-        )
-
-    def test_events_with_filters(self):
-        filters = {'event': ['die', 'stop'],
-                   'container': fake_api.FAKE_CONTAINER_ID}
-
-        self.client.events(filters=filters)
-
-        expected_filters = convert_filters(filters)
-        fake_request.assert_called_with(
-            'GET',
-            url_prefix + 'events',
-            params={
-                'since': None,
-                'until': None,
-                'filters': expected_filters
-            },
-            stream=True,
-            timeout=None
-        )
 
     def _socket_path_for_client_session(self, client):
         socket_adapter = client.get_adapter('http+docker://')
