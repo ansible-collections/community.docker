@@ -409,7 +409,7 @@ from ansible_collections.community.docker.plugins.module_utils.common_cli import
 
 from ansible_collections.community.docker.plugins.module_utils.compose_v2 import (
     BaseComposeManager,
-    common_compose_argspec,
+    common_compose_argspec_ex,
     is_failed,
 )
 
@@ -435,13 +435,13 @@ class ServicesManager(BaseComposeManager):
 
         for key, value in self.scale.items():
             if not isinstance(key, string_types):
-                self.client.fail('The key %s for `scale` is not a string' % repr(key))
+                self.fail('The key %s for `scale` is not a string' % repr(key))
             try:
                 value = check_type_int(value)
             except TypeError as exc:
-                self.client.fail('The value %s for `scale[%s]` is not an integer' % (repr(value), repr(key)))
+                self.fail('The value %s for `scale[%s]` is not an integer' % (repr(value), repr(key)))
             if value < 0:
-                self.client.fail('The value %s for `scale[%s]` is negative' % (repr(value), repr(key)))
+                self.fail('The value %s for `scale[%s]` is negative' % (repr(value), repr(key)))
             self.scale[key] = value
 
     def run(self):
@@ -620,15 +620,19 @@ def main():
         wait=dict(type='bool', default=False),
         wait_timeout=dict(type='int'),
     )
-    argument_spec.update(common_compose_argspec())
+    argspec_ex = common_compose_argspec_ex()
+    argument_spec.update(argspec_ex.pop('argspec'))
 
     client = AnsibleModuleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
+        **argspec_ex
     )
 
     try:
-        result = ServicesManager(client).run()
+        manager = ServicesManager(client)
+        result = manager.run()
+        manager.cleanup()
         client.module.exit_json(**result)
     except DockerException as e:
         client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
