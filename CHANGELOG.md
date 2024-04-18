@@ -987,7 +987,7 @@ New major release with some deprecations removed and a breaking change in the <c
 <a id="breaking-changes--porting-guide-1"></a>
 ### Breaking Changes / Porting Guide
 
-* docker\_compose \- fixed <code>timeout</code> defaulting behavior so that <code>stop\_grace\_period</code>\, if defined in the compose file\, will be used if <em class="title-reference">timeout\`</em> is not specified \([https\://github\.com/ansible\-collections/community\.docker/pull/163](https\://github\.com/ansible\-collections/community\.docker/pull/163)\)\.
+* docker\_compose \- fixed <code>timeout</code> defaulting behavior so that <code>stop\_grace\_period</code>\, if defined in the compose file\, will be used if <code>timeout</code> is not specified \([https\://github\.com/ansible\-collections/community\.docker/pull/163](https\://github\.com/ansible\-collections/community\.docker/pull/163)\)\.
 
 <a id="deprecated-features-4"></a>
 ### Deprecated Features
