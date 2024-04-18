@@ -96,8 +96,8 @@ from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.common.process import get_bin_path
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable, Cacheable
 from ansible.utils.display import Display
-from ansible.utils.unsafe_proxy import wrap_var as make_unsafe
 
+from ansible_collections.community.docker.plugins.plugin_utils.unsafe import make_unsafe
 from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import parse_filters, filter_host
 
 import json
