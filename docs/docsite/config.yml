@@ -13,3 +13,6 @@ envvar_directives:
   - DOCKER_TLS
   - DOCKER_TLS_HOSTNAME
   - DOCKER_TLS_VERIFY
+
+changelog:
+  write_changelog: true

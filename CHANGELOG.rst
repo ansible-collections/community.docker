@@ -768,7 +768,7 @@ New major release with some deprecations removed and a breaking change in the ``
 Breaking Changes / Porting Guide
 --------------------------------
 
-- docker_compose - fixed ``timeout`` defaulting behavior so that ``stop_grace_period``, if defined in the compose file, will be used if `timeout`` is not specified (https://github.com/ansible-collections/community.docker/pull/163).
+- docker_compose - fixed ``timeout`` defaulting behavior so that ``stop_grace_period``, if defined in the compose file, will be used if ``timeout`` is not specified (https://github.com/ansible-collections/community.docker/pull/163).
 
 Deprecated Features
 -------------------
