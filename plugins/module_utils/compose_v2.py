@@ -507,6 +507,7 @@ def common_compose_argspec():
         definition=dict(type='dict'),
         env_files=dict(type='list', elements='path'),
         profiles=dict(type='list', elements='str'),
+        check_files_existing=dict(type='bool', default=True),
     )
 
 
@@ -584,12 +585,13 @@ class BaseComposeManager(DockerBaseClass):
         if not os.path.isdir(self.project_src):
             self.fail('"{0}" is not a directory'.format(self.project_src))
 
+        self.check_files_existing = parameters['check_files_existing']
         if self.files:
             for file in self.files:
                 path = os.path.join(self.project_src, file)
                 if not os.path.exists(path):
                     self.fail('Cannot find Compose file "{0}" relative to project directory "{1}"'.format(file, self.project_src))
-        elif all(not os.path.exists(os.path.join(self.project_src, f)) for f in DOCKER_COMPOSE_FILES):
+        elif self.check_files_existing and all(not os.path.exists(os.path.join(self.project_src, f)) for f in DOCKER_COMPOSE_FILES):
             filenames = ', '.join(DOCKER_COMPOSE_FILES[:-1])
             self.fail('"{0}" does not contain {1}, or {2}'.format(self.project_src, filenames, DOCKER_COMPOSE_FILES[-1]))
 

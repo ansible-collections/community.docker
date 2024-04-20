@@ -1,0 +1,6 @@
+minor_changes:
+  - "docker_compose_v2* - the new option ``check_files_existing`` allows to disable the check for one of the files
+    ``compose.yaml``, ``compose.yml``, ``docker-compose.yaml``, and ``docker-compose.yml`` in ``project_src``
+    if ``files`` is not specified. This is necessary if a non-standard compose filename is specified through other
+    means, like the ``COMPOSE_FILE`` environment variable
+    (https://github.com/ansible-collections/community.docker/issues/838, https://github.com/ansible-collections/community.docker/pull/839)."
