@@ -4,6 +4,29 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v3.9.0
+======
+
+Release Summary
+---------------
+
+Bugfix and feature release.
+
+Minor Changes
+-------------
+
+- The EE requirements now include PyYAML, since the ``docker_compose_v2*`` modules depend on it when the ``definition`` option is used. This should not have a noticable effect on generated EEs since ansible-core itself depends on PyYAML as well, and ansible-builder explicitly ignores this dependency (https://github.com/ansible-collections/community.docker/pull/832).
+- docker_compose_v2* - the new option ``check_files_existing`` allows to disable the check for one of the files ``compose.yaml``, ``compose.yml``, ``docker-compose.yaml``, and ``docker-compose.yml`` in ``project_src`` if ``files`` is not specified. This is necessary if a non-standard compose filename is specified through other means, like the ``COMPOSE_FILE`` environment variable (https://github.com/ansible-collections/community.docker/issues/838, https://github.com/ansible-collections/community.docker/pull/839).
+- docker_compose_v2* modules - allow to provide an inline definition of the compose content instead of having to provide a ``project_src`` directory with the compose file written into it (https://github.com/ansible-collections/community.docker/issues/829, https://github.com/ansible-collections/community.docker/pull/832).
+- vendored Docker SDK for Python - remove unused code that relies on functionality deprecated in Python 3.12 (https://github.com/ansible-collections/community.docker/pull/834).
+
+Bugfixes
+--------
+
+- docker_compose_v2* - allow ``project_src`` to be a relative path, by converting it to an absolute path before using it (https://github.com/ansible-collections/community.docker/issues/827, https://github.com/ansible-collections/community.docker/pull/828).
+- docker_compose_v2* modules - abort with a nice error message instead of crash when the Docker Compose CLI plugin version is ``dev`` (https://github.com/ansible-collections/community.docker/issues/825, https://github.com/ansible-collections/community.docker/pull/826).
+- inventory plugins - add unsafe wrapper to avoid marking strings that do not contain ``{`` or ``}`` as unsafe, to work around a bug in AWX (https://github.com/ansible-collections/community.docker/pull/835).
+
 v3.8.1
 ======
 
