@@ -55,6 +55,17 @@ options:
           - Equivalent to C(docker compose --profile).
         type: list
         elements: str
+    check_files_existing:
+        description:
+          - If set to V(false), the module will not check whether one of the files
+            C(compose.yaml), C(compose.yml), C(docker-compose.yaml), or C(docker-compose.yml)
+            exists in O(project_src) if O(files) is not provided.
+          - This can be useful if environment files with C(COMPOSE_FILE) are used to configure a different
+            filename. The module currently does not check for C(COMPOSE_FILE) in environment files or the
+            current environment.
+        type: bool
+        default: true
+        version_added: 3.9.0
 requirements:
   - "PyYAML if O(definition) is used"
 notes:
