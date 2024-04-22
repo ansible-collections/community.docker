@@ -86,7 +86,7 @@ options:
   sysctls:
     description:
       - Dictionary of key, value pairs.
-    version_added: 3.9.0
+    version_added: 3.10.0
     type: dict
   dns:
     description:
