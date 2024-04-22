@@ -2766,6 +2766,7 @@ def main():
         init=dict(docker_py_version='4.0.0', docker_api_version='1.37'),
         cap_add=dict(docker_py_version='5.0.3', docker_api_version='1.41'),
         cap_drop=dict(docker_py_version='5.0.3', docker_api_version='1.41'),
+        sysctls=dict(docker_py_version='6.0.0', docker_api_version='1.40'),
         # specials
         publish_mode=dict(
             docker_py_version='3.0.0',
