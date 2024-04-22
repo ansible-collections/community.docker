@@ -58,3 +58,4 @@ service_expected_output:
   user: null
   working_dir: null
   init: null
+  sysctls: null
