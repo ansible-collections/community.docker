@@ -1105,6 +1105,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-sysctls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-sysctls"><strong>sysctls</strong></p>
+<a class="ansibleOptionLink" href="#parameter-sysctls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.10.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Dictionary of key, value pairs.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-timeout"><strong>timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -1113,7 +1121,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">60</span></code></p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1126,7 +1134,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-tls-hostname"><strong>tls_hostname</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1136,7 +1144,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p><strong>Note:</strong> this option is no longer supported for Docker SDK for Python 7.0.0+. Specifying it with Docker SDK for Python 7.0.0 or newer will lead to an error.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tty"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-tty"><strong>tty</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tty" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -1149,14 +1157,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-update_config"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-update-config"><strong>update_config</strong></p>
 <a class="ansibleOptionLink" href="#parameter-update_config" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Configures how the service should be updated. Useful for configuring rolling updates.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-update_config/delay"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-update-config-delay"><strong>delay</strong></p>
 <a class="ansibleOptionLink" href="#parameter-update_config/delay" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1165,7 +1173,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Corresponds to the <code class="docutils literal notranslate"><span class="pre">--update-delay</span></code> option of <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">service</span> <span class="pre">create</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-update_config/failure_action"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-update-config-failure-action"><strong>failure_action</strong></p>
 <a class="ansibleOptionLink" href="#parameter-update_config/failure_action" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1180,7 +1188,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-update_config/max_failure_ratio"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-update-config-max-failure-ratio"><strong>max_failure_ratio</strong></p>
 <a class="ansibleOptionLink" href="#parameter-update_config/max_failure_ratio" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">float</span></p>
 </div></td>
@@ -1188,7 +1196,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Corresponds to the <code class="docutils literal notranslate"><span class="pre">--update-max-failure-ratio</span></code> option of <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">service</span> <span class="pre">create</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-update_config/monitor"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-update-config-monitor"><strong>monitor</strong></p>
 <a class="ansibleOptionLink" href="#parameter-update_config/monitor" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1197,7 +1205,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Corresponds to the <code class="docutils literal notranslate"><span class="pre">--update-monitor</span></code> option of <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">service</span> <span class="pre">create</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-update_config/order"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-update-config-order"><strong>order</strong></p>
 <a class="ansibleOptionLink" href="#parameter-update_config/order" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1206,7 +1214,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Requires API version &gt;= 1.29.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-update_config/parallelism"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-update-config-parallelism"><strong>parallelism</strong></p>
 <a class="ansibleOptionLink" href="#parameter-update_config/parallelism" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -1214,7 +1222,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Corresponds to the <code class="docutils literal notranslate"><span class="pre">--update-parallelism</span></code> option of <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">service</span> <span class="pre">create</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-use_ssh_client"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-use-ssh-client"><strong>use_ssh_client</strong></p>
 <a class="ansibleOptionLink" href="#parameter-use_ssh_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 1.5.0</em></p>
@@ -1228,7 +1236,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-user"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-user"><strong>user</strong></p>
 <a class="ansibleOptionLink" href="#parameter-user" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1238,7 +1246,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Corresponds to the <code class="docutils literal notranslate"><span class="pre">--user</span></code> option of <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">service</span> <span class="pre">create</span></code>.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-swarm-service-module-parameter-tls-verify"></span><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
@@ -1253,7 +1261,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-working_dir"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-service-module-parameter-working-dir"><strong>working_dir</strong></p>
 <a class="ansibleOptionLink" href="#parameter-working_dir" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1506,7 +1514,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Note that facts are not part of registered vars but accessible directly.</p>
 <p>Note that before Ansible 2.7.9, the return variable was documented as <code class="docutils literal notranslate"><span class="pre">ansible_swarm_service</span></code>, while the module actually returned a variable called <code class="docutils literal notranslate"><span class="pre">ansible_docker_service</span></code>. The variable was renamed to <code class="ansible-return-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-service-module-return-swarm-service"><span class="std std-ref"><span class="pre">swarm_service</span></span></a></code> in both code and documentation for Ansible 2.7.9 and Ansible 2.8.0. In Ansible 2.7.x, the old name <code class="docutils literal notranslate"><span class="pre">ansible_docker_service</span></code> can still be used.</p>
 <p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> always</p>
-<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">{&quot;args&quot;:</span> <span class="pre">[&quot;3600&quot;],</span> <span class="pre">&quot;cap_add&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;cap_drop&quot;:</span> <span class="pre">[&quot;ALL&quot;],</span> <span class="pre">&quot;command&quot;:</span> <span class="pre">[&quot;sleep&quot;],</span> <span class="pre">&quot;configs&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;constraints&quot;:</span> <span class="pre">[&quot;node.role</span> <span class="pre">==</span> <span class="pre">manager&quot;,</span> <span class="pre">&quot;engine.labels.operatingsystem</span> <span class="pre">==</span> <span class="pre">ubuntu</span> <span class="pre">14.04&quot;],</span> <span class="pre">&quot;container_labels&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;dns&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;dns_options&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;dns_search&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;endpoint_mode&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;env&quot;:</span> <span class="pre">[&quot;ENVVAR1=envvar1&quot;,</span> <span class="pre">&quot;ENVVAR2=envvar2&quot;],</span> <span class="pre">&quot;force_update&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;groups&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;healthcheck&quot;:</span> <span class="pre">{&quot;interval&quot;:</span> <span class="pre">90000000000,</span> <span class="pre">&quot;retries&quot;:</span> <span class="pre">3,</span> <span class="pre">&quot;start_period&quot;:</span> <span class="pre">30000000000,</span> <span class="pre">&quot;test&quot;:</span> <span class="pre">[&quot;CMD&quot;,</span> <span class="pre">&quot;curl&quot;,</span> <span class="pre">&quot;--fail&quot;,</span> <span class="pre">&quot;http://nginx.host.com&quot;],</span> <span class="pre">&quot;timeout&quot;:</span> <span class="pre">10000000000},</span> <span class="pre">&quot;healthcheck_disabled&quot;:</span> <span class="pre">false,</span> <span class="pre">&quot;hostname&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;hosts&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;image&quot;:</span> <span class="pre">&quot;alpine:latest&#64;sha256:b3dbf31b77fd99d9c08f780ce6f5282aba076d70a513a8be859d8d3a4d0c92b8&quot;,</span> <span class="pre">&quot;labels&quot;:</span> <span class="pre">{&quot;com.example.department&quot;:</span> <span class="pre">&quot;Finance&quot;,</span> <span class="pre">&quot;com.example.description&quot;:</span> <span class="pre">&quot;Accounting</span> <span class="pre">webapp&quot;},</span> <span class="pre">&quot;limit_cpu&quot;:</span> <span class="pre">0.5,</span> <span class="pre">&quot;limit_memory&quot;:</span> <span class="pre">52428800,</span> <span class="pre">&quot;log_driver&quot;:</span> <span class="pre">&quot;fluentd&quot;,</span> <span class="pre">&quot;log_driver_options&quot;:</span> <span class="pre">{&quot;fluentd-address&quot;:</span> <span class="pre">&quot;127.0.0.1:24224&quot;,</span> <span class="pre">&quot;fluentd-async-connect&quot;:</span> <span class="pre">&quot;true&quot;,</span> <span class="pre">&quot;tag&quot;:</span> <span class="pre">&quot;myservice&quot;},</span> <span class="pre">&quot;mode&quot;:</span> <span class="pre">&quot;replicated&quot;,</span> <span class="pre">&quot;mounts&quot;:</span> <span class="pre">[{&quot;driver_config&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;labels&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;no_copy&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;propagation&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;readonly&quot;:</span> <span class="pre">false,</span> <span class="pre">&quot;source&quot;:</span> <span class="pre">&quot;/tmp/&quot;,</span> <span class="pre">&quot;target&quot;:</span> <span class="pre">&quot;/remote_tmp/&quot;,</span> <span class="pre">&quot;tmpfs_mode&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;tmpfs_size&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;type&quot;:</span> <span class="pre">&quot;bind&quot;}],</span> <span class="pre">&quot;networks&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;placement_preferences&quot;:</span> <span class="pre">[{&quot;spread&quot;:</span> <span class="pre">&quot;node.labels.mylabel&quot;}],</span> <span class="pre">&quot;publish&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;read_only&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;replicas&quot;:</span> <span class="pre">1,</span> <span class="pre">&quot;replicas_max_per_node&quot;:</span> <span class="pre">1,</span> <span class="pre">&quot;reserve_cpu&quot;:</span> <span class="pre">0.25,</span> <span class="pre">&quot;reserve_memory&quot;:</span> <span class="pre">20971520,</span> <span class="pre">&quot;restart_policy&quot;:</span> <span class="pre">&quot;on-failure&quot;,</span> <span class="pre">&quot;restart_policy_attempts&quot;:</span> <span class="pre">3,</span> <span class="pre">&quot;restart_policy_delay&quot;:</span> <span class="pre">5000000000,</span> <span class="pre">&quot;restart_policy_window&quot;:</span> <span class="pre">120000000000,</span> <span class="pre">&quot;secrets&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;stop_grace_period&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;stop_signal&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;tty&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;update_delay&quot;:</span> <span class="pre">10000000000,</span> <span class="pre">&quot;update_failure_action&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;update_max_failure_ratio&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;update_monitor&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;update_order&quot;:</span> <span class="pre">&quot;stop-first&quot;,</span> <span class="pre">&quot;update_parallelism&quot;:</span> <span class="pre">2,</span> <span class="pre">&quot;user&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;working_dir&quot;:</span> <span class="pre">null}</span></code></p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">{&quot;args&quot;:</span> <span class="pre">[&quot;3600&quot;],</span> <span class="pre">&quot;cap_add&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;cap_drop&quot;:</span> <span class="pre">[&quot;ALL&quot;],</span> <span class="pre">&quot;command&quot;:</span> <span class="pre">[&quot;sleep&quot;],</span> <span class="pre">&quot;configs&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;constraints&quot;:</span> <span class="pre">[&quot;node.role</span> <span class="pre">==</span> <span class="pre">manager&quot;,</span> <span class="pre">&quot;engine.labels.operatingsystem</span> <span class="pre">==</span> <span class="pre">ubuntu</span> <span class="pre">14.04&quot;],</span> <span class="pre">&quot;container_labels&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;dns&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;dns_options&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;dns_search&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;endpoint_mode&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;env&quot;:</span> <span class="pre">[&quot;ENVVAR1=envvar1&quot;,</span> <span class="pre">&quot;ENVVAR2=envvar2&quot;],</span> <span class="pre">&quot;force_update&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;groups&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;healthcheck&quot;:</span> <span class="pre">{&quot;interval&quot;:</span> <span class="pre">90000000000,</span> <span class="pre">&quot;retries&quot;:</span> <span class="pre">3,</span> <span class="pre">&quot;start_period&quot;:</span> <span class="pre">30000000000,</span> <span class="pre">&quot;test&quot;:</span> <span class="pre">[&quot;CMD&quot;,</span> <span class="pre">&quot;curl&quot;,</span> <span class="pre">&quot;--fail&quot;,</span> <span class="pre">&quot;http://nginx.host.com&quot;],</span> <span class="pre">&quot;timeout&quot;:</span> <span class="pre">10000000000},</span> <span class="pre">&quot;healthcheck_disabled&quot;:</span> <span class="pre">false,</span> <span class="pre">&quot;hostname&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;hosts&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;image&quot;:</span> <span class="pre">&quot;alpine:latest&#64;sha256:b3dbf31b77fd99d9c08f780ce6f5282aba076d70a513a8be859d8d3a4d0c92b8&quot;,</span> <span class="pre">&quot;labels&quot;:</span> <span class="pre">{&quot;com.example.department&quot;:</span> <span class="pre">&quot;Finance&quot;,</span> <span class="pre">&quot;com.example.description&quot;:</span> <span class="pre">&quot;Accounting</span> <span class="pre">webapp&quot;},</span> <span class="pre">&quot;limit_cpu&quot;:</span> <span class="pre">0.5,</span> <span class="pre">&quot;limit_memory&quot;:</span> <span class="pre">52428800,</span> <span class="pre">&quot;log_driver&quot;:</span> <span class="pre">&quot;fluentd&quot;,</span> <span class="pre">&quot;log_driver_options&quot;:</span> <span class="pre">{&quot;fluentd-address&quot;:</span> <span class="pre">&quot;127.0.0.1:24224&quot;,</span> <span class="pre">&quot;fluentd-async-connect&quot;:</span> <span class="pre">&quot;true&quot;,</span> <span class="pre">&quot;tag&quot;:</span> <span class="pre">&quot;myservice&quot;},</span> <span class="pre">&quot;mode&quot;:</span> <span class="pre">&quot;replicated&quot;,</span> <span class="pre">&quot;mounts&quot;:</span> <span class="pre">[{&quot;driver_config&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;labels&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;no_copy&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;propagation&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;readonly&quot;:</span> <span class="pre">false,</span> <span class="pre">&quot;source&quot;:</span> <span class="pre">&quot;/tmp/&quot;,</span> <span class="pre">&quot;target&quot;:</span> <span class="pre">&quot;/remote_tmp/&quot;,</span> <span class="pre">&quot;tmpfs_mode&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;tmpfs_size&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;type&quot;:</span> <span class="pre">&quot;bind&quot;}],</span> <span class="pre">&quot;networks&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;placement_preferences&quot;:</span> <span class="pre">[{&quot;spread&quot;:</span> <span class="pre">&quot;node.labels.mylabel&quot;}],</span> <span class="pre">&quot;publish&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;read_only&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;replicas&quot;:</span> <span class="pre">1,</span> <span class="pre">&quot;replicas_max_per_node&quot;:</span> <span class="pre">1,</span> <span class="pre">&quot;reserve_cpu&quot;:</span> <span class="pre">0.25,</span> <span class="pre">&quot;reserve_memory&quot;:</span> <span class="pre">20971520,</span> <span class="pre">&quot;restart_policy&quot;:</span> <span class="pre">&quot;on-failure&quot;,</span> <span class="pre">&quot;restart_policy_attempts&quot;:</span> <span class="pre">3,</span> <span class="pre">&quot;restart_policy_delay&quot;:</span> <span class="pre">5000000000,</span> <span class="pre">&quot;restart_policy_window&quot;:</span> <span class="pre">120000000000,</span> <span class="pre">&quot;secrets&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;stop_grace_period&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;stop_signal&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;sysctls&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;tty&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;update_delay&quot;:</span> <span class="pre">10000000000,</span> <span class="pre">&quot;update_failure_action&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;update_max_failure_ratio&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;update_monitor&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;update_order&quot;:</span> <span class="pre">&quot;stop-first&quot;,</span> <span class="pre">&quot;update_parallelism&quot;:</span> <span class="pre">2,</span> <span class="pre">&quot;user&quot;:</span> <span class="pre">null,</span> <span class="pre">&quot;working_dir&quot;:</span> <span class="pre">null}</span></code></p>
 </div></td>
 </tr>
 </tbody>
