@@ -126,6 +126,28 @@
     debug:
       var: result
 
+  - name: Prune build cache (API version 1.39+)
+    when: docker_api_version is version('1.39', '>=')
+    block:
+    - name: Prune build cache with option
+      docker_prune:
+        builder_cache: true
+        builder_cache_all: true
+        builder_cache_filters:
+          until: 10m
+        builder_cache_keep_storage: 1MB
+      register: result
+
+    - name: Show results
+      debug:
+        var: result
+
+    - name: Check results
+      assert:
+        that:
+          - "'builder_cache_space_reclaimed' in result"
+          - "'builder_cache_caches_deleted' in result"
+
   - name: Prune volumes with all filter (API version 1.42+)
     when: docker_api_version is version('1.42', '>=')
     block:
