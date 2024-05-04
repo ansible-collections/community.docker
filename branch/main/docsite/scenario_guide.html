@@ -413,11 +413,12 @@ No further requirements next to to the CLI tool and its Docker Compose plugin ar
 </section>
 <section id="docker-compose-v1">
 <h3>Docker Compose v1<a class="headerlink" href="#docker-compose-v1" title="Link to this heading"></a></h3>
-<p>The <a class="reference internal" href="../docker_compose_module.html#ansible-collections-community-docker-docker-compose-module"><span class="std std-ref">community.docker.docker_compose module</span></a>
+<p>The deprecated <a class="reference internal" href="../docker_compose_module.html#ansible-collections-community-docker-docker-compose-module"><span class="std std-ref">community.docker.docker_compose module</span></a>
 allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
 This module uses the out-dated and End of Life version 1.x of Docker Compose. It should mainly be used for legacy systems
-which still have to use that version of Docker Compose.</p>
-<p>You need to install the <a class="reference external" href="https://pypi.org/project/docker-compose/">old Python docker-compose</a> on the remote machines to use the module.</p>
+which still have to use that version of Docker Compose. <strong>The module is deprecated and will be removed from community.docker 4.0.0.</strong>
+Please use the Docker Compose v2 modules instead.</p>
+<p>You need to install the <a class="reference external" href="https://pypi.org/project/docker-compose/">old Python docker-compose</a> on the remote machines to use the Docker Compose v1 module.</p>
 </section>
 </section>
 <section id="docker-machine">
