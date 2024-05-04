@@ -1,0 +1,4 @@
+deprecated_features:
+  - "docker_compose - the Docker Compose v1 module is deprecated and will be removed from community.docker 4.0.0.
+     Please migrate to the ``community.docker.docker_compose_v2`` module, which works with Docker Compose v2
+     (https://github.com/ansible-collections/community.docker/issues/823, https://github.com/ansible-collections/community.docker/pull/833)."

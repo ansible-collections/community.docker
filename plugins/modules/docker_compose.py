@@ -14,6 +14,11 @@ module: docker_compose
 
 short_description: Manage multi-container Docker applications with Docker Compose V1
 
+deprecated:
+  removed_in: 4.0.0
+  why: This module uses docker-compose v1, which is End of Life since July 2022.
+  alternative: Migrate to M(community.docker.docker_compose_v2)
+
 author: "Chris Houseknecht (@chouseknecht)"
 
 description:

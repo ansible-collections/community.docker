@@ -78,7 +78,7 @@ If you use the Ansible package and do not update collections independently, use 
     - community.docker.docker_volume: manage Docker volumes
     - community.docker.docker_volume_info: retrieve information on Docker volumes
   * Docker Compose:
-    - community.docker.docker_compose: manage Docker Compose files (legacy Docker Compose v1)
+    - community.docker.docker_compose: manage Docker Compose files (legacy Docker Compose v1; the module is deprecated and will be removed from community.docker 4.0.0)
     - community.docker.docker_compose_v2: manage Docker Compose files (Docker compose CLI plugin)
     - community.docker.docker_compose_v2_pull: pull a Docker compose project
   * Docker Swarm:
