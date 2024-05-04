@@ -1,0 +1,2 @@
+minor_changes:
+  - docker_network - adds ``config_only`` and ``config_from`` to support creating and using config only networks (https://github.com/ansible-collections/community.docker/issues/395).

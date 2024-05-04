@@ -35,6 +35,18 @@ options:
     aliases:
       - network_name
 
+  config_from:
+    description:
+      - Specifies the config only network to use the config from.
+    type: str
+    version_added: 3.10.0
+
+  config_only:
+    description:
+      - Sets that this is a config only network.
+    type: bool
+    version_added: 3.10.0
+
   connected:
     description:
       - List of container names or container IDs to connect to a network.
@@ -283,6 +295,8 @@ class TaskParameters(DockerBaseClass):
 
         self.name = None
         self.connected = None
+        self.config_from = None
+        self.config_only = None
         self.driver = None
         self.driver_options = None
         self.ipam_driver = None
@@ -299,6 +313,11 @@ class TaskParameters(DockerBaseClass):
 
         for key, value in client.module.params.items():
             setattr(self, key, value)
+
+        # config_only sets driver to 'null' (and scope to 'local') so force that here. Otherwise we get
+        # diffs of 'null' --> 'bridge' given that the driver option defaults to 'bridge'.
+        if self.config_only:
+            self.driver = 'null'
 
 
 def container_names_in_network(network):
@@ -401,6 +420,14 @@ class DockerNetworkManager(object):
         :return: (bool, list)
         '''
         differences = DifferenceTracker()
+        if self.parameters.config_only is not None and self.parameters.config_only != net.get('ConfigOnly', False):
+            differences.add('config_only',
+                            parameter=self.parameters.config_only,
+                            active=net.get('ConfigOnly', False))
+        if self.parameters.config_from is not None and self.parameters.config_from != net.get('ConfigFrom', {}).get('Network', ''):
+            differences.add('config_from',
+                            parameter=self.parameters.config_from,
+                            active=net.get('ConfigFrom', {}).get('Network', ''))
         if self.parameters.driver and self.parameters.driver != net['Driver']:
             differences.add('driver',
                             parameter=self.parameters.driver,
@@ -503,6 +530,10 @@ class DockerNetworkManager(object):
                 'CheckDuplicate': None,
             }
 
+            if self.parameters.config_only is not None:
+                data['ConfigOnly'] = self.parameters.config_only
+            if self.parameters.config_from:
+                data['ConfigFrom'] = {'Network': self.parameters.config_from}
             if self.parameters.enable_ipv6:
                 data['EnableIPv6'] = True
             if self.parameters.internal:
@@ -630,6 +661,8 @@ class DockerNetworkManager(object):
 def main():
     argument_spec = dict(
         name=dict(type='str', required=True, aliases=['network_name']),
+        config_from=dict(type='str'),
+        config_only=dict(type='bool'),
         connected=dict(type='list', default=[], elements='str', aliases=['containers']),
         state=dict(type='str', default='present', choices=['present', 'absent']),
         driver=dict(type='str', default='bridge'),
@@ -653,6 +686,8 @@ def main():
     )
 
     option_minimal_versions = dict(
+        config_from=dict(docker_api_version='1.30'),
+        config_only=dict(docker_api_version='1.30'),
         scope=dict(docker_api_version='1.30'),
         attachable=dict(docker_api_version='1.26'),
     )
