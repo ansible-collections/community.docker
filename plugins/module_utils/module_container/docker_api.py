@@ -436,6 +436,7 @@ class DockerAPIEngine(Engine):
         min_api_version=None,
         preprocess_value=None,
         update_parameter=None,
+        extra_option_minimal_versions=None,
     ):
         def preprocess_value_(module, client, api_version, options, values):
             if len(options) != 1:
@@ -499,6 +500,7 @@ class DockerAPIEngine(Engine):
             set_value=set_value,
             min_api_version=min_api_version,
             update_value=update_value,
+            extra_option_minimal_versions=extra_option_minimal_versions,
         )
 
     @classmethod
@@ -512,6 +514,7 @@ class DockerAPIEngine(Engine):
         min_api_version=None,
         preprocess_value=None,
         update_parameter=None,
+        extra_option_minimal_versions=None,
     ):
         def preprocess_value_(module, client, api_version, options, values):
             if len(options) != 1:
@@ -577,6 +580,7 @@ class DockerAPIEngine(Engine):
             set_value=set_value,
             min_api_version=min_api_version,
             update_value=update_value,
+            extra_option_minimal_versions=extra_option_minimal_versions,
         )
 
 
@@ -751,6 +755,7 @@ def _preprocess_healthcheck(module, client, api_version, value):
         'Interval': value.get('interval'),
         'Timeout': value.get('timeout'),
         'StartPeriod': value.get('start_period'),
+        'StartInterval': value.get('start_interval'),
         'Retries': value.get('retries'),
     })
 
@@ -1300,7 +1305,16 @@ OPTION_ETC_HOSTS.add_engine('docker_api', DockerAPIEngine.host_config_value('Ext
 OPTION_GROUPS.add_engine('docker_api', DockerAPIEngine.host_config_value('GroupAdd'))
 
 OPTION_HEALTHCHECK.add_engine('docker_api', DockerAPIEngine.config_value(
-    'Healthcheck', preprocess_value=_preprocess_healthcheck, postprocess_for_get=_postprocess_healthcheck_get_value))
+    'Healthcheck',
+    preprocess_value=_preprocess_healthcheck,
+    postprocess_for_get=_postprocess_healthcheck_get_value,
+    extra_option_minimal_versions={
+        'healthcheck.start_interval': {
+            'docker_api_version': '1.44',
+            'detect_usage': lambda c: c.module.params['healthcheck'] and c.module.params['healthcheck']['start_interval'] is not None,
+        },
+    },
+))
 
 OPTION_HOSTNAME.add_engine('docker_api', DockerAPIEngine.config_value('Hostname'))
 

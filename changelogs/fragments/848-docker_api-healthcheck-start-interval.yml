@@ -1,0 +1,2 @@
+minor_changes:
+  - docker_container - adds ``healthcheck.start_interval`` to support healthcheck start interval setting on containers (https://github.com/ansible-collections/community.docker/pull/848).

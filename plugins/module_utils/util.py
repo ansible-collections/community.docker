@@ -348,9 +348,9 @@ def normalize_healthcheck(healthcheck, normalize_test=False):
     result = dict()
 
     # All supported healthcheck parameters
-    options = ('test', 'interval', 'timeout', 'start_period', 'retries')
+    options = ('test', 'interval', 'timeout', 'start_period', 'start_interval', 'retries')
 
-    duration_options = ('interval', 'timeout', 'start_period')
+    duration_options = ('interval', 'timeout', 'start_period', 'start_interval')
 
     for key in options:
         if key in healthcheck:

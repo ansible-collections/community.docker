@@ -938,6 +938,7 @@ OPTION_HEALTHCHECK = (
         interval=dict(type='str'),
         timeout=dict(type='str'),
         start_period=dict(type='str'),
+        start_interval=dict(type='str'),
         retries=dict(type='int'),
     ))
 )
