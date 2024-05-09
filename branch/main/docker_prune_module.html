@@ -246,6 +246,39 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-builder_cache_all"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-builder-cache-all"><strong>builder_cache_all</strong></p>
+<a class="ansibleOptionLink" href="#parameter-builder_cache_all" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.10.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Whether to remove all types of build cache.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-builder_cache_filters"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-builder-cache-filters"><strong>builder_cache_filters</strong></p>
+<a class="ansibleOptionLink" href="#parameter-builder_cache_filters" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.10.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>A dictionary of filter values used for selecting images to delete.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">until:</span> <span class="pre">10m</span></code>.</p>
+<p>See <a class="reference external" href="https://docs.docker.com/engine/api/v1.44/#tag/Image/operation/BuildPrune">the API documentation</a> for more information on possible filters.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-builder_cache_keep_storage"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-builder-cache-keep-storage"><strong>builder_cache_keep_storage</strong></p>
+<a class="ansibleOptionLink" href="#parameter-builder_cache_keep_storage" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.10.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Amount of disk space to keep for cache in format <code class="docutils literal notranslate"><span class="pre">&lt;number&gt;[&lt;unit&gt;]</span></code>.”</p>
+<p>Number is a positive integer. Unit can be one of <code class="ansible-value docutils literal notranslate"><span class="pre">B</span></code> (byte), <code class="ansible-value docutils literal notranslate"><span class="pre">K</span></code> (kibibyte, 1024B), <code class="ansible-value docutils literal notranslate"><span class="pre">M</span></code> (mebibyte), <code class="ansible-value docutils literal notranslate"><span class="pre">G</span></code> (gibibyte), <code class="ansible-value docutils literal notranslate"><span class="pre">T</span></code> (tebibyte), or <code class="ansible-value docutils literal notranslate"><span class="pre">P</span></code> (pebibyte).</p>
+<p>Omitting the unit defaults to bytes.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ca_path"></div>
 <div class="ansibleOptionAnchor" id="parameter-ca_cert"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_ca_cert"></div>
@@ -258,7 +291,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>This option was called <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-prune-module-parameter-ca-cert"><span class="std std-ref"><span class="pre">ca_cert</span></span></a></strong></code> and got renamed to <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-prune-module-parameter-ca-path"><span class="std std-ref"><span class="pre">ca_path</span></span></a></strong></code> in community.docker 3.6.0. The old name has been added as an alias and can still be used.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-client_cert"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_client_cert"></div>
 <div class="ansibleOptionAnchor" id="parameter-cert_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-tls-client-cert"><span id="ansible-collections-community-docker-docker-prune-module-parameter-client-cert"></span><span id="ansible-collections-community-docker-docker-prune-module-parameter-cert-path"></span><strong>client_cert</strong></p>
@@ -269,7 +302,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">cert.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-client_key"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_client_key"></div>
 <div class="ansibleOptionAnchor" id="parameter-key_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-tls-client-key"><span id="ansible-collections-community-docker-docker-prune-module-parameter-key-path"></span><span id="ansible-collections-community-docker-docker-prune-module-parameter-client-key"></span><strong>client_key</strong></p>
@@ -280,7 +313,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">key.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-containers"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-containers"><strong>containers</strong></p>
 <a class="ansibleOptionLink" href="#parameter-containers" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -292,7 +325,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-containers_filters"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-containers-filters"><strong>containers_filters</strong></p>
 <a class="ansibleOptionLink" href="#parameter-containers_filters" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
@@ -301,7 +334,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>See <a class="reference external" href="https://docs.docker.com/engine/reference/commandline/container_prune/#filtering">the docker documentation</a> for more information on possible filters.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-debug"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-debug"><strong>debug</strong></p>
 <a class="ansibleOptionLink" href="#parameter-debug" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -313,7 +346,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-docker_host"></div>
 <div class="ansibleOptionAnchor" id="parameter-docker_url"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-docker-url"><span id="ansible-collections-community-docker-docker-prune-module-parameter-docker-host"></span><strong>docker_host</strong></p>
 <a class="ansibleOptionLink" href="#parameter-docker_host" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: docker_url</span></p>
@@ -324,7 +357,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;unix:///var/run/docker.sock&quot;</span></code></p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-images"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-images"><strong>images</strong></p>
 <a class="ansibleOptionLink" href="#parameter-images" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -336,7 +369,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-images_filters"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-images-filters"><strong>images_filters</strong></p>
 <a class="ansibleOptionLink" href="#parameter-images_filters" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
@@ -345,7 +378,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>See <a class="reference external" href="https://docs.docker.com/engine/reference/commandline/image_prune/#filtering">the docker documentation</a> for more information on possible filters.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-networks"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-networks"><strong>networks</strong></p>
 <a class="ansibleOptionLink" href="#parameter-networks" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -357,7 +390,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-networks_filters"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-networks-filters"><strong>networks_filters</strong></p>
 <a class="ansibleOptionLink" href="#parameter-networks_filters" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
@@ -365,7 +398,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>See <a class="reference external" href="https://docs.docker.com/engine/reference/commandline/network_prune/#filtering">the docker documentation</a> for more information on possible filters.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ssl_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-ssl-version"><strong>ssl_version</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ssl_version" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -373,7 +406,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_SSL_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code></a> will be used instead.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-timeout"><strong>timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -382,7 +415,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">60</span></code></p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -395,7 +428,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-tls-hostname"><strong>tls_hostname</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -404,7 +437,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Note that this option had a default value <code class="ansible-value docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-use_ssh_client"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-use-ssh-client"><strong>use_ssh_client</strong></p>
 <a class="ansibleOptionLink" href="#parameter-use_ssh_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 1.5.0</em></p>
@@ -417,7 +450,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-prune-module-parameter-tls-verify"></span><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
@@ -432,7 +465,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-volumes"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-volumes"><strong>volumes</strong></p>
 <a class="ansibleOptionLink" href="#parameter-volumes" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -444,7 +477,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-volumes_filters"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-parameter-volumes-filters"><strong>volumes_filters</strong></p>
 <a class="ansibleOptionLink" href="#parameter-volumes_filters" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
@@ -543,6 +576,16 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </thead>
 <tbody>
 <tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-builder_cache_caches_deleted"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-return-builder-cache-caches-deleted"><strong>builder_cache_caches_deleted</strong></p>
+<a class="ansibleOptionLink" href="#return-builder_cache_caches_deleted" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.10.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The build caches that were deleted.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-prune-module-parameter-builder-cache"><span class="std std-ref"><span class="pre">builder_cache=true</span></span></a></code> and API version is 1.39 or later</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[]</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-builder_cache_space_reclaimed"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-return-builder-cache-space-reclaimed"><strong>builder_cache_space_reclaimed</strong></p>
 <a class="ansibleOptionLink" href="#return-builder_cache_space_reclaimed" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -551,7 +594,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">0</span></code></p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-containers"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-return-containers"><strong>containers</strong></p>
 <a class="ansibleOptionLink" href="#return-containers" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
@@ -560,7 +603,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[]</span></code></p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-containers_space_reclaimed"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-return-containers-space-reclaimed"><strong>containers_space_reclaimed</strong></p>
 <a class="ansibleOptionLink" href="#return-containers_space_reclaimed" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -569,7 +612,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">0</span></code></p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-images"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-return-images"><strong>images</strong></p>
 <a class="ansibleOptionLink" href="#return-images" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
@@ -578,7 +621,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[]</span></code></p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-images_space_reclaimed"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-return-images-space-reclaimed"><strong>images_space_reclaimed</strong></p>
 <a class="ansibleOptionLink" href="#return-images_space_reclaimed" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -587,7 +630,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">0</span></code></p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-networks"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-return-networks"><strong>networks</strong></p>
 <a class="ansibleOptionLink" href="#return-networks" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
@@ -596,7 +639,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[]</span></code></p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-volumes"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-return-volumes"><strong>volumes</strong></p>
 <a class="ansibleOptionLink" href="#return-volumes" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
@@ -605,7 +648,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[]</span></code></p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-volumes_space_reclaimed"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-prune-module-return-volumes-space-reclaimed"><strong>volumes_space_reclaimed</strong></p>
 <a class="ansibleOptionLink" href="#return-volumes_space_reclaimed" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
