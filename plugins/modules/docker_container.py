@@ -369,7 +369,7 @@ options:
       - Configure a check that is run to determine whether or not containers for this service are "healthy".
       - "See the docs for the L(HEALTHCHECK Dockerfile instruction,https://docs.docker.com/engine/reference/builder/#healthcheck)
         for details on how healthchecks work."
-      - "O(healthcheck.interval), O(healthcheck.timeout) and O(healthcheck.start_period) are specified as durations.
+      - "O(healthcheck.interval), O(healthcheck.timeout), O(healthcheck.start_period), and O(healthcheck.start_interval) are specified as durations.
         They accept duration as a string in a format that look like: V(5h34m56s), V(1m30s), and so on.
         The supported units are V(us), V(ms), V(s), V(m) and V(h)."
     type: dict
@@ -399,6 +399,12 @@ options:
           - Start period for the container to initialize before starting health-retries countdown.
           - The default used by the Docker daemon is V(0s).
         type: str
+      start_interval:
+        description:
+          - Time between health checks during the start period. This option requires Docker Engine version 25.0 or later.
+          - The default used by the Docker daemon is V(5s).
+        type: str
+        version_added: 3.10.0
   hostname:
     description:
       - The container's hostname.
@@ -1196,6 +1202,7 @@ EXAMPLES = '''
       timeout: 10s
       retries: 3
       start_period: 30s
+      start_interval: 10s
 
 - name: Remove healthcheck from container
   community.docker.docker_container:
