@@ -81,6 +81,28 @@ options:
       - Whether to prune the builder cache.
     type: bool
     default: false
+  builder_cache_all:
+    description:
+      - Whether to remove all types of build cache.
+    type: bool
+    default: false
+    version_added: 3.10.0
+  builder_cache_filters:
+    description:
+      - A dictionary of filter values used for selecting images to delete.
+      - "For example, C(until: 10m)."
+      - See L(the API documentation,https://docs.docker.com/engine/api/v1.44/#tag/Image/operation/BuildPrune)
+        for more information on possible filters.
+    type: dict
+    version_added: 3.10.0
+  builder_cache_keep_storage:
+    description:
+      - Amount of disk space to keep for cache in format C(<number>[<unit>])."
+      - "Number is a positive integer. Unit can be one of V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
+        V(T) (tebibyte), or V(P) (pebibyte)."
+      - "Omitting the unit defaults to bytes."
+    type: str
+    version_added: 3.10.0
 
 author:
   - "Felix Fontein (@felixfontein)"
@@ -181,11 +203,20 @@ builder_cache_space_reclaimed:
     returned: O(builder_cache=true)
     type: int
     sample: 0
+builder_cache_caches_deleted:
+    description:
+      - The build caches that were deleted.
+    returned: O(builder_cache=true) and API version is 1.39 or later
+    type: list
+    elements: str
+    sample: []
+    version_added: 3.10.0
 '''
 
 import traceback
 
 from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.formatters import human_to_bytes
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
@@ -209,12 +240,28 @@ def main():
         volumes=dict(type='bool', default=False),
         volumes_filters=dict(type='dict'),
         builder_cache=dict(type='bool', default=False),
+        builder_cache_all=dict(type='bool', default=False),
+        builder_cache_filters=dict(type='dict'),
+        builder_cache_keep_storage=dict(type='str'),  # convert to bytes
     )
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
+        option_minimal_versions=dict(
+            builder_cache=dict(docker_py_version='1.31'),
+            builder_cache_all=dict(docker_py_version='1.39'),
+            builder_cache_filters=dict(docker_py_version='1.31'),
+            builder_cache_keep_storage=dict(docker_py_version='1.39'),
+        ),
         # supports_check_mode=True,
     )
+
+    builder_cache_keep_storage = None
+    if client.module.params.get('builder_cache_keep_storage') is not None:
+        try:
+            builder_cache_keep_storage = human_to_bytes(client.module.params.get('builder_cache_keep_storage'))
+        except ValueError as exc:
+            client.module.fail_json(msg='Error while parsing value of builder_cache_keep_storage: {0}'.format(exc))
 
     try:
         result = dict()
@@ -256,10 +303,21 @@ def main():
                 changed = True
 
         if client.module.params['builder_cache']:
-            res = client.post_to_json('/build/prune')
+            filters = clean_dict_booleans_for_docker_api(client.module.params.get('builder_cache_filters'))
+            params = {'filters': convert_filters(filters)}
+            if client.module.params.get('builder_cache_all'):
+                params['all'] = 'true'
+            if builder_cache_keep_storage is not None:
+                params['keep-storage'] = builder_cache_keep_storage
+            res = client.post_to_json('/build/prune', params=params)
             result['builder_cache_space_reclaimed'] = res['SpaceReclaimed']
             if result['builder_cache_space_reclaimed']:
                 changed = True
+            if 'CachesDeleted' in res:
+                # API version 1.39+: return value CachesDeleted (list of str)
+                result['builder_cache_caches_deleted'] = res['CachesDeleted']
+                if result['builder_cache_caches_deleted']:
+                    changed = True
 
         result['changed'] = changed
         client.module.exit_json(**result)
