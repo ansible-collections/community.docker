@@ -21,6 +21,7 @@ notes:
       with Python's C(SSLSocket)s. See U(https://github.com/ansible-collections/community.docker/issues/605) for more information.
 extends_documentation_fragment:
     - community.docker.docker.api_documentation
+    - community.docker.docker.ssl_version_deprecation
     - community.docker.docker.var_names
 options:
     remote_user:
