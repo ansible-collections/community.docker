@@ -115,7 +115,52 @@ options:
       - never
       - always
     default: never
-
+  secrets:
+    description:
+      - Secrets to expose to the build.
+    type: list
+    elements: dict
+    version_added: 3.10.0
+    suboptions:
+      id:
+        description:
+          - The secret identifier.
+          - The secret will be made available as a file in the container under C(/run/secrets/<id>).
+        type: str
+        required: true
+      type:
+        description:
+          - Type of the secret.
+        type: str
+        choices:
+          file:
+            - Reads the secret from a file on the target.
+            - The file must be specified in O(secrets[].src).
+          env:
+            - Reads the secret from an environment variable on the target.
+            - The environment variable must be named in O(secrets[].env).
+          value:
+            - Provides the secret from a given value O(secrets[].value).
+            - B(Note) that the secret will be passed as an environment variable to C(docker compose).
+              Use another mean of transport if you consider this not safe enough.
+        required: true
+      src:
+        description:
+          - Source path of the secret.
+          - Only supported and required for O(secrets[].type=file).
+        type: path
+      env:
+        description:
+          - Environment value of the secret.
+          - Only supported and required for O(secrets[].type=env).
+        type: str
+      value:
+        description:
+          - Value of the secret.
+          - B(Note) that the secret will be passed as an environment variable to C(docker compose).
+            Use another mean of transport if you consider this not safe enough.
+          - Only supported and required for O(secrets[].type=value).
+        type: str
 requirements:
   - "Docker CLI with Docker buildx plugin"
 
@@ -152,6 +197,7 @@ image:
     sample: {}
 '''
 
+import base64
 import os
 import traceback
 
@@ -208,6 +254,7 @@ class ImageBuilder(DockerBaseClass):
         self.shm_size = convert_to_bytes(parameters['shm_size'], self.client.module, 'shm_size')
         self.labels = clean_dict_booleans_for_docker_api(parameters['labels'])
         self.rebuild = parameters['rebuild']
+        self.secrets = parameters['secrets']
 
         buildx = self.client.get_client_plugin_info('buildx')
         if buildx is None:
@@ -244,6 +291,7 @@ class ImageBuilder(DockerBaseClass):
             args.extend([option, value])
 
     def add_args(self, args):
+        environ_update = {}
         args.extend(['--tag', '%s:%s' % (self.name, self.tag)])
         if self.dockerfile:
             args.extend(['--file', os.path.join(self.path, self.dockerfile)])
@@ -268,6 +316,26 @@ class ImageBuilder(DockerBaseClass):
             args.extend(['--shm-size', str(self.shm_size)])
         if self.labels:
             self.add_list_arg(args, '--label', dict_to_list(self.labels))
+        if self.secrets:
+            random_prefix = None
+            for index, secret in enumerate(self.secrets):
+                if secret['type'] == 'file':
+                    args.extend(['--secret', 'id={id},type=file,src={src}'.format(id=secret['id'], src=secret['src'])])
+                if secret['type'] == 'env':
+                    args.extend(['--secret', 'id={id},type=env,env={env}'.format(id=secret['id'], env=secret['src'])])
+                if secret['type'] == 'value':
+                    # We pass values on using environment variables. The user has been warned in the documentation
+                    # that they should only use this mechanism when being comfortable with it.
+                    if random_prefix is None:
+                        # Use /dev/urandom to generate some entropy to make the environment variable's name unguessable
+                        random_prefix = base64.b64encode(os.urandom(16)).decode('utf-8').replace('=', '')
+                    env_name = 'ANSIBLE_DOCKER_COMPOSE_ENV_SECRET_{random}_{id}'.format(
+                        random=random_prefix,
+                        id=index,
+                    )
+                    environ_update[env_name] = secret['value']
+                    args.extend(['--secret', 'id={id},type=env,env={env}'.format(id=secret['id'], env=env_name)])
+        return environ_update
 
     def build_image(self):
         image = self.client.find_image(self.name, self.tag)
@@ -284,9 +352,9 @@ class ImageBuilder(DockerBaseClass):
         results['changed'] = True
         if not self.check_mode:
             args = ['buildx', 'build', '--progress', 'plain']
-            self.add_args(args)
+            environ_update = self.add_args(args)
             args.extend(['--', self.path])
-            rc, stdout, stderr = self.client.call_cli(*args)
+            rc, stdout, stderr = self.client.call_cli(*args, environ_update=environ_update)
             if rc != 0:
                 self.fail('Building %s:%s failed' % (self.name, self.tag), stdout=to_native(stdout), stderr=to_native(stderr))
             results['stdout'] = to_native(stdout)
@@ -313,6 +381,26 @@ def main():
         shm_size=dict(type='str'),
         labels=dict(type='dict'),
         rebuild=dict(type='str', choices=['never', 'always'], default='never'),
+        secrets=dict(
+            type='list',
+            elements='dict',
+            options=dict(
+                id=dict(type='str', required=True),
+                type=dict(type='str', choices=['file', 'env', 'value'], required=True),
+                src=dict(type='path'),
+                env=dict(type='str'),
+                value=dict(type='str', no_log=True),
+            ),
+            required_if=[
+                ('type', 'file', ['src']),
+                ('type', 'env', ['env']),
+                ('type', 'value', ['value']),
+            ],
+            mutually_exclusive=[
+                ('src', 'env', 'value'),
+            ],
+            no_log=False,
+        ),
     )
 
     client = AnsibleModuleDockerClient(
