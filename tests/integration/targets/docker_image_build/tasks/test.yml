@@ -35,6 +35,17 @@
     msg: "Has buildx plugin: {{ docker_has_buildx }}"
 
 - block:
+    - name: Determine plugin versions
+      command: docker info -f '{{ "{{" }}json .ClientInfo.Plugins{{ "}}" }}'
+      register: plugin_versions
+
+    - name: Determine buildx plugin version
+      set_fact:
+        buildx_version: >-
+          {{
+            (plugin_versions.stdout | from_json | selectattr('Name', 'eq', 'buildx') | map(attribute='Version') | first).lstrip('v')
+          }}
+
     - include_tasks: run-test.yml
       with_fileglob:
         - "tests/*.yml"

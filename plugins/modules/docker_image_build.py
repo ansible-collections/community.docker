@@ -139,10 +139,12 @@ options:
           env:
             - Reads the secret from an environment variable on the target.
             - The environment variable must be named in O(secrets[].env).
+            - Note that this requires the Buildkit plugin to have version 0.6.0 or newer.
           value:
             - Provides the secret from a given value O(secrets[].value).
             - B(Note) that the secret will be passed as an environment variable to C(docker compose).
               Use another mean of transport if you consider this not safe enough.
+            - Note that this requires the Buildkit plugin to have version 0.6.0 or newer.
         required: true
       src:
         description:
@@ -283,6 +285,8 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     is_valid_tag,
 )
 
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
+
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
     parse_repository_tag,
 )
@@ -327,6 +331,20 @@ class ImageBuilder(DockerBaseClass):
         buildx = self.client.get_client_plugin_info('buildx')
         if buildx is None:
             self.fail('Docker CLI {0} does not have the buildx plugin installed'.format(self.client.get_cli()))
+        buildx_version = buildx['Version'].lstrip('v')
+
+        if self.secrets:
+            for secret in self.secrets:
+                if secret['type'] in ('env', 'value'):
+                    if LooseVersion(buildx_version) < LooseVersion('0.6.0'):
+                        self.fail('The Docker buildx plugin has version {version}, but 0.6.0 is needed for secrets of type=env and type=value'.format(
+                            version=buildx_version,
+                        ))
+        if self.outputs and len(self.outputs) > 1:
+            if LooseVersion(buildx_version) < LooseVersion('0.13.0'):
+                self.fail('The Docker buildx plugin has version {version}, but 0.13.0 is needed to specify more than one output'.format(
+                    version=buildx_version,
+                ))
 
         self.path = parameters['path']
         if not os.path.isdir(self.path):
