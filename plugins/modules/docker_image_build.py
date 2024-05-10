@@ -18,6 +18,9 @@ version_added: 3.6.0
 
 description:
   - This module allows you to build Docker images using Docker's buildx plugin (BuildKit).
+  - Note that the module is B(not idempotent) in the sense of classical Ansible modules.
+    The only idempotence check is whether the built image already exists. This check can
+    be disabled with the O(rebuild) option.
 
 extends_documentation_fragment:
   - community.docker.docker.cli_documentation
