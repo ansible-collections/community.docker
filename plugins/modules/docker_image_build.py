@@ -92,8 +92,10 @@ options:
     type: str
   platform:
     description:
-      - Platform in the format C(os[/arch[/variant]]).
-    type: str
+      - Platforms in the format C(os[/arch[/variant]]).
+      - Since community.docker 3.10.0 this can be a list of platforms, instead of just a single platform.
+    type: list
+    elements: str
   shm_size:
     description:
       - "Size of C(/dev/shm) in format C(<number>[<unit>]). Number is positive integer.
@@ -131,6 +133,15 @@ EXAMPLES = '''
     name: localhost/python/3.12:latest
     path: /home/user/images/python
     dockerfile: Dockerfile-3.12
+
+- name: Build multi-platform image
+  community.docker.docker_image_build:
+    name: multi-platform-image
+    tag: "1.5.2"
+    path: /home/user/images/multi-platform
+    platform:
+      - linux/amd64
+      - linux/arm64/v8
 '''
 
 RETURN = '''
@@ -251,7 +262,8 @@ class ImageBuilder(DockerBaseClass):
         if self.target:
             args.extend(['--target', self.target])
         if self.platform:
-            args.extend(['--platform', self.platform])
+            for platform in self.platform:
+                args.extend(['--platform', platform])
         if self.shm_size:
             args.extend(['--shm-size', str(self.shm_size)])
         if self.labels:
@@ -297,7 +309,7 @@ def main():
         etc_hosts=dict(type='dict'),
         args=dict(type='dict'),
         target=dict(type='str'),
-        platform=dict(type='str'),
+        platform=dict(type='list', elements='str'),
         shm_size=dict(type='str'),
         labels=dict(type='dict'),
         rebuild=dict(type='str', choices=['never', 'always'], default='never'),

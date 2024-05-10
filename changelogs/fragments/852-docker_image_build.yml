@@ -1,0 +1,2 @@
+minor_changes:
+  - "docker_image_build - allow ``platform`` to be a list of platforms instead of only a single platform for multi-platform builds (https://github.com/ansible-collections/community.docker/pull/852)."
