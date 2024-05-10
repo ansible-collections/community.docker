@@ -161,6 +161,73 @@ options:
             Use another mean of transport if you consider this not safe enough.
           - Only supported and required for O(secrets[].type=value).
         type: str
+  outputs:
+    description:
+      - Output destinations.
+      - You can provide a list of exporters to export the built image in various places.
+        Note that not all exporters might be supported by the build driver used.
+      - Note that depending on how this option is used, no image with name O(name) and tag O(tag) might
+        be created, which can cause the basic idempotency this module offers to not work.
+      - Providing an empty list to this option is equivalent to not specifying it at all.
+        The default behavior is a single entry with O(outputs[].type=image).
+    type: list
+    elements: dict
+    version_added: 3.10.0
+    suboptions:
+      type:
+        description:
+          - The type of exporter to use.
+        type: str
+        choices:
+          local:
+            - This export type writes all result files to a directory on the client.
+              The new files will be owned by the current user.
+              On multi-platform builds, all results will be put in subdirectories by their platform.
+            - The destination has to be provided in O(outputs[].dest).
+          tar:
+            - This export type export type writes all result files as a single tarball on the client.
+              On multi-platform builds, all results will be put in subdirectories by their platform.
+            - The destination has to be provided in O(outputs[].dest).
+          oci:
+            - This export type writes the result image or manifest list as an
+              L(OCI image layout, https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md)
+              tarball on the client.
+            - The destination has to be provided in O(outputs[].dest).
+          docker:
+            - This export type writes the single-platform result image as a Docker image specification tarball on the client.
+              Tarballs created by this exporter are also OCI compatible.
+            - The destination can be provided in O(outputs[].dest).
+              If not specified, the tar will be loaded automatically to the local image store.
+            - The Docker context where to import the result can be provided in O(outputs[].context).
+          image:
+            - This exporter writes the build result as an image or a manifest list.
+              When using this driver, the image will appear in C(docker images).
+            - The image name can be provided in O(outputs[].name). If it is not provided, the
+            - Optionally, image can be automatically pushed to a registry by setting O(outputs[].push=true).
+        required: true
+      dest:
+        description:
+          - The destination path.
+          - Required for O(outputs[].type=local), O(outputs[].type=tar), O(outputs[].type=oci).
+          - Optional for O(outputs[].type=docker).
+        type: path
+      context:
+        description:
+          - Name for the Docker context where to import the result.
+          - Optional for O(outputs[].type=docker).
+        type: str
+      name:
+        description:
+          - Name under which the image is stored under.
+          - If not provided, O(name) and O(tag) will be used.
+          - Optional for O(outputs[].type=image).
+        type: str
+      push:
+        description:
+          - Whether to push the built image to a registry.
+          - Only used for O(outputs[].type=image).
+        type: bool
+        default: false
 requirements:
   - "Docker CLI with Docker buildx plugin"
 
@@ -255,6 +322,7 @@ class ImageBuilder(DockerBaseClass):
         self.labels = clean_dict_booleans_for_docker_api(parameters['labels'])
         self.rebuild = parameters['rebuild']
         self.secrets = parameters['secrets']
+        self.outputs = parameters['outputs']
 
         buildx = self.client.get_client_plugin_info('buildx')
         if buildx is None:
@@ -335,6 +403,28 @@ class ImageBuilder(DockerBaseClass):
                     )
                     environ_update[env_name] = secret['value']
                     args.extend(['--secret', 'id={id},type=env,env={env}'.format(id=secret['id'], env=env_name)])
+        if self.outputs:
+            for output in self.outputs:
+                if output['type'] == 'local':
+                    args.extend(['--output', 'type=local,dest={dest}'.format(dest=output['dest'])])
+                if output['type'] == 'tar':
+                    args.extend(['--output', 'type=tar,dest={dest}'.format(dest=output['dest'])])
+                if output['type'] == 'oci':
+                    args.extend(['--output', 'type=oci,dest={dest}'.format(dest=output['dest'])])
+                if output['type'] == 'docker':
+                    more = []
+                    if output['dest'] is not None:
+                        more.append('dest={dest}'.format(dest=output['dest']))
+                    if output['dest'] is not None:
+                        more.append('context={context}'.format(context=output['context']))
+                    args.extend(['--output', 'type=docker,{more}'.format(more=','.join(more))])
+                if output['type'] == 'image':
+                    more = []
+                    if output['name'] is not None:
+                        more.append('name={name}'.format(name=output['name']))
+                    if output['push']:
+                        more.append('push=true')
+                    args.extend(['--output', 'type=image,{more}'.format(more=','.join(more))])
         return environ_update
 
     def build_image(self):
@@ -400,6 +490,28 @@ def main():
                 ('src', 'env', 'value'),
             ],
             no_log=False,
+        ),
+        outputs=dict(
+            type='list',
+            elements='dict',
+            options=dict(
+                type=dict(type='str', choices=['local', 'tar', 'oci', 'docker', 'image'], required=True),
+                dest=dict(type='path'),
+                context=dict(type='str'),
+                name=dict(type='str'),
+                push=dict(type='bool', default=False),
+            ),
+            required_if=[
+                ('type', 'local', ['dest']),
+                ('type', 'tar', ['dest']),
+                ('type', 'oci', ['dest']),
+            ],
+            mutually_exclusive=[
+                ('dest', 'name'),
+                ('dest', 'push'),
+                ('context', 'name'),
+                ('context', 'push'),
+            ],
         ),
     )
 
