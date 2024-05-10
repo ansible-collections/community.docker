@@ -18,9 +18,13 @@
 - debug:
     msg: "Using name prefix {{ name_prefix }}"
 
+- name: Show images
+  command: docker images --all --digests
+
 # Run the tests
 - block:
-    - command: docker compose --help
+    - name: Show docker compose --help output
+      command: docker compose --help
 
     - include_tasks: run-test.yml
       with_fileglob:

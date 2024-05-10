@@ -52,7 +52,8 @@
     - name: Obtain Docker Compose version
       when: docker_has_compose
       block:
-        - command:
+        - name: Obtain docker info
+          command:
             cmd: docker info --format '{% raw %}{{ json .ClientInfo.Plugins }}{% endraw %}'
           register: docker_cli_plugins_stdout
         - set_fact:

@@ -20,7 +20,8 @@
 
 # Run the tests
 - block:
-    - command: docker compose --help
+    - name: Show docker compose --help output
+      command: docker compose --help
 
     - include_tasks: run-test.yml
       with_fileglob:

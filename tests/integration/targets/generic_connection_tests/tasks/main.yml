@@ -174,7 +174,8 @@
           - (output_direct.host_info | sanitize_host_info) == (output_https.host_info | sanitize_host_info)
 
   always:
-  - command: docker logs {{ daemon_nginx_frontend }}
+  - name: Obtain logs from the nginx frontend
+    command: docker logs {{ daemon_nginx_frontend }}
     register: output
     ignore_errors: true
   - debug:

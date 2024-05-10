@@ -91,7 +91,8 @@
 
     - block:
       # Cleanup docker daemon
-      - command: 'docker ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %}'
+      - name: Show all containers
+        command: 'docker ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %}'
 
       - name: "Remove all ansible-docker-test-* docker containers"
         shell: 'docker ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r docker rm -f'
