@@ -202,3 +202,37 @@
       - labels_1 is changed
       - labels_1.image.Config.Labels.FOO == 'BAR'
       - labels_1.image.Config.Labels["this is a label"] == "this is the label's value"
+
+####################################################################
+## secrets #########################################################
+####################################################################
+
+- name: Generate secret
+  set_fact:
+    docker_image_build_secret_value: this is my secret {{ '%0x' % ((2**32) | random) }}
+
+- name: Build image with secrets
+  docker_image_build:
+    name: "{{ iname }}"
+    path: "{{ remote_tmp_dir }}/files"
+    dockerfile: "SecretsDockerfile"
+    pull: false
+    secrets:
+      - id: my-awesome-secret
+        type: value
+        value: '{{ docker_image_build_secret_value }}'
+    nocache: true  # using a cache can result in the output step being CACHED
+  register: secrets_1
+
+- name: cleanup
+  docker_image_remove:
+    name: "{{ iname }}"
+
+- name: Show image information
+  debug:
+    var: secrets_1.stderr_lines
+
+- assert:
+    that:
+      - secrets_1 is changed
+      - (docker_image_build_secret_value | b64encode) in secrets_1.stderr

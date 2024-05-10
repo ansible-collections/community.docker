@@ -28,6 +28,7 @@
     - Dockerfile
     - EtcHostsDockerfile
     - MyDockerfile
+    - SecretsDockerfile
     - StagedDockerfile
 
 - debug:
