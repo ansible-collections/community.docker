@@ -935,6 +935,7 @@ OPTION_HEALTHCHECK = (
     OptionGroup(preprocess=_preprocess_healthcheck)
     .add_option('healthcheck', type='dict', ansible_suboptions=dict(
         test=dict(type='raw'),
+        test_cli_compatible=dict(type='bool', default=False),
         interval=dict(type='str'),
         timeout=dict(type='str'),
         start_period=dict(type='str'),
