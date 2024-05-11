@@ -78,6 +78,9 @@ DOCUMENTATION = '''
                 - Provide a valid SSL version number. Default value determined
                   by L(SSL Python module, https://docs.python.org/3/library/ssl.html).
             type: str
+            deprecated:
+                why: This was necessary a long time ago to handle problems with SSL versions. It is no longer necessary nowadays.
+                version: 4.0.0
         api_version:
             description:
                 - The version of the Docker API running on the Docker Host.

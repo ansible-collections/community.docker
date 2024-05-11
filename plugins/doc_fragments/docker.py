@@ -392,3 +392,12 @@ notes:
   - This module does B(not) use the L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) to
     communicate with the Docker daemon. It directly calls the Docker CLI program.
 '''
+
+    # DEPRECATED: this will be removed from community.docker 4.0.0! Use with care!
+    SSL_VERSION_DEPRECATION = '''
+options:
+    ssl_version:
+        deprecated:
+            why: This was necessary a long time ago to handle problems with older TLS/SSL versions. It is no longer necessary nowadays.
+            version: 4.0.0
+'''
