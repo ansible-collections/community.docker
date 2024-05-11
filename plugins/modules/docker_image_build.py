@@ -18,6 +18,9 @@ version_added: 3.6.0
 
 description:
   - This module allows you to build Docker images using Docker's buildx plugin (BuildKit).
+  - Note that the module is B(not idempotent) in the sense of classical Ansible modules.
+    The only idempotence check is whether the built image already exists. This check can
+    be disabled with the O(rebuild) option.
 
 extends_documentation_fragment:
   - community.docker.docker.cli_documentation
@@ -89,8 +92,10 @@ options:
     type: str
   platform:
     description:
-      - Platform in the format C(os[/arch[/variant]]).
-    type: str
+      - Platforms in the format C(os[/arch[/variant]]).
+      - Since community.docker 3.10.0 this can be a list of platforms, instead of just a single platform.
+    type: list
+    elements: str
   shm_size:
     description:
       - "Size of C(/dev/shm) in format C(<number>[<unit>]). Number is positive integer.
@@ -110,7 +115,121 @@ options:
       - never
       - always
     default: never
-
+  secrets:
+    description:
+      - Secrets to expose to the build.
+    type: list
+    elements: dict
+    version_added: 3.10.0
+    suboptions:
+      id:
+        description:
+          - The secret identifier.
+          - The secret will be made available as a file in the container under C(/run/secrets/<id>).
+        type: str
+        required: true
+      type:
+        description:
+          - Type of the secret.
+        type: str
+        choices:
+          file:
+            - Reads the secret from a file on the target.
+            - The file must be specified in O(secrets[].src).
+          env:
+            - Reads the secret from an environment variable on the target.
+            - The environment variable must be named in O(secrets[].env).
+            - Note that this requires the Buildkit plugin to have version 0.6.0 or newer.
+          value:
+            - Provides the secret from a given value O(secrets[].value).
+            - B(Note) that the secret will be passed as an environment variable to C(docker compose).
+              Use another mean of transport if you consider this not safe enough.
+            - Note that this requires the Buildkit plugin to have version 0.6.0 or newer.
+        required: true
+      src:
+        description:
+          - Source path of the secret.
+          - Only supported and required for O(secrets[].type=file).
+        type: path
+      env:
+        description:
+          - Environment value of the secret.
+          - Only supported and required for O(secrets[].type=env).
+        type: str
+      value:
+        description:
+          - Value of the secret.
+          - B(Note) that the secret will be passed as an environment variable to C(docker compose).
+            Use another mean of transport if you consider this not safe enough.
+          - Only supported and required for O(secrets[].type=value).
+        type: str
+  outputs:
+    description:
+      - Output destinations.
+      - You can provide a list of exporters to export the built image in various places.
+        Note that not all exporters might be supported by the build driver used.
+      - Note that depending on how this option is used, no image with name O(name) and tag O(tag) might
+        be created, which can cause the basic idempotency this module offers to not work.
+      - Providing an empty list to this option is equivalent to not specifying it at all.
+        The default behavior is a single entry with O(outputs[].type=image).
+    type: list
+    elements: dict
+    version_added: 3.10.0
+    suboptions:
+      type:
+        description:
+          - The type of exporter to use.
+        type: str
+        choices:
+          local:
+            - This export type writes all result files to a directory on the client.
+              The new files will be owned by the current user.
+              On multi-platform builds, all results will be put in subdirectories by their platform.
+            - The destination has to be provided in O(outputs[].dest).
+          tar:
+            - This export type export type writes all result files as a single tarball on the client.
+              On multi-platform builds, all results will be put in subdirectories by their platform.
+            - The destination has to be provided in O(outputs[].dest).
+          oci:
+            - This export type writes the result image or manifest list as an
+              L(OCI image layout, https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md)
+              tarball on the client.
+            - The destination has to be provided in O(outputs[].dest).
+          docker:
+            - This export type writes the single-platform result image as a Docker image specification tarball on the client.
+              Tarballs created by this exporter are also OCI compatible.
+            - The destination can be provided in O(outputs[].dest).
+              If not specified, the tar will be loaded automatically to the local image store.
+            - The Docker context where to import the result can be provided in O(outputs[].context).
+          image:
+            - This exporter writes the build result as an image or a manifest list.
+              When using this driver, the image will appear in C(docker images).
+            - The image name can be provided in O(outputs[].name). If it is not provided, the
+            - Optionally, image can be automatically pushed to a registry by setting O(outputs[].push=true).
+        required: true
+      dest:
+        description:
+          - The destination path.
+          - Required for O(outputs[].type=local), O(outputs[].type=tar), O(outputs[].type=oci).
+          - Optional for O(outputs[].type=docker).
+        type: path
+      context:
+        description:
+          - Name for the Docker context where to import the result.
+          - Optional for O(outputs[].type=docker).
+        type: str
+      name:
+        description:
+          - Name under which the image is stored under.
+          - If not provided, O(name) and O(tag) will be used.
+          - Optional for O(outputs[].type=image).
+        type: str
+      push:
+        description:
+          - Whether to push the built image to a registry.
+          - Only used for O(outputs[].type=image).
+        type: bool
+        default: false
 requirements:
   - "Docker CLI with Docker buildx plugin"
 
@@ -128,6 +247,15 @@ EXAMPLES = '''
     name: localhost/python/3.12:latest
     path: /home/user/images/python
     dockerfile: Dockerfile-3.12
+
+- name: Build multi-platform image
+  community.docker.docker_image_build:
+    name: multi-platform-image
+    tag: "1.5.2"
+    path: /home/user/images/multi-platform
+    platform:
+      - linux/amd64
+      - linux/arm64/v8
 '''
 
 RETURN = '''
@@ -138,6 +266,7 @@ image:
     sample: {}
 '''
 
+import base64
 import os
 import traceback
 
@@ -155,6 +284,8 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     is_image_name_id,
     is_valid_tag,
 )
+
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
     parse_repository_tag,
@@ -194,10 +325,26 @@ class ImageBuilder(DockerBaseClass):
         self.shm_size = convert_to_bytes(parameters['shm_size'], self.client.module, 'shm_size')
         self.labels = clean_dict_booleans_for_docker_api(parameters['labels'])
         self.rebuild = parameters['rebuild']
+        self.secrets = parameters['secrets']
+        self.outputs = parameters['outputs']
 
         buildx = self.client.get_client_plugin_info('buildx')
         if buildx is None:
             self.fail('Docker CLI {0} does not have the buildx plugin installed'.format(self.client.get_cli()))
+        buildx_version = buildx['Version'].lstrip('v')
+
+        if self.secrets:
+            for secret in self.secrets:
+                if secret['type'] in ('env', 'value'):
+                    if LooseVersion(buildx_version) < LooseVersion('0.6.0'):
+                        self.fail('The Docker buildx plugin has version {version}, but 0.6.0 is needed for secrets of type=env and type=value'.format(
+                            version=buildx_version,
+                        ))
+        if self.outputs and len(self.outputs) > 1:
+            if LooseVersion(buildx_version) < LooseVersion('0.13.0'):
+                self.fail('The Docker buildx plugin has version {version}, but 0.13.0 is needed to specify more than one output'.format(
+                    version=buildx_version,
+                ))
 
         self.path = parameters['path']
         if not os.path.isdir(self.path):
@@ -230,6 +377,7 @@ class ImageBuilder(DockerBaseClass):
             args.extend([option, value])
 
     def add_args(self, args):
+        environ_update = {}
         args.extend(['--tag', '%s:%s' % (self.name, self.tag)])
         if self.dockerfile:
             args.extend(['--file', os.path.join(self.path, self.dockerfile)])
@@ -248,11 +396,54 @@ class ImageBuilder(DockerBaseClass):
         if self.target:
             args.extend(['--target', self.target])
         if self.platform:
-            args.extend(['--platform', self.platform])
+            for platform in self.platform:
+                args.extend(['--platform', platform])
         if self.shm_size:
             args.extend(['--shm-size', str(self.shm_size)])
         if self.labels:
             self.add_list_arg(args, '--label', dict_to_list(self.labels))
+        if self.secrets:
+            random_prefix = None
+            for index, secret in enumerate(self.secrets):
+                if secret['type'] == 'file':
+                    args.extend(['--secret', 'id={id},type=file,src={src}'.format(id=secret['id'], src=secret['src'])])
+                if secret['type'] == 'env':
+                    args.extend(['--secret', 'id={id},type=env,env={env}'.format(id=secret['id'], env=secret['src'])])
+                if secret['type'] == 'value':
+                    # We pass values on using environment variables. The user has been warned in the documentation
+                    # that they should only use this mechanism when being comfortable with it.
+                    if random_prefix is None:
+                        # Use /dev/urandom to generate some entropy to make the environment variable's name unguessable
+                        random_prefix = base64.b64encode(os.urandom(16)).decode('utf-8').replace('=', '')
+                    env_name = 'ANSIBLE_DOCKER_COMPOSE_ENV_SECRET_{random}_{id}'.format(
+                        random=random_prefix,
+                        id=index,
+                    )
+                    environ_update[env_name] = secret['value']
+                    args.extend(['--secret', 'id={id},type=env,env={env}'.format(id=secret['id'], env=env_name)])
+        if self.outputs:
+            for output in self.outputs:
+                if output['type'] == 'local':
+                    args.extend(['--output', 'type=local,dest={dest}'.format(dest=output['dest'])])
+                if output['type'] == 'tar':
+                    args.extend(['--output', 'type=tar,dest={dest}'.format(dest=output['dest'])])
+                if output['type'] == 'oci':
+                    args.extend(['--output', 'type=oci,dest={dest}'.format(dest=output['dest'])])
+                if output['type'] == 'docker':
+                    more = []
+                    if output['dest'] is not None:
+                        more.append('dest={dest}'.format(dest=output['dest']))
+                    if output['dest'] is not None:
+                        more.append('context={context}'.format(context=output['context']))
+                    args.extend(['--output', 'type=docker,{more}'.format(more=','.join(more))])
+                if output['type'] == 'image':
+                    more = []
+                    if output['name'] is not None:
+                        more.append('name={name}'.format(name=output['name']))
+                    if output['push']:
+                        more.append('push=true')
+                    args.extend(['--output', 'type=image,{more}'.format(more=','.join(more))])
+        return environ_update
 
     def build_image(self):
         image = self.client.find_image(self.name, self.tag)
@@ -269,9 +460,9 @@ class ImageBuilder(DockerBaseClass):
         results['changed'] = True
         if not self.check_mode:
             args = ['buildx', 'build', '--progress', 'plain']
-            self.add_args(args)
+            environ_update = self.add_args(args)
             args.extend(['--', self.path])
-            rc, stdout, stderr = self.client.call_cli(*args)
+            rc, stdout, stderr = self.client.call_cli(*args, environ_update=environ_update)
             if rc != 0:
                 self.fail('Building %s:%s failed' % (self.name, self.tag), stdout=to_native(stdout), stderr=to_native(stderr))
             results['stdout'] = to_native(stdout)
@@ -294,10 +485,52 @@ def main():
         etc_hosts=dict(type='dict'),
         args=dict(type='dict'),
         target=dict(type='str'),
-        platform=dict(type='str'),
+        platform=dict(type='list', elements='str'),
         shm_size=dict(type='str'),
         labels=dict(type='dict'),
         rebuild=dict(type='str', choices=['never', 'always'], default='never'),
+        secrets=dict(
+            type='list',
+            elements='dict',
+            options=dict(
+                id=dict(type='str', required=True),
+                type=dict(type='str', choices=['file', 'env', 'value'], required=True),
+                src=dict(type='path'),
+                env=dict(type='str'),
+                value=dict(type='str', no_log=True),
+            ),
+            required_if=[
+                ('type', 'file', ['src']),
+                ('type', 'env', ['env']),
+                ('type', 'value', ['value']),
+            ],
+            mutually_exclusive=[
+                ('src', 'env', 'value'),
+            ],
+            no_log=False,
+        ),
+        outputs=dict(
+            type='list',
+            elements='dict',
+            options=dict(
+                type=dict(type='str', choices=['local', 'tar', 'oci', 'docker', 'image'], required=True),
+                dest=dict(type='path'),
+                context=dict(type='str'),
+                name=dict(type='str'),
+                push=dict(type='bool', default=False),
+            ),
+            required_if=[
+                ('type', 'local', ['dest']),
+                ('type', 'tar', ['dest']),
+                ('type', 'oci', ['dest']),
+            ],
+            mutually_exclusive=[
+                ('dest', 'name'),
+                ('dest', 'push'),
+                ('context', 'name'),
+                ('context', 'push'),
+            ],
+        ),
     )
 
     client = AnsibleModuleDockerClient(
