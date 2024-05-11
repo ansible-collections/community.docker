@@ -201,6 +201,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Synopsis</a><a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>This module allows you to build Docker images using Docker’s buildx plugin (BuildKit).</p></li>
+<li><p>Note that the module is <strong>not idempotent</strong> in the sense of classical Ansible modules. The only idempotence check is whether the built image already exists. This check can be disabled with the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-rebuild"><span class="std std-ref"><span class="pre">rebuild</span></span></a></strong></code> option.</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -355,6 +356,88 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-outputs"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-outputs"><strong>outputs</strong></p>
+<a class="ansibleOptionLink" href="#parameter-outputs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.10.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Output destinations.</p>
+<p>You can provide a list of exporters to export the built image in various places. Note that not all exporters might be supported by the build driver used.</p>
+<p>Note that depending on how this option is used, no image with name <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-name"><span class="std std-ref"><span class="pre">name</span></span></a></strong></code> and tag <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-tag"><span class="std std-ref"><span class="pre">tag</span></span></a></strong></code> might be created, which can cause the basic idempotency this module offers to not work.</p>
+<p>Providing an empty list to this option is equivalent to not specifying it at all. The default behavior is a single entry with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-type"><span class="std std-ref"><span class="pre">outputs[].type=image</span></span></a></code>.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-outputs/context"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-outputs-context"><strong>context</strong></p>
+<a class="ansibleOptionLink" href="#parameter-outputs/context" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Name for the Docker context where to import the result.</p>
+<p>Optional for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-type"><span class="std std-ref"><span class="pre">outputs[].type=docker</span></span></a></code>.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-outputs/dest"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-outputs-dest"><strong>dest</strong></p>
+<a class="ansibleOptionLink" href="#parameter-outputs/dest" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The destination path.</p>
+<p>Required for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-type"><span class="std std-ref"><span class="pre">outputs[].type=local</span></span></a></code>, <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-type"><span class="std std-ref"><span class="pre">outputs[].type=tar</span></span></a></code>, <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-type"><span class="std std-ref"><span class="pre">outputs[].type=oci</span></span></a></code>.</p>
+<p>Optional for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-type"><span class="std std-ref"><span class="pre">outputs[].type=docker</span></span></a></code>.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-outputs/name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-outputs-name"><strong>name</strong></p>
+<a class="ansibleOptionLink" href="#parameter-outputs/name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Name under which the image is stored under.</p>
+<p>If not provided, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-name"><span class="std std-ref"><span class="pre">name</span></span></a></strong></code> and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-tag"><span class="std std-ref"><span class="pre">tag</span></span></a></strong></code> will be used.</p>
+<p>Optional for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-type"><span class="std std-ref"><span class="pre">outputs[].type=image</span></span></a></code>.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-outputs/push"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-outputs-push"><strong>push</strong></p>
+<a class="ansibleOptionLink" href="#parameter-outputs/push" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Whether to push the built image to a registry.</p>
+<p>Only used for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-type"><span class="std std-ref"><span class="pre">outputs[].type=image</span></span></a></code>.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-outputs/type"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-outputs-type"><strong>type</strong></p>
+<a class="ansibleOptionLink" href="#parameter-outputs/type" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The type of exporter to use.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;docker&quot;</span></code>:
+This export type writes the single-platform result image as a Docker image specification tarball on the client. Tarballs created by this exporter are also OCI compatible.</p>
+<p>The destination can be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].dest</span></span></strong></code>. If not specified, the tar will be loaded automatically to the local image store.</p>
+<p>The Docker context where to import the result can be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].context</span></span></strong></code>.</p>
+</li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;image&quot;</span></code>:
+This exporter writes the build result as an image or a manifest list. When using this driver, the image will appear in <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code>.</p>
+<p>The image name can be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].name</span></span></strong></code>. If it is not provided, the</p>
+<p>Optionally, image can be automatically pushed to a registry by setting <code class="ansible-option-value docutils literal notranslate"><span><span class="pre">outputs[].push=true</span></span></code>.</p>
+</li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code>:
+This export type writes all result files to a directory on the client. The new files will be owned by the current user. On multi-platform builds, all results will be put in subdirectories by their platform.</p>
+<p>The destination has to be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].dest</span></span></strong></code>.</p>
+</li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;oci&quot;</span></code>:
+This export type writes the result image or manifest list as an <a class="reference external" href="https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md">OCI image layout</a> tarball on the client.</p>
+<p>The destination has to be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].dest</span></span></strong></code>.</p>
+</li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;tar&quot;</span></code>:
+This export type export type writes all result files as a single tarball on the client. On multi-platform builds, all results will be put in subdirectories by their platform.</p>
+<p>The destination has to be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].dest</span></span></strong></code>.</p>
+</li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-path"><strong>path</strong></p>
 <a class="ansibleOptionLink" href="#parameter-path" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
@@ -363,9 +446,10 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-platform"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-platform"><strong>platform</strong></p>
-<a class="ansibleOptionLink" href="#parameter-platform" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+<a class="ansibleOptionLink" href="#parameter-platform" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Platform in the format <code class="docutils literal notranslate"><span class="pre">os[/arch[/variant]]</span></code>.</p>
+<td><div class="ansible-option-cell"><p>Platforms in the format <code class="docutils literal notranslate"><span class="pre">os[/arch[/variant]]</span></code>.</p>
+<p>Since community.docker 3.10.0 this can be a list of platforms, instead of just a single platform.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -390,6 +474,71 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;never&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code></p></li>
 </ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-secrets"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-secrets"><strong>secrets</strong></p>
+<a class="ansibleOptionLink" href="#parameter-secrets" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.10.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Secrets to expose to the build.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-secrets/env"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-secrets-env"><strong>env</strong></p>
+<a class="ansibleOptionLink" href="#parameter-secrets/env" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Environment value of the secret.</p>
+<p>Only supported and required for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-secrets-type"><span class="std std-ref"><span class="pre">secrets[].type=env</span></span></a></code>.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-secrets/id"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-secrets-id"><strong>id</strong></p>
+<a class="ansibleOptionLink" href="#parameter-secrets/id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The secret identifier.</p>
+<p>The secret will be made available as a file in the container under <code class="docutils literal notranslate"><span class="pre">/run/secrets/&lt;id&gt;</span></code>.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-secrets/src"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-secrets-src"><strong>src</strong></p>
+<a class="ansibleOptionLink" href="#parameter-secrets/src" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Source path of the secret.</p>
+<p>Only supported and required for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-secrets-type"><span class="std std-ref"><span class="pre">secrets[].type=file</span></span></a></code>.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-secrets/type"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-secrets-type"><strong>type</strong></p>
+<a class="ansibleOptionLink" href="#parameter-secrets/type" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Type of the secret.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;env&quot;</span></code>:
+Reads the secret from an environment variable on the target.</p>
+<p>The environment variable must be named in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">secrets[].env</span></span></strong></code>.</p>
+<p>Note that this requires the Buildkit plugin to have version 0.6.0 or newer.</p>
+</li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;file&quot;</span></code>:
+Reads the secret from a file on the target.</p>
+<p>The file must be specified in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">secrets[].src</span></span></strong></code>.</p>
+</li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;value&quot;</span></code>:
+Provides the secret from a given value <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">secrets[].value</span></span></strong></code>.</p>
+<p><strong>Note</strong> that the secret will be passed as an environment variable to <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code>. Use another mean of transport if you consider this not safe enough.</p>
+<p>Note that this requires the Buildkit plugin to have version 0.6.0 or newer.</p>
+</li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-secrets/value"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-build-module-parameter-secrets-value"><strong>value</strong></p>
+<a class="ansibleOptionLink" href="#parameter-secrets/value" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Value of the secret.</p>
+<p><strong>Note</strong> that the secret will be passed as an environment variable to <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code>. Use another mean of transport if you consider this not safe enough.</p>
+<p>Only supported and required for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-secrets-type"><span class="std std-ref"><span class="pre">secrets[].type=value</span></span></a></code>.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -521,6 +670,15 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost/python/3.12:latest</span>
 <span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/home/user/images/python</span>
 <span class="w">    </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile-3.12</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Build multi-platform image</span>
+<span class="w">  </span><span class="nt">community.docker.docker_image_build</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">multi-platform-image</span>
+<span class="w">    </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.5.2&quot;</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/home/user/images/multi-platform</span>
+<span class="w">    </span><span class="nt">platform</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linux/amd64</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linux/arm64/v8</span>
 </pre></div>
 </div>
 </section>
