@@ -388,6 +388,7 @@ options:
             This is the classical behavior of the module and currently the default behavior.
         default: false
         type: bool
+        version_added: 3.10.0
       interval:
         description:
           - Time between running the check.
