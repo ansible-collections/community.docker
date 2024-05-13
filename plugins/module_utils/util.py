@@ -366,7 +366,7 @@ def normalize_healthcheck(healthcheck, normalize_test=False):
                 continue
             if key in duration_options:
                 value = convert_duration_to_nanosecond(value)
-            if not value and not (healthcheck['test_cli_compatible'] and key == 'test'):
+            if not value and not (healthcheck.get('test_cli_compatible') and key == 'test'):
                 continue
             if key == 'retries':
                 try:
