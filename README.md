@@ -9,6 +9,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 [![Doc](https://img.shields.io/badge/docs-brightgreen.svg)](https://docs.ansible.com/ansible/latest/collections/community/docker/)
 [![Build Status](https://dev.azure.com/ansible/community.docker/_apis/build/status/CI?branchName=main)](https://dev.azure.com/ansible/community.docker/_build?definitionId=25)
 [![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/community.docker)](https://codecov.io/gh/ansible-collections/community.docker)
+[![REUSE status](https://api.reuse.software/badge/github.com/ansible-collections/community.docker)](https://api.reuse.software/info/github.com/ansible-collections/community.docker)
 
 This repo contains the `community.docker` Ansible Collection. The collection includes many modules and plugins to work with Docker.
 
