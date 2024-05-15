@@ -746,7 +746,7 @@ def _preprocess_etc_hosts(module, client, api_version, value):
 def _preprocess_healthcheck(module, client, api_version, value):
     if value is None:
         return value
-    if not value or not value.get('test'):
+    if not value or not (value.get('test') or (value.get('test_cli_compatible') and value.get('test') is None)):
         value = {'test': ['NONE']}
     elif 'test' in value:
         value['test'] = normalize_healthcheck_test(value['test'])

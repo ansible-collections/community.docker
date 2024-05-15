@@ -379,6 +379,16 @@ options:
           - Command to run to check health.
           - Must be either a string or a list. If it is a list, the first item must be one of V(NONE), V(CMD) or V(CMD-SHELL).
         type: raw
+      test_cli_compatible:
+        description:
+          - If set to V(true), omitting O(healthcheck.test) while providing O(healthcheck) does not disable healthchecks,
+            but simply overwrites the image's values by the ones specified in O(healthcheck). This is
+            the behavior used by the Docker CLI.
+          - If set to V(false), omitting O(healthcheck.test) will disable the container's health check.
+            This is the classical behavior of the module and currently the default behavior.
+        default: false
+        type: bool
+        version_added: 3.10.0
       interval:
         description:
           - Time between running the check.

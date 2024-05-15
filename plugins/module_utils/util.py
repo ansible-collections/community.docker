@@ -353,7 +353,7 @@ def normalize_healthcheck(healthcheck, normalize_test=False):
     result = dict()
 
     # All supported healthcheck parameters
-    options = ('test', 'interval', 'timeout', 'start_period', 'start_interval', 'retries')
+    options = ('test', 'test_cli_compatible', 'interval', 'timeout', 'start_period', 'start_interval', 'retries')
 
     duration_options = ('interval', 'timeout', 'start_period', 'start_interval')
 
@@ -366,7 +366,7 @@ def normalize_healthcheck(healthcheck, normalize_test=False):
                 continue
             if key in duration_options:
                 value = convert_duration_to_nanosecond(value)
-            if not value:
+            if not value and not (healthcheck.get('test_cli_compatible') and key == 'test'):
                 continue
             if key == 'retries':
                 try:
@@ -376,7 +376,7 @@ def normalize_healthcheck(healthcheck, normalize_test=False):
                         'Cannot parse number of retries for healthcheck. '
                         'Expected an integer, got "{0}".'.format(value)
                     )
-            if key == 'test' and normalize_test:
+            if key == 'test' and value and normalize_test:
                 value = normalize_healthcheck_test(value)
             result[key] = value
 
