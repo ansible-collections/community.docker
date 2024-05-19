@@ -4,6 +4,32 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v3.10.0
+=======
+
+Release Summary
+---------------
+
+Feature release.
+
+Minor Changes
+-------------
+
+- docker_container - adds ``healthcheck.start_interval`` to support healthcheck start interval setting on containers (https://github.com/ansible-collections/community.docker/pull/848).
+- docker_container - adds ``healthcheck.test_cli_compatible`` to allow omit test option on containers without remove existing image test (https://github.com/ansible-collections/community.docker/pull/847).
+- docker_image_build - add ``outputs`` option to allow configuring outputs for the build (https://github.com/ansible-collections/community.docker/pull/852).
+- docker_image_build - add ``secrets`` option to allow passing secrets to the build (https://github.com/ansible-collections/community.docker/pull/852).
+- docker_image_build - allow ``platform`` to be a list of platforms instead of only a single platform for multi-platform builds (https://github.com/ansible-collections/community.docker/pull/852).
+- docker_network - adds ``config_only`` and ``config_from`` to support creating and using config only networks (https://github.com/ansible-collections/community.docker/issues/395).
+- docker_prune - add new options ``builder_cache_all``, ``builder_cache_filters``, and ``builder_cache_keep_storage``, and a new return value ``builder_cache_caches_deleted`` for pruning build caches (https://github.com/ansible-collections/community.docker/issues/844, https://github.com/ansible-collections/community.docker/issues/845).
+- docker_swarm_service - adds ``sysctls`` to support sysctl settings on swarm services (https://github.com/ansible-collections/community.docker/issues/190).
+
+Deprecated Features
+-------------------
+
+- docker_compose - the Docker Compose v1 module is deprecated and will be removed from community.docker 4.0.0. Please migrate to the ``community.docker.docker_compose_v2`` module, which works with Docker Compose v2 (https://github.com/ansible-collections/community.docker/issues/823, https://github.com/ansible-collections/community.docker/pull/833).
+- various modules and plugins - the ``ssl_version`` option has been deprecated and will be removed from community.docker 4.0.0. It has already been removed from Docker SDK for Python 7.0.0, and was only necessary in the past to work around SSL/TLS issues (https://github.com/ansible-collections/community.docker/pull/853).
+
 v3.9.0
 ======
 

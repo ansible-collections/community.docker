@@ -1,4 +1,0 @@
-deprecated_features:
-  - "various modules and plugins - the ``ssl_version`` option has been deprecated and will be removed from community.docker 4.0.0.
-     It has already been removed from Docker SDK for Python 7.0.0, and was only necessary in the past to work around SSL/TLS issues
-     (https://github.com/ansible-collections/community.docker/pull/853)."

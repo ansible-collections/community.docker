@@ -1,2 +1,0 @@
-minor_changes:
-  - "docker_prune - add new options ``builder_cache_all``, ``builder_cache_filters``, and ``builder_cache_keep_storage``, and a new return value ``builder_cache_caches_deleted`` for pruning build caches (https://github.com/ansible-collections/community.docker/issues/844, https://github.com/ansible-collections/community.docker/issues/845)."
