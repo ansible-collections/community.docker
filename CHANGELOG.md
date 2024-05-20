@@ -347,7 +347,7 @@ Bugfix and feature release\.
 <a id="new-modules"></a>
 ### New Modules
 
-* docker\_image\_export \- Export \(archive\) Docker images
+* community\.docker\.docker\_image\_export \- Export \(archive\) Docker images
 
 <a id="v3-6-0"></a>
 ## v3\.6\.0
@@ -391,13 +391,13 @@ so the main difference is that instead of some Python requirements\, they depend
 <a id="new-modules-1"></a>
 ### New Modules
 
-* docker\_compose\_v2 \- Manage multi\-container Docker applications with Docker Compose CLI plugin
-* docker\_compose\_v2\_pull \- Pull a Docker compose project
-* docker\_image\_build \- Build Docker images using Docker buildx
-* docker\_image\_pull \- Pull Docker images from registries
-* docker\_image\_push \- Push Docker images to registries
-* docker\_image\_remove \- Remove Docker images
-* docker\_image\_tag \- Tag Docker images with new names and/or tags
+* community\.docker\.docker\_compose\_v2 \- Manage multi\-container Docker applications with Docker Compose CLI plugin
+* community\.docker\.docker\_compose\_v2\_pull \- Pull a Docker compose project
+* community\.docker\.docker\_image\_build \- Build Docker images using Docker buildx
+* community\.docker\.docker\_image\_pull \- Pull Docker images from registries
+* community\.docker\.docker\_image\_push \- Push Docker images to registries
+* community\.docker\.docker\_image\_remove \- Remove Docker images
+* community\.docker\.docker\_image\_tag \- Tag Docker images with new names and/or tags
 
 <a id="v3-5-0"></a>
 ## v3\.5\.0
@@ -612,7 +612,7 @@ Regular bugfix and feature release\.
 <a id="new-modules-2"></a>
 ### New Modules
 
-* docker\_container\_copy\_into \- Copy a file into a Docker container
+* community\.docker\.docker\_container\_copy\_into \- Copy a file into a Docker container
 
 <a id="v3-3-2"></a>
 ## v3\.3\.2
@@ -1123,7 +1123,7 @@ New bugfixes and features release\.
 <a id="connection"></a>
 #### Connection
 
-* nsenter \- execute on host running controller container
+* community\.docker\.nsenter \- execute on host running controller container
 
 <a id="v1-8-0"></a>
 ## v1\.8\.0
@@ -1220,7 +1220,7 @@ Regular feature release\.
 <a id="new-modules-3"></a>
 ### New Modules
 
-* docker\_container\_exec \- Execute command in a docker container
+* community\.docker\.docker\_container\_exec \- Execute command in a docker container
 
 <a id="v1-4-0"></a>
 ## v1\.4\.0
@@ -1279,8 +1279,8 @@ Regular feature and bugfix release\.
 <a id="new-modules-4"></a>
 ### New Modules
 
-* docker\_image\_load \- Load docker image\(s\) from archives
-* docker\_plugin \- Manage Docker plugins
+* community\.docker\.docker\_image\_load \- Load docker image\(s\) from archives
+* community\.docker\.docker\_plugin \- Manage Docker plugins
 
 <a id="v1-2-2"></a>
 ## v1\.2\.2
@@ -1360,17 +1360,17 @@ Feature release with three new plugins and modules\.
 <a id="connection-1"></a>
 #### Connection
 
-* docker\_api \- Run tasks in docker containers
+* community\.docker\.docker\_api \- Run tasks in docker containers
 
 <a id="inventory"></a>
 #### Inventory
 
-* docker\_containers \- Ansible dynamic inventory plugin for Docker containers\.
+* community\.docker\.docker\_containers \- Ansible dynamic inventory plugin for Docker containers\.
 
 <a id="new-modules-5"></a>
 ### New Modules
 
-* current\_container\_facts \- Return facts about whether the module runs in a Docker container
+* community\.docker\.current\_container\_facts \- Return facts about whether the module runs in a Docker container
 
 <a id="v1-0-1"></a>
 ## v1\.0\.1

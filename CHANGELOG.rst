@@ -119,7 +119,7 @@ Bugfixes
 New Modules
 -----------
 
-- docker_image_export - Export (archive) Docker images
+- community.docker.docker_image_export - Export (archive) Docker images
 
 v3.6.0
 ======
@@ -163,13 +163,13 @@ Bugfixes
 New Modules
 -----------
 
-- docker_compose_v2 - Manage multi-container Docker applications with Docker Compose CLI plugin
-- docker_compose_v2_pull - Pull a Docker compose project
-- docker_image_build - Build Docker images using Docker buildx
-- docker_image_pull - Pull Docker images from registries
-- docker_image_push - Push Docker images to registries
-- docker_image_remove - Remove Docker images
-- docker_image_tag - Tag Docker images with new names and/or tags
+- community.docker.docker_compose_v2 - Manage multi-container Docker applications with Docker Compose CLI plugin
+- community.docker.docker_compose_v2_pull - Pull a Docker compose project
+- community.docker.docker_image_build - Build Docker images using Docker buildx
+- community.docker.docker_image_pull - Pull Docker images from registries
+- community.docker.docker_image_push - Push Docker images to registries
+- community.docker.docker_image_remove - Remove Docker images
+- community.docker.docker_image_tag - Tag Docker images with new names and/or tags
 
 v3.5.0
 ======
@@ -385,7 +385,7 @@ Bugfixes
 New Modules
 -----------
 
-- docker_container_copy_into - Copy a file into a Docker container
+- community.docker.docker_container_copy_into - Copy a file into a Docker container
 
 v3.3.2
 ======
@@ -896,7 +896,7 @@ New Plugins
 Connection
 ~~~~~~~~~~
 
-- nsenter - execute on host running controller container
+- community.docker.nsenter - execute on host running controller container
 
 v1.8.0
 ======
@@ -993,7 +993,7 @@ Bugfixes
 New Modules
 -----------
 
-- docker_container_exec - Execute command in a docker container
+- community.docker.docker_container_exec - Execute command in a docker container
 
 v1.4.0
 ======
@@ -1052,8 +1052,8 @@ Bugfixes
 New Modules
 -----------
 
-- docker_image_load - Load docker image(s) from archives
-- docker_plugin - Manage Docker plugins
+- community.docker.docker_image_load - Load docker image(s) from archives
+- community.docker.docker_plugin - Manage Docker plugins
 
 v1.2.2
 ======
@@ -1133,17 +1133,17 @@ New Plugins
 Connection
 ~~~~~~~~~~
 
-- docker_api - Run tasks in docker containers
+- community.docker.docker_api - Run tasks in docker containers
 
 Inventory
 ~~~~~~~~~
 
-- docker_containers - Ansible dynamic inventory plugin for Docker containers.
+- community.docker.docker_containers - Ansible dynamic inventory plugin for Docker containers.
 
 New Modules
 -----------
 
-- current_container_facts - Return facts about whether the module runs in a Docker container
+- community.docker.current_container_facts - Return facts about whether the module runs in a Docker container
 
 v1.0.1
 ======
