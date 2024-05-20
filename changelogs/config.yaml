@@ -35,3 +35,5 @@ sections:
   - Known Issues
 title: Docker Community Collection
 trivial_section_name: trivial
+use_fqcn: true
+add_plugin_period: true
