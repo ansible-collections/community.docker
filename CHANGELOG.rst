@@ -4,6 +4,30 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v3.10.1
+=======
+
+Release Summary
+---------------
+
+Hotfix release for requests 2.32.0 compatibility.
+
+Bugfixes
+--------
+
+- vendored Docker SDK for Python - include a hotfix for requests 2.32.0 compatibility (https://github.com/ansible-collections/community.docker/issues/860, https://github.com/docker/docker-py/issues/3256, https://github.com/ansible-collections/community.docker/pull/861).
+
+Known Issues
+------------
+
+- Please note that the fix for requests 2.32.0 included in community.docker 3.10.1 only
+  fixes problems with the *vendored* Docker SDK for Python code. Modules and plugins that
+  use Docker SDK for Python can still fail due to the SDK currently being incompatible
+  with requests 2.32.0.
+
+  If you still experience problems with requests 2.32.0, such as error messages like
+  ``Not supported URL scheme http+docker``, please restrict requests to ``<2.32.0``.
+
 v3.10.0
 =======
 
