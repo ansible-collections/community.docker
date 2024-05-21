@@ -6,5 +6,5 @@
 docker_py_version: '0.0'
 
 docker_pip_extra_packages: []
-docker_pip_package: docker
+docker_pip_package: git+https://github.com/felixfontein/docker-py.git@requests-hotfix#egg=docker
 docker_pip_package_limit: ''
