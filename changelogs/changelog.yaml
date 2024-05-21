@@ -1075,6 +1075,17 @@ releases:
     - 3.10.1.yml
     - 862-requests.yml
     release_date: '2024-05-20'
+  3.10.2:
+    changes:
+      bugfixes:
+      - vendored Docker SDK for Python - include a fix requests 2.32.2+ compatibility
+        (https://github.com/ansible-collections/community.docker/issues/860, https://github.com/psf/requests/issues/6707,
+        https://github.com/ansible-collections/community.docker/pull/864).
+      release_summary: Bugfix release.
+    fragments:
+    - 3.10.2.yml
+    - 864-requests.yml
+    release_date: '2024-05-21'
   3.2.0:
     changes:
       deprecated_features:

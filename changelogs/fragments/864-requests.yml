@@ -1,5 +1,0 @@
-bugfixes:
-  - "vendored Docker SDK for Python - include a fix requests 2.32.2+ compatibility
-    (https://github.com/ansible-collections/community.docker/issues/860,
-    https://github.com/psf/requests/issues/6707,
-    https://github.com/ansible-collections/community.docker/pull/864)."
