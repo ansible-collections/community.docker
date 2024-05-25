@@ -6,7 +6,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 
-from ansible.compat import selectors
+from ansible_collections.community.docker.plugins.module_utils.selectors import selectors
 
 from ansible_collections.community.docker.plugins.module_utils.socket_handler import (
     DockerSocketHandlerBase,
