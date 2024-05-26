@@ -1086,6 +1086,18 @@ releases:
     - 3.10.2.yml
     - 864-requests.yml
     release_date: '2024-05-21'
+  3.10.3:
+    changes:
+      bugfixes:
+      - docker and nsenter connection plugins, docker_container_exec module - avoid
+        using the deprecated ``ansible.module_utils.compat.selectors`` module util
+        with Python 3 (https://github.com/ansible-collections/community.docker/issues/870,
+        https://github.com/ansible-collections/community.docker/pull/871).
+      release_summary: Bugfix release.
+    fragments:
+    - 3.10.3.yml
+    - 871-selectors.yml
+    release_date: '2024-05-26'
   3.2.0:
     changes:
       deprecated_features:
