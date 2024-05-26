@@ -710,6 +710,21 @@ releases:
     - 2.7.1.yml
     - 448-docker_stack-error.yml
     release_date: '2022-08-12'
+  2.7.10:
+    changes:
+      bugfixes:
+      - EE requirements - restrict ``requests`` dependency to ``< 2.32.0`` since later
+        versions are incompatible with Docker SDK for Python < 7.1.0, which we depend
+        on (https://github.com/ansible-collections/community.docker/pull/872).
+      known_issues:
+      - EE requirements - ``requests < 2.32.0`` is vulnerable to `CVE-2024-35195 <https://github.com/advisories/GHSA-9wx4-h78v-vm56>`__.
+        This does not affect Docker SDK for Python, but might affect other users of
+        ``requests`` (https://github.com/ansible-collections/community.docker/pull/872).
+      release_summary: Bugfix release.
+    fragments:
+    - 2.7.10.yml
+    - 872-ee-requests.yml
+    release_date: '2024-05-26'
   2.7.2:
     changes:
       minor_changes:
