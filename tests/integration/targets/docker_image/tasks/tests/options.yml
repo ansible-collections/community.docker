@@ -299,7 +299,8 @@
     api_version: "1.22"
   register: load_image_4
   # Moby 25.0.0 (API version 1.44) dropped support for older API versions
-  when: docker_api_version is version('1.44', '<')
+  # Docker SDK for Python 7.1.0 also dropped support for older API versions
+  when: docker_api_version is version('1.44', '<') and docker_py_version is version('7.1.0', '<')
 
 - name: load image (ID, idempotency)
   docker_image:
@@ -320,7 +321,7 @@
     - '"Detected no loaded images. Archive potentially corrupt?" == load_image_3.msg'
     - load_image_5 is not changed
 
-- when: docker_api_version is version('1.44', '<')
+- when: docker_api_version is version('1.44', '<') and docker_py_version is version('7.1.0', '<')
   assert:
     that:
     - load_image_4 is changed
