@@ -169,7 +169,7 @@ EXAMPLES = '''
       ansible.builtin.debug:
         var: output
 
-    - name: Run `docker-compose up` again
+    - name: Run `docker compose up` again
       community.docker.docker_compose_v2:
         project_src: flask
       register: output
