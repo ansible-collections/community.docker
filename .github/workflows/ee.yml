@@ -68,14 +68,6 @@ jobs:
                   package_system: python39 python39-pip python39-wheel python39-cryptography
             base_image: docker.io/redhat/ubi8:latest
             pre_base: '"#"'
-          - name: ansible-core 2.12 @ CentOS Stream 8
-            ansible_core: https://github.com/ansible/ansible/archive/stable-2.12.tar.gz
-            ansible_runner: ansible-runner
-            other_deps: |2
-                python_interpreter:
-                  package_system: python39 python39-pip python39-wheel python39-cryptography
-            base_image: quay.io/centos/centos:stream8
-            pre_base: '"#"'
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
