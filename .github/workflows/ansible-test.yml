@@ -120,18 +120,6 @@ jobs:
         include:
           # 2.11
           - ansible: '2.11'
-            docker: fedora32
-            python: ''
-            target: azp/4/
-          - ansible: '2.11'
-            docker: fedora32
-            python: ''
-            target: azp/5/
-          - ansible: '2.11'
-            docker: fedora32
-            python: ''
-            target: azp/6/
-          - ansible: '2.11'
             docker: alpine3
             python: ''
             target: azp/4/
