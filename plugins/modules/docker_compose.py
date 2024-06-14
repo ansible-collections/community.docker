@@ -675,6 +675,9 @@ class ContainerManager(DockerBaseClass):
         for key, value in client.module.params.items():
             setattr(self, key, value)
 
+        if self.api_version:
+            os.environ['COMPOSE_API_VERSION'] = self.api_version
+
         self.check_mode = client.check_mode
 
         if not self.debug:
