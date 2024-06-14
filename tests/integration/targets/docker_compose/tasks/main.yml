@@ -15,7 +15,11 @@
     msg: "Using container name prefix {{ cname_prefix }}"
 
 # Run the tests
-- block:
+- module_defaults:
+    community.docker.docker_compose:
+      api_version: '{{ omit if docker_api_version is version("1.45", "<") else "1.44" }}'
+
+  block:
   - include_tasks: run-test.yml
     with_fileglob:
     - "tests/*.yml"
