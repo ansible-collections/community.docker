@@ -109,40 +109,28 @@ jobs:
         include:
           # 2.9
           - ansible: '2.9'
-            docker: fedora31
+            docker: ubuntu1804
             python: ''
             target: shippable/posix/group4/
           - ansible: '2.9'
-            docker: fedora31
+            docker: ubuntu1804
             python: ''
             target: shippable/posix/group5/
           - ansible: '2.9'
-            docker: fedora31
+            docker: ubuntu1804
             python: ''
             target: shippable/posix/group6/
           # 2.10
           - ansible: '2.10'
-            docker: fedora32
+            docker: ubuntu1804
             python: ''
             target: shippable/posix/group4/
           - ansible: '2.10'
-            docker: fedora32
+            docker: ubuntu1804
             python: ''
             target: shippable/posix/group5/
           - ansible: '2.10'
-            docker: fedora32
-            python: ''
-            target: shippable/posix/group6/
-          - ansible: '2.10'
-            docker: ubuntu1604
-            python: ''
-            target: shippable/posix/group4/
-          - ansible: '2.10'
-            docker: ubuntu1604
-            python: ''
-            target: shippable/posix/group5/
-          - ansible: '2.10'
-            docker: ubuntu1604
+            docker: ubuntu1804
             python: ''
             target: shippable/posix/group6/
           # 2.11
