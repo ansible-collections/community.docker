@@ -518,6 +518,9 @@ def common_compose_argspec_ex():
             ('definition', 'project_src'),
             ('definition', 'files')
         ],
+        required_one_of=[
+            ('definition', 'project_src'),
+        ],
         required_by={
             'definition': ('project_name', ),
         },

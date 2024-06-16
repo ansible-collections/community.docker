@@ -18,7 +18,7 @@ options:
           - Path to a directory containing a Compose file
             (C(compose.yml), C(compose.yaml), C(docker-compose.yml), or C(docker-compose.yaml)).
           - If O(files) is provided, will look for these files in this directory instead.
-          - Mutually exclusive with O(definition).
+          - Mutually exclusive with O(definition). One of O(project_src) and O(definition) must be provided.
         type: path
     project_name:
         description:
@@ -37,7 +37,7 @@ options:
     definition:
         description:
           - Compose file describing one or more services, networks and volumes.
-          - Mutually exclusive with O(project_src) and O(files).
+          - Mutually exclusive with O(project_src) and O(files). One of O(project_src) and O(definition) must be provided.
           - If provided, PyYAML must be available to this module, and O(project_name) must be specified.
           - Note that a temporary directory will be created and deleted afterwards when using this option.
         type: dict
