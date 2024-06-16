@@ -1098,6 +1098,20 @@ releases:
     - 3.10.3.yml
     - 871-selectors.yml
     release_date: '2024-05-26'
+  3.10.4:
+    changes:
+      bugfixes:
+      - docker_compose - make sure that the module uses the ``api_version`` parameter
+        (https://github.com/ansible-collections/community.docker/pull/881).
+      - docker_compose_v2* modules - there was no check to make sure that one of ``project_src``
+        and ``definition`` is provided. The modules crashed if none were provided
+        (https://github.com/ansible-collections/community.docker/issues/885, https://github.com/ansible-collections/community.docker/pull/886).
+      release_summary: Bugfix release.
+    fragments:
+    - 3.10.4.yml
+    - 881-docker-compose-v1-api-version.yml
+    - 886-compose-v2-req.yml
+    release_date: '2024-06-16'
   3.2.0:
     changes:
       deprecated_features:

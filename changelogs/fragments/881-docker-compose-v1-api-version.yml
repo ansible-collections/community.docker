@@ -1,2 +1,0 @@
-bugfixes:
-  - "docker_compose - make sure that the module uses the ``api_version`` parameter (https://github.com/ansible-collections/community.docker/pull/881)."

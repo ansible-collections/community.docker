@@ -2,248 +2,251 @@
 
 **Topics**
 
-- <a href="#v3-10-3">v3\.10\.3</a>
+- <a href="#v3-10-4">v3\.10\.4</a>
     - <a href="#release-summary">Release Summary</a>
     - <a href="#bugfixes">Bugfixes</a>
-- <a href="#v3-10-2">v3\.10\.2</a>
+- <a href="#v3-10-3">v3\.10\.3</a>
     - <a href="#release-summary-1">Release Summary</a>
     - <a href="#bugfixes-1">Bugfixes</a>
-- <a href="#v3-10-1">v3\.10\.1</a>
+- <a href="#v3-10-2">v3\.10\.2</a>
     - <a href="#release-summary-2">Release Summary</a>
     - <a href="#bugfixes-2">Bugfixes</a>
+- <a href="#v3-10-1">v3\.10\.1</a>
+    - <a href="#release-summary-3">Release Summary</a>
+    - <a href="#bugfixes-3">Bugfixes</a>
     - <a href="#known-issues">Known Issues</a>
 - <a href="#v3-10-0">v3\.10\.0</a>
-    - <a href="#release-summary-3">Release Summary</a>
+    - <a href="#release-summary-4">Release Summary</a>
     - <a href="#minor-changes">Minor Changes</a>
     - <a href="#deprecated-features">Deprecated Features</a>
 - <a href="#v3-9-0">v3\.9\.0</a>
-    - <a href="#release-summary-4">Release Summary</a>
-    - <a href="#minor-changes-1">Minor Changes</a>
-    - <a href="#bugfixes-3">Bugfixes</a>
-- <a href="#v3-8-1">v3\.8\.1</a>
     - <a href="#release-summary-5">Release Summary</a>
-    - <a href="#security-fixes">Security Fixes</a>
+    - <a href="#minor-changes-1">Minor Changes</a>
     - <a href="#bugfixes-4">Bugfixes</a>
-- <a href="#v3-8-0">v3\.8\.0</a>
+- <a href="#v3-8-1">v3\.8\.1</a>
     - <a href="#release-summary-6">Release Summary</a>
-    - <a href="#minor-changes-2">Minor Changes</a>
+    - <a href="#security-fixes">Security Fixes</a>
     - <a href="#bugfixes-5">Bugfixes</a>
-- <a href="#v3-7-0">v3\.7\.0</a>
+- <a href="#v3-8-0">v3\.8\.0</a>
     - <a href="#release-summary-7">Release Summary</a>
-    - <a href="#minor-changes-3">Minor Changes</a>
+    - <a href="#minor-changes-2">Minor Changes</a>
     - <a href="#bugfixes-6">Bugfixes</a>
+- <a href="#v3-7-0">v3\.7\.0</a>
+    - <a href="#release-summary-8">Release Summary</a>
+    - <a href="#minor-changes-3">Minor Changes</a>
+    - <a href="#bugfixes-7">Bugfixes</a>
     - <a href="#new-modules">New Modules</a>
 - <a href="#v3-6-0">v3\.6\.0</a>
-    - <a href="#release-summary-8">Release Summary</a>
+    - <a href="#release-summary-9">Release Summary</a>
     - <a href="#major-changes">Major Changes</a>
     - <a href="#minor-changes-4">Minor Changes</a>
-    - <a href="#bugfixes-7">Bugfixes</a>
+    - <a href="#bugfixes-8">Bugfixes</a>
     - <a href="#new-modules-1">New Modules</a>
 - <a href="#v3-5-0">v3\.5\.0</a>
-    - <a href="#release-summary-9">Release Summary</a>
+    - <a href="#release-summary-10">Release Summary</a>
     - <a href="#minor-changes-5">Minor Changes</a>
     - <a href="#deprecated-features-1">Deprecated Features</a>
-    - <a href="#bugfixes-8">Bugfixes</a>
-- <a href="#v3-4-11">v3\.4\.11</a>
-    - <a href="#release-summary-10">Release Summary</a>
     - <a href="#bugfixes-9">Bugfixes</a>
-- <a href="#v3-4-10">v3\.4\.10</a>
+- <a href="#v3-4-11">v3\.4\.11</a>
     - <a href="#release-summary-11">Release Summary</a>
     - <a href="#bugfixes-10">Bugfixes</a>
-- <a href="#v3-4-9">v3\.4\.9</a>
+- <a href="#v3-4-10">v3\.4\.10</a>
     - <a href="#release-summary-12">Release Summary</a>
     - <a href="#bugfixes-11">Bugfixes</a>
-- <a href="#v3-4-8">v3\.4\.8</a>
+- <a href="#v3-4-9">v3\.4\.9</a>
     - <a href="#release-summary-13">Release Summary</a>
+    - <a href="#bugfixes-12">Bugfixes</a>
+- <a href="#v3-4-8">v3\.4\.8</a>
+    - <a href="#release-summary-14">Release Summary</a>
     - <a href="#known-issues-1">Known Issues</a>
 - <a href="#v3-4-7">v3\.4\.7</a>
-    - <a href="#release-summary-14">Release Summary</a>
-    - <a href="#bugfixes-12">Bugfixes</a>
-- <a href="#v3-4-6">v3\.4\.6</a>
     - <a href="#release-summary-15">Release Summary</a>
     - <a href="#bugfixes-13">Bugfixes</a>
-    - <a href="#known-issues-2">Known Issues</a>
-- <a href="#v3-4-5">v3\.4\.5</a>
+- <a href="#v3-4-6">v3\.4\.6</a>
     - <a href="#release-summary-16">Release Summary</a>
     - <a href="#bugfixes-14">Bugfixes</a>
-- <a href="#v3-4-4">v3\.4\.4</a>
+    - <a href="#known-issues-2">Known Issues</a>
+- <a href="#v3-4-5">v3\.4\.5</a>
     - <a href="#release-summary-17">Release Summary</a>
+    - <a href="#bugfixes-15">Bugfixes</a>
+- <a href="#v3-4-4">v3\.4\.4</a>
+    - <a href="#release-summary-18">Release Summary</a>
     - <a href="#minor-changes-6">Minor Changes</a>
     - <a href="#known-issues-3">Known Issues</a>
 - <a href="#v3-4-3">v3\.4\.3</a>
-    - <a href="#release-summary-18">Release Summary</a>
-- <a href="#v3-4-2">v3\.4\.2</a>
     - <a href="#release-summary-19">Release Summary</a>
-    - <a href="#bugfixes-15">Bugfixes</a>
-- <a href="#v3-4-1">v3\.4\.1</a>
+- <a href="#v3-4-2">v3\.4\.2</a>
     - <a href="#release-summary-20">Release Summary</a>
     - <a href="#bugfixes-16">Bugfixes</a>
-- <a href="#v3-4-0">v3\.4\.0</a>
+- <a href="#v3-4-1">v3\.4\.1</a>
     - <a href="#release-summary-21">Release Summary</a>
-    - <a href="#minor-changes-7">Minor Changes</a>
     - <a href="#bugfixes-17">Bugfixes</a>
+- <a href="#v3-4-0">v3\.4\.0</a>
+    - <a href="#release-summary-22">Release Summary</a>
+    - <a href="#minor-changes-7">Minor Changes</a>
+    - <a href="#bugfixes-18">Bugfixes</a>
     - <a href="#new-modules-2">New Modules</a>
 - <a href="#v3-3-2">v3\.3\.2</a>
-    - <a href="#release-summary-22">Release Summary</a>
-    - <a href="#bugfixes-18">Bugfixes</a>
-- <a href="#v3-3-1">v3\.3\.1</a>
     - <a href="#release-summary-23">Release Summary</a>
     - <a href="#bugfixes-19">Bugfixes</a>
-- <a href="#v3-3-0">v3\.3\.0</a>
+- <a href="#v3-3-1">v3\.3\.1</a>
     - <a href="#release-summary-24">Release Summary</a>
-    - <a href="#minor-changes-8">Minor Changes</a>
     - <a href="#bugfixes-20">Bugfixes</a>
-- <a href="#v3-2-2">v3\.2\.2</a>
+- <a href="#v3-3-0">v3\.3\.0</a>
     - <a href="#release-summary-25">Release Summary</a>
+    - <a href="#minor-changes-8">Minor Changes</a>
     - <a href="#bugfixes-21">Bugfixes</a>
-- <a href="#v3-2-1">v3\.2\.1</a>
+- <a href="#v3-2-2">v3\.2\.2</a>
     - <a href="#release-summary-26">Release Summary</a>
-- <a href="#v3-2-0">v3\.2\.0</a>
+    - <a href="#bugfixes-22">Bugfixes</a>
+- <a href="#v3-2-1">v3\.2\.1</a>
     - <a href="#release-summary-27">Release Summary</a>
+- <a href="#v3-2-0">v3\.2\.0</a>
+    - <a href="#release-summary-28">Release Summary</a>
     - <a href="#minor-changes-9">Minor Changes</a>
     - <a href="#deprecated-features-2">Deprecated Features</a>
 - <a href="#v3-1-0">v3\.1\.0</a>
-    - <a href="#release-summary-28">Release Summary</a>
+    - <a href="#release-summary-29">Release Summary</a>
     - <a href="#minor-changes-10">Minor Changes</a>
 - <a href="#v3-0-2">v3\.0\.2</a>
-    - <a href="#release-summary-29">Release Summary</a>
-    - <a href="#bugfixes-22">Bugfixes</a>
-- <a href="#v3-0-1">v3\.0\.1</a>
     - <a href="#release-summary-30">Release Summary</a>
     - <a href="#bugfixes-23">Bugfixes</a>
-- <a href="#v3-0-0">v3\.0\.0</a>
+- <a href="#v3-0-1">v3\.0\.1</a>
     - <a href="#release-summary-31">Release Summary</a>
+    - <a href="#bugfixes-24">Bugfixes</a>
+- <a href="#v3-0-0">v3\.0\.0</a>
+    - <a href="#release-summary-32">Release Summary</a>
     - <a href="#major-changes-1">Major Changes</a>
     - <a href="#minor-changes-11">Minor Changes</a>
     - <a href="#breaking-changes--porting-guide">Breaking Changes / Porting Guide</a>
     - <a href="#removed-features-previously-deprecated">Removed Features \(previously deprecated\)</a>
     - <a href="#security-fixes-1">Security Fixes</a>
-    - <a href="#bugfixes-24">Bugfixes</a>
+    - <a href="#bugfixes-25">Bugfixes</a>
 - <a href="#v2-7-0">v2\.7\.0</a>
-    - <a href="#release-summary-32">Release Summary</a>
+    - <a href="#release-summary-33">Release Summary</a>
     - <a href="#minor-changes-12">Minor Changes</a>
     - <a href="#deprecated-features-3">Deprecated Features</a>
-    - <a href="#bugfixes-25">Bugfixes</a>
+    - <a href="#bugfixes-26">Bugfixes</a>
 - <a href="#v2-6-0">v2\.6\.0</a>
-    - <a href="#release-summary-33">Release Summary</a>
+    - <a href="#release-summary-34">Release Summary</a>
     - <a href="#minor-changes-13">Minor Changes</a>
     - <a href="#deprecated-features-4">Deprecated Features</a>
-    - <a href="#bugfixes-26">Bugfixes</a>
-- <a href="#v2-5-1">v2\.5\.1</a>
-    - <a href="#release-summary-34">Release Summary</a>
     - <a href="#bugfixes-27">Bugfixes</a>
-- <a href="#v2-5-0">v2\.5\.0</a>
+- <a href="#v2-5-1">v2\.5\.1</a>
     - <a href="#release-summary-35">Release Summary</a>
+    - <a href="#bugfixes-28">Bugfixes</a>
+- <a href="#v2-5-0">v2\.5\.0</a>
+    - <a href="#release-summary-36">Release Summary</a>
     - <a href="#minor-changes-14">Minor Changes</a>
 - <a href="#v2-4-0">v2\.4\.0</a>
-    - <a href="#release-summary-36">Release Summary</a>
-    - <a href="#minor-changes-15">Minor Changes</a>
-    - <a href="#bugfixes-28">Bugfixes</a>
-- <a href="#v2-3-0">v2\.3\.0</a>
     - <a href="#release-summary-37">Release Summary</a>
-    - <a href="#minor-changes-16">Minor Changes</a>
+    - <a href="#minor-changes-15">Minor Changes</a>
     - <a href="#bugfixes-29">Bugfixes</a>
-- <a href="#v2-2-1">v2\.2\.1</a>
+- <a href="#v2-3-0">v2\.3\.0</a>
     - <a href="#release-summary-38">Release Summary</a>
+    - <a href="#minor-changes-16">Minor Changes</a>
     - <a href="#bugfixes-30">Bugfixes</a>
-- <a href="#v2-2-0">v2\.2\.0</a>
+- <a href="#v2-2-1">v2\.2\.1</a>
     - <a href="#release-summary-39">Release Summary</a>
-    - <a href="#minor-changes-17">Minor Changes</a>
     - <a href="#bugfixes-31">Bugfixes</a>
-- <a href="#v2-1-1">v2\.1\.1</a>
+- <a href="#v2-2-0">v2\.2\.0</a>
     - <a href="#release-summary-40">Release Summary</a>
+    - <a href="#minor-changes-17">Minor Changes</a>
     - <a href="#bugfixes-32">Bugfixes</a>
-- <a href="#v2-1-0">v2\.1\.0</a>
+- <a href="#v2-1-1">v2\.1\.1</a>
     - <a href="#release-summary-41">Release Summary</a>
-    - <a href="#minor-changes-18">Minor Changes</a>
     - <a href="#bugfixes-33">Bugfixes</a>
-- <a href="#v2-0-2">v2\.0\.2</a>
+- <a href="#v2-1-0">v2\.1\.0</a>
     - <a href="#release-summary-42">Release Summary</a>
+    - <a href="#minor-changes-18">Minor Changes</a>
     - <a href="#bugfixes-34">Bugfixes</a>
-- <a href="#v2-0-1">v2\.0\.1</a>
+- <a href="#v2-0-2">v2\.0\.2</a>
     - <a href="#release-summary-43">Release Summary</a>
-- <a href="#v2-0-0">v2\.0\.0</a>
+    - <a href="#bugfixes-35">Bugfixes</a>
+- <a href="#v2-0-1">v2\.0\.1</a>
     - <a href="#release-summary-44">Release Summary</a>
+- <a href="#v2-0-0">v2\.0\.0</a>
+    - <a href="#release-summary-45">Release Summary</a>
     - <a href="#breaking-changes--porting-guide-1">Breaking Changes / Porting Guide</a>
     - <a href="#deprecated-features-5">Deprecated Features</a>
     - <a href="#removed-features-previously-deprecated-1">Removed Features \(previously deprecated\)</a>
 - <a href="#v1-10-0">v1\.10\.0</a>
-    - <a href="#release-summary-45">Release Summary</a>
+    - <a href="#release-summary-46">Release Summary</a>
     - <a href="#minor-changes-19">Minor Changes</a>
 - <a href="#v1-9-1">v1\.9\.1</a>
-    - <a href="#release-summary-46">Release Summary</a>
-    - <a href="#bugfixes-35">Bugfixes</a>
-- <a href="#v1-9-0">v1\.9\.0</a>
     - <a href="#release-summary-47">Release Summary</a>
+    - <a href="#bugfixes-36">Bugfixes</a>
+- <a href="#v1-9-0">v1\.9\.0</a>
+    - <a href="#release-summary-48">Release Summary</a>
     - <a href="#minor-changes-20">Minor Changes</a>
     - <a href="#deprecated-features-6">Deprecated Features</a>
-    - <a href="#bugfixes-36">Bugfixes</a>
+    - <a href="#bugfixes-37">Bugfixes</a>
     - <a href="#new-plugins">New Plugins</a>
         - <a href="#connection">Connection</a>
 - <a href="#v1-8-0">v1\.8\.0</a>
-    - <a href="#release-summary-48">Release Summary</a>
-    - <a href="#minor-changes-21">Minor Changes</a>
-    - <a href="#bugfixes-37">Bugfixes</a>
-- <a href="#v1-7-0">v1\.7\.0</a>
     - <a href="#release-summary-49">Release Summary</a>
+    - <a href="#minor-changes-21">Minor Changes</a>
+    - <a href="#bugfixes-38">Bugfixes</a>
+- <a href="#v1-7-0">v1\.7\.0</a>
+    - <a href="#release-summary-50">Release Summary</a>
     - <a href="#minor-changes-22">Minor Changes</a>
 - <a href="#v1-6-1">v1\.6\.1</a>
-    - <a href="#release-summary-50">Release Summary</a>
-    - <a href="#bugfixes-38">Bugfixes</a>
-- <a href="#v1-6-0">v1\.6\.0</a>
     - <a href="#release-summary-51">Release Summary</a>
+    - <a href="#bugfixes-39">Bugfixes</a>
+- <a href="#v1-6-0">v1\.6\.0</a>
+    - <a href="#release-summary-52">Release Summary</a>
     - <a href="#minor-changes-23">Minor Changes</a>
     - <a href="#deprecated-features-7">Deprecated Features</a>
-    - <a href="#bugfixes-39">Bugfixes</a>
-- <a href="#v1-5-0">v1\.5\.0</a>
-    - <a href="#release-summary-52">Release Summary</a>
-    - <a href="#minor-changes-24">Minor Changes</a>
     - <a href="#bugfixes-40">Bugfixes</a>
+- <a href="#v1-5-0">v1\.5\.0</a>
+    - <a href="#release-summary-53">Release Summary</a>
+    - <a href="#minor-changes-24">Minor Changes</a>
+    - <a href="#bugfixes-41">Bugfixes</a>
     - <a href="#new-modules-3">New Modules</a>
 - <a href="#v1-4-0">v1\.4\.0</a>
-    - <a href="#release-summary-53">Release Summary</a>
+    - <a href="#release-summary-54">Release Summary</a>
     - <a href="#minor-changes-25">Minor Changes</a>
     - <a href="#breaking-changes--porting-guide-2">Breaking Changes / Porting Guide</a>
     - <a href="#security-fixes-2">Security Fixes</a>
-    - <a href="#bugfixes-41">Bugfixes</a>
-- <a href="#v1-3-0">v1\.3\.0</a>
-    - <a href="#release-summary-54">Release Summary</a>
-    - <a href="#minor-changes-26">Minor Changes</a>
     - <a href="#bugfixes-42">Bugfixes</a>
+- <a href="#v1-3-0">v1\.3\.0</a>
+    - <a href="#release-summary-55">Release Summary</a>
+    - <a href="#minor-changes-26">Minor Changes</a>
+    - <a href="#bugfixes-43">Bugfixes</a>
     - <a href="#new-modules-4">New Modules</a>
 - <a href="#v1-2-2">v1\.2\.2</a>
-    - <a href="#release-summary-55">Release Summary</a>
+    - <a href="#release-summary-56">Release Summary</a>
     - <a href="#security-fixes-3">Security Fixes</a>
 - <a href="#v1-2-1">v1\.2\.1</a>
-    - <a href="#release-summary-56">Release Summary</a>
-    - <a href="#bugfixes-43">Bugfixes</a>
-- <a href="#v1-2-0">v1\.2\.0</a>
     - <a href="#release-summary-57">Release Summary</a>
-    - <a href="#minor-changes-27">Minor Changes</a>
     - <a href="#bugfixes-44">Bugfixes</a>
-- <a href="#v1-1-0">v1\.1\.0</a>
+- <a href="#v1-2-0">v1\.2\.0</a>
     - <a href="#release-summary-58">Release Summary</a>
+    - <a href="#minor-changes-27">Minor Changes</a>
+    - <a href="#bugfixes-45">Bugfixes</a>
+- <a href="#v1-1-0">v1\.1\.0</a>
+    - <a href="#release-summary-59">Release Summary</a>
     - <a href="#minor-changes-28">Minor Changes</a>
     - <a href="#deprecated-features-8">Deprecated Features</a>
-    - <a href="#bugfixes-45">Bugfixes</a>
+    - <a href="#bugfixes-46">Bugfixes</a>
     - <a href="#new-plugins-1">New Plugins</a>
         - <a href="#connection-1">Connection</a>
         - <a href="#inventory">Inventory</a>
     - <a href="#new-modules-5">New Modules</a>
 - <a href="#v1-0-1">v1\.0\.1</a>
-    - <a href="#release-summary-59">Release Summary</a>
-    - <a href="#bugfixes-46">Bugfixes</a>
-- <a href="#v1-0-0">v1\.0\.0</a>
     - <a href="#release-summary-60">Release Summary</a>
+    - <a href="#bugfixes-47">Bugfixes</a>
+- <a href="#v1-0-0">v1\.0\.0</a>
+    - <a href="#release-summary-61">Release Summary</a>
     - <a href="#minor-changes-29">Minor Changes</a>
 - <a href="#v0-1-0">v0\.1\.0</a>
-    - <a href="#release-summary-61">Release Summary</a>
+    - <a href="#release-summary-62">Release Summary</a>
     - <a href="#minor-changes-30">Minor Changes</a>
     - <a href="#removed-features-previously-deprecated-2">Removed Features \(previously deprecated\)</a>
-    - <a href="#bugfixes-47">Bugfixes</a>
+    - <a href="#bugfixes-48">Bugfixes</a>
 
-<a id="v3-10-3"></a>
-## v3\.10\.3
+<a id="v3-10-4"></a>
+## v3\.10\.4
 
 <a id="release-summary"></a>
 ### Release Summary
@@ -253,10 +256,11 @@ Bugfix release\.
 <a id="bugfixes"></a>
 ### Bugfixes
 
-* docker and nsenter connection plugins\, docker\_container\_exec module \- avoid using the deprecated <code>ansible\.module\_utils\.compat\.selectors</code> module util with Python 3 \([https\://github\.com/ansible\-collections/community\.docker/issues/870](https\://github\.com/ansible\-collections/community\.docker/issues/870)\, [https\://github\.com/ansible\-collections/community\.docker/pull/871](https\://github\.com/ansible\-collections/community\.docker/pull/871)\)\.
+* docker\_compose \- make sure that the module uses the <code>api\_version</code> parameter \([https\://github\.com/ansible\-collections/community\.docker/pull/881](https\://github\.com/ansible\-collections/community\.docker/pull/881)\)\.
+* docker\_compose\_v2\* modules \- there was no check to make sure that one of <code>project\_src</code> and <code>definition</code> is provided\. The modules crashed if none were provided \([https\://github\.com/ansible\-collections/community\.docker/issues/885](https\://github\.com/ansible\-collections/community\.docker/issues/885)\, [https\://github\.com/ansible\-collections/community\.docker/pull/886](https\://github\.com/ansible\-collections/community\.docker/pull/886)\)\.
 
-<a id="v3-10-2"></a>
-## v3\.10\.2
+<a id="v3-10-3"></a>
+## v3\.10\.3
 
 <a id="release-summary-1"></a>
 ### Release Summary
@@ -266,17 +270,30 @@ Bugfix release\.
 <a id="bugfixes-1"></a>
 ### Bugfixes
 
+* docker and nsenter connection plugins\, docker\_container\_exec module \- avoid using the deprecated <code>ansible\.module\_utils\.compat\.selectors</code> module util with Python 3 \([https\://github\.com/ansible\-collections/community\.docker/issues/870](https\://github\.com/ansible\-collections/community\.docker/issues/870)\, [https\://github\.com/ansible\-collections/community\.docker/pull/871](https\://github\.com/ansible\-collections/community\.docker/pull/871)\)\.
+
+<a id="v3-10-2"></a>
+## v3\.10\.2
+
+<a id="release-summary-2"></a>
+### Release Summary
+
+Bugfix release\.
+
+<a id="bugfixes-2"></a>
+### Bugfixes
+
 * vendored Docker SDK for Python \- include a fix requests 2\.32\.2\+ compatibility \([https\://github\.com/ansible\-collections/community\.docker/issues/860](https\://github\.com/ansible\-collections/community\.docker/issues/860)\, [https\://github\.com/psf/requests/issues/6707](https\://github\.com/psf/requests/issues/6707)\, [https\://github\.com/ansible\-collections/community\.docker/pull/864](https\://github\.com/ansible\-collections/community\.docker/pull/864)\)\.
 
 <a id="v3-10-1"></a>
 ## v3\.10\.1
 
-<a id="release-summary-2"></a>
+<a id="release-summary-3"></a>
 ### Release Summary
 
 Hotfix release for requests 2\.32\.0 compatibility\.
 
-<a id="bugfixes-2"></a>
+<a id="bugfixes-3"></a>
 ### Bugfixes
 
 * vendored Docker SDK for Python \- include a hotfix for requests 2\.32\.0 compatibility \([https\://github\.com/ansible\-collections/community\.docker/issues/860](https\://github\.com/ansible\-collections/community\.docker/issues/860)\, [https\://github\.com/docker/docker\-py/issues/3256](https\://github\.com/docker/docker\-py/issues/3256)\, [https\://github\.com/ansible\-collections/community\.docker/pull/861](https\://github\.com/ansible\-collections/community\.docker/pull/861)\)\.
@@ -295,7 +312,7 @@ Hotfix release for requests 2\.32\.0 compatibility\.
 <a id="v3-10-0"></a>
 ## v3\.10\.0
 
-<a id="release-summary-3"></a>
+<a id="release-summary-4"></a>
 ### Release Summary
 
 Feature release\.
@@ -321,7 +338,7 @@ Feature release\.
 <a id="v3-9-0"></a>
 ## v3\.9\.0
 
-<a id="release-summary-4"></a>
+<a id="release-summary-5"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -334,7 +351,7 @@ Bugfix and feature release\.
 * docker\_compose\_v2\* modules \- allow to provide an inline definition of the compose content instead of having to provide a <code>project\_src</code> directory with the compose file written into it \([https\://github\.com/ansible\-collections/community\.docker/issues/829](https\://github\.com/ansible\-collections/community\.docker/issues/829)\, [https\://github\.com/ansible\-collections/community\.docker/pull/832](https\://github\.com/ansible\-collections/community\.docker/pull/832)\)\.
 * vendored Docker SDK for Python \- remove unused code that relies on functionality deprecated in Python 3\.12 \([https\://github\.com/ansible\-collections/community\.docker/pull/834](https\://github\.com/ansible\-collections/community\.docker/pull/834)\)\.
 
-<a id="bugfixes-3"></a>
+<a id="bugfixes-4"></a>
 ### Bugfixes
 
 * docker\_compose\_v2\* \- allow <code>project\_src</code> to be a relative path\, by converting it to an absolute path before using it \([https\://github\.com/ansible\-collections/community\.docker/issues/827](https\://github\.com/ansible\-collections/community\.docker/issues/827)\, [https\://github\.com/ansible\-collections/community\.docker/pull/828](https\://github\.com/ansible\-collections/community\.docker/pull/828)\)\.
@@ -344,7 +361,7 @@ Bugfix and feature release\.
 <a id="v3-8-1"></a>
 ## v3\.8\.1
 
-<a id="release-summary-5"></a>
+<a id="release-summary-6"></a>
 ### Release Summary
 
 Bugfix release
@@ -354,7 +371,7 @@ Bugfix release
 
 * docker\_containers\, docker\_machine\, and docker\_swarm inventory plugins \- make sure all data received from the Docker daemon / Docker machine is marked as unsafe\, so remote code execution by obtaining texts that can be evaluated as templates is not possible \([https\://www\.die\-welt\.net/2024/03/remote\-code\-execution\-in\-ansible\-dynamic\-inventory\-plugins/](https\://www\.die\-welt\.net/2024/03/remote\-code\-execution\-in\-ansible\-dynamic\-inventory\-plugins/)\, [https\://github\.com/ansible\-collections/community\.docker/pull/815](https\://github\.com/ansible\-collections/community\.docker/pull/815)\)\.
 
-<a id="bugfixes-4"></a>
+<a id="bugfixes-5"></a>
 ### Bugfixes
 
 * docker\_compose\_v2 \- do not fail when non\-fatal errors occur\. This can happen when pulling an image fails\, but then the image can be built for another service\. Docker Compose emits an error in that case\, but <code>docker compose up</code> still completes successfully \([https\://github\.com/ansible\-collections/community\.docker/issues/807](https\://github\.com/ansible\-collections/community\.docker/issues/807)\, [https\://github\.com/ansible\-collections/community\.docker/pull/810](https\://github\.com/ansible\-collections/community\.docker/pull/810)\, [https\://github\.com/ansible\-collections/community\.docker/pull/811](https\://github\.com/ansible\-collections/community\.docker/pull/811)\)\.
@@ -365,7 +382,7 @@ Bugfix release
 <a id="v3-8-0"></a>
 ## v3\.8\.0
 
-<a id="release-summary-6"></a>
+<a id="release-summary-7"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -377,7 +394,7 @@ Bugfix and feature release\.
 * docker\_container \- the <code>pull\_check\_mode\_behavior</code> option now allows to control the module\'s behavior in check mode when <code>pull\=always</code> \([https\://github\.com/ansible\-collections/community\.docker/issues/792](https\://github\.com/ansible\-collections/community\.docker/issues/792)\, [https\://github\.com/ansible\-collections/community\.docker/pull/797](https\://github\.com/ansible\-collections/community\.docker/pull/797)\)\.
 * docker\_container \- the <code>pull</code> option now accepts the three values <code>never</code>\, <code>missing\_image</code> \(default\)\, and <code>never</code>\, next to the previously valid values <code>true</code> \(equivalent to <code>always</code>\) and <code>false</code> \(equivalent to <code>missing\_image</code>\)\. This allows the equivalent to <code>\-\-pull\=never</code> from the Docker command line \([https\://github\.com/ansible\-collections/community\.docker/issues/783](https\://github\.com/ansible\-collections/community\.docker/issues/783)\, [https\://github\.com/ansible\-collections/community\.docker/pull/797](https\://github\.com/ansible\-collections/community\.docker/pull/797)\)\.
 
-<a id="bugfixes-5"></a>
+<a id="bugfixes-6"></a>
 ### Bugfixes
 
 * docker\_compose\_v2 \- do not consider a <code>Waiting</code> event as an action/change \([https\://github\.com/ansible\-collections/community\.docker/pull/804](https\://github\.com/ansible\-collections/community\.docker/pull/804)\)\.
@@ -387,7 +404,7 @@ Bugfix and feature release\.
 <a id="v3-7-0"></a>
 ## v3\.7\.0
 
-<a id="release-summary-7"></a>
+<a id="release-summary-8"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -398,7 +415,7 @@ Bugfix and feature release\.
 * docker\_compose\_v2 \- add <code>scale</code> option to allow to explicitly scale services \([https\://github\.com/ansible\-collections/community\.docker/pull/776](https\://github\.com/ansible\-collections/community\.docker/pull/776)\)\.
 * docker\_compose\_v2\, docker\_compose\_v2\_pull \- support <code>files</code> parameter to specify multiple Compose files \([https\://github\.com/ansible\-collections/community\.docker/issues/772](https\://github\.com/ansible\-collections/community\.docker/issues/772)\, [https\://github\.com/ansible\-collections/community\.docker/pull/775](https\://github\.com/ansible\-collections/community\.docker/pull/775)\)\.
 
-<a id="bugfixes-6"></a>
+<a id="bugfixes-7"></a>
 ### Bugfixes
 
 * docker\_compose\_v2 \- properly parse dry\-run build events from <code>stderr</code> \([https\://github\.com/ansible\-collections/community\.docker/issues/778](https\://github\.com/ansible\-collections/community\.docker/issues/778)\, [https\://github\.com/ansible\-collections/community\.docker/pull/779](https\://github\.com/ansible\-collections/community\.docker/pull/779)\)\.
@@ -412,7 +429,7 @@ Bugfix and feature release\.
 <a id="v3-6-0"></a>
 ## v3\.6\.0
 
-<a id="release-summary-8"></a>
+<a id="release-summary-9"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -442,7 +459,7 @@ so the main difference is that instead of some Python requirements\, they depend
 * docker\_image \- allow to specify memory size and swap memory size in other units than bytes \([https\://github\.com/ansible\-collections/community\.docker/pull/727](https\://github\.com/ansible\-collections/community\.docker/pull/727)\)\.
 * inventory plugins \- add <code>filter</code> option which allows to include and exclude hosts based on Jinja2 conditions \([https\://github\.com/ansible\-collections/community\.docker/pull/698](https\://github\.com/ansible\-collections/community\.docker/pull/698)\, [https\://github\.com/ansible\-collections/community\.docker/issues/610](https\://github\.com/ansible\-collections/community\.docker/issues/610)\)\.
 
-<a id="bugfixes-7"></a>
+<a id="bugfixes-8"></a>
 ### Bugfixes
 
 * Use <code>unix\:///var/run/docker\.sock</code> instead of the legacy <code>unix\://var/run/docker\.sock</code> as default for <code>docker\_host</code> \([https\://github\.com/ansible\-collections/community\.docker/pull/736](https\://github\.com/ansible\-collections/community\.docker/pull/736)\)\.
@@ -462,7 +479,7 @@ so the main difference is that instead of some Python requirements\, they depend
 <a id="v3-5-0"></a>
 ## v3\.5\.0
 
-<a id="release-summary-9"></a>
+<a id="release-summary-10"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -478,7 +495,7 @@ Bugfix and feature release\.
 
 * docker\_container \- the default <code>ignore</code> for the <code>image\_name\_mismatch</code> parameter has been deprecated and will switch to <code>recreate</code> in community\.docker 4\.0\.0\. A deprecation warning will be printed in situations where the default value is used and where a behavior would change once the default changes \([https\://github\.com/ansible\-collections/community\.docker/pull/703](https\://github\.com/ansible\-collections/community\.docker/pull/703)\)\.
 
-<a id="bugfixes-8"></a>
+<a id="bugfixes-9"></a>
 ### Bugfixes
 
 * modules and plugins using the Docker SDK for Python \- remove <code>ssl\_version</code> from the parameters passed to Docker SDK for Python 7\.0\.0\+\. Explicitly fail with a nicer error message if it was explicitly set in this case \([https\://github\.com/ansible\-collections/community\.docker/pull/715](https\://github\.com/ansible\-collections/community\.docker/pull/715)\)\.
@@ -488,19 +505,6 @@ Bugfix and feature release\.
 <a id="v3-4-11"></a>
 ## v3\.4\.11
 
-<a id="release-summary-10"></a>
-### Release Summary
-
-Bugfix release\.
-
-<a id="bugfixes-9"></a>
-### Bugfixes
-
-* docker\_volume \- fix crash caused by accessing an empty dictionary\. The <code>has\_different\_config\(\)</code> was raising an <code>AttributeError</code> because the <code>self\.existing\_volume\[\"Labels\"\]</code> dictionary was <code>None</code> \([https\://github\.com/ansible\-collections/community\.docker/pull/702](https\://github\.com/ansible\-collections/community\.docker/pull/702)\)\.
-
-<a id="v3-4-10"></a>
-## v3\.4\.10
-
 <a id="release-summary-11"></a>
 ### Release Summary
 
@@ -509,17 +513,30 @@ Bugfix release\.
 <a id="bugfixes-10"></a>
 ### Bugfixes
 
+* docker\_volume \- fix crash caused by accessing an empty dictionary\. The <code>has\_different\_config\(\)</code> was raising an <code>AttributeError</code> because the <code>self\.existing\_volume\[\"Labels\"\]</code> dictionary was <code>None</code> \([https\://github\.com/ansible\-collections/community\.docker/pull/702](https\://github\.com/ansible\-collections/community\.docker/pull/702)\)\.
+
+<a id="v3-4-10"></a>
+## v3\.4\.10
+
+<a id="release-summary-12"></a>
+### Release Summary
+
+Bugfix release\.
+
+<a id="bugfixes-11"></a>
+### Bugfixes
+
 * docker\_swarm \- make init and join operations work again with Docker SDK for Python before 4\.0\.0 \([https\://github\.com/ansible\-collections/community\.docker/issues/695](https\://github\.com/ansible\-collections/community\.docker/issues/695)\, [https\://github\.com/ansible\-collections/community\.docker/pull/696](https\://github\.com/ansible\-collections/community\.docker/pull/696)\)\.
 
 <a id="v3-4-9"></a>
 ## v3\.4\.9
 
-<a id="release-summary-12"></a>
+<a id="release-summary-13"></a>
 ### Release Summary
 
 Maintenance release with updated documentation and vendored Docker SDK for Python code\.
 
-<a id="bugfixes-11"></a>
+<a id="bugfixes-12"></a>
 ### Bugfixes
 
 * vendored Docker SDK for Python code \- cherry\-pick changes from the Docker SDK for Python code to align code\. These changes should not affect the parts used by the collection\'s code \([https\://github\.com/ansible\-collections/community\.docker/pull/694](https\://github\.com/ansible\-collections/community\.docker/pull/694)\)\.
@@ -527,7 +544,7 @@ Maintenance release with updated documentation and vendored Docker SDK for Pytho
 <a id="v3-4-8"></a>
 ## v3\.4\.8
 
-<a id="release-summary-13"></a>
+<a id="release-summary-14"></a>
 ### Release Summary
 
 Maintenance release with updated documentation\.
@@ -548,12 +565,12 @@ for the rendered HTML version of the documentation of the latest release\.
 <a id="v3-4-7"></a>
 ## v3\.4\.7
 
-<a id="release-summary-14"></a>
+<a id="release-summary-15"></a>
 ### Release Summary
 
 Bugfix release\.
 
-<a id="bugfixes-12"></a>
+<a id="bugfixes-13"></a>
 ### Bugfixes
 
 * docker\_swarm\_info \- if <code>service\=true</code> is used\, do not crash when a service without an endpoint spec is encountered \([https\://github\.com/ansible\-collections/community\.docker/issues/636](https\://github\.com/ansible\-collections/community\.docker/issues/636)\, [https\://github\.com/ansible\-collections/community\.docker/pull/637](https\://github\.com/ansible\-collections/community\.docker/pull/637)\)\.
@@ -561,12 +578,12 @@ Bugfix release\.
 <a id="v3-4-6"></a>
 ## v3\.4\.6
 
-<a id="release-summary-15"></a>
+<a id="release-summary-16"></a>
 ### Release Summary
 
 Bugfix release with documentation warnings about using certain functionality when connecting to the Docker daemon with TCP TLS\.
 
-<a id="bugfixes-13"></a>
+<a id="bugfixes-14"></a>
 ### Bugfixes
 
 * socket\_handler module utils \- make sure this fully works when Docker SDK for Python is not available \([https\://github\.com/ansible\-collections/community\.docker/pull/620](https\://github\.com/ansible\-collections/community\.docker/pull/620)\)\.
@@ -583,12 +600,12 @@ Bugfix release with documentation warnings about using certain functionality whe
 <a id="v3-4-5"></a>
 ## v3\.4\.5
 
-<a id="release-summary-16"></a>
+<a id="release-summary-17"></a>
 ### Release Summary
 
 Maintenance release which adds compatibility with requests 2\.29\.0 and 2\.30\.0 and urllib3 2\.0\.
 
-<a id="bugfixes-14"></a>
+<a id="bugfixes-15"></a>
 ### Bugfixes
 
 * Make vendored Docker SDK for Python code compatible with requests 2\.29\.0 and urllib3 2\.0 \([https\://github\.com/ansible\-collections/community\.docker/pull/613](https\://github\.com/ansible\-collections/community\.docker/pull/613)\)\.
@@ -596,7 +613,7 @@ Maintenance release which adds compatibility with requests 2\.29\.0 and 2\.30\.0
 <a id="v3-4-4"></a>
 ## v3\.4\.4
 
-<a id="release-summary-17"></a>
+<a id="release-summary-18"></a>
 ### Release Summary
 
 Maintenance release with updated EE requirements and updated documentation\.
@@ -614,7 +631,7 @@ Maintenance release with updated EE requirements and updated documentation\.
 <a id="v3-4-3"></a>
 ## v3\.4\.3
 
-<a id="release-summary-18"></a>
+<a id="release-summary-19"></a>
 ### Release Summary
 
 Maintenance release with improved documentation\.
@@ -622,12 +639,12 @@ Maintenance release with improved documentation\.
 <a id="v3-4-2"></a>
 ## v3\.4\.2
 
-<a id="release-summary-19"></a>
+<a id="release-summary-20"></a>
 ### Release Summary
 
 Bugfix release\.
 
-<a id="bugfixes-15"></a>
+<a id="bugfixes-16"></a>
 ### Bugfixes
 
 * docker\_prune \- return correct value for <code>changed</code>\. So far the module always claimed that nothing changed \([https\://github\.com/ansible\-collections/community\.docker/pull/593](https\://github\.com/ansible\-collections/community\.docker/pull/593)\)\.
@@ -635,12 +652,12 @@ Bugfix release\.
 <a id="v3-4-1"></a>
 ## v3\.4\.1
 
-<a id="release-summary-20"></a>
+<a id="release-summary-21"></a>
 ### Release Summary
 
 Regular bugfix release\.
 
-<a id="bugfixes-16"></a>
+<a id="bugfixes-17"></a>
 ### Bugfixes
 
 * docker\_api connection plugin\, docker\_container\_exec\, docker\_container\_copy\_into \- properly close socket to Daemon after executing commands in containers \([https\://github\.com/ansible\-collections/community\.docker/pull/582](https\://github\.com/ansible\-collections/community\.docker/pull/582)\)\.
@@ -650,7 +667,7 @@ Regular bugfix release\.
 <a id="v3-4-0"></a>
 ## v3\.4\.0
 
-<a id="release-summary-21"></a>
+<a id="release-summary-22"></a>
 ### Release Summary
 
 Regular bugfix and feature release\.
@@ -661,7 +678,7 @@ Regular bugfix and feature release\.
 * docker\_api connection plugin \- when copying files to/from a container\, stream the file contents instead of first reading them to memory \([https\://github\.com/ansible\-collections/community\.docker/pull/545](https\://github\.com/ansible\-collections/community\.docker/pull/545)\)\.
 * docker\_host\_info \- allow to list all containers with new option <code>containers\_all</code> \([https\://github\.com/ansible\-collections/community\.docker/issues/535](https\://github\.com/ansible\-collections/community\.docker/issues/535)\, [https\://github\.com/ansible\-collections/community\.docker/pull/538](https\://github\.com/ansible\-collections/community\.docker/pull/538)\)\.
 
-<a id="bugfixes-17"></a>
+<a id="bugfixes-18"></a>
 ### Bugfixes
 
 * docker\_api connection plugin \- fix error handling when 409 Conflict is returned by the Docker daemon in case of a stopped container \([https\://github\.com/ansible\-collections/community\.docker/pull/546](https\://github\.com/ansible\-collections/community\.docker/pull/546)\)\.
@@ -677,19 +694,6 @@ Regular bugfix and feature release\.
 <a id="v3-3-2"></a>
 ## v3\.3\.2
 
-<a id="release-summary-22"></a>
-### Release Summary
-
-Bugfix release\.
-
-<a id="bugfixes-18"></a>
-### Bugfixes
-
-* docker\_container \- when <code>detach\=false</code>\, wait indefinitely and not at most one minute\. This was the behavior with Docker SDK for Python\, and was accidentally changed in 3\.0\.0 \([https\://github\.com/ansible\-collections/community\.docker/issues/526](https\://github\.com/ansible\-collections/community\.docker/issues/526)\, [https\://github\.com/ansible\-collections/community\.docker/pull/527](https\://github\.com/ansible\-collections/community\.docker/pull/527)\)\.
-
-<a id="v3-3-1"></a>
-## v3\.3\.1
-
 <a id="release-summary-23"></a>
 ### Release Summary
 
@@ -698,12 +702,25 @@ Bugfix release\.
 <a id="bugfixes-19"></a>
 ### Bugfixes
 
+* docker\_container \- when <code>detach\=false</code>\, wait indefinitely and not at most one minute\. This was the behavior with Docker SDK for Python\, and was accidentally changed in 3\.0\.0 \([https\://github\.com/ansible\-collections/community\.docker/issues/526](https\://github\.com/ansible\-collections/community\.docker/issues/526)\, [https\://github\.com/ansible\-collections/community\.docker/pull/527](https\://github\.com/ansible\-collections/community\.docker/pull/527)\)\.
+
+<a id="v3-3-1"></a>
+## v3\.3\.1
+
+<a id="release-summary-24"></a>
+### Release Summary
+
+Bugfix release\.
+
+<a id="bugfixes-20"></a>
+### Bugfixes
+
 * current\_container\_facts \- make container detection work better in more cases \([https\://github\.com/ansible\-collections/community\.docker/pull/522](https\://github\.com/ansible\-collections/community\.docker/pull/522)\)\.
 
 <a id="v3-3-0"></a>
 ## v3\.3\.0
 
-<a id="release-summary-24"></a>
+<a id="release-summary-25"></a>
 ### Release Summary
 
 Feature and bugfix release\.
@@ -714,7 +731,7 @@ Feature and bugfix release\.
 * current\_container\_facts \- make work with current Docker version\, also support Podman \([https\://github\.com/ansible\-collections/community\.docker/pull/510](https\://github\.com/ansible\-collections/community\.docker/pull/510)\)\.
 * docker\_image \- when using <code>archive\_path</code>\, detect whether changes are necessary based on the image ID \(hash\)\. If the existing tar archive matches the source\, do nothing\. Previously\, each task execution re\-created the archive \([https\://github\.com/ansible\-collections/community\.docker/pull/500](https\://github\.com/ansible\-collections/community\.docker/pull/500)\)\.
 
-<a id="bugfixes-20"></a>
+<a id="bugfixes-21"></a>
 ### Bugfixes
 
 * docker\_container\_exec \- fix <code>chdir</code> option which was ignored since community\.docker 3\.0\.0 \([https\://github\.com/ansible\-collections/community\.docker/issues/517](https\://github\.com/ansible\-collections/community\.docker/issues/517)\, [https\://github\.com/ansible\-collections/community\.docker/pull/518](https\://github\.com/ansible\-collections/community\.docker/pull/518)\)\.
@@ -723,12 +740,12 @@ Feature and bugfix release\.
 <a id="v3-2-2"></a>
 ## v3\.2\.2
 
-<a id="release-summary-25"></a>
+<a id="release-summary-26"></a>
 ### Release Summary
 
 Bugfix release\.
 
-<a id="bugfixes-21"></a>
+<a id="bugfixes-22"></a>
 ### Bugfixes
 
 * docker\_container \- the <code>kill\_signal</code> option erroneously did not accept strings anymore since 3\.0\.0 \([https\://github\.com/ansible\-collections/community\.docker/issues/505](https\://github\.com/ansible\-collections/community\.docker/issues/505)\, [https\://github\.com/ansible\-collections/community\.docker/pull/506](https\://github\.com/ansible\-collections/community\.docker/pull/506)\)\.
@@ -736,7 +753,7 @@ Bugfix release\.
 <a id="v3-2-1"></a>
 ## v3\.2\.1
 
-<a id="release-summary-26"></a>
+<a id="release-summary-27"></a>
 ### Release Summary
 
 Maintenance release with improved documentation\.
@@ -744,7 +761,7 @@ Maintenance release with improved documentation\.
 <a id="v3-2-0"></a>
 ## v3\.2\.0
 
-<a id="release-summary-27"></a>
+<a id="release-summary-28"></a>
 ### Release Summary
 
 Feature and deprecation release\.
@@ -763,7 +780,7 @@ Feature and deprecation release\.
 <a id="v3-1-0"></a>
 ## v3\.1\.0
 
-<a id="release-summary-28"></a>
+<a id="release-summary-29"></a>
 ### Release Summary
 
 Feature release\.
@@ -777,19 +794,6 @@ Feature release\.
 <a id="v3-0-2"></a>
 ## v3\.0\.2
 
-<a id="release-summary-29"></a>
-### Release Summary
-
-Bugfix release\.
-
-<a id="bugfixes-22"></a>
-### Bugfixes
-
-* docker\_image \- fix build argument handling \([https\://github\.com/ansible\-collections/community\.docker/issues/455](https\://github\.com/ansible\-collections/community\.docker/issues/455)\, [https\://github\.com/ansible\-collections/community\.docker/pull/456](https\://github\.com/ansible\-collections/community\.docker/pull/456)\)\.
-
-<a id="v3-0-1"></a>
-## v3\.0\.1
-
 <a id="release-summary-30"></a>
 ### Release Summary
 
@@ -798,12 +802,25 @@ Bugfix release\.
 <a id="bugfixes-23"></a>
 ### Bugfixes
 
+* docker\_image \- fix build argument handling \([https\://github\.com/ansible\-collections/community\.docker/issues/455](https\://github\.com/ansible\-collections/community\.docker/issues/455)\, [https\://github\.com/ansible\-collections/community\.docker/pull/456](https\://github\.com/ansible\-collections/community\.docker/pull/456)\)\.
+
+<a id="v3-0-1"></a>
+## v3\.0\.1
+
+<a id="release-summary-31"></a>
+### Release Summary
+
+Bugfix release\.
+
+<a id="bugfixes-24"></a>
+### Bugfixes
+
 * docker\_container \- fix handling of <code>env\_file</code> \([https\://github\.com/ansible\-collections/community\.docker/issues/451](https\://github\.com/ansible\-collections/community\.docker/issues/451)\, [https\://github\.com/ansible\-collections/community\.docker/pull/452](https\://github\.com/ansible\-collections/community\.docker/pull/452)\)\.
 
 <a id="v3-0-0"></a>
 ## v3\.0\.0
 
-<a id="release-summary-31"></a>
+<a id="release-summary-32"></a>
 ### Release Summary
 
 The 3\.0\.0 release features a rewrite of the <code>docker\_container</code> module\, and many modules and plugins no longer depend on the Docker SDK for Python\.
@@ -870,7 +887,7 @@ The 3\.0\.0 release features a rewrite of the <code>docker\_container</code> mod
 
 * modules and plugins communicating directly with the Docker daemon \- when connecting by SSH and not using <code>use\_ssh\_client\=true</code>\, reject unknown host keys instead of accepting them\. This is only a change relative to older community\.docker 3\.0\.0 pre\-releases or with respect to Docker SDK for Python \< 6\.0\.0\. Docker SDK for Python 6\.0\.0 will also include this change \([https\://github\.com/ansible\-collections/community\.docker/pull/434](https\://github\.com/ansible\-collections/community\.docker/pull/434)\)\.
 
-<a id="bugfixes-24"></a>
+<a id="bugfixes-25"></a>
 ### Bugfixes
 
 * docker\_image \- when composing the build context\, trim trailing whitespace from <code>\.dockerignore</code> entries\. This is only a change relative to older community\.docker 3\.0\.0 pre\-releases or with respect to Docker SDK for Python \< 6\.0\.0\. Docker SDK for Python 6\.0\.0 will also include this change \([https\://github\.com/ansible\-collections/community\.docker/pull/434](https\://github\.com/ansible\-collections/community\.docker/pull/434)\)\.
@@ -884,7 +901,7 @@ The 3\.0\.0 release features a rewrite of the <code>docker\_container</code> mod
 <a id="v2-7-0"></a>
 ## v2\.7\.0
 
-<a id="release-summary-32"></a>
+<a id="release-summary-33"></a>
 ### Release Summary
 
 Bugfix and deprecation release\. The next 2\.x\.y releases will only be bugfix releases\, the next expect minor/major release will be 3\.0\.0 with some major changes\.
@@ -900,7 +917,7 @@ Bugfix and deprecation release\. The next 2\.x\.y releases will only be bugfix r
 * Support for Docker API version 1\.20 to 1\.24 has been deprecated and will be removed in community\.docker 3\.0\.0\. The first Docker version supporting API version 1\.25 was Docker 1\.13\, released in January 2017\. This affects the modules <code>docker\_container</code>\, <code>docker\_container\_exec</code>\, <code>docker\_container\_info</code>\, <code>docker\_compose</code>\, <code>docker\_login</code>\, <code>docker\_image</code>\, <code>docker\_image\_info</code>\, <code>docker\_image\_load</code>\, <code>docker\_host\_info</code>\, <code>docker\_network</code>\, <code>docker\_network\_info</code>\, <code>docker\_node\_info</code>\, <code>docker\_swarm\_info</code>\, <code>docker\_swarm\_service</code>\, <code>docker\_swarm\_service\_info</code>\, <code>docker\_volume\_info</code>\, and <code>docker\_volume</code>\, whose minimally supported API version is between 1\.20 and 1\.24 \([https\://github\.com/ansible\-collections/community\.docker/pull/396](https\://github\.com/ansible\-collections/community\.docker/pull/396)\)\.
 * Support for Python 2\.6 is deprecated and will be removed in the next major release \(community\.docker 3\.0\.0\)\. Some modules might still work with Python 2\.6\, but we will no longer try to ensure compatibility \([https\://github\.com/ansible\-collections/community\.docker/pull/388](https\://github\.com/ansible\-collections/community\.docker/pull/388)\)\.
 
-<a id="bugfixes-25"></a>
+<a id="bugfixes-26"></a>
 ### Bugfixes
 
 * Docker SDK for Python based modules and plugins \- if the API version is specified as an option\, use that one to validate API version requirements of module/plugin options instead of the latest API version supported by the Docker daemon\. This also avoids one unnecessary API call per module/plugin \([https\://github\.com/ansible\-collections/community\.docker/pull/389](https\://github\.com/ansible\-collections/community\.docker/pull/389)\)\.
@@ -908,7 +925,7 @@ Bugfix and deprecation release\. The next 2\.x\.y releases will only be bugfix r
 <a id="v2-6-0"></a>
 ## v2\.6\.0
 
-<a id="release-summary-33"></a>
+<a id="release-summary-34"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -926,7 +943,7 @@ Bugfix and feature release\.
 * Various modules \- the default of <code>tls\_hostname</code> that was supposed to be removed in community\.docker 2\.0\.0 will now be removed in version 3\.0\.0 \([https\://github\.com/ansible\-collections/community\.docker/pull/362](https\://github\.com/ansible\-collections/community\.docker/pull/362)\)\.
 * docker\_stack \- the return values <code>out</code> and <code>err</code> that were supposed to be removed in community\.docker 2\.0\.0 will now be removed in version 3\.0\.0 \([https\://github\.com/ansible\-collections/community\.docker/pull/362](https\://github\.com/ansible\-collections/community\.docker/pull/362)\)\.
 
-<a id="bugfixes-26"></a>
+<a id="bugfixes-27"></a>
 ### Bugfixes
 
 * docker\_container \- fail with a meaningful message instead of crashing if a port is specified with more than three colon\-separated parts \([https\://github\.com/ansible\-collections/community\.docker/pull/367](https\://github\.com/ansible\-collections/community\.docker/pull/367)\, [https\://github\.com/ansible\-collections/community\.docker/issues/365](https\://github\.com/ansible\-collections/community\.docker/issues/365)\)\.
@@ -935,12 +952,12 @@ Bugfix and feature release\.
 <a id="v2-5-1"></a>
 ## v2\.5\.1
 
-<a id="release-summary-34"></a>
+<a id="release-summary-35"></a>
 ### Release Summary
 
 Maintenance release\.
 
-<a id="bugfixes-27"></a>
+<a id="bugfixes-28"></a>
 ### Bugfixes
 
 * Include <code>PSF\-license\.txt</code> file for <code>plugins/module\_utils/\_version\.py</code>\.
@@ -948,7 +965,7 @@ Maintenance release\.
 <a id="v2-5-0"></a>
 ## v2\.5\.0
 
-<a id="release-summary-35"></a>
+<a id="release-summary-36"></a>
 ### Release Summary
 
 Regular feature release\.
@@ -962,7 +979,7 @@ Regular feature release\.
 <a id="v2-4-0"></a>
 ## v2\.4\.0
 
-<a id="release-summary-36"></a>
+<a id="release-summary-37"></a>
 ### Release Summary
 
 Regular feature and bugfix release\.
@@ -974,7 +991,7 @@ Regular feature and bugfix release\.
 * current\_container\_facts \- add detection for GitHub Actions \([https\://github\.com/ansible\-collections/community\.docker/pull/336](https\://github\.com/ansible\-collections/community\.docker/pull/336)\)\.
 * docker\_container \- support returning Docker container log output when using Docker\'s <code>local</code> logging driver\, an optimized local logging driver introduced in Docker 18\.09 \([https\://github\.com/ansible\-collections/community\.docker/pull/337](https\://github\.com/ansible\-collections/community\.docker/pull/337)\)\.
 
-<a id="bugfixes-28"></a>
+<a id="bugfixes-29"></a>
 ### Bugfixes
 
 * docker connection plugin \- make sure that <code>docker\_extra\_args</code> is used for querying the Docker version\. Also ensures that the Docker version is only queried when needed\. This is currently the case if a remote user is specified \([https\://github\.com/ansible\-collections/community\.docker/issues/325](https\://github\.com/ansible\-collections/community\.docker/issues/325)\, [https\://github\.com/ansible\-collections/community\.docker/pull/327](https\://github\.com/ansible\-collections/community\.docker/pull/327)\)\.
@@ -982,7 +999,7 @@ Regular feature and bugfix release\.
 <a id="v2-3-0"></a>
 ## v2\.3\.0
 
-<a id="release-summary-37"></a>
+<a id="release-summary-38"></a>
 ### Release Summary
 
 Regular feature and bugfix release\.
@@ -996,7 +1013,7 @@ Regular feature and bugfix release\.
 * docker\_api connection plugin \- implement connection reset by clearing internal container user/group ID cache \([https\://github\.com/ansible\-collections/community\.docker/pull/312](https\://github\.com/ansible\-collections/community\.docker/pull/312)\)\.
 * docker\_api connection plugin \- the plugin supports new ways to define the timeout\. These are the <code>ANSIBLE\_DOCKER\_TIMEOUT</code> environment variable\, the <code>timeout</code> setting in the <code>docker\_connection</code> section of <code>ansible\.cfg</code>\, and the <code>ansible\_docker\_timeout</code> variable \([https\://github\.com/ansible\-collections/community\.docker/pull/308](https\://github\.com/ansible\-collections/community\.docker/pull/308)\)\.
 
-<a id="bugfixes-29"></a>
+<a id="bugfixes-30"></a>
 ### Bugfixes
 
 * docker connection plugin \- fix option handling to be compatible with ansible\-core 2\.13 \([https\://github\.com/ansible\-collections/community\.docker/pull/297](https\://github\.com/ansible\-collections/community\.docker/pull/297)\, [https\://github\.com/ansible\-collections/community\.docker/issues/307](https\://github\.com/ansible\-collections/community\.docker/issues/307)\)\.
@@ -1005,12 +1022,12 @@ Regular feature and bugfix release\.
 <a id="v2-2-1"></a>
 ## v2\.2\.1
 
-<a id="release-summary-38"></a>
+<a id="release-summary-39"></a>
 ### Release Summary
 
 Regular bugfix release\.
 
-<a id="bugfixes-30"></a>
+<a id="bugfixes-31"></a>
 ### Bugfixes
 
 * docker\_compose \- fix Python 3 type error when extracting warnings or errors from docker\-compose\'s output \([https\://github\.com/ansible\-collections/community\.docker/pull/305](https\://github\.com/ansible\-collections/community\.docker/pull/305)\)\.
@@ -1018,7 +1035,7 @@ Regular bugfix release\.
 <a id="v2-2-0"></a>
 ## v2\.2\.0
 
-<a id="release-summary-39"></a>
+<a id="release-summary-40"></a>
 ### Release Summary
 
 Regular feature and bugfix release\.
@@ -1030,7 +1047,7 @@ Regular feature and bugfix release\.
 * docker\_secret \- add support for rolling update\, set <code>rolling\_versions</code> to <code>true</code> to enable \([https\://github\.com/ansible\-collections/community\.docker/pull/293](https\://github\.com/ansible\-collections/community\.docker/pull/293)\, [https\://github\.com/ansible\-collections/community\.docker/issues/21](https\://github\.com/ansible\-collections/community\.docker/issues/21)\)\.
 * docker\_swarm\_service \- add support for setting capabilities with the <code>cap\_add</code> and <code>cap\_drop</code> parameters\. Usage is the same as with the <code>capabilities</code> and <code>cap\_drop</code> parameters for <code>docker\_container</code> \([https\://github\.com/ansible\-collections/community\.docker/pull/294](https\://github\.com/ansible\-collections/community\.docker/pull/294)\)\.
 
-<a id="bugfixes-31"></a>
+<a id="bugfixes-32"></a>
 ### Bugfixes
 
 * docker\_container\, docker\_image \- adjust image finding code to peculiarities of <code>podman\-docker</code>\'s API emulation when Docker short names like <code>redis</code> are used \([https\://github\.com/ansible\-collections/community\.docker/issues/292](https\://github\.com/ansible\-collections/community\.docker/issues/292)\)\.
@@ -1038,12 +1055,12 @@ Regular feature and bugfix release\.
 <a id="v2-1-1"></a>
 ## v2\.1\.1
 
-<a id="release-summary-40"></a>
+<a id="release-summary-41"></a>
 ### Release Summary
 
 Emergency release to amend breaking change in previous release\.
 
-<a id="bugfixes-32"></a>
+<a id="bugfixes-33"></a>
 ### Bugfixes
 
 * Fix unintended breaking change caused by [an earlier fix](https\://github\.com/ansible\-collections/community\.docker/pull/258) by vendoring the deprecated Python standard library <code>distutils\.version</code> until this collection stops supporting Ansible 2\.9 and ansible\-base 2\.10 \([https\://github\.com/ansible\-collections/community\.docker/issues/267](https\://github\.com/ansible\-collections/community\.docker/issues/267)\, [https\://github\.com/ansible\-collections/community\.docker/pull/269](https\://github\.com/ansible\-collections/community\.docker/pull/269)\)\.
@@ -1051,7 +1068,7 @@ Emergency release to amend breaking change in previous release\.
 <a id="v2-1-0"></a>
 ## v2\.1\.0
 
-<a id="release-summary-41"></a>
+<a id="release-summary-42"></a>
 ### Release Summary
 
 Feature and bugfix release\.
@@ -1062,7 +1079,7 @@ Feature and bugfix release\.
 * docker\_container\_exec \- add <code>detach</code> parameter \([https\://github\.com/ansible\-collections/community\.docker/issues/250](https\://github\.com/ansible\-collections/community\.docker/issues/250)\, [https\://github\.com/ansible\-collections/community\.docker/pull/255](https\://github\.com/ansible\-collections/community\.docker/pull/255)\)\.
 * docker\_container\_exec \- add <code>env</code> option \([https\://github\.com/ansible\-collections/community\.docker/issues/248](https\://github\.com/ansible\-collections/community\.docker/issues/248)\, [https\://github\.com/ansible\-collections/community\.docker/pull/254](https\://github\.com/ansible\-collections/community\.docker/pull/254)\)\.
 
-<a id="bugfixes-33"></a>
+<a id="bugfixes-34"></a>
 ### Bugfixes
 
 * Various modules and plugins \- use vendored version of <code>distutils\.version</code> included in ansible\-core 2\.12 if available\. This avoids breakage when <code>distutils</code> is removed from the standard library of Python 3\.12\. Note that ansible\-core 2\.11\, ansible\-base 2\.10 and Ansible 2\.9 are right now not compatible with Python 3\.12\, hence this fix does not target these ansible\-core/\-base/2\.9 versions \([https\://github\.com/ansible\-collections/community\.docker/pull/258](https\://github\.com/ansible\-collections/community\.docker/pull/258)\)\.
@@ -1072,12 +1089,12 @@ Feature and bugfix release\.
 <a id="v2-0-2"></a>
 ## v2\.0\.2
 
-<a id="release-summary-42"></a>
+<a id="release-summary-43"></a>
 ### Release Summary
 
 Bugfix release\.
 
-<a id="bugfixes-34"></a>
+<a id="bugfixes-35"></a>
 ### Bugfixes
 
 * docker\_api connection plugin \- avoid passing an unnecessary argument to a Docker SDK for Python call that is only supported by version 3\.0\.0 or later \([https\://github\.com/ansible\-collections/community\.docker/pull/243](https\://github\.com/ansible\-collections/community\.docker/pull/243)\)\.
@@ -1088,7 +1105,7 @@ Bugfix release\.
 <a id="v2-0-1"></a>
 ## v2\.0\.1
 
-<a id="release-summary-43"></a>
+<a id="release-summary-44"></a>
 ### Release Summary
 
 Maintenance release with some documentation fixes\.
@@ -1096,7 +1113,7 @@ Maintenance release with some documentation fixes\.
 <a id="v2-0-0"></a>
 ## v2\.0\.0
 
-<a id="release-summary-44"></a>
+<a id="release-summary-45"></a>
 ### Release Summary
 
 New major release with some deprecations removed and a breaking change in the <code>docker\_compose</code> module regarding the <code>timeout</code> parameter\.
@@ -1122,7 +1139,7 @@ New major release with some deprecations removed and a breaking change in the <c
 <a id="v1-10-0"></a>
 ## v1\.10\.0
 
-<a id="release-summary-45"></a>
+<a id="release-summary-46"></a>
 ### Release Summary
 
 Regular feature and bugfix release\.
@@ -1137,12 +1154,12 @@ Regular feature and bugfix release\.
 <a id="v1-9-1"></a>
 ## v1\.9\.1
 
-<a id="release-summary-46"></a>
+<a id="release-summary-47"></a>
 ### Release Summary
 
 Regular bugfix release\.
 
-<a id="bugfixes-35"></a>
+<a id="bugfixes-36"></a>
 ### Bugfixes
 
 * docker\_compose \- fixed incorrect <code>changed</code> status for services with <code>profiles</code> defined\, but none enabled \([https\://github\.com/ansible\-collections/community\.docker/pull/192](https\://github\.com/ansible\-collections/community\.docker/pull/192)\)\.
@@ -1150,7 +1167,7 @@ Regular bugfix release\.
 <a id="v1-9-0"></a>
 ## v1\.9\.0
 
-<a id="release-summary-47"></a>
+<a id="release-summary-48"></a>
 ### Release Summary
 
 New bugfixes and features release\.
@@ -1169,7 +1186,7 @@ New bugfixes and features release\.
 
 * docker\_container \- the new <code>command\_handling</code>\'s default value\, <code>compatibility</code>\, is deprecated and will change to <code>correct</code> in community\.docker 3\.0\.0\. A deprecation warning is emitted by the module in cases where the behavior will change\. Please note that ansible\-core will output a deprecation warning only once\, so if it is shown for an earlier task\, there could be more tasks with this warning where it is not shown \([https\://github\.com/ansible\-collections/community\.docker/pull/186](https\://github\.com/ansible\-collections/community\.docker/pull/186)\)\.
 
-<a id="bugfixes-36"></a>
+<a id="bugfixes-37"></a>
 ### Bugfixes
 
 * docker\_compose \- fixes task failures when bringing up services while using <code>docker\-compose \<1\.17\.0</code> \([https\://github\.com/ansible\-collections/community\.docker/issues/180](https\://github\.com/ansible\-collections/community\.docker/issues/180)\)\.
@@ -1188,7 +1205,7 @@ New bugfixes and features release\.
 <a id="v1-8-0"></a>
 ## v1\.8\.0
 
-<a id="release-summary-48"></a>
+<a id="release-summary-49"></a>
 ### Release Summary
 
 Regular bugfix and feature release\.
@@ -1202,7 +1219,7 @@ Regular bugfix and feature release\.
 * docker\_host\_info \- allow values for keys in <code>containers\_filters</code>\, <code>images\_filters</code>\, <code>networks\_filters</code>\, and <code>volumes\_filters</code> to be passed as YAML lists \([https\://github\.com/ansible\-collections/community\.docker/pull/160](https\://github\.com/ansible\-collections/community\.docker/pull/160)\)\.
 * docker\_plugin \- added <code>alias</code> option to specify local names for docker plugins \([https\://github\.com/ansible\-collections/community\.docker/pull/161](https\://github\.com/ansible\-collections/community\.docker/pull/161)\)\.
 
-<a id="bugfixes-37"></a>
+<a id="bugfixes-38"></a>
 ### Bugfixes
 
 * docker\_compose \- fix idempotence bug when using <code>stopped\: true</code> \([https\://github\.com/ansible\-collections/community\.docker/issues/142](https\://github\.com/ansible\-collections/community\.docker/issues/142)\, [https\://github\.com/ansible\-collections/community\.docker/pull/159](https\://github\.com/ansible\-collections/community\.docker/pull/159)\)\.
@@ -1210,7 +1227,7 @@ Regular bugfix and feature release\.
 <a id="v1-7-0"></a>
 ## v1\.7\.0
 
-<a id="release-summary-49"></a>
+<a id="release-summary-50"></a>
 ### Release Summary
 
 Small feature and bugfix release\.
@@ -1223,12 +1240,12 @@ Small feature and bugfix release\.
 <a id="v1-6-1"></a>
 ## v1\.6\.1
 
-<a id="release-summary-50"></a>
+<a id="release-summary-51"></a>
 ### Release Summary
 
 Bugfix release to reduce deprecation warning spam\.
 
-<a id="bugfixes-38"></a>
+<a id="bugfixes-39"></a>
 ### Bugfixes
 
 * docker\_\* modules and plugins\, except <code>docker\_swarm</code> connection plugin and <code>docker\_compose</code> and <code>docker\_stack\*\` modules \- only emit \`\`tls\_hostname</code> deprecation message if TLS is actually used \([https\://github\.com/ansible\-collections/community\.docker/pull/143](https\://github\.com/ansible\-collections/community\.docker/pull/143)\)\.
@@ -1236,7 +1253,7 @@ Bugfix release to reduce deprecation warning spam\.
 <a id="v1-6-0"></a>
 ## v1\.6\.0
 
-<a id="release-summary-51"></a>
+<a id="release-summary-52"></a>
 ### Release Summary
 
 Regular bugfix and feature release\.
@@ -1252,7 +1269,7 @@ Regular bugfix and feature release\.
 
 * docker\_\* modules and plugins\, except <code>docker\_swarm</code> connection plugin and <code>docker\_compose</code> and <code>docker\_stack\*\` modules \- the current default \`\`localhost</code> for <code>tls\_hostname</code> is deprecated\. In community\.docker 2\.0\.0 it will be computed from <code>docker\_host</code> instead \([https\://github\.com/ansible\-collections/community\.docker/pull/134](https\://github\.com/ansible\-collections/community\.docker/pull/134)\)\.
 
-<a id="bugfixes-39"></a>
+<a id="bugfixes-40"></a>
 ### Bugfixes
 
 * docker\-compose \- fix not pulling when <code>state\: present</code> and <code>stopped\: true</code> \([https\://github\.com/ansible\-collections/community\.docker/issues/12](https\://github\.com/ansible\-collections/community\.docker/issues/12)\, [https\://github\.com/ansible\-collections/community\.docker/pull/119](https\://github\.com/ansible\-collections/community\.docker/pull/119)\)\.
@@ -1262,7 +1279,7 @@ Regular bugfix and feature release\.
 <a id="v1-5-0"></a>
 ## v1\.5\.0
 
-<a id="release-summary-52"></a>
+<a id="release-summary-53"></a>
 ### Release Summary
 
 Regular feature release\.
@@ -1272,7 +1289,7 @@ Regular feature release\.
 
 * Add the <code>use\_ssh\_client</code> option to most docker modules and plugins \([https\://github\.com/ansible\-collections/community\.docker/issues/108](https\://github\.com/ansible\-collections/community\.docker/issues/108)\, [https\://github\.com/ansible\-collections/community\.docker/pull/114](https\://github\.com/ansible\-collections/community\.docker/pull/114)\)\.
 
-<a id="bugfixes-40"></a>
+<a id="bugfixes-41"></a>
 ### Bugfixes
 
 * all modules \- use <code>to\_native</code> to convert exceptions to strings \([https\://github\.com/ansible\-collections/community\.docker/pull/121](https\://github\.com/ansible\-collections/community\.docker/pull/121)\)\.
@@ -1285,7 +1302,7 @@ Regular feature release\.
 <a id="v1-4-0"></a>
 ## v1\.4\.0
 
-<a id="release-summary-53"></a>
+<a id="release-summary-54"></a>
 ### Release Summary
 
 Security release to address another potential secret leak\. Also includes regular bugfixes and features\.
@@ -1305,7 +1322,7 @@ Security release to address another potential secret leak\. Also includes regula
 
 * docker\_swarm \- the <code>join\_token</code> option is now marked as <code>no\_log</code> so it is no longer written into logs \([https\://github\.com/ansible\-collections/community\.docker/pull/103](https\://github\.com/ansible\-collections/community\.docker/pull/103)\)\.
 
-<a id="bugfixes-41"></a>
+<a id="bugfixes-42"></a>
 ### Bugfixes
 
 * <code>docker\_swarm\_service</code> \- fix KeyError on caused by reference to deprecated option <code>update\_failure\_action</code> \([https\://github\.com/ansible\-collections/community\.docker/pull/100](https\://github\.com/ansible\-collections/community\.docker/pull/100)\)\.
@@ -1314,7 +1331,7 @@ Security release to address another potential secret leak\. Also includes regula
 <a id="v1-3-0"></a>
 ## v1\.3\.0
 
-<a id="release-summary-54"></a>
+<a id="release-summary-55"></a>
 ### Release Summary
 
 Regular feature and bugfix release\.
@@ -1327,7 +1344,7 @@ Regular feature and bugfix release\.
 * docker\_image \- properly support image IDs \(hashes\) for loading and tagging images \([https\://github\.com/ansible\-collections/community\.docker/issues/86](https\://github\.com/ansible\-collections/community\.docker/issues/86)\, [https\://github\.com/ansible\-collections/community\.docker/pull/87](https\://github\.com/ansible\-collections/community\.docker/pull/87)\)\.
 * docker\_swarm\_service \- adding support for maximum number of tasks per node \(<code>replicas\_max\_per\_node</code>\) when running swarm service in replicated mode\. Introduced in API 1\.40 \([https\://github\.com/ansible\-collections/community\.docker/issues/7](https\://github\.com/ansible\-collections/community\.docker/issues/7)\, [https\://github\.com/ansible\-collections/community\.docker/pull/92](https\://github\.com/ansible\-collections/community\.docker/pull/92)\)\.
 
-<a id="bugfixes-42"></a>
+<a id="bugfixes-43"></a>
 ### Bugfixes
 
 * docker\_container \- fix healthcheck disabling idempotency issue with strict comparison \([https\://github\.com/ansible\-collections/community\.docker/issues/85](https\://github\.com/ansible\-collections/community\.docker/issues/85)\)\.
@@ -1345,7 +1362,7 @@ Regular feature and bugfix release\.
 <a id="v1-2-2"></a>
 ## v1\.2\.2
 
-<a id="release-summary-55"></a>
+<a id="release-summary-56"></a>
 ### Release Summary
 
 Security bugfix release to address CVE\-2021\-20191\.
@@ -1358,12 +1375,12 @@ Security bugfix release to address CVE\-2021\-20191\.
 <a id="v1-2-1"></a>
 ## v1\.2\.1
 
-<a id="release-summary-56"></a>
+<a id="release-summary-57"></a>
 ### Release Summary
 
 Bugfix release\.
 
-<a id="bugfixes-43"></a>
+<a id="bugfixes-44"></a>
 ### Bugfixes
 
 * docker connection plugin \- fix Docker version parsing\, as some docker versions have a leading <code>v</code> in the output of the command <code>docker version \-\-format \"\{\{\.Server\.Version\}\}\"</code> \([https\://github\.com/ansible\-collections/community\.docker/pull/76](https\://github\.com/ansible\-collections/community\.docker/pull/76)\)\.
@@ -1371,7 +1388,7 @@ Bugfix release\.
 <a id="v1-2-0"></a>
 ## v1\.2\.0
 
-<a id="release-summary-57"></a>
+<a id="release-summary-58"></a>
 ### Release Summary
 
 Feature release with one new feature and two bugfixes\.
@@ -1381,7 +1398,7 @@ Feature release with one new feature and two bugfixes\.
 
 * docker\_container \- added <code>default\_host\_ip</code> option which allows to explicitly set the default IP string for published ports without explicitly specified IPs\. When using IPv6 binds with Docker 20\.10\.2 or newer\, this needs to be set to an empty string \(<code>\"\"</code>\) \([https\://github\.com/ansible\-collections/community\.docker/issues/70](https\://github\.com/ansible\-collections/community\.docker/issues/70)\, [https\://github\.com/ansible\-collections/community\.docker/pull/71](https\://github\.com/ansible\-collections/community\.docker/pull/71)\)\.
 
-<a id="bugfixes-44"></a>
+<a id="bugfixes-45"></a>
 ### Bugfixes
 
 * docker\_container \- allow IPv6 zones \(RFC 4007\) in bind IPs \([https\://github\.com/ansible\-collections/community\.docker/pull/66](https\://github\.com/ansible\-collections/community\.docker/pull/66)\)\.
@@ -1390,7 +1407,7 @@ Feature release with one new feature and two bugfixes\.
 <a id="v1-1-0"></a>
 ## v1\.1\.0
 
-<a id="release-summary-58"></a>
+<a id="release-summary-59"></a>
 ### Release Summary
 
 Feature release with three new plugins and modules\.
@@ -1407,7 +1424,7 @@ Feature release with three new plugins and modules\.
 
 * docker\_container \- currently <code>published\_ports</code> can contain port mappings next to the special value <code>all</code>\, in which case the port mappings are ignored\. This behavior is deprecated for community\.docker 2\.0\.0\, at which point it will either be forbidden\, or this behavior will be properly implemented similar to how the Docker CLI tool handles this \([https\://github\.com/ansible\-collections/community\.docker/issues/8](https\://github\.com/ansible\-collections/community\.docker/issues/8)\, [https\://github\.com/ansible\-collections/community\.docker/pull/60](https\://github\.com/ansible\-collections/community\.docker/pull/60)\)\.
 
-<a id="bugfixes-45"></a>
+<a id="bugfixes-46"></a>
 ### Bugfixes
 
 * docker\_image \- if <code>push\=true</code> is used with <code>repository</code>\, and the image does not need to be tagged\, still push\. This can happen if <code>repository</code> and <code>name</code> are equal \([https\://github\.com/ansible\-collections/community\.docker/issues/52](https\://github\.com/ansible\-collections/community\.docker/issues/52)\, [https\://github\.com/ansible\-collections/community\.docker/pull/53](https\://github\.com/ansible\-collections/community\.docker/pull/53)\)\.
@@ -1435,12 +1452,12 @@ Feature release with three new plugins and modules\.
 <a id="v1-0-1"></a>
 ## v1\.0\.1
 
-<a id="release-summary-59"></a>
+<a id="release-summary-60"></a>
 ### Release Summary
 
 Maintenance release with a bugfix for <code>docker\_container</code>\.
 
-<a id="bugfixes-46"></a>
+<a id="bugfixes-47"></a>
 ### Bugfixes
 
 * docker\_container \- the validation for <code>capabilities</code> in <code>device\_requests</code> was incorrect \([https\://github\.com/ansible\-collections/community\.docker/issues/42](https\://github\.com/ansible\-collections/community\.docker/issues/42)\, [https\://github\.com/ansible\-collections/community\.docker/pull/43](https\://github\.com/ansible\-collections/community\.docker/pull/43)\)\.
@@ -1448,7 +1465,7 @@ Maintenance release with a bugfix for <code>docker\_container</code>\.
 <a id="v1-0-0"></a>
 ## v1\.0\.0
 
-<a id="release-summary-60"></a>
+<a id="release-summary-61"></a>
 ### Release Summary
 
 This is the first production \(non\-prerelease\) release of <code>community\.docker</code>\.
@@ -1463,7 +1480,7 @@ This is the first production \(non\-prerelease\) release of <code>community\.doc
 <a id="v0-1-0"></a>
 ## v0\.1\.0
 
-<a id="release-summary-61"></a>
+<a id="release-summary-62"></a>
 ### Release Summary
 
 The <code>community\.docker</code> continues the work on the Ansible docker modules and plugins from their state in <code>community\.general</code> 1\.2\.0\. The changes listed here are thus relative to the modules and plugins <code>community\.general\.docker\*</code>\.
@@ -1501,7 +1518,7 @@ All deprecation removals planned for <code>community\.general</code> 2\.0\.0 hav
 * docker\_volume \- no longer returns <code>ansible\_facts</code> \([https\://github\.com/ansible\-collections/community\.docker/pull/1](https\://github\.com/ansible\-collections/community\.docker/pull/1)\)\.
 * docker\_volume \- the <code>force</code> option has been removed\. Use <code>recreate</code> instead \([https\://github\.com/ansible\-collections/community\.docker/pull/1](https\://github\.com/ansible\-collections/community\.docker/pull/1)\)\.
 
-<a id="bugfixes-47"></a>
+<a id="bugfixes-48"></a>
 ### Bugfixes
 
 * docker\_login \- fix internal config file storage to handle credentials for more than one registry \([https\://github\.com/ansible\-collections/community\.general/issues/1117](https\://github\.com/ansible\-collections/community\.general/issues/1117)\)\.
