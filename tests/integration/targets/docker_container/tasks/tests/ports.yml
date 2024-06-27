@@ -185,64 +185,66 @@
 ## published_ports: IPv6 addresses #################################
 ####################################################################
 
-- name: published_ports -- IPv6
-  docker_container:
-    image: "{{ docker_test_image_alpine }}"
-    command: '/bin/sh -c "sleep 10m"'
-    name: "{{ cname }}"
-    state: started
-    published_ports:
-    - "[::1]:9001:9001"
-    force_kill: true
-  register: published_ports_1
+- when: docker_host_info.host_info.ServerVersion is version('27.0.0', '<')
+  block:
+    - name: published_ports -- IPv6
+      docker_container:
+        image: "{{ docker_test_image_alpine }}"
+        command: '/bin/sh -c "sleep 10m"'
+        name: "{{ cname }}"
+        state: started
+        published_ports:
+        - "[::1]:9001:9001"
+        force_kill: true
+      register: published_ports_1
 
-- name: published_ports -- IPv6 (idempotency)
-  docker_container:
-    image: "{{ docker_test_image_alpine }}"
-    command: '/bin/sh -c "sleep 10m"'
-    name: "{{ cname }}"
-    state: started
-    published_ports:
-    - "[::1]:9001:9001"
-    force_kill: true
-  register: published_ports_2
+    - name: published_ports -- IPv6 (idempotency)
+      docker_container:
+        image: "{{ docker_test_image_alpine }}"
+        command: '/bin/sh -c "sleep 10m"'
+        name: "{{ cname }}"
+        state: started
+        published_ports:
+        - "[::1]:9001:9001"
+        force_kill: true
+      register: published_ports_2
 
-- name: published_ports -- IPv6 (different IP)
-  docker_container:
-    image: "{{ docker_test_image_alpine }}"
-    command: '/bin/sh -c "sleep 10m"'
-    name: "{{ cname }}"
-    state: started
-    published_ports:
-    - "127.0.0.1:9001:9001"
-    force_kill: true
-  register: published_ports_3
+    - name: published_ports -- IPv6 (different IP)
+      docker_container:
+        image: "{{ docker_test_image_alpine }}"
+        command: '/bin/sh -c "sleep 10m"'
+        name: "{{ cname }}"
+        state: started
+        published_ports:
+        - "127.0.0.1:9001:9001"
+        force_kill: true
+      register: published_ports_3
 
-- name: published_ports -- IPv6 (hostname)
-  docker_container:
-    image: "{{ docker_test_image_alpine }}"
-    command: '/bin/sh -c "sleep 10m"'
-    name: "{{ cname }}"
-    state: started
-    published_ports:
-    - "localhost:9001:9001"
-    force_kill: true
-  register: published_ports_4
-  ignore_errors: true
+    - name: published_ports -- IPv6 (hostname)
+      docker_container:
+        image: "{{ docker_test_image_alpine }}"
+        command: '/bin/sh -c "sleep 10m"'
+        name: "{{ cname }}"
+        state: started
+        published_ports:
+        - "localhost:9001:9001"
+        force_kill: true
+      register: published_ports_4
+      ignore_errors: true
 
-- name: cleanup
-  docker_container:
-    name: "{{ cname }}"
-    state: absent
-    force_kill: true
-  diff: false
+    - name: cleanup
+      docker_container:
+        name: "{{ cname }}"
+        state: absent
+        force_kill: true
+      diff: false
 
-- assert:
-    that:
-    - published_ports_1 is changed
-    - published_ports_2 is not changed
-    - published_ports_3 is changed
-    - published_ports_4 is failed
+    - assert:
+        that:
+        - published_ports_1 is changed
+        - published_ports_2 is not changed
+        - published_ports_3 is changed
+        - published_ports_4 is failed
 
 ####################################################################
 ## publish_all_ports ###############################################
