@@ -687,6 +687,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-etc_hosts" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Dict of host-to-IP mappings, where each host name is a key in the dictionary. Each host name will be added to the container’s <code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code> file.</p>
+<p>Instead of an IP address, the special value <code class="ansible-value docutils literal notranslate"><span class="pre">host-gateway</span></code> can also be used, which resolves to the host’s gateway IP and allows containers to connect to services running on the host.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">

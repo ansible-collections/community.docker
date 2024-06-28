@@ -317,6 +317,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-build/etc_hosts" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Extra hosts to add to <code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code> in building containers, as a mapping of hostname to IP address.</p>
+<p>Instead of an IP address, the special value <code class="ansible-value docutils literal notranslate"><span class="pre">host-gateway</span></code> can also be used, which resolves to the host’s gateway IP and allows building containers to connect to services running on the host.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
