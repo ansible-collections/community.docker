@@ -32,6 +32,10 @@
 - debug:
     msg: "Using container name prefix {{ cname_prefix }}"
 
+- name: Retrieve docker host info
+  docker_host_info:
+  register: docker_host_info
+
 # Run the tests
 - block:
     - include_tasks: run-test.yml
