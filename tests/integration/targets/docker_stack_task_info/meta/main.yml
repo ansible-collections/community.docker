@@ -1,4 +1,5 @@
 ---
 dependencies:
   - setup_docker
+  - setup_docker_sdk_for_python  # needed for the Swarm modules
   - setup_remote_tmp_dir
