@@ -1,0 +1,67 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: Helper Docker images for testing
+on:
+  # Run CI against all pushes (direct commits, also merged PRs), Pull Requests
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/docker-images.yml
+      - tests/images/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/docker-images.yml
+      - tests/images/**
+  # Run CI once per day (at 03:00 UTC)
+  schedule:
+    - cron: '0 3 * * *'
+
+env:
+  CONTAINER_REGISTRY: ghcr.io/ansible-collections
+
+jobs:
+  build:
+    name: Build image ${{ matrix.name }}:${{ matrix.tag }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: simple-1
+            tag: latest
+          - name: simple-2
+            tag: latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install podman buildah
+
+      - name: Set up Go 1.22
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build ${{ matrix.name }} image
+        run: |
+          ./build.sh "${CONTAINER_REGISTRY}/${{ matrix.name }}:${{ matrix.tag }}"
+        working-directory: tests/images/${{ matrix.name }}
+
+      - name: Publish container image as ${{ env.CONTAINER_REGISTRY }}/${{ matrix.name }}:latest
+        if: github.event_name != 'pull_request'
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          image: ${{ matrix.name }}
+          tags: ${{ matrix.tag }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
