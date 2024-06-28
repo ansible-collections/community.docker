@@ -100,6 +100,9 @@ options:
       etc_hosts:
         description:
           - Extra hosts to add to C(/etc/hosts) in building containers, as a mapping of hostname to IP address.
+          - Instead of an IP address, the special value V(host-gateway) can also be used, which
+            resolves to the host's gateway IP and allows building containers to connect to services running
+            on the host.
         type: dict
       args:
         description:

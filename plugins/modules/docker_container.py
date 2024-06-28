@@ -340,6 +340,9 @@ options:
     description:
       - Dict of host-to-IP mappings, where each host name is a key in the dictionary.
         Each host name will be added to the container's C(/etc/hosts) file.
+      - Instead of an IP address, the special value V(host-gateway) can also be used, which
+        resolves to the host's gateway IP and allows containers to connect to services running
+        on the host.
     type: dict
   exposed_ports:
     description:
