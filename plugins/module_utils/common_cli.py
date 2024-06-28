@@ -30,7 +30,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import (  # 
 
 DOCKER_COMMON_ARGS = dict(
     docker_cli=dict(type='path'),
-    docker_host=dict(type='str', default=DEFAULT_DOCKER_HOST, fallback=(env_fallback, ['DOCKER_HOST']), aliases=['docker_url']),
+    docker_host=dict(type='str', fallback=(env_fallback, ['DOCKER_HOST']), aliases=['docker_url']),
     tls_hostname=dict(type='str', fallback=(env_fallback, ['DOCKER_TLS_HOSTNAME'])),
     api_version=dict(type='str', default='auto', fallback=(env_fallback, ['DOCKER_API_VERSION']), aliases=['docker_api_version']),
     ca_path=dict(type='path', aliases=['ca_cert', 'tls_ca_cert', 'cacert_path']),
@@ -62,7 +62,11 @@ class AnsibleDockerClientBase(object):
                 self.fail('Cannot find docker CLI in path. Please provide it explicitly with the docker_cli parameter')
 
         self._cli_base = [self._cli]
-        self._cli_base.extend(['--host', common_args['docker_host']])
+        docker_host = common_args['docker_host']
+        if not docker_host and not common_args['cli_context']:
+            docker_host = DEFAULT_DOCKER_HOST
+        if docker_host:
+            self._cli_base.extend(['--host', docker_host])
         if common_args['validate_certs']:
             self._cli_base.append('--tlsverify')
         elif common_args['tls']:
@@ -275,7 +279,7 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
             merged_arg_spec.update(argument_spec)
             self.arg_spec = merged_arg_spec
 
-        mutually_exclusive_params = []
+        mutually_exclusive_params = [('docker_host', 'cli_context')]
         mutually_exclusive_params += DOCKER_MUTUALLY_EXCLUSIVE
         if mutually_exclusive:
             mutually_exclusive_params += mutually_exclusive

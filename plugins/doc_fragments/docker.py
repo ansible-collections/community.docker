@@ -318,8 +318,9 @@ options:
               the module will automatically replace C(tcp) in the connection URL with C(https).
             - If the value is not specified in the task, the value of environment variable E(DOCKER_HOST) will be used
               instead. If the environment variable is not set, the default value will be used.
+            - Mutually exclusive with O(cli_context). If neither O(docker_host) nor O(cli_context) are provided, the
+              value V(unix:///var/run/docker.sock) is used.
         type: str
-        default: unix:///var/run/docker.sock
         aliases: [ docker_url ]
     tls_hostname:
         description:
@@ -381,6 +382,7 @@ options:
     cli_context:
         description:
             - The Docker CLI context to use.
+            - Mutually exclusive with O(docker_host).
         type: str
 
 notes:
