@@ -13,12 +13,12 @@
       services:
         {{ cname }}:
           image: {{ non_existing_image }}
-    test_service_alpine: |
+    test_service_simple: |
       version: '3'
       services:
         {{ cname }}:
-          image: {{ docker_test_image_alpine }}
-          command: /bin/sh -c 'sleep 10m'
+          image: {{ docker_test_image_simple_1 }}
+          command: 10m
           stop_grace_period: 1s
 
   block:
@@ -37,7 +37,7 @@
         name: '{{ item }}'
       loop:
         - '{{ non_existing_image }}'
-        - '{{ docker_test_image_alpine }}'
+        - '{{ docker_test_image_simple_1 }}'
 
 ####################################################################
 ## Missing image ###################################################
@@ -72,10 +72,10 @@
 ## Regular image ###################################################
 ####################################################################
 
-    - name: Template project file with Alpine image
+    - name: Template project file with simple image
       copy:
         dest: '{{ project_src }}/docker-compose.yml'
-        content: '{{ test_service_alpine }}'
+        content: '{{ test_service_simple }}'
 
     - when: docker_compose_version is version('2.22.0', '>=')
       block:
@@ -107,7 +107,7 @@
 
         - name: Make sure image is not around
           docker_image_remove:
-            name: '{{ docker_test_image_alpine }}'
+            name: '{{ docker_test_image_simple_1 }}'
 
         - name: Pull with policy=always (check)
           docker_compose_v2_pull:
