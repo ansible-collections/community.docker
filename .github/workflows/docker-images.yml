@@ -34,9 +34,11 @@ jobs:
       matrix:
         include:
           - name: simple-1
-            tag: latest
+            tag: tag
+            tag-as-latest: true
           - name: simple-2
-            tag: latest
+            tag: tag
+            tag-as-latest: true
 
     steps:
       - name: Check out repository
@@ -56,12 +58,27 @@ jobs:
           ./build.sh "${CONTAINER_REGISTRY}/${{ matrix.name }}:${{ matrix.tag }}"
         working-directory: tests/images/${{ matrix.name }}
 
-      - name: Publish container image as ${{ env.CONTAINER_REGISTRY }}/${{ matrix.name }}:latest
+      - name: Tag image as latest
+        if: matrix.tag-as-latest && matrix.tag != 'latest'
+        run: |
+          podman tag "${CONTAINER_REGISTRY}/${{ matrix.name }}:${{ matrix.tag }}" "${CONTAINER_REGISTRY}/${{ matrix.name }}:latest"
+
+      - name: Publish container image ${{ env.CONTAINER_REGISTRY }}/${{ matrix.name }}:${{ matrix.tag }}
         if: github.event_name != 'pull_request'
         uses: redhat-actions/push-to-registry@v2
         with:
           registry: ${{ env.CONTAINER_REGISTRY }}
           image: ${{ matrix.name }}
           tags: ${{ matrix.tag }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish container image ${{ env.CONTAINER_REGISTRY }}/${{ matrix.name }}:latest
+        if: github.event_name != 'pull_request' && matrix.tag-as-latest && matrix.tag != 'latest'
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          image: ${{ matrix.name }}
+          tags: latest
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
