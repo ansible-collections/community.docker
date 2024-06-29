@@ -6,8 +6,8 @@
 - set_fact:
     image_names:
       - "{{ docker_test_image_hello_world }}"
-      - "{{ docker_test_image_alpine_different }}"
-      - "{{ docker_test_image_alpine }}"
+      - "{{ docker_test_image_simple_1 }}"
+      - "{{ docker_test_image_simple_2 }}"
 
 - name: Make sure images are there
   docker_image_pull:
