@@ -27,10 +27,13 @@ else
     target="azp/"
 fi
 
-force_python=""
 if [[ "${version}" =~ -pypi-latest$ ]]; then
     version="${version/-pypi-latest}"
-    echo 'force_docker_sdk_for_python_pypi: true' >> tests/integration/interation_config.yml
+    echo 'force_docker_sdk_for_python_pypi: true' >> tests/integration/integration_config.yml
+fi
+if [[ "${version}" =~ -dev-latest$ ]]; then
+    version="${version/-dev-latest}"
+    echo 'force_docker_sdk_for_python_dev: true' >> tests/integration/integration_config.yml
 fi
 
 stage="${S:-prod}"
@@ -42,4 +45,4 @@ fi
 
 # shellcheck disable=SC2086
 ansible-test integration --color -v --retry-on-error "${target}" ${COVERAGE:+"$COVERAGE"} ${CHANGED:+"$CHANGED"} ${UNSTABLE:+"$UNSTABLE"} \
-    --python "${pyver}" --remote "${platform}/${version}" --remote-terminate always --remote-stage "${stage}" --remote-provider "${provider}" ${force_python}
+    --python "${pyver}" --remote "${platform}/${version}" --remote-terminate always --remote-stage "${stage}" --remote-provider "${provider}"

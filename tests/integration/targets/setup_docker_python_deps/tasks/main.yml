@@ -13,3 +13,20 @@
     name: "{{ docker_pip_api_packages + (docker_pip_api_packages_python2 if ansible_facts.python.version.major == 2 else []) }}"
     extra_args: "-c {{ remote_constraints }}"
     state: present
+  when: not (force_docker_sdk_for_python_dev | default(false))
+
+- name: Make sure git is installed
+  package:
+    name:
+      - git
+    state: present
+  when: force_docker_sdk_for_python_dev | default(false)
+
+- name: Install/upgrade Python requirements from source repositories
+  pip:
+    name:
+      - git+https://github.com/psf/requests
+      - git+https://github.com/urllib3/urllib3
+    extra_args: "-c {{ remote_constraints }}"
+    state: latest
+  when: force_docker_sdk_for_python_dev | default(false)

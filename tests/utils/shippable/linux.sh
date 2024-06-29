@@ -16,6 +16,15 @@ else
     target="azp/"
 fi
 
+if [[ "${image}" =~ -pypi-latest$ ]]; then
+    image="${image/-pypi-latest}"
+    echo 'force_docker_sdk_for_python_pypi: true' >> tests/integration/integration_config.yml
+fi
+if [[ "${image}" =~ -dev-latest$ ]]; then
+    image="${image/-dev-latest}"
+    echo 'force_docker_sdk_for_python_dev: true' >> tests/integration/integration_config.yml
+fi
+
 # shellcheck disable=SC2086
 ansible-test integration --color -v --retry-on-error "${target}" ${COVERAGE:+"$COVERAGE"} ${CHANGED:+"$CHANGED"} ${UNSTABLE:+"$UNSTABLE"} \
     --docker "${image}"

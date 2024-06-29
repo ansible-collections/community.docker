@@ -205,8 +205,8 @@ stages:
         parameters:
           testFormat: devel/{0}
           targets:
-            - name: RHEL 9.4 with latest Docker SDK from PyPi
-              test: rhel/9.4-pypi-latest
+            - name: RHEL 9.4 with Docker SDK, urllib3, requests from sources
+              test: rhel/9.4-dev-latest
           groups:
             - 1
             - 2
@@ -222,8 +222,8 @@ stages:
         parameters:
           testFormat: 2.17/{0}
           targets:
-            - name: RHEL 9.3 with latest Docker SDK from PyPi
-              test: rhel/9.3-pypi-latest
+            - name: RHEL 9.3
+              test: rhel/9.3
           groups:
             - 1
             - 2

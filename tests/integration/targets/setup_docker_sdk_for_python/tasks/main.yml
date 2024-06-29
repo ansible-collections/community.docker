@@ -29,11 +29,28 @@
         docker_pip_package_limit: '<4.3.0'
       when: docker_api_version is version('1.39', '<')
 
+    - name: Make sure git is installed
+      package:
+        name:
+          - git
+      when: force_docker_sdk_for_python_dev | default(false)
+
     - name: Install/upgrade Python requirements
       pip:
-        name: "{{ [docker_pip_package ~ docker_pip_package_limit] + docker_pip_extra_packages }}"
+        name: >-
+          {{
+            docker_pip_git_packages
+            if (force_docker_sdk_for_python_dev | default(false)) else
+            ([docker_pip_package ~ docker_pip_package_limit] + docker_pip_extra_packages)
+          }}
         extra_args: "-c {{ remote_constraints }}"
-        state: "{{ 'latest' if force_docker_sdk_for_python_pypi | default(false) else 'present' }}"
+        state: >-
+          {{
+            'latest' if (
+              (force_docker_sdk_for_python_pypi | default(false)) or
+              (force_docker_sdk_for_python_dev | default(false))
+            ) else 'present'
+          }}
 
     - name: Check docker-py version
       command: "{{ ansible_python.executable }} -c 'import docker; print(docker.__version__)'"
