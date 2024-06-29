@@ -15,7 +15,7 @@ __metaclass__ = type
       https://github.com/kennethreitz/requests/pull/799
 """
 
-from ansible_collections.community.docker.plugins.module_utils.version import StrictVersion
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 from .._import_helper import HTTPAdapter, urllib3
 from .basehttpadapter import BaseHTTPAdapter
@@ -66,4 +66,4 @@ class SSLHTTPAdapter(BaseHTTPAdapter):
             return False
         if urllib_ver == 'dev':
             return True
-        return StrictVersion(urllib_ver) > StrictVersion('1.5')
+        return LooseVersion(urllib_ver) > LooseVersion('1.5')
