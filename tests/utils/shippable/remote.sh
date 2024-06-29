@@ -18,7 +18,7 @@ fi
 force_python=""
 if [[ "${version}" =~ -pypi-latest$ ]]; then
     version="${version/-pypi-latest}"
-    echo 'force_docker_sdk_for_python_pypi: true' >> tests/integration/interation_config.yml
+    echo 'force_docker_sdk_for_python_pypi: true' >> tests/integration/integration_config.yml
     if [ "${platform}" == "rhel" ] && [[ "${version}" =~ ^8\. ]]; then
         # Use Python 3.8 on RHEL 8.x - TODO: this might be no longer necessary for high enough minor version! Check!
         force_python="--python 3.8"
