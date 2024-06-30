@@ -17,22 +17,9 @@
 - name: Add gpg key
   shell: curl -fsSL https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg >key && apt-key add key
 
-- name: Debug architecture
-  debug:
-    msg: '{{ ansible_architecture }}'
-
-- name: Set default arch amd64 for Docker repo
-  set_fact:
-    docker_arch: amd64
-
-- name: Set arch arm64 for Docker repo when on aarch64
-  set_fact:
-    docker_arch: arm64
-  when: ansible_architecture == 'aarch64'
-
 - name: Add Docker repo
   apt_repository:
-    repo: deb [arch={{ docker_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
+    repo: deb [arch={{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
     state: present
 
 - block:
