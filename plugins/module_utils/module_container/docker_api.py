@@ -44,6 +44,7 @@ from ansible_collections.community.docker.plugins.module_utils.module_container.
     OPTION_DEVICE_READ_IOPS,
     OPTION_DEVICE_WRITE_IOPS,
     OPTION_DEVICE_REQUESTS,
+    OPTION_DEVICE_CGROUP_RULES,
     OPTION_DNS_SERVERS,
     OPTION_DNS_OPTS,
     OPTION_DNS_SEARCH_DOMAINS,
@@ -1289,6 +1290,8 @@ OPTION_DEVICE_WRITE_IOPS.add_engine('docker_api', DockerAPIEngine.host_config_va
 
 OPTION_DEVICE_REQUESTS.add_engine('docker_api', DockerAPIEngine.host_config_value(
     'DeviceRequests', min_api_version='1.40', preprocess_value=_preprocess_device_requests))
+
+OPTION_DEVICE_CGROUP_RULES.add_engine('docker_api', DockerAPIEngine.host_config_value('DeviceCgroupRules', min_api_version='1.28'))
 
 OPTION_DNS_SERVERS.add_engine('docker_api', DockerAPIEngine.host_config_value('Dns'))
 
