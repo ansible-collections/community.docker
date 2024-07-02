@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="2.11.0" name="antsibull-docs" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>community.docker.docker_compose module – Manage multi-container Docker applications with Docker Compose V1 &mdash; Community.Docker Collection  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5707b69d" />
+      <link rel="stylesheet" type="text/css" href="_static/css/ansible.css?v=c5b67dd2" />
+      <link rel="stylesheet" type="text/css" href="_static/antsibull-minimal.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/rtd-ethical-ads.css?v=289b023e" />
+
+  
+    <link rel="shortcut icon" href="_static/images/Ansible-Mark-RGB_Black.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=7f41d439"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="community.docker.docker_compose_v2 module – Manage multi-container Docker applications with Docker Compose CLI plugin" href="docker_compose_v2_module.html" />
+    <link rel="prev" title="community.docker.current_container_facts module – Return facts about whether the module runs in a container" href="current_container_facts_module.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
+
+
+
+
+</head>
+
+<body class="wy-body-for-nav"><!-- extra body elements for Ansible beyond RTD Sphinx Theme -->
+
+<div class="DocSite-globalNav ansibleNav">
+  <ul>
+    <li><a href="https://www.ansible.com/blog" target="_blank">Blog</a></li>
+    <li><a href="https://forum.ansible.com/" target="_blank">Ansible community forum</a></li>
+    <li><a href="https://docs.ansible.com/" target="_blank">Documentation</a></li>
+  </ul>
+</div>
+
+<a class="DocSite-nav" href="https://ansible-collections.github.io/community.docker/branch/main/" style="padding-bottom: 30px;">
+
+  <img class="DocSiteNav-logo"
+    src="_static/images/Ansible-Mark-RGB_White.png"
+    alt="Ansible Logo">
+  <div class="DocSiteNav-title">Community.Docker Collection Docs</div>
+</a>
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Community.Docker Collection
+          </a><!--- Based on https://github.com/rtfd/sphinx_rtd_theme/pull/438/files -->
+
+<div class="version">
+  
+    
+  
+</div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <label class="sr-only" for="q">Search docs:</label>
+    <input type="text" class="st-default-search-input" id="q" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Community.Docker Release Notes</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="docsite/scenario_guide.html">Docker Guide</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="current_container_facts_module.html">community.docker.current_container_facts module – Return facts about whether the module runs in a container</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">community.docker.docker_compose module – Manage multi-container Docker applications with Docker Compose V1</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#deprecated">DEPRECATED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#attributes">Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See Also</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#return-values">Return Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#status">Status</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#authors">Authors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#collection-links">Collection links</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker_compose_v2_module.html">community.docker.docker_compose_v2 module – Manage multi-container Docker applications with Docker Compose CLI plugin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_compose_v2_pull_module.html">community.docker.docker_compose_v2_pull module – Pull a Docker compose project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_config_module.html">community.docker.docker_config module – Manage docker configs.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_container_module.html">community.docker.docker_container module – manage Docker containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_container_copy_into_module.html">community.docker.docker_container_copy_into module – Copy a file into a Docker container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_container_exec_module.html">community.docker.docker_container_exec module – Execute command in a docker container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_container_info_module.html">community.docker.docker_container_info module – Retrieves facts about docker container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_host_info_module.html">community.docker.docker_host_info module – Retrieves facts about docker host and lists of objects of the services.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_module.html">community.docker.docker_image module – Manage docker images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_build_module.html">community.docker.docker_image_build module – Build Docker images using Docker buildx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_export_module.html">community.docker.docker_image_export module – Export (archive) Docker images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_info_module.html">community.docker.docker_image_info module – Inspect docker images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_load_module.html">community.docker.docker_image_load module – Load docker image(s) from archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_pull_module.html">community.docker.docker_image_pull module – Pull Docker images from registries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_push_module.html">community.docker.docker_image_push module – Push Docker images to registries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_remove_module.html">community.docker.docker_image_remove module – Remove Docker images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_tag_module.html">community.docker.docker_image_tag module – Tag Docker images with new names and/or tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_login_module.html">community.docker.docker_login module – Log into a Docker registry.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_network_module.html">community.docker.docker_network module – Manage Docker networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_network_info_module.html">community.docker.docker_network_info module – Retrieves facts about docker network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_node_module.html">community.docker.docker_node module – Manage Docker Swarm node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_node_info_module.html">community.docker.docker_node_info module – Retrieves facts about docker swarm node from Swarm Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_plugin_module.html">community.docker.docker_plugin module – Manage Docker plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_prune_module.html">community.docker.docker_prune module – Allows to prune various docker objects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_secret_module.html">community.docker.docker_secret module – Manage docker secrets.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_stack_module.html">community.docker.docker_stack module – docker stack module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_stack_info_module.html">community.docker.docker_stack_info module – Return information on all docker stacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_stack_task_info_module.html">community.docker.docker_stack_task_info module – Return information of the tasks on a docker stack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_swarm_module.html">community.docker.docker_swarm module – Manage Swarm cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_swarm_info_module.html">community.docker.docker_swarm_info module – Retrieves facts about Docker Swarm cluster.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_swarm_service_module.html">community.docker.docker_swarm_service module – docker swarm service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_swarm_service_info_module.html">community.docker.docker_swarm_service_info module – Retrieves information about docker services from a Swarm Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_volume_module.html">community.docker.docker_volume module – Manage Docker volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_volume_info_module.html">community.docker.docker_volume_info module – Retrieve facts about Docker volumes</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="docker_connection.html">community.docker.docker connection – Run tasks in docker containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_api_connection.html">community.docker.docker_api connection – Run tasks in docker containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nsenter_connection.html">community.docker.nsenter connection – execute on host running controller container</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="docker_containers_inventory.html">community.docker.docker_containers inventory – Ansible dynamic inventory plugin for Docker containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_machine_inventory.html">community.docker.docker_machine inventory – Docker Machine inventory source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_swarm_inventory.html">community.docker.docker_swarm inventory – Ansible dynamic inventory plugin for Docker swarm nodes.</a></li>
+</ul>
+<!-- extra nav elements for Ansible beyond RTD Sphinx Theme -->
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Community.Docker Collection</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">community.docker.docker_compose module – Manage multi-container Docker applications with Docker Compose V1</li>
+      <li class="wy-breadcrumbs-aside">
+              <!-- User defined GitHub URL -->
+              <a href="https://github.com/ansible-collections/community.docker/edit/main/plugins/modules/docker_compose.py?description=%23%23%23%23%23%20SUMMARY%0A%3C!—%20Your%20description%20here%20–%3E%0A%0A%0A%23%23%23%23%23%20ISSUE%20TYPE%0A-%20Docs%20Pull%20Request%0A%0A%2Blabel:%20docsite_pr" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+  
+           <div itemprop="articleBody">
+             
+  <span class="target" id="ansible-collections-community-docker-docker-compose-module"></span><section id="community-docker-docker-compose-module-manage-multi-container-docker-applications-with-docker-compose-v1">
+<h1>community.docker.docker_compose module – Manage multi-container Docker applications with Docker Compose V1<a class="headerlink" href="#community-docker-docker-compose-module-manage-multi-container-docker-applications-with-docker-compose-v1" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/community/docker/">community.docker collection</a> (version 3.11.0).</p>
+<p>It is not included in <code class="docutils literal notranslate"><span class="pre">ansible-core</span></code>.
+To check whether it is installed, run <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">list</span></code>.</p>
+<p>To install it, use: <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">install</span> <span class="pre">community.docker</span></code>.
+You need further requirements to be able to use this module,
+see <a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-requirements"><span class="std std-ref">Requirements</span></a> for details.</p>
+<p>To use it in a playbook, specify: <code class="code docutils literal notranslate"><span class="pre">community.docker.docker_compose</span></code>.</p>
+</div>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#deprecated" id="id1">DEPRECATED</a></p></li>
+<li><p><a class="reference internal" href="#synopsis" id="id2">Synopsis</a></p></li>
+<li><p><a class="reference internal" href="#requirements" id="id3">Requirements</a></p></li>
+<li><p><a class="reference internal" href="#parameters" id="id4">Parameters</a></p></li>
+<li><p><a class="reference internal" href="#attributes" id="id5">Attributes</a></p></li>
+<li><p><a class="reference internal" href="#notes" id="id6">Notes</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id7">See Also</a></p></li>
+<li><p><a class="reference internal" href="#examples" id="id8">Examples</a></p></li>
+<li><p><a class="reference internal" href="#return-values" id="id9">Return Values</a></p></li>
+<li><p><a class="reference internal" href="#status" id="id10">Status</a></p></li>
+</ul>
+</nav>
+<section id="deprecated">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">DEPRECATED</a><a class="headerlink" href="#deprecated" title="Link to this heading"></a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">Removed in<span class="colon">:</span></dt>
+<dd class="field-odd"><p>version 4.0.0</p>
+</dd>
+<dt class="field-even">Why<span class="colon">:</span></dt>
+<dd class="field-even"><p>This module uses docker-compose v1, which is End of Life since July 2022.</p>
+</dd>
+<dt class="field-odd">Alternative<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Migrate to <a class="reference internal" href="docker_compose_v2_module.html#ansible-collections-community-docker-docker-compose-v2-module"><span class="std std-ref">community.docker.docker_compose_v2</span></a></p>
+</dd>
+</dl>
+</section>
+<section id="synopsis">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Synopsis</a><a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Uses Docker Compose to start, shutdown and scale services. <strong>This module requires docker-compose &lt; 2.0.0.</strong> Use the <a class="reference internal" href="docker_compose_v2_module.html#ansible-collections-community-docker-docker-compose-v2-module"><span class="std std-ref">community.docker.docker_compose_v2</span></a> module for using the modern Docker compose CLI plugin.</p></li>
+<li><p>Configuration can be read from a <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code> file or inline using the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code> option.</p></li>
+<li><p>See the examples for more details.</p></li>
+<li><p>Supports check mode.</p></li>
+<li><p>This module was called <code class="docutils literal notranslate"><span class="pre">docker_service</span></code> before Ansible 2.8. The usage did not change.</p></li>
+</ul>
+</section>
+<section id="requirements">
+<span id="ansible-collections-community-docker-docker-compose-module-requirements"></span><h2><a class="toc-backref" href="#id3" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
+<p>The below requirements are needed on the host that executes this module.</p>
+<ul class="simple">
+<li><p>Docker API &gt;= 1.25</p></li>
+<li><p>Docker SDK for Python: Please note that the <a class="reference external" href="https://pypi.org/project/docker-py/">docker-py</a> Python module has been superseded by <a class="reference external" href="https://pypi.org/project/docker/">docker</a> (see <a class="reference external" href="https://github.com/docker/docker-py/issues/1310">here</a> for details). Note that both modules should *not* be installed at the same time. Also note that when both modules are installed and one of them is uninstalled, the other might no longer function and a reinstall of it is required.</p></li>
+<li><p><a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a> &gt;= 1.8.0, &lt; 7. Docker SDK for Python 7+ is incompatible to docker-compose v1.</p></li>
+<li><p>PyYAML &gt;= 3.11</p></li>
+<li><p>docker-compose &gt;= 1.7.0, &lt; 2.0.0</p></li>
+</ul>
+</section>
+<section id="parameters">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Parameters</a><a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<table class="longtable ansible-option-table docutils align-default" style="width: 100%">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Comments</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-api_version"></div>
+<div class="ansibleOptionAnchor" id="parameter-docker_api_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-docker-api-version"><span id="ansible-collections-community-docker-docker-compose-module-parameter-api-version"></span><strong>api_version</strong></p>
+<a class="ansibleOptionLink" href="#parameter-api_version" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: docker_api_version</span></p>
+<p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The version of the Docker API running on the Docker Host.</p>
+<p>Defaults to the latest version of the API supported by Docker SDK for Python and the docker daemon.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_API_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-build"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-build"><strong>build</strong></p>
+<a class="ansibleOptionLink" href="#parameter-build" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state=present</span></span></a></code> to always build images prior to starting the application.</p>
+<p>Same as running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> with the pull option.</p>
+<p>Images will only be rebuilt if Docker detects a change in the Dockerfile or build directory contents.</p>
+<p>Use the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-nocache"><span class="std std-ref"><span class="pre">nocache</span></span></a></strong></code> option to ignore the image cache when performing the build.</p>
+<p>If an existing image is replaced, services using the image will be recreated unless <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-recreate"><span class="std std-ref"><span class="pre">recreate=never</span></span></a></code>.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-ca_path"></div>
+<div class="ansibleOptionAnchor" id="parameter-ca_cert"></div>
+<div class="ansibleOptionAnchor" id="parameter-tls_ca_cert"></div>
+<div class="ansibleOptionAnchor" id="parameter-cacert_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-tls-ca-cert"><span id="ansible-collections-community-docker-docker-compose-module-parameter-cacert-path"></span><span id="ansible-collections-community-docker-docker-compose-module-parameter-ca-path"></span><span id="ansible-collections-community-docker-docker-compose-module-parameter-ca-cert"></span><strong>ca_path</strong></p>
+<a class="ansibleOptionLink" href="#parameter-ca_path" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: ca_cert, tls_ca_cert, cacert_path</span></p>
+<p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Use a CA certificate when performing server verification by providing the path to a CA certificate file.</p>
+<p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">ca.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
+<p>This option was called <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-ca-cert"><span class="std std-ref"><span class="pre">ca_cert</span></span></a></strong></code> and got renamed to <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-ca-path"><span class="std std-ref"><span class="pre">ca_path</span></span></a></strong></code> in community.docker 3.6.0. The old name has been added as an alias and can still be used.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-client_cert"></div>
+<div class="ansibleOptionAnchor" id="parameter-tls_client_cert"></div>
+<div class="ansibleOptionAnchor" id="parameter-cert_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-tls-client-cert"><span id="ansible-collections-community-docker-docker-compose-module-parameter-client-cert"></span><span id="ansible-collections-community-docker-docker-compose-module-parameter-cert-path"></span><strong>client_cert</strong></p>
+<a class="ansibleOptionLink" href="#parameter-client_cert" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_client_cert, cert_path</span></p>
+<p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Path to the client’s TLS certificate file.</p>
+<p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">cert.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-client_key"></div>
+<div class="ansibleOptionAnchor" id="parameter-tls_client_key"></div>
+<div class="ansibleOptionAnchor" id="parameter-key_path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-tls-client-key"><span id="ansible-collections-community-docker-docker-compose-module-parameter-key-path"></span><span id="ansible-collections-community-docker-docker-compose-module-parameter-client-key"></span><strong>client_key</strong></p>
+<a class="ansibleOptionLink" href="#parameter-client_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_client_key, key_path</span></p>
+<p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Path to the client’s TLS key file.</p>
+<p>If the value is not specified in the task and the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> is set, the file <code class="docutils literal notranslate"><span class="pre">key.pem</span></code> from the directory specified in the environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a> will be used.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-debug"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-debug"><strong>debug</strong></p>
+<a class="ansibleOptionLink" href="#parameter-debug" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Debug mode</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-definition"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-definition"><strong>definition</strong></p>
+<a class="ansibleOptionLink" href="#parameter-definition" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Compose file describing one or more services, networks and volumes.</p>
+<p>Mutually exclusive with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code> and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-files"><span class="std std-ref"><span class="pre">files</span></span></a></strong></code>.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-dependencies"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-dependencies"><strong>dependencies</strong></p>
+<a class="ansibleOptionLink" href="#parameter-dependencies" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>When <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state</span></span></a></strong></code> is <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> specify whether or not to include linked services.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">true</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-docker_host"></div>
+<div class="ansibleOptionAnchor" id="parameter-docker_url"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-docker-url"><span id="ansible-collections-community-docker-docker-compose-module-parameter-docker-host"></span><strong>docker_host</strong></p>
+<a class="ansibleOptionLink" href="#parameter-docker_host" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: docker_url</span></p>
+<p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The URL or Unix socket path used to connect to the Docker API. To connect to a remote host, provide the TCP connection string. For example, <code class="ansible-value docutils literal notranslate"><span class="pre">tcp://192.0.2.23:2376</span></code>. If TLS is used to encrypt the connection, the module will automatically replace <code class="docutils literal notranslate"><span class="pre">tcp</span></code> in the connection URL with <code class="docutils literal notranslate"><span class="pre">https</span></code>.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;unix:///var/run/docker.sock&quot;</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-env_file"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-env-file"><strong>env_file</strong></p>
+<a class="ansibleOptionLink" href="#parameter-env_file" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 1.9.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>By default environment files are loaded from a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file located directly under the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code> directory.</p>
+<p><code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-env-file"><span class="std std-ref"><span class="pre">env_file</span></span></a></strong></code> can be used to specify the path of a custom environment file instead.</p>
+<p>The path is relative to the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code> directory.</p>
+<p>Requires <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> version 1.25.0 or greater.</p>
+<p>Note: <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> versions <code class="docutils literal notranslate"><span class="pre">&lt;=1.28</span></code> load the env file from the current working directory of the <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> command rather than <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code>.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-files"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-files"><strong>files</strong></p>
+<a class="ansibleOptionLink" href="#parameter-files" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=path</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>List of Compose file names relative to <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code>. Overrides <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code>.</p>
+<p>Files are loaded and merged in the order given.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-hostname_check"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-hostname-check"><strong>hostname_check</strong></p>
+<a class="ansibleOptionLink" href="#parameter-hostname_check" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Whether or not to check the Docker daemon’s hostname against the name provided in the client certificate.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-nocache"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-nocache"><strong>nocache</strong></p>
+<a class="ansibleOptionLink" href="#parameter-nocache" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Use with the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-build"><span class="std std-ref"><span class="pre">build</span></span></a></strong></code> option to ignore the cache during the image build process.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-profiles"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-profiles"><strong>profiles</strong></p>
+<a class="ansibleOptionLink" href="#parameter-profiles" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 1.8.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>List of profiles to enable when starting services.</p>
+<p>Equivalent to <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">--profile</span></code>.</p>
+<p>Requires <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> version 1.28.0 or greater.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-project_name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-project-name"><strong>project_name</strong></p>
+<a class="ansibleOptionLink" href="#parameter-project_name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Provide a project name. If not provided, the project name is taken from the basename of <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code>.</p>
+<p>Required when <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code> is provided.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-project_src"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-project-src"><strong>project_src</strong></p>
+<a class="ansibleOptionLink" href="#parameter-project_src" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Path to a directory containing a <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code> file.</p>
+<p>Mutually exclusive with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code>.</p>
+<p>Required when no <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code> is provided.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-pull"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-pull"><strong>pull</strong></p>
+<a class="ansibleOptionLink" href="#parameter-pull" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state=present</span></span></a></code> to always pull images prior to starting the application.</p>
+<p>Same as running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">pull</span></code>.</p>
+<p>When a new image is pulled, services using the image will be recreated unless <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-recreate"><span class="std std-ref"><span class="pre">recreate=never</span></span></a></code>.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-recreate"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-recreate"><strong>recreate</strong></p>
+<a class="ansibleOptionLink" href="#parameter-recreate" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>By default containers will be recreated when their configuration differs from the service definition.</p>
+<p>Setting to <code class="ansible-value docutils literal notranslate"><span class="pre">never</span></code> ignores configuration differences and leaves existing containers unchanged.</p>
+<p>Setting to <code class="ansible-value docutils literal notranslate"><span class="pre">always</span></code> forces recreation of all existing containers.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;smart&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-remove_images"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-remove-images"><strong>remove_images</strong></p>
+<a class="ansibleOptionLink" href="#parameter-remove_images" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state=absent</span></span></a></code> to remove all images or only local images.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-remove_orphans"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-remove-orphans"><strong>remove_orphans</strong></p>
+<a class="ansibleOptionLink" href="#parameter-remove_orphans" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Remove containers for services not defined in the Compose file.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-remove_volumes"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-remove-volumes"><strong>remove_volumes</strong></p>
+<a class="ansibleOptionLink" href="#parameter-remove_volumes" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state=absent</span></span></a></code> to remove data volumes.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-restarted"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-restarted"><strong>restarted</strong></p>
+<a class="ansibleOptionLink" href="#parameter-restarted" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state=present</span></span></a></code> to restart all containers defined in the Compose file.</p>
+<p>If <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-services"><span class="std std-ref"><span class="pre">services</span></span></a></strong></code> is defined, only the containers listed there will be restarted.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-scale"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-scale"><strong>scale</strong></p>
+<a class="ansibleOptionLink" href="#parameter-scale" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>When <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state</span></span></a></strong></code> is <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> scale services. Provide a dictionary of key/value pairs where the key is the name of the service and the value is an integer count for the number of containers.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-services"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-services"><strong>services</strong></p>
+<a class="ansibleOptionLink" href="#parameter-services" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>When <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state</span></span></a></strong></code> is <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> run <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code> resp. <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">stop</span></code> (with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-stopped"><span class="std std-ref"><span class="pre">stopped=true</span></span></a></code>) resp. <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">restart</span></code> (with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-restarted"><span class="std std-ref"><span class="pre">restarted=true</span></span></a></code>) on a subset of services.</p>
+<p>If empty, which is the default, the operation will be performed on all services defined in the Compose file (or inline <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-definition"><span class="std std-ref"><span class="pre">definition</span></span></a></strong></code>).</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-ssl_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-ssl-version"><strong>ssl_version</strong></p>
+<a class="ansibleOptionLink" href="#parameter-ssl_version" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Provide a valid SSL version number. Default value determined by <a class="reference external" href="https://docs.python.org/3/library/ssl.html">SSL Python module</a>.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_SSL_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code></a> will be used instead.</p>
+<p><strong>Note:</strong> this option is no longer supported for Docker SDK for Python 7.0.0+. Specifying it with Docker SDK for Python 7.0.0 or newer will lead to an error.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-state"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-state"><strong>state</strong></p>
+<a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Desired state of the project.</p>
+<p>Specifying <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> is the same as running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code> resp. <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">stop</span></code> (with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-stopped"><span class="std std-ref"><span class="pre">stopped=true</span></span></a></code>) resp. <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">restart</span></code> (with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-restarted"><span class="std std-ref"><span class="pre">restarted=true</span></span></a></code>).</p>
+<p>Specifying <code class="ansible-value docutils literal notranslate"><span class="pre">absent</span></code> is the same as running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">down</span></code>.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;absent&quot;</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;present&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-stopped"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-stopped"><strong>stopped</strong></p>
+<a class="ansibleOptionLink" href="#parameter-stopped" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Use with <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-state"><span class="std std-ref"><span class="pre">state=present</span></span></a></code> to stop all containers defined in the Compose file.</p>
+<p>If <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-services"><span class="std std-ref"><span class="pre">services</span></span></a></strong></code> is defined, only the containers listed there will be stopped.</p>
+<p>Requires <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> version 1.17.0 or greater for full support. For older versions, the services will first be started and then stopped when the service is supposed to be created as stopped.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-timeout"><strong>timeout</strong></p>
+<a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Timeout in seconds for container shutdown when attached or when containers are already running.</p>
+<p>By default <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> will use a <code class="ansible-value docutils literal notranslate"><span class="pre">10</span></code> seconds timeout unless <code class="docutils literal notranslate"><span class="pre">default_grace_period</span></code> is defined for a particular service in the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-project-src"><span class="std std-ref"><span class="pre">project_src</span></span></a></strong></code>.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-tls"><strong>tls</strong></p>
+<a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS without verifying the authenticity of the Docker host server. Note that if <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-validate-certs"><span class="std std-ref"><span class="pre">validate_certs</span></span></a></strong></code> is set to <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code> as well, it will take precedence.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-tls-hostname"><strong>tls_hostname</strong></p>
+<a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>When verifying the authenticity of the Docker Host server, provide the expected name of the server.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p>Note that this option had a default value <code class="ansible-value docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
+<p><strong>Note:</strong> this option is no longer supported for Docker SDK for Python 7.0.0+. Specifying it with Docker SDK for Python 7.0.0 or newer will lead to an error.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-use_ssh_client"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-use-ssh-client"><strong>use_ssh_client</strong></p>
+<a class="ansibleOptionLink" href="#parameter-use_ssh_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 1.5.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Currently ignored for this module, but might suddenly be supported later on.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
+<div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-compose-module-parameter-tls-verify"></span><strong>validate_certs</strong></p>
+<a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
+<p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Secure the connection to the API by using TLS and verifying the authenticity of the Docker host server.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Attributes</a><a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="longtable ansible-option-table docutils align-default" style="width: 100%">
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Support</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="attribute-action_group"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-attribute-action-group"><strong>action_group</strong></p>
+<a class="ansibleOptionLink" href="#attribute-action_group" title="Permalink to this attribute"></a></div></td>
+<td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-property">Action groups:</strong> <strong class="ansible-attribute-support-full">community.docker.docker</strong>, <strong class="ansible-attribute-support-full">docker</strong></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Use <code class="docutils literal notranslate"><span class="pre">group/docker</span></code> or <code class="docutils literal notranslate"><span class="pre">group/community.docker.docker</span></code> in <code class="docutils literal notranslate"><span class="pre">module_defaults</span></code> to set defaults for this module.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="attribute-check_mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-attribute-check-mode"><strong>check_mode</strong></p>
+<a class="ansibleOptionLink" href="#attribute-check_mode" title="Permalink to this attribute"></a></div></td>
+<td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-full">full</strong></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Can run in <code class="docutils literal notranslate"><span class="pre">check_mode</span></code> and return changed status prediction without modifying target.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="attribute-diff_mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-attribute-diff-mode"><strong>diff_mode</strong></p>
+<a class="ansibleOptionLink" href="#attribute-diff_mode" title="Permalink to this attribute"></a></div></td>
+<td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-none">none</strong></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Will return details on what has changed (or possibly needs changing in <code class="docutils literal notranslate"><span class="pre">check_mode</span></code>), when in diff mode.</p>
+</div></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="notes">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Notes</a><a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Connect to the Docker daemon by providing parameters with each task or by defining environment variables. You can define <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_API_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_SSL_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> and <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code></a>. If you are using docker machine, run the script shipped with the product that sets up the environment. It will set these variables for you. See <a class="reference external" href="https://docs.docker.com/machine/reference/env/">https://docs.docker.com/machine/reference/env/</a> for more details.</p></li>
+<li><p>When connecting to Docker daemon with TLS, you might need to install additional Python packages. For the Docker SDK for Python, version 2.4 or newer, this can be done by installing <code class="docutils literal notranslate"><span class="pre">docker[tls]</span></code> with <a class="reference external" href="https://docs.ansible.com/ansible/devel/collections/ansible/builtin/pip_module.html#ansible-collections-ansible-builtin-pip-module" title="(in Ansible vdevel)"><span class="xref std std-ref">ansible.builtin.pip</span></a>.</p></li>
+<li><p>Note that the Docker SDK for Python only allows to specify the path to the Docker configuration for very few functions. In general, it will use <code class="docutils literal notranslate"><span class="pre">$HOME/.docker/config.json</span></code> if the <code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CONFIG</span></code> environment variable is not specified, and use <code class="docutils literal notranslate"><span class="pre">$DOCKER_CONFIG/config.json</span></code> otherwise.</p></li>
+<li><p>This module uses the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a> to communicate with the Docker daemon.</p></li>
+</ul>
+</div>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">See Also</a><a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="docker_compose_v2_module.html#ansible-collections-community-docker-docker-compose-v2-module"><span class="std std-ref">community.docker.docker_compose_v2</span></a></dt><dd><p>Manage multi-container Docker applications with Docker Compose CLI plugin.</p>
+</dd>
+</dl>
+</div>
+</section>
+<section id="examples">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="c1"># Examples use the django example at https://docs.docker.com/compose/django. Follow it to create the</span>
+<span class="c1"># flask directory</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run using a project directory</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Tear down existing services</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create and start services</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show results</span>
+<span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run `docker-compose up` again</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show results</span>
+<span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">that</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not output.changed</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Stop all services</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">stopped</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show results</span>
+<span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Verify that web and db services are not running</span>
+<span class="w">      </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">that</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">output.services.web.flask_web_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">output.services.db.flask_db_1.state.running&quot;</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Restart services</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">restarted</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show results</span>
+<span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Verify that web and db services are running</span>
+<span class="w">      </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">that</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.web.flask_web_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.db.flask_db_1.state.running&quot;</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Scale the web service to 2</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Scale the web service to two instances</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">scale</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">web</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show results</span>
+<span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run with inline Compose file version 2</span>
+<span class="w">  </span><span class="c1"># https://docs.docker.com/compose/compose-file/compose-file-v2/</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Remove flask project</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Start flask project with inline definition</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">definition</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2&#39;</span>
+<span class="w">          </span><span class="nt">services</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">db</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="w">            </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">playbook_dir</span> <span class="cp">}}</span><span class="s">/flask&quot;</span>
+<span class="w">              </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;python</span><span class="nv"> </span><span class="s">manage.py</span><span class="nv"> </span><span class="s">runserver</span><span class="nv"> </span><span class="s">0.0.0.0:8000&quot;</span>
+<span class="w">              </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">playbook_dir</span> <span class="cp">}}</span><span class="s">/flask:/code&quot;</span>
+<span class="w">              </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8000:8000&quot;</span>
+<span class="w">              </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show results</span>
+<span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Verify that the db and web services are running</span>
+<span class="w">      </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">that</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.web.flask_web_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.db.flask_db_1.state.running&quot;</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run with inline Compose file version 1</span>
+<span class="w">  </span><span class="c1"># https://docs.docker.com/compose/compose-file/compose-file-v1/</span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">  </span><span class="nt">gather_facts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Remove flask project</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_src</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Start flask project with inline definition</span>
+<span class="w">      </span><span class="nt">community.docker.docker_compose</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">project_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flask</span>
+<span class="w">        </span><span class="nt">definition</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">db</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="w">            </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">playbook_dir</span> <span class="cp">}}</span><span class="s">/flask&quot;</span>
+<span class="w">              </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;python</span><span class="nv"> </span><span class="s">manage.py</span><span class="nv"> </span><span class="s">runserver</span><span class="nv"> </span><span class="s">0.0.0.0:8000&quot;</span>
+<span class="w">              </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">playbook_dir</span> <span class="cp">}}</span><span class="s">/flask:/code&quot;</span>
+<span class="w">              </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8000:8000&quot;</span>
+<span class="w">              </span><span class="nt">links</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span>
+<span class="w">      </span><span class="nt">register</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Show results</span>
+<span class="w">      </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">var</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Verify that web and db services are running</span>
+<span class="w">      </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">that</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.web.flask_web_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.db.flask_db_1.state.running&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="return-values">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Return Values</a><a class="headerlink" href="#return-values" title="Link to this heading"></a></h2>
+<p>Common return values are documented <a class="reference external" href="https://docs.ansible.com/ansible/devel/reference_appendices/common_return_values.html#common-return-values" title="(in Ansible vdevel)"><span class="xref std std-ref">here</span></a>, the following are the fields unique to this module:</p>
+<table class="longtable ansible-option-table docutils align-default" style="width: 100%">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-actions"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-actions"><strong>actions</strong></p>
+<a class="ansibleOptionLink" href="#return-actions" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">complex</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Provides the actions to be taken on each service as determined by compose.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> when in check mode or <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-module-parameter-debug"><span class="std std-ref"><span class="pre">debug=true</span></span></a></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-actions/service_name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-actions-service-name"><strong>service_name</strong></p>
+<a class="ansibleOptionLink" href="#return-actions/service_name" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">complex</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Name of the service.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> always</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-actions/service_name/action"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-actions-service-name-action"><strong>action</strong></p>
+<a class="ansibleOptionLink" href="#return-actions/service_name/action" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A descriptive name of the action to be performed on the service’s containers.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> always</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-actions/service_name/action/id"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-actions-service-name-action-id"><strong>id</strong></p>
+<a class="ansibleOptionLink" href="#return-actions/service_name/action/id" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>the container’s long ID</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> always</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-actions/service_name/action/name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-actions-service-name-action-name"><strong>name</strong></p>
+<a class="ansibleOptionLink" href="#return-actions/service_name/action/name" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>the container’s name</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> always</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-actions/service_name/action/short_id"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-actions-service-name-action-short-id"><strong>short_id</strong></p>
+<a class="ansibleOptionLink" href="#return-actions/service_name/action/short_id" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>the container’s short ID</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> always</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-actions/service_name/built_image"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-actions-service-name-built-image"><strong>built_image</strong></p>
+<a class="ansibleOptionLink" href="#return-actions/service_name/built_image" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">complex</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Provides image details when a new image is built for the service.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> on image build</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-actions/service_name/built_image/id"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-actions-service-name-built-image-id"><strong>id</strong></p>
+<a class="ansibleOptionLink" href="#return-actions/service_name/built_image/id" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>image hash</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> always</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-actions/service_name/built_image/name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-actions-service-name-built-image-name"><strong>name</strong></p>
+<a class="ansibleOptionLink" href="#return-actions/service_name/built_image/name" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>name of the image</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> always</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-actions/service_name/pulled_image"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-actions-service-name-pulled-image"><strong>pulled_image</strong></p>
+<a class="ansibleOptionLink" href="#return-actions/service_name/pulled_image" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">complex</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Provides image details when a new image is pulled for the service.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> on image pull</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-actions/service_name/pulled_image/id"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-actions-service-name-pulled-image-id"><strong>id</strong></p>
+<a class="ansibleOptionLink" href="#return-actions/service_name/pulled_image/id" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>image hash</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> always</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-actions/service_name/pulled_image/name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-actions-service-name-pulled-image-name"><strong>name</strong></p>
+<a class="ansibleOptionLink" href="#return-actions/service_name/pulled_image/name" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>name of the image</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> always</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services"><strong>services</strong></p>
+<a class="ansibleOptionLink" href="#return-services" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">complex</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>A dictionary mapping the service’s name to a dictionary of containers.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name"><strong>container_name</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">complex</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Name of the container. Format is <code class="docutils literal notranslate"><span class="pre">project_service_#</span></code>.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/cmd"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-cmd"><strong>cmd</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/cmd" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>One or more commands to be executed in the container.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[&quot;postgres&quot;]</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/image"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-image"><strong>image</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/image" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Name of the image from which the container was built.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;postgres&quot;</span></code></p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/labels"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-labels"><strong>labels</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/labels" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Meta data assigned to the container.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">{&quot;...&quot;:</span> <span class="pre">null}</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/networks"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-networks"><strong>networks</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/networks" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Contains a dictionary for each network to which the container is a member.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/networks/aliases"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-networks-aliases"><strong>aliases</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/networks/aliases" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Aliases assigned to the container by the network.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">[&quot;db&quot;]</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/networks/globalIPv6"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-networks-globalipv6"><strong>globalIPv6</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/networks/globalIPv6" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>IPv6 address assigned to the container.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/networks/globalIPv6PrefixLen"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-networks-globalipv6prefixlen"><strong>globalIPv6PrefixLen</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/networks/globalIPv6PrefixLen" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>IPv6 subnet length.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">0</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/networks/IPAddress"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-networks-ipaddress"><strong>IPAddress</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/networks/IPAddress" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The IP address assigned to the container.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;172.17.0.2&quot;</span></code></p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/networks/IPPrefixLen"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-networks-ipprefixlen"><strong>IPPrefixLen</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/networks/IPPrefixLen" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Number of bits used by the subnet.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">16</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/networks/links"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-networks-links"><strong>links</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/networks/links" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>List of container names to which this container is linked.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/networks/macAddress"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-networks-macaddress"><strong>macAddress</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/networks/macAddress" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Mac Address assigned to the virtual NIC.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;02:42:ac:11:00:02&quot;</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/state"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-state"><strong>state</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/state" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Information regarding the current disposition of the container.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/state/running"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-state-running"><strong>running</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/state/running" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Whether or not the container is up with a running process.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">true</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-services/container_name/state/status"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-module-return-services-container-name-state-status"><strong>status</strong></p>
+<a class="ansibleOptionLink" href="#return-services/container_name/state/status" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Description of the running state.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;running&quot;</span></code></p>
+</div></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="status">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Status</a><a class="headerlink" href="#status" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>This module will be removed in version 4.0.0.
+<em>[deprecated]</em></p></li>
+<li><p>For more information see <a class="reference internal" href="#deprecated">DEPRECATED</a>.</p></li>
+</ul>
+<section id="authors">
+<h3>Authors<a class="headerlink" href="#authors" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Chris Houseknecht (&#64;chouseknecht)</p></li>
+</ul>
+</section>
+<section id="collection-links">
+<h3>Collection links<a class="headerlink" href="#collection-links" title="Link to this heading"></a></h3>
+<ul class="ansible-links">
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://github.com/ansible-collections/community.docker/issues" rel="noopener external" target="_blank">Issue Tracker</a></span></li>
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://github.com/ansible-collections/community.docker" rel="noopener external" target="_blank">Repository (Sources)</a></span></li>
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://github.com/ansible-collections/community.docker/issues/new?assignees=&amp;labels=&amp;template=bug_report.md" rel="noopener external" target="_blank">Submit a bug report</a></span></li>
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://github.com/ansible-collections/community.docker/issues/new?assignees=&amp;labels=&amp;template=feature_request.md" rel="noopener external" target="_blank">Request a feature</a></span></li>
+<li><span><a class="reference internal" href="index.html#communication-for-community-docker"><span class="std std-ref">Communication</span></a></span></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          
+
+<footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="current_container_facts_module.html" class="btn btn-neutral float-left" title="community.docker.current_container_facts module – Return facts about whether the module runs in a container" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="docker_compose_v2_module.html" class="btn btn-neutral float-right" title="community.docker.docker_compose_v2 module – Manage multi-container Docker applications with Docker Compose CLI plugin" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Community.Docker Contributors.</p>
+  </div>
+
+  
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script><!-- extra footer elements for Ansible beyond RTD Sphinx Theme -->
+
+</body>
+</html>
