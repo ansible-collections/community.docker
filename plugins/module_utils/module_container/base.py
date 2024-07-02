@@ -895,6 +895,11 @@ OPTION_DEVICE_REQUESTS = (
     ))
 )
 
+OPTION_DEVICE_CGROUP_RULES = (
+    OptionGroup()
+    .add_option('device_cgroup_rules', type='list', elements='str')
+)
+
 OPTION_DNS_SERVERS = (
     OptionGroup()
     .add_option('dns_servers', type='list', elements='str')
@@ -1194,6 +1199,7 @@ OPTIONS = [
     OPTION_DEVICE_READ_IOPS,
     OPTION_DEVICE_WRITE_IOPS,
     OPTION_DEVICE_REQUESTS,
+    OPTION_DEVICE_CGROUP_RULES,
     OPTION_DNS_SERVERS,
     OPTION_DNS_OPTS,
     OPTION_DNS_SEARCH_DOMAINS,
