@@ -402,4 +402,5 @@ options:
         deprecated:
             why: This was necessary a long time ago to handle problems with older TLS/SSL versions. It is no longer necessary nowadays.
             version: 4.0.0
+            alternatives: None.
 '''

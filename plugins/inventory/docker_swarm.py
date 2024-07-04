@@ -81,6 +81,7 @@ DOCUMENTATION = '''
             deprecated:
                 why: This was necessary a long time ago to handle problems with SSL versions. It is no longer necessary nowadays.
                 version: 4.0.0
+                alternatives: None.
         api_version:
             description:
                 - The version of the Docker API running on the Docker Host.
