@@ -299,6 +299,12 @@ options:
           - Driver-specific options.
         type: dict
     version_added: 0.1.0
+  device_cgroup_rules:
+    description:
+      - List of cgroup rules to apply to the container.
+    type: list
+    elements: str
+    version_added: 3.11.0
   dns_opts:
     description:
       - List of DNS options.

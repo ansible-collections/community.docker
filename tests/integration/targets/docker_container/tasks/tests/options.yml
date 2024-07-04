@@ -1144,6 +1144,66 @@
   when: docker_api_version is version('1.40', '<')
 
 ####################################################################
+## device_cgroup_rules ###################################################
+####################################################################
+
+- name: device_cgroup_rules
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    force_kill: true
+    device_cgroup_rules:
+    - "c 42:* rmw"
+  register: device_cgroup_rules_1
+  ignore_errors: true
+
+- name: cgroupns_mode (idempotency)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    force_kill: true
+    device_cgroup_rules:
+    - "c 42:* rmw"
+  register: device_cgroup_rules_2
+  ignore_errors: true
+
+- name: cgroupns_mode (changed)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    force_kill: true
+    device_cgroup_rules:
+    - "c 189:* rmw"
+  register: device_cgroup_rules_3
+  ignore_errors: true
+
+- name: cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: true
+  diff: false
+
+- assert:
+    that:
+    - device_cgroup_rules_1 is changed
+    - device_cgroup_rules_2 is not changed
+    - device_cgroup_rules_3 is changed
+  when: docker_api_version is version('1.28', '>=')
+- assert:
+    that:
+    - device_cgroup_rules_1 is failed
+    - |
+      ('API version is ' ~ docker_api_version ~ '.') in device_cgroup_rules_1.msg and 'Minimum version required is 1.28 ' in device_cgroup_rules_1.msg
+  when: docker_api_version is version('1.28', '<')
+
+####################################################################
 ## dns_opts ########################################################
 ####################################################################
 
