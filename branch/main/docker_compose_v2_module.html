@@ -674,8 +674,13 @@ will change over time. New releases of the Docker compose CLI plugin can break t
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Verify that web and db services are not running</span>
 <span class="w">      </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">that</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">output.services.web.flask_web_1.state.running&quot;</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;not</span><span class="nv"> </span><span class="s">output.services.db.flask_db_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web_container.State != &#39;running&#39;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db_container.State != &#39;running&#39;</span>
+<span class="w">      </span><span class="nt">vars</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">web_container</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
+<span class="w">          </span><span class="cp">{{</span> <span class="nv">output.containers</span> <span class="o">|</span> <span class="nf">selectattr</span><span class="o">(</span><span class="s2">&quot;Service&quot;</span><span class="o">,</span> <span class="s2">&quot;equalto&quot;</span><span class="o">,</span> <span class="s2">&quot;web&quot;</span><span class="o">)</span> <span class="o">|</span> <span class="nf">first</span> <span class="cp">}}</span>
+<span class="w">        </span><span class="nt">db_container</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
+<span class="w">          </span><span class="cp">{{</span> <span class="nv">output.containers</span> <span class="o">|</span> <span class="nf">selectattr</span><span class="o">(</span><span class="s2">&quot;Service&quot;</span><span class="o">,</span> <span class="s2">&quot;equalto&quot;</span><span class="o">,</span> <span class="s2">&quot;db&quot;</span><span class="o">)</span> <span class="o">|</span> <span class="nf">first</span> <span class="cp">}}</span>
 
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Restart services</span>
 <span class="w">      </span><span class="nt">community.docker.docker_compose_v2</span><span class="p">:</span>
@@ -690,8 +695,13 @@ will change over time. New releases of the Docker compose CLI plugin can break t
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Verify that web and db services are running</span>
 <span class="w">      </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">that</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.web.flask_web_1.state.running&quot;</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;output.services.db.flask_db_1.state.running&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web_container.State == &#39;running&#39;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db_container.State == &#39;running&#39;</span>
+<span class="w">      </span><span class="nt">vars</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">web_container</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
+<span class="w">          </span><span class="cp">{{</span> <span class="nv">output.containers</span> <span class="o">|</span> <span class="nf">selectattr</span><span class="o">(</span><span class="s2">&quot;Service&quot;</span><span class="o">,</span> <span class="s2">&quot;equalto&quot;</span><span class="o">,</span> <span class="s2">&quot;web&quot;</span><span class="o">)</span> <span class="o">|</span> <span class="nf">first</span> <span class="cp">}}</span>
+<span class="w">        </span><span class="nt">db_container</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
+<span class="w">          </span><span class="cp">{{</span> <span class="nv">output.containers</span> <span class="o">|</span> <span class="nf">selectattr</span><span class="o">(</span><span class="s2">&quot;Service&quot;</span><span class="o">,</span> <span class="s2">&quot;equalto&quot;</span><span class="o">,</span> <span class="s2">&quot;db&quot;</span><span class="o">)</span> <span class="o">|</span> <span class="nf">first</span> <span class="cp">}}</span>
 </pre></div>
 </div>
 </section>
