@@ -129,9 +129,9 @@ EXAMPLES = '''
     container: mydata
     path: /home/user/bin/runme.o
     container_path: /bin/runme
-    owner: 0  # root
-    group: 0  # root
-    mode: 0o755  # readable and executable by all users, writable by root
+    owner_id: 0  # root
+    group_id: 0  # root
+    mode: 0755  # readable and executable by all users, writable by root
 '''
 
 RETURN = '''
