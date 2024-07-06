@@ -194,8 +194,13 @@ EXAMPLES = '''
     - name: Verify that web and db services are not running
       ansible.builtin.assert:
         that:
-          - "not output.services.web.flask_web_1.state.running"
-          - "not output.services.db.flask_db_1.state.running"
+          - web_container.State != 'running'
+          - db_container.State != 'running'
+      vars:
+        web_container: >-
+          {{ output.containers | selectattr("Service", "equalto", "web") | first }}
+        db_container: >-
+          {{ output.containers | selectattr("Service", "equalto", "db") | first }}
 
     - name: Restart services
       community.docker.docker_compose_v2:
@@ -210,8 +215,13 @@ EXAMPLES = '''
     - name: Verify that web and db services are running
       ansible.builtin.assert:
         that:
-          - "output.services.web.flask_web_1.state.running"
-          - "output.services.db.flask_db_1.state.running"
+          - web_container.State == 'running'
+          - db_container.State == 'running'
+      vars:
+        web_container: >-
+          {{ output.containers | selectattr("Service", "equalto", "web") | first }}
+        db_container: >-
+          {{ output.containers | selectattr("Service", "equalto", "db") | first }}
 '''
 
 RETURN = '''
