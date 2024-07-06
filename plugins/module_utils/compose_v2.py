@@ -202,9 +202,9 @@ _RE_SKIPPED_EVENT = re.compile(
     r'\s*'
     r'(?P<resource_id>\S+)'
     r'\s+'
-    r'Skipped -'
+    r'Skipped(?: -'
     r'\s*'
-    r'(?P<msg>\S(?:|.*\S))'
+    r'(?P<msg>\S(?:|.*\S))|\s*)'
     r'$'
 )
 
