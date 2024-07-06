@@ -217,6 +217,36 @@ EXTRA_TEST_CASES = [
             'dummy4: Foo bar',
         ],
     ),
+    (
+        # https://github.com/ansible-collections/community.docker/issues/911
+        '2.28.1-image-pull-skipped',
+        '2.28.1',
+        False,
+        " bash_1 Skipped \n"
+        " bash_2 Pulling \n"
+        " bash_2 Pulled \n",
+        [
+            Event(
+                'unknown',
+                'bash_1',
+                'Skipped',
+                None,
+            ),
+            Event(
+                'service',
+                'bash_2',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'bash_2',
+                'Pulled',
+                None,
+            ),
+        ],
+        [],
+    ),
 ]
 
 _ALL_TEST_CASES = EVENT_TEST_CASES + EXTRA_TEST_CASES
