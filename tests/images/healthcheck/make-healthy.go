@@ -31,5 +31,5 @@ func main() {
 	} else {
 		state = []byte("unhealthy")
 	}
-	os.WriteFile("health.txt", state, 0644)
+	os.WriteFile("/health.txt", state, 0644)
 }

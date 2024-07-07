@@ -19,3 +19,4 @@ docker_test_image_registry_nginx: quay.io/ansible/docker-test-containers:nginx-a
 docker_test_image_registry: registry:2.6.1
 docker_test_image_simple_1: ghcr.io/ansible-collections/simple-1:tag
 docker_test_image_simple_2: ghcr.io/ansible-collections/simple-2:tag
+docker_test_image_healthcheck: ghcr.io/ansible-collections/healthcheck:check

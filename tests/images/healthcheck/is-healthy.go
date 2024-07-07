@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	data, err := os.ReadFile("health.txt")
+	data, err := os.ReadFile("/health.txt")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error while reading health status: %s\n", err)
 		os.Exit(1)
