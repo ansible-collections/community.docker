@@ -39,6 +39,9 @@ jobs:
           - name: simple-2
             tag: tag
             tag-as-latest: true
+          - name: healthcheck
+            tag: check
+            tag-as-latest: true
 
     steps:
       - name: Check out repository
