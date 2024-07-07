@@ -27,7 +27,7 @@ for ARCH in amd64 arm64; do
         buildah copy "${WORKING_CONTAINER}" "${PROGRAM}-${ARCH}" "/${PROGRAM}"
     done
     buildah config --entrypoint '["/main"]' "${WORKING_CONTAINER}"
-    buildah config --healthcheck /is-healthy "${WORKING_CONTAINER}"
+    buildah config --healthcheck 'CMD /is-healthy' "${WORKING_CONTAINER}"
     buildah config --healthcheck-interval 1s "${WORKING_CONTAINER}"
     buildah config --healthcheck-retries 1 "${WORKING_CONTAINER}"
     buildah config --healthcheck-start-period 10s "${WORKING_CONTAINER}"
