@@ -247,7 +247,7 @@ class ContainerManager(DockerBaseClass):
                 self.fail(msg.format(container_id, state))
             # Wait
             if max_wait is not None:
-                if total_wait > max_wait:
+                if total_wait > max_wait or delay < 1E-4:
                     msg = 'Timeout of {1} seconds exceeded while waiting for container "{0}"'
                     self.fail(msg.format(container_id, max_wait))
                 if total_wait + delay > max_wait:
