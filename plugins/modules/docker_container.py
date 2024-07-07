@@ -381,6 +381,7 @@ options:
       - "O(healthcheck.interval), O(healthcheck.timeout), O(healthcheck.start_period), and O(healthcheck.start_interval) are specified as durations.
         They accept duration as a string in a format that look like: V(5h34m56s), V(1m30s), and so on.
         The supported units are V(us), V(ms), V(s), V(m) and V(h)."
+      - See also O(state=healthy).
     type: dict
     suboptions:
       test:
@@ -919,6 +920,8 @@ options:
         with the requested config.'
       - 'V(started) - Asserts that the container is first V(present), and then if the container is not running moves it to a running
         state. Use O(restart) to force a matching container to be stopped and restarted.'
+      - V(healthy) - Asserts that the container is V(present) and V(started), and is actually healthy as well.
+        The time waited can be controlled with O(healthy_wait_timeout). This state has been added in community.docker 3.11.0.
       - 'V(stopped) - Asserts that the container is first V(present), and then if the container is running moves it to a stopped
         state.'
       - "To control what will be taken into account when comparing configuration, see the O(comparisons) option. To avoid that the
@@ -932,12 +935,23 @@ options:
     choices:
       - absent
       - present
+      - healthy
       - stopped
       - started
   stop_signal:
     description:
       - Override default signal used to stop the container.
     type: str
+  healthy_wait_timeout:
+    description:
+      - When waiting for the container to become healthy if O(state=healthy), this option controls for how long
+        the module waits until the container's state becomes healthy.
+      - The timeout is specified in seconds. The default, V(300), is 5 minutes.
+      - Set this to 0 or a negative value to wait however long it takes.
+        Note that depending on the container this can result in the module not terminating.
+    default: 300
+    type: float
+    version_added: 3.11.0
   stop_timeout:
     description:
       - Number of seconds to wait for the container to stop before sending C(SIGKILL).
