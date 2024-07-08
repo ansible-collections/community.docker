@@ -11,7 +11,6 @@ docker_test_image_digest_base: quay.io/ansible/docker-test-containers
 docker_test_image_hello_world: quay.io/ansible/docker-test-containers:hello-world
 docker_test_image_hello_world_image_id: sha256:bf756fb1ae65adf866bd8c456593cd24beb6a0a061dedf42b26a993176745f6b
 docker_test_image_hello_world_base: quay.io/ansible/docker-test-containers
-docker_test_image_hello_world_platform: docker.io/library/hello-world:latest
 docker_test_image_busybox: quay.io/ansible/docker-test-containers:busybox
 docker_test_image_alpine: quay.io/ansible/docker-test-containers:alpine3.8
 docker_test_image_alpine_different: quay.io/ansible/docker-test-containers:alpine3.7
