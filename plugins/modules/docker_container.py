@@ -944,10 +944,10 @@ options:
     type: str
   healthy_wait_timeout:
     description:
-      - When waiting for the container to become healthy if O(state=healthy), this option controls for how long
-        the module waits until the container's state becomes healthy.
+      - When waiting for the container to become healthy if O(state=healthy), this option controls how long
+        the module waits until the container state becomes healthy.
       - The timeout is specified in seconds. The default, V(300), is 5 minutes.
-      - Set this to 0 or a negative value to wait however long it takes.
+      - Set this to 0 or a negative value to wait indefinitely.
         Note that depending on the container this can result in the module not terminating.
     default: 300
     type: float
