@@ -13,7 +13,7 @@ IMAGE_NAME="${1:-localhost/$(basename "$(pwd)"):latest}"
 podman manifest rm "${IMAGE_NAME}" || true
 podman image rm "${IMAGE_NAME}" || true
 buildah manifest create "${IMAGE_NAME}"
-for ARCH in amd64 arm64; do
+for ARCH in amd64 arm64 386; do
     rm -f "main-${ARCH}"
     GOARCH="${ARCH}" go build -ldflags "-s -w" -o "main-${ARCH}" main.go
 

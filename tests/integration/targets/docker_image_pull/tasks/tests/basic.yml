@@ -5,7 +5,7 @@
 
 - name: Basic pull tests
   vars:
-    image_name: "{{ docker_test_image_hello_world_platform }}"
+    image_name: "{{ docker_test_image_simple_1 }}"
   block:
     - name: Make sure image is not there
       docker_image_remove:
