@@ -808,9 +808,9 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <a class="ansibleOptionLink" href="#parameter-healthy_wait_timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">float</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 3.11.0</em></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>When waiting for the container to become healthy if <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-state"><span class="std std-ref"><span class="pre">state=healthy</span></span></a></code>, this option controls for how long the module waits until the container’s state becomes healthy.</p>
+<td><div class="ansible-option-cell"><p>When waiting for the container to become healthy if <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-state"><span class="std std-ref"><span class="pre">state=healthy</span></span></a></code>, this option controls how long the module waits until the container state becomes healthy.</p>
 <p>The timeout is specified in seconds. The default, <code class="ansible-value docutils literal notranslate"><span class="pre">300</span></code>, is 5 minutes.</p>
-<p>Set this to 0 or a negative value to wait however long it takes. Note that depending on the container this can result in the module not terminating.</p>
+<p>Set this to 0 or a negative value to wait indefinitely. Note that depending on the container this can result in the module not terminating.</p>
 <p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">300.0</span></code></p>
 </div></td>
 </tr>
