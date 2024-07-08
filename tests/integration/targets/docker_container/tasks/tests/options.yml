@@ -3605,13 +3605,13 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
 ## platform ########################################################
 ####################################################################
 
-- name: Remove hello-world image
+- name: Remove test image
   docker_image_remove:
-    name: "{{ docker_test_image_hello_world_platform }}"
+    name: "{{ docker_test_image_simple_1 }}"
 
 - name: platform
   docker_container:
-    image: "{{ docker_test_image_hello_world_platform }}"
+    image: "{{ docker_test_image_simple_1 }}"
     name: "{{ cname }}"
     state: present
     pull: true
@@ -3624,7 +3624,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
   # Docker daemon only returns 'linux' as the platform for the container,
   # so this has to be handled correctly by our additional code
   docker_container:
-    image: "{{ docker_test_image_hello_world_platform }}"
+    image: "{{ docker_test_image_simple_1 }}"
     name: "{{ cname }}"
     state: present
     platform: linux/amd64
@@ -3634,7 +3634,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
 
 - name: platform (idempotency with shorter name)
   docker_container:
-    image: "{{ docker_test_image_hello_world_platform }}"
+    image: "{{ docker_test_image_simple_1 }}"
     name: "{{ cname }}"
     state: present
     platform: linux
@@ -3644,7 +3644,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
 
 - name: platform (idempotency with shorter name)
   docker_container:
-    image: "{{ docker_test_image_hello_world_platform }}"
+    image: "{{ docker_test_image_simple_1 }}"
     name: "{{ cname }}"
     state: present
     platform: amd64
@@ -3654,7 +3654,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
 
 - name: platform (changed)
   docker_container:
-    image: "{{ docker_test_image_hello_world_platform }}"
+    image: "{{ docker_test_image_simple_1 }}"
     name: "{{ cname }}"
     state: present
     pull: true
@@ -3669,7 +3669,7 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
 
 - name: platform (idempotency)
   docker_container:
-    image: "{{ docker_test_image_hello_world_platform }}"
+    image: "{{ docker_test_image_simple_1 }}"
     name: "{{ cname }}"
     state: present
     pull: true
