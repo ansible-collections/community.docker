@@ -1,0 +1,64 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- name: Registering container name
+  set_fact:
+    cname: "{{ cname_prefix ~ '-hi' }}"
+- name: Registering container name
+  set_fact:
+    cnames: "{{ cnames + [cname] }}"
+
+- name: Prepare container
+  docker_container:
+    name: "{{ cname }}"
+    image: "{{ docker_test_image_healthcheck }}"
+    command: '10m'
+    state: stopped
+  register: healthy_1
+
+- debug: var=healthy_1.container.State
+
+- name: Start container (not healthy in time)
+  docker_container:
+    name: "{{ cname }}"
+    state: healthy
+    healthy_wait_timeout: 1
+  register: healthy_2
+  ignore_errors: true
+
+- debug: var=healthy_2.container.State
+
+- name: Prepare container
+  docker_container:
+    name: "{{ cname }}"
+    image: "{{ docker_test_image_healthcheck }}"
+    command: '10m 5s'
+    state: stopped
+    force_kill: true
+  register: healthy_3
+
+- debug: var=healthy_3.container.State
+
+- name: Start container (healthy in time)
+  docker_container:
+    name: "{{ cname }}"
+    state: healthy
+    healthy_wait_timeout: 10
+  register: healthy_4
+
+- debug: var=healthy_4.container.State
+
+- name: Cleanup
+  docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: true
+- assert:
+    that:
+      - healthy_2 is failed
+      - healthy_2.container.State.Health.Status == "starting"
+      - healthy_2.msg.startswith("Timeout of 1.0 seconds exceeded while waiting for container ")
+      - healthy_4 is changed
+      - healthy_4.container.State.Health.Status == "healthy"

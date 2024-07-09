@@ -85,6 +85,9 @@ class ContainerManager(DockerBaseClass):
         self.param_pull_check_mode_behavior = self.module.params['pull_check_mode_behavior']
         self.param_recreate = self.module.params['recreate']
         self.param_removal_wait_timeout = self.module.params['removal_wait_timeout']
+        self.param_healthy_wait_timeout = self.module.params['healthy_wait_timeout']
+        if self.param_healthy_wait_timeout <= 0:
+            self.param_healthy_wait_timeout = None
         self.param_restart = self.module.params['restart']
         self.param_state = self.module.params['state']
         self._parse_comparisons()
@@ -212,7 +215,7 @@ class ContainerManager(DockerBaseClass):
         self.client.fail(*args, **kwargs)
 
     def run(self):
-        if self.param_state in ('stopped', 'started', 'present'):
+        if self.param_state in ('stopped', 'started', 'present', 'healthy'):
             self.present(self.param_state)
         elif self.param_state == 'absent':
             self.absent()
@@ -227,7 +230,7 @@ class ContainerManager(DockerBaseClass):
         if self.facts:
             self.results['container'] = self.facts
 
-    def wait_for_state(self, container_id, complete_states=None, wait_states=None, accept_removal=False, max_wait=None):
+    def wait_for_state(self, container_id, complete_states=None, wait_states=None, accept_removal=False, max_wait=None, health_state=False):
         delay = 1.0
         total_wait = 0
         while True:
@@ -235,21 +238,24 @@ class ContainerManager(DockerBaseClass):
             result = self.engine_driver.inspect_container_by_id(self.client, container_id)
             if result is None:
                 if accept_removal:
-                    return
+                    return result
                 msg = 'Encontered vanished container while waiting for container "{0}"'
                 self.fail(msg.format(container_id))
             # Check container state
-            state = result.get('State', {}).get('Status')
+            state_info = result.get('State') or {}
+            if health_state:
+                state_info = state_info.get('Health') or {}
+            state = state_info.get('Status')
             if complete_states is not None and state in complete_states:
-                return
+                return result
             if wait_states is not None and state not in wait_states:
                 msg = 'Encontered unexpected state "{1}" while waiting for container "{0}"'
-                self.fail(msg.format(container_id, state))
+                self.fail(msg.format(container_id, state), container=result)
             # Wait
             if max_wait is not None:
                 if total_wait > max_wait or delay < 1E-4:
                     msg = 'Timeout of {1} seconds exceeded while waiting for container "{0}"'
-                    self.fail(msg.format(container_id, max_wait))
+                    self.fail(msg.format(container_id, max_wait), container=result)
                 if total_wait + delay > max_wait:
                     delay = max_wait - total_wait
             sleep(delay)
@@ -368,10 +374,10 @@ class ContainerManager(DockerBaseClass):
             container = self.update_limits(container, container_image, comparison_image, host_info)
             container = self.update_networks(container, container_created)
 
-            if state == 'started' and not container.running:
+            if state in ('started', 'healthy') and not container.running:
                 self.diff_tracker.add('running', parameter=True, active=was_running)
                 container = self.container_start(container.id)
-            elif state == 'started' and self.param_restart:
+            elif state in ('started', 'healthy') and self.param_restart:
                 self.diff_tracker.add('running', parameter=True, active=was_running)
                 self.diff_tracker.add('restarted', parameter=True, active=False)
                 container = self.container_restart(container.id)
@@ -380,7 +386,7 @@ class ContainerManager(DockerBaseClass):
                 self.container_stop(container.id)
                 container = self._get_container(container.id)
 
-            if state == 'started' and self.param_paused is not None and container.paused != self.param_paused:
+            if state in ('started', 'healthy') and self.param_paused is not None and container.paused != self.param_paused:
                 self.diff_tracker.add('paused', parameter=self.param_paused, active=was_paused)
                 if not self.check_mode:
                     try:
@@ -397,6 +403,19 @@ class ContainerManager(DockerBaseClass):
                 self.results['actions'].append(dict(set_paused=self.param_paused))
 
         self.facts = container.raw
+
+        if state == 'healthy' and not self.check_mode:
+            # `None` means that no health check enabled; simply treat this as 'healthy'
+            inspect_result = self.wait_for_state(
+                container.id,
+                wait_states=['starting', 'unhealthy'],
+                complete_states=['healthy', None],
+                max_wait=self.param_healthy_wait_timeout,
+                health_state=True,
+            )
+            if inspect_result:
+                # Return the latest inspection results retrieved
+                self.facts = inspect_result
 
     def absent(self):
         container = self._get_container(self.param_name)
@@ -878,10 +897,11 @@ def run_module(engine_driver):
             recreate=dict(type='bool', default=False),
             removal_wait_timeout=dict(type='float'),
             restart=dict(type='bool', default=False),
-            state=dict(type='str', default='started', choices=['absent', 'present', 'started', 'stopped']),
+            state=dict(type='str', default='started', choices=['absent', 'present', 'healthy', 'started', 'stopped']),
+            healthy_wait_timeout=dict(type='float', default=300),
         ),
         required_if=[
-            ('state', 'present', ['image'])
+            ('state', 'present', ['image']),
         ],
     )
 
