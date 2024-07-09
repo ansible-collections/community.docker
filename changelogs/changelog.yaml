@@ -735,6 +735,16 @@ releases:
     - 2.7.11.yml
     - 881-docker-compose-v1-api-version.yml
     release_date: '2024-06-16'
+  2.7.12:
+    changes:
+      bugfixes:
+      - docker_container - fix possible infinite loop if ``removal_wait_timeout``
+        is set (https://github.com/ansible-collections/community.docker/pull/922).
+      release_summary: Bugfix release.
+    fragments:
+    - 2.7.12.yml
+    - 922-docker_container-wait-fix.yml
+    release_date: '2024-07-09'
   2.7.2:
     changes:
       minor_changes:
