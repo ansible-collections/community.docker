@@ -1,2 +1,0 @@
-minor_changes:
-  - "docker_container - add support for ``device_cgroup_rules`` (https://github.com/ansible-collections/community.docker/pull/910)."
