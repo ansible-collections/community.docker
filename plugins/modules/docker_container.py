@@ -921,6 +921,9 @@ options:
       - 'V(started) - Asserts that the container is first V(present), and then if the container is not running moves it to a running
         state. Use O(restart) to force a matching container to be stopped and restarted.'
       - V(healthy) - Asserts that the container is V(present) and V(started), and is actually healthy as well.
+        This means that the conditions defined in O(healthcheck) respectively in the image's C(HEALTHCHECK)
+        (L(Docker reference for HEALTHCHECK, https://docs.docker.com/reference/dockerfile/#healthcheck))
+        are satisfied.
         The time waited can be controlled with O(healthy_wait_timeout). This state has been added in community.docker 3.11.0.
       - 'V(stopped) - Asserts that the container is first V(present), and then if the container is running moves it to a stopped
         state.'
