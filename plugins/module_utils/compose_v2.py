@@ -7,6 +7,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 
+import json
 import os
 import re
 import shutil
@@ -348,6 +349,69 @@ def _concat_event_msg(event, append_msg):
     )
 
 
+def parse_json_events(stderr, warn_function=None):
+    events = []
+    stderr_lines = stderr.splitlines()
+    if stderr_lines and stderr_lines[-1] == b'':
+        del stderr_lines[-1]
+    for line in stderr_lines:
+        line = line.strip()
+        if not line.startswith(b'{') or not line.endswith(b'}'):
+            continue
+        try:
+            line_data = json.loads(line)
+        except Exception as exc:
+            if warn_function:
+                warn_function(
+                    'Cannot parse event from line: {0!r}: {1}. Please report this at '
+                    'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
+                    .format(line, exc)
+                )
+            continue
+        if line_data.get('error'):
+            resource_type = ResourceType.UNKNOWN
+            event = Event(
+                resource_type,
+                line_data.get('id'),
+                'Error',
+                line_data.get('message'),
+            )
+        else:
+            resource_type = ResourceType.UNKNOWN
+            resource_id = line_data.get('id')
+            status = line_data.get('status')
+            text = line_data.get('text')
+            if isinstance(resource_id, str) and ' ' in resource_id:
+                resource_type_str, resource_id = resource_id.split(' ', 1)
+                try:
+                    resource_type = ResourceType.from_docker_compose_event(resource_type_str)
+                except KeyError:
+                    if warn_function:
+                        warn_function(
+                            'Unknown resource type {0!r}. Please report this at '
+                            'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
+                            .format(resource_type_str)
+                        )
+                    resource_type = ResourceType.UNKNOWN
+            elif text in DOCKER_STATUS_PULL:
+                resource_type = ResourceType.IMAGE
+                status, text = text, None
+            elif text in DOCKER_PULL_PROGRESS_DONE or line_data.get('text') in DOCKER_PULL_PROGRESS_WORKING:
+                resource_type = ResourceType.IMAGE_LAYER
+                status, text = text, None
+            if status not in DOCKER_STATUS and text in DOCKER_STATUS:
+                status, text = text, status
+            event = Event(
+                resource_type,
+                resource_id,
+                status,
+                text,
+            )
+
+        events.append(event)
+    return events
+
+
 def parse_events(stderr, dry_run=False, warn_function=None):
     events = []
     error_event = None
@@ -476,11 +540,15 @@ def update_failed(result, events, args, stdout, stderr, rc, cli):
     errors = []
     for event in events:
         if event.status in DOCKER_STATUS_ERROR:
-            msg = 'Error when processing {resource_type} {resource_id}: '
-            if event.resource_type == 'unknown':
-                msg = 'Error when processing {resource_id}: '
-                if event.resource_id == '':
-                    msg = 'General error: '
+            if event.resource_id is None:
+                if event.resource_type == 'unknown':
+                    msg = 'General error: ' if event.resource_type == 'unknown' else 'Error when processing {resource_type}: '
+            else:
+                msg = 'Error when processing {resource_type} {resource_id}: '
+                if event.resource_type == 'unknown':
+                    msg = 'Error when processing {resource_id}: '
+                    if event.resource_id == '':
+                        msg = 'General error: '
             msg += '{status}' if event.msg is None else '{msg}'
             errors.append(msg.format(
                 resource_type=event.resource_type,
@@ -598,13 +666,19 @@ class BaseComposeManager(DockerBaseClass):
             filenames = ', '.join(DOCKER_COMPOSE_FILES[:-1])
             self.fail('"{0}" does not contain {1}, or {2}'.format(self.project_src, filenames, DOCKER_COMPOSE_FILES[-1]))
 
+        # Support for JSON output was added in Compose 2.29.0 (https://github.com/docker/compose/releases/tag/v2.29.0);
+        # more precisely in https://github.com/docker/compose/pull/11478
+        self.use_json_events = self.compose_version >= LooseVersion('2.29.0')
+
     def fail(self, msg, **kwargs):
         self.cleanup()
         self.client.fail(msg, **kwargs)
 
     def get_base_args(self):
         args = ['compose', '--ansi', 'never']
-        if self.compose_version >= LooseVersion('2.19.0'):
+        if self.use_json_events:
+            args.extend(['--progress', 'json'])
+        elif self.compose_version >= LooseVersion('2.19.0'):
             # https://github.com/docker/compose/pull/10690
             args.extend(['--progress', 'plain'])
         args.extend(['--project-directory', self.project_src])
@@ -618,17 +692,25 @@ class BaseComposeManager(DockerBaseClass):
             args.extend(['--profile', profile])
         return args
 
+    def _handle_failed_cli_call(self, args, rc, stdout, stderr):
+        events = parse_json_events(stderr, warn_function=self.client.warn)
+        result = {}
+        self.update_failed(result, events, args, stdout, stderr, rc)
+        self.client.module.exit_json(**result)
+
     def list_containers_raw(self):
         args = self.get_base_args() + ['ps', '--format', 'json', '--all']
         if self.compose_version >= LooseVersion('2.23.0'):
             # https://github.com/docker/compose/pull/11038
             args.append('--no-trunc')
-        kwargs = dict(cwd=self.project_src, check_rc=True)
+        kwargs = dict(cwd=self.project_src, check_rc=not self.use_json_events)
         if self.compose_version >= LooseVersion('2.21.0'):
             # Breaking change in 2.21.0: https://github.com/docker/compose/pull/10918
-            dummy, containers, dummy = self.client.call_cli_json_stream(*args, **kwargs)
+            rc, containers, stderr = self.client.call_cli_json_stream(*args, **kwargs)
         else:
-            dummy, containers, dummy = self.client.call_cli_json(*args, **kwargs)
+            rc, containers, stderr = self.client.call_cli_json(*args, **kwargs)
+        if self.use_json_events and rc != 0:
+            self._handle_failed_cli_call(args, rc, containers, stderr)
         return containers
 
     def list_containers(self):
@@ -648,11 +730,15 @@ class BaseComposeManager(DockerBaseClass):
 
     def list_images(self):
         args = self.get_base_args() + ['images', '--format', 'json']
-        kwargs = dict(cwd=self.project_src, check_rc=True)
-        dummy, images, dummy = self.client.call_cli_json(*args, **kwargs)
+        kwargs = dict(cwd=self.project_src, check_rc=not self.use_json_events)
+        rc, images, stderr = self.client.call_cli_json(*args, **kwargs)
+        if self.use_json_events and rc != 0:
+            self._handle_failed_cli_call(args, rc, images, stderr)
         return images
 
     def parse_events(self, stderr, dry_run=False):
+        if self.use_json_events:
+            return parse_json_events(stderr, warn_function=self.client.warn)
         return parse_events(stderr, dry_run=dry_run, warn_function=self.client.warn)
 
     def emit_warnings(self, events):
