@@ -65,8 +65,10 @@
         that:
           - pull_1_check is failed or pull_1_check is changed
           - pull_1_check is changed or pull_1_check.msg.startswith('Error when processing ')
+          - pull_1_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - pull_1 is failed
           - pull_1.msg.startswith('Error when processing ')
+          - pull_1.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
 
 ####################################################################
 ## Regular image ###################################################
@@ -139,18 +141,26 @@
             that:
               - pull_1_check is changed
               - pull_1_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_1_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
               - pull_1 is changed
               - pull_1.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_1.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
               - pull_2_check is not changed
+              - pull_2_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
               - pull_2 is not changed
+              - pull_2.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
               - pull_3_check is changed
               - pull_3_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_3_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
               - pull_3 is changed
               - pull_3.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_3.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
               - pull_4_check is changed
               - pull_4_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_4_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
               - pull_4 is not changed
               - pull_4.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_4.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
 
     - when: docker_compose_version is version('2.22.0', '<')
       block:
@@ -184,9 +194,13 @@
             that:
               - pull_1_check is changed
               - pull_1_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_1_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
               - pull_1 is changed
               - pull_1.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_1.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
               - pull_2_check is changed
               - pull_2_check.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_2_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
               - pull_2 is not changed
               - pull_2.actions | selectattr('status', 'eq', 'Pulling') | first
+              - pull_2.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
