@@ -1,0 +1,2 @@
+minor_changes:
+  - "docker_compose_v2* modules - support Docker Compose 2.29.0's ``json`` progress writer to avoid having to parse text output (https://github.com/ansible-collections/community.docker/pull/931)."
