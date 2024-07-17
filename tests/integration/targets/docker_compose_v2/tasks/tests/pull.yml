@@ -84,12 +84,16 @@
         that:
           - present_1_check is failed or present_1_check is changed
           - present_1_check is changed or present_1_check.msg.startswith('General error:')
+          - present_1_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - present_1 is failed
           - present_1.msg.startswith('General error:')
+          - present_1.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - present_2_check is failed
           - present_2_check.msg.startswith('Error when processing ' ~ cname ~ ':')
+          - present_2_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - present_2 is failed
           - present_2.msg.startswith('Error when processing ' ~ cname ~ ':')
+          - present_2.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
 
 ####################################################################
 ## Regular image ###################################################
@@ -190,22 +194,32 @@
           - present_1_check is changed
           - present_1_check.actions | selectattr('status', 'eq', 'Pulling') | first
           - present_1_check.actions | selectattr('status', 'eq', 'Creating') | first
+          - present_1_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - present_1 is changed
           - present_1.actions | selectattr('status', 'eq', 'Pulling') | first
           - present_1.actions | selectattr('status', 'eq', 'Creating') | first
+          - present_1.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - present_2_check is not changed
+          - present_2_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - present_2 is not changed
+          - present_2.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - present_3_check is changed
           - present_3_check.actions | selectattr('status', 'eq', 'Pulling') | first
           - present_3_check.actions | selectattr('status', 'eq', 'Creating') | length == 0
           - present_3_check.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+          - present_3_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - present_3 is not changed
           - present_3.actions | selectattr('status', 'eq', 'Pulling') | first
           - present_3.actions | selectattr('status', 'eq', 'Creating') | length == 0
           - present_3.actions | selectattr('status', 'eq', 'Recreating') | length == 0
+          - present_3.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - present_4_check is changed
           - present_4_check.actions | selectattr('status', 'eq', 'Pulling') | length == 0
+          - present_4_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - present_4 is changed
           - present_4.actions | selectattr('status', 'eq', 'Pulling') | length == 0
+          - present_4.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - present_5_check is not changed
+          - present_5_check.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
           - present_5 is not changed
+          - present_5.warnings | default([]) | select('regex', 'Cannot parse event from line:') | length == 0
