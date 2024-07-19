@@ -1,7 +1,11 @@
 minor_changes:
-  - "docker_container - when creating a network, directly pass the networks to connect to to the Docker Daemon.
-     This makes creation more efficient and works around a bug in Docker Daemon that does not use the specified
-     MAC address in at least some cases, though only for creation (https://github.com/ansible-collections/community.docker/pull/933)."
+  - "docker_container - when creating a container, directly pass all networks to connect to to the Docker Daemon
+     for API version 1.44 and newer. This makes creation more efficient and works around a bug in Docker Daemon that
+     does not use the specified MAC address in at least some cases, though only for creation
+     (https://github.com/ansible-collections/community.docker/pull/933)."
+bugfixes:
+  - "docker_container - restore behavior of the module from community.docker 2.x.y that passes the first network
+     to the Docker Deamon while creating the container (https://github.com/ansible-collections/community.docker/pull/933)."
 known_issues:
   - "docker_container - when specifying a MAC address for a container's network, and the network is attached
      after container creation (for example, due to idempotency checks), the MAC address is at least in some

@@ -279,6 +279,9 @@ class DockerAPIEngineDriver(EngineDriver):
         }
         client.post_json('/networks/{0}/connect', network_id, data=data)
 
+    def create_container_supports_more_than_one_network(self, client):
+        return client.docker_api_version >= LooseVersion('1.44')
+
     def create_container(self, client, container_name, create_parameters, networks=None):
         params = {'name': container_name}
         if 'platform' in create_parameters:
@@ -286,10 +289,10 @@ class DockerAPIEngineDriver(EngineDriver):
         if networks is not None:
             create_parameters = create_parameters.copy()
             create_parameters['NetworkingConfig'] = {
-                'EndpointsConfig': {
-                    network: self._create_endpoint_config(network_params)
+                'EndpointsConfig': dict(
+                    (network, self._create_endpoint_config(network_params))
                     for network, network_params in networks.items()
-                }
+                )
             }
         new_container = client.post_json_to_json('/containers/create', data=create_parameters, params=params)
         client.report_warnings(new_container)

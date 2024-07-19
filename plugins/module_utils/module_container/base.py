@@ -299,6 +299,9 @@ class EngineDriver(object):
     def connect_container_to_network(self, client, container_id, network_id, parameters=None):
         pass
 
+    def create_container_supports_more_than_one_network(self, client):
+        return False
+
     @abc.abstractmethod
     def create_container(self, client, container_name, create_parameters, networks=None):
         pass
