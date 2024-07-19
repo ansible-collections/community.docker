@@ -722,6 +722,9 @@ options:
         description:
           - Endpoint MAC address (for example, V(92:d0:c6:0a:29:33)).
           - This is only available for Docker API version 1.44 and later.
+          - Please note that when a container is attached to a network after creation,
+            this is currently ignored by the Docker Daemon at least in some cases.
+            When passed on creation, this seems to work better.
         type: str
         version_added: 3.6.0
   networks_cli_compatible:

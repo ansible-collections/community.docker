@@ -300,7 +300,7 @@ class EngineDriver(object):
         pass
 
     @abc.abstractmethod
-    def create_container(self, client, container_name, create_parameters):
+    def create_container(self, client, container_name, create_parameters, networks=None):
         pass
 
     @abc.abstractmethod

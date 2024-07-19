@@ -766,12 +766,19 @@ class ContainerManager(DockerBaseClass):
         self.log("create container")
         self.log("image: %s parameters:" % image)
         self.log(create_parameters, pretty_print=True)
-        self.results['actions'].append(dict(created="Created container", create_parameters=create_parameters))
+        networks = {}
+        if self.module.params['networks']:
+            for network in self.module.params['networks']:
+                networks[network['name']] = {
+                    key: value for key, value in network.items()
+                    if key not in ('name', 'id')
+                }
+        self.results['actions'].append(dict(created="Created container", create_parameters=create_parameters, networks=networks))
         self.results['changed'] = True
         new_container = None
         if not self.check_mode:
             try:
-                container_id = self.engine_driver.create_container(self.client, self.param_name, create_parameters)
+                container_id = self.engine_driver.create_container(self.client, self.param_name, create_parameters, networks=networks)
             except Exception as exc:
                 self.fail("Error creating container: %s" % to_native(exc))
             return self._get_container(container_id)

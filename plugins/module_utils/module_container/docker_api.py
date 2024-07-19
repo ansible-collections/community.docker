@@ -244,8 +244,8 @@ class DockerAPIEngineDriver(EngineDriver):
     def disconnect_container_from_network(self, client, container_id, network_id):
         client.post_json('/networks/{0}/disconnect', network_id, data={'Container': container_id})
 
-    def connect_container_to_network(self, client, container_id, network_id, parameters=None):
-        parameters = (parameters or {}).copy()
+    def _create_endpoint_config(self, parameters):
+        parameters = parameters.copy()
         params = {}
         for para, dest_para in {
             'ipv4_address': 'IPv4Address',
@@ -268,16 +268,29 @@ class DockerAPIEngineDriver(EngineDriver):
                 ipam_config[param] = params.pop(param)
         if ipam_config:
             params['IPAMConfig'] = ipam_config
+        return params
+
+    def connect_container_to_network(self, client, container_id, network_id, parameters=None):
+        parameters = (parameters or {}).copy()
+        params = self._create_endpoint_config(parameters or {})
         data = {
             'Container': container_id,
             'EndpointConfig': params,
         }
         client.post_json('/networks/{0}/connect', network_id, data=data)
 
-    def create_container(self, client, container_name, create_parameters):
+    def create_container(self, client, container_name, create_parameters, networks=None):
         params = {'name': container_name}
         if 'platform' in create_parameters:
             params['platform'] = create_parameters.pop('platform')
+        if networks is not None:
+            create_parameters = create_parameters.copy()
+            create_parameters['NetworkingConfig'] = {
+                'EndpointsConfig': {
+                    network: self._create_endpoint_config(network_params)
+                    for network, network_params in networks.items()
+                }
+            }
         new_container = client.post_json_to_json('/containers/create', data=create_parameters, params=params)
         client.report_warnings(new_container)
         return new_container['Id']
