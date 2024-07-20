@@ -85,6 +85,7 @@ DOCKER_STATUS_WAITING = frozenset((
     'Waiting',
 ))
 DOCKER_STATUS = frozenset(DOCKER_STATUS_DONE | DOCKER_STATUS_WORKING | DOCKER_STATUS_PULL | DOCKER_STATUS_ERROR | DOCKER_STATUS_WAITING)
+DOCKER_STATUS_AND_WARNING = frozenset(DOCKER_STATUS | DOCKER_STATUS_WARNING)
 
 DOCKER_PULL_PROGRESS_DONE = frozenset((
     'Already exists',
@@ -399,7 +400,7 @@ def parse_json_events(stderr, warn_function=None):
             elif text in DOCKER_PULL_PROGRESS_DONE or line_data.get('text') in DOCKER_PULL_PROGRESS_WORKING:
                 resource_type = ResourceType.IMAGE_LAYER
                 status, text = text, None
-            if status not in DOCKER_STATUS and text in DOCKER_STATUS:
+            if status not in DOCKER_STATUS_AND_WARNING and text in DOCKER_STATUS_AND_WARNING:
                 status, text = text, status
             event = Event(
                 resource_type,
@@ -520,7 +521,7 @@ def extract_actions(events):
 def emit_warnings(events, warn_function):
     for event in events:
         # If a message is present, assume it is a warning
-        if event.status is None and event.msg is not None:
+        if (event.status is None and event.msg is not None) or event.status in DOCKER_STATUS_WARNING:
             warn_function('Docker compose: {resource_type} {resource_id}: {msg}'.format(
                 resource_type=event.resource_type,
                 resource_id=event.resource_id,
