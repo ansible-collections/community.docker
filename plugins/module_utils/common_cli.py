@@ -13,6 +13,7 @@ import shlex
 from ansible.module_utils.basic import AnsibleModule, env_fallback
 from ansible.module_utils.common.process import get_bin_path
 from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
@@ -84,7 +85,9 @@ class AnsibleDockerClientBase(object):
         dummy, self._version, dummy = self.call_cli_json('version', '--format', '{{ json . }}', check_rc=True)
         self._info = None
 
-        self.docker_api_version_str = self._version['Server']['ApiVersion']
+        if not isinstance(self._version.get('Server'), dict) or not isinstance(self._version['Server'].get('ApiVersion'), string_types):
+            self.fail('Cannot determine Docker Daemon information. Are you maybe using podman instead of docker?')
+        self.docker_api_version_str = to_native(self._version['Server']['ApiVersion'])
         self.docker_api_version = LooseVersion(self.docker_api_version_str)
         min_docker_api_version = min_docker_api_version or '1.25'
         if self.docker_api_version < LooseVersion(min_docker_api_version):
@@ -168,7 +171,10 @@ class AnsibleDockerClientBase(object):
         return self._info
 
     def get_client_plugin_info(self, component):
-        for plugin in self.get_cli_info()['ClientInfo'].get('Plugins') or []:
+        cli_info = self.get_cli_info()
+        if not isinstance(cli_info.get('ClientInfo'), dict):
+            self.fail('Cannot determine Docker client information. Are you maybe using podman instead of docker?')
+        for plugin in cli_info['ClientInfo'].get('Plugins') or []:
             if plugin.get('Name') == component:
                 return plugin
         return None
