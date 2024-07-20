@@ -533,7 +533,7 @@ class ContainerManager(DockerBaseClass):
                 if not match:
                     # No match.
                     if engine.ignore_mismatching_result(self.module, self.client, self.engine_driver.get_api_version(self.client),
-                                                        option, image, container_value, param_value):
+                                                        option, image, container_value, param_value, host_info):
                         # Ignore the result
                         continue
 

@@ -1,0 +1,4 @@
+bugfixes:
+  - "docker_container - fix idempotency if ``network_mode=default`` and Docker 26.1.0 or later is used. There was a breaking change in
+     Docker 26.1.0 regarding normalization of ``NetworkMode``
+     (https://github.com/ansible-collections/community.docker/issues/934, https://github.com/ansible-collections/community.docker/pull/936)."
