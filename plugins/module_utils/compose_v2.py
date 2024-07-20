@@ -17,6 +17,7 @@ from collections import namedtuple
 
 from ansible.module_utils.basic import missing_required_lib
 from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.six import string_types
 from ansible.module_utils.six.moves import shlex_quote
 
 from ansible_collections.community.docker.plugins.module_utils.util import DockerBaseClass
@@ -350,6 +351,12 @@ def _concat_event_msg(event, append_msg):
     )
 
 
+_JSON_LEVEL_TO_STATUS_MAP = {
+    'warning': 'Warning',
+    'error': 'Error',
+}
+
+
 def parse_json_events(stderr, warn_function=None):
     events = []
     stderr_lines = stderr.splitlines()
@@ -358,6 +365,22 @@ def parse_json_events(stderr, warn_function=None):
     for line in stderr_lines:
         line = line.strip()
         if not line.startswith(b'{') or not line.endswith(b'}'):
+            if line.startswith(b'Warning: '):
+                # This is a bug in Compose that will get fixed by https://github.com/docker/compose/pull/11996
+                event = Event(
+                    ResourceType.UNKNOWN,
+                    None,
+                    'Warning',
+                    to_native(line[len(b'Warning: '):]),
+                )
+                events.append(event)
+                continue
+            if warn_function:
+                warn_function(
+                    'Found non-JSON line: {0!r}. Please report this at '
+                    'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
+                    .format(line)
+                )
             continue
         try:
             line_data = json.loads(line)
@@ -396,10 +419,15 @@ def parse_json_events(stderr, warn_function=None):
                     resource_type = ResourceType.UNKNOWN
             elif text in DOCKER_STATUS_PULL:
                 resource_type = ResourceType.IMAGE
-                status, text = text, None
+                status, text = text, status
             elif text in DOCKER_PULL_PROGRESS_DONE or line_data.get('text') in DOCKER_PULL_PROGRESS_WORKING:
                 resource_type = ResourceType.IMAGE_LAYER
-                status, text = text, None
+                status, text = text, status
+            elif status is None and isinstance(text, string_types) and text.startswith('Skipped - '):
+                status, text = text.split(' - ', 1)
+            elif line_data.get('level') in _JSON_LEVEL_TO_STATUS_MAP and 'msg' in line_data:
+                status = _JSON_LEVEL_TO_STATUS_MAP[line_data['level']]
+                text = line_data['msg']
             if status not in DOCKER_STATUS_AND_WARNING and text in DOCKER_STATUS_AND_WARNING:
                 status, text = text, status
             event = Event(
