@@ -539,6 +539,7 @@ def main():
     client = AnsibleModuleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
+        needs_api_version=False,
     )
 
     try:
