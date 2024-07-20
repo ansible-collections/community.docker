@@ -377,7 +377,7 @@ def parse_json_events(stderr, warn_function=None):
                 continue
             if warn_function:
                 warn_function(
-                    'Found non-JSON line: {0!r}. Please report this at '
+                    'Cannot parse event from non-JSON line: {0!r}. Please report this at '
                     'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
                     .format(line)
                 )
@@ -412,9 +412,9 @@ def parse_json_events(stderr, warn_function=None):
                 except KeyError:
                     if warn_function:
                         warn_function(
-                            'Unknown resource type {0!r}. Please report this at '
+                            'Unknown resource type {0!r} in line {1!r}. Please report this at '
                             'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
-                            .format(resource_type_str)
+                            .format(resource_type_str, line)
                         )
                     resource_type = ResourceType.UNKNOWN
             elif text in DOCKER_STATUS_PULL:
