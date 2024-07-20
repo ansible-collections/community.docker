@@ -13,6 +13,7 @@ import shlex
 from ansible.module_utils.basic import AnsibleModule, env_fallback
 from ansible.module_utils.common.process import get_bin_path
 from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
@@ -48,7 +49,7 @@ class DockerException(Exception):
 
 
 class AnsibleDockerClientBase(object):
-    def __init__(self, common_args, min_docker_api_version=None):
+    def __init__(self, common_args, min_docker_api_version=None, needs_api_version=True):
         self._environment = {}
         if common_args['tls_hostname']:
             self._environment['DOCKER_TLS_HOSTNAME'] = common_args['tls_hostname']
@@ -84,11 +85,19 @@ class AnsibleDockerClientBase(object):
         dummy, self._version, dummy = self.call_cli_json('version', '--format', '{{ json . }}', check_rc=True)
         self._info = None
 
-        self.docker_api_version_str = self._version['Server']['ApiVersion']
-        self.docker_api_version = LooseVersion(self.docker_api_version_str)
-        min_docker_api_version = min_docker_api_version or '1.25'
-        if self.docker_api_version < LooseVersion(min_docker_api_version):
-            self.fail('Docker API version is %s. Minimum version required is %s.' % (self.docker_api_version_str, min_docker_api_version))
+        if needs_api_version:
+            if not isinstance(self._version.get('Server'), dict) or not isinstance(self._version['Server'].get('ApiVersion'), string_types):
+                self.fail('Cannot determine Docker Daemon information. Are you maybe using podman instead of docker?')
+            self.docker_api_version_str = to_native(self._version['Server']['ApiVersion'])
+            self.docker_api_version = LooseVersion(self.docker_api_version_str)
+            min_docker_api_version = min_docker_api_version or '1.25'
+            if self.docker_api_version < LooseVersion(min_docker_api_version):
+                self.fail('Docker API version is %s. Minimum version required is %s.' % (self.docker_api_version_str, min_docker_api_version))
+        else:
+            self.docker_api_version_str = None
+            self.docker_api_version = None
+            if min_docker_api_version is not None:
+                self.fail('Internal error: cannot have needs_api_version=False with min_docker_api_version not None')
 
     def log(self, msg, pretty_print=False):
         pass
@@ -168,7 +177,10 @@ class AnsibleDockerClientBase(object):
         return self._info
 
     def get_client_plugin_info(self, component):
-        for plugin in self.get_cli_info()['ClientInfo'].get('Plugins') or []:
+        cli_info = self.get_cli_info()
+        if not isinstance(cli_info.get('ClientInfo'), dict):
+            self.fail('Cannot determine Docker client information. Are you maybe using podman instead of docker?')
+        for plugin in cli_info['ClientInfo'].get('Plugins') or []:
             if plugin.get('Name') == component:
                 return plugin
         return None
@@ -267,7 +279,7 @@ class AnsibleDockerClientBase(object):
 class AnsibleModuleDockerClient(AnsibleDockerClientBase):
     def __init__(self, argument_spec=None, supports_check_mode=False, mutually_exclusive=None,
                  required_together=None, required_if=None, required_one_of=None, required_by=None,
-                 min_docker_api_version=None, fail_results=None):
+                 min_docker_api_version=None, fail_results=None, needs_api_version=True):
 
         # Modules can put information in here which will always be returned
         # in case client.fail() is called.
@@ -304,7 +316,9 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
         self.diff = self.module._diff
 
         common_args = dict((k, self.module.params[k]) for k in DOCKER_COMMON_ARGS)
-        super(AnsibleModuleDockerClient, self).__init__(common_args, min_docker_api_version=min_docker_api_version)
+        super(AnsibleModuleDockerClient, self).__init__(
+            common_args, min_docker_api_version=min_docker_api_version, needs_api_version=needs_api_version,
+        )
 
     # def call_cli(self, *args, check_rc=False, data=None, cwd=None, environ_update=None):
     def call_cli(self, *args, **kwargs):
