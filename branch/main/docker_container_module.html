@@ -1221,6 +1221,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Endpoint MAC address (for example, <code class="ansible-value docutils literal notranslate"><span class="pre">92:d0:c6:0a:29:33</span></code>).</p>
 <p>This is only available for Docker API version 1.44 and later.</p>
+<p>Please note that when a container is attached to a network after creation, this is currently ignored by the Docker Daemon at least in some cases. When passed on creation, this seems to work better.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
