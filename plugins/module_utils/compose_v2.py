@@ -392,7 +392,22 @@ def parse_json_events(stderr, warn_function=None):
                     .format(line, exc)
                 )
             continue
-        if line_data.get('error'):
+        if line_data.get('tail'):
+            resource_type = ResourceType.UNKNOWN
+            msg = line_data.get('text')
+            status = 'Error'
+            if isinstance(msg, str) and msg.lower().startswith('warning:'):
+                # For some reason, Writer.TailMsgf() is always used for errors *except* in one place,
+                # where its message is prepended with 'WARNING: ' (in pkg/compose/pull.go).
+                status = 'Warning'
+                msg = msg[len('warning:'):].lstrip()
+            event = Event(
+                resource_type,
+                None,
+                status,
+                msg,
+            )
+        elif line_data.get('error'):
             resource_type = ResourceType.UNKNOWN
             event = Event(
                 resource_type,
