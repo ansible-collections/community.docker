@@ -21,3 +21,4 @@ function convert_image {
 
 # convert_image docker.io/library/registry:2.6.1 docker-distribution:2.6.1
 # convert_image docker.io/library/registry:2.8.3 docker-distribution:2.8.3
+convert_image docker.io/library/python:3-alpine docker-python:3-alpine
