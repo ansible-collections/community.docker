@@ -497,9 +497,9 @@ class ServicesManager(BaseComposeManager):
             args.append('--no-start')
         if dry_run:
             args.append('--dry-run')
+        args.append('--')
         for service in self.services:
             args.append(service)
-        args.append('--')
         return args
 
     def cmd_up(self):
@@ -518,9 +518,9 @@ class ServicesManager(BaseComposeManager):
             args.extend(['--timeout', '%d' % self.timeout])
         if dry_run:
             args.append('--dry-run')
+        args.append('--')
         for service in self.services:
             args.append(service)
-        args.append('--')
         return args
 
     def _are_containers_stopped(self):
@@ -571,9 +571,9 @@ class ServicesManager(BaseComposeManager):
             args.extend(['--timeout', '%d' % self.timeout])
         if dry_run:
             args.append('--dry-run')
+        args.append('--')
         for service in self.services:
             args.append(service)
-        args.append('--')
         return args
 
     def cmd_restart(self):
@@ -598,9 +598,9 @@ class ServicesManager(BaseComposeManager):
             args.extend(['--timeout', '%d' % self.timeout])
         if dry_run:
             args.append('--dry-run')
+        args.append('--')
         for service in self.services:
             args.append(service)
-        args.append('--')
         return args
 
     def cmd_down(self):
