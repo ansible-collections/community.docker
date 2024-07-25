@@ -260,6 +260,31 @@ To check whether it is installed, run <code class="code docutils literal notrans
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-privileged"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-connection-parameter-privileged"><strong>privileged</strong></p>
+<a class="ansibleOptionLink" href="#parameter-privileged" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.12.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Whether commands should be run with extended privileges.</p>
+<p><strong>Note</strong> that this allows command to potentially break out of the container. Use with care!</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+<p class="ansible-option-line"><strong class="ansible-option-configuration">Configuration:</strong></p>
+<ul>
+<li><p>INI entry:</p>
+<div class="highlight-YAML+Jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">[</span><span class="nv">docker_connection</span><span class="p p-Indicator">]</span>
+<span class="l l-Scalar l-Scalar-Plain">privileged = false</span>
+</pre></div>
+</div>
+</li>
+<li><p>Environment variable: <span class="target" id="index-2"></span><a class="reference internal" href="environment_variables.html#envvar-ANSIBLE_DOCKER_PRIVILEGED"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">ANSIBLE_DOCKER_PRIVILEGED</span></code></a></p></li>
+<li><p>Variable: ansible_docker_privileged</p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-remote_addr"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-connection-parameter-remote-addr"><strong>remote_addr</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remote_addr" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -273,7 +298,7 @@ To check whether it is installed, run <code class="code docutils literal notrans
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-remote_user"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-connection-parameter-remote-user"><strong>remote_user</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remote_user" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -287,11 +312,31 @@ To check whether it is installed, run <code class="code docutils literal notrans
 </pre></div>
 </div>
 </li>
-<li><p>Environment variable: <span class="target" id="index-2"></span><a class="reference external" href="https://docs.ansible.com/ansible/devel/reference_appendices/config.html#envvar-ANSIBLE_REMOTE_USER" title="(in Ansible vdevel)"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">ANSIBLE_REMOTE_USER</span></code></a></p></li>
+<li><p>Environment variable: <span class="target" id="index-3"></span><a class="reference external" href="https://docs.ansible.com/ansible/devel/reference_appendices/config.html#envvar-ANSIBLE_REMOTE_USER" title="(in Ansible vdevel)"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">ANSIBLE_REMOTE_USER</span></code></a></p></li>
 <li><p>Variable: ansible_user</p></li>
 <li><p>Variable: ansible_docker_user</p></li>
 <li><p>Keyword: remote_user</p></li>
 <li><p>CLI argument: –user</p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-working_dir"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-connection-parameter-working-dir"><strong>working_dir</strong></p>
+<a class="ansibleOptionLink" href="#parameter-working_dir" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.12.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The directory inside the container to run commands in.</p>
+<p>Requires Docker CLI version 18.06 or later.</p>
+<p class="ansible-option-line"><strong class="ansible-option-configuration">Configuration:</strong></p>
+<ul>
+<li><p>INI entry:</p>
+<div class="highlight-YAML+Jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">[</span><span class="nv">docker_connection</span><span class="p p-Indicator">]</span>
+<span class="l l-Scalar l-Scalar-Plain">working_dir = VALUE</span>
+</pre></div>
+</div>
+</li>
+<li><p>Environment variable: <span class="target" id="index-4"></span><a class="reference internal" href="environment_variables.html#envvar-ANSIBLE_DOCKER_WORKING_DIR"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">ANSIBLE_DOCKER_WORKING_DIR</span></code></a></p></li>
+<li><p>Variable: ansible_docker_working_dir</p></li>
 </ul>
 </div></td>
 </tr>

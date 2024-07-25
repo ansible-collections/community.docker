@@ -159,9 +159,28 @@
 <p>The following index documents all environment variables declared by plugins in collections.
 Environment variables used by the ansible-core configuration are documented in <a class="reference external" href="https://docs.ansible.com/ansible/devel/reference_appendices/config.html#ansible-configuration-settings" title="(in Ansible vdevel)"><span>Ansible Configuration Settings</span></a>.</p>
 <dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-ANSIBLE_DOCKER_PRIVILEGED">
+<span class="sig-name descname"><span class="pre">ANSIBLE_DOCKER_PRIVILEGED</span></span><a class="headerlink" href="#envvar-ANSIBLE_DOCKER_PRIVILEGED" title="Link to this definition"></a></dt>
+<dd><p>Whether commands should be run with extended privileges.</p>
+<p><strong>Note</strong> that this allows command to potentially break out of the container. Use with care!</p>
+<p><em>Used by:</em>
+<a class="reference internal" href="docker_connection.html#ansible-collections-community-docker-docker-connection"><span class="std std-ref">community.docker.docker connection plugin</span></a>,
+<a class="reference internal" href="docker_api_connection.html#ansible-collections-community-docker-docker-api-connection"><span class="std std-ref">community.docker.docker_api connection plugin</span></a></p>
+</dd></dl>
+
+<dl class="std envvar">
 <dt class="sig sig-object std" id="envvar-ANSIBLE_DOCKER_TIMEOUT">
 <span class="sig-name descname"><span class="pre">ANSIBLE_DOCKER_TIMEOUT</span></span><a class="headerlink" href="#envvar-ANSIBLE_DOCKER_TIMEOUT" title="Link to this definition"></a></dt>
 <dd><p>Controls how long we can wait to access reading output from the container once execution started.</p>
+<p><em>Used by:</em>
+<a class="reference internal" href="docker_connection.html#ansible-collections-community-docker-docker-connection"><span class="std std-ref">community.docker.docker connection plugin</span></a>,
+<a class="reference internal" href="docker_api_connection.html#ansible-collections-community-docker-docker-api-connection"><span class="std std-ref">community.docker.docker_api connection plugin</span></a></p>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-ANSIBLE_DOCKER_WORKING_DIR">
+<span class="sig-name descname"><span class="pre">ANSIBLE_DOCKER_WORKING_DIR</span></span><a class="headerlink" href="#envvar-ANSIBLE_DOCKER_WORKING_DIR" title="Link to this definition"></a></dt>
+<dd><p>See the documentations for the options where this environment variable is used.</p>
 <p><em>Used by:</em>
 <a class="reference internal" href="docker_connection.html#ansible-collections-community-docker-docker-connection"><span class="std std-ref">community.docker.docker connection plugin</span></a>,
 <a class="reference internal" href="docker_api_connection.html#ansible-collections-community-docker-docker-api-connection"><span class="std std-ref">community.docker.docker_api connection plugin</span></a></p>
