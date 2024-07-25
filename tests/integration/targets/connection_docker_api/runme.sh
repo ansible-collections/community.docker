@@ -54,6 +54,8 @@ cat > test_connection.inventory << EOF
 [docker_api]
 docker_api-no-pipelining ansible_pipelining=false
 docker_api-pipelining    ansible_pipelining=true
+docker_api-working-dir   ansible_docker_working_dir=/home
+docker_api-privileged    ansible_docker_privileged=true
 
 [docker_api:vars]
 ansible_host=docker-connection-test-container${CONTAINER_SUFFIX}

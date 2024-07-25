@@ -3,5 +3,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 azp/4
-skip/docker  # coverage does not work if we're inside a docker container, since we cannot access this container's /tmp dir from the new container
+skip/docker  # coverage does not work if we're inside a docker container, since we cannot access this container's /tmp dir from the new container; also privileged doesn't work
 destructive
