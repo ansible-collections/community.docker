@@ -1,0 +1,2 @@
+minor_changes:
+  - "docker, docker_api connection plugins - allow to determine the working directory when executing commands with the new ``working_dir`` option (https://github.com/ansible-collections/community.docker/pull/943)."

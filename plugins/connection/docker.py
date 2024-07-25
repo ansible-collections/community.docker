@@ -92,6 +92,19 @@ options:
           - name: ansible_docker_extra_env
         type: dict
         version_added: 3.12.0
+    working_dir:
+        description:
+          - The directory inside the container to run commands in.
+          - Requires Docker CLI version 18.06 or later.
+        env:
+          - name: ANSIBLE_DOCKER_WORKING_DIR
+        ini:
+          - key: working_dir
+            section: docker_connection
+        vars:
+          - name: ansible_docker_working_dir
+        type: string
+        version_added: 3.12.0
 '''
 
 import fcntl
@@ -238,6 +251,15 @@ class Connection(ConnectionBase):
                             .format(what.lower(), what, val)
                         )
                 local_cmd += [b'-e', b'%s=%s' % (to_bytes(k, errors='surrogate_or_strict'), to_bytes(v, errors='surrogate_or_strict'))]
+
+        if self.get_option('working_dir') is not None:
+            local_cmd += [b'-w', to_bytes(self.get_option('working_dir'), errors='surrogate_or_strict')]
+            if self.docker_version != u'dev' and LooseVersion(self.docker_version) < LooseVersion(u'18.06'):
+                # https://github.com/docker/cli/pull/732, first appeared in release 18.06.0
+                raise AnsibleConnectionFailure(
+                    'Providing the working directory requires Docker CLI version 18.06 or newer. You have Docker CLI version {0}.'
+                    .format(self.docker_version)
+                )
 
         # -i is needed to keep stdin open which allows pipelining to work
         local_cmd += [b'-i', self.get_option('remote_addr')] + cmd

@@ -86,6 +86,19 @@ options:
           - name: ansible_docker_extra_env
         type: dict
         version_added: 3.12.0
+    working_dir:
+        description:
+          - The directory inside the container to run commands in.
+          - Requires Docker API version 1.35 or later.
+        env:
+          - name: ANSIBLE_DOCKER_WORKING_DIR
+        ini:
+          - key: working_dir
+            section: docker_connection
+        vars:
+          - name: ansible_docker_working_dir
+        type: string
+        version_added: 3.12.0
 '''
 
 import os
@@ -115,6 +128,8 @@ from ansible_collections.community.docker.plugins.plugin_utils.common_api import
 )
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException, NotFound
+
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 MIN_DOCKER_API = None
 
@@ -232,6 +247,15 @@ class Connection(ConnectionBase):
                             .format(what.lower(), what, val)
                         )
                 data['Env'].append(u'{0}={1}'.format(to_text(k, errors='surrogate_or_strict'), to_text(v, errors='surrogate_or_strict')))
+
+        if self.get_option('working_dir') is not None:
+            data['WorkingDir'] = self.get_option('working_dir')
+            if self.client.docker_api_version < LooseVersion('1.35'):
+                raise AnsibleConnectionFailure(
+                    'Providing the working directory requires Docker API version 1.35 or newer.'
+                    ' The Docker daemon the connection is using has API version {0}.'
+                    .format(self.client.docker_api_version_str)
+                )
 
         exec_data = self._call_client(lambda: self.client.post_json_to_json('/containers/{0}/exec', self.get_option('remote_addr'), data=data))
         exec_id = exec_data['Id']
