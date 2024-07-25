@@ -232,7 +232,7 @@ class Connection(ConnectionBase):
                             'wrapped in quotes to avoid them being interpreted. {1}: {2!r}'
                             .format(what.lower(), what, val)
                         )
-                local_cmd += [b'-e', b'{0}={1}'.format(to_bytes(k, errors='surrogate_or_strict'), to_bytes(v, errors='surrogate_or_strict'))]
+                local_cmd += [b'-e', b'%s=%s' % (to_bytes(k, errors='surrogate_or_strict'), to_bytes(v, errors='surrogate_or_strict'))]
 
         # -i is needed to keep stdin open which allows pipelining to work
         local_cmd += [b'-i', self.get_option('remote_addr')] + cmd
