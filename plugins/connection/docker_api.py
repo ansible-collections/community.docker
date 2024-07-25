@@ -69,6 +69,23 @@ options:
         cli:
             - name: timeout
         type: integer
+    extra_env:
+        description:
+          - Provide extra environment variables to set when running commands in the Docker container.
+          - This option can currently only be provided as Ansible variables due to limitations of
+            ansible-core's configuration manager.
+        # env:
+        #   - name: ANSIBLE_DOCKER_EXTRA_ENV
+        # ini:
+        #   - key: extra_env
+        #     section: docker_connection
+        # ansible-core's config manager does NOT support converting JSON strings (or other things) to dictionaries,
+        # it only accepts actual dictionaries (which don't happen to come from env and ini vars). So there's no way
+        # to actually provide this parameter from env and ini sources... :-(
+        vars:
+          - name: ansible_docker_extra_env
+        type: dict
+        version_added: 3.12.0
 '''
 
 import os
@@ -76,6 +93,7 @@ import os.path
 
 from ansible.errors import AnsibleFileNotFound, AnsibleConnectionFailure
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
+from ansible.module_utils.six import string_types
 from ansible.plugins.connection import ConnectionBase
 from ansible.utils.display import Display
 
@@ -202,6 +220,18 @@ class Connection(ConnectionBase):
 
         if 'detachKeys' in self.client._general_configs:
             data['detachKeys'] = self.client._general_configs['detachKeys']
+
+        if self.get_option('extra_env'):
+            data['Env'] = []
+            for k, v in self.get_option('extra_env').items():
+                for val, what in ((k, 'Key'), (v, 'Value')):
+                    if not isinstance(val, string_types):
+                        raise AnsibleConnectionFailure(
+                            'Non-string {0} found for extra_env option. Ambiguous env options must be '
+                            'wrapped in quotes to avoid them being interpreted. {1}: {2!r}'
+                            .format(what.lower(), what, val)
+                        )
+                data['Env'].append(u'{0}={1}'.format(to_text(k, errors='surrogate_or_strict'), to_text(v, errors='surrogate_or_strict')))
 
         exec_data = self._call_client(lambda: self.client.post_json_to_json('/containers/{0}/exec', self.get_option('remote_addr'), data=data))
         exec_id = exec_data['Id']
