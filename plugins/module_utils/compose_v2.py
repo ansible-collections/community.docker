@@ -493,7 +493,7 @@ def parse_events(stderr, dry_run=False, warn_function=None):
             index_event = _find_last_event_for(events, match.group('resource_id'))
             if index_event is not None:
                 index, event = index_event
-                events[-1] = _concat_event_msg(event, match.group('msg'))
+                events[index] = _concat_event_msg(event, match.group('msg'))
         event, parsed = _extract_logfmt_event(line, warn_function=warn_function)
         if event is not None:
             events.append(event)
