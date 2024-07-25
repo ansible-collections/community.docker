@@ -340,6 +340,19 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-extra_env"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-extra-env"><strong>extra_env</strong></p>
+<a class="ansibleOptionLink" href="#parameter-extra_env" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.12.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Provide extra environment variables to set when running commands in the Docker container.</p>
+<p>This option can currently only be provided as Ansible variables due to limitations of ansible-core’s configuration manager.</p>
+<p class="ansible-option-line"><strong class="ansible-option-configuration">Configuration:</strong></p>
+<ul class="simple">
+<li><p>Variable: ansible_docker_extra_env</p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-remote_addr"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-remote-addr"><strong>remote_addr</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remote_addr" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -353,7 +366,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-remote_user"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-remote-user"><strong>remote_user</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remote_user" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -374,7 +387,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ssl_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-ssl-version"><strong>ssl_version</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ssl_version" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 <p>Removed in: version 4.0.0</p>
@@ -389,7 +402,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-timeout"><strong>timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -402,7 +415,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -419,7 +432,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-tls-hostname"><strong>tls_hostname</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -432,7 +445,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-use_ssh_client"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-use-ssh-client"><strong>use_ssh_client</strong></p>
 <a class="ansibleOptionLink" href="#parameter-use_ssh_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 1.5.0</em></p>
@@ -445,7 +458,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-api-connection-parameter-tls-verify"></span><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
