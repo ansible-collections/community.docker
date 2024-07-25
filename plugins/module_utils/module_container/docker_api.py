@@ -431,7 +431,7 @@ class DockerAPIEngine(Engine):
         self.set_value = set_value
         self.get_expected_values = get_expected_values or (lambda module, client, api_version, options, image, values, host_info: values)
         self.ignore_mismatching_result = ignore_mismatching_result or \
-            (lambda module, client, api_version, option, image, container_value, expected_value: False)
+            (lambda module, client, api_version, option, image, container_value, expected_value, host_info: False)
         self.preprocess_value = preprocess_value or (lambda module, client, api_version, options, values: values)
         self.update_value = update_value
         self.can_set_value = can_set_value or (lambda api_version: set_value is not None)
@@ -832,7 +832,7 @@ def _preprocess_links(module, client, api_version, value):
     return result
 
 
-def _ignore_mismatching_label_result(module, client, api_version, option, image, container_value, expected_value):
+def _ignore_mismatching_label_result(module, client, api_version, option, image, container_value, expected_value, host_info):
     if option.comparison == 'strict' and module.params['image_label_mismatch'] == 'fail':
         # If there are labels from the base image that should be removed and
         # base_image_mismatch is fail we want raise an error.
@@ -850,10 +850,20 @@ def _ignore_mismatching_label_result(module, client, api_version, option, image,
     return False
 
 
-def _ignore_mismatching_network_result(module, client, api_version, option, image, container_value, expected_value):
+def _needs_host_info_network(values):
+    return values.get('network_mode') == 'default'
+
+
+def _ignore_mismatching_network_result(module, client, api_version, option, image, container_value, expected_value, host_info):
     # 'networks' is handled out-of-band
     if option.name == 'networks':
         return True
+    # The 'default' network_mode value is translated by the Docker daemon to 'bridge' on Linux and 'nat' on Windows.
+    # This happens since Docker 26.1.0 due to https://github.com/moby/moby/pull/47431; before, 'default' was returned.
+    if option.name == 'network_mode' and expected_value == 'default':
+        os_type = host_info.get('OSType') if host_info else None
+        if (container_value, os_type) in (('bridge', 'linux'), ('nat', 'windows')):
+            return True
     return False
 
 
@@ -1338,7 +1348,7 @@ OPTION_HEALTHCHECK.add_engine('docker_api', DockerAPIEngine.config_value(
 OPTION_HOSTNAME.add_engine('docker_api', DockerAPIEngine.config_value('Hostname'))
 
 OPTION_IMAGE.add_engine('docker_api', DockerAPIEngine.config_value(
-    'Image', ignore_mismatching_result=lambda module, client, api_version, option, image, container_value, expected_value: True))
+    'Image', ignore_mismatching_result=lambda module, client, api_version, option, image, container_value, expected_value, host_info: True))
 
 OPTION_INIT.add_engine('docker_api', DockerAPIEngine.host_config_value('Init'))
 
@@ -1373,6 +1383,7 @@ OPTION_NETWORK.add_engine('docker_api', DockerAPIEngine(
     get_value=_get_values_network,
     set_value=_set_values_network,
     ignore_mismatching_result=_ignore_mismatching_network_result,
+    needs_host_info=_needs_host_info_network,
     extra_option_minimal_versions={
         'networks.mac_address': {
             'docker_api_version': '1.44',
