@@ -337,6 +337,33 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-ignore_buildable"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-parameter-ignore-buildable"><strong>ignore_buildable</strong></p>
+<a class="ansibleOptionLink" href="#parameter-ignore_buildable" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.12.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>If set to <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code>, will not pull images that can be built.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-include_deps"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-parameter-include-deps"><strong>include_deps</strong></p>
+<a class="ansibleOptionLink" href="#parameter-include_deps" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.12.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>If set to <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code>, also pull services that are declared as dependencies.</p>
+<p>This only makes sense if <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-compose-v2-pull-module-parameter-services"><span class="std std-ref"><span class="pre">services</span></span></a></strong></code> is used.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-policy"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-parameter-policy"><strong>policy</strong></p>
 <a class="ansibleOptionLink" href="#parameter-policy" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -376,6 +403,14 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-services"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-parameter-services"><strong>services</strong></p>
+<a class="ansibleOptionLink" href="#parameter-services" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.12.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Specifies a subset of services to be targeted.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -388,7 +423,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-parameter-tls-hostname"><strong>tls_hostname</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -396,7 +431,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-compose-v2-pull-module-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-compose-v2-pull-module-parameter-tls-verify"></span><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
