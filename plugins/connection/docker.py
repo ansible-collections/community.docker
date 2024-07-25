@@ -105,6 +105,20 @@ options:
           - name: ansible_docker_working_dir
         type: string
         version_added: 3.12.0
+    privileged:
+        description:
+          - Whether commands should be run with extended privileges.
+          - B(Note) that this allows command to potentially break out of the container. Use with care!
+        env:
+          - name: ANSIBLE_DOCKER_PRIVILEGED
+        ini:
+          - key: privileged
+            section: docker_connection
+        vars:
+          - name: ansible_docker_privileged
+        type: boolean
+        default: false
+        version_added: 3.12.0
 '''
 
 import fcntl
@@ -260,6 +274,9 @@ class Connection(ConnectionBase):
                     'Providing the working directory requires Docker CLI version 18.06 or newer. You have Docker CLI version {0}.'
                     .format(self.docker_version)
                 )
+
+        if self.get_option('privileged'):
+            local_cmd += [b'--privileged']
 
         # -i is needed to keep stdin open which allows pipelining to work
         local_cmd += [b'-i', self.get_option('remote_addr')] + cmd

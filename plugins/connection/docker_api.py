@@ -99,6 +99,20 @@ options:
           - name: ansible_docker_working_dir
         type: string
         version_added: 3.12.0
+    privileged:
+        description:
+          - Whether commands should be run with extended privileges.
+          - B(Note) that this allows command to potentially break out of the container. Use with care!
+        env:
+          - name: ANSIBLE_DOCKER_PRIVILEGED
+        ini:
+          - key: privileged
+            section: docker_connection
+        vars:
+          - name: ansible_docker_privileged
+        type: boolean
+        default: false
+        version_added: 3.12.0
 '''
 
 import os
@@ -225,7 +239,7 @@ class Connection(ConnectionBase):
         data = {
             'Container': self.get_option('remote_addr'),
             'User': self.get_option('remote_user') or '',
-            'Privileged': False,
+            'Privileged': self.get_option('privileged'),
             'Tty': False,
             'AttachStdin': need_stdin,
             'AttachStdout': True,
