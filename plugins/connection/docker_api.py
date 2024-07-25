@@ -72,11 +72,16 @@ options:
     extra_env:
         description:
           - Provide extra environment variables to set when running commands in the Docker container.
-        env:
-          - name: ANSIBLE_DOCKER_EXTRA_ENV
-        ini:
-          - key: extra_env
-            section: docker_connection
+          - This option can currently only be provided as Ansible variables due to limitations of
+            ansible-core's configuration manager.
+        # env:
+        #   - name: ANSIBLE_DOCKER_EXTRA_ENV
+        # ini:
+        #   - key: extra_env
+        #     section: docker_connection
+        # ansible-core's config manager does NOT support converting JSON strings (or other things) to dictionaries,
+        # it only accepts actual dictionaries (which don't happen to come from env and ini vars). So there's no way
+        # to actually provide this parameter from env and ini sources... :-(
         vars:
           - name: ansible_docker_extra_env
         type: dict
