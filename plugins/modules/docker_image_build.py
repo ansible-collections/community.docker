@@ -207,7 +207,8 @@ options:
           image:
             - This exporter writes the build result as an image or a manifest list.
               When using this driver, the image will appear in C(docker images).
-            - The image name can be provided in O(outputs[].name). If it is not provided, the
+            - The image name can be provided in O(outputs[].name). If it is not provided,
+              O(name) and O(tag) will be used.
             - Optionally, image can be automatically pushed to a registry by setting O(outputs[].push=true).
         required: true
       dest:
@@ -433,19 +434,19 @@ class ImageBuilder(DockerBaseClass):
                 if output['type'] == 'oci':
                     args.extend(['--output', 'type=oci,dest={dest}'.format(dest=output['dest'])])
                 if output['type'] == 'docker':
-                    more = []
+                    subargs = ['type=docker']
                     if output['dest'] is not None:
-                        more.append('dest={dest}'.format(dest=output['dest']))
-                    if output['dest'] is not None:
-                        more.append('context={context}'.format(context=output['context']))
-                    args.extend(['--output', 'type=docker,{more}'.format(more=','.join(more))])
+                        subargs.append('dest={dest}'.format(dest=output['dest']))
+                    if output['context'] is not None:
+                        subargs.append('context={context}'.format(context=output['context']))
+                    args.extend(['--output', ','.join(subargs)])
                 if output['type'] == 'image':
-                    more = []
+                    subargs = ['type=image']
                     if output['name'] is not None:
-                        more.append('name={name}'.format(name=output['name']))
+                        subargs.append('name={name}'.format(name=output['name']))
                     if output['push']:
-                        more.append('push=true')
-                    args.extend(['--output', 'type=image,{more}'.format(more=','.join(more))])
+                        subargs.append('push=true')
+                    args.extend(['--output', ','.join(subargs)])
         return environ_update
 
     def build_image(self):
