@@ -421,7 +421,7 @@ This export type writes the single-platform result image as a Docker image speci
 </li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;image&quot;</span></code>:
 This exporter writes the build result as an image or a manifest list. When using this driver, the image will appear in <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code>.</p>
-<p>The image name can be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].name</span></span></strong></code>. If it is not provided, the</p>
+<p>The image name can be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].name</span></span></strong></code>. If it is not provided, <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">name</span></span></strong></code> and <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">tag</span></span></strong></code> will be used.</p>
 <p>Optionally, image can be automatically pushed to a registry by setting <code class="ansible-option-value docutils literal notranslate"><span><span class="pre">outputs[].push=true</span></span></code>.</p>
 </li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code>:
