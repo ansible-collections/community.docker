@@ -456,13 +456,13 @@ def parse_json_events(stderr, warn_function=None):
     return events
 
 
-def parse_events(stderr, dry_run=False, warn_function=None):
+def parse_events(stderr, dry_run=False, warn_function=None, nonzero_rc=False):
     events = []
     error_event = None
     stderr_lines = stderr.splitlines()
     if stderr_lines and stderr_lines[-1] == b'':
         del stderr_lines[-1]
-    for line in stderr_lines:
+    for index, line in enumerate(stderr_lines):
         line = to_native(line.strip())
         if not line:
             continue
@@ -513,7 +513,7 @@ def parse_events(stderr, dry_run=False, warn_function=None):
             )
             events.append(error_event)
             continue
-        if len(stderr_lines) == 1:
+        if len(stderr_lines) == 1 or (nonzero_rc and index == len(stderr_lines) - 1):
             # **Very likely** an error message that is independent of an error event
             error_event = Event(
                 ResourceType.UNKNOWN,
@@ -780,10 +780,10 @@ class BaseComposeManager(DockerBaseClass):
             self._handle_failed_cli_call(args, rc, images, stderr)
         return images
 
-    def parse_events(self, stderr, dry_run=False):
+    def parse_events(self, stderr, dry_run=False, nonzero_rc=False):
         if self.use_json_events:
             return parse_json_events(stderr, warn_function=self.client.warn)
-        return parse_events(stderr, dry_run=dry_run, warn_function=self.client.warn)
+        return parse_events(stderr, dry_run=dry_run, warn_function=self.client.warn, nonzero_rc=nonzero_rc)
 
     def emit_warnings(self, events):
         emit_warnings(events, warn_function=self.client.warn)

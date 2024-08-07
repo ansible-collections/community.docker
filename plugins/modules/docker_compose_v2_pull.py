@@ -165,7 +165,7 @@ class PullManager(BaseComposeManager):
         result = dict()
         args = self.get_pull_cmd(self.check_mode)
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
-        events = self.parse_events(stderr, dry_run=self.check_mode)
+        events = self.parse_events(stderr, dry_run=self.check_mode, nonzero_rc=rc != 0)
         self.emit_warnings(events)
         self.update_result(result, events, stdout, stderr, ignore_service_pull_events=self.policy != 'missing' and not self.check_mode)
         self.update_failed(result, events, args, stdout, stderr, rc)
