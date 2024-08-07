@@ -20,6 +20,7 @@ EXTRA_TEST_CASES = [
         '2.24.2-manual-build-dry-run',
         '2.24.2',
         True,
+        False,
         ' DRY-RUN MODE -    build service foobar \n'
         ' DRY-RUN MODE -  ==> ==> writing image dryRun-8843d7f92416211de9ebb963ff4ce28125932878 \n'
         ' DRY-RUN MODE -  ==> ==> naming to my-python \n'
@@ -79,6 +80,7 @@ EXTRA_TEST_CASES = [
         # https://github.com/ansible-collections/community.docker/issues/785
         '2.20.0-manual-pull',
         '2.20.0',
+        False,
         False,
         '4f4fb700ef54 Waiting\n'
         '238022553356 Downloading     541B/541B\n'
@@ -180,6 +182,7 @@ EXTRA_TEST_CASES = [
         '2.20.3-logrus-warn',
         '2.20.3',
         False,
+        False,
         'time="2024-02-02T08:14:10+01:00" level=warning msg="a network with name influxNetwork exists but was not'
         ' created for project \\"influxdb\\".\\nSet `external: true` to use an existing network"\n',
         [],
@@ -192,6 +195,7 @@ EXTRA_TEST_CASES = [
         '2.20.3-image-warning-error',
         '2.20.3',
         False,
+        True,
         " dummy3 Warning \n"
         " dummy2 Warning \n"
         " dummy Error \n"
@@ -222,6 +226,7 @@ EXTRA_TEST_CASES = [
         '2.28.1-image-pull-skipped',
         '2.28.1',
         False,
+        False,
         " bash_1 Skipped \n"
         " bash_2 Pulling \n"
         " bash_2 Pulled \n",
@@ -247,23 +252,54 @@ EXTRA_TEST_CASES = [
         ],
         [],
     ),
+    (
+        # https://github.com/ansible-collections/community.docker/issues/948
+        '2.28.1-unknown',  # TODO: find out actual version!
+        '2.28.1',  # TODO: find out actual version!
+        False,
+        True,
+        " prometheus Pulling \n"
+        " prometheus Pulled \n"
+        "network internet-monitoring-front-tier was found but has incorrect label com.docker.compose.network set to \"internet-monitoring-front-tier\"\n",
+        [
+            Event(
+                'service',
+                'prometheus',
+                'Pulling',
+                None,
+            ),
+            Event(
+                'service',
+                'prometheus',
+                'Pulled',
+                None,
+            ),
+            Event(
+                'unknown',
+                '',
+                'Error',
+                'network internet-monitoring-front-tier was found but has incorrect label com.docker.compose.network set to "internet-monitoring-front-tier"',
+            ),
+        ],
+        [],
+    ),
 ]
 
 _ALL_TEST_CASES = EVENT_TEST_CASES + EXTRA_TEST_CASES
 
 
 @pytest.mark.parametrize(
-    'test_id, compose_version, dry_run, stderr, events, warnings',
+    'test_id, compose_version, dry_run, nonzero_rc, stderr, events, warnings',
     _ALL_TEST_CASES,
     ids=[tc[0] for tc in _ALL_TEST_CASES],
 )
-def test_parse_events(test_id, compose_version, dry_run, stderr, events, warnings):
+def test_parse_events(test_id, compose_version, dry_run, nonzero_rc, stderr, events, warnings):
     collected_warnings = []
 
     def collect_warning(msg):
         collected_warnings.append(msg)
 
-    collected_events = parse_events(stderr, dry_run=dry_run, warn_function=collect_warning)
+    collected_events = parse_events(stderr, dry_run=dry_run, warn_function=collect_warning, nonzero_rc=nonzero_rc)
 
     print(collected_events)
     print(collected_warnings)
