@@ -1,4 +1,0 @@
-bugfixes:
-  - "docker_compose_v2* modules, docker_image_build - provide better error message when required fields are not present in ``docker version``
-     or ``docker info`` output. This can happen if Podman is used instead of Docker
-     (https://github.com/ansible-collections/community.docker/issues/891, https://github.com/ansible-collections/community.docker/pull/935)."
