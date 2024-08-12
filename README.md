@@ -15,6 +15,20 @@ This repo contains the `community.docker` Ansible Collection. The collection inc
 
 Please note that this collection does **not** support Windows targets. The connection plugins included in this collection support Windows targets on a best-effort basis, but we are not testing this in CI.
 
+## Communication
+
+* Join the Ansible forum:
+  * [Get Help](https://forum.ansible.com/c/help/6): get help or help others.
+  * [Posts tagged with 'docker'](https://forum.ansible.com/tag/docker): subscribe to participate in Docker related conversations.
+  * [Posts tagged with 'docker-compose'](https://forum.ansible.com/tag/docker-compose): subscribe to participate in Docker Compose related conversations.
+  * [Posts tagged with 'docker-swarm'](https://forum.ansible.com/tag/docker-swarm): subscribe to participate in Docker Swarm related conversations.
+  * [Social Spaces](https://forum.ansible.com/c/chat/4): gather and interact with fellow enthusiasts.
+  * [News & Announcements](https://forum.ansible.com/c/news/5): track project-wide announcements including social events.
+
+* The Ansible [Bullhorn newsletter](https://docs.ansible.com/ansible/devel/community/communication.html#the-bullhorn): used to announce releases and important changes.
+
+For more information about communication, see the [Ansible communication guide](https://docs.ansible.com/ansible/devel/community/communication.html).
+
 ## Tested with Ansible
 
 Tested with the current ansible-core 2.11, ansible-core 2.12, ansible-core 2.13, ansible-core 2.14, ansible-core 2.15, ansible-core 2.16, and ansible-core 2.17 releases, and the current development version of ansible-core. Ansible/ansible-base versions before 2.11.0 are not supported.
