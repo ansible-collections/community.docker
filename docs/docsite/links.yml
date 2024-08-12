@@ -9,6 +9,12 @@ edit_on_github:
   path_prefix: ''
 
 extra_links:
+  - description: Ask for help (Docker)
+    url: https://forum.ansible.com/tags/c/help/6/none/docker
+  - description: Ask for help (Docker Compose)
+    url: https://forum.ansible.com/tags/c/help/6/none/docker-compose
+  - description: Ask for help (Docker Swarm)
+    url: https://forum.ansible.com/tags/c/help/6/none/docker-swarm
   - description: Submit a bug report
     url: https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&template=bug_report.md
   - description: Request a feature
@@ -26,6 +32,15 @@ communication:
     - topic: Ansible Project List
       url: https://groups.google.com/g/ansible-project
   forums:
-    - topic: Ansible Forum
+    - topic: "Ansible Forum: General usage and support questions"
       # The following URL directly points to the "Get Help" section
       url: https://forum.ansible.com/c/help/6/none
+    - topic: "Ansible Forum: Discussions about Docker"
+      # The following URL directly points to the "docker" tag
+      url: https://forum.ansible.com/tag/docker
+    - topic: "Ansible Forum: Discussions about Docker Compose"
+      # The following URL directly points to the "docker-compose" tag
+      url: https://forum.ansible.com/tag/docker-compose
+    - topic: "Ansible Forum: Discussions about Docker Swarm"
+      # The following URL directly points to the "docker-swarm" tag
+      url: https://forum.ansible.com/tag/docker-swarm
