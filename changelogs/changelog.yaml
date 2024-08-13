@@ -1879,3 +1879,17 @@ releases:
       - 947-docker_image_build.yml
       - 949-compose-error.yml
     release_date: '2024-08-07'
+  3.12.1:
+    changes:
+      deprecated_features:
+        - The collection deprecates support for all ansible-core versions that are
+          currently End of Life, `according to the ansible-core support matrix <https://docs.ansible.com/ansible-core/devel/reference_appendices/release_and_maintenance.html#ansible-core-support-matrix>`__.
+          This means that the next major release of the collection will no longer
+          support ansible-core 2.11, ansible-core 2.12, ansible-core 2.13, and ansible-core
+          2.14.
+      release_summary: Maintenance release with updated documentation and changelog.
+    fragments:
+      - 0-readme.yml
+      - 3.12.1.yml
+      - deprecate-eol-ansible-core.yml
+    release_date: '2024-08-13'
