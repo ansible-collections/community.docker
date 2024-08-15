@@ -24,7 +24,7 @@ If you encounter abusive behavior violating the [Ansible Code of Conduct](https:
 ## Communication
 
 * Join the Ansible forum:
-  * [Get Help](https://forum.ansible.com/c/help/6): get help or help others.
+  * [Get Help](https://forum.ansible.com/c/help/6): get help or help others. Please add appropriate tags if you start new discussions, for example the `docker`, `docker-compose`, or `docker-swarm` tags.
   * [Posts tagged with 'docker'](https://forum.ansible.com/tag/docker): subscribe to participate in Docker related conversations.
   * [Posts tagged with 'docker-compose'](https://forum.ansible.com/tag/docker-compose): subscribe to participate in Docker Compose related conversations.
   * [Posts tagged with 'docker-swarm'](https://forum.ansible.com/tag/docker-swarm): subscribe to participate in Docker Swarm related conversations.
