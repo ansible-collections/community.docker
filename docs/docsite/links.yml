@@ -24,10 +24,6 @@ communication:
   matrix_rooms:
     - topic: General usage and support questions
       room: '#users:ansible.im'
-  irc_channels:
-    - topic: General usage and support questions
-      network: Libera
-      channel: '#ansible'
   forums:
     - topic: "Ansible Forum: General usage and support questions"
       # The following URL directly points to the "Get Help" section
