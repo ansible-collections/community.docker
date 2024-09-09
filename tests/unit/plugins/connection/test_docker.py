@@ -46,7 +46,7 @@ class TestDockerConnectionClass(unittest.TestCase):
                 return_value=('false', 'garbage', '', 1))
     @mock.patch('ansible_collections.community.docker.plugins.connection.docker.Connection._new_docker_version',
                 return_value=('docker version', '1.2.3', '', 0))
-    def test_docker_connection_module_too_old(self, mock_new_docker_verison, mock_old_docker_version):
+    def test_docker_connection_module_too_old(self, mock_new_docker_version, mock_old_docker_version):
         self.dc._version = None
         self.dc.remote_user = 'foo'
         self.assertRaisesRegexp(AnsibleError, '^docker connection type requires docker 1.3 or higher$', self.dc._get_actual_user)
@@ -55,7 +55,7 @@ class TestDockerConnectionClass(unittest.TestCase):
                 return_value=('false', 'garbage', '', 1))
     @mock.patch('ansible_collections.community.docker.plugins.connection.docker.Connection._new_docker_version',
                 return_value=('docker version', '1.7.0', '', 0))
-    def test_docker_connection_module(self, mock_new_docker_verison, mock_old_docker_version):
+    def test_docker_connection_module(self, mock_new_docker_version, mock_old_docker_version):
         self.dc._version = None
         version = self.dc.docker_version
 
