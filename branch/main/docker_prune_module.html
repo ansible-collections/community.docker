@@ -545,6 +545,22 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">      </span><span class="c1"># only consider containers created more than 24 hours ago</span>
 <span class="w">      </span><span class="nt">until</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">24h</span>
 
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Prune containers with labels</span>
+<span class="w">  </span><span class="nt">community.docker.docker_prune</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">containers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">containers_filters</span><span class="p">:</span>
+<span class="w">      </span><span class="c1"># Prune containers whose &quot;foo&quot; label has value &quot;bar&quot;, and</span>
+<span class="w">      </span><span class="c1"># whose &quot;bam&quot; label has value &quot;baz&quot;. If you only want to</span>
+<span class="w">      </span><span class="c1"># compare one label, you can provide it as a string instead</span>
+<span class="w">      </span><span class="c1"># of a list with one element.</span>
+<span class="w">      </span><span class="nt">label</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foo=bar</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bam=baz</span>
+<span class="w">      </span><span class="c1"># Prune containers whose label &quot;bar&quot; does *not* have value</span>
+<span class="w">      </span><span class="c1"># &quot;baz&quot;. If you want to avoid more than one label, you can</span>
+<span class="w">      </span><span class="c1"># provide a list of multiple label-value pairs.</span>
+<span class="w">      </span><span class="s">&quot;label!&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bar=baz</span>
+
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Prune everything</span>
 <span class="w">  </span><span class="nt">community.docker.docker_prune</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">containers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
