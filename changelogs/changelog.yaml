@@ -1893,3 +1893,13 @@ releases:
       - 3.12.1.yml
       - deprecate-eol-ansible-core.yml
     release_date: '2024-08-13'
+  3.12.2:
+    changes:
+      bugfixes:
+        - docker_prune - fix handling of lists for the filter options (https://github.com/ansible-collections/community.docker/issues/961,
+          https://github.com/ansible-collections/community.docker/pull/966).
+      release_summary: Bugfix release.
+    fragments:
+      - 3.12.2.yml
+      - 966-prune-filters.yml
+    release_date: '2024-09-17'
