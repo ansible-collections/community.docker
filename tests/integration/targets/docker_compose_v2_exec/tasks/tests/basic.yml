@@ -1,0 +1,97 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- vars:
+    pname: "{{ name_prefix }}-start-stop"
+    cname: "{{ name_prefix }}-container"
+    project_src: "{{ remote_tmp_dir }}/{{ pname }}"
+    test_service: |
+      services:
+        {{ cname }}:
+          image: "{{ docker_test_image_alpine }}"
+          command: '/bin/sh -c "sleep 10m"'
+          stop_grace_period: 1s
+
+  block:
+    - name: Registering container name
+      set_fact:
+        cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
+        dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
+
+    - name: Create project directory
+      file:
+        path: '{{ project_src }}'
+        state: directory
+
+    - name: Template default project file
+      copy:
+        dest: '{{ project_src }}/docker-compose.yml'
+        content: '{{ test_service }}'
+
+    - block:
+        - name: Start services
+          docker_compose_v2:
+            project_src: '{{ project_src }}'
+            state: present
+
+        - name: Run command with command
+          docker_compose_v2_exec:
+            project_src: '{{ project_src }}'
+            service: '{{ cname }}'
+            command: /bin/sh -c "ls /"
+          register: result_1
+
+        - name: Run command with argv
+          docker_compose_v2_exec:
+            project_src: '{{ project_src }}'
+            service: '{{ cname }}'
+            argv:
+              - /bin/sh
+              - "-c"
+              - whoami
+            user: "1234"
+          register: result_2
+          failed_when: result_2.rc != 1
+
+        - name: Run detached command
+          docker_compose_v2_exec:
+            project_src: '{{ project_src }}'
+            service: '{{ cname }}'
+            command: /bin/sh -c "sleep 1"
+            detach: true
+          register: result_3
+
+        - name: Run command with input
+          docker_compose_v2_exec:
+            project_src: '{{ project_src }}'
+            service: '{{ cname }}'
+            command: /bin/sh -c "cat"
+            stdin: This is a test
+          register: result_4
+
+        - assert:
+            that:
+              - result_1.rc == 0
+              - result_1.stderr == ""
+              - >-
+                "usr" in result_1.stdout_lines
+                and
+                "etc" in result_1.stdout_lines
+              - result_2.rc == 1
+              - >-
+                "whoami: unknown uid 1234" in result_2.stderr
+              - result_2.stdout == ""
+              - result_3.rc is not defined
+              - result_3.stdout is not defined
+              - result_3.stderr is not defined
+              - result_4.rc == 0
+              - result_4.stdout == "This is a test"
+              - result_4.stderr == ""
+
+      always:
+        - name: Cleanup
+          docker_compose_v2:
+            project_src: '{{ project_src }}'
+            state: absent

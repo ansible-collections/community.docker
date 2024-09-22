@@ -8,7 +8,9 @@ action_groups:
   docker:
     - docker_compose
     - docker_compose_v2
+    - docker_compose_v2_exec
     - docker_compose_v2_pull
+    - docker_compose_v2_run
     - docker_config
     - docker_container
     - docker_container_copy_into
