@@ -429,18 +429,6 @@ options:
     description:
       - The container's hostname.
     type: str
-  ignore_image:
-    description:
-      - When O(state) is V(present) or V(started), the module compares the configuration of an existing
-        container to requested configuration. The evaluation includes the image version. If the image
-        version in the registry does not match the container, the container will be recreated. You can
-        stop this behavior by setting O(ignore_image) to V(true).
-      - "B(Warning:) This option is ignored if C(image: ignore) or C(*: ignore) is specified in the
-        O(comparisons) option."
-      - "This option is deprecated since community.docker 3.2.0 and will be removed in community.docker 4.0.0.
-        Use C(image: ignore) in O(comparisons) instead of O(ignore_image=true)."
-    type: bool
-    default: false
   image:
     description:
       - Repository path and tag used to create the container. If an image is not found or pull is true, the image
@@ -485,12 +473,12 @@ options:
       - If set to V(recreate) the container will be recreated.
       - If set to V(ignore) (currently the default) the container will not be recreated because of this. It might still get recreated for other reasons.
         This has been the default behavior of the module for a long time, but might not be what users expect.
-      - Since community.docker 3.5.0, the default V(ignore) has been deprecated. If not specified, a deprecation warning
-        will be emitted if this setting would make a difference. The default will change to V(recreate) in community.docker 4.0.0.
+      - The default changed from V(ignore) to V(recreate) in community.docker 4.0.0.
     type: str
     choices:
       - recreate
       - ignore
+    default: recreate
     version_added: 3.2.0
   init:
     description:
@@ -849,15 +837,6 @@ options:
       - image_not_present
       - always
     version_added: 3.8.0
-  purge_networks:
-    description:
-      - Remove the container from ALL networks not included in O(networks) parameter.
-      - Any default networks such as C(bridge), if not found in O(networks), will be removed as well.
-      - "This option is deprecated since community.docker 3.2.0 and will be removed in community.docker 4.0.0.
-        Use C(networks: strict) in O(comparisons) instead of O(purge_networks=true) and make sure that
-        O(networks) is specified. If you want to remove all networks, specify O(networks) as C([])."
-    type: bool
-    default: false
   read_only:
     description:
       - Mount the container's root file system as read-only.

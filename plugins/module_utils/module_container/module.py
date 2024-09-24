@@ -135,11 +135,6 @@ class ContainerManager(DockerBaseClass):
             comp_aliases[option_name] = option_name
             for alias in option.ansible_aliases:
                 comp_aliases[alias] = option_name
-        # Process legacy ignore options
-        if self.module.params['ignore_image']:
-            self.all_options['image'].comparison = 'ignore'
-        if self.module.params['purge_networks']:
-            self.all_options['networks'].comparison = 'strict'
         # Process comparisons specified by user
         if self.module.params.get('comparisons'):
             # If '*' appears in comparisons, process it first
@@ -184,11 +179,6 @@ class ContainerManager(DockerBaseClass):
         for option in self.all_options.values():
             if option.copy_comparison_from is not None:
                 option.comparison = self.all_options[option.copy_comparison_from].comparison
-        # Check legacy values
-        if self.module.params['ignore_image'] and self.all_options['image'].comparison != 'ignore':
-            self.module.warn('The ignore_image option has been overridden by the comparisons option!')
-        if self.module.params['purge_networks'] and self.all_options['networks'].comparison != 'strict':
-            self.module.warn('The purge_networks option has been overridden by the comparisons option!')
 
     def _update_params(self):
         if self.param_networks_cli_compatible is True and self.module.params['networks'] and self.module.params['network_mode'] is None:
@@ -332,20 +322,9 @@ class ContainerManager(DockerBaseClass):
             image_different = False
             if self.all_options['image'].comparison == 'strict':
                 image_different = self._image_is_different(image, container)
-                if self.param_image_name_mismatch != 'ignore' and self.param_image is not None and self.param_image != container.image_name:
-                    if self.param_image_name_mismatch == 'recreate':
-                        different = True
-                        self.diff_tracker.add('image_name', parameter=self.param_image, active=container.image_name)
-                    else:
-                        # The default has been deprecated!
-                        self.module.deprecate(
-                            'The default value "ignore" for image_name_mismatch has been deprecated and will change to "recreate"'
-                            ' in community.docker 4.0.0. In the current situation, this would cause the container to be recreated'
-                            ' since the current container\'s image name "{active}" does not match the desired image name "{parameter}".'.format(
-                                parameter=self.param_image, active=container.image_name),
-                            version='4.0.0',
-                            collection_name='community.docker',
-                        )
+                if self.param_image_name_mismatch == 'recreate' and self.param_image is not None and self.param_image != container.image_name:
+                    different = True
+                    self.diff_tracker.add('image_name', parameter=self.param_image, active=container.image_name)
             if image_different or different or self.param_recreate:
                 self.diff_tracker.merge(differences)
                 self.diff['differences'] = differences.get_legacy_docker_container_diffs()
@@ -704,13 +683,6 @@ class ContainerManager(DockerBaseClass):
                 updated_container = self._add_networks(container, network_differences)
 
         purge_networks = self.all_options['networks'].comparison == 'strict' and self.module.params['networks'] is not None
-        if not purge_networks and self.module.params['purge_networks']:
-            purge_networks = True
-            self.module.deprecate(
-                'The purge_networks option is used while networks is not specified. In this case purge_networks=true cannot'
-                ' be replaced by `networks: strict` in comparisons, which is necessary once purge_networks is removed.'
-                ' Please modify the docker_container invocation by adding `networks: []`',
-                version='4.0.0', collection_name='community.docker')
         if purge_networks:
             has_extra_networks, extra_networks = self.has_extra_networks(container)
             if has_extra_networks:
@@ -890,11 +862,10 @@ def run_module(engine_driver):
             command_handling=dict(type='str', choices=['compatibility', 'correct'], default='correct'),
             default_host_ip=dict(type='str'),
             force_kill=dict(type='bool', default=False, aliases=['forcekill']),
-            ignore_image=dict(type='bool', default=False, removed_in_version='4.0.0', removed_from_collection='community.docker'),
             image=dict(type='str'),
             image_comparison=dict(type='str', choices=['desired-image', 'current-image'], default='desired-image'),
             image_label_mismatch=dict(type='str', choices=['ignore', 'fail'], default='ignore'),
-            image_name_mismatch=dict(type='str', choices=['ignore', 'recreate']),
+            image_name_mismatch=dict(type='str', choices=['ignore', 'recreate'], default='recreate'),
             keep_volumes=dict(type='bool', default=True),
             kill_signal=dict(type='str'),
             name=dict(type='str', required=True),
@@ -903,7 +874,6 @@ def run_module(engine_driver):
             paused=dict(type='bool'),
             pull=dict(type='raw', choices=['never', 'missing', 'always', True, False], default='missing'),
             pull_check_mode_behavior=dict(type='str', choices=['image_not_present', 'always'], default='image_not_present'),
-            purge_networks=dict(type='bool', default=False, removed_in_version='4.0.0', removed_from_collection='community.docker'),
             recreate=dict(type='bool', default=False),
             removal_wait_timeout=dict(type='float'),
             restart=dict(type='bool', default=False),

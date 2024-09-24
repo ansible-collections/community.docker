@@ -2290,7 +2290,7 @@
     - interactive_3 is changed
 
 ####################################################################
-## image / image_comparison / ignore_image #########################
+## image / image_comparison ########################################
 ####################################################################
 
 - name: Pull images to make sure ignore_image test succeeds
@@ -2570,7 +2570,8 @@
 - name: ignore_image
   docker_container:
     image: "{{ docker_test_image_hello_world }}"
-    ignore_image: true
+    comparisons:
+      image: ignore
     name: "{{ cname }}"
     state: started
   register: ignore_image
@@ -2579,8 +2580,9 @@
 - name: ignore_image (labels and env differ in image, image_comparison=current-image)
   docker_container:
     image: "{{ docker_test_image_registry_nginx }}"
-    ignore_image: true
     image_comparison: current-image
+    comparisons:
+      image: ignore
     name: "{{ cname }}"
     state: started
   register: ignore_image_2
@@ -2589,8 +2591,9 @@
 - name: ignore_image (labels and env differ in image, image_comparison=desired-image)
   docker_container:
     image: "{{ docker_test_image_registry_nginx }}"
-    ignore_image: true
     image_comparison: desired-image
+    comparisons:
+      image: ignore
     name: "{{ cname }}"
     state: started
     force_kill: true

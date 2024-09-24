@@ -143,7 +143,6 @@ author:
   - Felix Fontein (@felixfontein)
 
 seealso:
-  - module: community.docker.docker_compose
   - module: community.docker.docker_compose_v2_pull
 '''
 

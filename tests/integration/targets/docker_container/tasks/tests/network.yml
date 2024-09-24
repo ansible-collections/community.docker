@@ -385,18 +385,16 @@
     networks_cli_compatible: true
   register: networks_7
 
-- name: networks_cli_compatible=yes, networks not specified, purge_networks
+- name: networks_cli_compatible=yes, networks empty, purge_networks
   docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
     state: started
     networks_cli_compatible: true
-    purge_networks: true
-    # To replace `purge_networks=true`, we have to specify `networks: []`:
-    #   comparisons:
-    #     networks: strict
-    #   networks: []
+    comparisons:
+      networks: strict
+    networks: []
     force_kill: true
   register: networks_8
 

@@ -57,19 +57,6 @@ jobs:
             ansible_runner: ansible-runner
             base_image: quay.io/rockylinux/rockylinux:9
             pre_base: '"#"'
-          - name: ansible-core 2.14 @ CentOS Stream 9
-            ansible_core: https://github.com/ansible/ansible/archive/stable-2.14.tar.gz
-            ansible_runner: ansible-runner
-            base_image: quay.io/centos/centos:stream9
-            pre_base: '"#"'
-          - name: ansible-core 2.13 @ RHEL UBI 8
-            ansible_core: https://github.com/ansible/ansible/archive/stable-2.13.tar.gz
-            ansible_runner: ansible-runner
-            other_deps: |2
-                python_interpreter:
-                  package_system: python39 python39-pip python39-wheel python39-cryptography
-            base_image: docker.io/redhat/ubi8:latest
-            pre_base: '"#"'
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
