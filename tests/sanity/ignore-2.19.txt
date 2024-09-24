@@ -1,0 +1,4 @@
+plugins/modules/docker_container_copy_into.py validate-modules:undocumented-parameter # _max_file_size_for_diff is used by the action plugin
+plugins/module_utils/_api/api/client.py pylint:use-yield-from  # suggested construct does not work with Python 2
+plugins/module_utils/_api/utils/build.py pylint:use-yield-from  # suggested construct does not work with Python 2
+tests/unit/plugins/module_utils/test_copy.py pylint:use-yield-from  # suggested construct does not work with Python 2
