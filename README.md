@@ -37,9 +37,7 @@ For more information about communication, see the [Ansible communication guide](
 
 ## Tested with Ansible
 
-Tested with the current ansible-core 2.11, ansible-core 2.12, ansible-core 2.13, ansible-core 2.14, ansible-core 2.15, ansible-core 2.16, ansible-core 2.17, and ansible-core 2.18 releases, and the current development version of ansible-core. Ansible/ansible-base versions before 2.11.0 are not supported.
-
-Please note that Ansible 2.9 and ansible-base 2.10 are no longer supported. If you need to use them, use community.docker 2.x.y. Also note that this collection does not work with ansible-core 2.11 (this includes ansible-base and Ansible 2.9) on Python 3.12+.
+Tested with the current ansible-core 2.15, ansible-core 2.16, ansible-core 2.17, and ansible-core 2.18 releases, and the current development version of ansible-core. Ansible/ansible-base versions before 2.15.0 are not supported.
 
 ## External requirements
 

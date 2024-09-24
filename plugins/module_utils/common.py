@@ -122,18 +122,6 @@ if not HAS_DOCKER_PY:
 
 
 def _get_tls_config(fail_function, **kwargs):
-    if 'ssl_version' in kwargs and LooseVersion(docker_version) >= LooseVersion('7.0.0b1'):
-        ssl_version = kwargs.pop('ssl_version')
-        if ssl_version is not None:
-            fail_function(
-                "ssl_version is not compatible with Docker SDK for Python 7.0.0+. You are using"
-                " Docker SDK for Python {docker_py_version}. The ssl_version option (value: {ssl_version})"
-                " has either been set directly or with the environment variable DOCKER_SSL_VERSION."
-                " Make sure it is not set, or switch to an older version of Docker SDK for Python.".format(
-                    docker_py_version=docker_version,
-                    ssl_version=ssl_version,
-                )
-            )
     if 'assert_hostname' in kwargs and LooseVersion(docker_version) >= LooseVersion('7.0.0b1'):
         assert_hostname = kwargs.pop('assert_hostname')
         if assert_hostname is not None:
@@ -174,7 +162,6 @@ def get_connect_params(auth, fail_function):
         tls_config = dict(
             verify=True,
             assert_hostname=auth['tls_hostname'],
-            ssl_version=auth['ssl_version'],
             fail_function=fail_function,
         )
         if auth['cert_path'] and auth['key_path']:
@@ -186,7 +173,6 @@ def get_connect_params(auth, fail_function):
         # TLS without verification
         tls_config = dict(
             verify=False,
-            ssl_version=auth['ssl_version'],
             fail_function=fail_function,
         )
         if auth['cert_path'] and auth['key_path']:
@@ -334,7 +320,6 @@ class AnsibleDockerClientBase(Client):
             cacert_path=self._get_value('cacert_path', params['ca_path'], 'DOCKER_CERT_PATH', None, type='str'),
             cert_path=self._get_value('cert_path', params['client_cert'], 'DOCKER_CERT_PATH', None, type='str'),
             key_path=self._get_value('key_path', params['client_key'], 'DOCKER_CERT_PATH', None, type='str'),
-            ssl_version=self._get_value('ssl_version', params['ssl_version'], 'DOCKER_SSL_VERSION', None, type='str'),
             tls=self._get_value('tls', params['tls'], 'DOCKER_TLS', DEFAULT_TLS, type='bool'),
             tls_verify=self._get_value('tls_verfy', params['validate_certs'], 'DOCKER_TLS_VERIFY',
                                        DEFAULT_TLS_VERIFY, type='bool'),

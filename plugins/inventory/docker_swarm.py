@@ -77,15 +77,6 @@ DOCUMENTATION = r'''
             description: When verifying the authenticity of the Docker host server, provide the expected name of
                          the server.
             type: str
-        ssl_version:
-            description:
-                - Provide a valid SSL version number. Default value determined
-                  by L(SSL Python module, https://docs.python.org/3/library/ssl.html).
-            type: str
-            deprecated:
-                why: This was necessary a long time ago to handle problems with SSL versions. It is no longer necessary nowadays.
-                version: 4.0.0
-                alternatives: None.
         api_version:
             description:
                 - The version of the Docker API running on the Docker Host.
@@ -197,7 +188,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             tls_hostname=self.get_option('tls_hostname'),
             api_version=self.get_option('api_version'),
             timeout=self.get_option('timeout'),
-            ssl_version=self.get_option('ssl_version'),
             use_ssh_client=self.get_option('use_ssh_client'),
             debug=None,
         )
