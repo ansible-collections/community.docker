@@ -718,9 +718,9 @@ class BaseComposeManager(DockerBaseClass):
         self.cleanup()
         self.client.fail(msg, **kwargs)
 
-    def get_base_args(self):
+    def get_base_args(self, plain_progress=False):
         args = ['compose', '--ansi', 'never']
-        if self.use_json_events:
+        if self.use_json_events and not plain_progress:
             args.extend(['--progress', 'json'])
         elif self.compose_version >= LooseVersion('2.19.0'):
             # https://github.com/docker/compose/pull/10690
