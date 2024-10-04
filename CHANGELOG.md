@@ -2,14 +2,17 @@
 
 **Topics**
 
-- <a href="#v3-12-2">v3\.12\.2</a>
+- <a href="#v3-13-0">v3\.13\.0</a>
     - <a href="#release-summary">Release Summary</a>
+    - <a href="#new-modules">New Modules</a>
+- <a href="#v3-12-2">v3\.12\.2</a>
+    - <a href="#release-summary-1">Release Summary</a>
     - <a href="#bugfixes">Bugfixes</a>
 - <a href="#v3-12-1">v3\.12\.1</a>
-    - <a href="#release-summary-1">Release Summary</a>
+    - <a href="#release-summary-2">Release Summary</a>
     - <a href="#deprecated-features">Deprecated Features</a>
 - <a href="#v3-12-0">v3\.12\.0</a>
-    - <a href="#release-summary-2">Release Summary</a>
+    - <a href="#release-summary-3">Release Summary</a>
     - <a href="#minor-changes">Minor Changes</a>
     - <a href="#bugfixes-1">Bugfixes</a>
     - <a href="#known-issues">Known Issues</a>
@@ -17,119 +20,119 @@
     - <a href="#minor-changes-1">Minor Changes</a>
     - <a href="#bugfixes-2">Bugfixes</a>
 - <a href="#v3-10-4">v3\.10\.4</a>
-    - <a href="#release-summary-3">Release Summary</a>
+    - <a href="#release-summary-4">Release Summary</a>
     - <a href="#bugfixes-3">Bugfixes</a>
 - <a href="#v3-10-3">v3\.10\.3</a>
-    - <a href="#release-summary-4">Release Summary</a>
+    - <a href="#release-summary-5">Release Summary</a>
     - <a href="#bugfixes-4">Bugfixes</a>
 - <a href="#v3-10-2">v3\.10\.2</a>
-    - <a href="#release-summary-5">Release Summary</a>
+    - <a href="#release-summary-6">Release Summary</a>
     - <a href="#bugfixes-5">Bugfixes</a>
 - <a href="#v3-10-1">v3\.10\.1</a>
-    - <a href="#release-summary-6">Release Summary</a>
+    - <a href="#release-summary-7">Release Summary</a>
     - <a href="#bugfixes-6">Bugfixes</a>
     - <a href="#known-issues-1">Known Issues</a>
 - <a href="#v3-10-0">v3\.10\.0</a>
-    - <a href="#release-summary-7">Release Summary</a>
+    - <a href="#release-summary-8">Release Summary</a>
     - <a href="#minor-changes-2">Minor Changes</a>
     - <a href="#deprecated-features-1">Deprecated Features</a>
 - <a href="#v3-9-0">v3\.9\.0</a>
-    - <a href="#release-summary-8">Release Summary</a>
+    - <a href="#release-summary-9">Release Summary</a>
     - <a href="#minor-changes-3">Minor Changes</a>
     - <a href="#bugfixes-7">Bugfixes</a>
 - <a href="#v3-8-1">v3\.8\.1</a>
-    - <a href="#release-summary-9">Release Summary</a>
+    - <a href="#release-summary-10">Release Summary</a>
     - <a href="#security-fixes">Security Fixes</a>
     - <a href="#bugfixes-8">Bugfixes</a>
 - <a href="#v3-8-0">v3\.8\.0</a>
-    - <a href="#release-summary-10">Release Summary</a>
+    - <a href="#release-summary-11">Release Summary</a>
     - <a href="#minor-changes-4">Minor Changes</a>
     - <a href="#bugfixes-9">Bugfixes</a>
 - <a href="#v3-7-0">v3\.7\.0</a>
-    - <a href="#release-summary-11">Release Summary</a>
+    - <a href="#release-summary-12">Release Summary</a>
     - <a href="#minor-changes-5">Minor Changes</a>
     - <a href="#bugfixes-10">Bugfixes</a>
-    - <a href="#new-modules">New Modules</a>
+    - <a href="#new-modules-1">New Modules</a>
 - <a href="#v3-6-0">v3\.6\.0</a>
-    - <a href="#release-summary-12">Release Summary</a>
+    - <a href="#release-summary-13">Release Summary</a>
     - <a href="#major-changes">Major Changes</a>
     - <a href="#minor-changes-6">Minor Changes</a>
     - <a href="#bugfixes-11">Bugfixes</a>
-    - <a href="#new-modules-1">New Modules</a>
+    - <a href="#new-modules-2">New Modules</a>
 - <a href="#v3-5-0">v3\.5\.0</a>
-    - <a href="#release-summary-13">Release Summary</a>
+    - <a href="#release-summary-14">Release Summary</a>
     - <a href="#minor-changes-7">Minor Changes</a>
     - <a href="#deprecated-features-2">Deprecated Features</a>
     - <a href="#bugfixes-12">Bugfixes</a>
 - <a href="#v3-4-11">v3\.4\.11</a>
-    - <a href="#release-summary-14">Release Summary</a>
+    - <a href="#release-summary-15">Release Summary</a>
     - <a href="#bugfixes-13">Bugfixes</a>
 - <a href="#v3-4-10">v3\.4\.10</a>
-    - <a href="#release-summary-15">Release Summary</a>
+    - <a href="#release-summary-16">Release Summary</a>
     - <a href="#bugfixes-14">Bugfixes</a>
 - <a href="#v3-4-9">v3\.4\.9</a>
-    - <a href="#release-summary-16">Release Summary</a>
+    - <a href="#release-summary-17">Release Summary</a>
     - <a href="#bugfixes-15">Bugfixes</a>
 - <a href="#v3-4-8">v3\.4\.8</a>
-    - <a href="#release-summary-17">Release Summary</a>
+    - <a href="#release-summary-18">Release Summary</a>
     - <a href="#known-issues-2">Known Issues</a>
 - <a href="#v3-4-7">v3\.4\.7</a>
-    - <a href="#release-summary-18">Release Summary</a>
+    - <a href="#release-summary-19">Release Summary</a>
     - <a href="#bugfixes-16">Bugfixes</a>
 - <a href="#v3-4-6">v3\.4\.6</a>
-    - <a href="#release-summary-19">Release Summary</a>
+    - <a href="#release-summary-20">Release Summary</a>
     - <a href="#bugfixes-17">Bugfixes</a>
     - <a href="#known-issues-3">Known Issues</a>
 - <a href="#v3-4-5">v3\.4\.5</a>
-    - <a href="#release-summary-20">Release Summary</a>
+    - <a href="#release-summary-21">Release Summary</a>
     - <a href="#bugfixes-18">Bugfixes</a>
 - <a href="#v3-4-4">v3\.4\.4</a>
-    - <a href="#release-summary-21">Release Summary</a>
+    - <a href="#release-summary-22">Release Summary</a>
     - <a href="#minor-changes-8">Minor Changes</a>
     - <a href="#known-issues-4">Known Issues</a>
 - <a href="#v3-4-3">v3\.4\.3</a>
-    - <a href="#release-summary-22">Release Summary</a>
-- <a href="#v3-4-2">v3\.4\.2</a>
     - <a href="#release-summary-23">Release Summary</a>
+- <a href="#v3-4-2">v3\.4\.2</a>
+    - <a href="#release-summary-24">Release Summary</a>
     - <a href="#bugfixes-19">Bugfixes</a>
 - <a href="#v3-4-1">v3\.4\.1</a>
-    - <a href="#release-summary-24">Release Summary</a>
+    - <a href="#release-summary-25">Release Summary</a>
     - <a href="#bugfixes-20">Bugfixes</a>
 - <a href="#v3-4-0">v3\.4\.0</a>
-    - <a href="#release-summary-25">Release Summary</a>
+    - <a href="#release-summary-26">Release Summary</a>
     - <a href="#minor-changes-9">Minor Changes</a>
     - <a href="#bugfixes-21">Bugfixes</a>
-    - <a href="#new-modules-2">New Modules</a>
+    - <a href="#new-modules-3">New Modules</a>
 - <a href="#v3-3-2">v3\.3\.2</a>
-    - <a href="#release-summary-26">Release Summary</a>
+    - <a href="#release-summary-27">Release Summary</a>
     - <a href="#bugfixes-22">Bugfixes</a>
 - <a href="#v3-3-1">v3\.3\.1</a>
-    - <a href="#release-summary-27">Release Summary</a>
+    - <a href="#release-summary-28">Release Summary</a>
     - <a href="#bugfixes-23">Bugfixes</a>
 - <a href="#v3-3-0">v3\.3\.0</a>
-    - <a href="#release-summary-28">Release Summary</a>
+    - <a href="#release-summary-29">Release Summary</a>
     - <a href="#minor-changes-10">Minor Changes</a>
     - <a href="#bugfixes-24">Bugfixes</a>
 - <a href="#v3-2-2">v3\.2\.2</a>
-    - <a href="#release-summary-29">Release Summary</a>
+    - <a href="#release-summary-30">Release Summary</a>
     - <a href="#bugfixes-25">Bugfixes</a>
 - <a href="#v3-2-1">v3\.2\.1</a>
-    - <a href="#release-summary-30">Release Summary</a>
-- <a href="#v3-2-0">v3\.2\.0</a>
     - <a href="#release-summary-31">Release Summary</a>
+- <a href="#v3-2-0">v3\.2\.0</a>
+    - <a href="#release-summary-32">Release Summary</a>
     - <a href="#minor-changes-11">Minor Changes</a>
     - <a href="#deprecated-features-3">Deprecated Features</a>
 - <a href="#v3-1-0">v3\.1\.0</a>
-    - <a href="#release-summary-32">Release Summary</a>
+    - <a href="#release-summary-33">Release Summary</a>
     - <a href="#minor-changes-12">Minor Changes</a>
 - <a href="#v3-0-2">v3\.0\.2</a>
-    - <a href="#release-summary-33">Release Summary</a>
+    - <a href="#release-summary-34">Release Summary</a>
     - <a href="#bugfixes-26">Bugfixes</a>
 - <a href="#v3-0-1">v3\.0\.1</a>
-    - <a href="#release-summary-34">Release Summary</a>
+    - <a href="#release-summary-35">Release Summary</a>
     - <a href="#bugfixes-27">Bugfixes</a>
 - <a href="#v3-0-0">v3\.0\.0</a>
-    - <a href="#release-summary-35">Release Summary</a>
+    - <a href="#release-summary-36">Release Summary</a>
     - <a href="#major-changes-1">Major Changes</a>
     - <a href="#minor-changes-13">Minor Changes</a>
     - <a href="#breaking-changes--porting-guide">Breaking Changes / Porting Guide</a>
@@ -137,132 +140,146 @@
     - <a href="#security-fixes-1">Security Fixes</a>
     - <a href="#bugfixes-28">Bugfixes</a>
 - <a href="#v2-7-0">v2\.7\.0</a>
-    - <a href="#release-summary-36">Release Summary</a>
+    - <a href="#release-summary-37">Release Summary</a>
     - <a href="#minor-changes-14">Minor Changes</a>
     - <a href="#deprecated-features-4">Deprecated Features</a>
     - <a href="#bugfixes-29">Bugfixes</a>
 - <a href="#v2-6-0">v2\.6\.0</a>
-    - <a href="#release-summary-37">Release Summary</a>
+    - <a href="#release-summary-38">Release Summary</a>
     - <a href="#minor-changes-15">Minor Changes</a>
     - <a href="#deprecated-features-5">Deprecated Features</a>
     - <a href="#bugfixes-30">Bugfixes</a>
 - <a href="#v2-5-1">v2\.5\.1</a>
-    - <a href="#release-summary-38">Release Summary</a>
+    - <a href="#release-summary-39">Release Summary</a>
     - <a href="#bugfixes-31">Bugfixes</a>
 - <a href="#v2-5-0">v2\.5\.0</a>
-    - <a href="#release-summary-39">Release Summary</a>
+    - <a href="#release-summary-40">Release Summary</a>
     - <a href="#minor-changes-16">Minor Changes</a>
 - <a href="#v2-4-0">v2\.4\.0</a>
-    - <a href="#release-summary-40">Release Summary</a>
+    - <a href="#release-summary-41">Release Summary</a>
     - <a href="#minor-changes-17">Minor Changes</a>
     - <a href="#bugfixes-32">Bugfixes</a>
 - <a href="#v2-3-0">v2\.3\.0</a>
-    - <a href="#release-summary-41">Release Summary</a>
+    - <a href="#release-summary-42">Release Summary</a>
     - <a href="#minor-changes-18">Minor Changes</a>
     - <a href="#bugfixes-33">Bugfixes</a>
 - <a href="#v2-2-1">v2\.2\.1</a>
-    - <a href="#release-summary-42">Release Summary</a>
+    - <a href="#release-summary-43">Release Summary</a>
     - <a href="#bugfixes-34">Bugfixes</a>
 - <a href="#v2-2-0">v2\.2\.0</a>
-    - <a href="#release-summary-43">Release Summary</a>
+    - <a href="#release-summary-44">Release Summary</a>
     - <a href="#minor-changes-19">Minor Changes</a>
     - <a href="#bugfixes-35">Bugfixes</a>
 - <a href="#v2-1-1">v2\.1\.1</a>
-    - <a href="#release-summary-44">Release Summary</a>
+    - <a href="#release-summary-45">Release Summary</a>
     - <a href="#bugfixes-36">Bugfixes</a>
 - <a href="#v2-1-0">v2\.1\.0</a>
-    - <a href="#release-summary-45">Release Summary</a>
+    - <a href="#release-summary-46">Release Summary</a>
     - <a href="#minor-changes-20">Minor Changes</a>
     - <a href="#bugfixes-37">Bugfixes</a>
 - <a href="#v2-0-2">v2\.0\.2</a>
-    - <a href="#release-summary-46">Release Summary</a>
+    - <a href="#release-summary-47">Release Summary</a>
     - <a href="#bugfixes-38">Bugfixes</a>
 - <a href="#v2-0-1">v2\.0\.1</a>
-    - <a href="#release-summary-47">Release Summary</a>
-- <a href="#v2-0-0">v2\.0\.0</a>
     - <a href="#release-summary-48">Release Summary</a>
+- <a href="#v2-0-0">v2\.0\.0</a>
+    - <a href="#release-summary-49">Release Summary</a>
     - <a href="#breaking-changes--porting-guide-1">Breaking Changes / Porting Guide</a>
     - <a href="#deprecated-features-6">Deprecated Features</a>
     - <a href="#removed-features-previously-deprecated-1">Removed Features \(previously deprecated\)</a>
 - <a href="#v1-10-0">v1\.10\.0</a>
-    - <a href="#release-summary-49">Release Summary</a>
+    - <a href="#release-summary-50">Release Summary</a>
     - <a href="#minor-changes-21">Minor Changes</a>
 - <a href="#v1-9-1">v1\.9\.1</a>
-    - <a href="#release-summary-50">Release Summary</a>
+    - <a href="#release-summary-51">Release Summary</a>
     - <a href="#bugfixes-39">Bugfixes</a>
 - <a href="#v1-9-0">v1\.9\.0</a>
-    - <a href="#release-summary-51">Release Summary</a>
+    - <a href="#release-summary-52">Release Summary</a>
     - <a href="#minor-changes-22">Minor Changes</a>
     - <a href="#deprecated-features-7">Deprecated Features</a>
     - <a href="#bugfixes-40">Bugfixes</a>
     - <a href="#new-plugins">New Plugins</a>
         - <a href="#connection">Connection</a>
 - <a href="#v1-8-0">v1\.8\.0</a>
-    - <a href="#release-summary-52">Release Summary</a>
+    - <a href="#release-summary-53">Release Summary</a>
     - <a href="#minor-changes-23">Minor Changes</a>
     - <a href="#bugfixes-41">Bugfixes</a>
 - <a href="#v1-7-0">v1\.7\.0</a>
-    - <a href="#release-summary-53">Release Summary</a>
+    - <a href="#release-summary-54">Release Summary</a>
     - <a href="#minor-changes-24">Minor Changes</a>
 - <a href="#v1-6-1">v1\.6\.1</a>
-    - <a href="#release-summary-54">Release Summary</a>
+    - <a href="#release-summary-55">Release Summary</a>
     - <a href="#bugfixes-42">Bugfixes</a>
 - <a href="#v1-6-0">v1\.6\.0</a>
-    - <a href="#release-summary-55">Release Summary</a>
+    - <a href="#release-summary-56">Release Summary</a>
     - <a href="#minor-changes-25">Minor Changes</a>
     - <a href="#deprecated-features-8">Deprecated Features</a>
     - <a href="#bugfixes-43">Bugfixes</a>
 - <a href="#v1-5-0">v1\.5\.0</a>
-    - <a href="#release-summary-56">Release Summary</a>
+    - <a href="#release-summary-57">Release Summary</a>
     - <a href="#minor-changes-26">Minor Changes</a>
     - <a href="#bugfixes-44">Bugfixes</a>
-    - <a href="#new-modules-3">New Modules</a>
+    - <a href="#new-modules-4">New Modules</a>
 - <a href="#v1-4-0">v1\.4\.0</a>
-    - <a href="#release-summary-57">Release Summary</a>
+    - <a href="#release-summary-58">Release Summary</a>
     - <a href="#minor-changes-27">Minor Changes</a>
     - <a href="#breaking-changes--porting-guide-2">Breaking Changes / Porting Guide</a>
     - <a href="#security-fixes-2">Security Fixes</a>
     - <a href="#bugfixes-45">Bugfixes</a>
 - <a href="#v1-3-0">v1\.3\.0</a>
-    - <a href="#release-summary-58">Release Summary</a>
+    - <a href="#release-summary-59">Release Summary</a>
     - <a href="#minor-changes-28">Minor Changes</a>
     - <a href="#bugfixes-46">Bugfixes</a>
-    - <a href="#new-modules-4">New Modules</a>
+    - <a href="#new-modules-5">New Modules</a>
 - <a href="#v1-2-2">v1\.2\.2</a>
-    - <a href="#release-summary-59">Release Summary</a>
+    - <a href="#release-summary-60">Release Summary</a>
     - <a href="#security-fixes-3">Security Fixes</a>
 - <a href="#v1-2-1">v1\.2\.1</a>
-    - <a href="#release-summary-60">Release Summary</a>
+    - <a href="#release-summary-61">Release Summary</a>
     - <a href="#bugfixes-47">Bugfixes</a>
 - <a href="#v1-2-0">v1\.2\.0</a>
-    - <a href="#release-summary-61">Release Summary</a>
+    - <a href="#release-summary-62">Release Summary</a>
     - <a href="#minor-changes-29">Minor Changes</a>
     - <a href="#bugfixes-48">Bugfixes</a>
 - <a href="#v1-1-0">v1\.1\.0</a>
-    - <a href="#release-summary-62">Release Summary</a>
+    - <a href="#release-summary-63">Release Summary</a>
     - <a href="#minor-changes-30">Minor Changes</a>
     - <a href="#deprecated-features-9">Deprecated Features</a>
     - <a href="#bugfixes-49">Bugfixes</a>
     - <a href="#new-plugins-1">New Plugins</a>
         - <a href="#connection-1">Connection</a>
         - <a href="#inventory">Inventory</a>
-    - <a href="#new-modules-5">New Modules</a>
+    - <a href="#new-modules-6">New Modules</a>
 - <a href="#v1-0-1">v1\.0\.1</a>
-    - <a href="#release-summary-63">Release Summary</a>
+    - <a href="#release-summary-64">Release Summary</a>
     - <a href="#bugfixes-50">Bugfixes</a>
 - <a href="#v1-0-0">v1\.0\.0</a>
-    - <a href="#release-summary-64">Release Summary</a>
+    - <a href="#release-summary-65">Release Summary</a>
     - <a href="#minor-changes-31">Minor Changes</a>
 - <a href="#v0-1-0">v0\.1\.0</a>
-    - <a href="#release-summary-65">Release Summary</a>
+    - <a href="#release-summary-66">Release Summary</a>
     - <a href="#minor-changes-32">Minor Changes</a>
     - <a href="#removed-features-previously-deprecated-2">Removed Features \(previously deprecated\)</a>
     - <a href="#bugfixes-51">Bugfixes</a>
 
+<a id="v3-13-0"></a>
+## v3\.13\.0
+
+<a id="release-summary"></a>
+### Release Summary
+
+Feature release\.
+
+<a id="new-modules"></a>
+### New Modules
+
+* community\.docker\.docker\_compose\_v2\_exec \- Run command in a container of a Compose service\.
+* community\.docker\.docker\_compose\_v2\_run \- Run command in a new container of a Compose service\.
+
 <a id="v3-12-2"></a>
 ## v3\.12\.2
 
-<a id="release-summary"></a>
+<a id="release-summary-1"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -275,7 +292,7 @@ Bugfix release\.
 <a id="v3-12-1"></a>
 ## v3\.12\.1
 
-<a id="release-summary-1"></a>
+<a id="release-summary-2"></a>
 ### Release Summary
 
 Maintenance release with updated documentation and changelog\.
@@ -288,7 +305,7 @@ Maintenance release with updated documentation and changelog\.
 <a id="v3-12-0"></a>
 ## v3\.12\.0
 
-<a id="release-summary-2"></a>
+<a id="release-summary-3"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -338,7 +355,7 @@ Bugfix and feature release\.
 <a id="v3-10-4"></a>
 ## v3\.10\.4
 
-<a id="release-summary-3"></a>
+<a id="release-summary-4"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -352,7 +369,7 @@ Bugfix release\.
 <a id="v3-10-3"></a>
 ## v3\.10\.3
 
-<a id="release-summary-4"></a>
+<a id="release-summary-5"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -365,7 +382,7 @@ Bugfix release\.
 <a id="v3-10-2"></a>
 ## v3\.10\.2
 
-<a id="release-summary-5"></a>
+<a id="release-summary-6"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -378,7 +395,7 @@ Bugfix release\.
 <a id="v3-10-1"></a>
 ## v3\.10\.1
 
-<a id="release-summary-6"></a>
+<a id="release-summary-7"></a>
 ### Release Summary
 
 Hotfix release for requests 2\.32\.0 compatibility\.
@@ -402,7 +419,7 @@ Hotfix release for requests 2\.32\.0 compatibility\.
 <a id="v3-10-0"></a>
 ## v3\.10\.0
 
-<a id="release-summary-7"></a>
+<a id="release-summary-8"></a>
 ### Release Summary
 
 Feature release\.
@@ -428,7 +445,7 @@ Feature release\.
 <a id="v3-9-0"></a>
 ## v3\.9\.0
 
-<a id="release-summary-8"></a>
+<a id="release-summary-9"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -451,7 +468,7 @@ Bugfix and feature release\.
 <a id="v3-8-1"></a>
 ## v3\.8\.1
 
-<a id="release-summary-9"></a>
+<a id="release-summary-10"></a>
 ### Release Summary
 
 Bugfix release
@@ -472,7 +489,7 @@ Bugfix release
 <a id="v3-8-0"></a>
 ## v3\.8\.0
 
-<a id="release-summary-10"></a>
+<a id="release-summary-11"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -494,7 +511,7 @@ Bugfix and feature release\.
 <a id="v3-7-0"></a>
 ## v3\.7\.0
 
-<a id="release-summary-11"></a>
+<a id="release-summary-12"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -511,7 +528,7 @@ Bugfix and feature release\.
 * docker\_compose\_v2 \- properly parse dry\-run build events from <code>stderr</code> \([https\://github\.com/ansible\-collections/community\.docker/issues/778](https\://github\.com/ansible\-collections/community\.docker/issues/778)\, [https\://github\.com/ansible\-collections/community\.docker/pull/779](https\://github\.com/ansible\-collections/community\.docker/pull/779)\)\.
 * docker\_compose\_v2\_pull \- the module was documented as part of the <code>community\.docker\.docker</code> action group\, but was not actually part of it\. That has now been fixed \([https\://github\.com/ansible\-collections/community\.docker/pull/773](https\://github\.com/ansible\-collections/community\.docker/pull/773)\)\.
 
-<a id="new-modules"></a>
+<a id="new-modules-1"></a>
 ### New Modules
 
 * community\.docker\.docker\_image\_export \- Export \(archive\) Docker images
@@ -519,7 +536,7 @@ Bugfix and feature release\.
 <a id="v3-6-0"></a>
 ## v3\.6\.0
 
-<a id="release-summary-12"></a>
+<a id="release-summary-13"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -555,7 +572,7 @@ so the main difference is that instead of some Python requirements\, they depend
 * Use <code>unix\:///var/run/docker\.sock</code> instead of the legacy <code>unix\://var/run/docker\.sock</code> as default for <code>docker\_host</code> \([https\://github\.com/ansible\-collections/community\.docker/pull/736](https\://github\.com/ansible\-collections/community\.docker/pull/736)\)\.
 * docker\_image \- fix archiving idempotency with Docker API 1\.44 or later \([https\://github\.com/ansible\-collections/community\.docker/pull/765](https\://github\.com/ansible\-collections/community\.docker/pull/765)\)\.
 
-<a id="new-modules-1"></a>
+<a id="new-modules-2"></a>
 ### New Modules
 
 * community\.docker\.docker\_compose\_v2 \- Manage multi\-container Docker applications with Docker Compose CLI plugin
@@ -569,7 +586,7 @@ so the main difference is that instead of some Python requirements\, they depend
 <a id="v3-5-0"></a>
 ## v3\.5\.0
 
-<a id="release-summary-13"></a>
+<a id="release-summary-14"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -595,7 +612,7 @@ Bugfix and feature release\.
 <a id="v3-4-11"></a>
 ## v3\.4\.11
 
-<a id="release-summary-14"></a>
+<a id="release-summary-15"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -608,7 +625,7 @@ Bugfix release\.
 <a id="v3-4-10"></a>
 ## v3\.4\.10
 
-<a id="release-summary-15"></a>
+<a id="release-summary-16"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -621,7 +638,7 @@ Bugfix release\.
 <a id="v3-4-9"></a>
 ## v3\.4\.9
 
-<a id="release-summary-16"></a>
+<a id="release-summary-17"></a>
 ### Release Summary
 
 Maintenance release with updated documentation and vendored Docker SDK for Python code\.
@@ -634,7 +651,7 @@ Maintenance release with updated documentation and vendored Docker SDK for Pytho
 <a id="v3-4-8"></a>
 ## v3\.4\.8
 
-<a id="release-summary-17"></a>
+<a id="release-summary-18"></a>
 ### Release Summary
 
 Maintenance release with updated documentation\.
@@ -655,7 +672,7 @@ for the rendered HTML version of the documentation of the latest release\.
 <a id="v3-4-7"></a>
 ## v3\.4\.7
 
-<a id="release-summary-18"></a>
+<a id="release-summary-19"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -668,7 +685,7 @@ Bugfix release\.
 <a id="v3-4-6"></a>
 ## v3\.4\.6
 
-<a id="release-summary-19"></a>
+<a id="release-summary-20"></a>
 ### Release Summary
 
 Bugfix release with documentation warnings about using certain functionality when connecting to the Docker daemon with TCP TLS\.
@@ -690,7 +707,7 @@ Bugfix release with documentation warnings about using certain functionality whe
 <a id="v3-4-5"></a>
 ## v3\.4\.5
 
-<a id="release-summary-20"></a>
+<a id="release-summary-21"></a>
 ### Release Summary
 
 Maintenance release which adds compatibility with requests 2\.29\.0 and 2\.30\.0 and urllib3 2\.0\.
@@ -703,7 +720,7 @@ Maintenance release which adds compatibility with requests 2\.29\.0 and 2\.30\.0
 <a id="v3-4-4"></a>
 ## v3\.4\.4
 
-<a id="release-summary-21"></a>
+<a id="release-summary-22"></a>
 ### Release Summary
 
 Maintenance release with updated EE requirements and updated documentation\.
@@ -721,7 +738,7 @@ Maintenance release with updated EE requirements and updated documentation\.
 <a id="v3-4-3"></a>
 ## v3\.4\.3
 
-<a id="release-summary-22"></a>
+<a id="release-summary-23"></a>
 ### Release Summary
 
 Maintenance release with improved documentation\.
@@ -729,7 +746,7 @@ Maintenance release with improved documentation\.
 <a id="v3-4-2"></a>
 ## v3\.4\.2
 
-<a id="release-summary-23"></a>
+<a id="release-summary-24"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -742,7 +759,7 @@ Bugfix release\.
 <a id="v3-4-1"></a>
 ## v3\.4\.1
 
-<a id="release-summary-24"></a>
+<a id="release-summary-25"></a>
 ### Release Summary
 
 Regular bugfix release\.
@@ -757,7 +774,7 @@ Regular bugfix release\.
 <a id="v3-4-0"></a>
 ## v3\.4\.0
 
-<a id="release-summary-25"></a>
+<a id="release-summary-26"></a>
 ### Release Summary
 
 Regular bugfix and feature release\.
@@ -776,7 +793,7 @@ Regular bugfix and feature release\.
 * docker\_plugin \- do not crash if plugin is installed in check mode \([https\://github\.com/ansible\-collections/community\.docker/issues/552](https\://github\.com/ansible\-collections/community\.docker/issues/552)\, [https\://github\.com/ansible\-collections/community\.docker/pull/553](https\://github\.com/ansible\-collections/community\.docker/pull/553)\)\.
 * most modules \- fix handling of <code>DOCKER\_TIMEOUT</code> environment variable\, and improve handling of other fallback environment variables \([https\://github\.com/ansible\-collections/community\.docker/issues/551](https\://github\.com/ansible\-collections/community\.docker/issues/551)\, [https\://github\.com/ansible\-collections/community\.docker/pull/554](https\://github\.com/ansible\-collections/community\.docker/pull/554)\)\.
 
-<a id="new-modules-2"></a>
+<a id="new-modules-3"></a>
 ### New Modules
 
 * community\.docker\.docker\_container\_copy\_into \- Copy a file into a Docker container
@@ -784,7 +801,7 @@ Regular bugfix and feature release\.
 <a id="v3-3-2"></a>
 ## v3\.3\.2
 
-<a id="release-summary-26"></a>
+<a id="release-summary-27"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -797,7 +814,7 @@ Bugfix release\.
 <a id="v3-3-1"></a>
 ## v3\.3\.1
 
-<a id="release-summary-27"></a>
+<a id="release-summary-28"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -810,7 +827,7 @@ Bugfix release\.
 <a id="v3-3-0"></a>
 ## v3\.3\.0
 
-<a id="release-summary-28"></a>
+<a id="release-summary-29"></a>
 ### Release Summary
 
 Feature and bugfix release\.
@@ -830,7 +847,7 @@ Feature and bugfix release\.
 <a id="v3-2-2"></a>
 ## v3\.2\.2
 
-<a id="release-summary-29"></a>
+<a id="release-summary-30"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -843,7 +860,7 @@ Bugfix release\.
 <a id="v3-2-1"></a>
 ## v3\.2\.1
 
-<a id="release-summary-30"></a>
+<a id="release-summary-31"></a>
 ### Release Summary
 
 Maintenance release with improved documentation\.
@@ -851,7 +868,7 @@ Maintenance release with improved documentation\.
 <a id="v3-2-0"></a>
 ## v3\.2\.0
 
-<a id="release-summary-31"></a>
+<a id="release-summary-32"></a>
 ### Release Summary
 
 Feature and deprecation release\.
@@ -870,7 +887,7 @@ Feature and deprecation release\.
 <a id="v3-1-0"></a>
 ## v3\.1\.0
 
-<a id="release-summary-32"></a>
+<a id="release-summary-33"></a>
 ### Release Summary
 
 Feature release\.
@@ -884,7 +901,7 @@ Feature release\.
 <a id="v3-0-2"></a>
 ## v3\.0\.2
 
-<a id="release-summary-33"></a>
+<a id="release-summary-34"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -897,7 +914,7 @@ Bugfix release\.
 <a id="v3-0-1"></a>
 ## v3\.0\.1
 
-<a id="release-summary-34"></a>
+<a id="release-summary-35"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -910,7 +927,7 @@ Bugfix release\.
 <a id="v3-0-0"></a>
 ## v3\.0\.0
 
-<a id="release-summary-35"></a>
+<a id="release-summary-36"></a>
 ### Release Summary
 
 The 3\.0\.0 release features a rewrite of the <code>docker\_container</code> module\, and many modules and plugins no longer depend on the Docker SDK for Python\.
@@ -991,7 +1008,7 @@ The 3\.0\.0 release features a rewrite of the <code>docker\_container</code> mod
 <a id="v2-7-0"></a>
 ## v2\.7\.0
 
-<a id="release-summary-36"></a>
+<a id="release-summary-37"></a>
 ### Release Summary
 
 Bugfix and deprecation release\. The next 2\.x\.y releases will only be bugfix releases\, the next expect minor/major release will be 3\.0\.0 with some major changes\.
@@ -1015,7 +1032,7 @@ Bugfix and deprecation release\. The next 2\.x\.y releases will only be bugfix r
 <a id="v2-6-0"></a>
 ## v2\.6\.0
 
-<a id="release-summary-37"></a>
+<a id="release-summary-38"></a>
 ### Release Summary
 
 Bugfix and feature release\.
@@ -1042,7 +1059,7 @@ Bugfix and feature release\.
 <a id="v2-5-1"></a>
 ## v2\.5\.1
 
-<a id="release-summary-38"></a>
+<a id="release-summary-39"></a>
 ### Release Summary
 
 Maintenance release\.
@@ -1055,7 +1072,7 @@ Maintenance release\.
 <a id="v2-5-0"></a>
 ## v2\.5\.0
 
-<a id="release-summary-39"></a>
+<a id="release-summary-40"></a>
 ### Release Summary
 
 Regular feature release\.
@@ -1069,7 +1086,7 @@ Regular feature release\.
 <a id="v2-4-0"></a>
 ## v2\.4\.0
 
-<a id="release-summary-40"></a>
+<a id="release-summary-41"></a>
 ### Release Summary
 
 Regular feature and bugfix release\.
@@ -1089,7 +1106,7 @@ Regular feature and bugfix release\.
 <a id="v2-3-0"></a>
 ## v2\.3\.0
 
-<a id="release-summary-41"></a>
+<a id="release-summary-42"></a>
 ### Release Summary
 
 Regular feature and bugfix release\.
@@ -1112,7 +1129,7 @@ Regular feature and bugfix release\.
 <a id="v2-2-1"></a>
 ## v2\.2\.1
 
-<a id="release-summary-42"></a>
+<a id="release-summary-43"></a>
 ### Release Summary
 
 Regular bugfix release\.
@@ -1125,7 +1142,7 @@ Regular bugfix release\.
 <a id="v2-2-0"></a>
 ## v2\.2\.0
 
-<a id="release-summary-43"></a>
+<a id="release-summary-44"></a>
 ### Release Summary
 
 Regular feature and bugfix release\.
@@ -1145,7 +1162,7 @@ Regular feature and bugfix release\.
 <a id="v2-1-1"></a>
 ## v2\.1\.1
 
-<a id="release-summary-44"></a>
+<a id="release-summary-45"></a>
 ### Release Summary
 
 Emergency release to amend breaking change in previous release\.
@@ -1158,7 +1175,7 @@ Emergency release to amend breaking change in previous release\.
 <a id="v2-1-0"></a>
 ## v2\.1\.0
 
-<a id="release-summary-45"></a>
+<a id="release-summary-46"></a>
 ### Release Summary
 
 Feature and bugfix release\.
@@ -1179,7 +1196,7 @@ Feature and bugfix release\.
 <a id="v2-0-2"></a>
 ## v2\.0\.2
 
-<a id="release-summary-46"></a>
+<a id="release-summary-47"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -1195,7 +1212,7 @@ Bugfix release\.
 <a id="v2-0-1"></a>
 ## v2\.0\.1
 
-<a id="release-summary-47"></a>
+<a id="release-summary-48"></a>
 ### Release Summary
 
 Maintenance release with some documentation fixes\.
@@ -1203,7 +1220,7 @@ Maintenance release with some documentation fixes\.
 <a id="v2-0-0"></a>
 ## v2\.0\.0
 
-<a id="release-summary-48"></a>
+<a id="release-summary-49"></a>
 ### Release Summary
 
 New major release with some deprecations removed and a breaking change in the <code>docker\_compose</code> module regarding the <code>timeout</code> parameter\.
@@ -1229,7 +1246,7 @@ New major release with some deprecations removed and a breaking change in the <c
 <a id="v1-10-0"></a>
 ## v1\.10\.0
 
-<a id="release-summary-49"></a>
+<a id="release-summary-50"></a>
 ### Release Summary
 
 Regular feature and bugfix release\.
@@ -1244,7 +1261,7 @@ Regular feature and bugfix release\.
 <a id="v1-9-1"></a>
 ## v1\.9\.1
 
-<a id="release-summary-50"></a>
+<a id="release-summary-51"></a>
 ### Release Summary
 
 Regular bugfix release\.
@@ -1257,7 +1274,7 @@ Regular bugfix release\.
 <a id="v1-9-0"></a>
 ## v1\.9\.0
 
-<a id="release-summary-51"></a>
+<a id="release-summary-52"></a>
 ### Release Summary
 
 New bugfixes and features release\.
@@ -1295,7 +1312,7 @@ New bugfixes and features release\.
 <a id="v1-8-0"></a>
 ## v1\.8\.0
 
-<a id="release-summary-52"></a>
+<a id="release-summary-53"></a>
 ### Release Summary
 
 Regular bugfix and feature release\.
@@ -1317,7 +1334,7 @@ Regular bugfix and feature release\.
 <a id="v1-7-0"></a>
 ## v1\.7\.0
 
-<a id="release-summary-53"></a>
+<a id="release-summary-54"></a>
 ### Release Summary
 
 Small feature and bugfix release\.
@@ -1330,7 +1347,7 @@ Small feature and bugfix release\.
 <a id="v1-6-1"></a>
 ## v1\.6\.1
 
-<a id="release-summary-54"></a>
+<a id="release-summary-55"></a>
 ### Release Summary
 
 Bugfix release to reduce deprecation warning spam\.
@@ -1343,7 +1360,7 @@ Bugfix release to reduce deprecation warning spam\.
 <a id="v1-6-0"></a>
 ## v1\.6\.0
 
-<a id="release-summary-55"></a>
+<a id="release-summary-56"></a>
 ### Release Summary
 
 Regular bugfix and feature release\.
@@ -1369,7 +1386,7 @@ Regular bugfix and feature release\.
 <a id="v1-5-0"></a>
 ## v1\.5\.0
 
-<a id="release-summary-56"></a>
+<a id="release-summary-57"></a>
 ### Release Summary
 
 Regular feature release\.
@@ -1384,7 +1401,7 @@ Regular feature release\.
 
 * all modules \- use <code>to\_native</code> to convert exceptions to strings \([https\://github\.com/ansible\-collections/community\.docker/pull/121](https\://github\.com/ansible\-collections/community\.docker/pull/121)\)\.
 
-<a id="new-modules-3"></a>
+<a id="new-modules-4"></a>
 ### New Modules
 
 * community\.docker\.docker\_container\_exec \- Execute command in a docker container
@@ -1392,7 +1409,7 @@ Regular feature release\.
 <a id="v1-4-0"></a>
 ## v1\.4\.0
 
-<a id="release-summary-57"></a>
+<a id="release-summary-58"></a>
 ### Release Summary
 
 Security release to address another potential secret leak\. Also includes regular bugfixes and features\.
@@ -1421,7 +1438,7 @@ Security release to address another potential secret leak\. Also includes regula
 <a id="v1-3-0"></a>
 ## v1\.3\.0
 
-<a id="release-summary-58"></a>
+<a id="release-summary-59"></a>
 ### Release Summary
 
 Regular feature and bugfix release\.
@@ -1443,7 +1460,7 @@ Regular feature and bugfix release\.
 * docker\_image\_info \- prevent module failure when image vanishes between listing and inspection \([https\://github\.com/ansible\-collections/community\.docker/pull/87](https\://github\.com/ansible\-collections/community\.docker/pull/87)\)\.
 * docker\_image\_info \- prevent module failure when querying non\-existent image by ID \([https\://github\.com/ansible\-collections/community\.docker/pull/87](https\://github\.com/ansible\-collections/community\.docker/pull/87)\)\.
 
-<a id="new-modules-4"></a>
+<a id="new-modules-5"></a>
 ### New Modules
 
 * community\.docker\.docker\_image\_load \- Load docker image\(s\) from archives
@@ -1452,7 +1469,7 @@ Regular feature and bugfix release\.
 <a id="v1-2-2"></a>
 ## v1\.2\.2
 
-<a id="release-summary-59"></a>
+<a id="release-summary-60"></a>
 ### Release Summary
 
 Security bugfix release to address CVE\-2021\-20191\.
@@ -1465,7 +1482,7 @@ Security bugfix release to address CVE\-2021\-20191\.
 <a id="v1-2-1"></a>
 ## v1\.2\.1
 
-<a id="release-summary-60"></a>
+<a id="release-summary-61"></a>
 ### Release Summary
 
 Bugfix release\.
@@ -1478,7 +1495,7 @@ Bugfix release\.
 <a id="v1-2-0"></a>
 ## v1\.2\.0
 
-<a id="release-summary-61"></a>
+<a id="release-summary-62"></a>
 ### Release Summary
 
 Feature release with one new feature and two bugfixes\.
@@ -1497,7 +1514,7 @@ Feature release with one new feature and two bugfixes\.
 <a id="v1-1-0"></a>
 ## v1\.1\.0
 
-<a id="release-summary-62"></a>
+<a id="release-summary-63"></a>
 ### Release Summary
 
 Feature release with three new plugins and modules\.
@@ -1534,7 +1551,7 @@ Feature release with three new plugins and modules\.
 
 * community\.docker\.docker\_containers \- Ansible dynamic inventory plugin for Docker containers\.
 
-<a id="new-modules-5"></a>
+<a id="new-modules-6"></a>
 ### New Modules
 
 * community\.docker\.current\_container\_facts \- Return facts about whether the module runs in a Docker container
@@ -1542,7 +1559,7 @@ Feature release with three new plugins and modules\.
 <a id="v1-0-1"></a>
 ## v1\.0\.1
 
-<a id="release-summary-63"></a>
+<a id="release-summary-64"></a>
 ### Release Summary
 
 Maintenance release with a bugfix for <code>docker\_container</code>\.
@@ -1555,7 +1572,7 @@ Maintenance release with a bugfix for <code>docker\_container</code>\.
 <a id="v1-0-0"></a>
 ## v1\.0\.0
 
-<a id="release-summary-64"></a>
+<a id="release-summary-65"></a>
 ### Release Summary
 
 This is the first production \(non\-prerelease\) release of <code>community\.docker</code>\.
@@ -1570,7 +1587,7 @@ This is the first production \(non\-prerelease\) release of <code>community\.doc
 <a id="v0-1-0"></a>
 ## v0\.1\.0
 
-<a id="release-summary-65"></a>
+<a id="release-summary-66"></a>
 ### Release Summary
 
 The <code>community\.docker</code> continues the work on the Ansible docker modules and plugins from their state in <code>community\.general</code> 1\.2\.0\. The changes listed here are thus relative to the modules and plugins <code>community\.general\.docker\*</code>\.

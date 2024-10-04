@@ -1903,3 +1903,16 @@ releases:
       - 3.12.2.yml
       - 966-prune-filters.yml
     release_date: '2024-09-17'
+  3.13.0:
+    changes:
+      release_summary: Feature release.
+    fragments:
+      - 3.13.0.yml
+    modules:
+      - description: Run command in a container of a Compose service.
+        name: docker_compose_v2_exec
+        namespace: ''
+      - description: Run command in a new container of a Compose service.
+        name: docker_compose_v2_run
+        namespace: ''
+    release_date: '2024-10-04'

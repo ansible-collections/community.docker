@@ -4,6 +4,20 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v3.13.0
+=======
+
+Release Summary
+---------------
+
+Feature release.
+
+New Modules
+-----------
+
+- community.docker.docker_compose_v2_exec - Run command in a container of a Compose service.
+- community.docker.docker_compose_v2_run - Run command in a new container of a Compose service.
+
 v3.12.2
 =======
 
