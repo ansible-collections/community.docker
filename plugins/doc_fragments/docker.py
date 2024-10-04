@@ -71,14 +71,6 @@ options:
               the file C(key.pem) from the directory specified in the environment variable E(DOCKER_CERT_PATH) will be used.
         type: path
         aliases: [ tls_client_key, key_path ]
-    ssl_version:
-        description:
-            - Provide a valid SSL version number. Default value determined by L(SSL Python module, https://docs.python.org/3/library/ssl.html).
-            - If the value is not specified in the task, the value of environment variable E(DOCKER_SSL_VERSION) will be
-              used instead.
-            - B(Note:) this option is no longer supported for Docker SDK for Python 7.0.0+. Specifying it with Docker SDK for
-              Python 7.0.0 or newer will lead to an error.
-        type: str
     tls:
         description:
             - Secure the connection to the API by using TLS without verifying the authenticity of the Docker host
@@ -110,7 +102,7 @@ options:
 
 notes:
   - Connect to the Docker daemon by providing parameters with each task or by defining environment variables.
-    You can define E(DOCKER_HOST), E(DOCKER_TLS_HOSTNAME), E(DOCKER_API_VERSION), E(DOCKER_CERT_PATH), E(DOCKER_SSL_VERSION),
+    You can define E(DOCKER_HOST), E(DOCKER_TLS_HOSTNAME), E(DOCKER_API_VERSION), E(DOCKER_CERT_PATH),
     E(DOCKER_TLS), E(DOCKER_TLS_VERIFY) and E(DOCKER_TIMEOUT). If you are using docker machine, run the script shipped
     with the product that sets up the environment. It will set these variables for you. See
     U(https://docs.docker.com/machine/reference/env/) for more details.
@@ -148,9 +140,6 @@ options:
     client_key:
         vars:
             - name: ansible_docker_client_key
-    ssl_version:
-        vars:
-            - name: ansible_docker_ssl_version
     tls:
         vars:
             - name: ansible_docker_tls
@@ -250,12 +239,6 @@ options:
               the file C(key.pem) from the directory specified in the environment variable E(DOCKER_CERT_PATH) will be used.
         type: path
         aliases: [ tls_client_key, key_path ]
-    ssl_version:
-        description:
-            - Provide a valid SSL version number. Default value determined by L(SSL Python module, https://docs.python.org/3/library/ssl.html).
-            - If the value is not specified in the task, the value of environment variable E(DOCKER_SSL_VERSION) will be
-              used instead.
-        type: str
     tls:
         description:
             - Secure the connection to the API by using TLS without verifying the authenticity of the Docker host
@@ -286,7 +269,7 @@ options:
 
 notes:
   - Connect to the Docker daemon by providing parameters with each task or by defining environment variables.
-    You can define E(DOCKER_HOST), E(DOCKER_TLS_HOSTNAME), E(DOCKER_API_VERSION), E(DOCKER_CERT_PATH), E(DOCKER_SSL_VERSION),
+    You can define E(DOCKER_HOST), E(DOCKER_TLS_HOSTNAME), E(DOCKER_API_VERSION), E(DOCKER_CERT_PATH),
     E(DOCKER_TLS), E(DOCKER_TLS_VERIFY) and E(DOCKER_TIMEOUT). If you are using docker machine, run the script shipped
     with the product that sets up the environment. It will set these variables for you. See
     U(https://docs.docker.com/machine/reference/env/) for more details.
@@ -393,14 +376,4 @@ notes:
     U(https://docs.docker.com/machine/reference/env/) for more details.
   - This module does B(not) use the L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) to
     communicate with the Docker daemon. It directly calls the Docker CLI program.
-'''
-
-    # DEPRECATED: this will be removed from community.docker 4.0.0! Use with care!
-    SSL_VERSION_DEPRECATION = '''
-options:
-    ssl_version:
-        deprecated:
-            why: This was necessary a long time ago to handle problems with older TLS/SSL versions. It is no longer necessary nowadays.
-            version: 4.0.0
-            alternatives: None.
 '''

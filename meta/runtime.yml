@@ -3,10 +3,9 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-requires_ansible: '>=2.11.0'
+requires_ansible: '>=2.15.0'
 action_groups:
   docker:
-    - docker_compose
     - docker_compose_v2
     - docker_compose_v2_exec
     - docker_compose_v2_pull
@@ -47,6 +46,6 @@ action_groups:
 plugin_routing:
   modules:
     docker_compose:
-      deprecation:
+      tombstone:
         removal_version: 4.0.0
         warning_text: This module uses docker-compose v1, which is End of Life since July 2022. Please migrate to community.docker.docker_compose_v2.

@@ -77,6 +77,7 @@
     image: "{{ docker_test_image_alpine }}"
     name: "{{ cname }}"
     state: present
+    image_name_mismatch: ignore
   register: create_5
   check_mode: true
 
@@ -85,6 +86,7 @@
     image: "{{ docker_test_image_alpine }}"
     name: "{{ cname }}"
     state: present
+    image_name_mismatch: ignore
   register: create_6
 
 - name: Cleanup
