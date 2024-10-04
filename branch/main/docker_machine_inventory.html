@@ -132,6 +132,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#authors">Authors</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#collection-links">Collection links</a></li>
@@ -187,14 +188,15 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <li><p><a class="reference internal" href="#synopsis" id="id1">Synopsis</a></p></li>
 <li><p><a class="reference internal" href="#requirements" id="id2">Requirements</a></p></li>
 <li><p><a class="reference internal" href="#parameters" id="id3">Parameters</a></p></li>
-<li><p><a class="reference internal" href="#examples" id="id4">Examples</a></p></li>
+<li><p><a class="reference internal" href="#notes" id="id4">Notes</a></p></li>
+<li><p><a class="reference internal" href="#examples" id="id5">Examples</a></p></li>
 </ul>
 </nav>
 <section id="synopsis">
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Synopsis</a><a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Get inventory hosts from Docker Machine.</p></li>
-<li><p>Uses a YAML configuration file that ends with docker_machine.(yml|yaml).</p></li>
+<li><p>Uses a YAML configuration file that ends with <code class="ansible-value docutils literal notranslate"><span class="pre">docker_machine.(yml|yaml)</span></code>.</p></li>
 <li><p>The plugin sets standard host variables <code class="docutils literal notranslate"><span class="pre">ansible_host</span></code>, <code class="docutils literal notranslate"><span class="pre">ansible_port</span></code>, <code class="docutils literal notranslate"><span class="pre">ansible_user</span></code> and <code class="docutils literal notranslate"><span class="pre">ansible_ssh_private_key</span></code>.</p></li>
 <li><p>The plugin stores the Docker Machine ‘env’ output variables in <code class="docutils literal notranslate"><span class="pre">dm_</span></code> prefixed host variables.</p></li>
 </ul>
@@ -429,8 +431,17 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </tbody>
 </table>
 </section>
+<section id="notes">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Notes</a><a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The configuration file must be a YAML file whose filename ends with <code class="ansible-value docutils literal notranslate"><span class="pre">docker_machine.yml</span></code> or <code class="ansible-value docutils literal notranslate"><span class="pre">docker_machine.yaml</span></code>. Other filenames will not be accepted.</p></li>
+</ul>
+</div>
+</section>
 <section id="examples">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="c1"># Minimal example</span>
 <span class="nt">plugin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">community.docker.docker_machine</span>
 
