@@ -8,7 +8,7 @@ from __future__ import (absolute_import, division, print_function)
 
 __metaclass__ = type
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
     name: docker_swarm
     author:
       - Stefan Heitmüller (@morph027) <stefan.heitmueller@gmx.com>
@@ -21,10 +21,14 @@ DOCUMENTATION = '''
         - community.library_inventory_filtering_v1.inventory_filter
     description:
         - Reads inventories from the Docker swarm API.
-        - Uses a YAML configuration file docker_swarm.[yml|yaml].
+        - Uses a YAML configuration file that ends with V(docker_swarm.(yml|yaml\)).
         - "The plugin returns following groups of swarm nodes:  C(all) - all hosts; C(workers) - all worker nodes;
           C(managers) - all manager nodes; C(leader) - the swarm leader node;
           C(nonleaders) - all nodes except the swarm leader."
+    notes:
+        - The configuration file must be a YAML file whose filename ends with V(docker_swarm.yml) or V(docker_swarm.yaml).
+          Other filenames will not be accepted.
+
     options:
         plugin:
             description: The name of this plugin, it should always be set to V(community.docker.docker_swarm)

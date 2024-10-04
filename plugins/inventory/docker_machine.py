@@ -6,7 +6,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
     name: docker_machine
     author: Ximon Eighteen (@ximon18)
     short_description: Docker Machine inventory source
@@ -17,9 +17,12 @@ DOCUMENTATION = '''
         - community.library_inventory_filtering_v1.inventory_filter
     description:
         - Get inventory hosts from Docker Machine.
-        - Uses a YAML configuration file that ends with docker_machine.(yml|yaml).
+        - Uses a YAML configuration file that ends with V(docker_machine.(yml|yaml\)).
         - The plugin sets standard host variables C(ansible_host), C(ansible_port), C(ansible_user) and C(ansible_ssh_private_key).
         - The plugin stores the Docker Machine 'env' output variables in C(dm_) prefixed host variables.
+    notes:
+        - The configuration file must be a YAML file whose filename ends with V(docker_machine.yml) or V(docker_machine.yaml).
+          Other filenames will not be accepted.
 
     options:
         plugin:
