@@ -12,7 +12,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 name: docker_containers
 short_description: Ansible dynamic inventory plugin for Docker containers
 version_added: 1.1.0
@@ -25,7 +25,11 @@ extends_documentation_fragment:
     - community.library_inventory_filtering_v1.inventory_filter
 description:
     - Reads inventories from the Docker API.
-    - Uses a YAML configuration file that ends with C(docker.[yml|yaml]).
+    - Uses a YAML configuration file that ends with V(docker.(yml|yaml\)).
+notes:
+    - The configuration file must be a YAML file whose filename ends with V(docker.yml) or V(docker.yaml).
+      Other filenames will not be accepted.
+
 options:
     plugin:
         description:
