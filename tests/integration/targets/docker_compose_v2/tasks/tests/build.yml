@@ -1,0 +1,262 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- vars:
+    pname: "{{ name_prefix }}-build"
+    cname: "{{ name_prefix }}-container"
+    iname: "{{ name_prefix }}-image"
+    project_src: "{{ remote_tmp_dir }}/{{ pname }}"
+    test_service: |
+      services:
+        {{ cname }}:
+          build: ./build
+          image: "{{ iname }}"
+          stop_grace_period: 1s
+
+  block:
+    - name: Registering container name
+      set_fact:
+        cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
+        dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
+        images: "{{ images + [iname] }}"
+
+    - name: Create project directory
+      file:
+        path: '{{ item }}'
+        state: directory
+      loop:
+        - '{{ project_src }}'
+        - '{{ project_src }}/build'
+
+####################################################################
+## Present #########################################################
+####################################################################
+
+    - name: Template default project file
+      copy:
+        dest: '{{ project_src }}/docker-compose.yml'
+        content: '{{ test_service }}'
+
+    - name: Template Dockerfile
+      copy:
+        dest: '{{ project_src }}/build/Dockerfile'
+        content: |
+          FROM {{ docker_test_image_alpine }}
+          ENTRYPOINT ["/bin/sh", "-c", "sleep 10m"]
+
+    - name: Present (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+      check_mode: true
+      register: present_1_check
+
+    - name: Present
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+      register: present_1
+
+    - name: Present (idempotent check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+      check_mode: true
+      register: present_2_check
+
+    - name: Present (idempotent)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+      register: present_2
+
+    - assert:
+        that:
+          - present_1_check is changed
+          - present_1_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_1 is changed
+          - present_1.containers | length == 1
+          - present_1.containers[0].Name == pname ~ '-' ~ cname ~ '-1'
+          - present_1.images | length == 1
+          - present_1.images[0].ContainerName == pname ~ '-' ~ cname ~ '-1'
+          - present_1.images[0].Repository == iname
+          - present_1.images[0].Tag == "latest"
+          - present_1.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_2_check is not changed
+          - present_2_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_2 is not changed
+          - present_2.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+
+####################################################################
+## Absent ##########################################################
+####################################################################
+
+    - name: Absent (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: absent
+      check_mode: true
+      register: absent_1_check
+
+    - name: Absent
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: absent
+      register: absent_1
+
+    - name: Absent (idempotent check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: absent
+      check_mode: true
+      register: absent_2_check
+
+    - name: Absent (idempotent)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: absent
+      register: absent_2
+
+    - assert:
+        that:
+          - absent_1_check is changed
+          - absent_1_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - absent_1 is changed
+          - absent_1.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - absent_2_check is not changed
+          - absent_2_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - absent_2 is not changed
+          - absent_2.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+
+####################################################################
+## Stopping and starting ###########################################
+####################################################################
+
+    - name: Present stopped (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: stopped
+      check_mode: true
+      register: present_1_check
+
+    - name: Present stopped
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: stopped
+      register: present_1
+
+    - name: Present stopped (idempotent check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: stopped
+      check_mode: true
+      register: present_2_check
+
+    - name: Present stopped (idempotent)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: stopped
+      register: present_2
+
+    - name: Started (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+      check_mode: true
+      register: present_3_check
+
+    - name: Started
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+      register: present_3
+
+    - name: Started (idempotent check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+      check_mode: true
+      register: present_4_check
+
+    - name: Started (idempotent)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+      register: present_4
+
+    - name: Restarted (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: restarted
+      check_mode: true
+      register: present_5_check
+
+    - name: Restarted
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: restarted
+      register: present_5
+
+    - name: Stopped (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: stopped
+      check_mode: true
+      register: present_6_check
+
+    - name: Stopped
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: stopped
+      register: present_6
+
+    - name: Restarted (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: restarted
+      check_mode: true
+      register: present_7_check
+
+    - name: Restarted
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: restarted
+      register: present_7
+
+    - name: Cleanup
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: absent
+
+    - assert:
+        that:
+          - present_1_check is changed
+          - present_1_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_1 is changed
+          - present_1.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_2_check is not changed
+          - present_2_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_2 is not changed
+          - present_2.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_3_check is changed
+          - present_3_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_3 is changed
+          - present_3.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_4_check is not changed
+          - present_4_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_4 is not changed
+          - present_4.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_5_check is changed
+          - present_5_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_5 is changed
+          - present_5.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_6_check is changed
+          - present_6_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_6 is changed
+          - present_6.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_7_check is changed
+          - present_7_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_7 is changed
+          - present_7.warnings | default([]) | select('regex', ' Please report this at ') | length == 0

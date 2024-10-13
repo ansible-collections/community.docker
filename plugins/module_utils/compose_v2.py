@@ -119,6 +119,7 @@ class ResourceType(object):
             "Image": cls.IMAGE,
             "Volume": cls.VOLUME,
             "Container": cls.CONTAINER,
+            "Service": cls.SERVICE,
         }[resource_type]
 
 
@@ -420,6 +421,19 @@ def parse_json_events(stderr, warn_function=None):
             resource_id = line_data.get('id')
             status = line_data.get('status')
             text = line_data.get('text')
+            if resource_id == " " and text and text.startswith("build service "):
+                # Example:
+                # {"dry-run":true,"id":" ","text":"build service app"}
+                resource_id = "S" + text[len("build s"):]
+                text = "Building"
+            if resource_id == "==>" and text and text.startswith("==> writing image "):
+                # Example:
+                # {"dry-run":true,"id":"==>","text":"==> writing image dryRun-7d1043473d55bfa90e8530d35801d4e381bc69f0"}
+                continue
+            if resource_id == "==> ==>" and text and text.startswith("naming to "):
+                # Example:
+                # {"dry-run":true,"id":"==> ==>","text":"naming to display-app"}
+                continue
             if isinstance(resource_id, str) and ' ' in resource_id:
                 resource_type_str, resource_id = resource_id.split(' ', 1)
                 try:
