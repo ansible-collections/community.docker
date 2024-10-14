@@ -4,22 +4,15 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - vars:
-    pname: "{{ name_prefix }}-start-stop"
+    pname: "{{ name_prefix }}-build"
     cname: "{{ name_prefix }}-container"
+    iname: "{{ name_prefix }}-image"
     project_src: "{{ remote_tmp_dir }}/{{ pname }}"
     test_service: |
-      version: '3'
       services:
         {{ cname }}:
-          image: "{{ docker_test_image_alpine }}"
-          command: '/bin/sh -c "sleep 10m"'
-          stop_grace_period: 1s
-    test_service_mod: |
-      version: '3'
-      services:
-        {{ cname }}:
-          image: "{{ docker_test_image_alpine }}"
-          command: '/bin/sh -c "sleep 15m"'
+          build: ./build
+          image: "{{ iname }}"
           stop_grace_period: 1s
 
   block:
@@ -27,11 +20,15 @@
       set_fact:
         cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
         dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
+        images: "{{ images + [iname] }}"
 
     - name: Create project directory
       file:
-        path: '{{ project_src }}'
+        path: '{{ item }}'
         state: directory
+      loop:
+        - '{{ project_src }}'
+        - '{{ project_src }}/build'
 
 ####################################################################
 ## Present #########################################################
@@ -41,6 +38,13 @@
       copy:
         dest: '{{ project_src }}/docker-compose.yml'
         content: '{{ test_service }}'
+
+    - name: Template Dockerfile
+      copy:
+        dest: '{{ project_src }}/build/Dockerfile'
+        content: |
+          FROM {{ docker_test_image_alpine }}
+          ENTRYPOINT ["/bin/sh", "-c", "sleep 10m"]
 
     - name: Present (check)
       docker_compose_v2:
@@ -68,24 +72,6 @@
         state: present
       register: present_2
 
-    - name: Template modified project file
-      copy:
-        dest: '{{ project_src }}/docker-compose.yml'
-        content: '{{ test_service_mod }}'
-
-    - name: Present (changed check)
-      docker_compose_v2:
-        project_src: '{{ project_src }}'
-        state: present
-      check_mode: true
-      register: present_3_check
-
-    - name: Present (changed)
-      docker_compose_v2:
-        project_src: '{{ project_src }}'
-        state: present
-      register: present_3
-
     - assert:
         that:
           - present_1_check is changed
@@ -93,20 +79,15 @@
           - present_1 is changed
           - present_1.containers | length == 1
           - present_1.containers[0].Name == pname ~ '-' ~ cname ~ '-1'
-          - present_1.containers[0].Image == docker_test_image_alpine
           - present_1.images | length == 1
           - present_1.images[0].ContainerName == pname ~ '-' ~ cname ~ '-1'
-          - present_1.images[0].Repository == (docker_test_image_alpine | split(':') | first)
-          - present_1.images[0].Tag == (docker_test_image_alpine | split(':') | last)
+          - present_1.images[0].Repository == iname
+          - present_1.images[0].Tag == "latest"
           - present_1.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
           - present_2_check is not changed
           - present_2_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
           - present_2 is not changed
           - present_2.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
-          - present_3_check is changed
-          - present_3_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
-          - present_3 is changed
-          - present_3.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
 
 ####################################################################
 ## Absent ##########################################################
@@ -152,11 +133,6 @@
 ####################################################################
 ## Stopping and starting ###########################################
 ####################################################################
-
-    - name: Template default project file
-      copy:
-        dest: '{{ project_src }}/docker-compose.yml'
-        content: '{{ test_service }}'
 
     - name: Present stopped (check)
       docker_compose_v2:
