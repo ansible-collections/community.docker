@@ -1916,3 +1916,14 @@ releases:
         name: docker_compose_v2_run
         namespace: ''
     release_date: '2024-10-04'
+  3.13.1:
+    changes:
+      bugfixes:
+        - docker_compose_v2 - improve parsing of dry-run image build operations from
+          JSON events (https://github.com/ansible-collections/community.docker/issues/975,
+          https://github.com/ansible-collections/community.docker/pull/976).
+      release_summary: Bugfix release.
+    fragments:
+      - 3.13.1.yml
+      - 976-compose-v2.yml
+    release_date: '2024-10-15'
