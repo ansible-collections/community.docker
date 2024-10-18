@@ -81,7 +81,6 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="current_container_facts_module.html">community.docker.current_container_facts module – Return facts about whether the module runs in a container</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docker_compose_module.html">community.docker.docker_compose module – Manage multi-container Docker applications with Docker Compose V1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_compose_v2_module.html">community.docker.docker_compose_v2 module – Manage multi-container Docker applications with Docker Compose CLI plugin</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_compose_v2_exec_module.html">community.docker.docker_compose_v2_exec module – Run command in a container of a Compose service</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_compose_v2_pull_module.html">community.docker.docker_compose_v2_pull module – Pull a Docker compose project</a></li>
@@ -172,7 +171,7 @@
 <h1>community.docker.docker_api connection – Run tasks in docker containers<a class="headerlink" href="#community-docker-docker-api-connection-run-tasks-in-docker-containers" title="Link to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This connection plugin is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/community/docker/">community.docker collection</a> (version 3.13.2).</p>
+<p>This connection plugin is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/community/docker/">community.docker collection</a> (version 4.0.0).</p>
 <p>It is not included in <code class="docutils literal notranslate"><span class="pre">ansible-core</span></code>.
 To check whether it is installed, run <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">list</span></code>.</p>
 <p>To install it, use: <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">install</span> <span class="pre">community.docker</span></code>.
@@ -413,21 +412,6 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-ssl_version"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-ssl-version"><strong>ssl_version</strong></p>
-<a class="ansibleOptionLink" href="#parameter-ssl_version" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-<p>Removed in: version 4.0.0</p>
-<p>Why: This was necessary a long time ago to handle problems with older TLS/SSL versions. It is no longer necessary nowadays.</p>
-<p>Alternative: None.</p>
-</div></td>
-<td><div class="ansible-option-cell"><p>Provide a valid SSL version number. Default value determined by <a class="reference external" href="https://docs.python.org/3/library/ssl.html">SSL Python module</a>.</p>
-<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_SSL_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code></a> will be used instead.</p>
-<p class="ansible-option-line"><strong class="ansible-option-configuration">Configuration:</strong></p>
-<ul class="simple">
-<li><p>Variable: ansible_docker_ssl_version</p></li>
-</ul>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-timeout"><strong>timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -440,7 +424,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -457,7 +441,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-tls-hostname"><strong>tls_hostname</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -470,7 +454,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-use_ssh_client"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-use-ssh-client"><strong>use_ssh_client</strong></p>
 <a class="ansibleOptionLink" href="#parameter-use_ssh_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 1.5.0</em></p>
@@ -483,7 +467,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-api-connection-parameter-tls-verify"></span><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
@@ -502,7 +486,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-working_dir"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-api-connection-parameter-working-dir"><strong>working_dir</strong></p>
 <a class="ansibleOptionLink" href="#parameter-working_dir" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 3.12.0</em></p>
@@ -531,7 +515,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p>Does <strong>not work with TCP TLS sockets</strong>! This is caused by the inability to send <code class="docutils literal notranslate"><span class="pre">close_notify</span></code> without closing the connection with Python’s <code class="docutils literal notranslate"><span class="pre">SSLSocket</span></code>s. See <a class="reference external" href="https://github.com/ansible-collections/community.docker/issues/605">https://github.com/ansible-collections/community.docker/issues/605</a> for more information.</p></li>
-<li><p>Connect to the Docker daemon by providing parameters with each task or by defining environment variables. You can define <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_API_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_SSL_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_SSL_VERSION</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> and <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code></a>. If you are using docker machine, run the script shipped with the product that sets up the environment. It will set these variables for you. See <a class="reference external" href="https://docs.docker.com/machine/reference/env/">https://docs.docker.com/machine/reference/env/</a> for more details.</p></li>
+<li><p>Connect to the Docker daemon by providing parameters with each task or by defining environment variables. You can define <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_API_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_CERT_PATH"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CERT_PATH</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a>, <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> and <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code></a>. If you are using docker machine, run the script shipped with the product that sets up the environment. It will set these variables for you. See <a class="reference external" href="https://docs.docker.com/machine/reference/env/">https://docs.docker.com/machine/reference/env/</a> for more details.</p></li>
 <li><p>This module does <strong>not</strong> use the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a> to communicate with the Docker daemon. It uses code derived from the Docker SDK or Python that is included in this collection.</p></li>
 </ul>
 </div>
