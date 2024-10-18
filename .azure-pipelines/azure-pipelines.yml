@@ -99,17 +99,6 @@ stages:
               test: '2.16/sanity/1'
             - name: Units
               test: '2.16/units/1'
-  - stage: Ansible_2_15
-    displayName: Sanity & Units 2.15
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          targets:
-            - name: Sanity
-              test: '2.15/sanity/1'
-            - name: Units
-              test: '2.15/units/1'
 
 ### Docker
   - stage: Docker_devel
@@ -131,7 +120,6 @@ stages:
           groups:
             - 4
             - 5
-            # - 6  -- some images no longer work with docker-compose v1
   - stage: Docker_2_18
     displayName: Docker 2.18
     dependsOn: []
@@ -145,7 +133,6 @@ stages:
           groups:
             - 4
             - 5
-            # - 6  -- some images no longer work with docker-compose v1
   - stage: Docker_2_17
     displayName: Docker 2.17
     dependsOn: []
@@ -163,7 +150,6 @@ stages:
           groups:
             - 4
             - 5
-            - 6
   - stage: Docker_2_16
     displayName: Docker 2.16
     dependsOn: []
@@ -183,23 +169,6 @@ stages:
           groups:
             - 4
             - 5
-            - 6
-  - stage: Docker_2_15
-    displayName: Docker 2.15
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.15/linux/{0}
-          targets:
-            - name: Fedora 37
-              test: fedora37
-            - name: CentOS 7
-              test: centos7
-          groups:
-            - 4
-            - 5
-            - 6
 
 ### Community Docker
   - stage: Docker_community_devel
@@ -219,7 +188,6 @@ stages:
           groups:
             - 4
             - 5
-            - 6
 
 ### Remote
   - stage: Remote_devel
@@ -238,7 +206,6 @@ stages:
             - 3
             - 4
             - 5
-            # - 6  -- Docker 26 no longer works with docker-compose v1
   - stage: Remote_2_18
     displayName: Remote 2.18
     dependsOn: []
@@ -255,7 +222,6 @@ stages:
             - 3
             - 4
             - 5
-            # - 6  -- Docker 26 no longer works with docker-compose v1
   - stage: Remote_2_17
     displayName: Remote 2.17
     dependsOn: []
@@ -272,7 +238,6 @@ stages:
             - 3
             - 4
             - 5
-            # - 6  -- Docker 26 no longer works with docker-compose v1
   - stage: Remote_2_16
     displayName: Remote 2.16
     dependsOn: []
@@ -286,24 +251,6 @@ stages:
             # Currently always hangs in group 2
             # - name: RHEL 8.8
             #   test: rhel/8.8
-          groups:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-  - stage: Remote_2_15
-    displayName: Remote 2.15
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.15/{0}
-          targets:
-            - name: RHEL 9.1
-              test: rhel/9.1
-            - name: RHEL 8.7
-              test: rhel/8.7
             - name: RHEL 7.9
               test: rhel/7.9
           groups:
@@ -322,17 +269,14 @@ stages:
       - Ansible_2_18
       - Ansible_2_17
       - Ansible_2_16
-      - Ansible_2_15
       - Remote_devel
       - Remote_2_18
       - Remote_2_17
       - Remote_2_16
-      - Remote_2_15
       - Docker_devel
       - Docker_2_18
       - Docker_2_17
       - Docker_2_16
-      - Docker_2_15
       - Docker_community_devel
     jobs:
       - template: templates/coverage.yml

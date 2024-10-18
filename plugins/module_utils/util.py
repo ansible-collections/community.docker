@@ -29,12 +29,6 @@ DOCKER_COMMON_ARGS = dict(
     ca_path=dict(type='path', aliases=['ca_cert', 'tls_ca_cert', 'cacert_path']),
     client_cert=dict(type='path', aliases=['tls_client_cert', 'cert_path']),
     client_key=dict(type='path', aliases=['tls_client_key', 'key_path']),
-    ssl_version=dict(
-        type='str',
-        fallback=(env_fallback, ['DOCKER_SSL_VERSION']),
-        removed_in_version='4.0.0',
-        removed_from_collection='community.docker',
-    ),
     tls=dict(type='bool', default=DEFAULT_TLS, fallback=(env_fallback, ['DOCKER_TLS'])),
     use_ssh_client=dict(type='bool', default=False),
     validate_certs=dict(type='bool', default=DEFAULT_TLS_VERIFY, fallback=(env_fallback, ['DOCKER_TLS_VERIFY']), aliases=['tls_verify']),

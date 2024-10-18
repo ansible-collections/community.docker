@@ -83,7 +83,6 @@ def get_connect_params(auth_data, fail_function):
         tls_config = dict(
             verify=True,
             assert_hostname=auth_data['tls_hostname'],
-            ssl_version=auth_data['ssl_version'],
             fail_function=fail_function,
         )
         if auth_data['cert_path'] and auth_data['key_path']:
@@ -95,7 +94,6 @@ def get_connect_params(auth_data, fail_function):
         # TLS without verification
         tls_config = dict(
             verify=False,
-            ssl_version=auth_data['ssl_version'],
             fail_function=fail_function,
         )
         if auth_data['cert_path'] and auth_data['key_path']:
@@ -205,7 +203,6 @@ class AnsibleDockerClientBase(Client):
             cacert_path=self._get_value('cacert_path', params['ca_path'], 'DOCKER_CERT_PATH', None, type='str'),
             cert_path=self._get_value('cert_path', params['client_cert'], 'DOCKER_CERT_PATH', None, type='str'),
             key_path=self._get_value('key_path', params['client_key'], 'DOCKER_CERT_PATH', None, type='str'),
-            ssl_version=self._get_value('ssl_version', params['ssl_version'], 'DOCKER_SSL_VERSION', None, type='str'),
             tls=self._get_value('tls', params['tls'], 'DOCKER_TLS', DEFAULT_TLS, type='bool'),
             tls_verify=self._get_value('tls_verfy', params['validate_certs'], 'DOCKER_TLS_VERIFY',
                                        DEFAULT_TLS_VERIFY, type='bool'),
