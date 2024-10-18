@@ -631,7 +631,7 @@ def main():
         pull=dict(type='str', choices=['always', 'missing', 'never', 'policy'], default='policy'),
         build=dict(type='str', choices=['always', 'never', 'policy'], default='policy'),
         recreate=dict(type='str', default='auto', choices=['always', 'never', 'auto']),
-        renew_anon_volumes=dict(type='bool',default=False),
+        renew_anon_volumes=dict(type='bool', default=False),
         remove_images=dict(type='str', choices=['all', 'local']),
         remove_volumes=dict(type='bool', default=False),
         remove_orphans=dict(type='bool', default=False),
