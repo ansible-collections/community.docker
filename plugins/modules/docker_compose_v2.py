@@ -95,10 +95,11 @@ options:
       - auto
   renew_anon_volumes:
     description:
-      - Whether to recreate instead of reuse anonymous volumes from previous containers
-      - V(true) is equivalent to the C(--renew-anon-volumes) or C(-V) option of C(docker compose up)
+      - Whether to recreate instead of reuse anonymous volumes from previous containers.
+      - V(true) is equivalent to the C(--renew-anon-volumes) option of C(docker compose up).
     type: bool
     default: false
+    version_added: 4.0.0
   remove_images:
     description:
       - Use with O(state=absent) to remove all images or only local images.
