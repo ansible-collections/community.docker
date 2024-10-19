@@ -1,0 +1,70 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- vars:
+    pname: "{{ name_prefix }}-exit"
+    cname: "{{ name_prefix }}-container"
+    project_src: "{{ remote_tmp_dir }}/{{ pname }}"
+    test_service: |
+      services:
+        {{ cname }}:
+          image: "{{ docker_test_image_alpine }}"
+          command: '/bin/sh -c "exit 0"'
+          stop_grace_period: 1s
+
+  block:
+    - name: Registering container name
+      set_fact:
+        cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
+        dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
+
+    - name: Create project directory
+      file:
+        path: '{{ project_src }}'
+        state: directory
+
+    - name: Template default project file
+      copy:
+        dest: '{{ project_src }}/docker-compose.yml'
+        content: '{{ test_service }}'
+
+    - name: Present (check)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        wait: true
+      check_mode: true
+      register: present_1_check
+
+    - name: Present
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        wait: true
+      register: present_1
+      ignore_errors: true
+
+    - name: Cleanup
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: absent
+
+    - assert:
+        that:
+          - present_1_check is changed
+          - present_1_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_1 is failed
+          - present_1.containers | length == 1
+          - present_1.containers[0].Name == pname ~ '-' ~ cname ~ '-1'
+          - present_1.containers[0].Image == docker_test_image_alpine
+          - present_1.containers[0].State == 'exited'
+          - present_1.containers[0].ExitCode == 0
+          - present_1.images | length == 1
+          - present_1.images[0].ContainerName == pname ~ '-' ~ cname ~ '-1'
+          - present_1.images[0].Repository == (docker_test_image_alpine | split(':') | first)
+          - present_1.images[0].Tag == (docker_test_image_alpine | split(':') | last)
+          - present_1.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - >-
+            ("container " ~ pname ~ '-' ~ cname ~ "-1 exited (0)") in present_1.msg 
