@@ -93,6 +93,13 @@ options:
       - always
       - never
       - auto
+  renew_anon_volumes:
+    description:
+      - Whether to recreate instead of reuse anonymous volumes from previous containers.
+      - V(true) is equivalent to the C(--renew-anon-volumes) option of C(docker compose up).
+    type: bool
+    default: false
+    version_added: 4.0.0
   remove_images:
     description:
       - Use with O(state=absent) to remove all images or only local images.
@@ -436,6 +443,7 @@ class ServicesManager(BaseComposeManager):
         self.remove_images = parameters['remove_images']
         self.remove_volumes = parameters['remove_volumes']
         self.remove_orphans = parameters['remove_orphans']
+        self.renew_anon_volumes = parameters['renew_anon_volumes']
         self.timeout = parameters['timeout']
         self.services = parameters['services'] or []
         self.scale = parameters['scale'] or {}
@@ -478,6 +486,8 @@ class ServicesManager(BaseComposeManager):
             args.append('--force-recreate')
         if self.recreate == 'never':
             args.append('--no-recreate')
+        if self.renew_anon_volumes:
+            args.append('--renew-anon-volumes')
         if not self.dependencies:
             args.append('--no-deps')
         if self.timeout is not None:
@@ -620,6 +630,7 @@ def main():
         pull=dict(type='str', choices=['always', 'missing', 'never', 'policy'], default='policy'),
         build=dict(type='str', choices=['always', 'never', 'policy'], default='policy'),
         recreate=dict(type='str', default='auto', choices=['always', 'never', 'auto']),
+        renew_anon_volumes=dict(type='bool', default=False),
         remove_images=dict(type='str', choices=['all', 'local']),
         remove_volumes=dict(type='bool', default=False),
         remove_orphans=dict(type='bool', default=False),
