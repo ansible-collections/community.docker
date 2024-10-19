@@ -283,6 +283,72 @@ EXTRA_TEST_CASES = [
         ],
         [],
     ),
+    (
+        # https://github.com/ansible-collections/community.docker/issues/978
+        '2.28.1-unknown',  # TODO: find out actual version!
+        '2.28.1',  # TODO: find out actual version!
+        False,
+        True,
+        " Network create_users_db_default  Creating\n"
+        " Network create_users_db_default  Created\n"
+        " Container create_users_db-init  Creating\n"
+        " Container create_users_db-init  Created\n"
+        " Container create_users_db-init  Starting\n"
+        " Container create_users_db-init  Started\n"
+        " Container create_users_db-init  Waiting\n"
+        "container create_users_db-init exited (0)\n",
+        [
+            Event(
+                'network',
+                'create_users_db_default',
+                'Creating',
+                None,
+            ),
+            Event(
+                'network',
+                'create_users_db_default',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'create_users_db-init',
+                'Creating',
+                None,
+            ),
+            Event(
+                'container',
+                'create_users_db-init',
+                'Created',
+                None,
+            ),
+            Event(
+                'container',
+                'create_users_db-init',
+                'Starting',
+                None,
+            ),
+            Event(
+                'container',
+                'create_users_db-init',
+                'Started',
+                None,
+            ),
+            Event(
+                'container',
+                'create_users_db-init',
+                'Waiting',
+                None,
+            ),
+            Event(
+                'unknown',
+                '',
+                'Error',
+                'container create_users_db-init exited (0)',
+            ),
+        ],
+        [],
+    ),
 ]
 
 _ALL_TEST_CASES = EVENT_TEST_CASES + EXTRA_TEST_CASES
