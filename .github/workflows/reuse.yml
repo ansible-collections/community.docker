@@ -7,9 +7,13 @@ name: Verify REUSE
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - stable-*
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - stable-*
   # Run CI once per day (at 04:30 UTC)
   schedule:
     - cron: '30 4 * * *'
