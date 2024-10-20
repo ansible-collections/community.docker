@@ -29,7 +29,7 @@ schedules:
     always: true
     branches:
       include:
-        - stable-2
+        - stable-3
 
 variables:
   - name: checkoutPath
