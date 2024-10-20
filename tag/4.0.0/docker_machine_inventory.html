@@ -1,0 +1,530 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="2.15.0" name="antsibull-docs" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>community.docker.docker_machine inventory – Docker Machine inventory source &mdash; Community.Docker Collection  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5707b69d" />
+      <link rel="stylesheet" type="text/css" href="_static/css/ansible.css?v=c5b67dd2" />
+      <link rel="stylesheet" type="text/css" href="_static/antsibull-minimal.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/rtd-ethical-ads.css?v=289b023e" />
+
+  
+    <link rel="shortcut icon" href="_static/images/Ansible-Mark-RGB_Black.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=7f41d439"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="community.docker.docker_swarm inventory – Ansible dynamic inventory plugin for Docker swarm nodes." href="docker_swarm_inventory.html" />
+    <link rel="prev" title="community.docker.docker_containers inventory – Ansible dynamic inventory plugin for Docker containers" href="docker_containers_inventory.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
+
+
+
+
+</head>
+
+<body class="wy-body-for-nav"><!-- extra body elements for Ansible beyond RTD Sphinx Theme -->
+
+<div class="DocSite-globalNav ansibleNav">
+  <ul>
+    <li><a href="https://www.ansible.com/blog" target="_blank">Blog</a></li>
+    <li><a href="https://forum.ansible.com/" target="_blank">Ansible community forum</a></li>
+    <li><a href="https://docs.ansible.com/" target="_blank">Documentation</a></li>
+  </ul>
+</div>
+
+<a class="DocSite-nav" href="https://ansible-collections.github.io/community.docker/branch/main/" style="padding-bottom: 30px;">
+
+  <img class="DocSiteNav-logo"
+    src="_static/images/Ansible-Mark-RGB_White.png"
+    alt="Ansible Logo">
+  <div class="DocSiteNav-title">Community.Docker Collection Docs</div>
+</a>
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Community.Docker Collection
+          </a><!--- Based on https://github.com/rtfd/sphinx_rtd_theme/pull/438/files -->
+
+<div class="version">
+  
+    
+  
+</div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <label class="sr-only" for="q">Search docs:</label>
+    <input type="text" class="st-default-search-input" id="q" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Community.Docker Release Notes</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="docsite/scenario_guide.html">Docker Guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="current_container_facts_module.html">community.docker.current_container_facts module – Return facts about whether the module runs in a container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_compose_v2_module.html">community.docker.docker_compose_v2 module – Manage multi-container Docker applications with Docker Compose CLI plugin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_compose_v2_exec_module.html">community.docker.docker_compose_v2_exec module – Run command in a container of a Compose service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_compose_v2_pull_module.html">community.docker.docker_compose_v2_pull module – Pull a Docker compose project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_compose_v2_run_module.html">community.docker.docker_compose_v2_run module – Run command in a new container of a Compose service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_config_module.html">community.docker.docker_config module – Manage docker configs.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_container_module.html">community.docker.docker_container module – manage Docker containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_container_copy_into_module.html">community.docker.docker_container_copy_into module – Copy a file into a Docker container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_container_exec_module.html">community.docker.docker_container_exec module – Execute command in a docker container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_container_info_module.html">community.docker.docker_container_info module – Retrieves facts about docker container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_host_info_module.html">community.docker.docker_host_info module – Retrieves facts about docker host and lists of objects of the services.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_module.html">community.docker.docker_image module – Manage docker images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_build_module.html">community.docker.docker_image_build module – Build Docker images using Docker buildx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_export_module.html">community.docker.docker_image_export module – Export (archive) Docker images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_info_module.html">community.docker.docker_image_info module – Inspect docker images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_load_module.html">community.docker.docker_image_load module – Load docker image(s) from archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_pull_module.html">community.docker.docker_image_pull module – Pull Docker images from registries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_push_module.html">community.docker.docker_image_push module – Push Docker images to registries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_remove_module.html">community.docker.docker_image_remove module – Remove Docker images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image_tag_module.html">community.docker.docker_image_tag module – Tag Docker images with new names and/or tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_login_module.html">community.docker.docker_login module – Log into a Docker registry.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_network_module.html">community.docker.docker_network module – Manage Docker networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_network_info_module.html">community.docker.docker_network_info module – Retrieves facts about docker network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_node_module.html">community.docker.docker_node module – Manage Docker Swarm node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_node_info_module.html">community.docker.docker_node_info module – Retrieves facts about docker swarm node from Swarm Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_plugin_module.html">community.docker.docker_plugin module – Manage Docker plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_prune_module.html">community.docker.docker_prune module – Allows to prune various docker objects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_secret_module.html">community.docker.docker_secret module – Manage docker secrets.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_stack_module.html">community.docker.docker_stack module – docker stack module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_stack_info_module.html">community.docker.docker_stack_info module – Return information on all docker stacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_stack_task_info_module.html">community.docker.docker_stack_task_info module – Return information of the tasks on a docker stack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_swarm_module.html">community.docker.docker_swarm module – Manage Swarm cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_swarm_info_module.html">community.docker.docker_swarm_info module – Retrieves facts about Docker Swarm cluster.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_swarm_service_module.html">community.docker.docker_swarm_service module – docker swarm service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_swarm_service_info_module.html">community.docker.docker_swarm_service_info module – Retrieves information about docker services from a Swarm Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_volume_module.html">community.docker.docker_volume module – Manage Docker volumes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_volume_info_module.html">community.docker.docker_volume_info module – Retrieve facts about Docker volumes</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="docker_connection.html">community.docker.docker connection – Run tasks in docker containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_api_connection.html">community.docker.docker_api connection – Run tasks in docker containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nsenter_connection.html">community.docker.nsenter connection – execute on host running controller container</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docker_containers_inventory.html">community.docker.docker_containers inventory – Ansible dynamic inventory plugin for Docker containers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">community.docker.docker_machine inventory – Docker Machine inventory source</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#authors">Authors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#collection-links">Collection links</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker_swarm_inventory.html">community.docker.docker_swarm inventory – Ansible dynamic inventory plugin for Docker swarm nodes.</a></li>
+</ul>
+<!-- extra nav elements for Ansible beyond RTD Sphinx Theme -->
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Community.Docker Collection</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">community.docker.docker_machine inventory – Docker Machine inventory source</li>
+      <li class="wy-breadcrumbs-aside">
+              <!-- User defined GitHub URL -->
+              <a href="https://github.com/ansible-collections/community.docker/edit/main/plugins/inventory/docker_machine.py?description=%23%23%23%23%23%20SUMMARY%0A%3C!—%20Your%20description%20here%20–%3E%0A%0A%0A%23%23%23%23%23%20ISSUE%20TYPE%0A-%20Docs%20Pull%20Request%0A%0A%2Blabel:%20docsite_pr" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+  
+           <div itemprop="articleBody">
+             
+  <span class="target" id="ansible-collections-community-docker-docker-machine-inventory"></span><section id="community-docker-docker-machine-inventory-docker-machine-inventory-source">
+<h1>community.docker.docker_machine inventory – Docker Machine inventory source<a class="headerlink" href="#community-docker-docker-machine-inventory-docker-machine-inventory-source" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This inventory plugin is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/community/docker/">community.docker collection</a> (version 4.0.0).</p>
+<p>It is not included in <code class="docutils literal notranslate"><span class="pre">ansible-core</span></code>.
+To check whether it is installed, run <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">list</span></code>.</p>
+<p>To install it, use: <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">install</span> <span class="pre">community.docker</span></code>.
+You need further requirements to be able to use this inventory plugin,
+see <a class="reference internal" href="#ansible-collections-community-docker-docker-machine-inventory-requirements"><span class="std std-ref">Requirements</span></a> for details.</p>
+<p>To use it in a playbook, specify: <code class="code docutils literal notranslate"><span class="pre">community.docker.docker_machine</span></code>.</p>
+</div>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#synopsis" id="id1">Synopsis</a></p></li>
+<li><p><a class="reference internal" href="#requirements" id="id2">Requirements</a></p></li>
+<li><p><a class="reference internal" href="#parameters" id="id3">Parameters</a></p></li>
+<li><p><a class="reference internal" href="#notes" id="id4">Notes</a></p></li>
+<li><p><a class="reference internal" href="#examples" id="id5">Examples</a></p></li>
+</ul>
+</nav>
+<section id="synopsis">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Synopsis</a><a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Get inventory hosts from Docker Machine.</p></li>
+<li><p>Uses a YAML configuration file that ends with <code class="ansible-value docutils literal notranslate"><span class="pre">docker_machine.(yml|yaml)</span></code>.</p></li>
+<li><p>The plugin sets standard host variables <code class="docutils literal notranslate"><span class="pre">ansible_host</span></code>, <code class="docutils literal notranslate"><span class="pre">ansible_port</span></code>, <code class="docutils literal notranslate"><span class="pre">ansible_user</span></code> and <code class="docutils literal notranslate"><span class="pre">ansible_ssh_private_key</span></code>.</p></li>
+<li><p>The plugin stores the Docker Machine ‘env’ output variables in <code class="docutils literal notranslate"><span class="pre">dm_</span></code> prefixed host variables.</p></li>
+</ul>
+</section>
+<section id="requirements">
+<span id="ansible-collections-community-docker-docker-machine-inventory-requirements"></span><h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
+<p>The below requirements are needed on the local controller node that executes this inventory.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.docker.com/machine/">Docker Machine</a></p></li>
+</ul>
+</section>
+<section id="parameters">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Parameters</a><a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<table class="longtable ansible-option-table docutils align-default" style="width: 100%">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Comments</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-compose"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-compose"><strong>compose</strong></p>
+<a class="ansibleOptionLink" href="#parameter-compose" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Create vars from jinja2 expressions.</p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">{}</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-daemon_env"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-daemon-env"><strong>daemon_env</strong></p>
+<a class="ansibleOptionLink" href="#parameter-daemon_env" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Whether docker daemon connection environment variables should be fetched, and how to behave if they cannot be fetched.</p>
+<p>With <code class="ansible-value docutils literal notranslate"><span class="pre">require</span></code> and <code class="ansible-value docutils literal notranslate"><span class="pre">require-silently</span></code>, fetch them and skip any host for which they cannot be fetched. A warning will be issued for any skipped host if the choice is <code class="ansible-value docutils literal notranslate"><span class="pre">require</span></code>.</p>
+<p>With <code class="ansible-value docutils literal notranslate"><span class="pre">optional</span></code> and <code class="ansible-value docutils literal notranslate"><span class="pre">optional-silently</span></code>, fetch them and not skip hosts for which they cannot be fetched. A warning will be issued for hosts where they cannot be fetched if the choice is <code class="ansible-value docutils literal notranslate"><span class="pre">optional</span></code>.</p>
+<p>With <code class="ansible-value docutils literal notranslate"><span class="pre">skip</span></code>, do not attempt to fetch the docker daemon connection environment variables.</p>
+<p>If fetched successfully, the variables will be prefixed with <code class="docutils literal notranslate"><span class="pre">dm_</span></code> and stored as host variables.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;require&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;require-silently&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;optional&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;optional-silently&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;skip&quot;</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-filters"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-filters"><strong>filters</strong></p>
+<a class="ansibleOptionLink" href="#parameter-filters" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 3.5.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>A list of include/exclude filters that allows to select/deselect hosts for this inventory.</p>
+<p>Filters are processed sequentially until the first filter where <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-machine-inventory-parameter-filters-exclude"><span class="std std-ref"><span class="pre">filters[].exclude</span></span></a></strong></code> or <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-machine-inventory-parameter-filters-include"><span class="std std-ref"><span class="pre">filters[].include</span></span></a></strong></code> matches is found. In case <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-machine-inventory-parameter-filters-exclude"><span class="std std-ref"><span class="pre">filters[].exclude</span></span></a></strong></code> matches, the host is excluded, and in case <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-machine-inventory-parameter-filters-include"><span class="std std-ref"><span class="pre">filters[].include</span></span></a></strong></code> matches, the host is included. In case no filter matches, the host is included.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-filters/exclude"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-filters-exclude"><strong>exclude</strong></p>
+<a class="ansibleOptionLink" href="#parameter-filters/exclude" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A Jinja2 condition. If it matches for a host, that host is <strong>excluded</strong>.</p>
+<p>Exactly one of <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-machine-inventory-parameter-filters-exclude"><span class="std std-ref"><span class="pre">filters[].exclude</span></span></a></strong></code> and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-machine-inventory-parameter-filters-include"><span class="std std-ref"><span class="pre">filters[].include</span></span></a></strong></code> can be specified.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-filters/include"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-filters-include"><strong>include</strong></p>
+<a class="ansibleOptionLink" href="#parameter-filters/include" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A Jinja2 condition. If it matches for a host, that host is <strong>included</strong>.</p>
+<p>Exactly one of <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-machine-inventory-parameter-filters-exclude"><span class="std std-ref"><span class="pre">filters[].exclude</span></span></a></strong></code> and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-machine-inventory-parameter-filters-include"><span class="std std-ref"><span class="pre">filters[].include</span></span></a></strong></code> can be specified.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-groups"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-groups"><strong>groups</strong></p>
+<a class="ansibleOptionLink" href="#parameter-groups" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Add hosts to group based on Jinja2 conditionals.</p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">{}</span></code></p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-keyed_groups"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-keyed-groups"><strong>keyed_groups</strong></p>
+<a class="ansibleOptionLink" href="#parameter-keyed_groups" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Add hosts to group based on the values of a variable.</p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">[]</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-keyed_groups/default_value"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-keyed-groups-default-value"><strong>default_value</strong></p>
+<a class="ansibleOptionLink" href="#parameter-keyed_groups/default_value" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+<p><em class="ansible-option-versionadded">added in ansible-core 2.12</em></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The default value when the host variable’s value is an empty string.</p>
+<p>This option is mutually exclusive with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-machine-inventory-parameter-keyed-groups-trailing-separator"><span class="std std-ref"><span class="pre">keyed_groups[].trailing_separator</span></span></a></strong></code>.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-keyed_groups/key"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-keyed-groups-key"><strong>key</strong></p>
+<a class="ansibleOptionLink" href="#parameter-keyed_groups/key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The key from input dictionary used to generate groups</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-keyed_groups/parent_group"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-keyed-groups-parent-group"><strong>parent_group</strong></p>
+<a class="ansibleOptionLink" href="#parameter-keyed_groups/parent_group" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>parent group for keyed group</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-keyed_groups/prefix"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-keyed-groups-prefix"><strong>prefix</strong></p>
+<a class="ansibleOptionLink" href="#parameter-keyed_groups/prefix" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A keyed group name will start with this prefix</p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-keyed_groups/separator"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-keyed-groups-separator"><strong>separator</strong></p>
+<a class="ansibleOptionLink" href="#parameter-keyed_groups/separator" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>separator used to build the keyed group name</p>
+<p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;_&quot;</span></code></p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-keyed_groups/trailing_separator"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-keyed-groups-trailing-separator"><strong>trailing_separator</strong></p>
+<a class="ansibleOptionLink" href="#parameter-keyed_groups/trailing_separator" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in ansible-core 2.12</em></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Set this option to <code class="ansible-value docutils literal notranslate"><span class="pre">False</span></code> to omit the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-machine-inventory-parameter-keyed-groups-separator"><span class="std std-ref"><span class="pre">keyed_groups[].separator</span></span></a></strong></code> after the host variable when the value is an empty string.</p>
+<p>This option is mutually exclusive with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-machine-inventory-parameter-keyed-groups-default-value"><span class="std std-ref"><span class="pre">keyed_groups[].default_value</span></span></a></strong></code>.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">true</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-leading_separator"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-leading-separator"><strong>leading_separator</strong></p>
+<a class="ansibleOptionLink" href="#parameter-leading_separator" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in ansible-core 2.11</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Use in conjunction with keyed_groups.</p>
+<p>By default, a keyed group that does not have a prefix or a separator provided will have a name that starts with an underscore.</p>
+<p>This is because the default prefix is “” and the default separator is “_”.</p>
+<p>Set this option to False to omit the leading underscore (or other separator) if no prefix is given.</p>
+<p>If the group name is derived from a mapping the separator is still used to concatenate the items.</p>
+<p>To not use a separator in the group name at all, set the separator for the keyed group to an empty string instead.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">true</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-plugin"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-plugin"><strong>plugin</strong></p>
+<a class="ansibleOptionLink" href="#parameter-plugin" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>token that ensures this is a source file for the <code class="docutils literal notranslate"><span class="pre">docker_machine</span></code> plugin.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;docker_machine&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;community.docker.docker_machine&quot;</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-running_required"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-running-required"><strong>running_required</strong></p>
+<a class="ansibleOptionLink" href="#parameter-running_required" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>When <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code>, hosts which Docker Machine indicates are in a state other than <code class="docutils literal notranslate"><span class="pre">running</span></code> will be skipped.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">true</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-strict"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-strict"><strong>strict</strong></p>
+<a class="ansibleOptionLink" href="#parameter-strict" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>If <code class="ansible-value docutils literal notranslate"><span class="pre">yes</span></code> make invalid entries a fatal error, otherwise skip and continue.</p>
+<p>Since it is possible to use facts in the expressions they might not always be available and we ignore those errors by default.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-use_extra_vars"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-use-extra-vars"><strong>use_extra_vars</strong></p>
+<a class="ansibleOptionLink" href="#parameter-use_extra_vars" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in ansible-core 2.11</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Merge extra vars into the available variables for composition (highest precedence).</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+<p class="ansible-option-line"><strong class="ansible-option-configuration">Configuration:</strong></p>
+<ul>
+<li><p>INI entry:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[inventory_plugins]</span>
+<span class="na">use_extra_vars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+</pre></div>
+</div>
+</li>
+<li><p>Environment variable: <span class="target" id="index-0"></span><a class="reference internal" href="environment_variables.html#envvar-ANSIBLE_INVENTORY_USE_EXTRA_VARS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">ANSIBLE_INVENTORY_USE_EXTRA_VARS</span></code></a></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-verbose_output"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-machine-inventory-parameter-verbose-output"><strong>verbose_output</strong></p>
+<a class="ansibleOptionLink" href="#parameter-verbose_output" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>When <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code>, include all available nodes metadata (for example <code class="docutils literal notranslate"><span class="pre">Image</span></code>, <code class="docutils literal notranslate"><span class="pre">Region</span></code>, <code class="docutils literal notranslate"><span class="pre">Size</span></code>) as a JSON object named <code class="docutils literal notranslate"><span class="pre">docker_machine_node_attributes</span></code>.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">true</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+</ul>
+</div></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="notes">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Notes</a><a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The configuration file must be a YAML file whose filename ends with <code class="ansible-value docutils literal notranslate"><span class="pre">docker_machine.yml</span></code> or <code class="ansible-value docutils literal notranslate"><span class="pre">docker_machine.yaml</span></code>. Other filenames will not be accepted.</p></li>
+</ul>
+</div>
+</section>
+<section id="examples">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="c1"># Minimal example</span>
+<span class="nt">plugin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">community.docker.docker_machine</span>
+
+<span class="c1"># Example using constructed features to create a group per Docker Machine driver</span>
+<span class="c1"># (https://docs.docker.com/machine/drivers/), for example:</span>
+<span class="c1">#   $ docker-machine create --driver digitalocean ... mymachine</span>
+<span class="c1">#   $ ansible-inventory -i ./path/to/docker-machine.yml --host=mymachine</span>
+<span class="c1">#   {</span>
+<span class="c1">#     ...</span>
+<span class="c1">#     &quot;digitalocean&quot;: {</span>
+<span class="c1">#       &quot;hosts&quot;: [</span>
+<span class="c1">#           &quot;mymachine&quot;</span>
+<span class="c1">#       ]</span>
+<span class="c1">#     ...</span>
+<span class="c1">#   }</span>
+<span class="nt">strict</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="nt">keyed_groups</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">separator</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span>
+<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker_machine_node_attributes.DriverName</span>
+
+<span class="c1"># Example grouping hosts by Digital Machine tag</span>
+<span class="nt">strict</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="nt">keyed_groups</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tag</span>
+<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;dm_tags&#39;</span>
+
+<span class="c1"># Example using compose to override the default SSH behaviour of asking the user to accept the remote host key</span>
+<span class="nt">compose</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ansible_ssh_common_args</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&quot;-o</span><span class="nv"> </span><span class="s">StrictHostKeyChecking=accept-new&quot;&#39;</span>
+</pre></div>
+</div>
+<section id="authors">
+<h3>Authors<a class="headerlink" href="#authors" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Ximon Eighteen (&#64;ximon18)</p></li>
+</ul>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Configuration entries for each entry type have a low to high priority order. For example, a variable that is lower in the list will override a variable that is higher up.</p>
+</div>
+</section>
+<section id="collection-links">
+<h3>Collection links<a class="headerlink" href="#collection-links" title="Link to this heading"></a></h3>
+<ul class="ansible-links">
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://github.com/ansible-collections/community.docker/issues" rel="noopener external" target="_blank">Issue Tracker</a></span></li>
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://github.com/ansible-collections/community.docker" rel="noopener external" target="_blank">Repository (Sources)</a></span></li>
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://forum.ansible.com/tags/c/help/6/none/docker" rel="noopener external" target="_blank">Ask for help (Docker)</a></span></li>
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://forum.ansible.com/tags/c/help/6/none/docker-compose" rel="noopener external" target="_blank">Ask for help (Docker Compose)</a></span></li>
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://forum.ansible.com/tags/c/help/6/none/docker-swarm" rel="noopener external" target="_blank">Ask for help (Docker Swarm)</a></span></li>
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://github.com/ansible-collections/community.docker/issues/new?assignees=&amp;labels=&amp;template=bug_report.md" rel="noopener external" target="_blank">Submit a bug report</a></span></li>
+<li><span><a aria-role="button" class="ansible-link reference external" href="https://github.com/ansible-collections/community.docker/issues/new?assignees=&amp;labels=&amp;template=feature_request.md" rel="noopener external" target="_blank">Request a feature</a></span></li>
+<li><span><a class="reference internal" href="index.html#communication-for-community-docker"><span class="std std-ref">Communication</span></a></span></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          
+
+<footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="docker_containers_inventory.html" class="btn btn-neutral float-left" title="community.docker.docker_containers inventory – Ansible dynamic inventory plugin for Docker containers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="docker_swarm_inventory.html" class="btn btn-neutral float-right" title="community.docker.docker_swarm inventory – Ansible dynamic inventory plugin for Docker swarm nodes." accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Community.Docker Contributors.</p>
+  </div>
+
+  
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script><!-- extra footer elements for Ansible beyond RTD Sphinx Theme -->
+
+</body>
+</html>
