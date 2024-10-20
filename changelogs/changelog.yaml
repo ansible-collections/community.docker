@@ -756,6 +756,20 @@ releases:
     - 2.7.13.yml
     - 966-prune-filters.yml
     release_date: '2024-09-17'
+  2.7.14:
+    changes:
+      release_summary: 'Maintenance release.
+
+
+        With this release, community.docker 2.x.y is End of Life. There will be no
+        further community.docker 2.x.y releases,
+
+        and CI will be disabled. Please upgrade to community.docker 4.x.y or 3.x.y.
+
+        '
+    fragments:
+    - 2.7.14.yml
+    release_date: '2024-10-20'
   2.7.2:
     changes:
       minor_changes:

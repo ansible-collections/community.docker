@@ -4,6 +4,17 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v2.7.14
+=======
+
+Release Summary
+---------------
+
+Maintenance release.
+
+With this release, community.docker 2.x.y is End of Life. There will be no further community.docker 2.x.y releases,
+and CI will be disabled. Please upgrade to community.docker 4.x.y or 3.x.y.
+
 v2.7.13
 =======
 
