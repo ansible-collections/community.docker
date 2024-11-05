@@ -212,6 +212,7 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     compare_generic,
+    sanitize_labels,
 )
 from ansible.module_utils.common.text.converters import to_native, to_bytes
 
@@ -414,6 +415,7 @@ def main():
         min_docker_api_version='1.30',
         option_minimal_versions=option_minimal_versions,
     )
+    sanitize_labels(client.module.params['labels'], 'labels', client)
 
     try:
         results = dict(
