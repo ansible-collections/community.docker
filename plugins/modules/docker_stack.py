@@ -57,6 +57,14 @@ options:
         current stack definition.
     type: bool
     default: false
+  detach:
+    description:
+      - If V(false), the C(--detach=false) option is added to the C(docker stack deploy) command,
+        allowing Docker to wait for tasks to converge before exiting.
+      - If V(true) (default), Docker exits immediately instead of waiting for tasks to converge.
+    type: bool
+    default: true
+    version_added: 4.1.0
   with_registry_auth:
     description:
       - If true will add the C(--with-registry-auth) option to the C(docker stack deploy) command.
@@ -200,6 +208,8 @@ def docker_stack_deploy(client, stack_name, compose_files):
     command = ["stack", "deploy"]
     if client.module.params["prune"]:
         command += ["--prune"]
+    if not client.module.params["detach"]:
+        command += ["--detach=false"]
     if client.module.params["with_registry_auth"]:
         command += ["--with-registry-auth"]
     if client.module.params["resolve_image"]:
@@ -222,6 +232,8 @@ def docker_stack_inspect(client, stack_name):
 
 def docker_stack_rm(client, stack_name, retries, interval):
     command = ["stack", "rm", stack_name]
+    if not client.module.params["detach"]:
+        command += ["--detach=false"]
     rc, out, err = client.call_cli(*command)
 
     while to_native(err) != "Nothing found in stack: %s\n" % stack_name and retries > 0:
@@ -237,6 +249,7 @@ def main():
             'name': dict(type='str', required=True),
             'compose': dict(type='list', elements='raw', default=[]),
             'prune': dict(type='bool', default=False),
+            'detach': dict(type='bool', default=True),
             'with_registry_auth': dict(type='bool', default=False),
             'resolve_image': dict(type='str', choices=['always', 'changed', 'never']),
             'state': dict(type='str', default='present', choices=['present', 'absent']),
