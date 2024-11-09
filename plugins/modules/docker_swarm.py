@@ -324,6 +324,7 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
 )
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DifferenceTracker,
+    sanitize_labels,
 )
 
 from ansible_collections.community.docker.plugins.module_utils.swarm import AnsibleDockerSwarmClient
@@ -714,6 +715,7 @@ def main():
         min_docker_version='1.10.0',
         option_minimal_versions=option_minimal_versions,
     )
+    sanitize_labels(client.module.params['labels'], 'labels', client)
 
     try:
         results = dict(

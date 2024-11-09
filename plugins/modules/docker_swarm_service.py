@@ -954,6 +954,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     convert_duration_to_nanosecond,
     parse_healthcheck,
     clean_dict_booleans_for_docker_api,
+    sanitize_labels,
 )
 
 from ansible.module_utils.basic import human_to_bytes
@@ -1531,10 +1532,9 @@ class DockerService(DockerBaseClass):
         secret_ids,
         config_ids,
         network_ids,
-        docker_api_version,
-        docker_py_version,
+        client,
     ):
-        s = DockerService(docker_api_version, docker_py_version)
+        s = DockerService(client.docker_api_version, client.docker_py_version)
         s.image = image_digest
         s.args = ap['args']
         s.endpoint_mode = ap['endpoint_mode']
@@ -1546,7 +1546,9 @@ class DockerService(DockerBaseClass):
         s.hosts = ap['hosts']
         s.tty = ap['tty']
         s.labels = ap['labels']
+        sanitize_labels(s.labels, 'labels', client)
         s.container_labels = ap['container_labels']
+        sanitize_labels(s.container_labels, 'container_labels', client)
         s.sysctls = ap['sysctls']
         s.mode = ap['mode']
         s.stop_signal = ap['stop_signal']
@@ -2488,8 +2490,7 @@ class DockerServiceManager(object):
                 secret_ids,
                 config_ids,
                 network_ids,
-                self.client.docker_api_version,
-                self.client.docker_py_version
+                self.client,
             )
         except Exception as e:
             return self.client.fail(
