@@ -153,6 +153,7 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
 from ansible.module_utils.common.text.converters import to_native
 
 from ansible_collections.community.docker.plugins.module_utils.swarm import AnsibleDockerSwarmClient
+from ansible_collections.community.docker.plugins.module_utils.util import sanitize_labels
 
 
 class TaskParameters(DockerBaseClass):
@@ -171,6 +172,8 @@ class TaskParameters(DockerBaseClass):
 
         for key, value in client.module.params.items():
             setattr(self, key, value)
+
+        sanitize_labels(self.labels, "labels", client)
 
 
 class SwarmNodeManager(DockerBaseClass):

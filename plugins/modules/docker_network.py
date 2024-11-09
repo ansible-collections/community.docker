@@ -284,6 +284,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     DifferenceTracker,
     clean_dict_booleans_for_docker_api,
+    sanitize_labels,
 )
 from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
 
@@ -698,6 +699,7 @@ def main():
         # "The docker server >= 1.10.0"
         option_minimal_versions=option_minimal_versions,
     )
+    sanitize_labels(client.module.params['labels'], 'labels', client)
 
     try:
         cm = DockerNetworkManager(client)
