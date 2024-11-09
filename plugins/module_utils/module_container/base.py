@@ -22,6 +22,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     compare_generic,
     normalize_healthcheck,
     omit_none_from_dict,
+    sanitize_labels,
 )
 
 from ansible_collections.community.docker.plugins.module_utils._platform import (
@@ -651,6 +652,17 @@ def _preprocess_mounts(module, values):
     return values
 
 
+def _preprocess_labels(module, values):
+    result = {}
+    if 'labels' in values:
+        labels = values['labels']
+        if labels is not None:
+            labels = dict(labels)
+            sanitize_labels(labels, 'labels', module=module)
+        result['labels'] = labels
+    return result
+
+
 def _preprocess_log(module, values):
     result = {}
     if 'log_driver' not in values:
@@ -978,7 +990,7 @@ OPTION_KERNEL_MEMORY = (
 )
 
 OPTION_LABELS = (
-    OptionGroup()
+    OptionGroup(preprocess=_preprocess_labels)
     .add_option('labels', type='dict', needs_no_suboptions=True)
 )
 

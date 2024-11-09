@@ -204,6 +204,7 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     compare_generic,
+    sanitize_labels,
 )
 from ansible.module_utils.common.text.converters import to_native, to_bytes
 
@@ -384,6 +385,7 @@ def main():
         mutually_exclusive=mutually_exclusive,
         min_docker_version='2.1.0',
     )
+    sanitize_labels(client.module.params['labels'], 'labels', client)
 
     try:
         results = dict(

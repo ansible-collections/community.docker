@@ -12,7 +12,9 @@ from datetime import timedelta
 
 from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.common.collections import is_sequence
+from ansible.module_utils.six import string_types
 from ansible.module_utils.six.moves.urllib.parse import urlparse
+from ansible.module_utils.common.text.converters import to_text
 
 
 DEFAULT_DOCKER_HOST = 'unix:///var/run/docker.sock'
@@ -275,6 +277,28 @@ class DifferenceTracker(object):
         '''
         result = [entry['name'] for entry in self._diff]
         return result
+
+
+def sanitize_labels(labels, labels_field, client=None, module=None):
+    def fail(msg):
+        if client is not None:
+            client.module.fail(msg)
+        if module is not None:
+            module.fail_json(msg=msg)
+        raise ValueError(msg)
+
+    if labels is None:
+        return
+    for k, v in list(labels.items()):
+        if not isinstance(k, string_types):
+            fail(
+                "The key {key!r} of {field} is not a string!".format(
+                    field=labels_field, key=k))
+        if isinstance(v, (bool, float)):
+            fail(
+                "The value {value!r} for {key!r} of {field} is not a string or something than can be safely converted to a string!".format(
+                    field=labels_field, key=k, value=v))
+        labels[k] = to_text(v)
 
 
 def clean_dict_booleans_for_docker_api(data, allow_sequences=False):

@@ -127,6 +127,7 @@ from ansible_collections.community.docker.plugins.module_utils.common_api import
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     DifferenceTracker,
+    sanitize_labels,
 )
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     APIError,
@@ -296,6 +297,7 @@ def main():
         supports_check_mode=True,
         # "The docker server >= 1.9.0"
     )
+    sanitize_labels(client.module.params['labels'], 'labels', client)
 
     try:
         cm = DockerVolumeManager(client)
