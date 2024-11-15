@@ -304,7 +304,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-detach"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-stack-module-parameter-detach"><strong>detach</strong></p>
 <a class="ansibleOptionLink" href="#parameter-detach" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>If false will add the <code class="docutils literal notranslate"><span class="pre">--detach=false</span></code> option to the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">stack</span> <span class="pre">deploy</span></code> command. This will have docker exit immediately instead of waiting for the stack services to converge.</p>
+<td><div class="ansible-option-cell"><p>If <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code>, the <code class="docutils literal notranslate"><span class="pre">--detach=false</span></code> option is added to the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">stack</span> <span class="pre">deploy</span></code> command, allowing docker to wait for tasks to converge before exiting.</p>
+<p>If <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code> (default), docker exits immediately instead of waiting for tasks to converge.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
