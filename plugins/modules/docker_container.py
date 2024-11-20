@@ -470,8 +470,8 @@ options:
       - Determines what the module does if the image matches, but the image name in the container's configuration
         does not match the image name provided to the module.
       - "This is ignored if C(image: ignore) is set in O(comparisons)."
-      - If set to V(recreate) the container will be recreated.
-      - If set to V(ignore) (currently the default) the container will not be recreated because of this. It might still get recreated for other reasons.
+      - If set to V(recreate) (currently the default) the container will be recreated.
+      - If set to V(ignore) the container will not be recreated because of this. It might still get recreated for other reasons.
         This has been the default behavior of the module for a long time, but might not be what users expect.
       - The default changed from V(ignore) to V(recreate) in community.docker 4.0.0.
     type: str
