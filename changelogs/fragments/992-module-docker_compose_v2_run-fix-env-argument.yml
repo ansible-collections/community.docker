@@ -1,2 +1,2 @@
 bugfixes:
-- "fix missing ``--env`` flag in modules ``docker_compose_v2_run`` and ``docker_compose_v2_exec`` while assembling env arguments"
+- "docker_compose_v2_exec, docker_compose_v2_run - fix missing ``--env`` flag while assembling env arguments (https://github.com/ansible-collections/community.docker/pull/992)."
