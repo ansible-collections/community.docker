@@ -346,6 +346,7 @@ class ExecManager(BaseComposeManager):
             args.append('--no-TTY')
         if self.env:
             for name, value in list(self.env.items()):
+                args.append('--env')
                 args.append('{0}={1}'.format(name, value))
         args.append('--')
         args.append(self.service)
