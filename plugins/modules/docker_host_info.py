@@ -249,6 +249,9 @@ class DockerHostManager(DockerBaseClass):
         listed_objects = ['volumes', 'networks', 'containers', 'images']
 
         self.results['host_info'] = self.get_docker_host_info()
+        # At this point we definitely know that we can talk to the Docker daemon
+        self.results['can_talk_to_docker'] = True
+        self.client.fail_results['can_talk_to_docker'] = True
 
         if self.client.module.params['disk_usage']:
             self.results['disk_usage'] = self.get_docker_disk_usage_facts()
@@ -363,7 +366,9 @@ def main():
             can_talk_to_docker=False,
         ),
     )
-    client.fail_results['can_talk_to_docker'] = True
+    if client.module.params['api_version'] is None or client.module.params['api_version'].lower() == 'auto':
+        # At this point we know that we can talk to Docker, since we asked it for the API version
+        client.fail_results['can_talk_to_docker'] = True
 
     try:
         results = dict(
