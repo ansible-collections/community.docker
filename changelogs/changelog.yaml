@@ -1951,3 +1951,17 @@ releases:
       - 3.13.2.yml
       - 985-label-sanitize.yml
     release_date: '2024-11-10'
+  3.13.3:
+    changes:
+      bugfixes:
+        - docker_compose_v2_exec, docker_compose_v2_run - fix missing ``--env`` flag
+          while assembling env arguments (https://github.com/ansible-collections/community.docker/pull/992).
+        - docker_host_info - ensure that the module always returns ``can_talk_to_docker``,
+          and that it provides the correct value even if ``api_version`` is specified
+          (https://github.com/ansible-collections/community.docker/issues/993, https://github.com/ansible-collections/community.docker/pull/995).
+      release_summary: Bugfix release.
+    fragments:
+      - 3.13.3.yml
+      - 992-module-docker_compose_v2_run-fix-env-argument.yml
+      - 995-docker_host_info-return.yml
+    release_date: '2024-11-23'
