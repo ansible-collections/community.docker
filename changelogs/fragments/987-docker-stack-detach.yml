@@ -1,2 +1,0 @@
-minor_changes:
-  - "docker_stack - allow to add ``--detach=false`` option to ``docker stack deploy`` command (https://github.com/ansible-collections/community.docker/pull/987)."

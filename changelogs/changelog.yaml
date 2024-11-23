@@ -1975,3 +1975,21 @@ releases:
       - 4.0.1.yml
       - 985-label-sanitize.yml
     release_date: '2024-11-10'
+  4.1.0:
+    changes:
+      bugfixes:
+        - docker_compose_v2_exec, docker_compose_v2_run - fix missing ``--env`` flag
+          while assembling env arguments (https://github.com/ansible-collections/community.docker/pull/992).
+        - docker_host_info - ensure that the module always returns ``can_talk_to_docker``,
+          and that it provides the correct value even if ``api_version`` is specified
+          (https://github.com/ansible-collections/community.docker/issues/993, https://github.com/ansible-collections/community.docker/pull/995).
+      minor_changes:
+        - docker_stack - allow to add ``--detach=false`` option to ``docker stack
+          deploy`` command (https://github.com/ansible-collections/community.docker/pull/987).
+      release_summary: Bugfix and feature release.
+    fragments:
+      - 4.1.0.yml
+      - 987-docker-stack-detach.yml
+      - 992-module-docker_compose_v2_run-fix-env-argument.yml
+      - 995-docker_host_info-return.yml
+    release_date: '2024-11-23'
