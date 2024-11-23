@@ -20,12 +20,39 @@
   - name: assert reading docker host facts when docker is running
     assert:
       that:
-         - 'output.host_info.Name is string'
-         - 'output.containers is not defined'
-         - 'output.networks is not defined'
-         - 'output.volumes is not defined'
-         - 'output.images is not defined'
-         - 'output.disk_usage is not defined'
+        - output.host_info.Name is string
+        - output.containers is not defined
+        - output.networks is not defined
+        - output.volumes is not defined
+        - output.images is not defined
+        - output.disk_usage is not defined
+        - output.can_talk_to_docker is true
+
+- block:
+  - name: Get info on Docker host with invalid api_version
+    docker_host_info:
+      api_version: 1.999.999
+    register: output
+    ignore_errors: true
+
+  - name: assert can_talk_is_docker is false
+    assert:
+      that:
+        - output is failed
+        - output.can_talk_to_docker is false
+
+- block:
+  - name: Get info on Docker host with invalid docker_host
+    docker_host_info:
+      docker_host: tcp://127.0.0.1:80
+    register: output
+    ignore_errors: true
+
+  - name: assert can_talk_is_docker is false
+    assert:
+      that:
+        - output is failed
+        - output.can_talk_to_docker is false
 
 # Container and volume are created so that all lists are non-empty:
 # * container and volume lists are non-emtpy because of the created objects;
