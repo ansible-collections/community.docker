@@ -4,7 +4,7 @@
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="2.16.0" name="antsibull-docs" />
+<meta content="2.16.1" name="antsibull-docs" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>community.docker.docker_container module – manage Docker containers &mdash; Community.Docker Collection  documentation</title>
@@ -867,7 +867,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-cell"><p>Determines what the module does if the image matches, but the image name in the container’s configuration does not match the image name provided to the module.</p>
 <p>This is ignored if <code class="docutils literal notranslate"><span class="pre">image:</span> <span class="pre">ignore</span></code> is set in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-comparisons"><span class="std std-ref"><span class="pre">comparisons</span></span></a></strong></code>.</p>
-<p>If set to <code class="ansible-value docutils literal notranslate"><span class="pre">recreate</span></code> (currently the default) the container will be recreated.</p>
+<p>If set to <code class="ansible-value docutils literal notranslate"><span class="pre">recreate</span></code> (default) the container will be recreated.</p>
 <p>If set to <code class="ansible-value docutils literal notranslate"><span class="pre">ignore</span></code> the container will not be recreated because of this. It might still get recreated for other reasons. This has been the default behavior of the module for a long time, but might not be what users expect.</p>
 <p>The default changed from <code class="ansible-value docutils literal notranslate"><span class="pre">ignore</span></code> to <code class="ansible-value docutils literal notranslate"><span class="pre">recreate</span></code> in community.docker 4.0.0.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
