@@ -25,7 +25,6 @@
     docker_network:
       name: ingress
       state: absent
-      force: true
 
   - name: ingress
     docker_network:
