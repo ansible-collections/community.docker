@@ -20,6 +20,12 @@
     docker_swarm:
       state: present
       advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
+  
+  - name: cleanup default swarm ingress network
+    docker_network:
+      name: ingress
+      state: absent
+      force: true
 
   - name: ingress
     docker_network:
