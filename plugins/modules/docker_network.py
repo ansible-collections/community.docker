@@ -96,6 +96,11 @@ options:
       - Enable IPv6 networking.
     type: bool
 
+  ingress:
+    description:
+      - Enable swarm routing-mesh.
+    type: bool
+
   ipam_driver:
     description:
       - Specify an IPAM driver.
@@ -309,6 +314,7 @@ class TaskParameters(DockerBaseClass):
         self.labels = None
         self.debug = None
         self.enable_ipv6 = None
+        self.ingress = None
         self.scope = None
         self.attachable = None
 
@@ -493,6 +499,11 @@ class DockerNetworkManager(object):
                             parameter=self.parameters.enable_ipv6,
                             active=net.get('EnableIPv6', False))
 
+        if self.parameters.ingress is not None and self.parameters.ingress != net.get('Ingress', False):
+            differences.add('ingress',
+                            parameter=self.parameters.ingress,
+                            active=net.get('Ingress', False))
+
         if self.parameters.internal is not None and self.parameters.internal != net.get('Internal', False):
             differences.add('internal',
                             parameter=self.parameters.internal,
@@ -537,6 +548,8 @@ class DockerNetworkManager(object):
                 data['ConfigFrom'] = {'Network': self.parameters.config_from}
             if self.parameters.enable_ipv6:
                 data['EnableIPv6'] = True
+            if self.parameters.ingress:
+                data['Ingress'] = True
             if self.parameters.internal:
                 data['Internal'] = True
             if self.parameters.scope is not None:
@@ -679,6 +692,7 @@ def main():
             aux_addresses=dict(type='dict'),
         )),
         enable_ipv6=dict(type='bool'),
+        ingress=dict(type='bool'),
         internal=dict(type='bool'),
         labels=dict(type='dict', default={}),
         debug=dict(type='bool', default=False),
