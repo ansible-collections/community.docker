@@ -49,29 +49,6 @@
       state: absent
       force: true
 
-  - assert:
-      that:
-      - overlay_1 is changed
-      - overlay_2 is not changed
-      - overlay_3 is changed
-
-  always:
-  - name: cleanup swarm
-    docker_swarm:
-      state: absent
-      force: true
-
-####################################################################
-## ingress #########################################################
-####################################################################
-
-- block:
-  # Overlay networks require swarm initialization before they'll work
-  - name: swarm
-    docker_swarm:
-      state: present
-      advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
-
   - name: ingress
     docker_network:
       name: "{{ nname_1 }}"
@@ -101,6 +78,9 @@
 
   - assert:
       that:
+      - overlay_1 is changed
+      - overlay_2 is not changed
+      - overlay_3 is changed
       - ingress_1 is changed
       - ingress_2 is not changed
       - ingress_3 is changed
@@ -110,5 +90,3 @@
     docker_swarm:
       state: absent
       force: true
-
-
