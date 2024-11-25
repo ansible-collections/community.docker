@@ -15,33 +15,32 @@
 ####################################################################
 
 - block:
-  # Overlay networks require swarm initialization before they'll work
+  # Ingress networks require swarm initialization before they'll work
   - name: swarm
     docker_swarm:
       state: present
       advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
 
-  - name: overlay
+  - name: ingress
     docker_network:
       name: "{{ nname_1 }}"
       driver: overlay
-      driver_options:
-        com.docker.network.driver.overlay.vxlanid_list: "257"
-    register: overlay_1
+      ingress: true
+    register: ingress_1
 
-  - name: overlay (idempotency)
+  - name: ingress (idempotency)
     docker_network:
       name: "{{ nname_1 }}"
       driver: overlay
-      driver_options:
-        com.docker.network.driver.overlay.vxlanid_list: "257"
-    register: overlay_2
+      ingress: true
+    register: ingress_2
 
-  - name: overlay (change)
+  - name: ingress (change)
     docker_network:
       name: "{{ nname_1 }}"
-      driver: bridge
-    register: overlay_3
+      driver: overlay
+      ingress: false
+    register: ingress_3
 
   - name: cleanup network
     docker_network:
@@ -51,9 +50,9 @@
 
   - assert:
       that:
-      - overlay_1 is changed
-      - overlay_2 is not changed
-      - overlay_3 is changed
+      - ingress_1 is changed
+      - ingress_2 is not changed
+      - ingress_3 is changed
 
   always:
   - name: cleanup swarm
