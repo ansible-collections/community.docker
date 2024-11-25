@@ -98,7 +98,8 @@ options:
 
   ingress:
     description:
-      - Enable swarm routing-mesh.
+      - Enable Swarm routing-mesh.
+    version_added: 4.2.0
     type: bool
 
   ipam_driver:
