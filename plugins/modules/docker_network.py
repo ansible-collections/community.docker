@@ -99,6 +99,7 @@ options:
   ingress:
     description:
       - Enable Swarm routing-mesh.
+    type: bool
 
   ipam_driver:
     description:
@@ -647,7 +648,7 @@ class DockerNetworkManager(object):
 
     def disconnect_container(self, container_name):
         if not self.check_mode:
-            data = {"Container": container_name, "Force": True }
+            data = {"Container": container_name, "Force": True}
             self.client.post_json('/networks/{0}/disconnect', self.parameters.name, data=data)
         self.results['actions'].append("Disconnected container %s" % (container_name,))
         self.results['changed'] = True
