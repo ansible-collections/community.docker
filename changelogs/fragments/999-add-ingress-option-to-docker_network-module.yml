@@ -1,0 +1,5 @@
+minor_changes:
+  - Added 'ingress' option to docker_network module
+  - Containers reconnect to network only if they really exist.
+  - Enabled "force" option in Docker network container disconnect api call.
+  - Added waiting while container actually disconnect from Swarm network.
