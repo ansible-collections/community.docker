@@ -100,6 +100,7 @@ options:
     description:
       - Enable Swarm routing-mesh.
     type: bool
+    version_added: 4.2.0
 
   ipam_driver:
     description:
