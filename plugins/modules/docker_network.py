@@ -607,7 +607,7 @@ class DockerNetworkManager(object):
     def is_container_exist(self, container_name):
         try:
             container = self.client.get_container(container_name)
-            return True if container else False
+            return bool(container)
 
         except DockerException as e:
             self.client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
