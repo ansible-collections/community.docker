@@ -96,6 +96,12 @@ options:
       - Enable IPv6 networking.
     type: bool
 
+  ingress:
+    description:
+      - Enable Swarm routing-mesh.
+    type: bool
+    version_added: 4.2.0
+
   ipam_driver:
     description:
       - Specify an IPAM driver.
@@ -273,6 +279,7 @@ network:
 
 import re
 import traceback
+import time
 
 from ansible.module_utils.common.text.converters import to_native
 
@@ -311,6 +318,7 @@ class TaskParameters(DockerBaseClass):
         self.enable_ipv6 = None
         self.scope = None
         self.attachable = None
+        self.ingress = None
 
         for key, value in client.module.params.items():
             setattr(self, key, value)
@@ -507,6 +515,10 @@ class DockerNetworkManager(object):
             differences.add('attachable',
                             parameter=self.parameters.attachable,
                             active=net.get('Attachable'))
+        if self.parameters.ingress is not None and self.parameters.ingress != net.get('Ingress', False):
+            differences.add('ingress',
+                            parameter=self.parameters.ingress,
+                            active=net.get('Ingress'))
         if self.parameters.labels:
             if not net.get('Labels'):
                 differences.add('labels',
@@ -543,6 +555,8 @@ class DockerNetworkManager(object):
                 data['Scope'] = self.parameters.scope
             if self.parameters.attachable is not None:
                 data['Attachable'] = self.parameters.attachable
+            if self.parameters.ingress is not None:
+                data['Ingress'] = self.parameters.ingress
             if self.parameters.labels is not None:
                 data["Labels"] = self.parameters.labels
 
@@ -579,6 +593,9 @@ class DockerNetworkManager(object):
             self.disconnect_all_containers()
             if not self.check_mode:
                 self.client.delete_call('/networks/{0}', self.parameters.name)
+                if self.existing_network.get('Scope', 'local') == 'swarm':
+                    while self.get_existing_network():
+                        time.sleep(0.1)
             self.results['actions'].append("Removed network %s" % (self.parameters.name,))
             self.results['changed'] = True
 
@@ -587,9 +604,21 @@ class DockerNetworkManager(object):
             return False
         return container_name in container_names_in_network(self.existing_network)
 
+    def is_container_exist(self, container_name):
+        try:
+            container = self.client.get_container(container_name)
+            return bool(container)
+
+        except DockerException as e:
+            self.client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        except RequestException as e:
+            self.client.fail(
+                'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+                exception=traceback.format_exc())
+
     def connect_containers(self):
         for name in self.parameters.connected:
-            if not self.is_container_connected(name):
+            if not self.is_container_connected(name) and self.is_container_exist(name):
                 if not self.check_mode:
                     data = {
                         "Container": name,
@@ -620,7 +649,7 @@ class DockerNetworkManager(object):
 
     def disconnect_container(self, container_name):
         if not self.check_mode:
-            data = {"Container": container_name}
+            data = {"Container": container_name, "Force": True}
             self.client.post_json('/networks/{0}/disconnect', self.parameters.name, data=data)
         self.results['actions'].append("Disconnected container %s" % (container_name,))
         self.results['changed'] = True
@@ -684,6 +713,7 @@ def main():
         debug=dict(type='bool', default=False),
         scope=dict(type='str', choices=['local', 'global', 'swarm']),
         attachable=dict(type='bool'),
+        ingress=dict(type='bool'),
     )
 
     option_minimal_versions = dict(
@@ -700,7 +730,6 @@ def main():
         option_minimal_versions=option_minimal_versions,
     )
     sanitize_labels(client.module.params['labels'], 'labels', client)
-
     try:
         cm = DockerNetworkManager(client)
         client.module.exit_json(**cm.results)
