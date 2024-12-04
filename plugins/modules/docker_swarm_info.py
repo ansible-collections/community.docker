@@ -270,7 +270,7 @@ class DockerSwarmManager(DockerBaseClass):
                 item_record = self.get_essential_facts_tasks(item)
             elif docker_object == 'services':
                 item_record = self.get_essential_facts_services(item)
-                if item_record['Mode'] == 'Global':
+                if item_record.get('Mode') == 'Global':
                     item_record['Replicas'] = len(items)
             items_list.append(item_record)
 
