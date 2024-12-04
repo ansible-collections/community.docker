@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_swarm_info - do not crash when finding Swarm jobs if ``services=true`` (https://github.com/ansible-collections/community.docker/issues/1003)."
