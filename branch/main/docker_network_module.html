@@ -392,6 +392,19 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-ingress"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-ingress"><strong>ingress</strong></p>
+<a class="ansibleOptionLink" href="#parameter-ingress" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 4.2.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Enable Swarm routing-mesh.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-internal"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-internal"><strong>internal</strong></p>
 <a class="ansibleOptionLink" href="#parameter-internal" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -403,56 +416,56 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ipam_config"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-ipam-config"><strong>ipam_config</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ipam_config" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>List of IPAM config blocks. Consult <a class="reference external" href="https://docs.docker.com/compose/compose-file/compose-file-v2/#ipam">Docker docs</a> for valid options and values. Note that <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-network-module-parameter-ipam-config-iprange"><span class="std std-ref"><span class="pre">ipam_config[].iprange</span></span></a></strong></code> is spelled differently here (we use the notation from the Docker SDK for Python).</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ipam_config/aux_addresses"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-ipam-config-aux-addresses"><strong>aux_addresses</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ipam_config/aux_addresses" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Auxiliary IP addresses used by Network driver, as a mapping from hostname to IP.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ipam_config/gateway"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-ipam-config-gateway"><strong>gateway</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ipam_config/gateway" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>IP gateway address.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ipam_config/iprange"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-ipam-config-iprange"><strong>iprange</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ipam_config/iprange" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>IP address range in CIDR notation.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ipam_config/subnet"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-ipam-config-subnet"><strong>subnet</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ipam_config/subnet" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>IP subset in CIDR notation.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ipam_driver"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-ipam-driver"><strong>ipam_driver</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ipam_driver" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Specify an IPAM driver.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-ipam_driver_options"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-ipam-driver-options"><strong>ipam_driver_options</strong></p>
 <a class="ansibleOptionLink" href="#parameter-ipam_driver_options" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Dictionary of IPAM driver options.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-labels"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-labels"><strong>labels</strong></p>
 <a class="ansibleOptionLink" href="#parameter-labels" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
@@ -460,7 +473,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">{}</span></code></p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-name"></div>
 <div class="ansibleOptionAnchor" id="parameter-network_name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-network-name"><span id="ansible-collections-community-docker-docker-network-module-parameter-name"></span><strong>name</strong></p>
 <a class="ansibleOptionLink" href="#parameter-name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: network_name</span></p>
@@ -469,7 +482,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <td><div class="ansible-option-cell"><p>Name of the network to operate on.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-scope"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-scope"><strong>scope</strong></p>
 <a class="ansibleOptionLink" href="#parameter-scope" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -482,7 +495,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-state"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-state"><strong>state</strong></p>
 <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -495,7 +508,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-timeout"><strong>timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -504,7 +517,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">60</span></code></p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -517,7 +530,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-tls-hostname"><strong>tls_hostname</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -526,7 +539,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Note that this option had a default value <code class="ansible-value docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-use_ssh_client"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-use-ssh-client"><strong>use_ssh_client</strong></p>
 <a class="ansibleOptionLink" href="#parameter-use_ssh_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 1.5.0</em></p>
@@ -539,7 +552,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-network-module-parameter-tls-verify"></span><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
