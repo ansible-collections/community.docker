@@ -175,6 +175,11 @@ options:
         be created, which can cause the basic idempotency this module offers to not work.
       - Providing an empty list to this option is equivalent to not specifying it at all.
         The default behavior is a single entry with O(outputs[].type=image).
+      - B(Note) that since community.docker 4.2.0, an entry for O(name)/O(tag) is added if O(outputs)
+        has at least one entry and no entry has type O(outputs[].type=image) and includes O(name)/O(tag)
+        in O(outputs[].name). This is because the module would otherwise pass C(--tag name:image) to
+        the buildx plugin, which for some reason overwrites all images in O(outputs) by the C(name:image)
+        provided in O(name)/O(tag).
     type: list
     elements: dict
     version_added: 3.10.0
@@ -373,6 +378,28 @@ class ImageBuilder(DockerBaseClass):
         if is_image_name_id(self.tag):
             self.fail('Image name must not contain a digest, but have a tag')
 
+        if self.outputs:
+            found = False
+            name_tag = '%s:%s' % (self.name, self.tag)
+            for output in self.outputs:
+                if output['type'] == 'image' and name_tag in output['name'].split(','):
+                    found = True
+                    break
+            if not found:
+                self.outputs.append({
+                    'type': 'image',
+                    'name': name_tag,
+                    'push': False,
+                })
+                if LooseVersion(buildx_version) < LooseVersion('0.13.0'):
+                    self.fail(
+                        "The output does not include an image with name {name_tag}, and the Docker"
+                        " buildx plugin has version {version} which only supports one output.".format(
+                            name_tag=name_tag,
+                            version=buildx_version,
+                        ),
+                    )
+
     def fail(self, msg, **kwargs):
         self.client.fail(msg, **kwargs)
 
@@ -382,7 +409,8 @@ class ImageBuilder(DockerBaseClass):
 
     def add_args(self, args):
         environ_update = {}
-        args.extend(['--tag', '%s:%s' % (self.name, self.tag)])
+        if not self.outputs:
+            args.extend(['--tag', '%s:%s' % (self.name, self.tag)])
         if self.dockerfile:
             args.extend(['--file', os.path.join(self.path, self.dockerfile)])
         if self.cache_from:
