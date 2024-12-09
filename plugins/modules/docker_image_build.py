@@ -175,6 +175,10 @@ options:
         be created, which can cause the basic idempotency this module offers to not work.
       - Providing an empty list to this option is equivalent to not specifying it at all.
         The default behavior is a single entry with O(outputs[].type=image).
+      - B(Note) that for some reason Docker the buildx plugin overwrites the image name
+        of every entry with O(outputs[].type=image), O(outputs[].type=oci), or O(outputs[].type=docker)
+        with the image name specified in O(name)/O(tag). We will not work around this in community.docker 3.x.y
+        for backwards compatibility. Please upgrade to community.docker 4.2.0 or newer for a workaround.
     type: list
     elements: dict
     version_added: 3.10.0
