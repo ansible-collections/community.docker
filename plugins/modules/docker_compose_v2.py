@@ -82,6 +82,16 @@ options:
       - When O(state) is V(present) or V(restarted), specify whether or not to include linked services.
     type: bool
     default: true
+  ignore_build_events:
+    description:
+      - Ignores image building events for change detection.
+      - If O(state=present) and O(ignore_build_events=true) and O(build=always), a rebuild that does
+        not trigger a container restart no longer results in RV(ignore:changed=true).
+      - Note that Docker Compose 2.31.0 is the first Compose 2.x version to emit build events.
+        For older versions, the behavior is always as if O(ignore_build_events=true).
+    type: bool
+    default: true
+    version_added: 4.2.0
   recreate:
     description:
       - By default containers will be recreated when their configuration differs from the service definition.
@@ -439,6 +449,7 @@ class ServicesManager(BaseComposeManager):
         self.dependencies = parameters['dependencies']
         self.pull = parameters['pull']
         self.build = parameters['build']
+        self.ignore_build_events = parameters['ignore_build_events']
         self.recreate = parameters['recreate']
         self.remove_images = parameters['remove_images']
         self.remove_volumes = parameters['remove_volumes']
@@ -517,7 +528,7 @@ class ServicesManager(BaseComposeManager):
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode, nonzero_rc=rc != 0)
         self.emit_warnings(events)
-        self.update_result(result, events, stdout, stderr, ignore_service_pull_events=True)
+        self.update_result(result, events, stdout, stderr, ignore_service_pull_events=True, ignore_build_events=self.ignore_build_events)
         self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
@@ -548,7 +559,7 @@ class ServicesManager(BaseComposeManager):
         rc_1, stdout_1, stderr_1 = self.client.call_cli(*args_1, cwd=self.project_src)
         events_1 = self.parse_events(stderr_1, dry_run=self.check_mode, nonzero_rc=rc_1 != 0)
         self.emit_warnings(events_1)
-        self.update_result(result, events_1, stdout_1, stderr_1, ignore_service_pull_events=True)
+        self.update_result(result, events_1, stdout_1, stderr_1, ignore_service_pull_events=True, ignore_build_events=self.ignore_build_events)
         is_failed_1 = is_failed(events_1, rc_1)
         if not is_failed_1 and not self._are_containers_stopped():
             # Make sure all containers are stopped
@@ -639,6 +650,7 @@ def main():
         scale=dict(type='dict'),
         wait=dict(type='bool', default=False),
         wait_timeout=dict(type='int'),
+        ignore_build_events=dict(type='bool', default=True),
     )
     argspec_ex = common_compose_argspec_ex()
     argument_spec.update(argspec_ex.pop('argspec'))
