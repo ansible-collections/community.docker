@@ -175,6 +175,11 @@ options:
         be created, which can cause the basic idempotency this module offers to not work.
       - Providing an empty list to this option is equivalent to not specifying it at all.
         The default behavior is a single entry with O(outputs[].type=image).
+      - B(Note) that since community.docker 4.2.0, an entry for O(name)/O(tag) is added if O(outputs)
+        has at least one entry and no entry has type O(outputs[].type=image) and includes O(name)/O(tag)
+        in O(outputs[].name). This is because the module would otherwise pass C(--tag name:image) to
+        the buildx plugin, which for some reason overwrites all images in O(outputs) by the C(name:image)
+        provided in O(name)/O(tag).
     type: list
     elements: dict
     version_added: 3.10.0
@@ -224,10 +229,12 @@ options:
         type: str
       name:
         description:
-          - Name under which the image is stored under.
+          - Name(s) under which the image is stored under.
           - If not provided, O(name) and O(tag) will be used.
           - Optional for O(outputs[].type=image).
-        type: str
+          - This can be a list of strings since community.docker 4.2.0.
+        type: list
+        elements: str
       push:
         description:
           - Whether to push the built image to a registry.
@@ -268,6 +275,13 @@ image:
     returned: success
     type: dict
     sample: {}
+
+command:
+    description: The command executed.
+    returned: success and for some failures
+    type: list
+    elements: str
+    version_added: 4.2.0
 '''
 
 import base64
@@ -309,6 +323,12 @@ def convert_to_bytes(value, module, name, unlimited_value=None):
 
 def dict_to_list(dictionary, concat='='):
     return ['%s%s%s' % (k, concat, v) for k, v in sorted(dictionary.items())]
+
+
+def _quote_csv(input):
+    if input.strip() == input and all(i not in input for i in '",\r\n'):
+        return input
+    return '"{0}"'.format(input.replace('"', '""'))
 
 
 class ImageBuilder(DockerBaseClass):
@@ -373,6 +393,31 @@ class ImageBuilder(DockerBaseClass):
         if is_image_name_id(self.tag):
             self.fail('Image name must not contain a digest, but have a tag')
 
+        if self.outputs:
+            found = False
+            name_tag = '%s:%s' % (self.name, self.tag)
+            for output in self.outputs:
+                if output['type'] == 'image':
+                    if not output['name']:
+                        # Since we no longer pass --tag if --output is provided, we need to set this manually
+                        output['name'] = [name_tag]
+                    if output['name'] and name_tag in output['name']:
+                        found = True
+            if not found:
+                self.outputs.append({
+                    'type': 'image',
+                    'name': [name_tag],
+                    'push': False,
+                })
+                if LooseVersion(buildx_version) < LooseVersion('0.13.0'):
+                    self.fail(
+                        "The output does not include an image with name {name_tag}, and the Docker"
+                        " buildx plugin has version {version} which only supports one output.".format(
+                            name_tag=name_tag,
+                            version=buildx_version,
+                        ),
+                    )
+
     def fail(self, msg, **kwargs):
         self.client.fail(msg, **kwargs)
 
@@ -382,7 +427,8 @@ class ImageBuilder(DockerBaseClass):
 
     def add_args(self, args):
         environ_update = {}
-        args.extend(['--tag', '%s:%s' % (self.name, self.tag)])
+        if not self.outputs:
+            args.extend(['--tag', '%s:%s' % (self.name, self.tag)])
         if self.dockerfile:
             args.extend(['--file', os.path.join(self.path, self.dockerfile)])
         if self.cache_from:
@@ -427,26 +473,27 @@ class ImageBuilder(DockerBaseClass):
                     args.extend(['--secret', 'id={id},type=env,env={env}'.format(id=secret['id'], env=env_name)])
         if self.outputs:
             for output in self.outputs:
+                subargs = []
                 if output['type'] == 'local':
-                    args.extend(['--output', 'type=local,dest={dest}'.format(dest=output['dest'])])
+                    subargs.extend(['type=local', 'dest={dest}'.format(dest=output['dest'])])
                 if output['type'] == 'tar':
-                    args.extend(['--output', 'type=tar,dest={dest}'.format(dest=output['dest'])])
+                    subargs.extend(['type=tar', 'dest={dest}'.format(dest=output['dest'])])
                 if output['type'] == 'oci':
-                    args.extend(['--output', 'type=oci,dest={dest}'.format(dest=output['dest'])])
+                    subargs.extend(['type=oci', 'dest={dest}'.format(dest=output['dest'])])
                 if output['type'] == 'docker':
-                    subargs = ['type=docker']
+                    subargs.append('type=docker')
                     if output['dest'] is not None:
                         subargs.append('dest={dest}'.format(dest=output['dest']))
                     if output['context'] is not None:
                         subargs.append('context={context}'.format(context=output['context']))
-                    args.extend(['--output', ','.join(subargs)])
                 if output['type'] == 'image':
-                    subargs = ['type=image']
+                    subargs.append('type=image')
                     if output['name'] is not None:
-                        subargs.append('name={name}'.format(name=output['name']))
+                        subargs.append('name={name}'.format(name=','.join(output['name'])))
                     if output['push']:
                         subargs.append('push=true')
-                    args.extend(['--output', ','.join(subargs)])
+                if subargs:
+                    args.extend(['--output', ','.join(_quote_csv(subarg) for subarg in subargs)])
         return environ_update
 
     def build_image(self):
@@ -468,10 +515,11 @@ class ImageBuilder(DockerBaseClass):
             args.extend(['--', self.path])
             rc, stdout, stderr = self.client.call_cli(*args, environ_update=environ_update)
             if rc != 0:
-                self.fail('Building %s:%s failed' % (self.name, self.tag), stdout=to_native(stdout), stderr=to_native(stderr))
+                self.fail('Building %s:%s failed' % (self.name, self.tag), stdout=to_native(stdout), stderr=to_native(stderr), command=args)
             results['stdout'] = to_native(stdout)
             results['stderr'] = to_native(stderr)
             results['image'] = self.client.find_image(self.name, self.tag) or {}
+            results['command'] = args
 
         return results
 
@@ -520,7 +568,7 @@ def main():
                 type=dict(type='str', choices=['local', 'tar', 'oci', 'docker', 'image'], required=True),
                 dest=dict(type='path'),
                 context=dict(type='str'),
-                name=dict(type='str'),
+                name=dict(type='list', elements='str'),
                 push=dict(type='bool', default=False),
             ),
             required_if=[

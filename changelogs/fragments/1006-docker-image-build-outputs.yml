@@ -1,0 +1,10 @@
+bugfixes:
+  - "docker_image_build - work around bug resp. very unexpected behavior in Docker buildx that overwrites
+     all image names in ``--output`` parameters if ``--tag`` is provided, which the module did by default
+     in the past. The module now only supplies ``--tag`` if ``outputs`` is empty. If ``outputs`` has entries,
+     it will add an additional entry with ``type=image`` if no entry of ``type=image`` contains the image name
+     specified by the ``name`` and ``tag`` options
+     (https://github.com/ansible-collections/community.docker/issues/1001, https://github.com/ansible-collections/community.docker/pull/1006)."
+minor_changes:
+  - "docker_image_build - ``outputs[].name`` can now be a list of strings (https://github.com/ansible-collections/community.docker/pull/1006)."
+  - "docker_image_build - the executed command is now returned in the ``command`` return value in case of success and some errors (https://github.com/ansible-collections/community.docker/pull/1006)."

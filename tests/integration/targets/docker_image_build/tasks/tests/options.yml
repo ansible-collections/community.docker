@@ -243,47 +243,58 @@
 ## outputs #########################################################
 ####################################################################
 
-- name: Make sure the image is not there
-  docker_image_remove:
-    name: "{{ iname }}"
+- when: buildx_version is version('0.13.0', '>=')
+  block:
+    - name: Make sure the image is not there
+      docker_image_remove:
+        name: "{{ iname }}"
 
-- name: Make sure the image tarball is not there
-  file:
-    path: "{{ remote_tmp_dir }}/container.tar"
-    state: absent
+    - name: Make sure the image tarball is not there
+      file:
+        path: "{{ remote_tmp_dir }}/container.tar"
+        state: absent
 
-- name: Build image with outputs
-  docker_image_build:
-    name: "{{ iname }}"
-    path: "{{ remote_tmp_dir }}/files"
-    dockerfile: "Dockerfile"
-    pull: false
-    outputs:
-      - type: tar
-        dest: "{{ remote_tmp_dir }}/container.tar"
-  register: outputs_1
+    - name: Build image with outputs
+      docker_image_build:
+        name: "{{ iname }}"
+        path: "{{ remote_tmp_dir }}/files"
+        dockerfile: "Dockerfile"
+        pull: false
+        outputs:
+          - type: tar
+            dest: "{{ remote_tmp_dir }}/container.tar"
+      ignore_errors: true
+      register: outputs_1
 
-- name: cleanup (should not be changed)
-  docker_image_remove:
-    name: "{{ iname }}"
-  register: outputs_1_cleanup
+    - when: outputs_1 is not failed
+      block:
+        - name: cleanup (should be changed)
+          docker_image_remove:
+            name: "{{ iname }}"
+          register: outputs_1_cleanup
 
-- name: Gather information on tarball
-  stat:
-    path: "{{ remote_tmp_dir }}/container.tar"
-  register: outputs_1_stat
+        - name: Gather information on tarball
+          stat:
+            path: "{{ remote_tmp_dir }}/container.tar"
+          register: outputs_1_stat
 
-- name: Show image information
-  debug:
-    var: outputs_1.image
+        - name: Show image information
+          debug:
+            var: outputs_1.image
 
-- name: Show tarball information
-  debug:
-    var: outputs_1_stat.stat
+        - name: Show tarball information
+          debug:
+            var: outputs_1_stat.stat
 
-- assert:
-    that:
-      - outputs_1 is changed
-      - outputs_1.image | length == 0
-      - outputs_1_cleanup is not changed
-      - outputs_1_stat.stat.exists
+        - assert:
+            that:
+              - outputs_1 is changed
+              - outputs_1.image | length > 0
+              - outputs_1_cleanup is changed
+              - outputs_1_stat.stat.exists
+
+    - when: outputs_1 is failed
+      assert:
+        that:
+          - >-
+            'ERROR: multiple outputs currently unsupported by the current BuildKit daemon' in outputs_1.stderr
