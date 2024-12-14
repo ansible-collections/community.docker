@@ -82,16 +82,6 @@ options:
       - When O(state) is V(present) or V(restarted), specify whether or not to include linked services.
     type: bool
     default: true
-  ignore_build_events:
-    description:
-      - Ignores image building events for change detection.
-      - If O(state=present) and O(ignore_build_events=true) and O(build=always), a rebuild that does
-        not trigger a container restart no longer results in RV(ignore:changed=true).
-      - Note that Docker Compose 2.31.0 is the first Compose 2.x version to emit build events.
-        For older versions, the behavior is always as if O(ignore_build_events=true).
-    type: bool
-    default: true
-    version_added: 4.2.0
   recreate:
     description:
       - By default containers will be recreated when their configuration differs from the service definition.
@@ -443,7 +433,7 @@ class ServicesManager(BaseComposeManager):
         self.dependencies = parameters['dependencies']
         self.pull = parameters['pull']
         self.build = parameters['build']
-        self.ignore_build_events = parameters['ignore_build_events']
+        self.ignore_build_events = True
         self.recreate = parameters['recreate']
         self.remove_images = parameters['remove_images']
         self.remove_volumes = parameters['remove_volumes']
@@ -640,7 +630,6 @@ def main():
         scale=dict(type='dict'),
         wait=dict(type='bool', default=False),
         wait_timeout=dict(type='int'),
-        ignore_build_events=dict(type='bool', default=True),
     )
     argspec_ex = common_compose_argspec_ex()
     argument_spec.update(argspec_ex.pop('argspec'))
