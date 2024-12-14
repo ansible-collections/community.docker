@@ -87,6 +87,8 @@ options:
       - Ignores image building events for change detection.
       - If O(state=present) and O(ignore_build_events=true) and O(build=always), a rebuild that does
         not trigger a container restart no longer results in RV(ignore:changed=true).
+      - Note that Docker Compose 2.31.0 is the first Compose 2.x version to emit build events.
+        For older versions, the behavior is always as if O(ignore_build_events=false).
     type: bool
     default: false
     version_added: 4.2.0
