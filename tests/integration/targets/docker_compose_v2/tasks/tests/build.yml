@@ -72,6 +72,40 @@
         state: present
       register: present_2
 
+    - name: Present (idempotent check, build=always, ignore_build_events=false)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        build: always
+        ignore_build_events: false
+      check_mode: true
+      register: present_3_check
+
+    - name: Present (idempotent, build=always, ignore_build_events=false)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        build: always
+        ignore_build_events: false
+      register: present_3
+
+    - name: Present (idempotent check, build=always, ignore_build_events=true)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        build: always
+        ignore_build_events: true
+      check_mode: true
+      register: present_4_check
+
+    - name: Present (idempotent, build=always, ignore_build_events=true)
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        build: always
+        ignore_build_events: true
+      register: present_4
+
     - assert:
         that:
           - present_1_check is changed
@@ -88,6 +122,14 @@
           - present_2_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
           - present_2 is not changed
           - present_2.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_3_check is changed
+          - present_3_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_3 is changed
+          - present_3.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_4_check is changed
+          - present_4_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
+          - present_4 is not changed
+          - present_4.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
 
 ####################################################################
 ## Absent ##########################################################
