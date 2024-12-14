@@ -19,7 +19,7 @@ jobs:
     permissions:
       contents: read
     name: Build Ansible Docs
-    uses: felixfontein/github-docs-build/.github/workflows/_shared-docs-build-pr.yml@base-ref
+    uses: ansible-community/github-docs-build/.github/workflows/_shared-docs-build-pr.yml@main
     with:
       collection-name: community.docker
       init-lenient: false
