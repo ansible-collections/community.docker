@@ -1,5 +1,7 @@
 minor_changes:
-  - "docker_compose_v2 - add ``ignore_build_events`` option (default value ``false``) which allows to ignore build events for change detection.
-     This can be useful if ``build=always`` is set, to avoid having a changed status if the image was rebuilt, but the containers using it were not
-     restarted since the image did not change
+  - "docker_compose_v2 - add ``ignore_build_events`` option (default value ``true``) which allows to (not) ignore build events for change detection
+     (https://github.com/ansible-collections/community.docker/issues/1005, https://github.com/ansible-collections/community.docker/issues/pull/1011)."
+bugfixes:
+  - "docker_compose_v2 - when using Compose 2.31.0 or newer, revert to the old behavior that image rebuilds, for example if ``rebuild=always``, only
+     result in ``changed`` if a container has been restarted
      (https://github.com/ansible-collections/community.docker/issues/1005, https://github.com/ansible-collections/community.docker/issues/pull/1011)."
