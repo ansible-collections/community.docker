@@ -268,7 +268,7 @@
 
     - when: outputs_1 is not failed
       block:
-        - name: cleanup (should not be changed)
+        - name: cleanup (should be changed)
           docker_image_remove:
             name: "{{ iname }}"
           register: outputs_1_cleanup
@@ -289,8 +289,8 @@
         - assert:
             that:
               - outputs_1 is changed
-              - outputs_1.image | length == 0
-              - outputs_1_cleanup is not changed
+              - outputs_1.image | length > 0
+              - outputs_1_cleanup is changed
               - outputs_1_stat.stat.exists
 
     - when: outputs_1 is failed
