@@ -76,6 +76,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -109,7 +110,7 @@ jobs:
 
       - name: Create files for building execution environment
         run: |
-          COLLECTION_FILENAME="$(ls "${{ env.NAMESPACE }}-${{ env.COLLECTION_NAME }}"-*.tar.gz)"
+          COLLECTION_FILENAME="$(ls "${NAMESPACE}-${COLLECTION_NAME}"-*.tar.gz)"
 
           # EE config
           cat > execution-environment.yml <<EOF
