@@ -101,7 +101,9 @@ If you use the Ansible package and do not update collections independently, use 
   * Docker Compose:
     - community.docker.docker_compose: manage Docker Compose files (legacy Docker Compose v1; the module is deprecated and will be removed from community.docker 4.0.0)
     - community.docker.docker_compose_v2: manage Docker Compose files (Docker compose CLI plugin)
+    - community.docker.docker_compose_v2_exec: run command in a container of a Compose service
     - community.docker.docker_compose_v2_pull: pull a Docker compose project
+    - community.docker.docker_compose_v2_run: run command in a new container of a Compose service
   * Docker Swarm:
     - community.docker.docker_config: manage configurations
     - community.docker.docker_node: manage Docker Swarm nodes
