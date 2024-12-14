@@ -7,3 +7,4 @@ bugfixes:
      (https://github.com/ansible-collections/community.docker/issues/1001, https://github.com/ansible-collections/community.docker/pull/1006)."
 minor_changes:
   - "docker_image_build - ``outputs[].name`` can now be a list of strings (https://github.com/ansible-collections/community.docker/pull/1006)."
+  - "docker_image_build - the executed command is now returned in the ``command`` return value in case of success and some errors (https://github.com/ansible-collections/community.docker/pull/1006)."

@@ -275,6 +275,13 @@ image:
     returned: success
     type: dict
     sample: {}
+
+command:
+    description: The command executed.
+    returned: success and for some failures
+    type: list
+    elements: str
+    version_added: 4.2.0
 '''
 
 import base64
@@ -508,10 +515,11 @@ class ImageBuilder(DockerBaseClass):
             args.extend(['--', self.path])
             rc, stdout, stderr = self.client.call_cli(*args, environ_update=environ_update)
             if rc != 0:
-                self.fail('Building %s:%s failed' % (self.name, self.tag), stdout=to_native(stdout), stderr=to_native(stderr))
+                self.fail('Building %s:%s failed' % (self.name, self.tag), stdout=to_native(stdout), stderr=to_native(stderr), command=args)
             results['stdout'] = to_native(stdout)
             results['stderr'] = to_native(stderr)
             results['image'] = self.client.find_image(self.name, self.tag) or {}
+            results['command'] = args
 
         return results
 
