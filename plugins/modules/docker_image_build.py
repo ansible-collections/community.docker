@@ -229,10 +229,12 @@ options:
         type: str
       name:
         description:
-          - Name under which the image is stored under.
+          - Name(s) under which the image is stored under.
           - If not provided, O(name) and O(tag) will be used.
           - Optional for O(outputs[].type=image).
-        type: str
+          - This can be a list of strings since community.docker 4.2.0.
+        type: list
+        elements: str
       push:
         description:
           - Whether to push the built image to a registry.
@@ -316,6 +318,12 @@ def dict_to_list(dictionary, concat='='):
     return ['%s%s%s' % (k, concat, v) for k, v in sorted(dictionary.items())]
 
 
+def _quote_csv(input):
+    if input.strip() == input and all(i not in input for i in '",\r\n'):
+        return input
+    return '"{0}"'.format(input.replace('"', '""'))
+
+
 class ImageBuilder(DockerBaseClass):
     def __init__(self, client):
         super(ImageBuilder, self).__init__()
@@ -382,13 +390,16 @@ class ImageBuilder(DockerBaseClass):
             found = False
             name_tag = '%s:%s' % (self.name, self.tag)
             for output in self.outputs:
-                if output['type'] == 'image' and name_tag in output['name'].split(','):
-                    found = True
-                    break
+                if output['type'] == 'image':
+                    if not output['name']:
+                        # Since we no longer pass --tag if --output is provided, we need to set this manually
+                        output['name'] = [name_tag]
+                    if output['name'] and name_tag in output['name']:
+                        found = True
             if not found:
                 self.outputs.append({
                     'type': 'image',
-                    'name': name_tag,
+                    'name': [name_tag],
                     'push': False,
                 })
                 if LooseVersion(buildx_version) < LooseVersion('0.13.0'):
@@ -455,26 +466,27 @@ class ImageBuilder(DockerBaseClass):
                     args.extend(['--secret', 'id={id},type=env,env={env}'.format(id=secret['id'], env=env_name)])
         if self.outputs:
             for output in self.outputs:
+                subargs = []
                 if output['type'] == 'local':
-                    args.extend(['--output', 'type=local,dest={dest}'.format(dest=output['dest'])])
+                    subargs.extend(['type=local', 'dest={dest}'.format(dest=output['dest'])])
                 if output['type'] == 'tar':
-                    args.extend(['--output', 'type=tar,dest={dest}'.format(dest=output['dest'])])
+                    subargs.extend(['type=tar', 'dest={dest}'.format(dest=output['dest'])])
                 if output['type'] == 'oci':
-                    args.extend(['--output', 'type=oci,dest={dest}'.format(dest=output['dest'])])
+                    subargs.extend(['type=oci', 'dest={dest}'.format(dest=output['dest'])])
                 if output['type'] == 'docker':
-                    subargs = ['type=docker']
+                    subargs.append('type=docker')
                     if output['dest'] is not None:
                         subargs.append('dest={dest}'.format(dest=output['dest']))
                     if output['context'] is not None:
                         subargs.append('context={context}'.format(context=output['context']))
-                    args.extend(['--output', ','.join(subargs)])
                 if output['type'] == 'image':
-                    subargs = ['type=image']
+                    subargs.append('type=image')
                     if output['name'] is not None:
-                        subargs.append('name={name}'.format(name=output['name']))
+                        subargs.append('name={name}'.format(name=','.join(output['name'])))
                     if output['push']:
                         subargs.append('push=true')
-                    args.extend(['--output', ','.join(subargs)])
+                if subargs:
+                    args.extend(['--output', ','.join(_quote_csv(subarg) for subarg in subargs)])
         return environ_update
 
     def build_image(self):
@@ -548,7 +560,7 @@ def main():
                 type=dict(type='str', choices=['local', 'tar', 'oci', 'docker', 'image'], required=True),
                 dest=dict(type='path'),
                 context=dict(type='str'),
-                name=dict(type='str'),
+                name=dict(type='list', elements='str'),
                 push=dict(type='bool', default=False),
             ),
             required_if=[

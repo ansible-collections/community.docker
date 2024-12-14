@@ -5,3 +5,5 @@ bugfixes:
      it will add an additional entry with ``type=image`` if no entry of ``type=image`` contains the image name
      specified by the ``name`` and ``tag`` options
      (https://github.com/ansible-collections/community.docker/issues/1001, https://github.com/ansible-collections/community.docker/pull/1006)."
+minor_changes:
+  - "docker_image_build - ``outputs[].name`` can now be a list of strings (https://github.com/ansible-collections/community.docker/pull/1006)."
