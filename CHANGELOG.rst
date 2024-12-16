@@ -4,6 +4,32 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v4.2.0
+======
+
+Release Summary
+---------------
+
+Bugfix and feature release.
+
+Minor Changes
+-------------
+
+- docker_compose_v2 - add ``ignore_build_events`` option (default value ``true``) which allows to (not) ignore build events for change detection (https://github.com/ansible-collections/community.docker/issues/1005, https://github.com/ansible-collections/community.docker/issues/pull/1011).
+- docker_image_build - ``outputs[].name`` can now be a list of strings (https://github.com/ansible-collections/community.docker/pull/1006).
+- docker_image_build - the executed command is now returned in the ``command`` return value in case of success and some errors (https://github.com/ansible-collections/community.docker/pull/1006).
+- docker_network - added ``ingress`` option (https://github.com/ansible-collections/community.docker/pull/999).
+
+Bugfixes
+--------
+
+- docker_compose_v2 - when using Compose 2.31.0 or newer, revert to the old behavior that image rebuilds, for example if ``rebuild=always``, only result in ``changed`` if a container has been restarted (https://github.com/ansible-collections/community.docker/issues/1005, https://github.com/ansible-collections/community.docker/issues/pull/1011).
+- docker_image_build - work around bug resp. very unexpected behavior in Docker buildx that overwrites all image names in ``--output`` parameters if ``--tag`` is provided, which the module did by default in the past. The module now only supplies ``--tag`` if ``outputs`` is empty. If ``outputs`` has entries, it will add an additional entry with ``type=image`` if no entry of ``type=image`` contains the image name specified by the ``name`` and ``tag`` options (https://github.com/ansible-collections/community.docker/issues/1001, https://github.com/ansible-collections/community.docker/pull/1006).
+- docker_network - added waiting while container actually disconnect from Swarm network (https://github.com/ansible-collections/community.docker/pull/999).
+- docker_network - containers are only reconnected to a network if they really exist (https://github.com/ansible-collections/community.docker/pull/999).
+- docker_network - enabled "force" option in Docker network container disconnect API call (https://github.com/ansible-collections/community.docker/pull/999).
+- docker_swarm_info - do not crash when finding Swarm jobs if ``services=true`` (https://github.com/ansible-collections/community.docker/issues/1003).
+
 v4.1.0
 ======
 

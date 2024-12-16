@@ -1,6 +1,0 @@
-minor_changes:
-  - docker_network - added ``ingress`` option (https://github.com/ansible-collections/community.docker/pull/999).
-bugfixes:
-  - docker_network - containers are only reconnected to a network if they really exist (https://github.com/ansible-collections/community.docker/pull/999).
-  - docker_network - enabled "force" option in Docker network container disconnect API call (https://github.com/ansible-collections/community.docker/pull/999).
-  - docker_network - added waiting while container actually disconnect from Swarm network (https://github.com/ansible-collections/community.docker/pull/999).
