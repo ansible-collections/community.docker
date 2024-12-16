@@ -4,6 +4,25 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v3.13.4
+=======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- docker_compose_v2 - when using Compose 2.31.0 or newer, revert to the old behavior that image rebuilds, for example if ``rebuild=always``, only result in ``changed`` if a container has been restarted (https://github.com/ansible-collections/community.docker/issues/1005, https://github.com/ansible-collections/community.docker/issues/pull/1011, https://github.com/ansible-collections/community.docker/pull/1012).
+- docker_swarm_info - do not crash when finding Swarm jobs if ``services=true`` (https://github.com/ansible-collections/community.docker/issues/1003).
+
+Known Issues
+------------
+
+- docker_image_build - when ``outputs`` is specified, all entries with ``type=image``, ``type=oci`` and ``type=docker`` have their name overwritten by the values provided in ``name`` and ``tag``. This happens because the module provides the ``--tag`` option with the values of the ``name`` and ``tag`` options to Docker the buildx plugin, which for some reason takes that value and uses it to overwrite the values in ``--output`` parameters (https://github.com/ansible-collections/community.docker/issues/1001, https://github.com/ansible-collections/community.docker/pull/1007).
+
 v3.13.3
 =======
 
