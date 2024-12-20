@@ -383,7 +383,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-force"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-force"><strong>force</strong></p>
 <a class="ansibleOptionLink" href="#parameter-force" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>With state <code class="ansible-value docutils literal notranslate"><span class="pre">absent</span></code> forces disconnecting all containers from the network prior to deleting the network. With state <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> will disconnect all containers, delete the network and re-create the network.</p>
+<td><div class="ansible-option-cell"><p>With state <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> will disconnect all containers for existing networks, delete the network and re-create the network.</p>
 <p>This option is required if you have changed the IPAM or driver options and want an existing network to be updated to use the new options.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
@@ -495,7 +495,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-state"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-network-module-parameter-state"><strong>state</strong></p>
 <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p><code class="ansible-value docutils literal notranslate"><span class="pre">absent</span></code> deletes the network. If a network has connected containers, it cannot be deleted. Use the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-network-module-parameter-force"><span class="std std-ref"><span class="pre">force</span></span></a></strong></code> option to disconnect all containers and delete the network.</p>
+<td><div class="ansible-option-cell"><p><code class="ansible-value docutils literal notranslate"><span class="pre">absent</span></code> deletes the network. If a network has connected containers, these will be detached from the network.</p>
 <p><code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code> creates the network, if it does not already exist with the specified parameters, and connects the list of containers provided via the connected parameter. Containers not on the list will be disconnected. An empty list will leave no containers connected to the network. Use the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-network-module-parameter-appends"><span class="std std-ref"><span class="pre">appends</span></span></a></strong></code> option to leave existing containers connected. Use the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-network-module-parameter-force"><span class="std std-ref"><span class="pre">force</span></span></a></strong></code> options to force re-creation of the network.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
@@ -684,7 +684,6 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">  </span><span class="nt">community.docker.docker_network</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network_one</span>
 <span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span>
-<span class="w">    </span><span class="nt">force</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 </section>
