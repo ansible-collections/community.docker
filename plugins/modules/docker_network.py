@@ -73,9 +73,7 @@ options:
 
   force:
     description:
-      - With state V(absent) forces disconnecting all containers from the
-        network prior to deleting the network. With state V(present) will
-        disconnect all containers, delete the network and re-create the
+      - With state V(present) will disconnect all containers for existing networks, delete the network and re-create the
         network.
       - This option is required if you have changed the IPAM or driver options
         and want an existing network to be updated to use the new options.
@@ -133,9 +131,8 @@ options:
 
   state:
     description:
-      - V(absent) deletes the network. If a network has connected containers, it
-        cannot be deleted. Use the O(force) option to disconnect all containers
-        and delete the network.
+      - V(absent) deletes the network. If a network has connected containers, these will be
+        detached from the network.
       - V(present) creates the network, if it does not already exist with the
         specified parameters, and connects the list of containers provided via
         the connected parameter. Containers not on the list will be disconnected.
@@ -259,7 +256,6 @@ EXAMPLES = '''
   community.docker.docker_network:
     name: network_one
     state: absent
-    force: true
 '''
 
 RETURN = '''
