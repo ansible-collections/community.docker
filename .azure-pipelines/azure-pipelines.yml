@@ -184,7 +184,7 @@ stages:
             - name: Debian Bookworm
               test: debian-bookworm/3.11
             - name: ArchLinux
-              test: archlinux/3.12
+              test: archlinux/3.13
           groups:
             - 4
             - 5
