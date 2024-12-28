@@ -167,7 +167,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         return vars
 
     def _get_machine_names(self):
-        # Filter out machines that are not in the Running state as we probably can't do anything useful actions
+        # Filter out machines that are not in the Running state as we probably cannot do anything useful actions
         # with them.
         ls_command = ['ls', '-q']
         if self.get_option('running_required'):

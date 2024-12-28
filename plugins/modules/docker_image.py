@@ -587,7 +587,7 @@ class ImageManager(DockerBaseClass):
                 try:
                     self.client.delete_json('/images/{0}', name, params={'force': self.force_absent})
                 except NotFound:
-                    # If the image vanished while we were trying to remove it, don't fail
+                    # If the image vanished while we were trying to remove it, do not fail
                     pass
                 except Exception as exc:
                     self.fail("Error removing image %s - %s" % (name, to_native(exc)))
@@ -758,7 +758,7 @@ class ImageManager(DockerBaseClass):
         :param name: name of the image. required.
         :param tag: image tag.
         :param repository: path to the repository. required.
-        :param push: bool. push the image once it's tagged.
+        :param push: bool. push the image once it is tagged.
         :return: None
         '''
         repo, repo_tag = parse_repository_tag(repository)
@@ -780,7 +780,7 @@ class ImageManager(DockerBaseClass):
             if not self.check_mode:
                 try:
                     # Finding the image does not always work, especially running a localhost registry. In those
-                    # cases, if we don't set force=True, it errors.
+                    # cases, if we do not set force=True, it errors.
                     params = {
                         'tag': repo_tag,
                         'repo': repo,

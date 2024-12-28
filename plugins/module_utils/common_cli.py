@@ -120,7 +120,7 @@ class AnsibleDockerClientBase(object):
     @abc.abstractmethod
     # def call_cli(self, *args, check_rc=False, data=None, cwd=None, environ_update=None):
     def call_cli(self, *args, **kwargs):
-        # Python 2.7 doesn't like anything than '**kwargs' after '*args', so we have to do this manually...
+        # Python 2.7 does not like anything than '**kwargs' after '*args', so we have to do this manually...
         pass
 
     # def call_cli_json(self, *args, check_rc=False, data=None, cwd=None, environ_update=None, warn_on_stderr=False):
@@ -220,7 +220,7 @@ class AnsibleDockerClientBase(object):
             registry, repo_name = resolve_repository_name(name)
             if registry == 'docker.io':
                 # If docker.io is explicitly there in name, the image
-                # isn't found in some cases (#41509)
+                # is not found in some cases (#41509)
                 self.log("Check for docker.io image: %s" % repo_name)
                 images = self._image_lookup(repo_name, tag)
                 if not images and repo_name.startswith('library/'):
@@ -229,8 +229,8 @@ class AnsibleDockerClientBase(object):
                     self.log("Check for docker.io image: %s" % lookup)
                     images = self._image_lookup(lookup, tag)
                 if not images:
-                    # Last case for some Docker versions: if docker.io wasn't there,
-                    # it can be that the image wasn't found either
+                    # Last case for some Docker versions: if docker.io was not there,
+                    # it can be that the image was not found either
                     # (https://github.com/ansible/ansible/pull/15586)
                     lookup = "%s/%s" % (registry, repo_name)
                     self.log("Check for docker.io image: %s" % lookup)
@@ -322,7 +322,7 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
 
     # def call_cli(self, *args, check_rc=False, data=None, cwd=None, environ_update=None):
     def call_cli(self, *args, **kwargs):
-        # Python 2.7 doesn't like anything than '**kwargs' after '*args', so we have to do this manually...
+        # Python 2.7 does not like anything than '**kwargs' after '*args', so we have to do this manually...
         check_rc = kwargs.pop('check_rc', False)
         data = kwargs.pop('data', None)
         cwd = kwargs.pop('cwd', None)

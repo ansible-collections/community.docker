@@ -57,7 +57,7 @@ def shutdown_writing(sock, log=_empty_writer):
 
 def write_to_socket(sock, data):
     if hasattr(sock, '_send_until_done'):
-        # WrappedSocket (urllib3/contrib/pyopenssl) doesn't have `send`, but
+        # WrappedSocket (urllib3/contrib/pyopenssl) does not have `send`, but
         # only `sendall`, which uses `_send_until_done` under the hood.
         return sock._send_until_done(data)
     elif hasattr(sock, 'send'):

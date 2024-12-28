@@ -100,7 +100,7 @@ def create_archive(root, files=None, fileobj=None, gzip=False,
             i.mtime = int(i.mtime)
 
         if IS_WINDOWS_PLATFORM:
-            # Windows doesn't keep track of the execute bit, so we make files
+            # Windows does not keep track of the execute bit, so we make files
             # and directories executable by default.
             i.mode = i.mode & 0o755 | 0o111
 
@@ -113,7 +113,7 @@ def create_archive(root, files=None, fileobj=None, gzip=False,
                     'Can not read file in context: {0}'.format(full_path)
                 )
         else:
-            # Directories, FIFOs, symlinks... don't need to be read.
+            # Directories, FIFOs, symlinks... do not need to be read.
             t.addfile(i, None)
 
     for name, contents in extra_files:
@@ -210,10 +210,10 @@ class PatternMatcher(object):
                     continue
 
                 if match:
-                    # If we want to skip this file and it's a directory
+                    # If we want to skip this file and it is a directory
                     # then we should first check to see if there's an
                     # excludes pattern (e.g. !dir/file) that starts with this
-                    # dir. If so then we can't skip this dir.
+                    # dir. If so then we cannot skip this dir.
                     skip = True
 
                     for pat in self.patterns:

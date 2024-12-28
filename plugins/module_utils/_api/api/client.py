@@ -276,7 +276,7 @@ class APIClient(
         return response.text
 
     def _post_json(self, url, data, **kwargs):
-        # Go <1.1 can't unserialize null to a string
+        # Go <1.1 cannot unserialize null to a string
         # so we do this disgusting thing here.
         data2 = {}
         if data is not None and isinstance(data, dict):
@@ -316,8 +316,8 @@ class APIClient(
             # close TLS sockets.
             sock._response = response
         except AttributeError:
-            # UNIX sockets can't have attributes set on them, but that's
-            # fine because we won't be doing TLS over them
+            # UNIX sockets cannot have attributes set on them, but that's
+            # fine because we will not be doing TLS over them
             pass
 
         return sock
@@ -340,7 +340,7 @@ class APIClient(
                         data += reader.read(reader._fp.chunk_left)
                     yield data
         else:
-            # Response isn't chunked, meaning we probably
+            # Response is not chunked, meaning we probably
             # encountered an error immediately
             yield self._result(response, json=decode)
 
@@ -419,7 +419,7 @@ class APIClient(
                 response.close()
 
     def _disable_socket_timeout(self, socket):
-        """ Depending on the combination of python version and whether we're
+        """ Depending on the combination of python version and whether we are
         connecting over http or https, we might need to access _sock, which
         may or may not exist; or we may need to just settimeout on socket
         itself, which also may or may not have settimeout on it. To avoid
@@ -440,7 +440,7 @@ class APIClient(
             if hasattr(s, 'gettimeout'):
                 timeout = s.gettimeout()
 
-            # Don't change the timeout if it is already disabled.
+            # Do not change the timeout if it is already disabled.
             if timeout is None or timeout == 0.0:
                 continue
 
@@ -456,7 +456,7 @@ class APIClient(
 
     def _get_result_tty(self, stream, res, is_tty):
         # We should also use raw streaming (without keep-alive)
-        # if we're dealing with a tty-enabled container.
+        # if we are dealing with a tty-enabled container.
         if is_tty:
             return self._stream_raw_result(res) if stream else \
                 self._result(res, binary=True)
@@ -506,7 +506,7 @@ class APIClient(
     def _set_auth_headers(self, headers):
         log.debug('Looking for auth config')
 
-        # If we don't have any auth data so far, try reloading the config
+        # If we do not have any auth data so far, try reloading the config
         # file one more time in case anything showed up in there.
         if not self._auth_configs or self._auth_configs.is_empty:
             log.debug("No auth config in memory - loading from filesystem")

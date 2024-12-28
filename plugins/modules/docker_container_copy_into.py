@@ -371,7 +371,7 @@ def is_binary(content):
     if b'\x00' in content:
         return True
     # TODO: better detection
-    # (ansible-core also just checks for 0x00, and even just sticks to the first 8k, so this isn't too bad...)
+    # (ansible-core also just checks for 0x00, and even just sticks to the first 8k, so this is not too bad...)
     return False
 
 
@@ -450,7 +450,7 @@ def is_file_idempotent(client, container, managed_path, container_path, follow_l
                 diff['after_header'] = managed_path
                 diff['after'] = to_text(content)
 
-    # When forcing and we're not following links in the container, go!
+    # When forcing and we are not following links in the container, go!
     if force and not follow_links:
         retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff)
         return container_path, mode, False
@@ -467,7 +467,7 @@ def is_file_idempotent(client, container, managed_path, container_path, follow_l
     if follow_links:
         container_path = real_container_path
 
-    # If the file wasn't found, continue
+    # If the file was not found, continue
     if regular_stat is None:
         if diff is not None:
             diff['before_header'] = container_path
@@ -617,7 +617,7 @@ def is_content_idempotent(client, container, content, container_path, follow_lin
             diff['after_header'] = 'dynamically generated'
             diff['after'] = to_text(content)
 
-    # When forcing and we're not following links in the container, go!
+    # When forcing and we are not following links in the container, go!
     if force and not follow_links:
         retrieve_diff(client, container, container_path, follow_links, diff, max_file_size_for_diff)
         return container_path, mode, False
@@ -634,7 +634,7 @@ def is_content_idempotent(client, container, content, container_path, follow_lin
     if follow_links:
         container_path = real_container_path
 
-    # If the file wasn't found, continue
+    # If the file was not found, continue
     if regular_stat is None:
         if diff is not None:
             diff['before_header'] = container_path

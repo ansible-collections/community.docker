@@ -482,7 +482,7 @@ class ContainerManager(DockerBaseClass):
                         self.results['changed'] = True
                         self.results['actions'].append(dict(pulled_image="%s:%s" % (repository, tag), changed=True))
                 elif not image or self.param_pull_check_mode_behavior == 'always':
-                    # If the image isn't there, or pull_check_mode_behavior == 'always', claim we'll
+                    # If the image is not there, or pull_check_mode_behavior == 'always', claim we'll
                     # pull. (Implicitly: if the image is there, claim it already was latest unless
                     # pull_check_mode_behavior == 'always'.)
                     self.results['changed'] = True

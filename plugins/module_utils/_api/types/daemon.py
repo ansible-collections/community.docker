@@ -67,7 +67,7 @@ class CancellableStream(object):
                     sock = sock_raw._sock
 
             elif hasattr(sock_fp, 'channel'):
-                # We're working with a paramiko (SSH) channel, which doesn't
+                # We are working with a paramiko (SSH) channel, which does not
                 # support cancelable streams with the current implementation
                 raise DockerException(
                     'Cancellable streams not supported for the SSH protocol'

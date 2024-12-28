@@ -289,7 +289,7 @@ class SecretManager(DockerBaseClass):
     def create_secret(self):
         ''' Create a new secret '''
         secret_id = None
-        # We can't see the data after creation, so adding a label we can use for idempotency check
+        # We cannot see the data after creation, so adding a label we can use for idempotency check
         labels = {
             'ansible_key': self.data_key
         }

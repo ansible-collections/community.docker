@@ -41,7 +41,7 @@ class ImageArchiveInvalidException(Exception):
 
         super(ImageArchiveInvalidException, self).__init__(message)
 
-        # Python 2 doesn't support causes
+        # Python 2 does not support causes
         self.cause = cause
 
 

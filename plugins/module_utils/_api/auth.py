@@ -170,7 +170,7 @@ class AuthConfig(dict):
                 with open(config_file) as f:
                     config_dict = json.load(f)
             except (IOError, KeyError, ValueError) as e:
-                # Likely missing new Docker config file or it's in an
+                # Likely missing new Docker config file or it is in an
                 # unknown format, continue to attempt to read old location
                 # and format.
                 log.debug(e)
@@ -194,7 +194,7 @@ class AuthConfig(dict):
             return cls(res, credstore_env)
 
         log.debug(
-            "Couldn't find auth-related section ; attempting to interpret "
+            "Could not find auth-related section ; attempting to interpret "
             "as auth-only file"
         )
         return cls({'auths': cls.parse_auth(config_dict)}, credstore_env)

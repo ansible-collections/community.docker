@@ -841,7 +841,7 @@ class BaseComposeManager(DockerBaseClass):
 
     def cleanup_result(self, result):
         if not result.get('failed'):
-            # Only return stdout and stderr if it's not empty
+            # Only return stdout and stderr if it is not empty
             for res in ('stdout', 'stderr'):
                 if result.get(res) == '':
                     result.pop(res)
@@ -851,5 +851,5 @@ class BaseComposeManager(DockerBaseClass):
             try:
                 shutil.rmtree(dir, True)
             except Exception:
-                # shouldn't happen, but simply ignore to be on the safe side
+                # should not happen, but simply ignore to be on the safe side
                 pass

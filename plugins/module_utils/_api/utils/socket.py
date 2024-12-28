@@ -64,7 +64,7 @@ def read(socket, n=4096):
                          len(e.args) > 0 and
                          e.args[0] == NPIPE_ENDED)
         if is_pipe_ended:
-            # npipes don't support duplex sockets, so we interpret
+            # npipes do not support duplex sockets, so we interpret
             # a PIPE_ENDED error as a close operation (0-length read).
             return ''
         raise
@@ -73,7 +73,7 @@ def read(socket, n=4096):
 def read_exactly(socket, n):
     """
     Reads exactly n bytes from socket
-    Raises SocketError if there isn't enough data
+    Raises SocketError if there is not enough data
     """
     data = binary_type()
     while len(data) < n:

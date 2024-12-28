@@ -52,7 +52,7 @@ class APIError(_HTTPError, DockerException):
     """
     def __init__(self, message, response=None, explanation=None):
         # requests 1.2 supports response as a keyword argument, but
-        # requests 1.1 doesn't
+        # requests 1.1 does not
         super(APIError, self).__init__(message)
         self.response = response
         self.explanation = explanation

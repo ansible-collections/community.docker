@@ -38,13 +38,13 @@ options:
           the port number from the listen address is used.
       - If O(advertise_addr) is not specified, it will be automatically
           detected when possible.
-      - Only used when swarm is initialised or joined. Because of this it's not
+      - Only used when swarm is initialised or joined. Because of this it is not
         considered for idempotency checking.
     type: str
   default_addr_pool:
     description:
       - Default address pool in CIDR format.
-      - Only used when swarm is initialised. Because of this it's not considered
+      - Only used when swarm is initialised. Because of this it is not considered
         for idempotency checking.
       - Requires API version >= 1.39.
     type: list
@@ -52,7 +52,7 @@ options:
   subnet_size:
     description:
       - Default address pool subnet mask length.
-      - Only used when swarm is initialised. Because of this it's not considered
+      - Only used when swarm is initialised. Because of this it is not considered
         for idempotency checking.
       - Requires API version >= 1.39.
     type: int
@@ -64,7 +64,7 @@ options:
           like V(eth0:4567).
       - If the port number is omitted, the default swarm listening port
           is used.
-      - Only used when swarm is initialised or joined. Because of this it's not
+      - Only used when swarm is initialised or joined. Because of this it is not
         considered for idempotency checking.
     type: str
     default: 0.0.0.0:2377
