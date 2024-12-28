@@ -429,7 +429,7 @@ options:
   image_comparison:
     description:
       - Determines which image to use for idempotency checks that depend on image parameters.
-      - The default, V(desired-image), will use the image that is provided to the module via the O(image) parameter.
+      - The default, V(desired-image), will use the image that is provided to the module with the O(image) parameter.
       - V(current-image) will use the image that the container is currently using, if the container exists. It falls back
         to the image that is provided in case the container does not yet exist.
       - This affects the O(env), O(env_file), O(exposed_ports), O(labels), and O(volumes) options.
@@ -703,7 +703,7 @@ options:
     description:
       - If O(networks_cli_compatible=true) (default), this module will behave as C(docker run --network) and will B(not) add
         the default network if O(networks) is specified. If O(networks) is not specified, the default network will be attached.
-      - 'When O(networks_cli_compatible=false) and networks are provided to the module via the O(networks) option, the module
+      - 'When O(networks_cli_compatible=false) and networks are provided to the module with the O(networks) option, the module
         behaves differently than C(docker run --network): C(docker run --network other) will create a container with network
         C(other) attached, but the default network not attached. This module with O(networks) set to C({name: other}) will
         create a container with both C(default) and C(other) attached. If C(networks: strict) or C(*: strict) is set in O(comparisons),

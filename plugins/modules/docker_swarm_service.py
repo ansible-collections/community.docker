@@ -16,7 +16,7 @@ author:
   - "Piotr Wojciechowski (@wojciechowskipiotr)"
 short_description: docker swarm service
 description:
-  - Manages docker services via a swarm manager node.
+  - Manages docker services through a swarm manager node.
   - This modules does not support updating services in a stack.
 extends_documentation_fragment:
   - community.docker.docker
@@ -444,7 +444,7 @@ options:
       delay:
         description:
           - Delay between restarts.
-          - 'Accepts a a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms),
+          - 'Accepts a a string in a format that look like: V(5h34m56s), V(1m30s), and so on. The supported units are V(us), V(ms),
             V(s), V(m) and V(h).'
           - Corresponds to the C(--restart-delay) option of C(docker service create).
         type: str
@@ -456,7 +456,7 @@ options:
       window:
         description:
           - Restart policy evaluation window.
-          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms),
+          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s), and so on. The supported units are V(us), V(ms),
             V(s), V(m) and V(h).'
           - Corresponds to the C(--restart-window) option of C(docker service create).
         type: str
@@ -474,7 +474,7 @@ options:
       delay:
         description:
           - Delay between task rollbacks.
-          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms),
+          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s), and so on. The supported units are V(us), V(ms),
             V(s), V(m) and V(h).'
           - Corresponds to the C(--rollback-delay) option of C(docker service create).
           - Requires API version >= 1.28.
@@ -491,7 +491,7 @@ options:
       monitor:
         description:
           - Duration after each task rollback to monitor for failure.
-          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms),
+          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s), and so on. The supported units are V(us), V(ms),
             V(s), V(m) and V(h).'
           - Corresponds to the C(--rollback-monitor) option of C(docker service create).
           - Requires API version >= 1.28.
@@ -555,7 +555,7 @@ options:
   stop_grace_period:
     description:
       - Time to wait before force killing a container.
-      - 'Accepts a duration as a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us),
+      - 'Accepts a duration as a string in a format that look like: V(5h34m56s), V(1m30s), and so on. The supported units are V(us),
         V(ms), V(s), V(m) and V(h).'
       - Corresponds to the C(--stop-grace-period) option of C(docker service create).
     type: str
@@ -581,7 +581,7 @@ options:
       delay:
         description:
           - Rolling update delay.
-          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms),
+          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s), and so on. The supported units are V(us), V(ms),
             V(s), V(m) and V(h).'
           - Corresponds to the C(--update-delay) option of C(docker service create).
         type: str
@@ -598,7 +598,7 @@ options:
       monitor:
         description:
           - Time to monitor updated tasks for failures.
-          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms),
+          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s), and so on. The supported units are V(us), V(ms),
             V(s), V(m) and V(h).'
           - Corresponds to the C(--update-monitor) option of C(docker service create).
         type: str

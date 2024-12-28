@@ -50,7 +50,7 @@ options:
     description:
       - List of container names or container IDs to connect to a network.
       - Please note that the module only makes sure that these containers are connected to the network, but does not care
-        about connection options. If you rely on specific IP addresses etc., use the M(community.docker.docker_container)
+        about connection options. If you rely on specific IP addresses and so on, use the M(community.docker.docker_container)
         module to ensure your containers are correctly connected to this network.
     type: list
     elements: str
@@ -137,7 +137,7 @@ options:
     description:
       - V(absent) deletes the network. If a network has connected containers, these will be detached from the network.
       - V(present) creates the network, if it does not already exist with the specified parameters, and connects the list
-        of containers provided via the connected parameter. Containers not on the list will be disconnected. An empty list
+        of containers provided by the O(connected) parameter. Containers not on the list will be disconnected. An empty list
         will leave no containers connected to the network. Use the O(appends) option to leave existing containers connected.
         Use the O(force) options to force re-creation of the network.
     type: str

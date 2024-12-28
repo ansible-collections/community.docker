@@ -14,7 +14,7 @@ module: docker_prune
 short_description: Allows to prune various docker objects
 
 description:
-  - Allows to run C(docker container prune), C(docker image prune), C(docker network prune) and C(docker volume prune) via
+  - Allows to run C(docker container prune), C(docker image prune), C(docker network prune) and C(docker volume prune) through
     the Docker API.
 extends_documentation_fragment:
   - community.docker.docker.api_documentation

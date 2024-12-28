@@ -12,7 +12,7 @@ DOCUMENTATION = r"""
 module: docker_node
 short_description: Manage Docker Swarm node
 description:
-  - Manages the Docker nodes via Swarm Manager.
+  - Manages the Docker nodes through a Swarm Manager.
   - This module allows to change the node's role, its availability, and to modify, add or remove node labels.
 extends_documentation_fragment:
   - community.docker.docker
