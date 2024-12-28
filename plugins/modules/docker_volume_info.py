@@ -9,12 +9,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = r"""
 module: docker_volume_info
 short_description: Retrieve facts about Docker volumes
 description:
   - Performs largely the same function as the C(docker volume inspect) CLI subcommand.
-
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -35,9 +34,9 @@ author:
 
 requirements:
   - "Docker API >= 1.25"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Get infos on volume
   community.docker.docker_volume_info:
     name: mydata
@@ -51,31 +50,24 @@ EXAMPLES = '''
   ansible.builtin.debug:
     var: result.volume
   when: result.exists
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 exists:
-    description:
-      - Returns whether the volume exists.
-    type: bool
-    returned: always
-    sample: true
+  description:
+    - Returns whether the volume exists.
+  type: bool
+  returned: always
+  sample: true
 volume:
-    description:
-      - Volume inspection results for the affected volume.
-      - Will be V(none) if volume does not exist.
-    returned: success
-    type: dict
-    sample: '{
-            "CreatedAt": "2018-12-09T17:43:44+01:00",
-            "Driver": "local",
-            "Labels": null,
-            "Mountpoint": "/var/lib/docker/volumes/ansible-test-bd3f6172/_data",
-            "Name": "ansible-test-bd3f6172",
-            "Options": {},
-            "Scope": "local"
-        }'
-'''
+  description:
+    - Volume inspection results for the affected volume.
+    - Will be V(none) if volume does not exist.
+  returned: success
+  type: dict
+  sample: '{ "CreatedAt": "2018-12-09T17:43:44+01:00", "Driver": "local", "Labels": null, "Mountpoint": "/var/lib/docker/volumes/ansible-test-bd3f6172/_data",
+    "Name": "ansible-test-bd3f6172", "Options": {}, "Scope": "local" }'
+"""
 
 import traceback
 

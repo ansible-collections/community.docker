@@ -8,8 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_image_push
 
 short_description: Push Docker images to registries
@@ -18,7 +17,6 @@ version_added: 3.6.0
 
 description:
   - Pushes a Docker image to a registry.
-
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -33,8 +31,8 @@ attributes:
 options:
   name:
     description:
-      - "Image name. Name format must be one of V(name), V(repository/name), or V(registry_server:port/name).
-      - The name can optionally include the tag by appending V(:tag_name), or it can contain a digest by appending V(@hash:digest)."
+      - Image name. Name format must be one of V(name), V(repository/name), or V(registry_server:port/name). - The name can
+        optionally include the tag by appending V(:tag_name), or it can contain a digest by appending V(@hash:digest).
     type: str
     required: true
   tag:
@@ -54,22 +52,22 @@ seealso:
   - module: community.docker.docker_image_pull
   - module: community.docker.docker_image_remove
   - module: community.docker.docker_image_tag
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Push an image
   community.docker.docker_image_push:
     name: registry.example.com:5000/repo/image
     tag: latest
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 image:
-    description: Image inspection results for the affected image.
-    returned: success
-    type: dict
-    sample: {}
-'''
+  description: Image inspection results for the affected image.
+  returned: success
+  type: dict
+  sample: {}
+"""
 
 import traceback
 

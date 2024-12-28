@@ -9,14 +9,12 @@ from __future__ import (absolute_import, division, print_function)
 
 __metaclass__ = type
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_stack_info
 author: "Jose Angel Munoz (@imjoseangel)"
 short_description: Return information on all docker stacks
 description:
-  - Retrieve information on docker stacks using the C(docker stack) command
-    on the target node (see examples).
+  - Retrieve information on docker stacks using the C(docker stack) command on the target node (see examples).
 requirements:
   - Docker CLI tool C(docker)
 extends_documentation_fragment:
@@ -51,30 +49,30 @@ options:
 seealso:
   - module: community.docker.docker_stack_task_info
     description: >-
-      To retrieve detailed information about the services under a specific
-      stack use the M(community.docker.docker_stack_task_info) module.
-'''
+      To retrieve detailed information about the services under a specific stack use the M(community.docker.docker_stack_task_info)
+      module.
+"""
 
-RETURN = '''
+RETURN = r"""
 results:
-    description:
-        - List of dictionaries containing the list of stacks on the target node
-    sample:
-        - {"name":"grafana","namespace":"default","orchestrator":"Kubernetes","services":"2"}
-    returned: always
-    type: list
-    elements: dict
-'''
+  description:
+    - List of dictionaries containing the list of stacks on the target node.
+  sample:
+    - {"name": "grafana", "namespace": "default", "orchestrator": "Kubernetes", "services": "2"}
+  returned: always
+  type: list
+  elements: dict
+"""
 
-EXAMPLES = '''
-  - name: Shows stack info
-    community.docker.docker_stack_info:
-    register: result
+EXAMPLES = r"""
+- name: Shows stack info
+  community.docker.docker_stack_info:
+  register: result
 
-  - name: Show results
-    ansible.builtin.debug:
-      var: result.results
-'''
+- name: Show results
+  ansible.builtin.debug:
+    var: result.results
+"""
 
 import json
 import traceback

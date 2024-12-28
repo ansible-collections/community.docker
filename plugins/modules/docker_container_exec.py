@@ -8,8 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_container_exec
 
 short_description: Execute command in a docker container
@@ -18,7 +17,6 @@ version_added: 1.5.0
 
 description:
   - Executes a command in a Docker container.
-
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -55,8 +53,7 @@ options:
   detach:
     description:
       - Whether to run the command synchronously (O(detach=false), default) or asynchronously (O(detach=true)).
-      - If set to V(true), O(stdin) cannot be provided, and the return values RV(stdout), RV(stderr), and
-        RV(rc) are not returned.
+      - If set to V(true), O(stdin) cannot be provided, and the return values RV(stdout), RV(stderr), and RV(rc) are not returned.
     type: bool
     default: false
     version_added: 2.1.0
@@ -87,25 +84,28 @@ options:
   env:
     description:
       - Dictionary of environment variables with their respective values to be passed to the command ran inside the container.
-      - Values which might be parsed as numbers, booleans or other types by the YAML parser must be quoted (for example V("true")) in order to avoid data loss.
-      - Please note that if you are passing values in with Jinja2 templates, like V("{{ value }}"), you need to add V(| string) to prevent Ansible to
-        convert strings such as V("true") back to booleans. The correct way is to use V("{{ value | string }}").
+      - Values which might be parsed as numbers, booleans or other types by the YAML parser must be quoted (for example V("true"))
+        in order to avoid data loss.
+      - Please note that if you are passing values in with Jinja2 templates, like V("{{ value }}"), you need to add V(| string)
+        to prevent Ansible to convert strings such as V("true") back to booleans. The correct way is to use V("{{ value |
+        string }}").
     type: dict
     version_added: 2.1.0
 
 notes:
-  - Does B(not work with TCP TLS sockets) when using O(stdin). This is caused by the inability to send C(close_notify) without closing the connection
-    with Python's C(SSLSocket)s. See U(https://github.com/ansible-collections/community.docker/issues/605) for more information.
-  - If you need to evaluate environment variables of the container in O(command) or O(argv), you need to pass the command through a shell,
-    like O(command=/bin/sh -c "echo $ENV_VARIABLE").
+  - Does B(not work with TCP TLS sockets) when using O(stdin). This is caused by the inability to send C(close_notify) without
+    closing the connection with Python's C(SSLSocket)s. See U(https://github.com/ansible-collections/community.docker/issues/605)
+    for more information.
+  - If you need to evaluate environment variables of the container in O(command) or O(argv), you need to pass the command
+    through a shell, like O(command=/bin/sh -c "echo $ENV_VARIABLE").
 author:
   - "Felix Fontein (@felixfontein)"
 
 requirements:
   - "Docker API >= 1.25"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Run a simple command (command)
   community.docker.docker_container_exec:
     container: foo
@@ -130,33 +130,33 @@ EXAMPLES = '''
 - name: Print stderr lines
   ansible.builtin.debug:
     var: result.stderr_lines
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 stdout:
-    type: str
-    returned: success and O(detach=false)
-    description:
-      - The standard output of the container command.
+  type: str
+  returned: success and O(detach=false)
+  description:
+    - The standard output of the container command.
 stderr:
-    type: str
-    returned: success and O(detach=false)
-    description:
-      - The standard error output of the container command.
+  type: str
+  returned: success and O(detach=false)
+  description:
+    - The standard error output of the container command.
 rc:
-    type: int
-    returned: success and O(detach=false)
-    sample: 0
-    description:
-      - The exit code of the command.
+  type: int
+  returned: success and O(detach=false)
+  sample: 0
+  description:
+    - The exit code of the command.
 exec_id:
-    type: str
-    returned: success and O(detach=true)
-    sample: 249d9e3075655baf705ed8f40488c5e9434049cf3431976f1bfdb73741c574c5
-    description:
-      - The execution ID of the command.
-    version_added: 2.1.0
-'''
+  type: str
+  returned: success and O(detach=true)
+  sample: 249d9e3075655baf705ed8f40488c5e9434049cf3431976f1bfdb73741c574c5
+  description:
+    - The execution ID of the command.
+  version_added: 2.1.0
+"""
 
 import shlex
 import traceback

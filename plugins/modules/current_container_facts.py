@@ -9,25 +9,23 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = r'''
----
+DOCUMENTATION = r"""
 module: current_container_facts
 short_description: Return facts about whether the module runs in a container
 version_added: 1.1.0
 description:
   - Return facts about whether the module runs in a Docker or podman container.
-  - This module attempts a best-effort detection. There might be special cases where
-    it does not work; if you encounter one, L(please file an issue,
-    https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&template=bug_report.md).
+  - This module attempts a best-effort detection. There might be special cases where it does not work; if you encounter one,
+    L(please file an issue, https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&template=bug_report.md).
 author:
   - Felix Fontein (@felixfontein)
 extends_documentation_fragment:
   - community.docker.attributes
   - community.docker.attributes.facts
   - community.docker.attributes.facts_module
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Get facts on current container
   community.docker.current_container_facts:
 
@@ -35,42 +33,44 @@ EXAMPLES = '''
   ansible.builtin.debug:
     msg: "Container ID is {{ ansible_module_container_id }}"
   when: ansible_module_running_in_container
-'''
+"""
 
-RETURN = r'''
+RETURN = r"""
 ansible_facts:
-    description: Ansible facts returned by the module
-    type: dict
-    returned: always
-    contains:
-        ansible_module_running_in_container:
-            description:
-              - Whether the module was able to detect that it runs in a container or not.
-            returned: always
-            type: bool
-        ansible_module_container_id:
-            description:
-              - The detected container ID.
-              - Contains an empty string if no container was detected.
-            returned: always
-            type: str
-        ansible_module_container_type:
-            description:
-              - The detected container environment.
-              - Contains an empty string if no container was detected, or a non-empty string identifying the container environment.
-              - V(docker) indicates that the module ran inside a regular Docker container.
-              - V(azure_pipelines) indicates that the module ran on Azure Pipelines. This seems to no longer be reported.
-              - V(github_actions) indicates that the module ran inside a Docker container on GitHub Actions. It is supported since community.docker 2.4.0.
-              - V(podman) indicates that the module ran inside a regular Podman container. It is supported since community.docker 3.3.0.
-            returned: always
-            type: str
-            choices:
-              - ''
-              - docker
-              - azure_pipelines
-              - github_actions
-              - podman
-'''
+  description: Ansible facts returned by the module.
+  type: dict
+  returned: always
+  contains:
+    ansible_module_running_in_container:
+      description:
+        - Whether the module was able to detect that it runs in a container or not.
+      returned: always
+      type: bool
+    ansible_module_container_id:
+      description:
+        - The detected container ID.
+        - Contains an empty string if no container was detected.
+      returned: always
+      type: str
+    ansible_module_container_type:
+      description:
+        - The detected container environment.
+        - Contains an empty string if no container was detected, or a non-empty string identifying the container environment.
+        - V(docker) indicates that the module ran inside a regular Docker container.
+        - V(azure_pipelines) indicates that the module ran on Azure Pipelines. This seems to no longer be reported.
+        - V(github_actions) indicates that the module ran inside a Docker container on GitHub Actions. It is supported since
+          community.docker 2.4.0.
+        - V(podman) indicates that the module ran inside a regular Podman container. It is supported since community.docker
+          3.3.0.
+      returned: always
+      type: str
+      choices:
+        - ''
+        - docker
+        - azure_pipelines
+        - github_actions
+        - podman
+"""
 
 import os
 import re

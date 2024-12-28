@@ -8,8 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_image_build
 
 short_description: Build Docker images using Docker buildx
@@ -18,10 +17,8 @@ version_added: 3.6.0
 
 description:
   - This module allows you to build Docker images using Docker's buildx plugin (BuildKit).
-  - Note that the module is B(not idempotent) in the sense of classical Ansible modules.
-    The only idempotence check is whether the built image already exists. This check can
-    be disabled with the O(rebuild) option.
-
+  - Note that the module is B(not idempotent) in the sense of classical Ansible modules. The only idempotence check is whether
+    the built image already exists. This check can be disabled with the O(rebuild) option.
 extends_documentation_fragment:
   - community.docker.docker.cli_documentation
   - community.docker.attributes
@@ -36,8 +33,8 @@ attributes:
 options:
   name:
     description:
-      - "Image name. Name format will be one of: C(name), C(repository/name), C(registry_server:port/name).
-        When pushing or pulling an image the name can optionally include the tag by appending C(:tag_name)."
+      - 'Image name. Name format will be one of: C(name), C(repository/name), C(registry_server:port/name). When pushing or
+        pulling an image the name can optionally include the tag by appending C(:tag_name).'
       - Note that image IDs (hashes) and names with digest cannot be used.
     type: str
     required: true
@@ -79,9 +76,8 @@ options:
   etc_hosts:
     description:
       - Extra hosts to add to C(/etc/hosts) in building containers, as a mapping of hostname to IP address.
-      - Instead of an IP address, the special value V(host-gateway) can also be used, which
-        resolves to the host's gateway IP and allows building containers to connect to services running
-        on the host.
+      - Instead of an IP address, the special value V(host-gateway) can also be used, which resolves to the host's gateway
+        IP and allows building containers to connect to services running on the host.
     type: dict
   args:
     description:
@@ -90,8 +86,7 @@ options:
     type: dict
   target:
     description:
-      - When building an image specifies an intermediate build stage by
-        name as a final stage for the resulting image.
+      - When building an image specifies an intermediate build stage by name as a final stage for the resulting image.
     type: str
   platform:
     description:
@@ -101,9 +96,8 @@ options:
     elements: str
   shm_size:
     description:
-      - "Size of C(/dev/shm) in format C(<number>[<unit>]). Number is positive integer.
-        Unit can be V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
-        V(T) (tebibyte), or V(P) (pebibyte)."
+      - Size of C(/dev/shm) in format C(<number>[<unit>]). Number is positive integer. Unit can be V(B) (byte), V(K) (kibibyte,
+        1024B), V(M) (mebibyte), V(G) (gibibyte), V(T) (tebibyte), or V(P) (pebibyte).
       - Omitting the unit defaults to bytes. If you omit the size entirely, Docker daemon uses V(64M).
     type: str
   labels:
@@ -145,8 +139,8 @@ options:
             - Note that this requires the Buildkit plugin to have version 0.6.0 or newer.
           value:
             - Provides the secret from a given value O(secrets[].value).
-            - B(Note) that the secret will be passed as an environment variable to C(docker compose).
-              Use another mean of transport if you consider this not safe enough.
+            - B(Note) that the secret will be passed as an environment variable to C(docker compose). Use another mean of
+              transport if you consider this not safe enough.
             - Note that this requires the Buildkit plugin to have version 0.6.0 or newer.
         required: true
       src:
@@ -162,24 +156,23 @@ options:
       value:
         description:
           - Value of the secret.
-          - B(Note) that the secret will be passed as an environment variable to C(docker compose).
-            Use another mean of transport if you consider this not safe enough.
+          - B(Note) that the secret will be passed as an environment variable to C(docker compose). Use another mean of transport
+            if you consider this not safe enough.
           - Only supported and required for O(secrets[].type=value).
         type: str
   outputs:
     description:
       - Output destinations.
-      - You can provide a list of exporters to export the built image in various places.
-        Note that not all exporters might be supported by the build driver used.
-      - Note that depending on how this option is used, no image with name O(name) and tag O(tag) might
-        be created, which can cause the basic idempotency this module offers to not work.
-      - Providing an empty list to this option is equivalent to not specifying it at all.
-        The default behavior is a single entry with O(outputs[].type=image).
-      - B(Note) that since community.docker 4.2.0, an entry for O(name)/O(tag) is added if O(outputs)
-        has at least one entry and no entry has type O(outputs[].type=image) and includes O(name)/O(tag)
-        in O(outputs[].name). This is because the module would otherwise pass C(--tag name:image) to
-        the buildx plugin, which for some reason overwrites all images in O(outputs) by the C(name:image)
-        provided in O(name)/O(tag).
+      - You can provide a list of exporters to export the built image in various places. Note that not all exporters might
+        be supported by the build driver used.
+      - Note that depending on how this option is used, no image with name O(name) and tag O(tag) might be created, which
+        can cause the basic idempotency this module offers to not work.
+      - Providing an empty list to this option is equivalent to not specifying it at all. The default behavior is a single
+        entry with O(outputs[].type=image).
+      - B(Note) that since community.docker 4.2.0, an entry for O(name)/O(tag) is added if O(outputs) has at least one entry
+        and no entry has type O(outputs[].type=image) and includes O(name)/O(tag) in O(outputs[].name). This is because the
+        module would otherwise pass C(--tag name:image) to the buildx plugin, which for some reason overwrites all images
+        in O(outputs) by the C(name:image) provided in O(name)/O(tag).
     type: list
     elements: dict
     version_added: 3.10.0
@@ -190,30 +183,27 @@ options:
         type: str
         choices:
           local:
-            - This export type writes all result files to a directory on the client.
-              The new files will be owned by the current user.
-              On multi-platform builds, all results will be put in subdirectories by their platform.
+            - This export type writes all result files to a directory on the client. The new files will be owned by the current
+              user. On multi-platform builds, all results will be put in subdirectories by their platform.
             - The destination has to be provided in O(outputs[].dest).
           tar:
-            - This export type export type writes all result files as a single tarball on the client.
-              On multi-platform builds, all results will be put in subdirectories by their platform.
+            - This export type export type writes all result files as a single tarball on the client. On multi-platform builds,
+              all results will be put in subdirectories by their platform.
             - The destination has to be provided in O(outputs[].dest).
           oci:
-            - This export type writes the result image or manifest list as an
-              L(OCI image layout, https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md)
+            - This export type writes the result image or manifest list as an L(OCI image layout, https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md)
               tarball on the client.
             - The destination has to be provided in O(outputs[].dest).
           docker:
             - This export type writes the single-platform result image as a Docker image specification tarball on the client.
               Tarballs created by this exporter are also OCI compatible.
-            - The destination can be provided in O(outputs[].dest).
-              If not specified, the tar will be loaded automatically to the local image store.
+            - The destination can be provided in O(outputs[].dest). If not specified, the tar will be loaded automatically
+              to the local image store.
             - The Docker context where to import the result can be provided in O(outputs[].context).
           image:
-            - This exporter writes the build result as an image or a manifest list.
-              When using this driver, the image will appear in C(docker images).
-            - The image name can be provided in O(outputs[].name). If it is not provided,
-              O(name) and O(tag) will be used.
+            - This exporter writes the build result as an image or a manifest list. When using this driver, the image will
+              appear in C(docker images).
+            - The image name can be provided in O(outputs[].name). If it is not provided, O(name) and O(tag) will be used.
             - Optionally, image can be automatically pushed to a registry by setting O(outputs[].push=true).
         required: true
       dest:
@@ -250,9 +240,9 @@ author:
 seealso:
   - module: community.docker.docker_image_push
   - module: community.docker.docker_image_tag
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Build Python 3.12 image
   community.docker.docker_image_build:
     name: localhost/python/3.12:latest
@@ -267,22 +257,22 @@ EXAMPLES = '''
     platform:
       - linux/amd64
       - linux/arm64/v8
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 image:
-    description: Image inspection results for the affected image.
-    returned: success
-    type: dict
-    sample: {}
+  description: Image inspection results for the affected image.
+  returned: success
+  type: dict
+  sample: {}
 
 command:
-    description: The command executed.
-    returned: success and for some failures
-    type: list
-    elements: str
-    version_added: 4.2.0
-'''
+  description: The command executed.
+  returned: success and for some failures
+  type: list
+  elements: str
+  version_added: 4.2.0
+"""
 
 import base64
 import os

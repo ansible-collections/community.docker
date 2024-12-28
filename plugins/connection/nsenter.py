@@ -8,40 +8,37 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-DOCUMENTATION = '''
+DOCUMENTATION = r"""
 name: nsenter
 short_description: execute on host running controller container
 version_added: 1.9.0
 description:
-    - This connection plugin allows Ansible, running in a privileged container, to execute tasks on the container
-      host instead of in the container itself.
-    - This is useful for running Ansible in a pull model, while still keeping the Ansible control node
-      containerized.
-    - It relies on having privileged access to run C(nsenter) in the host's PID namespace, allowing it to enter the
-      namespaces of the provided PID (default PID 1, or init/systemd).
+  - This connection plugin allows Ansible, running in a privileged container, to execute tasks on the container host instead
+    of in the container itself.
+  - This is useful for running Ansible in a pull model, while still keeping the Ansible control node containerized.
+  - It relies on having privileged access to run C(nsenter) in the host's PID namespace, allowing it to enter the namespaces
+    of the provided PID (default PID 1, or init/systemd).
 author: Jeff Goldschrafe (@jgoldschrafe)
 options:
-    nsenter_pid:
-        description:
-            - PID to attach with using nsenter.
-            - The default should be fine unless you are attaching as a non-root user.
-        type: int
-        default: 1
-        vars:
-            - name: ansible_nsenter_pid
-        env:
-            - name: ANSIBLE_NSENTER_PID
-        ini:
-            - section: nsenter_connection
-              key: nsenter_pid
+  nsenter_pid:
+    description:
+      - PID to attach with using nsenter.
+      - The default should be fine unless you are attaching as a non-root user.
+    type: int
+    default: 1
+    vars:
+      - name: ansible_nsenter_pid
+    env:
+      - name: ANSIBLE_NSENTER_PID
+    ini:
+      - section: nsenter_connection
+        key: nsenter_pid
 notes:
-    - The remote user is ignored; this plugin always runs as root.
-    - >-
-        This plugin requires the Ansible controller container to be launched in the following way:
-        (1) The container image contains the C(nsenter) program;
-        (2) The container is launched in privileged mode;
-        (3) The container is launched in the host's PID namespace (C(--pid host)).
-'''
+  - The remote user is ignored; this plugin always runs as root.
+  - "This plugin requires the Ansible controller container to be launched in the following way: (1) The container image contains
+    the C(nsenter) program; (2) The container is launched in privileged mode; (3) The container is launched in the host's
+    PID namespace (C(--pid host))."
+"""
 
 import os
 import pty

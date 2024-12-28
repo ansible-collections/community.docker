@@ -8,8 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_image_export
 
 short_description: Export (archive) Docker images
@@ -19,7 +18,6 @@ version_added: 3.7.0
 description:
   - Creates an archive (tarball) from one or more Docker images.
   - This can be copied to another machine and loaded with M(community.docker.docker_image_load).
-
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -34,8 +32,8 @@ attributes:
 options:
   names:
     description:
-      - "One or more image names. Name format will be one of: C(name), C(repository/name), C(registry_server:port/name).
-        When pushing or pulling an image the name can optionally include the tag by appending C(:tag_name)."
+      - 'One or more image names. Name format will be one of: C(name), C(repository/name), C(registry_server:port/name). When
+        pushing or pulling an image the name can optionally include the tag by appending C(:tag_name).'
       - Note that image IDs (hashes) can also be used.
     type: list
     elements: str
@@ -68,9 +66,9 @@ seealso:
   - module: community.docker.docker_image
   - module: community.docker.docker_image_info
   - module: community.docker.docker_image_load
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Export an image
   community.docker.docker_image_export:
     name: pacur/centos-7
@@ -82,16 +80,16 @@ EXAMPLES = '''
       - hello-world:latest
       - pacur/centos-7:latest
     path: /tmp/various.tar
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 images:
-    description: Image inspection results for the affected images.
-    returned: success
-    type: list
-    elements: dict
-    sample: []
-'''
+  description: Image inspection results for the affected images.
+  returned: success
+  type: list
+  elements: dict
+  sample: []
+"""
 
 import traceback
 

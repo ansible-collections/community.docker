@@ -9,13 +9,12 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = r"""
 module: docker_volume
 short_description: Manage Docker volumes
 description:
   - Create/remove Docker volumes.
   - Performs largely the same function as the C(docker volume) CLI subcommand.
-
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -44,32 +43,30 @@ options:
 
   driver_options:
     description:
-      - "Dictionary of volume settings. Consult docker docs for valid options and values:
-        U(https://docs.docker.com/engine/reference/commandline/volume_create/#driver-specific-options)."
+      - 'Dictionary of volume settings. Consult docker docs for valid options and values: U(https://docs.docker.com/engine/reference/commandline/volume_create/#driver-specific-options).'
     type: dict
     default: {}
 
   labels:
     description:
-      - Dictionary of label key/values to set for the volume
+      - Dictionary of label key/values to set for the volume.
     type: dict
 
   recreate:
     description:
-      - Controls when a volume will be recreated when O(state=present). Please
-        note that recreating an existing volume will cause B(any data in the existing volume
-        to be lost!) The volume will be deleted and a new volume with the same name will be
-        created.
+      - Controls when a volume will be recreated when O(state=present). Please note that recreating an existing volume will
+        cause B(any data in the existing volume to be lost!) The volume will be deleted and a new volume with the same name
+        will be created.
       - The value V(always) forces the volume to be always recreated.
       - The value V(never) makes sure the volume will not be recreated.
-      - The value V(options-changed) makes sure the volume will be recreated if the volume
-        already exist and the driver, driver options or labels differ.
+      - The value V(options-changed) makes sure the volume will be recreated if the volume already exist and the driver, driver
+        options or labels differ.
     type: str
     default: never
     choices:
-    - always
-    - never
-    - options-changed
+      - always
+      - never
+      - options-changed
 
   state:
     description:
@@ -86,9 +83,9 @@ author:
 
 requirements:
   - "Docker API >= 1.25"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Create a volume
   community.docker.docker_volume:
     name: volume_one
@@ -104,16 +101,16 @@ EXAMPLES = '''
     driver_options:
       type: btrfs
       device: /dev/sda2
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 volume:
-    description:
+  description:
     - Volume inspection results for the affected volume.
-    returned: success
-    type: dict
-    sample: {}
-'''
+  returned: success
+  type: dict
+  sample: {}
+"""
 
 import traceback
 

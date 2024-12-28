@@ -10,8 +10,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
-
+DOCUMENTATION = r"""
 module: docker_compose_v2
 
 short_description: Manage multi-container Docker applications with Docker Compose CLI plugin
@@ -20,7 +19,6 @@ version_added: 3.6.0
 
 description:
   - Uses Docker Compose to start or shutdown services.
-
 extends_documentation_fragment:
   - community.docker.compose_v2
   - community.docker.compose_v2.minimum_version
@@ -56,7 +54,8 @@ options:
       - Whether to pull images before running. This is used when C(docker compose up) is run.
       - V(always) ensures that the images are always pulled, even when already present on the Docker daemon.
       - V(missing) only pulls them when they are not present on the Docker daemon.
-      - V(never) never pulls images. If they are not present, the module will fail when trying to create the containers that need them.
+      - V(never) never pulls images. If they are not present, the module will fail when trying to create the containers that
+        need them.
       - V(policy) use the Compose file's C(pull_policy) defined for the service to figure out what to do.
     type: str
     choices:
@@ -68,8 +67,10 @@ options:
   build:
     description:
       - Whether to build images before starting containers. This is used when C(docker compose up) is run.
-      - V(always) always builds before starting containers. This is equivalent to the C(--build) option of C(docker compose up).
-      - V(never) never builds before starting containers. This is equivalent to the C(--no-build) option of C(docker compose up).
+      - V(always) always builds before starting containers. This is equivalent to the C(--build) option of C(docker compose
+        up).
+      - V(never) never builds before starting containers. This is equivalent to the C(--no-build) option of C(docker compose
+        up).
       - V(policy) uses the policy as defined in the Compose file.
     type: str
     choices:
@@ -85,10 +86,10 @@ options:
   ignore_build_events:
     description:
       - Ignores image building events for change detection.
-      - If O(state=present) and O(ignore_build_events=true) and O(build=always), a rebuild that does
-        not trigger a container restart no longer results in RV(ignore:changed=true).
-      - Note that Docker Compose 2.31.0 is the first Compose 2.x version to emit build events.
-        For older versions, the behavior is always as if O(ignore_build_events=true).
+      - If O(state=present) and O(ignore_build_events=true) and O(build=always), a rebuild that does not trigger a container
+        restart no longer results in RV(ignore:changed=true).
+      - Note that Docker Compose 2.31.0 is the first Compose 2.x version to emit build events. For older versions, the behavior
+        is always as if O(ignore_build_events=true).
     type: bool
     default: true
     version_added: 4.2.0
@@ -139,8 +140,8 @@ options:
   scale:
     description:
       - Define how to scale services when running C(docker compose up).
-      - Provide a dictionary of key/value pairs where the key is the name of the service
-        and the value is an integer count for the number of containers.
+      - Provide a dictionary of key/value pairs where the key is the name of the service and the value is an integer count
+        for the number of containers.
     type: dict
     version_added: 3.7.0
   wait:
@@ -161,9 +162,9 @@ author:
 
 seealso:
   - module: community.docker.docker_compose_v2_pull
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 # Examples use the django example at https://docs.docker.com/compose/django. Follow it to create the
 # flask directory
 
@@ -238,9 +239,9 @@ EXAMPLES = '''
           {{ output.containers | selectattr("Service", "equalto", "web") | first }}
         db_container: >-
           {{ output.containers | selectattr("Service", "equalto", "db") | first }}
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 containers:
   description:
     - A list of containers associated to the service.
@@ -420,7 +421,7 @@ actions:
         - Recreating
         - Pulling
         - Building
-'''
+"""
 
 import traceback
 

@@ -8,13 +8,12 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = r"""
 module: docker_network
 short_description: Manage Docker networks
 description:
   - Create/remove Docker networks and connect containers to them.
   - Performs largely the same function as the C(docker network) CLI subcommand.
-
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -50,9 +49,9 @@ options:
   connected:
     description:
       - List of container names or container IDs to connect to a network.
-      - Please note that the module only makes sure that these containers are connected to the network,
-        but does not care about connection options. If you rely on specific IP addresses etc., use the
-        M(community.docker.docker_container) module to ensure your containers are correctly connected to this network.
+      - Please note that the module only makes sure that these containers are connected to the network, but does not care
+        about connection options. If you rely on specific IP addresses etc., use the M(community.docker.docker_container)
+        module to ensure your containers are correctly connected to this network.
     type: list
     elements: str
     default: []
@@ -73,10 +72,9 @@ options:
 
   force:
     description:
-      - With state V(present) will disconnect all containers for existing networks, delete the network and re-create the
-        network.
-      - This option is required if you have changed the IPAM or driver options
-        and want an existing network to be updated to use the new options.
+      - With state V(present) will disconnect all containers for existing networks, delete the network and re-create the network.
+      - This option is required if you have changed the IPAM or driver options and want an existing network to be updated
+        to use the new options.
     type: bool
     default: false
 
@@ -112,9 +110,9 @@ options:
 
   ipam_config:
     description:
-      - List of IPAM config blocks. Consult
-        L(Docker docs,https://docs.docker.com/compose/compose-file/compose-file-v2/#ipam) for valid options and values.
-        Note that O(ipam_config[].iprange) is spelled differently here (we use the notation from the Docker SDK for Python).
+      - List of IPAM config blocks. Consult L(Docker docs,https://docs.docker.com/compose/compose-file/compose-file-v2/#ipam)
+        for valid options and values. Note that O(ipam_config[].iprange) is spelled differently here (we use the notation
+        from the Docker SDK for Python).
     type: list
     elements: dict
     suboptions:
@@ -137,14 +135,11 @@ options:
 
   state:
     description:
-      - V(absent) deletes the network. If a network has connected containers, these will be
-        detached from the network.
-      - V(present) creates the network, if it does not already exist with the
-        specified parameters, and connects the list of containers provided via
-        the connected parameter. Containers not on the list will be disconnected.
-        An empty list will leave no containers connected to the network. Use the
-        O(appends) option to leave existing containers connected. Use the O(force)
-        options to force re-creation of the network.
+      - V(absent) deletes the network. If a network has connected containers, these will be detached from the network.
+      - V(present) creates the network, if it does not already exist with the specified parameters, and connects the list
+        of containers provided via the connected parameter. Containers not on the list will be disconnected. An empty list
+        will leave no containers connected to the network. Use the O(appends) option to leave existing containers connected.
+        Use the O(force) options to force re-creation of the network.
     type: str
     default: present
     choices:
@@ -173,18 +168,19 @@ options:
 
   attachable:
     description:
-      - If enabled, and the network is in the global scope, non-service containers on worker nodes will be able to connect to the network.
+      - If enabled, and the network is in the global scope, non-service containers on worker nodes will be able to connect
+        to the network.
     type: bool
 
 notes:
-  - When network options are changed, the module disconnects all containers from the network, deletes the network, and re-creates the network.
-    It does not try to reconnect containers, except the ones listed in (O(connected), and even for these, it does not consider specific
-    connection options like fixed IP addresses or MAC addresses. If you need more control over how the containers are connected to the
-    network, loop the M(community.docker.docker_container) module to loop over your containers to make sure they are connected properly.
-  - The module does not support Docker Swarm. This means that it will not try to disconnect or reconnect services. If services are connected to the
-    network, deleting the network will fail. When network options are changed, the network has to be deleted and recreated, so this will
-    fail as well.
-
+  - When network options are changed, the module disconnects all containers from the network, deletes the network, and re-creates
+    the network. It does not try to reconnect containers, except the ones listed in (O(connected), and even for these, it
+    does not consider specific connection options like fixed IP addresses or MAC addresses. If you need more control over
+    how the containers are connected to the network, loop the M(community.docker.docker_container) module to loop over your
+    containers to make sure they are connected properly.
+  - The module does not support Docker Swarm. This means that it will not try to disconnect or reconnect services. If services
+    are connected to the network, deleting the network will fail. When network options are changed, the network has to be
+    deleted and recreated, so this will fail as well.
 author:
   - "Ben Keith (@keitwb)"
   - "Chris Houseknecht (@chouseknecht)"
@@ -192,9 +188,9 @@ author:
 
 requirements:
   - "Docker API >= 1.25"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Create a network
   community.docker.docker_network:
     name: network_one
@@ -262,16 +258,16 @@ EXAMPLES = '''
   community.docker.docker_network:
     name: network_one
     state: absent
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 network:
-    description:
+  description:
     - Network inspection results for the affected network.
-    returned: success
-    type: dict
-    sample: {}
-'''
+  returned: success
+  type: dict
+  sample: {}
+"""
 
 import re
 import traceback

@@ -6,60 +6,59 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-DOCUMENTATION = r'''
-    name: docker_machine
-    author: Ximon Eighteen (@ximon18)
-    short_description: Docker Machine inventory source
-    requirements:
-        - L(Docker Machine,https://docs.docker.com/machine/)
-    extends_documentation_fragment:
-        - ansible.builtin.constructed
-        - community.library_inventory_filtering_v1.inventory_filter
+DOCUMENTATION = r"""
+name: docker_machine
+author: Ximon Eighteen (@ximon18)
+short_description: Docker Machine inventory source
+requirements:
+  - L(Docker Machine,https://docs.docker.com/machine/)
+extends_documentation_fragment:
+  - ansible.builtin.constructed
+  - community.library_inventory_filtering_v1.inventory_filter
+description:
+  - Get inventory hosts from Docker Machine.
+  - Uses a YAML configuration file that ends with V(docker_machine.(yml|yaml\)).
+  - The plugin sets standard host variables C(ansible_host), C(ansible_port), C(ansible_user) and C(ansible_ssh_private_key).
+  - The plugin stores the Docker Machine 'env' output variables in C(dm_) prefixed host variables.
+notes:
+  - The configuration file must be a YAML file whose filename ends with V(docker_machine.yml) or V(docker_machine.yaml). Other
+    filenames will not be accepted.
+options:
+  plugin:
+    description: Token that ensures this is a source file for the C(docker_machine) plugin.
+    required: true
+    choices: ['docker_machine', 'community.docker.docker_machine']
+  daemon_env:
     description:
-        - Get inventory hosts from Docker Machine.
-        - Uses a YAML configuration file that ends with V(docker_machine.(yml|yaml\)).
-        - The plugin sets standard host variables C(ansible_host), C(ansible_port), C(ansible_user) and C(ansible_ssh_private_key).
-        - The plugin stores the Docker Machine 'env' output variables in C(dm_) prefixed host variables.
-    notes:
-        - The configuration file must be a YAML file whose filename ends with V(docker_machine.yml) or V(docker_machine.yaml).
-          Other filenames will not be accepted.
-
-    options:
-        plugin:
-            description: token that ensures this is a source file for the C(docker_machine) plugin.
-            required: true
-            choices: ['docker_machine', 'community.docker.docker_machine']
-        daemon_env:
-            description:
-                - Whether docker daemon connection environment variables should be fetched, and how to behave if they cannot be fetched.
-                - With V(require) and V(require-silently), fetch them and skip any host for which they cannot be fetched.
-                  A warning will be issued for any skipped host if the choice is V(require).
-                - With V(optional) and V(optional-silently), fetch them and not skip hosts for which they cannot be fetched.
-                  A warning will be issued for hosts where they cannot be fetched if the choice is V(optional).
-                - With V(skip), do not attempt to fetch the docker daemon connection environment variables.
-                - If fetched successfully, the variables will be prefixed with C(dm_) and stored as host variables.
-            type: str
-            choices:
-                - require
-                - require-silently
-                - optional
-                - optional-silently
-                - skip
-            default: require
-        running_required:
-            description:
-                - When V(true), hosts which Docker Machine indicates are in a state other than C(running) will be skipped.
-            type: bool
-            default: true
-        verbose_output:
-            description:
-                - When V(true), include all available nodes metadata (for example C(Image), C(Region), C(Size)) as a JSON object
-                  named C(docker_machine_node_attributes).
-            type: bool
-            default: true
-        filters:
-            version_added: 3.5.0
-'''
+      - Whether docker daemon connection environment variables should be fetched, and how to behave if they cannot be fetched.
+      - With V(require) and V(require-silently), fetch them and skip any host for which they cannot be fetched. A warning
+        will be issued for any skipped host if the choice is V(require).
+      - With V(optional) and V(optional-silently), fetch them and not skip hosts for which they cannot be fetched. A warning
+        will be issued for hosts where they cannot be fetched if the choice is V(optional).
+      - With V(skip), do not attempt to fetch the docker daemon connection environment variables.
+      - If fetched successfully, the variables will be prefixed with C(dm_) and stored as host variables.
+    type: str
+    choices:
+      - require
+      - require-silently
+      - optional
+      - optional-silently
+      - skip
+    default: require
+  running_required:
+    description:
+      - When V(true), hosts which Docker Machine indicates are in a state other than C(running) will be skipped.
+    type: bool
+    default: true
+  verbose_output:
+    description:
+      - When V(true), include all available nodes metadata (for example C(Image), C(Region), C(Size)) as a JSON object named
+        C(docker_machine_node_attributes).
+    type: bool
+    default: true
+  filters:
+    version_added: 3.5.0
+"""
 
 EXAMPLES = '''
 # Minimal example

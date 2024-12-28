@@ -7,8 +7,7 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_swarm_service
 author:
   - "Dario Zanzico (@dariko)"
@@ -19,7 +18,6 @@ short_description: docker swarm service
 description:
   - Manages docker services via a swarm manager node.
   - This modules does not support updating services in a stack.
-
 extends_documentation_fragment:
   - community.docker.docker
   - community.docker.docker.docker_py_2_documentation
@@ -118,16 +116,14 @@ options:
     description:
       - List or dictionary of the service environment variables.
       - If passed a list each items need to be in the format of C(KEY=VALUE).
-      - If passed a dictionary values which might be parsed as numbers,
-        booleans or other types by the YAML parser must be quoted (for example V("true"))
-        in order to avoid data loss.
+      - If passed a dictionary values which might be parsed as numbers, booleans or other types by the YAML parser must be
+        quoted (for example V("true")) in order to avoid data loss.
       - Corresponds to the C(--env) option of C(docker service create).
     type: raw
   env_files:
     description:
       - List of paths to files, present on the target, containing environment variables C(FOO=BAR).
-      - The order of the list is significant in determining the value assigned to a
-        variable that shows up more than once.
+      - The order of the list is significant in determining the value assigned to a variable that shows up more than once.
       - If variable also present in O(env), then O(env) value will override.
     type: list
     elements: path
@@ -145,12 +141,12 @@ options:
     elements: str
   healthcheck:
     description:
-      - Configure a check that is run to determine whether or not containers for this service are "healthy".
-        See the docs for the L(HEALTHCHECK Dockerfile instruction,https://docs.docker.com/engine/reference/builder/#healthcheck)
-        for details on how healthchecks work.
-      - "O(healthcheck.interval), O(healthcheck.timeout), and O(healthcheck.start_period) are specified as durations.
-        They accept duration as a string in a format that look like: V(5h34m56s), V(1m30s), and so on.
-        The supported units are V(us), V(ms), V(s), V(m) and V(h)."
+      - Configure a check that is run to determine whether or not containers for this service are "healthy". See the docs
+        for the L(HEALTHCHECK Dockerfile instruction,https://docs.docker.com/engine/reference/builder/#healthcheck) for details
+        on how healthchecks work.
+      - 'O(healthcheck.interval), O(healthcheck.timeout), and O(healthcheck.start_period) are specified as durations. They
+        accept duration as a string in a format that look like: V(5h34m56s), V(1m30s), and so on. The supported units are
+        V(us), V(ms), V(s), V(m) and V(h).'
     type: dict
     suboptions:
       test:
@@ -181,8 +177,8 @@ options:
     type: str
   hosts:
     description:
-      - Dict of host-to-IP mappings, where each host name is a key in the dictionary.
-        Each host name will be added to the container's /etc/hosts file.
+      - Dict of host-to-IP mappings, where each host name is a key in the dictionary. Each host name will be added to the
+        container's /etc/hosts file.
       - Corresponds to the C(--host) option of C(docker service create).
     type: dict
   image:
@@ -212,9 +208,8 @@ options:
         type: float
       memory:
         description:
-          - "Service memory limit in format C(<number>[<unit>]). Number is a positive integer.
-            Unit can be V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
-            V(T) (tebibyte), or V(P) (pebibyte)."
+          - Service memory limit in format C(<number>[<unit>]). Number is a positive integer. Unit can be V(B) (byte), V(K)
+            (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte), V(T) (tebibyte), or V(P) (pebibyte).
           - V(0) equals no limit.
           - Omitting the unit defaults to bytes.
           - Corresponds to the C(--limit-memory) option of C(docker service create).
@@ -222,7 +217,7 @@ options:
     type: dict
   logging:
     description:
-      - "Logging configuration for the service."
+      - Logging configuration for the service.
     suboptions:
       driver:
         description:
@@ -314,9 +309,8 @@ options:
         type: dict
       tmpfs_size:
         description:
-          - "Size of the tmpfs mount in format C(<number>[<unit>]). Number is a positive integer.
-            Unit can be V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
-            V(T) (tebibyte), or V(P) (pebibyte)."
+          - Size of the tmpfs mount in format C(<number>[<unit>]). Number is a positive integer. Unit can be V(B) (byte),
+            V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte), V(T) (tebibyte), or V(P) (pebibyte).
           - Can only be used when O(mounts[].type=tmpfs).
         type: str
       tmpfs_mode:
@@ -333,10 +327,9 @@ options:
   networks:
     description:
       - List of the service networks names or dictionaries.
-      - When passed dictionaries valid sub-options are C(name), which is required, and
-        C(aliases) and C(options).
-      - Prior to API version 1.29, updating and removing networks is not supported.
-        If changes are made the service will then be removed and recreated.
+      - When passed dictionaries valid sub-options are C(name), which is required, and C(aliases) and C(options).
+      - Prior to API version 1.29, updating and removing networks is not supported. If changes are made the service will then
+        be removed and recreated.
       - Corresponds to the C(--network) option of C(docker service create).
     type: list
     elements: raw
@@ -361,7 +354,7 @@ options:
         description:
           - Maximum number of tasks per node.
           - Corresponds to the C(--replicas_max_per_node) option of C(docker service create).
-          - Requires API version >= 1.40
+          - Requires API version >= 1.40.
         type: int
         version_added: 1.3.0
     type: dict
@@ -422,9 +415,8 @@ options:
         type: float
       memory:
         description:
-          - "Service memory reservation in format C(<number>[<unit>]). Number is a positive integer.
-            Unit can be V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
-            V(T) (tebibyte), or V(P) (pebibyte)."
+          - Service memory reservation in format C(<number>[<unit>]). Number is a positive integer. Unit can be V(B) (byte),
+            V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte), V(T) (tebibyte), or V(P) (pebibyte).
           - V(0) equals no reservation.
           - Omitting the unit defaults to bytes.
           - Corresponds to the C(--reserve-memory) option of C(docker service create).
@@ -452,8 +444,8 @@ options:
       delay:
         description:
           - Delay between restarts.
-          - "Accepts a a string in a format that look like:
-            V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
+          - 'Accepts a a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms),
+            V(s), V(m) and V(h).'
           - Corresponds to the C(--restart-delay) option of C(docker service create).
         type: str
       max_attempts:
@@ -464,8 +456,8 @@ options:
       window:
         description:
           - Restart policy evaluation window.
-          - "Accepts a string in a format that look like:
-            V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
+          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms),
+            V(s), V(m) and V(h).'
           - Corresponds to the C(--restart-window) option of C(docker service create).
         type: str
     type: dict
@@ -482,8 +474,8 @@ options:
       delay:
         description:
           - Delay between task rollbacks.
-          - "Accepts a string in a format that look like:
-            V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
+          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms),
+            V(s), V(m) and V(h).'
           - Corresponds to the C(--rollback-delay) option of C(docker service create).
           - Requires API version >= 1.28.
         type: str
@@ -499,8 +491,8 @@ options:
       monitor:
         description:
           - Duration after each task rollback to monitor for failure.
-          - "Accepts a string in a format that look like:
-            V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
+          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms),
+            V(s), V(m) and V(h).'
           - Corresponds to the C(--rollback-monitor) option of C(docker service create).
           - Requires API version >= 1.28.
         type: str
@@ -553,8 +545,8 @@ options:
   state:
     description:
       - V(absent) - A service matching the specified name will be removed and have its tasks stopped.
-      - V(present) - Asserts the existence of a service matching the name and provided configuration parameters.
-        Unspecified configuration parameters will be set to docker defaults.
+      - V(present) - Asserts the existence of a service matching the name and provided configuration parameters. Unspecified
+        configuration parameters will be set to docker defaults.
     type: str
     default: present
     choices:
@@ -563,8 +555,8 @@ options:
   stop_grace_period:
     description:
       - Time to wait before force killing a container.
-      - "Accepts a duration as a string in a format that look like:
-        V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
+      - 'Accepts a duration as a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us),
+        V(ms), V(s), V(m) and V(h).'
       - Corresponds to the C(--stop-grace-period) option of C(docker service create).
     type: str
   stop_signal:
@@ -589,8 +581,8 @@ options:
       delay:
         description:
           - Rolling update delay.
-          - "Accepts a string in a format that look like:
-            V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
+          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms),
+            V(s), V(m) and V(h).'
           - Corresponds to the C(--update-delay) option of C(docker service create).
         type: str
       failure_action:
@@ -606,8 +598,8 @@ options:
       monitor:
         description:
           - Time to monitor updated tasks for failures.
-          - "Accepts a string in a format that look like:
-            V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms), V(s), V(m) and V(h)."
+          - 'Accepts a string in a format that look like: V(5h34m56s), V(1m30s) etc. The supported units are V(us), V(ms),
+            V(s), V(m) and V(h).'
           - Corresponds to the C(--update-monitor) option of C(docker service create).
         type: str
       max_failure_ratio:
@@ -653,122 +645,37 @@ requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.0.2"
   - "Docker API >= 1.25"
 notes:
-  - "Images will only resolve to the latest digest when using Docker API >= 1.30 and Docker SDK for Python >= 3.2.0.
-     When using older versions use O(force_update=true) to trigger the swarm to resolve a new image."
-'''
+  - Images will only resolve to the latest digest when using Docker API >= 1.30 and Docker SDK for Python >= 3.2.0. When using
+    older versions use O(force_update=true) to trigger the swarm to resolve a new image.
+"""
 
-RETURN = '''
+RETURN = r"""
 swarm_service:
   returned: always
   type: dict
   description:
-    - Dictionary of variables representing the current state of the service.
-      Matches the module parameters format.
+    - Dictionary of variables representing the current state of the service. Matches the module parameters format.
     - Note that facts are not part of registered vars but accessible directly.
-    - Note that before Ansible 2.7.9, the return variable was documented as C(ansible_swarm_service),
-      while the module actually returned a variable called C(ansible_docker_service). The variable
-      was renamed to RV(swarm_service) in both code and documentation for Ansible 2.7.9 and Ansible 2.8.0.
-      In Ansible 2.7.x, the old name C(ansible_docker_service) can still be used.
-  sample: '{
-    "args": [
-      "3600"
-    ],
-    "cap_add": null,
-    "cap_drop": [
-      "ALL"
-    ],
-    "command": [
-      "sleep"
-    ],
-    "configs": null,
-    "constraints": [
-      "node.role == manager",
-      "engine.labels.operatingsystem == ubuntu 14.04"
-    ],
-    "container_labels": null,
-    "sysctls": null,
-    "dns": null,
-    "dns_options": null,
-    "dns_search": null,
-    "endpoint_mode": null,
-    "env": [
-       "ENVVAR1=envvar1",
-       "ENVVAR2=envvar2"
-    ],
-    "force_update": null,
-    "groups": null,
-    "healthcheck": {
-      "interval": 90000000000,
-      "retries": 3,
-      "start_period": 30000000000,
-      "test": [
-        "CMD",
-        "curl",
-        "--fail",
-        "http://nginx.host.com"
-      ],
-      "timeout": 10000000000
-    },
-    "healthcheck_disabled": false,
-    "hostname": null,
-    "hosts": null,
-    "image": "alpine:latest@sha256:b3dbf31b77fd99d9c08f780ce6f5282aba076d70a513a8be859d8d3a4d0c92b8",
-    "labels": {
-      "com.example.department": "Finance",
-      "com.example.description": "Accounting webapp"
-    },
-    "limit_cpu": 0.5,
-    "limit_memory": 52428800,
-    "log_driver": "fluentd",
-    "log_driver_options": {
-      "fluentd-address": "127.0.0.1:24224",
-      "fluentd-async-connect": "true",
-      "tag": "myservice"
-    },
-    "mode": "replicated",
-    "mounts": [
-      {
-        "readonly": false,
-        "source": "/tmp/",
-        "target": "/remote_tmp/",
-        "type": "bind",
-        "labels": null,
-        "propagation": null,
-        "no_copy": null,
-        "driver_config": null,
-        "tmpfs_size": null,
-        "tmpfs_mode": null
-      }
-    ],
-    "networks": null,
-    "placement_preferences": [
-      {
-        "spread": "node.labels.mylabel"
-      }
-    ],
-    "publish": null,
-    "read_only": null,
-    "replicas": 1,
-    "replicas_max_per_node": 1,
-    "reserve_cpu": 0.25,
-    "reserve_memory": 20971520,
-    "restart_policy": "on-failure",
-    "restart_policy_attempts": 3,
-    "restart_policy_delay": 5000000000,
-    "restart_policy_window": 120000000000,
-    "secrets": null,
-    "stop_grace_period": null,
-    "stop_signal": null,
-    "tty": null,
-    "update_delay": 10000000000,
-    "update_failure_action": null,
-    "update_max_failure_ratio": null,
-    "update_monitor": null,
-    "update_order": "stop-first",
-    "update_parallelism": 2,
-    "user": null,
-    "working_dir": null
-  }'
+    - Note that before Ansible 2.7.9, the return variable was documented as C(ansible_swarm_service), while the module actually
+      returned a variable called C(ansible_docker_service). The variable was renamed to RV(swarm_service) in both code and
+      documentation for Ansible 2.7.9 and Ansible 2.8.0. In Ansible 2.7.x, the old name C(ansible_docker_service) can still
+      be used.
+  sample: '{ "args": [ "3600" ], "cap_add": null, "cap_drop": [ "ALL" ], "command": [ "sleep" ], "configs": null, "constraints":
+    [ "node.role == manager", "engine.labels.operatingsystem == ubuntu 14.04" ], "container_labels": null, "sysctls": null,
+    "dns": null, "dns_options": null, "dns_search": null, "endpoint_mode": null, "env": [ "ENVVAR1=envvar1", "ENVVAR2=envvar2"
+    ], "force_update": null, "groups": null, "healthcheck": { "interval": 90000000000, "retries": 3, "start_period": 30000000000,
+    "test": [ "CMD", "curl", "--fail", "http://nginx.host.com" ], "timeout": 10000000000 }, "healthcheck_disabled": false,
+    "hostname": null, "hosts": null, "image": "alpine:latest@sha256:b3dbf31b77fd99d9c08f780ce6f5282aba076d70a513a8be859d8d3a4d0c92b8",
+    "labels": { "com.example.department": "Finance", "com.example.description": "Accounting webapp" }, "limit_cpu": 0.5, "limit_memory":
+    52428800, "log_driver": "fluentd", "log_driver_options": { "fluentd-address": "127.0.0.1:24224", "fluentd-async-connect":
+    "true", "tag": "myservice" }, "mode": "replicated", "mounts": [ { "readonly": false, "source": "/tmp/", "target": "/remote_tmp/",
+    "type": "bind", "labels": null, "propagation": null, "no_copy": null, "driver_config": null, "tmpfs_size": null, "tmpfs_mode":
+    null } ], "networks": null, "placement_preferences": [ { "spread": "node.labels.mylabel" } ], "publish": null, "read_only":
+    null, "replicas": 1, "replicas_max_per_node": 1, "reserve_cpu": 0.25, "reserve_memory": 20971520, "restart_policy": "on-failure",
+    "restart_policy_attempts": 3, "restart_policy_delay": 5000000000, "restart_policy_window": 120000000000, "secrets": null,
+    "stop_grace_period": null, "stop_signal": null, "tty": null, "update_delay": 10000000000, "update_failure_action": null,
+    "update_max_failure_ratio": null, "update_monitor": null, "update_order": "stop-first", "update_parallelism": 2, "user":
+    null, "working_dir": null }'
 changes:
   returned: always
   description:
@@ -779,12 +686,12 @@ changes:
 rebuilt:
   returned: always
   description:
-    - True if the service has been recreated (removed and created)
+    - True if the service has been recreated (removed and created).
   type: bool
   sample: true
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Set command and arguments
   community.docker.docker_swarm_service:
     name: myservice
@@ -913,8 +820,8 @@ EXAMPLES = '''
     name: myservice
     image: nginx:1.13
     healthcheck:
-      # Check if nginx server is healthy by curl'ing the server.
-      # If this fails or timeouts, the healthcheck fails.
+    # Check if nginx server is healthy by curl'ing the server.
+    # If this fails or timeouts, the healthcheck fails.
       test: ["CMD", "curl", "--fail", "http://nginx.host.com"]
       interval: 1m30s
       timeout: 10s
@@ -936,7 +843,7 @@ EXAMPLES = '''
   community.docker.docker_swarm_service:
     name: myservice
     state: absent
-'''
+"""
 
 import shlex
 import time

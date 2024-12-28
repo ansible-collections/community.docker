@@ -8,21 +8,18 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_host_info
 
-short_description: Retrieves facts about docker host and lists of objects of the services.
+short_description: Retrieves facts about docker host and lists of objects of the services
 
 description:
   - Retrieves facts about a docker host.
   - Essentially returns the output of C(docker system info).
-  - The module also allows to list object names for containers, images, networks and volumes.
-    It also allows to query information on disk usage.
+  - The module also allows to list object names for containers, images, networks and volumes. It also allows to query information
+    on disk usage.
   - The output differs depending on API version of the docker daemon.
-  - If the docker daemon cannot be contacted or does not meet the API version requirements,
-    the module will fail.
-
+  - If the docker daemon cannot be contacted or does not meet the API version requirements, the module will fail.
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -54,11 +51,11 @@ options:
   containers_filters:
     description:
       - A dictionary of filter values used for selecting containers to list.
-      - "For example, C(until: 24h)."
-      - C(label) is a special case of filter which can be a string C(<key>) matching when a label is present, a string
-        C(<key>=<value>) matching when a label has a particular value, or a list of strings C(<key>)/C(<key>=<value).
-      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/container_prune/#filtering)
-        for more information on possible filters.
+      - 'For example, C(until: 24h).'
+      - C(label) is a special case of filter which can be a string C(<key>) matching when a label is present, a string C(<key>=<value>)
+        matching when a label has a particular value, or a list of strings C(<key>)/C(<key>=<value).
+      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/container_prune/#filtering) for
+        more information on possible filters.
     type: dict
   images:
     description:
@@ -68,11 +65,11 @@ options:
   images_filters:
     description:
       - A dictionary of filter values used for selecting images to list.
-      - "For example, C(dangling: true)."
-      - C(label) is a special case of filter which can be a string C(<key>) matching when a label is present, a string
-        C(<key>=<value>) matching when a label has a particular value, or a list of strings C(<key>)/C(<key>=<value).
-      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/image_prune/#filtering)
-        for more information on possible filters.
+      - 'For example, C(dangling: true).'
+      - C(label) is a special case of filter which can be a string C(<key>) matching when a label is present, a string C(<key>=<value>)
+        matching when a label has a particular value, or a list of strings C(<key>)/C(<key>=<value).
+      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/image_prune/#filtering) for more
+        information on possible filters.
     type: dict
   networks:
     description:
@@ -82,10 +79,10 @@ options:
   networks_filters:
     description:
       - A dictionary of filter values used for selecting networks to list.
-      - C(label) is a special case of filter which can be a string C(<key>) matching when a label is present, a string
-        C(<key>=<value>) matching when a label has a particular value, or a list of strings C(<key>)/C(<key>=<value).
-      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/network_prune/#filtering)
-        for more information on possible filters.
+      - C(label) is a special case of filter which can be a string C(<key>) matching when a label is present, a string C(<key>=<value>)
+        matching when a label has a particular value, or a list of strings C(<key>)/C(<key>=<value).
+      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/network_prune/#filtering) for
+        more information on possible filters.
     type: dict
   volumes:
     description:
@@ -95,10 +92,10 @@ options:
   volumes_filters:
     description:
       - A dictionary of filter values used for selecting volumes to list.
-      - C(label) is a special case of filter which can be a string C(<key>) matching when a label is present, a string
-        C(<key>=<value>) matching when a label has a particular value, or a list of strings C(<key>)/C(<key>=<value).
-      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/volume_prune/#filtering)
-        for more information on possible filters.
+      - C(label) is a special case of filter which can be a string C(<key>) matching when a label is present, a string C(<key>=<value>)
+        matching when a label has a particular value, or a list of strings C(<key>)/C(<key>=<value).
+      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/volume_prune/#filtering) for more
+        information on possible filters.
     type: dict
   disk_usage:
     description:
@@ -108,11 +105,11 @@ options:
     default: false
   verbose_output:
     description:
-      - When set to V(true) and O(networks), O(volumes), O(images), O(containers), or O(disk_usage) is set to V(true)
-        then output will contain verbose information about objects matching the full output of API method.
-        For details see the documentation of your version of Docker API at U(https://docs.docker.com/engine/api/).
-      - The verbose output in this module contains only subset of information returned by this module
-        for each type of the objects.
+      - When set to V(true) and O(networks), O(volumes), O(images), O(containers), or O(disk_usage) is set to V(true) then
+        output will contain verbose information about objects matching the full output of API method. For details see the
+        documentation of your version of Docker API at U(https://docs.docker.com/engine/api/).
+      - The verbose output in this module contains only subset of information returned by this module for each type of the
+        objects.
     type: bool
     default: false
 
@@ -121,9 +118,9 @@ author:
 
 requirements:
   - "Docker API >= 1.25"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Get info on docker host
   community.docker.docker_host_info:
   register: result
@@ -163,61 +160,55 @@ EXAMPLES = '''
 - name: Show host information
   ansible.builtin.debug:
     var: result.host_info
+"""
 
-'''
-
-RETURN = '''
+RETURN = r"""
 can_talk_to_docker:
-    description:
-      - Will be V(true) if the module can talk to the docker daemon.
-    returned: both on success and on error
-    type: bool
+  description:
+    - Will be V(true) if the module can talk to the docker daemon.
+  returned: both on success and on error
+  type: bool
 
 host_info:
-    description:
-      - Facts representing the basic state of the docker host. Matches the C(docker system info) output.
-    returned: always
-    type: dict
+  description:
+    - Facts representing the basic state of the docker host. Matches the C(docker system info) output.
+  returned: always
+  type: dict
 volumes:
-    description:
-      - List of dict objects containing the basic information about each volume.
-        Keys matches the C(docker volume ls) output unless O(verbose_output=true).
-        See description for O(verbose_output).
-    returned: When O(volumes=true)
-    type: list
-    elements: dict
+  description:
+    - List of dict objects containing the basic information about each volume. Keys matches the C(docker volume ls) output
+      unless O(verbose_output=true). See description for O(verbose_output).
+  returned: When O(volumes=true)
+  type: list
+  elements: dict
 networks:
-    description:
-      - List of dict objects containing the basic information about each network.
-        Keys matches the C(docker network ls) output unless O(verbose_output=true).
-        See description for O(verbose_output).
-    returned: When O(networks=true)
-    type: list
-    elements: dict
+  description:
+    - List of dict objects containing the basic information about each network. Keys matches the C(docker network ls) output
+      unless O(verbose_output=true). See description for O(verbose_output).
+  returned: When O(networks=true)
+  type: list
+  elements: dict
 containers:
-    description:
-      - List of dict objects containing the basic information about each container.
-        Keys matches the C(docker container ls) output unless O(verbose_output=true).
-        See description for O(verbose_output).
-    returned: When O(containers=true)
-    type: list
-    elements: dict
+  description:
+    - List of dict objects containing the basic information about each container. Keys matches the C(docker container ls)
+      output unless O(verbose_output=true). See description for O(verbose_output).
+  returned: When O(containers=true)
+  type: list
+  elements: dict
 images:
-    description:
-      - List of dict objects containing the basic information about each image.
-        Keys matches the C(docker image ls) output unless O(verbose_output=true).
-        See description for O(verbose_output).
-    returned: When O(images=true)
-    type: list
-    elements: dict
+  description:
+    - List of dict objects containing the basic information about each image. Keys matches the C(docker image ls) output unless
+      O(verbose_output=true). See description for O(verbose_output).
+  returned: When O(images=true)
+  type: list
+  elements: dict
 disk_usage:
-    description:
-      - Information on summary disk usage by images, containers and volumes on docker host
-        unless O(verbose_output=true). See description for O(verbose_output).
-    returned: When O(disk_usage=true)
-    type: dict
-
-'''
+  description:
+    - Information on summary disk usage by images, containers and volumes on docker host unless O(verbose_output=true). See
+      description for O(verbose_output).
+  returned: When O(disk_usage=true)
+  type: dict
+"""
 
 import traceback
 

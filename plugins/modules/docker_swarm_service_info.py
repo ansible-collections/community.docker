@@ -8,8 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_swarm_service_info
 
 short_description: Retrieves information about docker services from a Swarm Manager
@@ -18,7 +17,6 @@ description:
   - Retrieves information about a docker service.
   - Essentially returns the output of C(docker service inspect <name>).
   - Must be executed on a host running as Swarm Manager, otherwise the module will fail.
-
 extends_documentation_fragment:
   - community.docker.docker
   - community.docker.docker.docker_py_1_documentation
@@ -39,29 +37,29 @@ author:
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.0.0"
   - "Docker API >= 1.25"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Get info from a service
   community.docker.docker_swarm_service_info:
     name: myservice
   register: result
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 exists:
-    description:
-      - Returns whether the service exists.
-    type: bool
-    returned: always
-    sample: true
+  description:
+    - Returns whether the service exists.
+  type: bool
+  returned: always
+  sample: true
 service:
-    description:
-      - A dictionary representing the current state of the service. Matches the C(docker service inspect) output.
-      - Will be V(none) if service does not exist.
-    returned: always
-    type: dict
-'''
+  description:
+    - A dictionary representing the current state of the service. Matches the C(docker service inspect) output.
+    - Will be V(none) if service does not exist.
+  returned: always
+  type: dict
+"""
 
 import traceback
 
