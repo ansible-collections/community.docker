@@ -8,8 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_image_pull
 
 short_description: Pull Docker images from registries
@@ -18,7 +17,6 @@ version_added: 3.6.0
 
 description:
   - Pulls a Docker image from a registry.
-
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -36,8 +34,8 @@ attributes:
 options:
   name:
     description:
-      - "Image name. Name format must be one of V(name), V(repository/name), or V(registry_server:port/name).
-      - The name can optionally include the tag by appending V(:tag_name), or it can contain a digest by appending V(@hash:digest)."
+      - Image name. Name format must be one of V(name), V(repository/name), or V(registry_server:port/name).
+      - The name can optionally include the tag by appending V(:tag_name), or it can contain a digest by appending V(@hash:digest).
     type: str
     required: true
   tag:
@@ -54,8 +52,8 @@ options:
     description:
       - Determines when to pull an image.
       - If V(always), will always pull the image.
-      - If V(not_present), will only pull the image if no image of the name exists on the current Docker daemon,
-        or if O(platform) does not match.
+      - If V(not_present), will only pull the image if no image of the name exists on the current Docker daemon, or if O(platform)
+        does not match.
     type: str
     choices:
       - always
@@ -72,23 +70,23 @@ seealso:
   - module: community.docker.docker_image_pull
   - module: community.docker.docker_image_remove
   - module: community.docker.docker_image_tag
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Pull an image
   community.docker.docker_image_pull:
     name: pacur/centos-7
     # Select platform for pulling. If not specified, will pull whatever docker prefers.
     platform: amd64
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 image:
-    description: Image inspection results for the affected image.
-    returned: success
-    type: dict
-    sample: {}
-'''
+  description: Image inspection results for the affected image.
+  returned: success
+  type: dict
+  sample: {}
+"""
 
 import traceback
 

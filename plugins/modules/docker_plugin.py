@@ -10,7 +10,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = r"""
 module: docker_plugin
 short_description: Manage Docker plugins
 version_added: 1.3.0
@@ -19,7 +19,6 @@ description:
   - Performs largely the same function as the C(docker plugin) CLI subcommand.
 notes:
   - The C(--grant-all-permissions) CLI flag is true by default in this module.
-
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -54,7 +53,7 @@ options:
 
   alias:
     description:
-     - Local name for plugin.
+      - Local name for plugin.
     type: str
     version_added: 1.8.0
 
@@ -82,9 +81,9 @@ author:
 
 requirements:
   - "Docker API >= 1.25"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Install a plugin
   community.docker.docker_plugin:
     plugin_name: plugin_one
@@ -111,21 +110,21 @@ EXAMPLES = '''
     plugin_options:
       IPALLOC_RANGE: "10.32.0.0/12"
       WEAVE_PASSWORD: "PASSWORD"
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 plugin:
-    description:
-      - Plugin inspection results for the affected plugin.
-    returned: success
-    type: dict
-    sample: {}
+  description:
+    - Plugin inspection results for the affected plugin.
+  returned: success
+  type: dict
+  sample: {}
 actions:
-    description:
-      - List of actions performed during task execution.
-    returned: when O(state) is not V(absent)
-    type: list
-'''
+  description:
+    - List of actions performed during task execution.
+  returned: when O(state) is not V(absent)
+  type: list
+"""
 
 import traceback
 

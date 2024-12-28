@@ -11,18 +11,16 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_login
-short_description: Log into a Docker registry.
+short_description: Log into a Docker registry
 description:
   - Provides functionality similar to the C(docker login) command.
-  - Authenticate with a docker registry and add the credentials to your local Docker config file respectively the
-    credentials store associated to the registry. Adding the credentials to the config files resp. the credential
-    store allows future connections to the registry using tools such as Ansible's Docker modules, the Docker CLI
-    and Docker SDK for Python without needing to provide credentials.
+  - Authenticate with a docker registry and add the credentials to your local Docker config file respectively the credentials
+    store associated to the registry. Adding the credentials to the config files resp. the credential store allows future
+    connections to the registry using tools such as Ansible's Docker modules, the Docker CLI and Docker SDK for Python without
+    needing to provide credentials.
   - Running in check mode will perform the authentication without updating the config file.
-
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -82,10 +80,9 @@ requirements:
 author:
   - Olaf Kilian (@olsaki) <olaf.kilian@symanex.com>
   - Chris Houseknecht (@chouseknecht)
-'''
+"""
 
-EXAMPLES = '''
-
+EXAMPLES = r"""
 - name: Log into DockerHub
   community.docker.docker_login:
     username: docker
@@ -107,18 +104,15 @@ EXAMPLES = '''
 - name: Log out of DockerHub
   community.docker.docker_login:
     state: absent
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 login_results:
-    description: Results from the login.
-    returned: when O(state=present)
-    type: dict
-    sample: {
-        "serveraddress": "localhost:5000",
-        "username": "testuser"
-    }
-'''
+  description: Results from the login.
+  returned: when O(state=present)
+  type: dict
+  sample: {"serveraddress": "localhost:5000", "username": "testuser"}
+"""
 
 import base64
 import json

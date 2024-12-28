@@ -8,8 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_container_copy_into
 
 short_description: Copy a file into a Docker container
@@ -19,9 +18,8 @@ version_added: 3.4.0
 description:
   - Copy a file into a Docker container.
   - Similar to C(docker cp).
-  - To copy files in a non-running container, you must provide the O(owner_id) and O(group_id) options.
-    This is also necessary if the container does not contain a C(/bin/sh) shell with an C(id) tool.
-
+  - To copy files in a non-running container, you must provide the O(owner_id) and O(group_id) options. This is also necessary
+    if the container does not contain a C(/bin/sh) shell with an C(id) tool.
 attributes:
   check_mode:
     support: full
@@ -29,8 +27,8 @@ attributes:
     support: full
     details:
       - Additional data will need to be transferred to compute diffs.
-      - The module uses R(the MAX_FILE_SIZE_FOR_DIFF ansible-core configuration,MAX_FILE_SIZE_FOR_DIFF)
-        to determine for how large files diffs should be computed.
+      - The module uses R(the MAX_FILE_SIZE_FOR_DIFF ansible-core configuration,MAX_FILE_SIZE_FOR_DIFF) to determine for how
+        large files diffs should be computed.
 
 options:
   container:
@@ -51,11 +49,9 @@ options:
     type: str
   content_is_b64:
     description:
-      - If set to V(true), the content in O(content) is assumed to be Base64 encoded and
-        will be decoded before being used.
-      - To use binary O(content), it is better to keep it Base64 encoded and let it
-        be decoded by this option. Otherwise you risk the data to be interpreted as
-        UTF-8 and corrupted.
+      - If set to V(true), the content in O(content) is assumed to be Base64 encoded and will be decoded before being used.
+      - To use binary O(content), it is better to keep it Base64 encoded and let it be decoded by this option. Otherwise you
+        risk the data to be interpreted as UTF-8 and corrupted.
     type: bool
     default: false
   container_path:
@@ -71,24 +67,25 @@ options:
     default: false
   local_follow:
     description:
-      - This flag indicates that filesystem links in the source tree (where the module is executed), if they exist, should be followed.
+      - This flag indicates that filesystem links in the source tree (where the module is executed), if they exist, should
+        be followed.
     type: bool
     default: true
   owner_id:
     description:
       - The owner ID to use when writing the file to disk.
       - If provided, O(group_id) must also be provided.
-      - If not provided, the module will try to determine the user and group ID for the current user in the container.
-        This will only work if C(/bin/sh) is present in the container and the C(id) binary or shell builtin is available.
-        Also the container must be running.
+      - If not provided, the module will try to determine the user and group ID for the current user in the container. This
+        will only work if C(/bin/sh) is present in the container and the C(id) binary or shell builtin is available. Also
+        the container must be running.
     type: int
   group_id:
     description:
       - The group ID to use when writing the file to disk.
       - If provided, O(owner_id) must also be provided.
-      - If not provided, the module will try to determine the user and group ID for the current user in the container.
-        This will only work if C(/bin/sh) is present in the container and the C(id) binary or shell builtin is available.
-        Also the container must be running.
+      - If not provided, the module will try to determine the user and group ID for the current user in the container. This
+        will only work if C(/bin/sh) is present in the container and the C(id) binary or shell builtin is available. Also
+        the container must be running.
     type: int
   mode:
     description:
@@ -98,8 +95,8 @@ options:
   force:
     description:
       - If set to V(true), force writing the file (without performing any idempotency checks).
-      - If set to V(false), only write the file if it does not exist on the target. If a filesystem object exists at
-        the destination, the module will not do any change.
+      - If set to V(false), only write the file if it does not exist on the target. If a filesystem object exists at the destination,
+        the module will not do any change.
       - If this option is not specified, the module will be idempotent. To verify idempotency, it will try to get information
         on the filesystem object in the container, and if everything seems to match will download the file from the container
         to compare it to the file to upload.
@@ -115,9 +112,9 @@ author:
 
 requirements:
   - "Docker API >= 1.25"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Copy a file into the container
   community.docker.docker_container_copy_into:
     container: mydata
@@ -129,19 +126,19 @@ EXAMPLES = '''
     container: mydata
     path: /home/user/bin/runme.o
     container_path: /bin/runme
-    owner_id: 0  # root
-    group_id: 0  # root
-    mode: 0755  # readable and executable by all users, writable by root
-'''
+    owner_id: 0 # root
+    group_id: 0 # root
+    mode: 0755 # readable and executable by all users, writable by root
+"""
 
-RETURN = '''
+RETURN = r"""
 container_path:
   description:
     - The actual path in the container.
     - Can only be different from O(container_path) when O(follow=true).
   type: str
   returned: success
-'''
+"""
 
 import base64
 import io

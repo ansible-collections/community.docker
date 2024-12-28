@@ -8,19 +8,17 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_config
 
-short_description: Manage docker configs.
+short_description: Manage docker configs
 
 description:
   - Create and remove Docker configs in a Swarm environment. Similar to C(docker config create) and C(docker config rm).
-  - Adds to the metadata of new configs 'ansible_key', an encrypted hash representation of the data, which is then used
-    in future runs to test if a config has changed. If 'ansible_key' is not present, then a config will not be updated
-    unless the O(force) option is set.
+  - Adds to the metadata of new configs 'ansible_key', an encrypted hash representation of the data, which is then used in
+    future runs to test if a config has changed. If 'ansible_key' is not present, then a config will not be updated unless
+    the O(force) option is set.
   - Updates to configs are performed by removing the config and creating it again.
-
 extends_documentation_fragment:
   - community.docker.docker
   - community.docker.docker.docker_py_2_documentation
@@ -41,10 +39,8 @@ options:
     type: str
   data_is_b64:
     description:
-      - If set to V(true), the data is assumed to be Base64 encoded and will be
-        decoded before being used.
-      - To use binary O(data), it is better to keep it Base64 encoded and let it
-        be decoded by this option.
+      - If set to V(true), the data is assumed to be Base64 encoded and will be decoded before being used.
+      - To use binary O(data), it is better to keep it Base64 encoded and let it be decoded by this option.
     type: bool
     default: false
   data_src:
@@ -55,8 +51,9 @@ options:
     version_added: 1.10.0
   labels:
     description:
-      - "A map of key:value meta data, where both the C(key) and C(value) are expected to be a string."
-      - If new meta data is provided, or existing meta data is modified, the config will be updated by removing it and creating it again.
+      - A map of key:value meta data, where both the C(key) and C(value) are expected to be a string.
+      - If new meta data is provided, or existing meta data is modified, the config will be updated by removing it and creating
+        it again.
     type: dict
   force:
     description:
@@ -107,10 +104,9 @@ requirements:
 author:
   - Chris Houseknecht (@chouseknecht)
   - John Hu (@ushuz)
-'''
+"""
 
-EXAMPLES = '''
-
+EXAMPLES = r"""
 - name: Create config foo (from a file on the control machine)
   community.docker.docker_config:
     name: foo
@@ -162,7 +158,7 @@ EXAMPLES = '''
     name: foo
     data: Goodnight everyone!
     labels:
-      bar: monkey   # Changing a label will cause a remove/create of the config
+      bar: monkey # Changing a label will cause a remove/create of the config
       one: '1'
     state: present
 
@@ -177,9 +173,9 @@ EXAMPLES = '''
   community.docker.docker_config:
     name: foo
     state: absent
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 config_id:
   description:
     - The ID assigned by Docker to the config object.
@@ -193,7 +189,7 @@ config_name:
   type: str
   sample: 'awesome_config'
   version_added: 2.2.0
-'''
+"""
 
 import base64
 import hashlib

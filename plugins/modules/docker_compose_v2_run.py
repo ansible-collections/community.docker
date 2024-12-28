@@ -8,8 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
-
+DOCUMENTATION = r"""
 module: docker_compose_v2_run
 
 short_description: Run command in a new container of a Compose service
@@ -19,7 +18,6 @@ version_added: 3.13.0
 description:
   - Uses Docker Compose to run a command in a new container for a service.
   - This encapsulates C(docker compose run).
-
 extends_documentation_fragment:
   - community.docker.compose_v2
   - community.docker.compose_v2.minimum_version
@@ -134,8 +132,8 @@ options:
   detach:
     description:
       - Whether to run the command synchronously (O(detach=false), default) or asynchronously (O(detach=true)).
-      - If set to V(true), O(stdin) cannot be provided, and the return values RV(stdout), RV(stderr), and
-        RV(rc) are not returned. Instead, the return value RV(container_id) is provided.
+      - If set to V(true), O(stdin) cannot be provided, and the return values RV(stdout), RV(stderr), and RV(rc) are not returned.
+        Instead, the return value RV(container_id) is provided.
     type: bool
     default: false
   user:
@@ -165,9 +163,11 @@ options:
   env:
     description:
       - Dictionary of environment variables with their respective values to be passed to the command ran inside the container.
-      - Values which might be parsed as numbers, booleans or other types by the YAML parser must be quoted (for example V("true")) in order to avoid data loss.
-      - Please note that if you are passing values in with Jinja2 templates, like V("{{ value }}"), you need to add V(| string) to prevent Ansible to
-        convert strings such as V("true") back to booleans. The correct way is to use V("{{ value | string }}").
+      - Values which might be parsed as numbers, booleans or other types by the YAML parser must be quoted (for example V("true"))
+        in order to avoid data loss.
+      - Please note that if you are passing values in with Jinja2 templates, like V("{{ value }}"), you need to add V(| string)
+        to prevent Ansible to convert strings such as V("true") back to booleans. The correct way is to use V("{{ value |
+        string }}").
     type: dict
 
 author:
@@ -177,11 +177,11 @@ seealso:
   - module: community.docker.docker_compose_v2
 
 notes:
-  - If you need to evaluate environment variables of the container in O(command) or O(argv), you need to pass the command through a shell,
-    like O(command=/bin/sh -c "echo $ENV_VARIABLE").
-'''
+  - If you need to evaluate environment variables of the container in O(command) or O(argv), you need to pass the command
+    through a shell, like O(command=/bin/sh -c "echo $ENV_VARIABLE").
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Run a simple command (command)
   community.docker.docker_compose_v2_run:
     service: foo
@@ -206,31 +206,31 @@ EXAMPLES = '''
 - name: Print stderr lines
   ansible.builtin.debug:
     var: result.stderr_lines
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 container_id:
-    type: str
-    returned: success and O(detach=true)
-    description:
-      - The ID of the created container.
+  type: str
+  returned: success and O(detach=true)
+  description:
+    - The ID of the created container.
 stdout:
-    type: str
-    returned: success and O(detach=false)
-    description:
-      - The standard output of the container command.
+  type: str
+  returned: success and O(detach=false)
+  description:
+    - The standard output of the container command.
 stderr:
-    type: str
-    returned: success and O(detach=false)
-    description:
-      - The standard error output of the container command.
+  type: str
+  returned: success and O(detach=false)
+  description:
+    - The standard error output of the container command.
 rc:
-    type: int
-    returned: success and O(detach=false)
-    sample: 0
-    description:
-      - The exit code of the command.
-'''
+  type: int
+  returned: success and O(detach=false)
+  sample: 0
+  description:
+    - The exit code of the command.
+"""
 
 import shlex
 import traceback

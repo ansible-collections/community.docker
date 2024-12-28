@@ -9,14 +9,12 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_stack
 author: "Dario Zanzico (@dariko)"
 short_description: docker stack module
 description:
-  - Manage docker stacks using the C(docker stack) command
-    on the target node (see examples).
+  - Manage docker stacks using the C(docker stack) command on the target node (see examples).
 extends_documentation_fragment:
   - community.docker.docker.cli_documentation
   - community.docker.attributes
@@ -31,7 +29,7 @@ attributes:
 options:
   name:
     description:
-      - Stack name
+      - Stack name.
     type: str
     required: true
   state:
@@ -44,47 +42,42 @@ options:
       - absent
   compose:
     description:
-      - List of compose definitions. Any element may be a string
-        referring to the path of the compose file on the target host
+      - List of compose definitions. Any element may be a string referring to the path of the compose file on the target host
         or the YAML contents of a compose file nested as dictionary.
     type: list
     elements: raw
     default: []
   prune:
     description:
-      - If true will add the C(--prune) option to the C(docker stack deploy) command.
-        This will have docker remove the services not present in the
-        current stack definition.
+      - If true will add the C(--prune) option to the C(docker stack deploy) command. This will have docker remove the services
+        not present in the current stack definition.
     type: bool
     default: false
   detach:
     description:
-      - If V(false), the C(--detach=false) option is added to the C(docker stack deploy) command,
-        allowing Docker to wait for tasks to converge before exiting.
+      - If V(false), the C(--detach=false) option is added to the C(docker stack deploy) command, allowing Docker to wait
+        for tasks to converge before exiting.
       - If V(true) (default), Docker exits immediately instead of waiting for tasks to converge.
     type: bool
     default: true
     version_added: 4.1.0
   with_registry_auth:
     description:
-      - If true will add the C(--with-registry-auth) option to the C(docker stack deploy) command.
-        This will have docker send registry authentication details to Swarm agents.
+      - If true will add the C(--with-registry-auth) option to the C(docker stack deploy) command. This will have docker send
+        registry authentication details to Swarm agents.
     type: bool
     default: false
   resolve_image:
     description:
-      - If set will add the C(--resolve-image) option to the C(docker stack deploy) command.
-        This will have docker query the registry to resolve image digest and
-        supported platforms. If not set, docker use "always" by default.
+      - If set will add the C(--resolve-image) option to the C(docker stack deploy) command. This will have docker query the
+        registry to resolve image digest and supported platforms. If not set, docker use "always" by default.
     type: str
     choices: ["always", "changed", "never"]
   absent_retries:
     description:
-      - If larger than V(0) and O(state=absent) the module will retry up to
-        O(absent_retries) times to delete the stack until all the
-        resources have been effectively deleted.
-        If the last try still reports the stack as not completely
-        removed the module will fail.
+      - If larger than V(0) and O(state=absent) the module will retry up to O(absent_retries) times to delete the stack until
+        all the resources have been effectively deleted. If the last try still reports the stack as not completely removed
+        the module will fail.
     type: int
     default: 0
   absent_retries_interval:
@@ -117,47 +110,47 @@ requirements:
   - Docker CLI tool C(docker)
   - jsondiff
   - pyyaml
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 stack_spec_diff:
-    description: |
-        dictionary containing the differences between the 'Spec' field
-        of the stack services before and after applying the new stack
-        definition.
-    sample: >
-        "stack_spec_diff":
-        {'test_stack_test_service': {u'TaskTemplate': {u'ContainerSpec': {delete: [u'Env']}}}}
-    returned: on change
-    type: dict
-'''
+  description: |-
+    Dictionary containing the differences between the 'Spec' field
+    of the stack services before and after applying the new stack
+    definition.
+  sample: >
+    "stack_spec_diff":
+    {'test_stack_test_service': {u'TaskTemplate': {u'ContainerSpec': {delete: [u'Env']}}}}
+  returned: on change
+  type: dict
+"""
 
-EXAMPLES = '''
-  - name: Deploy stack from a compose file
-    community.docker.docker_stack:
-      state: present
-      name: mystack
-      compose:
-        - /opt/docker-compose.yml
+EXAMPLES = r"""
+- name: Deploy stack from a compose file
+  community.docker.docker_stack:
+    state: present
+    name: mystack
+    compose:
+      - /opt/docker-compose.yml
 
-  - name: Deploy stack from base compose file and override the web service
-    community.docker.docker_stack:
-      state: present
-      name: mystack
-      compose:
-        - /opt/docker-compose.yml
-        - version: '3'
-          services:
-            web:
-              image: nginx:latest
-              environment:
-                ENVVAR: envvar
+- name: Deploy stack from base compose file and override the web service
+  community.docker.docker_stack:
+    state: present
+    name: mystack
+    compose:
+      - /opt/docker-compose.yml
+      - version: '3'
+        services:
+          web:
+            image: nginx:latest
+            environment:
+              ENVVAR: envvar
 
-  - name: Remove stack
-    community.docker.docker_stack:
-      name: mystack
-      state: absent
-'''
+- name: Remove stack
+  community.docker.docker_stack:
+    name: mystack
+    state: absent
+"""
 
 
 import json

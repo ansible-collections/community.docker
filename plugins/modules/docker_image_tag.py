@@ -8,8 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_image_tag
 
 short_description: Tag Docker images with new names and/or tags
@@ -18,7 +17,6 @@ version_added: 3.6.0
 
 description:
   - This module allows to tag Docker images with new names and/or tags.
-
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -33,8 +31,8 @@ attributes:
 options:
   name:
     description:
-      - "Image name. Name format will be one of: C(name), C(repository/name), C(registry_server:port/name).
-        When pushing or pulling an image the name can optionally include the tag by appending C(:tag_name)."
+      - 'Image name. Name format will be one of: C(name), C(repository/name), C(registry_server:port/name). When pushing or
+        pulling an image the name can optionally include the tag by appending C(:tag_name).'
       - Note that image IDs (hashes) can also be used.
     type: str
     required: true
@@ -47,13 +45,15 @@ options:
   repository:
     description:
       - List of new image names to tag the image as.
-      - Expects format C(repository:tag). If no tag is provided, will use the value of the O(tag) parameter if present, or V(latest).
+      - Expects format C(repository:tag). If no tag is provided, will use the value of the O(tag) parameter if present, or
+        V(latest).
     type: list
     elements: str
     required: true
   existing_images:
     description:
-      - Defines the behavior if the image to be tagged already exists and is another image than the one identified by O(name) and O(tag).
+      - Defines the behavior if the image to be tagged already exists and is another image than the one identified by O(name)
+        and O(tag).
       - If set to V(keep), the tagged image is kept.
       - If set to V(overwrite), the tagged image is overwritten by the specified one.
     type: str
@@ -71,32 +71,32 @@ author:
 seealso:
   - module: community.docker.docker_image_push
   - module: community.docker.docker_image_remove
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Tag Python 3.12 image with two new names
   community.docker.docker_image_tag:
     name: python:3.12
     repository:
       - python-3:3.12
       - local-registry:5000/python-3/3.12:latest
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 image:
-    description: Image inspection results for the affected image.
-    returned: success
-    type: dict
-    sample: {}
+  description: Image inspection results for the affected image.
+  returned: success
+  type: dict
+  sample: {}
 tagged_images:
-    description:
-      - A list of images that got tagged.
-    returned: success
-    type: list
-    elements: str
-    sample:
-      - python-3:3.12
-'''
+  description:
+    - A list of images that got tagged.
+  returned: success
+  type: list
+  elements: str
+  sample:
+    - python-3:3.12
+"""
 
 import traceback
 

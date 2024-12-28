@@ -8,8 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
-
+DOCUMENTATION = r"""
 module: docker_compose_v2_pull
 
 short_description: Pull a Docker compose project
@@ -18,7 +17,6 @@ version_added: 3.6.0
 
 description:
   - Uses Docker Compose to pull images for a project.
-
 extends_documentation_fragment:
   - community.docker.compose_v2
   - community.docker.compose_v2.minimum_version
@@ -30,9 +28,8 @@ attributes:
   check_mode:
     support: full
     details:
-      - If O(policy=always), the module will always indicate a change.
-        Docker Compose does not give any information whether pulling would
-        update the image or not.
+      - If O(policy=always), the module will always indicate a change. Docker Compose does not give any information whether
+        pulling would update the image or not.
   diff_mode:
     support: none
 
@@ -41,7 +38,8 @@ options:
     description:
       - Whether to pull images before running. This is used when C(docker compose up) is ran.
       - V(always) ensures that the images are always pulled, even when already present on the Docker daemon.
-      - V(missing) only pulls them when they are not present on the Docker daemon. This is only supported since Docker Compose 2.22.0.
+      - V(missing) only pulls them when they are not present on the Docker daemon. This is only supported since Docker Compose
+        2.22.0.
     type: str
     choices:
       - always
@@ -72,15 +70,15 @@ author:
 
 seealso:
   - module: community.docker.docker_compose_v2
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Pull images for flask project
   community.docker.docker_compose_v2_pull:
     project_src: /path/to/flask
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 actions:
   description:
     - A list of actions that have been applied.
@@ -108,7 +106,7 @@ actions:
       sample: Pulling
       choices:
         - Pulling
-'''
+"""
 
 import traceback
 

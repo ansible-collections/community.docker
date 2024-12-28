@@ -9,14 +9,12 @@ from __future__ import (absolute_import, division, print_function)
 
 __metaclass__ = type
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_stack_task_info
 author: "Jose Angel Munoz (@imjoseangel)"
 short_description: Return information of the tasks on a docker stack
 description:
-  - Retrieve information on docker stacks tasks using the C(docker stack) command
-    on the target node (see examples).
+  - Retrieve information on docker stacks tasks using the C(docker stack) command on the target node (see examples).
 extends_documentation_fragment:
   - community.docker.docker.cli_documentation
   - community.docker.attributes
@@ -53,30 +51,30 @@ options:
     version_added: 3.6.0
 requirements:
   - Docker CLI tool C(docker)
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 results:
-    description:
-        - List of dictionaries containing the list of tasks associated
-          to a stack name.
-    sample:
-        - {"CurrentState":"Running","DesiredState":"Running","Error":"","ID":"7wqv6m02ugkw","Image":"busybox","Name":"test_stack.1","Node":"swarm","Ports":""}
-    returned: always
-    type: list
-    elements: dict
-'''
+  description:
+    - List of dictionaries containing the list of tasks associated to a stack name.
+  sample:
+    - {"CurrentState": "Running", "DesiredState": "Running", "Error": "", "ID": "7wqv6m02ugkw", "Image": "busybox", "Name": "test_stack.1",
+      "Node": "swarm", "Ports": ""}
+  returned: always
+  type: list
+  elements: dict
+"""
 
-EXAMPLES = '''
-  - name: Shows stack info
-    community.docker.docker_stack_task_info:
-      name: test_stack
-    register: result
+EXAMPLES = r"""
+- name: Shows stack info
+  community.docker.docker_stack_task_info:
+    name: test_stack
+  register: result
 
-  - name: Show results
-    ansible.builtin.debug:
-      var: result.results
-'''
+- name: Show results
+  ansible.builtin.debug:
+    var: result.results
+"""
 
 import json
 import traceback

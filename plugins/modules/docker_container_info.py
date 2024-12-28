@@ -8,17 +8,15 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_container_info
 
 short_description: Retrieves facts about docker container
 
 description:
   - Retrieves facts about a docker container.
-  - Essentially returns the output of C(docker inspect <name>), similar to what M(community.docker.docker_container)
-    returns for a non-absent container.
-
+  - Essentially returns the output of C(docker inspect <name>), similar to what M(community.docker.docker_container) returns
+    for a non-absent container.
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -38,9 +36,9 @@ author:
 
 requirements:
   - "Docker API >= 1.25"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Get infos on container
   community.docker.docker_container_info:
     name: mydata
@@ -54,54 +52,27 @@ EXAMPLES = '''
   ansible.builtin.debug:
     var: result.container
   when: result.exists
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 exists:
-    description:
-      - Returns whether the container exists.
-    type: bool
-    returned: always
-    sample: true
+  description:
+    - Returns whether the container exists.
+  type: bool
+  returned: always
+  sample: true
 container:
-    description:
-      - Facts representing the current state of the container. Matches the docker inspection output.
-      - Will be V(none) if container does not exist.
-    returned: always
-    type: dict
-    sample: '{
-        "AppArmorProfile": "",
-        "Args": [],
-        "Config": {
-            "AttachStderr": false,
-            "AttachStdin": false,
-            "AttachStdout": false,
-            "Cmd": [
-                "/usr/bin/supervisord"
-            ],
-            "Domainname": "",
-            "Entrypoint": null,
-            "Env": [
-                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-            ],
-            "ExposedPorts": {
-                "443/tcp": {},
-                "80/tcp": {}
-            },
-            "Hostname": "8e47bf643eb9",
-            "Image": "lnmp_nginx:v1",
-            "Labels": {},
-            "OnBuild": null,
-            "OpenStdin": false,
-            "StdinOnce": false,
-            "Tty": false,
-            "User": "",
-            "Volumes": {
-                "/tmp/lnmp/nginx-sites/logs/": {}
-            },
-            ...
-    }'
-'''
+  description:
+    - Facts representing the current state of the container. Matches the docker inspection output.
+    - Will be V(none) if container does not exist.
+  returned: always
+  type: dict
+  sample: '{ "AppArmorProfile": "", "Args": [], "Config": { "AttachStderr": false, "AttachStdin": false, "AttachStdout": false,
+    "Cmd": [ "/usr/bin/supervisord" ], "Domainname": "", "Entrypoint": null, "Env": [ "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    ], "ExposedPorts": { "443/tcp": {}, "80/tcp": {} }, "Hostname": "8e47bf643eb9", "Image": "lnmp_nginx:v1", "Labels": {},
+    "OnBuild": null, "OpenStdin": false, "StdinOnce": false, "Tty": false, "User": "", "Volumes": { "/tmp/lnmp/nginx-sites/logs/":
+    {} }, ... }'
+"""
 
 import traceback
 

@@ -8,20 +8,17 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_image
 
 short_description: Manage docker images
 
 description:
-  - Build, load or pull an image, making the image available for creating containers. Also supports tagging
-    an image, pushing an image, and archiving an image to a C(.tar) file.
-
+  - Build, load or pull an image, making the image available for creating containers. Also supports tagging an image, pushing
+    an image, and archiving an image to a C(.tar) file.
 notes:
-  - Building images is done using Docker daemon's API. It is not possible to use BuildKit / buildx this way.
-    Use M(community.docker.docker_image_build) to build images with BuildKit.
-
+  - Building images is done using Docker daemon's API. It is not possible to use BuildKit / buildx this way. Use M(community.docker.docker_image_build)
+    to build images with BuildKit.
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -38,23 +35,21 @@ attributes:
 options:
   source:
     description:
-      - "Determines where the module will try to retrieve the image from."
-      - "Use V(build) to build the image from a C(Dockerfile). O(build.path) must
-         be specified when this value is used."
-      - "Use V(load) to load the image from a C(.tar) file. O(load_path) must
-         be specified when this value is used."
-      - "Use V(pull) to pull the image from a registry."
-      - "Use V(local) to make sure that the image is already available on the local
-         docker daemon. This means that the module does not try to build, pull or load the image."
+      - Determines where the module will try to retrieve the image from.
+      - Use V(build) to build the image from a C(Dockerfile). O(build.path) must be specified when this value is used.
+      - Use V(load) to load the image from a C(.tar) file. O(load_path) must be specified when this value is used.
+      - Use V(pull) to pull the image from a registry.
+      - Use V(local) to make sure that the image is already available on the local docker daemon. This means that the module
+        does not try to build, pull or load the image.
     type: str
     choices:
-    - build
-    - load
-    - pull
-    - local
+      - build
+      - load
+      - pull
+      - local
   build:
     description:
-      - "Specifies options used for building images."
+      - Specifies options used for building images.
     type: dict
     suboptions:
       cache_from:
@@ -64,7 +59,8 @@ options:
         elements: str
       dockerfile:
         description:
-          - Use with O(state=present) and O(source=build) to provide an alternate name for the Dockerfile to use when building an image.
+          - Use with O(state=present) and O(source=build) to provide an alternate name for the Dockerfile to use when building
+            an image.
           - This can also include a relative path (relative to O(build.path)).
         type: str
       http_timeout:
@@ -74,8 +70,8 @@ options:
         type: int
       path:
         description:
-          - Use with state 'present' to build an image. Will be the path to a directory containing the context and
-            Dockerfile for building an image.
+          - Use with state 'present' to build an image. Will be the path to a directory containing the context and Dockerfile
+            for building an image.
         type: path
         required: true
       pull:
@@ -100,9 +96,8 @@ options:
       etc_hosts:
         description:
           - Extra hosts to add to C(/etc/hosts) in building containers, as a mapping of hostname to IP address.
-          - Instead of an IP address, the special value V(host-gateway) can also be used, which
-            resolves to the host's gateway IP and allows building containers to connect to services running
-            on the host.
+          - Instead of an IP address, the special value V(host-gateway) can also be used, which resolves to the host's gateway
+            IP and allows building containers to connect to services running on the host.
         type: dict
       args:
         description:
@@ -116,18 +111,16 @@ options:
         suboptions:
           memory:
             description:
-              - "Memory limit for build in format C(<number>[<unit>]). Number is a positive integer.
-                Unit can be V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
-                V(T) (tebibyte), or V(P) (pebibyte)."
+              - Memory limit for build in format C(<number>[<unit>]). Number is a positive integer. Unit can be V(B) (byte),
+                V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte), V(T) (tebibyte), or V(P) (pebibyte).
               - Omitting the unit defaults to bytes.
               - Before community.docker 3.6.0, no units were allowed.
             type: str
           memswap:
             description:
-              - "Total memory limit (memory + swap) for build in format C(<number>[<unit>]), or
-                the special values V(unlimited) or V(-1) for unlimited swap usage.
-                Number is a positive integer. Unit can be V(B) (byte), V(K) (kibibyte, 1024B),
-                V(M) (mebibyte), V(G) (gibibyte), V(T) (tebibyte), or V(P) (pebibyte)."
+              - Total memory limit (memory + swap) for build in format C(<number>[<unit>]), or the special values V(unlimited)
+                or V(-1) for unlimited swap usage. Number is a positive integer. Unit can be V(B) (byte), V(K) (kibibyte,
+                1024B), V(M) (mebibyte), V(G) (gibibyte), V(T) (tebibyte), or V(P) (pebibyte).
               - Omitting the unit defaults to bytes.
               - Before community.docker 3.6.0, no units were allowed, and neither was the special value V(unlimited).
             type: str
@@ -142,14 +135,12 @@ options:
             type: str
       use_config_proxy:
         description:
-          - If set to V(true) and a proxy configuration is specified in the docker client configuration
-            (by default C($HOME/.docker/config.json)), the corresponding environment variables will
-            be set in the container being built.
+          - If set to V(true) and a proxy configuration is specified in the docker client configuration (by default C($HOME/.docker/config.json)),
+            the corresponding environment variables will be set in the container being built.
         type: bool
       target:
         description:
-          - When building an image specifies an intermediate build stage by
-            name as a final stage for the resulting image.
+          - When building an image specifies an intermediate build stage by name as a final stage for the resulting image.
         type: str
       platform:
         description:
@@ -158,9 +149,8 @@ options:
         version_added: 1.1.0
       shm_size:
         description:
-          - "Size of C(/dev/shm) in format C(<number>[<unit>]). Number is positive integer.
-            Unit can be V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
-            V(T) (tebibyte), or V(P) (pebibyte)."
+          - Size of C(/dev/shm) in format C(<number>[<unit>]). Number is positive integer. Unit can be V(B) (byte), V(K) (kibibyte,
+            1024B), V(M) (mebibyte), V(G) (gibibyte), V(T) (tebibyte), or V(P) (pebibyte).
           - Omitting the unit defaults to bytes. If you omit the size entirely, Docker daemon uses V(64M).
         type: str
         version_added: 3.6.0
@@ -180,8 +170,8 @@ options:
     type: path
   force_source:
     description:
-      - Use with O(state=present) to build, load or pull an image (depending on the
-        value of the O(source) option) when the image already exists.
+      - Use with O(state=present) to build, load or pull an image (depending on the value of the O(source) option) when the
+        image already exists.
     type: bool
     default: false
   force_absent:
@@ -196,23 +186,23 @@ options:
     default: false
   name:
     description:
-      - "Image name. Name format will be one of: C(name), C(repository/name), C(registry_server:port/name).
-        When pushing or pulling an image the name can optionally include the tag by appending C(:tag_name)."
-      - Note that image IDs (hashes) are only supported for O(state=absent), for O(state=present) with O(source=load),
-        and for O(state=present) with O(source=local).
+      - 'Image name. Name format will be one of: C(name), C(repository/name), C(registry_server:port/name). When pushing or
+        pulling an image the name can optionally include the tag by appending C(:tag_name).'
+      - Note that image IDs (hashes) are only supported for O(state=absent), for O(state=present) with O(source=load), and
+        for O(state=present) with O(source=local).
     type: str
     required: true
   pull:
     description:
-      - "Specifies options used for pulling images."
+      - Specifies options used for pulling images.
     type: dict
     version_added: 1.3.0
     suboptions:
       platform:
         description:
           - When pulling an image, ask for this specific platform.
-          - Note that this value is not used to determine whether the image needs to be pulled. This might change
-            in the future in a minor release, though.
+          - Note that this value is not used to determine whether the image needs to be pulled. This might change in the future
+            in a minor release, though.
         type: str
   push:
     description:
@@ -223,16 +213,16 @@ options:
     description:
       - Use with O(state=present) to tag the image.
       - Expects format C(repository:tag). If no tag is provided, will use the value of the O(tag) parameter or V(latest).
-      - If O(push=true), O(repository) must either include a registry, or will be assumed to belong to the default
-        registry (Docker Hub).
+      - If O(push=true), O(repository) must either include a registry, or will be assumed to belong to the default registry
+        (Docker Hub).
     type: str
   state:
     description:
       - Make assertions about the state of an image.
-      - When V(absent) an image will be removed. Use the force option to un-tag and remove all images
-        matching the provided name.
-      - When V(present) check if an image exists using the provided name and tag. If the image is not found or the
-        force option is used, the image will either be pulled, built or loaded, depending on the O(source) option.
+      - When V(absent) an image will be removed. Use the force option to un-tag and remove all images matching the provided
+        name.
+      - When V(present) check if an image exists using the provided name and tag. If the image is not found or the force option
+        is used, the image will either be pulled, built or loaded, depending on the O(source) option.
     type: str
     default: present
     choices:
@@ -240,8 +230,7 @@ options:
       - present
   tag:
     description:
-      - Used to select an image when pulling. Will be added to the image when pushing, tagging or building. Defaults to
-        V(latest).
+      - Used to select an image when pulling. Will be added to the image when pushing, tagging or building. Defaults to V(latest).
       - If O(name) parameter format is C(name:tag), then tag value from O(name) will take precedence.
     type: str
     default: latest
@@ -263,15 +252,14 @@ seealso:
   - module: community.docker.docker_image_push
   - module: community.docker.docker_image_remove
   - module: community.docker.docker_image_tag
-'''
+"""
 
-EXAMPLES = '''
-
+EXAMPLES = r"""
 - name: Pull an image
   community.docker.docker_image:
     name: pacur/centos-7
     source: pull
-    # Select platform for pulling. If not specified, will pull whatever docker prefers.
+  # Select platform for pulling. If not specified, will pull whatever docker prefers.
     pull:
       platform: amd64
 
@@ -284,9 +272,9 @@ EXAMPLES = '''
 
 - name: Tag and push to local registry
   community.docker.docker_image:
-    # Image will be centos:7
+  # Image will be centos:7
     name: centos
-    # Will be pushed to localhost:5000/centos:7
+  # Will be pushed to localhost:5000/centos:7
     repository: localhost:5000/centos
     tag: 7
     push: true
@@ -296,7 +284,7 @@ EXAMPLES = '''
   community.docker.docker_image:
     name: myimage:7.1.2
     repository: myimage:latest
-    # As 'latest' usually already is present, we need to enable overwriting of existing tags:
+  # As 'latest' usually already is present, we need to enable overwriting of existing tags:
     force_tag: true
     source: local
 
@@ -345,26 +333,26 @@ EXAMPLES = '''
     name: myimage:latest
     build:
       path: /path/to/build/dir
-      # Use as cache source for building myimage
+    # Use as cache source for building myimage
       cache_from:
         - nginx:latest
         - alpine:3.8
     source: build
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 image:
-    description: Image inspection results for the affected image.
-    returned: success
-    type: dict
-    sample: {}
+  description: Image inspection results for the affected image.
+  returned: success
+  type: dict
+  sample: {}
 stdout:
-    description: Docker build output when building an image.
-    returned: success
-    type: str
-    sample: ""
-    version_added: 1.0.0
-'''
+  description: Docker build output when building an image.
+  returned: success
+  type: str
+  sample: ""
+  version_added: 1.0.0
+"""
 
 import errno
 import json

@@ -8,21 +8,18 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_swarm_info
 
-short_description: Retrieves facts about Docker Swarm cluster.
+short_description: Retrieves facts about Docker Swarm cluster
 
 description:
   - Retrieves facts about a Docker Swarm.
   - Returns lists of swarm objects names for the services - nodes, services, tasks.
   - The output differs depending on API version available on docker host.
-  - Must be run on Swarm Manager node; otherwise module fails with error message.
-    It does return boolean flags in on both error and success which indicate whether
-    the docker daemon can be communicated with, whether it is in Swarm mode, and
+  - Must be run on Swarm Manager node; otherwise module fails with error message. It does return boolean flags in on both
+    error and success which indicate whether the docker daemon can be communicated with, whether it is in Swarm mode, and
     whether it is a Swarm Manager node.
-
 author:
   - Piotr Wojciechowski (@WojciechowskiPiotr)
 
@@ -42,9 +39,9 @@ options:
   nodes_filters:
     description:
       - A dictionary of filter values used for selecting nodes to list.
-      - "For example, C(name: mynode)."
-      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/node_ls/#filtering)
-        for more information on possible filters.
+      - 'For example, C(name: mynode).'
+      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/node_ls/#filtering) for more information
+        on possible filters.
     type: dict
   services:
     description:
@@ -54,9 +51,9 @@ options:
   services_filters:
     description:
       - A dictionary of filter values used for selecting services to list.
-      - "For example, C(name: myservice)."
-      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/service_ls/#filtering)
-        for more information on possible filters.
+      - 'For example, C(name: myservice).'
+      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/service_ls/#filtering) for more
+        information on possible filters.
     type: dict
   tasks:
     description:
@@ -66,9 +63,9 @@ options:
   tasks_filters:
     description:
       - A dictionary of filter values used for selecting tasks to list.
-      - "For example, C(node: mynode-1)."
-      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/service_ps/#filtering)
-        for more information on possible filters.
+      - 'For example, C(node: mynode-1).'
+      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/service_ps/#filtering) for more
+        information on possible filters.
     type: dict
   unlock_key:
     description:
@@ -77,20 +74,20 @@ options:
     default: false
   verbose_output:
     description:
-      - When set to V(true) and O(nodes), O(services), or O(tasks) is set to V(true), then the module output will
-        contain verbose information about objects matching the full output of API method.
+      - When set to V(true) and O(nodes), O(services), or O(tasks) is set to V(true), then the module output will contain
+        verbose information about objects matching the full output of API method.
       - For details see the documentation of your version of Docker API at U(https://docs.docker.com/engine/api/).
-      - The verbose output in this module contains only subset of information returned by this info module
-        for each type of the objects.
+      - The verbose output in this module contains only subset of information returned by this info module for each type of
+        the objects.
     type: bool
     default: false
 
 requirements:
-    - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"
-    - "Docker API >= 1.25"
-'''
+  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"
+  - "Docker API >= 1.25"
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Get info on Docker Swarm
   community.docker.docker_swarm_info:
   ignore_errors: true
@@ -133,66 +130,59 @@ EXAMPLES = '''
 - name: Print swarm unlock key
   ansible.builtin.debug:
     var: result.swarm_unlock_key
+"""
 
-'''
-
-RETURN = '''
+RETURN = r"""
 can_talk_to_docker:
-    description:
-      - Will be V(true) if the module can talk to the docker daemon.
-    returned: both on success and on error
-    type: bool
+  description:
+    - Will be V(true) if the module can talk to the docker daemon.
+  returned: both on success and on error
+  type: bool
 docker_swarm_active:
-    description:
-      - Will be V(true) if the module can talk to the docker daemon,
-        and the docker daemon is in Swarm mode.
-    returned: both on success and on error
-    type: bool
+  description:
+    - Will be V(true) if the module can talk to the docker daemon, and the docker daemon is in Swarm mode.
+  returned: both on success and on error
+  type: bool
 docker_swarm_manager:
-    description:
-      - Will be V(true) if the module can talk to the docker daemon,
-        the docker daemon is in Swarm mode, and the current node is
-        a manager node.
-      - Only if this one is V(true), the module will not fail.
-    returned: both on success and on error
-    type: bool
+  description:
+    - Will be V(true) if the module can talk to the docker daemon, the docker daemon is in Swarm mode, and the current node
+      is a manager node.
+    - Only if this one is V(true), the module will not fail.
+  returned: both on success and on error
+  type: bool
 swarm_facts:
-    description:
-      - Facts representing the basic state of the docker Swarm cluster.
-      - Contains tokens to connect to the Swarm
-    returned: always
-    type: dict
+  description:
+    - Facts representing the basic state of the docker Swarm cluster.
+    - Contains tokens to connect to the Swarm.
+  returned: always
+  type: dict
 swarm_unlock_key:
-    description:
-      - Contains the key needed to unlock the swarm.
-    returned: When O(unlock_key=true).
-    type: str
+  description:
+    - Contains the key needed to unlock the swarm.
+  returned: When O(unlock_key=true).
+  type: str
 nodes:
-    description:
-      - List of dict objects containing the basic information about each volume.
-        Keys matches the C(docker node ls) output unless O(verbose_output=true).
-        See description for O(verbose_output).
-    returned: When O(nodes=true)
-    type: list
-    elements: dict
+  description:
+    - List of dict objects containing the basic information about each volume. Keys matches the C(docker node ls) output unless
+      O(verbose_output=true). See description for O(verbose_output).
+  returned: When O(nodes=true)
+  type: list
+  elements: dict
 services:
-    description:
-      - List of dict objects containing the basic information about each volume.
-        Keys matches the C(docker service ls) output unless O(verbose_output=true).
-        See description for O(verbose_output).
-    returned: When O(services=true)
-    type: list
-    elements: dict
+  description:
+    - List of dict objects containing the basic information about each volume. Keys matches the C(docker service ls) output
+      unless O(verbose_output=true). See description for O(verbose_output).
+  returned: When O(services=true)
+  type: list
+  elements: dict
 tasks:
-    description:
-      - List of dict objects containing the basic information about each volume.
-        Keys matches the C(docker service ps) output unless O(verbose_output=true).
-        See description for O(verbose_output).
-    returned: When O(tasks=true)
-    type: list
-    elements: dict
-
-'''
+  description:
+    - List of dict objects containing the basic information about each volume. Keys matches the C(docker service ps) output
+      unless O(verbose_output=true). See description for O(verbose_output).
+  returned: When O(tasks=true)
+  type: list
+  elements: dict
+"""
 
 import traceback
 

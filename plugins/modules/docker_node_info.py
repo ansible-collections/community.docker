@@ -8,8 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_node_info
 
 short_description: Retrieves facts about docker swarm node from Swarm Manager
@@ -18,7 +17,6 @@ description:
   - Retrieves facts about a docker node.
   - Essentially returns the output of C(docker node inspect <name>).
   - Must be executed on a host running as Swarm Manager, otherwise the module will fail.
-
 extends_documentation_fragment:
   - community.docker.docker
   - community.docker.docker.docker_py_1_documentation
@@ -50,9 +48,9 @@ author:
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.4.0"
   - "Docker API >= 1.25"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Get info on all nodes
   community.docker.docker_node_info:
   register: result
@@ -73,20 +71,19 @@ EXAMPLES = '''
   community.docker.docker_node_info:
     self: true
   register: result
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 nodes:
-    description:
-      - Facts representing the current state of the nodes. Matches the C(docker node inspect) output.
-      - Can contain multiple entries if more than one node provided in O(name), or O(name) is not provided.
-      - If O(name) contains a list of nodes, the output will provide information on all nodes registered
-        at the swarm, including nodes that left the swarm but have not been removed from the cluster on swarm
-        managers and nodes that are unreachable.
-    returned: always
-    type: list
-    elements: dict
-'''
+  description:
+    - Facts representing the current state of the nodes. Matches the C(docker node inspect) output.
+    - Can contain multiple entries if more than one node provided in O(name), or O(name) is not provided.
+    - If O(name) contains a list of nodes, the output will provide information on all nodes registered at the swarm, including
+      nodes that left the swarm but have not been removed from the cluster on swarm managers and nodes that are unreachable.
+  returned: always
+  type: list
+  elements: dict
+"""
 
 import traceback
 

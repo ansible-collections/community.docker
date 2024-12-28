@@ -8,16 +8,14 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_prune
 
 short_description: Allows to prune various docker objects
 
 description:
-  - Allows to run C(docker container prune), C(docker image prune), C(docker network prune)
-    and C(docker volume prune) via the Docker API.
-
+  - Allows to run C(docker container prune), C(docker image prune), C(docker network prune) and C(docker volume prune) via
+    the Docker API.
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -38,9 +36,9 @@ options:
   containers_filters:
     description:
       - A dictionary of filter values used for selecting containers to delete.
-      - "For example, C(until: 24h)."
-      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/container_prune/#filtering)
-        for more information on possible filters.
+      - 'For example, C(until: 24h).'
+      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/container_prune/#filtering) for
+        more information on possible filters.
     type: dict
   images:
     description:
@@ -50,9 +48,9 @@ options:
   images_filters:
     description:
       - A dictionary of filter values used for selecting images to delete.
-      - "For example, C(dangling: true)."
-      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/image_prune/#filtering)
-        for more information on possible filters.
+      - 'For example, C(dangling: true).'
+      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/image_prune/#filtering) for more
+        information on possible filters.
     type: dict
   networks:
     description:
@@ -62,8 +60,8 @@ options:
   networks_filters:
     description:
       - A dictionary of filter values used for selecting networks to delete.
-      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/network_prune/#filtering)
-        for more information on possible filters.
+      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/network_prune/#filtering) for
+        more information on possible filters.
     type: dict
   volumes:
     description:
@@ -73,8 +71,8 @@ options:
   volumes_filters:
     description:
       - A dictionary of filter values used for selecting volumes to delete.
-      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/volume_prune/#filtering)
-        for more information on possible filters.
+      - See L(the docker documentation,https://docs.docker.com/engine/reference/commandline/volume_prune/#filtering) for more
+        information on possible filters.
     type: dict
   builder_cache:
     description:
@@ -90,17 +88,17 @@ options:
   builder_cache_filters:
     description:
       - A dictionary of filter values used for selecting images to delete.
-      - "For example, C(until: 10m)."
-      - See L(the API documentation,https://docs.docker.com/engine/api/v1.44/#tag/Image/operation/BuildPrune)
-        for more information on possible filters.
+      - 'For example, C(until: 10m).'
+      - See L(the API documentation,https://docs.docker.com/engine/api/v1.44/#tag/Image/operation/BuildPrune) for more information
+        on possible filters.
     type: dict
     version_added: 3.10.0
   builder_cache_keep_storage:
     description:
-      - Amount of disk space to keep for cache in format C(<number>[<unit>])."
-      - "Number is a positive integer. Unit can be one of V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
-        V(T) (tebibyte), or V(P) (pebibyte)."
-      - "Omitting the unit defaults to bytes."
+      - Amount of disk space to keep for cache in format C(<number>[<unit>]).".
+      - Number is a positive integer. Unit can be one of V(B) (byte), V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte),
+        V(T) (tebibyte), or V(P) (pebibyte).
+      - Omitting the unit defaults to bytes.
     type: str
     version_added: 3.10.0
 
@@ -109,12 +107,11 @@ author:
 
 notes:
   - The module always returned C(changed=false) before community.docker 3.5.1.
-
 requirements:
   - "Docker API >= 1.25"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Prune containers older than 24h
   community.docker.docker_prune:
     containers: true
@@ -155,79 +152,79 @@ EXAMPLES = '''
     networks: true
     volumes: true
     builder_cache: true
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 # containers
 containers:
-    description:
-      - List of IDs of deleted containers.
-    returned: O(containers=true)
-    type: list
-    elements: str
-    sample: []
+  description:
+    - List of IDs of deleted containers.
+  returned: O(containers=true)
+  type: list
+  elements: str
+  sample: []
 containers_space_reclaimed:
-    description:
-      - Amount of reclaimed disk space from container pruning in bytes.
-    returned: O(containers=true)
-    type: int
-    sample: 0
+  description:
+    - Amount of reclaimed disk space from container pruning in bytes.
+  returned: O(containers=true)
+  type: int
+  sample: 0
 
 # images
 images:
-    description:
-      - List of IDs of deleted images.
-    returned: O(images=true)
-    type: list
-    elements: str
-    sample: []
+  description:
+    - List of IDs of deleted images.
+  returned: O(images=true)
+  type: list
+  elements: str
+  sample: []
 images_space_reclaimed:
-    description:
-      - Amount of reclaimed disk space from image pruning in bytes.
-    returned: O(images=true)
-    type: int
-    sample: 0
+  description:
+    - Amount of reclaimed disk space from image pruning in bytes.
+  returned: O(images=true)
+  type: int
+  sample: 0
 
 # networks
 networks:
-    description:
-      - List of IDs of deleted networks.
-    returned: O(networks=true)
-    type: list
-    elements: str
-    sample: []
+  description:
+    - List of IDs of deleted networks.
+  returned: O(networks=true)
+  type: list
+  elements: str
+  sample: []
 
 # volumes
 volumes:
-    description:
-      - List of IDs of deleted volumes.
-    returned: O(volumes=true)
-    type: list
-    elements: str
-    sample: []
+  description:
+    - List of IDs of deleted volumes.
+  returned: O(volumes=true)
+  type: list
+  elements: str
+  sample: []
 volumes_space_reclaimed:
-    description:
-      - Amount of reclaimed disk space from volumes pruning in bytes.
-    returned: O(volumes=true)
-    type: int
-    sample: 0
+  description:
+    - Amount of reclaimed disk space from volumes pruning in bytes.
+  returned: O(volumes=true)
+  type: int
+  sample: 0
 
 # builder_cache
 builder_cache_space_reclaimed:
-    description:
-      - Amount of reclaimed disk space from builder cache pruning in bytes.
-    returned: O(builder_cache=true)
-    type: int
-    sample: 0
+  description:
+    - Amount of reclaimed disk space from builder cache pruning in bytes.
+  returned: O(builder_cache=true)
+  type: int
+  sample: 0
 builder_cache_caches_deleted:
-    description:
-      - The build caches that were deleted.
-    returned: O(builder_cache=true) and API version is 1.39 or later
-    type: list
-    elements: str
-    sample: []
-    version_added: 3.10.0
-'''
+  description:
+    - The build caches that were deleted.
+  returned: O(builder_cache=true) and API version is 1.39 or later
+  type: list
+  elements: str
+  sample: []
+  version_added: 3.10.0
+"""
 
 import traceback
 

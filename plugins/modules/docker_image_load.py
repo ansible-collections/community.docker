@@ -9,8 +9,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = r"""
 module: docker_image_load
 
 short_description: Load docker image(s) from archives
@@ -18,9 +17,7 @@ short_description: Load docker image(s) from archives
 version_added: 1.3.0
 
 description:
-  - Load one or multiple Docker images from a C(.tar) archive, and return information on
-    the loaded image(s).
-
+  - Load one or multiple Docker images from a C(.tar) archive, and return information on the loaded image(s).
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
@@ -50,9 +47,9 @@ seealso:
   - module: community.docker.docker_image_push
   - module: community.docker.docker_image_remove
   - module: community.docker.docker_image_tag
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = r"""
 - name: Load all image(s) from the given tar file
   community.docker.docker_image_load:
     path: /path/to/images.tar
@@ -61,24 +58,24 @@ EXAMPLES = '''
 - name: Print the loaded image names
   ansible.builtin.debug:
     msg: "Loaded the following images: {{ result.image_names | join(', ') }}"
-'''
+"""
 
-RETURN = '''
+RETURN = r"""
 image_names:
-    description: List of image names and IDs loaded from the archive.
-    returned: success
-    type: list
-    elements: str
-    sample:
-      - 'hello-world:latest'
-      - 'sha256:e004c2cc521c95383aebb1fb5893719aa7a8eae2e7a71f316a4410784edb00a9'
+  description: List of image names and IDs loaded from the archive.
+  returned: success
+  type: list
+  elements: str
+  sample:
+    - 'hello-world:latest'
+    - 'sha256:e004c2cc521c95383aebb1fb5893719aa7a8eae2e7a71f316a4410784edb00a9'
 images:
-    description: Image inspection results for the loaded images.
-    returned: success
-    type: list
-    elements: dict
-    sample: []
-'''
+  description: Image inspection results for the loaded images.
+  returned: success
+  type: list
+  elements: dict
+  sample: []
+"""
 
 import errno
 import traceback
