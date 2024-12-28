@@ -191,7 +191,8 @@ options:
               all results will be put in subdirectories by their platform.
             - The destination has to be provided in O(outputs[].dest).
           oci:
-            - This export type writes the result image or manifest list as an L(OCI image layout, https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md)
+            - This export type writes the result image or manifest list as an L(OCI image layout,
+              https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md)
               tarball on the client.
             - The destination has to be provided in O(outputs[].dest).
           docker:

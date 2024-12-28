@@ -46,8 +46,8 @@ options:
         (default) selects the P(community.docker.docker_api#connection) connection plugin.
       - When V(docker-api) is used, all Docker daemon configuration values are passed from the inventory plugin to the connection
         plugin. This can be controlled with O(configure_docker_daemon).
-      - Note that the P(community.docker.docker_api#connection) does B(not work with TCP TLS sockets)! See U(https://github.com/ansible-collections/community.docker/issues/605)
-        for more information.
+      - Note that the P(community.docker.docker_api#connection) does B(not work with TCP TLS sockets)!
+        See U(https://github.com/ansible-collections/community.docker/issues/605) for more information.
     type: str
     default: docker-api
     choices:
