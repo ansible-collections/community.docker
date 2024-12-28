@@ -1021,16 +1021,16 @@ EXAMPLES = r"""
     devices:
       - "/dev/sda:/dev/xvda:rwm"
     ports:
-   # Publish container port 9000 as host port 8080
+     # Publish container port 9000 as host port 8080
       - "8080:9000"
-   # Publish container UDP port 9001 as host port 8081 on interface 127.0.0.1
+     # Publish container UDP port 9001 as host port 8081 on interface 127.0.0.1
       - "127.0.0.1:8081:9001/udp"
-   # Publish container port 9002 as a random host port
+     # Publish container port 9002 as a random host port
       - "9002"
-   # Publish container port 9003 as a free host port in range 8000-8100
-   # (the host port will be selected by the Docker daemon)
+     # Publish container port 9003 as a free host port in range 8000-8100
+     # (the host port will be selected by the Docker daemon)
       - "8000-8100:9003"
-   # Publish container ports 9010-9020 to host ports 7000-7010
+     # Publish container ports 9010-9020 to host ports 7000-7010
       - "7000-7010:9010-9020"
     env:
       SECRET_KEY: "ssssh"
@@ -1070,8 +1070,8 @@ EXAMPLES = r"""
     log_options:
       syslog-address: tcp://my-syslog-server:514
       syslog-facility: daemon
-    # NOTE: in Docker 1.13+ the "syslog-tag" option was renamed to "tag" for
-    # older docker installs, use "syslog-tag" instead
+      # NOTE: in Docker 1.13+ the "syslog-tag" option was renamed to "tag" for
+      # older docker installs, use "syslog-tag" instead
       tag: myservice
 
 - name: Create db container and connect to network
@@ -1181,8 +1181,8 @@ EXAMPLES = r"""
     image: nginx:1.13
     state: started
     healthcheck:
-    # Check if nginx server is healthy by curl'ing the server.
-    # If this fails or timeouts, the healthcheck fails.
+      # Check if nginx server is healthy by curl'ing the server.
+      # If this fails or timeouts, the healthcheck fails.
       test: ["CMD", "curl", "--fail", "http://nginx.host.com"]
       interval: 1m30s
       timeout: 10s
@@ -1196,7 +1196,7 @@ EXAMPLES = r"""
     image: nginx:1.13
     state: started
     healthcheck:
-    # The "NONE" check needs to be specified
+      # The "NONE" check needs to be specified
       test: ["NONE"]
 
 - name: Create a tmpfs with a size and mode
@@ -1216,11 +1216,11 @@ EXAMPLES = r"""
     image: ubuntu:18.04
     state: started
     device_read_bps:
-    # Limit read rate for /dev/sda to 20 mebibytes per second
+      # Limit read rate for /dev/sda to 20 mebibytes per second
       - path: /dev/sda
         rate: 20M
     device_read_iops:
-    # Limit read rate for /dev/sdb to 300 IO per second
+      # Limit read rate for /dev/sdb to 300 IO per second
       - path: /dev/sdb
         rate: 300
 
@@ -1239,9 +1239,8 @@ EXAMPLES = r"""
         count: -1 # this means we want all
         capabilities:
         # We have one OR condition: 'gpu' AND 'utility'
-          -
-              - gpu
-              - utility
+          - - gpu
+            - utility
         # See https://github.com/NVIDIA/nvidia-container-runtime#supported-driver-capabilities
         # for a list of capabilities supported by the nvidia driver
 
@@ -1251,8 +1250,8 @@ EXAMPLES = r"""
     image: ubuntu:18.04
     state: started
     storage_opts:
-    # Limit root filesystem to 12 MB - note that this requires special storage backends
-    # (https://fabianlee.org/2020/01/15/docker-use-overlay2-with-an-xfs-backing-filesystem-to-limit-rootfs-size/)
+      # Limit root filesystem to 12 MB - note that this requires special storage backends
+      # (https://fabianlee.org/2020/01/15/docker-use-overlay2-with-an-xfs-backing-filesystem-to-limit-rootfs-size/)
       size: 12m
 """
 

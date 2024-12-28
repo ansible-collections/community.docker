@@ -116,23 +116,23 @@ EXAMPLES = r"""
   community.docker.docker_prune:
     containers: true
     containers_filters:
-    # only consider containers created more than 24 hours ago
+      # only consider containers created more than 24 hours ago
       until: 24h
 
 - name: Prune containers with labels
   community.docker.docker_prune:
     containers: true
     containers_filters:
-    # Prune containers whose "foo" label has value "bar", and
-    # whose "bam" label has value "baz". If you only want to
-    # compare one label, you can provide it as a string instead
-    # of a list with one element.
+      # Prune containers whose "foo" label has value "bar", and
+      # whose "bam" label has value "baz". If you only want to
+      # compare one label, you can provide it as a string instead
+      # of a list with one element.
       label:
         - foo=bar
         - bam=baz
-    # Prune containers whose label "bar" does *not* have value
-    # "baz". If you want to avoid more than one label, you can
-    # provide a list of multiple label-value pairs.
+      # Prune containers whose label "bar" does *not* have value
+      # "baz". If you want to avoid more than one label, you can
+      # provide a list of multiple label-value pairs.
       "label!": bar=baz
 
 - name: Prune everything

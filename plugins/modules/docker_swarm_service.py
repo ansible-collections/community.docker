@@ -820,8 +820,8 @@ EXAMPLES = r"""
     name: myservice
     image: nginx:1.13
     healthcheck:
-    # Check if nginx server is healthy by curl'ing the server.
-    # If this fails or timeouts, the healthcheck fails.
+      # Check if nginx server is healthy by curl'ing the server.
+      # If this fails or timeouts, the healthcheck fails.
       test: ["CMD", "curl", "--fail", "http://nginx.host.com"]
       interval: 1m30s
       timeout: 10s

@@ -102,9 +102,9 @@ EXAMPLES = r"""
 - name: Create secret foo (from a file on the control machine)
   community.docker.docker_secret:
     name: foo
-  # If the file is JSON or binary, Ansible might modify it (because
-  # it is first decoded and later re-encoded). Base64-encoding the
-  # file directly after reading it prevents this to happen.
+    # If the file is JSON or binary, Ansible might modify it (because
+    # it is first decoded and later re-encoded). Base64-encoding the
+    # file directly after reading it prevents this to happen.
     data: "{{ lookup('file', '/path/to/secret/file') | b64encode }}"
     data_is_b64: true
     state: present
@@ -131,7 +131,7 @@ EXAMPLES = r"""
     labels:
       bar: baz
       one: '1'
-    # Adding a new label will cause a remove/create of the secret
+      # Adding a new label will cause a remove/create of the secret
       two: '2'
     state: present
 
@@ -142,7 +142,7 @@ EXAMPLES = r"""
     labels:
       bar: baz
       one: '1'
-    # Even though 'two' is missing, there is no change to the existing secret
+      # Even though 'two' is missing, there is no change to the existing secret
     state: present
 
 - name: Update an existing label

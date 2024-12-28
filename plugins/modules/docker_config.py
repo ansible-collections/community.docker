@@ -110,9 +110,9 @@ EXAMPLES = r"""
 - name: Create config foo (from a file on the control machine)
   community.docker.docker_config:
     name: foo
-  # If the file is JSON or binary, Ansible might modify it (because
-  # it is first decoded and later re-encoded). Base64-encoding the
-  # file directly after reading it prevents this to happen.
+    # If the file is JSON or binary, Ansible might modify it (because
+    # it is first decoded and later re-encoded). Base64-encoding the
+    # file directly after reading it prevents this to happen.
     data: "{{ lookup('file', '/path/to/config/file') | b64encode }}"
     data_is_b64: true
     state: present
@@ -139,7 +139,7 @@ EXAMPLES = r"""
     labels:
       bar: baz
       one: '1'
-    # Adding a new label will cause a remove/create of the config
+      # Adding a new label will cause a remove/create of the config
       two: '2'
     state: present
 
@@ -150,7 +150,7 @@ EXAMPLES = r"""
     labels:
       bar: baz
       one: '1'
-    # Even though 'two' is missing, there is no change to the existing config
+      # Even though 'two' is missing, there is no change to the existing config
     state: present
 
 - name: Update an existing label

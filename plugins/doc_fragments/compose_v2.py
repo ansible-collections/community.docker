@@ -66,11 +66,12 @@ options:
 requirements:
   - "PyYAML if O(definition) is used"
 notes:
-  - "The Docker compose CLI plugin has no stable output format (see for example U(https://github.com/docker/compose/issues/10872)),\n
-    and for the main operations also no machine friendly output format. The module tries to accomodate this with various\n
-    version-dependent behavior adjustments and with testing older and newer versions of the Docker compose CLI plugin. Currently
-    the module is tested with multiple plugin versions between 2.18.1 and 2.23.3. The exact list of plugin versions\nwill
-    change over time. New releases of the Docker compose CLI plugin can break this module at any time."
+  - |-
+    The Docker compose CLI plugin has no stable output format (see for example U(https://github.com/docker/compose/issues/10872)),
+    and for the main operations also no machine friendly output format. The module tries to accomodate this with various
+    version-dependent behavior adjustments and with testing older and newer versions of the Docker compose CLI plugin.
+    Currently the module is tested with multiple plugin versions between 2.18.1 and 2.23.3. The exact list of plugin versions
+    will change over time. New releases of the Docker compose CLI plugin can break this module at any time.
 """
 
     # The following needs to be kept in sync with the compose_v2 module utils

@@ -76,7 +76,7 @@ EXAMPLES = r"""
 - name: Pull an image
   community.docker.docker_image_pull:
     name: pacur/centos-7
-  # Select platform for pulling. If not specified, will pull whatever docker prefers.
+    # Select platform for pulling. If not specified, will pull whatever docker prefers.
     platform: amd64
 """
 
