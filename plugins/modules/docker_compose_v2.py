@@ -550,7 +550,7 @@ class ServicesManager(BaseComposeManager):
         return True
 
     def cmd_stop(self):
-        # Since 'docker compose stop' **always** claims its stopping containers, even if they are already
+        # Since 'docker compose stop' **always** claims it is stopping containers, even if they are already
         # stopped, we have to do this a bit more complicated.
 
         result = dict()

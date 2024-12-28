@@ -79,7 +79,7 @@ options:
         #   - key: extra_env
         #     section: docker_connection
         # ansible-core's config manager does NOT support converting JSON strings (or other things) to dictionaries,
-        # it only accepts actual dictionaries (which don't happen to come from env and ini vars). So there's no way
+        # it only accepts actual dictionaries (which do not happen to come from env and ini vars). So there's no way
         # to actually provide this parameter from env and ini sources... :-(
         vars:
           - name: ansible_docker_extra_env
@@ -205,9 +205,9 @@ class Connection(ConnectionBase):
             self._connected = True
 
             if self.actual_user is None and display.verbosity > 2:
-                # Since we're not setting the actual_user, look it up so we have it for logging later
+                # Since we are not setting the actual_user, look it up so we have it for logging later
                 # Only do this if display verbosity is high enough that we'll need the value
-                # This saves overhead from calling into docker when we don't need to
+                # This saves overhead from calling into docker when we do not need to
                 display.vvv(u"Trying to determine actual user")
                 result = self._call_client(lambda: self.client.get_json('/containers/{0}/json', self.get_option('remote_addr')))
                 if result.get('Config'):
@@ -319,11 +319,11 @@ class Connection(ConnectionBase):
         ''' Make sure that we put files into a standard path
 
             If a path is relative, then we need to choose where to put it.
-            ssh chooses $HOME but we aren't guaranteed that a home dir will
-            exist in any given chroot.  So for now we're choosing "/" instead.
+            ssh chooses $HOME but we are not guaranteed that a home dir will
+            exist in any given chroot.  So for now we are choosing "/" instead.
             This also happens to be the former default.
 
-            Can revisit using $HOME instead if it's a problem
+            Can revisit using $HOME instead if it is a problem
         '''
         if getattr(self._shell, "_IS_WINDOWS", False):
             import ntpath

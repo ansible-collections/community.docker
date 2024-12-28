@@ -353,7 +353,7 @@ class DockerAPIEngineDriver(EngineDriver):
             except APIError as exc:
                 if 'Unpause the container before stopping or killing' in exc.explanation:
                     # New docker daemon versions do not allow containers to be removed
-                    # if they are paused. Make sure we don't end up in an infinite loop.
+                    # if they are paused. Make sure we do not end up in an infinite loop.
                     if count == 3:
                         raise Exception('%s [tried to unpause three times]' % to_native(exc))
                     count += 1
@@ -379,7 +379,7 @@ class DockerAPIEngineDriver(EngineDriver):
             except APIError as exc:
                 if 'Unpause the container before stopping or killing' in exc.explanation:
                     # New docker daemon versions do not allow containers to be removed
-                    # if they are paused. Make sure we don't end up in an infinite loop.
+                    # if they are paused. Make sure we do not end up in an infinite loop.
                     if count == 3:
                         raise Exception('%s [tried to unpause three times]' % to_native(exc))
                     count += 1
@@ -802,7 +802,7 @@ def _get_image_labels(image):
     if not image:
         return {}
 
-    # Can't use get('Labels', {}) because 'Labels' may be present and be None
+    # Cannot use get('Labels', {}) because 'Labels' may be present and be None
     return image['Config'].get('Labels') or {}
 
 
@@ -1267,7 +1267,7 @@ def _preprocess_container_names(module, client, api_version, value):
     # name (and in the latter case, retrieve its ID)
     container = client.get_container(container_name)
     if container is None:
-        # If we can't find the container, issue a warning and continue with
+        # If we cannot find the container, issue a warning and continue with
         # what the user specified.
         module.warn('Cannot find a container with name or ID "{0}"'.format(container_name))
         return value

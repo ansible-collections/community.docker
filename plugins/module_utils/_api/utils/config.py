@@ -70,7 +70,7 @@ def load_general_config(config_path=None):
         with open(config_file) as f:
             return json.load(f)
     except (IOError, ValueError) as e:
-        # In the case of a legacy `.dockercfg` file, we won't
+        # In the case of a legacy `.dockercfg` file, we will not
         # be able to load any JSON data.
         log.debug(e)
 

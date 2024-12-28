@@ -190,7 +190,7 @@ class ImageRemover(DockerBaseClass):
             try:
                 res = self.client.delete_json('/images/{0}', name, params={'force': self.force, 'noprune': not self.prune})
             except NotFound:
-                # If the image vanished while we were trying to remove it, don't fail
+                # If the image vanished while we were trying to remove it, do not fail
                 res = []
             except Exception as exc:
                 self.fail("Error removing image %s - %s" % (name, to_native(exc)))

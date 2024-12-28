@@ -298,7 +298,7 @@ class ConfigManager(DockerBaseClass):
     def create_config(self):
         ''' Create a new config '''
         config_id = None
-        # We can't see the data after creation, so adding a label we can use for idempotency check
+        # We ca not see the data after creation, so adding a label we can use for idempotency check
         labels = {
             'ansible_key': self.data_key
         }
@@ -350,7 +350,7 @@ class ConfigManager(DockerBaseClass):
                 if not self.force:
                     self.client.module.warn("'ansible_key' label not found. Config will not be changed unless the force parameter is set to 'true'")
             # template_driver has changed if it was set in the previous config
-            # and now it differs, or if it wasn't set but now it is.
+            # and now it differs, or if it was not set but now it is.
             if attrs.get('Templating', {}).get('Name'):
                 if attrs['Templating']['Name'] != self.template_driver:
                     template_driver_changed = True

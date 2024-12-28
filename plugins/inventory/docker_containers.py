@@ -33,7 +33,7 @@ options:
     plugin:
         description:
             - The name of this plugin, it should always be set to V(community.docker.docker_containers)
-              for this plugin to recognize it as it's own.
+              for this plugin to recognize it as its own.
         type: str
         required: true
         choices: [ community.docker.docker_containers ]
@@ -162,7 +162,7 @@ filters:
   # Next accept all containers whose inventory_hostname starts with 'a'
   - include: >-
       inventory_hostname.startswith("a")
-  # Exclude all containers that didn't match any of the above filters
+  # Exclude all containers that did not match any of the above filters
   - exclude: true
 '''
 

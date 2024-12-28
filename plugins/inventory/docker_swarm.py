@@ -32,7 +32,7 @@ DOCUMENTATION = r'''
     options:
         plugin:
             description: The name of this plugin, it should always be set to V(community.docker.docker_swarm)
-                         for this plugin to recognize it as it's own.
+                         for this plugin to recognize it as its own.
             type: str
             required: true
             choices: [ docker_swarm, community.docker.docker_swarm ]

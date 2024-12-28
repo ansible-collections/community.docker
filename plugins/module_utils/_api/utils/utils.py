@@ -160,7 +160,7 @@ def convert_volume_binds(binds):
                 mode = 'rw'
 
             # NOTE: this is only relevant for Linux hosts
-            # (doesn't apply in Docker Desktop)
+            # (does not apply in Docker Desktop)
             propagation_modes = [
                 'rshared',
                 'shared',
@@ -391,7 +391,7 @@ def kwargs_from_env(ssl_version=None, assert_hostname=None, environment=None):
 
     if not tls_verify and assert_hostname is None:
         # assert_hostname is a subset of TLS verification,
-        # so if it's not set already then set it to false.
+        # so if it is not set already then set it to false.
         assert_hostname = False
 
     params['tls'] = TLSConfig(

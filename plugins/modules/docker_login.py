@@ -320,7 +320,7 @@ class LoginManager(DockerBaseClass):
         # If user is already logged in, then response contains password for user
         if 'password' in response:
             # This returns correct password if user is logged in and wrong password is given.
-            # So if it returns another password as we passed, and the user didn't request to
+            # So if it returns another password as we passed, and the user did not request to
             # reauthorize, still do it.
             if not self.reauthorize and response['password'] != self.password:
                 try:

@@ -210,7 +210,7 @@ def compare_generic(a, b, method, datatype):
             # If we would know that both a and b do not contain duplicates,
             # we could simply compare len(a) to len(b) to finish this test.
             # We can assume that b has no duplicates (as it is returned by
-            # docker), but we don't know for a.
+            # docker), but we do not know for a.
             for bv in b:
                 found = False
                 for av in a:
@@ -303,7 +303,7 @@ def sanitize_labels(labels, labels_field, client=None, module=None):
 
 def clean_dict_booleans_for_docker_api(data, allow_sequences=False):
     '''
-    Go doesn't like Python booleans 'True' or 'False', while Ansible is just
+    Go does not like Python booleans 'True' or 'False', while Ansible is just
     fine with them in YAML. As such, they need to be converted in cases where
     we pass dictionaries to the Docker API (e.g. docker_network's
     driver_options and docker_prune's filters). When `allow_sequences=True`

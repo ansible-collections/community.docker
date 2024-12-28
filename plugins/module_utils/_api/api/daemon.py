@@ -72,7 +72,7 @@ class DaemonApiMixin(object):
                 If the server returns an error.
         """
 
-        # If we don't have any auth data so far, try reloading the config file
+        # If we do not have any auth data so far, try reloading the config file
         # one more time in case anything showed up in there.
         # If dockercfg_path is passed check to see if the config file exists,
         # if so load that config.
@@ -107,7 +107,7 @@ class DaemonApiMixin(object):
     def ping(self):
         """
         Checks the server is responsive. An exception will be raised if it
-        isn't responding.
+        is not responding.
 
         Returns:
             (bool) The response from the server.
