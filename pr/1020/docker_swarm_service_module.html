@@ -1442,8 +1442,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myservice</span>
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx:1.13</span>
 <span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
-<span class="w">    </span><span class="c1"># Check if nginx server is healthy by curl&#39;ing the server.</span>
-<span class="w">    </span><span class="c1"># If this fails or timeouts, the healthcheck fails.</span>
+<span class="w">      </span><span class="c1"># Check if nginx server is healthy by curl&#39;ing the server.</span>
+<span class="w">      </span><span class="c1"># If this fails or timeouts, the healthcheck fails.</span>
 <span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;CMD&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;curl&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;--fail&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;http://nginx.host.com&quot;</span><span class="p p-Indicator">]</span>
 <span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1m30s</span>
 <span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>

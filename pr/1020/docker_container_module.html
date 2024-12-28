@@ -1743,16 +1743,16 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">    </span><span class="nt">devices</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;/dev/sda:/dev/xvda:rwm&quot;</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">   </span><span class="c1"># Publish container port 9000 as host port 8080</span>
+<span class="w">     </span><span class="c1"># Publish container port 9000 as host port 8080</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8080:9000&quot;</span>
-<span class="w">   </span><span class="c1"># Publish container UDP port 9001 as host port 8081 on interface 127.0.0.1</span>
+<span class="w">     </span><span class="c1"># Publish container UDP port 9001 as host port 8081 on interface 127.0.0.1</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;127.0.0.1:8081:9001/udp&quot;</span>
-<span class="w">   </span><span class="c1"># Publish container port 9002 as a random host port</span>
+<span class="w">     </span><span class="c1"># Publish container port 9002 as a random host port</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;9002&quot;</span>
-<span class="w">   </span><span class="c1"># Publish container port 9003 as a free host port in range 8000-8100</span>
-<span class="w">   </span><span class="c1"># (the host port will be selected by the Docker daemon)</span>
+<span class="w">     </span><span class="c1"># Publish container port 9003 as a free host port in range 8000-8100</span>
+<span class="w">     </span><span class="c1"># (the host port will be selected by the Docker daemon)</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8000-8100:9003&quot;</span>
-<span class="w">   </span><span class="c1"># Publish container ports 9010-9020 to host ports 7000-7010</span>
+<span class="w">     </span><span class="c1"># Publish container ports 9010-9020 to host ports 7000-7010</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;7000-7010:9010-9020&quot;</span>
 <span class="w">    </span><span class="nt">env</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">SECRET_KEY</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ssssh&quot;</span>
@@ -1792,8 +1792,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">    </span><span class="nt">log_options</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">syslog-address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tcp://my-syslog-server:514</span>
 <span class="w">      </span><span class="nt">syslog-facility</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">daemon</span>
-<span class="w">    </span><span class="c1"># NOTE: in Docker 1.13+ the &quot;syslog-tag&quot; option was renamed to &quot;tag&quot; for</span>
-<span class="w">    </span><span class="c1"># older docker installs, use &quot;syslog-tag&quot; instead</span>
+<span class="w">      </span><span class="c1"># NOTE: in Docker 1.13+ the &quot;syslog-tag&quot; option was renamed to &quot;tag&quot; for</span>
+<span class="w">      </span><span class="c1"># older docker installs, use &quot;syslog-tag&quot; instead</span>
 <span class="w">      </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myservice</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create db container and connect to network</span>
@@ -1903,8 +1903,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx:1.13</span>
 <span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">started</span>
 <span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
-<span class="w">    </span><span class="c1"># Check if nginx server is healthy by curl&#39;ing the server.</span>
-<span class="w">    </span><span class="c1"># If this fails or timeouts, the healthcheck fails.</span>
+<span class="w">      </span><span class="c1"># Check if nginx server is healthy by curl&#39;ing the server.</span>
+<span class="w">      </span><span class="c1"># If this fails or timeouts, the healthcheck fails.</span>
 <span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;CMD&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;curl&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;--fail&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;http://nginx.host.com&quot;</span><span class="p p-Indicator">]</span>
 <span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1m30s</span>
 <span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
@@ -1918,7 +1918,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx:1.13</span>
 <span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">started</span>
 <span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
-<span class="w">    </span><span class="c1"># The &quot;NONE&quot; check needs to be specified</span>
+<span class="w">      </span><span class="c1"># The &quot;NONE&quot; check needs to be specified</span>
 <span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;NONE&quot;</span><span class="p p-Indicator">]</span>
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a tmpfs with a size and mode</span>
@@ -1938,11 +1938,11 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu:18.04</span>
 <span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">started</span>
 <span class="w">    </span><span class="nt">device_read_bps</span><span class="p">:</span>
-<span class="w">    </span><span class="c1"># Limit read rate for /dev/sda to 20 mebibytes per second</span>
+<span class="w">      </span><span class="c1"># Limit read rate for /dev/sda to 20 mebibytes per second</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/sda</span>
 <span class="w">        </span><span class="nt">rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20M</span>
 <span class="w">    </span><span class="nt">device_read_iops</span><span class="p">:</span>
-<span class="w">    </span><span class="c1"># Limit read rate for /dev/sdb to 300 IO per second</span>
+<span class="w">      </span><span class="c1"># Limit read rate for /dev/sdb to 300 IO per second</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/sdb</span>
 <span class="w">        </span><span class="nt">rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
 
@@ -1961,9 +1961,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">        </span><span class="nt">count</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span><span class="w"> </span><span class="c1"># this means we want all</span>
 <span class="w">        </span><span class="nt">capabilities</span><span class="p">:</span>
 <span class="w">        </span><span class="c1"># We have one OR condition: &#39;gpu&#39; AND &#39;utility&#39;</span>
-<span class="w">          </span><span class="p p-Indicator">-</span>
-<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gpu</span>
-<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">utility</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gpu</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">utility</span>
 <span class="w">        </span><span class="c1"># See https://github.com/NVIDIA/nvidia-container-runtime#supported-driver-capabilities</span>
 <span class="w">        </span><span class="c1"># for a list of capabilities supported by the nvidia driver</span>
 
@@ -1973,8 +1972,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu:18.04</span>
 <span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">started</span>
 <span class="w">    </span><span class="nt">storage_opts</span><span class="p">:</span>
-<span class="w">    </span><span class="c1"># Limit root filesystem to 12 MB - note that this requires special storage backends</span>
-<span class="w">    </span><span class="c1"># (https://fabianlee.org/2020/01/15/docker-use-overlay2-with-an-xfs-backing-filesystem-to-limit-rootfs-size/)</span>
+<span class="w">      </span><span class="c1"># Limit root filesystem to 12 MB - note that this requires special storage backends</span>
+<span class="w">      </span><span class="c1"># (https://fabianlee.org/2020/01/15/docker-use-overlay2-with-an-xfs-backing-filesystem-to-limit-rootfs-size/)</span>
 <span class="w">      </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12m</span>
 </pre></div>
 </div>
