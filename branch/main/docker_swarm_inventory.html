@@ -270,7 +270,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Socket of a Docker swarm manager node (<code class="docutils literal notranslate"><span class="pre">tcp</span></code>, <code class="docutils literal notranslate"><span class="pre">unix</span></code>).</p>
-<p>Use <code class="ansible-value docutils literal notranslate"><span class="pre">unix:///var/run/docker.sock</span></code> to connect via local socket.</p>
+<p>Use <code class="ansible-value docutils literal notranslate"><span class="pre">unix:///var/run/docker.sock</span></code> to connect through a local socket.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
@@ -310,7 +310,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <div class="ansibleOptionAnchor" id="parameter-include_host_uri"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-swarm-inventory-parameter-include-host-uri"><strong>include_host_uri</strong></p>
 <a class="ansibleOptionLink" href="#parameter-include_host_uri" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>Toggle to return the additional attribute <code class="docutils literal notranslate"><span class="pre">ansible_host_uri</span></code> which contains the URI of the swarm leader in format of <code class="ansible-value docutils literal notranslate"><span class="pre">tcp://172.16.0.1:2376</span></code>. This value may be used without additional modification as value of option <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-inventory-parameter-docker-host"><span class="std std-ref"><span class="pre">docker_host</span></span></a></strong></code> in Docker Swarm modules when connecting via API. The port always defaults to <code class="ansible-value docutils literal notranslate"><span class="pre">2376</span></code>.</p>
+<td><div class="ansible-option-cell"><p>Toggle to return the additional attribute <code class="docutils literal notranslate"><span class="pre">ansible_host_uri</span></code> which contains the URI of the swarm leader in format of <code class="ansible-value docutils literal notranslate"><span class="pre">tcp://172.16.0.1:2376</span></code>. This value may be used without additional modification as value of option <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-swarm-inventory-parameter-docker-host"><span class="std std-ref"><span class="pre">docker_host</span></span></a></strong></code> in Docker Swarm modules when connecting through the API. The port always defaults to <code class="ansible-value docutils literal notranslate"><span class="pre">2376</span></code>.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
