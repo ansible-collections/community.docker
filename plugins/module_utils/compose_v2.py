@@ -701,16 +701,7 @@ class BaseComposeManager(DockerBaseClass):
         self.env_files = parameters['env_files']
         self.profiles = parameters['profiles']
 
-        compose = self.client.get_client_plugin_info('compose')
-        if compose is None:
-            self.fail('Docker CLI {0} does not have the compose plugin installed'.format(self.client.get_cli()))
-        if compose['Version'] == 'dev':
-            self.fail(
-                'Docker CLI {0} has a compose plugin installed, but it reports version "dev".'
-                ' Please use a version of the plugin that returns a proper version.'
-                .format(self.client.get_cli())
-            )
-        compose_version = compose['Version'].lstrip('v')
+        compose_version = self.get_compose_version()
         self.compose_version = LooseVersion(compose_version)
         if self.compose_version < LooseVersion(min_version):
             self.fail('Docker CLI {cli} has the compose plugin with version {version}; need version {min_version} or later'.format(
@@ -735,6 +726,33 @@ class BaseComposeManager(DockerBaseClass):
         # Support for JSON output was added in Compose 2.29.0 (https://github.com/docker/compose/releases/tag/v2.29.0);
         # more precisely in https://github.com/docker/compose/pull/11478
         self.use_json_events = self.compose_version >= LooseVersion('2.29.0')
+
+    def get_compose_version(self):
+        return self.get_compose_version_from_cli() or self.get_compose_version_from_api()
+
+    def get_compose_version_from_cli(self):
+        rc, version_info, stderr = self.client.call_cli('compose', 'version', '--format', 'json')
+        if rc:
+            return None
+        try:
+            version = json.loads(version_info)['version']
+            if version == 'dev':
+                return None
+            return version.lstrip('v')
+        except Exception:
+            return None
+
+    def get_compose_version_from_api(self):
+        compose = self.client.get_client_plugin_info('compose')
+        if compose is None:
+            self.fail('Docker CLI {0} does not have the compose plugin installed'.format(self.client.get_cli()))
+        if compose['Version'] == 'dev':
+            self.fail(
+                'Docker CLI {0} has a compose plugin installed, but it reports version "dev".'
+                ' Please use a version of the plugin that returns a proper version.'
+                .format(self.client.get_cli())
+            )
+        return compose['Version'].lstrip('v')
 
     def fail(self, msg, **kwargs):
         self.cleanup()
