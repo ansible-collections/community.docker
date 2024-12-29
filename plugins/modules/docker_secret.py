@@ -30,6 +30,10 @@ attributes:
     support: full
   diff_mode:
     support: none
+  idempotent:
+    support: partial
+    details:
+      - If O(force=true) the module is not idempotent.
 
 options:
   data:

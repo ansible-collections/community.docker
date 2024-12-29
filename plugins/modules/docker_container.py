@@ -37,6 +37,10 @@ attributes:
       - This behavior can be configured with O(pull_check_mode_behavior).
   diff_mode:
     support: full
+  idempotent:
+    support: partial
+    details:
+      - If O(recreate=true) or O(restart=true) the module is not idempotent.
 
 options:
   auto_remove:

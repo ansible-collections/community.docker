@@ -29,6 +29,10 @@ attributes:
     support: full
   diff_mode:
     support: none
+  idempotent:
+    support: partial
+    details:
+      - If O(rebuild=always) the module is not idempotent.
 
 options:
   name:

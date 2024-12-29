@@ -19,6 +19,7 @@ extends_documentation_fragment:
   - community.docker.attributes
   - community.docker.attributes.actiongroup_docker
   - community.docker.attributes.info_module
+  - community.docker.attributes.idempotent_not_modify_state
 
 options:
   name:

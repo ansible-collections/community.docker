@@ -33,6 +33,10 @@ attributes:
       - In check mode, pulling the image does not result in a changed result.
   diff_mode:
     support: none
+  idempotent:
+    support: partial
+    details:
+      - If O(state=restarted) or O(recreate=always) the module is not idempotent.
 
 options:
   state:

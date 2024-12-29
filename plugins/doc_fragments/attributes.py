@@ -18,6 +18,20 @@ attributes:
     description: Can run in C(check_mode) and return changed status prediction without modifying target.
   diff_mode:
     description: Will return details on what has changed (or possibly needs changing in C(check_mode)), when in diff mode.
+  idempotent:
+    description:
+      - When run twice in a row with the same arguments, the second invocation indicates no change.
+      - This assumes that the system controlled/queried by the module has not changed in a relevant way.
+"""
+
+    # Should be used together with the standard fragment
+    IDEMPOTENT_NOT_MODIFY_STATE = r"""
+options: {}
+attributes:
+  idempotent:
+    support: full
+    details:
+      - This action does not modify state.
 """
 
     # Should be used together with the standard fragment

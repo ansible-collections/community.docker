@@ -29,6 +29,10 @@ attributes:
       - Additional data will need to be transferred to compute diffs.
       - The module uses R(the MAX_FILE_SIZE_FOR_DIFF ansible-core configuration,MAX_FILE_SIZE_FOR_DIFF) to determine for how
         large files diffs should be computed.
+  idempotent:
+    support: partial
+    details:
+      - If O(force=true) the module is not idempotent.
 
 options:
   container:

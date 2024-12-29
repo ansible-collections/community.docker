@@ -16,6 +16,9 @@ short_description: Manage docker images
 description:
   - Build, load or pull an image, making the image available for creating containers. Also supports tagging an image, pushing
     an image, and archiving an image to a C(.tar) file.
+  - We recommend to use the individual modules M(community.docker.docker_image_build), M(community.docker.docker_image_export),
+    M(community.docker.docker_image_load), M(community.docker.docker_image_pull), M(community.docker.docker_image_push),
+    M(community.docker.docker_image_remove), and M(community.docker.docker_image_tag) instead of this module.
 notes:
   - Building images is done using Docker daemon's API. It is not possible to use BuildKit / buildx this way. Use M(community.docker.docker_image_build)
     to build images with BuildKit.
@@ -31,6 +34,11 @@ attributes:
       - When trying to pull an image, the module assumes this is always changed in check mode.
   diff_mode:
     support: none
+  idempotent:
+    support: partial
+    details:
+      - Whether the module is idempotent depends on the exact parameters, in particular of O(force_source) and O(force_tag).
+      # TODO: improve idempotent details!
 
 options:
   source:

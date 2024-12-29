@@ -27,6 +27,10 @@ attributes:
     support: none
   diff_mode:
     support: none
+  idempotent:
+    support: N/A
+    details:
+      - Whether the executed command is idempotent depends on the command.
 
 options:
   container:

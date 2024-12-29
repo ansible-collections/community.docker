@@ -31,6 +31,8 @@ attributes:
     support: full
   diff_mode:
     support: none
+  idempotent:
+    support: full
 
 options:
   registry_url:
@@ -280,8 +282,7 @@ class LoginManager(DockerBaseClass):
         authcfg = self.client._auth_configs.resolve_authconfig(self.registry_url)
         # If we found an existing auth config for this registry and username
         # combination, we can return it immediately unless reauth is requested.
-        if authcfg and authcfg.get('username', None) == self.username \
-                and not reauth:
+        if authcfg and authcfg.get('username') == self.username and not reauth:
             return authcfg
 
         req_data = {

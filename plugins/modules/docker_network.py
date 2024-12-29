@@ -24,6 +24,10 @@ attributes:
     support: full
   diff_mode:
     support: full
+  idempotent:
+    support: partial
+    details:
+      - If O(force=true) the module is not idempotent.
 
 options:
   name:

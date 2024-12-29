@@ -26,6 +26,8 @@ attributes:
     support: none
   action_group:
     version_added: 3.6.0
+  idempotent:
+    support: full
 options:
   name:
     description:
