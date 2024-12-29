@@ -735,7 +735,10 @@ class BaseComposeManager(DockerBaseClass):
         if rc:
             return None
         try:
-            return json.loads(version_info)['version'].lstrip('v')
+            version = json.loads(version_info)['version']
+            if version == 'dev':
+                return None
+            return version.lstrip('v')
         except Exception:
             return None
 
