@@ -4,6 +4,19 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v4.3.0
+======
+
+Release Summary
+---------------
+
+Feature release.
+
+Minor Changes
+-------------
+
+- docker_compose_v2* modules - determine compose version with ``docker compose version`` and only then fall back to ``docker info`` (https://github.com/ansible-collections/community.docker/pull/1021).
+
 v4.2.0
 ======
 

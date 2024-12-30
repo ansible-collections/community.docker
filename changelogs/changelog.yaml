@@ -2031,3 +2031,13 @@ releases:
       - 4.2.0.yml
       - 999-add-ingress-option-to-docker_network-module.yml
     release_date: '2024-12-16'
+  4.3.0:
+    changes:
+      minor_changes:
+        - docker_compose_v2* modules - determine compose version with ``docker compose
+          version`` and only then fall back to ``docker info`` (https://github.com/ansible-collections/community.docker/pull/1021).
+      release_summary: Feature release.
+    fragments:
+      - 1021-docker_compose_v2-version-detection.yml
+      - 4.3.0.yml
+    release_date: '2024-12-30'
