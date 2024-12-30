@@ -712,7 +712,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-partial">partial</strong></p>
 <p>Whether the module is idempotent depends on the exact parameters, in particular of <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-module-parameter-force-source"><span class="std std-ref"><span class="pre">force_source</span></span></a></strong></code> and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-module-parameter-force-tag"><span class="std std-ref"><span class="pre">force_tag</span></span></a></strong></code>.</p>
 </div></td>
-<td><div class="ansible-option-cell"><p>When run twice in a row with the same arguments, the second invocation indicates no change.</p>
+<td><div class="ansible-option-cell"><p>When run twice in a row outside check mode, with the same arguments, the second invocation indicates no change.</p>
 <p>This assumes that the system controlled/queried by the module has not changed in a relevant way.</p>
 </div></td>
 </tr>

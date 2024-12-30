@@ -647,7 +647,7 @@ Provides the secret from a given value <code class="ansible-option docutils lite
 <td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-partial">partial</strong></p>
 <p>If <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-rebuild"><span class="std std-ref"><span class="pre">rebuild=always</span></span></a></code> the module is not idempotent.</p>
 </div></td>
-<td><div class="ansible-option-cell"><p>When run twice in a row with the same arguments, the second invocation indicates no change.</p>
+<td><div class="ansible-option-cell"><p>When run twice in a row outside check mode, with the same arguments, the second invocation indicates no change.</p>
 <p>This assumes that the system controlled/queried by the module has not changed in a relevant way.</p>
 </div></td>
 </tr>
