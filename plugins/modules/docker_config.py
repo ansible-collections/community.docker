@@ -15,8 +15,8 @@ short_description: Manage docker configs
 
 description:
   - Create and remove Docker configs in a Swarm environment. Similar to C(docker config create) and C(docker config rm).
-  - Adds to the metadata of new configs 'ansible_key', an encrypted hash representation of the data, which is then used in
-    future runs to test if a config has changed. If 'ansible_key' is not present, then a config will not be updated unless
+  - Adds to the metadata of new configs C(ansible_key), an encrypted hash representation of the data, which is then used in
+    future runs to test if a config has changed. If C(ansible_key) is not present, then a config will not be updated unless
     the O(force) option is set.
   - Updates to configs are performed by removing the config and creating it again.
 extends_documentation_fragment:
@@ -30,6 +30,10 @@ attributes:
     support: full
   diff_mode:
     support: none
+  idempotent:
+    support: partial
+    details:
+      - If O(force=true) the module is not idempotent.
 
 options:
   data:

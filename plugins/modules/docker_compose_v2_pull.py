@@ -32,6 +32,8 @@ attributes:
         pulling would update the image or not.
   diff_mode:
     support: none
+  idempotent:
+    support: full
 
 options:
   policy:

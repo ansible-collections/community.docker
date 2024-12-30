@@ -24,6 +24,7 @@ extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes
   - community.docker.attributes.actiongroup_docker
+  - community.docker.attributes.idempotent_not_modify_state
 
 attributes:
   check_mode:

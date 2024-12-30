@@ -30,6 +30,8 @@ attributes:
       - When check mode is combined with diff mode, the pulled image's ID is always shown as V(unknown) in the diff.
   diff_mode:
     support: full
+  idempotent:
+    support: full
 
 options:
   name:

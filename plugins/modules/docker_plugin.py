@@ -29,6 +29,8 @@ attributes:
     support: full
   diff_mode:
     support: full
+  idempotent:
+    support: full
 
 options:
   plugin_name:

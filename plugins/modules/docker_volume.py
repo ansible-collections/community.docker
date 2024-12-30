@@ -25,6 +25,10 @@ attributes:
     support: full
   diff_mode:
     support: full
+  idempotent:
+    support: partial
+    details:
+      - If O(recreate=always) the module is not idempotent.
 
 options:
   volume_name:

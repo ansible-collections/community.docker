@@ -23,6 +23,7 @@ extends_documentation_fragment:
   - community.docker.attributes
   - community.docker.attributes.facts
   - community.docker.attributes.facts_module
+  - community.docker.attributes.idempotent_not_modify_state
 """
 
 EXAMPLES = r"""

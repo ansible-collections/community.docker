@@ -24,6 +24,8 @@ attributes:
     support: full
   diff_mode:
     support: full
+  idempotent:
+    support: full
 
 options:
   advertise_addr:

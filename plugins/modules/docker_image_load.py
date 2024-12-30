@@ -28,6 +28,8 @@ attributes:
     support: none
   diff_mode:
     support: none
+  idempotent:
+    support: none
 
 options:
   path:
