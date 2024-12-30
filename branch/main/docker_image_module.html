@@ -199,6 +199,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Synopsis</a><a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Build, load or pull an image, making the image available for creating containers. Also supports tagging an image, pushing an image, and archiving an image to a <code class="docutils literal notranslate"><span class="pre">.tar</span></code> file.</p></li>
+<li><p>We recommend to use the individual modules <a class="reference internal" href="docker_image_build_module.html#ansible-collections-community-docker-docker-image-build-module"><span class="std std-ref">community.docker.docker_image_build</span></a>, <a class="reference internal" href="docker_image_export_module.html#ansible-collections-community-docker-docker-image-export-module"><span class="std std-ref">community.docker.docker_image_export</span></a>, <a class="reference internal" href="docker_image_load_module.html#ansible-collections-community-docker-docker-image-load-module"><span class="std std-ref">community.docker.docker_image_load</span></a>, <a class="reference internal" href="docker_image_pull_module.html#ansible-collections-community-docker-docker-image-pull-module"><span class="std std-ref">community.docker.docker_image_pull</span></a>, <a class="reference internal" href="docker_image_push_module.html#ansible-collections-community-docker-docker-image-push-module"><span class="std std-ref">community.docker.docker_image_push</span></a>, <a class="reference internal" href="docker_image_remove_module.html#ansible-collections-community-docker-docker-image-remove-module"><span class="std std-ref">community.docker.docker_image_remove</span></a>, and <a class="reference internal" href="docker_image_tag_module.html#ansible-collections-community-docker-docker-image-tag-module"><span class="std std-ref">community.docker.docker_image_tag</span></a> instead of this module.</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -703,6 +704,16 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-none">none</strong></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Will return details on what has changed (or possibly needs changing in <code class="docutils literal notranslate"><span class="pre">check_mode</span></code>), when in diff mode.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="attribute-idempotent"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-module-attribute-idempotent"><strong>idempotent</strong></p>
+<a class="ansibleOptionLink" href="#attribute-idempotent" title="Permalink to this attribute"></a></div></td>
+<td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-partial">partial</strong></p>
+<p>Whether the module is idempotent depends on the exact parameters, in particular of <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-module-parameter-force-source"><span class="std std-ref"><span class="pre">force_source</span></span></a></strong></code> and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-module-parameter-force-tag"><span class="std std-ref"><span class="pre">force_tag</span></span></a></strong></code>.</p>
+</div></td>
+<td><div class="ansible-option-cell"><p>When run twice in a row outside check mode, with the same arguments, the second invocation indicates no change.</p>
+<p>This assumes that the system controlled/queried by the module has not changed in a relevant way.</p>
 </div></td>
 </tr>
 </tbody>
