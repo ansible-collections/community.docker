@@ -20,7 +20,7 @@ attributes:
     description: Will return details on what has changed (or possibly needs changing in C(check_mode)), when in diff mode.
   idempotent:
     description:
-      - When run twice in a row with the same arguments, the second invocation indicates no change.
+      - When run twice in a row outside check mode, with the same arguments, the second invocation indicates no change.
       - This assumes that the system controlled/queried by the module has not changed in a relevant way.
 """
 
