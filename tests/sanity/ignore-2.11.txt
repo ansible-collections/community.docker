@@ -12,3 +12,8 @@ plugins/modules/docker_compose_v2_pull.py validate-modules:return-syntax-error
 plugins/modules/docker_container.py import-2.6!skip # Import uses Python 2.7+ syntax
 plugins/modules/docker_container_copy_into.py validate-modules:undocumented-parameter # _max_file_size_for_diff is used by the action plugin
 plugins/modules/docker_image_build.py validate-modules:invalid-documentation
+tests/sanity/extra/action-group.py compile-2.6!skip # Uses Python 3.6+ syntax
+tests/sanity/extra/action-group.py compile-2.7!skip # Uses Python 3.6+ syntax
+tests/sanity/extra/action-group.py compile-3.5!skip # Uses Python 3.6+ syntax
+tests/sanity/extra/action-group.py future-import-boilerplate
+tests/sanity/extra/action-group.py metaclass-boilerplate
