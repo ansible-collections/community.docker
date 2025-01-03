@@ -2,7 +2,8 @@
     "include_symlinks": true,
     "prefixes": [
         "meta/runtime.yml",
-        "plugins/modules/"
+        "plugins/modules/",
+        "tests/sanity/extra/action-group."
     ],
     "output": "path-message",
     "requirements": [
