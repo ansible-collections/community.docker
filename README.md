@@ -6,8 +6,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 # Docker Community Collection
 
-[![Doc](https://img.shields.io/badge/docs-brightgreen.svg)](https://docs.ansible.com/ansible/latest/collections/community/docker/)
+[![Documentation](https://img.shields.io/badge/docs-brightgreen.svg)](https://docs.ansible.com/ansible/latest/collections/community/docker/)
 [![Build Status](https://dev.azure.com/ansible/community.docker/_apis/build/status/CI?branchName=stable-3)](https://dev.azure.com/ansible/community.docker/_build?definitionId=25)
+[![EOL CI](https://github.com/ansible-collections/community.docker/actions/workflows/ansible-test.yml/badge.svg?branch=stable-3)](https://github.com/ansible-collections/community.docker/actions)
 [![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/community.docker)](https://codecov.io/gh/ansible-collections/community.docker)
 [![REUSE status](https://api.reuse.software/badge/github.com/ansible-collections/community.docker)](https://api.reuse.software/info/github.com/ansible-collections/community.docker)
 
