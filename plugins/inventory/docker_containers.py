@@ -110,19 +110,23 @@ options:
 """
 
 EXAMPLES = '''
+---
 # Minimal example using local Docker daemon
 plugin: community.docker.docker_containers
 docker_host: unix:///var/run/docker.sock
 
+---
 # Minimal example using remote Docker daemon
 plugin: community.docker.docker_containers
 docker_host: tcp://my-docker-host:2375
 
+---
 # Example using remote Docker daemon with unverified TLS
 plugin: community.docker.docker_containers
 docker_host: tcp://my-docker-host:2376
 tls: true
 
+---
 # Example using remote Docker daemon with verified TLS and client certificate verification
 plugin: community.docker.docker_containers
 docker_host: tcp://my-docker-host:2376
@@ -131,6 +135,7 @@ ca_path: /somewhere/ca.pem
 client_key: /somewhere/key.pem
 client_cert: /somewhere/cert.pem
 
+---
 # Example using constructed features to create groups
 plugin: community.docker.docker_containers
 docker_host: tcp://my-docker-host:2375
@@ -143,6 +148,7 @@ keyed_groups:
   - prefix: os
     key: docker_platform
 
+---
 # Example using SSH connection with an explicit fallback for when port 22 has not been
 # exported: use container name as ansible_ssh_host and 22 as ansible_ssh_port
 plugin: community.docker.docker_containers
@@ -151,6 +157,7 @@ compose:
   ansible_ssh_host: ansible_ssh_host | default(docker_name[1:], true)
   ansible_ssh_port: ansible_ssh_port | default(22, true)
 
+---
 # Only consider containers which have a label 'foo', or whose name starts with 'a'
 plugin: community.docker.docker_containers
 filters:

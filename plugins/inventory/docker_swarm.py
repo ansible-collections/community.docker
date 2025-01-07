@@ -107,19 +107,23 @@ options:
 """
 
 EXAMPLES = '''
+---
 # Minimal example using local docker
 plugin: community.docker.docker_swarm
 docker_host: unix:///var/run/docker.sock
 
+---
 # Minimal example using remote docker
 plugin: community.docker.docker_swarm
 docker_host: tcp://my-docker-host:2375
 
+---
 # Example using remote docker with unverified TLS
 plugin: community.docker.docker_swarm
 docker_host: tcp://my-docker-host:2376
 tls: true
 
+---
 # Example using remote docker with verified TLS and client certificate verification
 plugin: community.docker.docker_swarm
 docker_host: tcp://my-docker-host:2376
@@ -128,6 +132,7 @@ ca_path: /somewhere/ca.pem
 client_key: /somewhere/key.pem
 client_cert: /somewhere/cert.pem
 
+---
 # Example using constructed features to create groups and set ansible_host
 plugin: community.docker.docker_swarm
 docker_host: tcp://my-docker-host:2375
