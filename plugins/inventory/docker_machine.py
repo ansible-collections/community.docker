@@ -61,9 +61,11 @@ options:
 """
 
 EXAMPLES = '''
+---
 # Minimal example
 plugin: community.docker.docker_machine
 
+---
 # Example using constructed features to create a group per Docker Machine driver
 # (https://docs.docker.com/machine/drivers/), for example:
 #   $ docker-machine create --driver digitalocean ... mymachine
@@ -76,18 +78,23 @@ plugin: community.docker.docker_machine
 #       ]
 #     ...
 #   }
+plugin: community.docker.docker_machine
 strict: false
 keyed_groups:
   - separator: ''
     key: docker_machine_node_attributes.DriverName
 
+---
 # Example grouping hosts by Digital Machine tag
+plugin: community.docker.docker_machine
 strict: false
 keyed_groups:
   - prefix: tag
     key: 'dm_tags'
 
+---
 # Example using compose to override the default SSH behaviour of asking the user to accept the remote host key
+plugin: community.docker.docker_machine
 compose:
   ansible_ssh_common_args: '"-o StrictHostKeyChecking=accept-new"'
 '''
