@@ -109,14 +109,14 @@ stages:
         parameters:
           testFormat: devel/linux/{0}
           targets:
-            - name: Fedora 40
-              test: fedora40
+            - name: Fedora 41
+              test: fedora41
             - name: Ubuntu 22.04
               test: ubuntu2204
             - name: Ubuntu 24.04
               test: ubuntu2404
-            - name: Alpine 3.20
-              test: alpine320
+            - name: Alpine 3.21
+              test: alpine321
           groups:
             - 4
             - 5
@@ -128,8 +128,12 @@ stages:
         parameters:
           testFormat: 2.18/linux/{0}
           targets:
+            - name: Fedora 40
+              test: fedora40
             - name: Ubuntu 22.04
               test: ubuntu2204
+            - name: Alpine 3.20
+              test: alpine320
           groups:
             - 4
             - 5
@@ -198,8 +202,8 @@ stages:
         parameters:
           testFormat: devel/{0}
           targets:
-            - name: RHEL 9.4 with Docker SDK, urllib3, requests from sources
-              test: rhel/9.4-dev-latest
+            - name: RHEL 9.5 with Docker SDK, urllib3, requests from sources
+              test: rhel/9.5-dev-latest
           groups:
             - 1
             - 2
