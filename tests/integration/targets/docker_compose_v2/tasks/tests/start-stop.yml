@@ -8,14 +8,12 @@
     cname: "{{ name_prefix }}-container"
     project_src: "{{ remote_tmp_dir }}/{{ pname }}"
     test_service: |
-      version: '3'
       services:
         {{ cname }}:
           image: "{{ docker_test_image_alpine }}"
           command: '/bin/sh -c "sleep 10m"'
           stop_grace_period: 1s
     test_service_mod: |
-      version: '3'
       services:
         {{ cname }}:
           image: "{{ docker_test_image_alpine }}"
