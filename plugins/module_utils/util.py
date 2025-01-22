@@ -282,7 +282,7 @@ class DifferenceTracker(object):
 def sanitize_labels(labels, labels_field, client=None, module=None):
     def fail(msg):
         if client is not None:
-            client.module.fail(msg)
+            client.fail(msg)
         if module is not None:
             module.fail_json(msg=msg)
         raise ValueError(msg)
