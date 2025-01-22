@@ -118,6 +118,14 @@
 ## labels ##########################################################
 ####################################################################
 
+- name: Create a volume with an invalid label
+  docker_volume:
+    name: "{{ vname }}"
+    labels:
+      foo: 1.0
+  register: driver_labels_invalid
+  ignore_errors: true
+
 - name: Create a volume with labels
   docker_volume:
     name: "{{ vname }}"
@@ -173,6 +181,8 @@
 
 - assert:
     that:
+    - driver_labels_invalid is failed
+    - driver_labels_invalid.msg == "The value 1.0 for 'foo' of labels is not a string or something than can be safely converted to a string!"
     - driver_labels_1 is changed
     - driver_labels_2 is not changed
     - driver_labels_3 is not changed
