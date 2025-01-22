@@ -4,7 +4,7 @@
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="2.16.2" name="antsibull-docs" />
+<meta content="2.16.3" name="antsibull-docs" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>community.docker.docker_image_build module – Build Docker images using Docker buildx &mdash; Community.Docker Collection  documentation</title>
@@ -417,25 +417,25 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <ul>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;docker&quot;</span></code>:
 This export type writes the single-platform result image as a Docker image specification tarball on the client. Tarballs created by this exporter are also OCI compatible.</p>
-<p>The destination can be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].dest</span></span></strong></code>. If not specified, the tar will be loaded automatically to the local image store.</p>
-<p>The Docker context where to import the result can be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].context</span></span></strong></code>.</p>
+<p>The destination can be provided in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-dest"><span class="std std-ref"><span class="pre">outputs[].dest</span></span></a></strong></code>. If not specified, the tar will be loaded automatically to the local image store.</p>
+<p>The Docker context where to import the result can be provided in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-context"><span class="std std-ref"><span class="pre">outputs[].context</span></span></a></strong></code>.</p>
 </li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;image&quot;</span></code>:
 This exporter writes the build result as an image or a manifest list. When using this driver, the image will appear in <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code>.</p>
-<p>The image name can be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].name</span></span></strong></code>. If it is not provided, <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">name</span></span></strong></code> and <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">tag</span></span></strong></code> will be used.</p>
-<p>Optionally, image can be automatically pushed to a registry by setting <code class="ansible-option-value docutils literal notranslate"><span><span class="pre">outputs[].push=true</span></span></code>.</p>
+<p>The image name can be provided in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-name"><span class="std std-ref"><span class="pre">outputs[].name</span></span></a></strong></code>. If it is not provided, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-name"><span class="std std-ref"><span class="pre">name</span></span></a></strong></code> and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-tag"><span class="std std-ref"><span class="pre">tag</span></span></a></strong></code> will be used.</p>
+<p>Optionally, image can be automatically pushed to a registry by setting <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-push"><span class="std std-ref"><span class="pre">outputs[].push=true</span></span></a></code>.</p>
 </li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code>:
 This export type writes all result files to a directory on the client. The new files will be owned by the current user. On multi-platform builds, all results will be put in subdirectories by their platform.</p>
-<p>The destination has to be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].dest</span></span></strong></code>.</p>
+<p>The destination has to be provided in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-dest"><span class="std std-ref"><span class="pre">outputs[].dest</span></span></a></strong></code>.</p>
 </li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;oci&quot;</span></code>:
 This export type writes the result image or manifest list as an <a class="reference external" href="https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md">OCI image layout</a> tarball on the client.</p>
-<p>The destination has to be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].dest</span></span></strong></code>.</p>
+<p>The destination has to be provided in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-dest"><span class="std std-ref"><span class="pre">outputs[].dest</span></span></a></strong></code>.</p>
 </li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;tar&quot;</span></code>:
 This export type export type writes all result files as a single tarball on the client. On multi-platform builds, all results will be put in subdirectories by their platform.</p>
-<p>The destination has to be provided in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">outputs[].dest</span></span></strong></code>.</p>
+<p>The destination has to be provided in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-outputs-dest"><span class="std std-ref"><span class="pre">outputs[].dest</span></span></a></strong></code>.</p>
 </li>
 </ul>
 </div></td>
@@ -520,15 +520,15 @@ This export type export type writes all result files as a single tarball on the 
 <ul>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;env&quot;</span></code>:
 Reads the secret from an environment variable on the target.</p>
-<p>The environment variable must be named in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">secrets[].env</span></span></strong></code>.</p>
+<p>The environment variable must be named in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-secrets-env"><span class="std std-ref"><span class="pre">secrets[].env</span></span></a></strong></code>.</p>
 <p>Note that this requires the Buildkit plugin to have version 0.6.0 or newer.</p>
 </li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;file&quot;</span></code>:
 Reads the secret from a file on the target.</p>
-<p>The file must be specified in <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">secrets[].src</span></span></strong></code>.</p>
+<p>The file must be specified in <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-secrets-src"><span class="std std-ref"><span class="pre">secrets[].src</span></span></a></strong></code>.</p>
 </li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;value&quot;</span></code>:
-Provides the secret from a given value <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">secrets[].value</span></span></strong></code>.</p>
+Provides the secret from a given value <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-image-build-module-parameter-secrets-value"><span class="std std-ref"><span class="pre">secrets[].value</span></span></a></strong></code>.</p>
 <p><strong>Note</strong> that the secret will be passed as an environment variable to <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code>. Use another mean of transport if you consider this not safe enough.</p>
 <p>Note that this requires the Buildkit plugin to have version 0.6.0 or newer.</p>
 </li>
