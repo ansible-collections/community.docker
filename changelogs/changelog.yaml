@@ -1990,3 +1990,13 @@ releases:
       - 1011-docker_compose_v2-build-changed.yml
       - 3.13.4.yml
     release_date: '2024-12-16'
+  3.13.5:
+    changes:
+      bugfixes:
+        - Fix label sanitization code to avoid crashes in case of errors (https://github.com/ansible-collections/community.docker/issues/1028,
+          https://github.com/ansible-collections/community.docker/pull/1029).
+      release_summary: Bugfix release.
+    fragments:
+      - 1029-sanitize-labels-fail.yml
+      - 3.13.5.yml
+    release_date: '2025-01-23'
