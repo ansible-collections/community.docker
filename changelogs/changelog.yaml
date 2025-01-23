@@ -2041,3 +2041,13 @@ releases:
       - 1021-docker_compose_v2-version-detection.yml
       - 4.3.0.yml
     release_date: '2024-12-30'
+  4.3.1:
+    changes:
+      bugfixes:
+        - Fix label sanitization code to avoid crashes in case of errors (https://github.com/ansible-collections/community.docker/issues/1028,
+          https://github.com/ansible-collections/community.docker/pull/1029).
+      release_summary: Bugfix release.
+    fragments:
+      - 1029-sanitize-labels-fail.yml
+      - 4.3.1.yml
+    release_date: '2025-01-23'
