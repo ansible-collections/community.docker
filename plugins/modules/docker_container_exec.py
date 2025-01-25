@@ -101,7 +101,8 @@ notes:
     closing the connection with Python's C(SSLSocket)s. See U(https://github.com/ansible-collections/community.docker/issues/605)
     for more information.
   - If you need to evaluate environment variables of the container in O(command) or O(argv), you need to pass the command
-    through a shell, like O(command=/bin/sh -c "echo $ENV_VARIABLE").
+    through a shell, like O(command=/bin/sh -c "echo $ENV_VARIABLE"). The same needs to be done in case you want to use glob patterns
+    or other shell features such as redirects.
 author:
   - "Felix Fontein (@felixfontein)"
 
