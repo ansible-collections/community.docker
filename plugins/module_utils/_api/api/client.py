@@ -202,7 +202,14 @@ class APIClient(
 
     def _retrieve_server_version(self):
         try:
-            return self.version(api_version=False)["ApiVersion"]
+            version_result = self.version(api_version=False)
+        except Exception as e:
+            raise DockerException(
+                'Error while fetching server API version: {0}'.format(e)
+            )
+
+        try:
+            return version_result["ApiVersion"]
         except KeyError:
             raise DockerException(
                 'Invalid response from docker daemon: key "ApiVersion"'
@@ -210,7 +217,7 @@ class APIClient(
             )
         except Exception as e:
             raise DockerException(
-                'Error while fetching server API version: {0}'.format(e)
+                'Error while fetching server API version: {0}. Response seems to be broken.'.format(e)
             )
 
     def _set_request_timeout(self, kwargs):
