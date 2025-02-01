@@ -27,7 +27,7 @@ if sys.version_info < (2, 7):
     pytestmark = pytest.mark.skip('Python 2.6 is not supported')
 
 from ansible_collections.community.docker.plugins.module_utils._api.api.client import APIClient
-from ansible_collections.community.docker.plugins.module_utils._api.constants import IS_WINDOWS_PLATFORM, DEFAULT_DOCKER_API_VERSION
+from ansible_collections.community.docker.plugins.module_utils._api.constants import IS_WINDOWS_PLATFORM
 from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
     convert_filters, convert_volume_binds,
@@ -35,6 +35,7 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.utils 
     parse_devices, parse_env_file, parse_host,
     parse_repository_tag, split_command, format_environment,
 )
+from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.constants import DEFAULT_DOCKER_API_VERSION
 
 
 TEST_CERT_DIR = os.path.join(
