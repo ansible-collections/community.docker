@@ -1,0 +1,2 @@
+bugfixes:
+  - docker_compose_v2_run - the module has a conflict between the type of parameter it expects and the one it tries to sanitize. Fix removes the label sanitization step because they are already validated by the parameter definition (https://github.com/ansible-collections/community.docker/pull/1034).
