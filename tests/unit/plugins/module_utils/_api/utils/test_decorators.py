@@ -19,8 +19,8 @@ if sys.version_info < (2, 7):
     pytestmark = pytest.mark.skip('Python 2.6 is not supported')
 
 from ansible_collections.community.docker.plugins.module_utils._api.api.client import APIClient
-from ansible_collections.community.docker.plugins.module_utils._api.constants import DEFAULT_DOCKER_API_VERSION
 from ansible_collections.community.docker.plugins.module_utils._api.utils.decorators import update_headers
+from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.constants import DEFAULT_DOCKER_API_VERSION
 
 
 class DecoratorsTest(unittest.TestCase):

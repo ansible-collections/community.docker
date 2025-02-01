@@ -34,7 +34,7 @@ if sys.version_info < (2, 7):
 
 from ansible_collections.community.docker.plugins.module_utils._api import constants, errors
 from ansible_collections.community.docker.plugins.module_utils._api.api.client import APIClient
-from ansible_collections.community.docker.plugins.module_utils._api.constants import DEFAULT_DOCKER_API_VERSION
+from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.constants import DEFAULT_DOCKER_API_VERSION
 from requests.packages import urllib3
 
 from .. import fake_api
@@ -109,7 +109,7 @@ def fake_read_from_socket(self, response, stream, tty=False, demux=False):
 url_base = '{prefix}/'.format(prefix=fake_api.prefix)
 url_prefix = '{0}v{1}/'.format(
     url_base,
-    constants.DEFAULT_DOCKER_API_VERSION)
+    DEFAULT_DOCKER_API_VERSION)
 
 
 class BaseAPIClientTest(unittest.TestCase):

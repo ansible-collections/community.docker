@@ -11,10 +11,11 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 from ansible_collections.community.docker.plugins.module_utils._api import constants
+from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.constants import DEFAULT_DOCKER_API_VERSION
 
 from . import fake_stat
 
-CURRENT_VERSION = 'v{api_version}'.format(api_version=constants.DEFAULT_DOCKER_API_VERSION)
+CURRENT_VERSION = 'v{api_version}'.format(api_version=DEFAULT_DOCKER_API_VERSION)
 
 FAKE_CONTAINER_ID = '3cc2351ab11b'
 FAKE_IMAGE_ID = 'e9aa60c60128'
