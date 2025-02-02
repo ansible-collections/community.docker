@@ -119,16 +119,17 @@ class ContextAPI(object):
                 If the server returns an error.
         """
         names = []
-        for dirname, dirnames, fnames in os.walk(get_meta_dir()):
-            for filename in fnames + dirnames:
+        for dirname, dummy, fnames in os.walk(get_meta_dir()):
+            for filename in fnames:
                 if filename == METAFILE:
+                    filepath = os.path.join(dirname, filename)
                     try:
-                        data = json.load(
-                            open(os.path.join(dirname, filename)))
+                        with open(filepath, "r") as f:
+                            data = json.load(f)
                         names.append(data["Name"])
                     except Exception as e:
                         raise errors.ContextException(
-                            f"Failed to load metafile {filename}: {e}",
+                            f"Failed to load metafile {filepath}: {e}",
                         ) from e
 
         contexts = [cls.DEFAULT_CONTEXT]
