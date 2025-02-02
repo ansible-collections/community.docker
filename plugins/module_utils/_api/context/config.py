@@ -15,7 +15,7 @@ import json
 import os
 
 from ..constants import DEFAULT_UNIX_SOCKET, IS_WINDOWS_PLATFORM
-from ..utils.config import find_config_file
+from ..utils.config import find_config_file, get_default_config_file
 from ..utils.utils import parse_host
 
 METAFILE = "meta.json"
@@ -51,6 +51,8 @@ def write_context_name_to_docker_config(name=None):
         config["currentContext"] = name
     else:
         return
+    if not docker_cfg_path:
+        docker_cfg_path = get_default_config_file()
     try:
         with open(docker_cfg_path, "w") as f:
             json.dump(config, f, indent=4)
@@ -63,7 +65,8 @@ def get_context_id(name):
 
 
 def get_context_dir():
-    return os.path.join(os.path.dirname(find_config_file() or ""), "contexts")
+    docker_cfg_path = find_config_file() or get_default_config_file()
+    return os.path.join(os.path.dirname(docker_cfg_path), "contexts")
 
 
 def get_meta_dir(name=None):
