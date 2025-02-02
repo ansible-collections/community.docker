@@ -253,8 +253,6 @@ from ansible_collections.community.docker.plugins.module_utils.compose_v2 import
     common_compose_argspec_ex,
 )
 
-from ansible_collections.community.docker.plugins.module_utils.util import sanitize_labels
-
 
 class ExecManager(BaseComposeManager):
     def __init__(self, client):
@@ -424,7 +422,6 @@ def main():
         needs_api_version=False,
         **argspec_ex
     )
-    sanitize_labels(client.module.params['labels'], 'labels', client)
 
     try:
         manager = ExecManager(client)
