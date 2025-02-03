@@ -20,7 +20,8 @@ from ansible_collections.community.docker.plugins.module_utils._api.constants im
     DEFAULT_UNIX_SOCKET,
     IS_WINDOWS_PLATFORM,
 )
-from ansible_collections.community.docker.plugins.module_utils._api.context import Context, ContextAPI
+from ansible_collections.community.docker.plugins.module_utils._api.context.api import ContextAPI
+from ansible_collections.community.docker.plugins.module_utils._api.context.context import Context
 
 
 class BaseContextTest(unittest.TestCase):

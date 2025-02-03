@@ -13,6 +13,8 @@ __metaclass__ = type
 import json
 import os
 
+from ansible.module_utils.six import raise_from
+
 from .. import errors
 
 from .config import (
@@ -128,9 +130,9 @@ class ContextAPI(object):
                             data = json.load(f)
                         names.append(data["Name"])
                     except Exception as e:
-                        raise errors.ContextException(
-                            f"Failed to load metafile {filepath}: {e}",
-                        ) from e
+                        raise_from(errors.ContextException(
+                            "Failed to load metafile {filepath}: {e}".format(filepath=filepath, e=e),
+                        ), e)
 
         contexts = [cls.DEFAULT_CONTEXT]
         for name in names:
@@ -154,7 +156,7 @@ class ContextAPI(object):
         err = write_context_name_to_docker_config(name)
         if err:
             raise errors.ContextException(
-                f'Failed to set current context: {err}')
+                'Failed to set current context: {err}'.format(err=err))
 
     @classmethod
     def remove_context(cls, name):

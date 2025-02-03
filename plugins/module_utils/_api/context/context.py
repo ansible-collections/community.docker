@@ -14,6 +14,8 @@ import json
 import os
 from shutil import copyfile, rmtree
 
+from ansible.module_utils.six import raise_from
+
 from ..errors import ContextException
 from ..tls import TLSConfig
 
@@ -59,7 +61,7 @@ class Context(object):
             if not isinstance(v, dict):
                 # unknown format
                 raise ContextException(
-                    f"Unknown endpoint format for context {name}: {v}",
+                    "Unknown endpoint format for context {name}: {v}".format(name=name, v=v),
                 )
 
             self.endpoints[k] = v
@@ -113,9 +115,9 @@ class Context(object):
                 metadata = json.load(f)
         except (OSError, KeyError, ValueError) as e:
             # unknown format
-            raise Exception(
-                f"Detected corrupted meta file for context {name} : {e}"
-            ) from e
+            raise_from(Exception(
+                "Detected corrupted meta file for context {name} : {e}".format(name=name, e=e)
+            ), e)
 
         # for docker endpoints, set defaults for
         # Host and SkipTLSVerify fields
@@ -189,7 +191,7 @@ class Context(object):
             rmtree(self.tls_path)
 
     def __repr__(self):
-        return f"<{self.__class__.__name__}: '{self.name}'>"
+        return "<{classname}: '{name}'>".format(classname=self.__class__.__name__, name=self.name)
 
     def __str__(self):
         return json.dumps(self.__call__(), indent=2)
