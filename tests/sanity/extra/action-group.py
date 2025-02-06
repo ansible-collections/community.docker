@@ -20,6 +20,7 @@ ACTION_GROUPS = {
         'pattern': re.compile('^.*$'),
         'exclusions': [
             'current_container_facts',
+            'docker_context_info',
         ],
         'doc_fragment': 'community.docker.attributes.actiongroup_docker',
     },
