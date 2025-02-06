@@ -26,12 +26,27 @@ from .config import (
 from .context import Context
 
 
+def create_default_context():
+    host = None
+    if os.environ.get('DOCKER_HOST'):
+        host = os.environ.get('DOCKER_HOST')
+    return Context("default", "swarm", host, description="Current DOCKER_HOST based configuration")
+
+
 class ContextAPI(object):
     """Context API.
     Contains methods for context management:
     create, list, remove, get, inspect.
     """
-    DEFAULT_CONTEXT = Context("default", "swarm")
+    DEFAULT_CONTEXT = None
+
+    @classmethod
+    def get_default_context(cls):
+        context = cls.DEFAULT_CONTEXT
+        if context is None:
+            context = create_default_context()
+            cls.DEFAULT_CONTEXT = context
+        return context
 
     @classmethod
     def create_context(
@@ -108,7 +123,7 @@ class ContextAPI(object):
         if not name:
             name = get_current_context_name()
         if name == "default":
-            return cls.DEFAULT_CONTEXT
+            return cls.get_default_context()
         return Context.load_context(name)
 
     @classmethod
@@ -128,13 +143,16 @@ class ContextAPI(object):
                     try:
                         with open(filepath, "r") as f:
                             data = json.load(f)
-                        names.append(data["Name"])
+                        name = data["Name"]
+                        if name == "default":
+                            raise ValueError('"default" is a reserved context name')
+                        names.append(name)
                     except Exception as e:
                         raise_from(errors.ContextException(
                             "Failed to load metafile {filepath}: {e}".format(filepath=filepath, e=e),
                         ), e)
 
-        contexts = [cls.DEFAULT_CONTEXT]
+        contexts = [cls.get_default_context()]
         for name in names:
             contexts.append(Context.load_context(name))
         return contexts
@@ -193,7 +211,7 @@ class ContextAPI(object):
 
     @classmethod
     def inspect_context(cls, name="default"):
-        """Remove a context. Similar to the ``docker context inspect`` command.
+        """Inspect a context. Similar to the ``docker context inspect`` command.
 
         Args:
             name (str): The name of the context
@@ -213,7 +231,7 @@ class ContextAPI(object):
         if not name:
             raise errors.MissingContextParameter("name")
         if name == "default":
-            return cls.DEFAULT_CONTEXT()
+            return cls.get_default_context()()
         ctx = Context.load_context(name)
         if not ctx:
             raise errors.ContextNotFound(name)

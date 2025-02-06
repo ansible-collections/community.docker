@@ -23,6 +23,10 @@ METAFILE = "meta.json"
 
 def get_current_context_name():
     name = "default"
+    if os.environ.get('DOCKER_HOST'):
+        return name
+    if os.environ.get('DOCKER_CONTEXT'):
+        return os.environ['DOCKER_CONTEXT']
     docker_cfg_path = find_config_file()
     if docker_cfg_path:
         try:

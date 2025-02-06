@@ -27,11 +27,14 @@ from .config import (
 )
 
 
+IN_MEMORY = "IN MEMORY"
+
+
 class Context(object):
     """A context."""
 
     def __init__(self, name, orchestrator=None, host=None, endpoints=None,
-                 tls=False):
+                 tls=False, description=None):
         if not name:
             raise Exception("Name not provided")
         self.name = name
@@ -39,8 +42,9 @@ class Context(object):
         self.orchestrator = orchestrator
         self.endpoints = {}
         self.tls_cfg = {}
-        self.meta_path = "IN MEMORY"
-        self.tls_path = "IN MEMORY"
+        self.meta_path = IN_MEMORY
+        self.tls_path = IN_MEMORY
+        self.description = description
 
         if not endpoints:
             # set default docker endpoint if no endpoint is set
@@ -96,7 +100,8 @@ class Context(object):
             instance = cls(
                 meta["Name"],
                 orchestrator=meta["Metadata"].get("StackOrchestrator", None),
-                endpoints=meta.get("Endpoints", None))
+                endpoints=meta.get("Endpoints", None),
+                description=meta.get('Description'))
             instance.context_type = meta["Metadata"].get("Type", None)
             instance._load_certs()
             instance.meta_path = get_meta_dir(name)
