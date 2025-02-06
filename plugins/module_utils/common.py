@@ -321,7 +321,7 @@ class AnsibleDockerClientBase(Client):
             cert_path=self._get_value('cert_path', params['client_cert'], 'DOCKER_CERT_PATH', None, type='str'),
             key_path=self._get_value('key_path', params['client_key'], 'DOCKER_CERT_PATH', None, type='str'),
             tls=self._get_value('tls', params['tls'], 'DOCKER_TLS', DEFAULT_TLS, type='bool'),
-            tls_verify=self._get_value('tls_verfy', params['validate_certs'], 'DOCKER_TLS_VERIFY',
+            tls_verify=self._get_value('validate_certs', params['validate_certs'], 'DOCKER_TLS_VERIFY',
                                        DEFAULT_TLS_VERIFY, type='bool'),
             timeout=self._get_value('timeout', params['timeout'], 'DOCKER_TIMEOUT',
                                     DEFAULT_TIMEOUT_SECONDS, type='int'),
