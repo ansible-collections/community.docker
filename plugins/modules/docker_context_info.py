@@ -14,7 +14,9 @@ module: docker_context_info
 short_description: Retrieve information on Docker contexts for the current user
 
 description:
-  - Essentially returns the output of C(docker context ls --format json).
+  - Return information on Docker contexts.
+  - This includes some generic information, as well as a RV(contexts[].config) dictionary that can be used for module defaults for all community.docker modules
+    that use the C(community.docker.docker) module defaults group.
 extends_documentation_fragment:
   - community.docker.attributes
   - community.docker.attributes.info_module
@@ -24,17 +26,22 @@ options:
   only_current:
     description:
       - If set to V(true), RV(contexts) will just contain the current context and none else.
-      - If set to V(false), RV(contexts) will list all contexts.
+      - If set to V(false) (default), RV(contexts) will list all contexts, unless O(name) is specified.
+      - Mutually exclusive to O(name).
     type: bool
     default: false
+  name:
+    description:
+      - A specific Docker CLI context to query.
+      - The module will fail if this context does not exist. If you simply want to query whether a context exists,
+        do not specify this parameter and use Jinja2 to search the resulting list for a context of the given name instead.
+      - Mutually exclusive with O(only_current).
+    type: str
   cli_context:
     description:
-      - The Docker CLI context to use.
-      - If set, will ignore the E(DOCKER_HOST) and E(DOCKER_CONTEXT) environment variables and the user's Docker config.
-      - If not set, the module will follow Docker CLI's precedence and uses E(DOCKER_HOST) if set;
-        if not, uses E(DOCKER_CONTEXT) if set;
-        if not, uses the current context from the Docker config;
-        if not set, uses C(default).
+      - Override for the default context's name.
+      - This is preferably used for context selection when O(only_current=true),
+        and it is used to compute the return values RV(contexts[].current) and RV(current_context_name).
     type: str
 
 author:
@@ -63,13 +70,15 @@ EXAMPLES = r"""
       community.docker.docker_container:
         image: ubuntu:latest
         name: ubuntu
-        state: running
+        state: started
 """
 
 RETURN = r"""
 contexts:
   description:
-    - A list of all contexts (O(only_current=false)) or only the current context (O(only_current=true)).
+    - A list of all contexts (O(only_current=false), O(name) not specified),
+      only the current context (O(only_current=true)),
+      or the requested context (O(name) specified).
   type: list
   elements: dict
   returned: success
@@ -149,6 +158,13 @@ contexts:
           type: bool
           returned: success, context is for Docker, and TLS config is present
           sample: true
+
+current_context_name:
+  description:
+    - The name of the current Docker context.
+  type: str
+  returned: success
+  sample: default
 """
 
 import traceback
@@ -161,12 +177,15 @@ from ansible_collections.community.docker.plugins.module_utils._api.context.api 
     ContextAPI,
 )
 from ansible_collections.community.docker.plugins.module_utils._api.context.config import (
-    get_current_context_name,
+    get_current_context_name_with_source,
 )
 from ansible_collections.community.docker.plugins.module_utils._api.context.context import (
     IN_MEMORY,
 )
-from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    ContextException,
+    DockerException,
+)
 
 
 def tls_context_to_json(context):
@@ -230,28 +249,51 @@ def context_to_json(context, current):
 def main():
     argument_spec = dict(
         only_current=dict(type='bool', default=False),
+        name=dict(type='str'),
         cli_context=dict(type='str'),
     )
 
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True,
+        mutually_exclusive=[
+            ("only_current", "name"),
+        ],
     )
 
     try:
-        current_context_name = get_current_context_name()
-        if module.params['only_current']:
-            contexts = [context_to_json(ContextAPI.get_context(current_context_name), True)]
+        if module.params['cli_context']:
+            current_context_name, current_context_source = module.params['cli_context'], "cli_context module option"
         else:
-            contexts = [
-                context_to_json(context, context.name == current_context_name)
-                for context in ContextAPI.contexts()
-            ]
+            current_context_name, current_context_source = get_current_context_name_with_source()
+        if module.params['name']:
+            contexts = [ContextAPI.get_context(module.params['name'])]
+            if not contexts[0]:
+                module.fail_json(msg="There is no context of name {name!r}".format(name=module.params['name']))
+        elif module.params['only_current']:
+            contexts = [ContextAPI.get_context(current_context_name)]
+            if not contexts[0]:
+                module.fail_json(
+                    msg="There is no context of name {name!r}, which is configured as the default context ({source})".format(
+                        name=current_context_name,
+                        source=current_context_source,
+                    ),
+                )
+        else:
+            contexts = ContextAPI.contexts()
+
+        json_contexts = [
+            context_to_json(context, context.name == current_context_name)
+            for context in contexts
+        ]
 
         module.exit_json(
             changed=False,
-            contexts=contexts,
+            contexts=json_contexts,
+            current_context_name=current_context_name,
         )
+    except ContextException as e:
+        module.fail_json(msg='Error when handling Docker contexts: {0}'.format(to_native(e)), exception=traceback.format_exc())
     except DockerException as e:
         module.fail_json(msg='An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
 

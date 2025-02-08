@@ -133,7 +133,7 @@ class ContextAPI(object):
             (Context): List of context objects.
         Raises:
             :py:class:`docker.errors.APIError`
-                If the server returns an error.
+                If something goes wrong.
         """
         names = []
         for dirname, dummy, fnames in os.walk(get_meta_dir()):
@@ -154,7 +154,10 @@ class ContextAPI(object):
 
         contexts = [cls.get_default_context()]
         for name in names:
-            contexts.append(Context.load_context(name))
+            context = Context.load_context(name)
+            if not context:
+                raise errors.ContextException("Context {context} cannot be found".format(context=name))
+            contexts.append(context)
         return contexts
 
     @classmethod

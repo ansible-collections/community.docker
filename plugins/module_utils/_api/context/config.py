@@ -21,20 +21,23 @@ from ..utils.utils import parse_host
 METAFILE = "meta.json"
 
 
-def get_current_context_name():
-    name = "default"
+def get_current_context_name_with_source():
     if os.environ.get('DOCKER_HOST'):
-        return name
+        return "default", "DOCKER_HOST environment variable set"
     if os.environ.get('DOCKER_CONTEXT'):
-        return os.environ['DOCKER_CONTEXT']
+        return os.environ['DOCKER_CONTEXT'], "DOCKER_CONTEXT environment variable set"
     docker_cfg_path = find_config_file()
     if docker_cfg_path:
         try:
             with open(docker_cfg_path) as f:
-                name = json.load(f).get("currentContext", "default")
+                return json.load(f).get("currentContext", "default"), "configuration file {file}".format(file=docker_cfg_path)
         except Exception:
-            return "default"
-    return name
+            pass
+    return "default", "fallback value"
+
+
+def get_current_context_name():
+    return get_current_context_name_with_source()[0]
 
 
 def write_context_name_to_docker_config(name=None):
