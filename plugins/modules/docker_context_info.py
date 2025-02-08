@@ -118,6 +118,9 @@ contexts:
     config:
       description:
         - In case the context is for Docker, contains option values to configure the community.docker modules to use this context.
+        - Note that the exact values returned here and their values might change over time if incompatibilities to existing modules are found.
+          The goal is that this configuration works fine with all modules in this collection, but we do not have the capabilities to
+          test all possible configuration options at the moment.
       type: dict
       returned: success
       sample: {}
