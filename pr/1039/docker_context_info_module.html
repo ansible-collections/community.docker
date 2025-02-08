@@ -191,7 +191,8 @@ To check whether it is installed, run <code class="code docutils literal notrans
 <section id="synopsis">
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Synopsis</a><a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>Essentially returns the output of <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">context</span> <span class="pre">ls</span> <span class="pre">--format</span> <span class="pre">json</span></code>.</p></li>
+<li><p>Return information on Docker contexts.</p></li>
+<li><p>This includes some generic information, as well as a <code class="ansible-return-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-return-contexts-config"><span class="std std-ref"><span class="pre">contexts[].config</span></span></a></code> dictionary that can be used for module defaults for all community.docker modules that use the <code class="docutils literal notranslate"><span class="pre">community.docker.docker</span></code> module defaults group.</p></li>
 </ul>
 </section>
 <section id="parameters">
@@ -207,17 +208,26 @@ To check whether it is installed, run <code class="code docutils literal notrans
 <div class="ansibleOptionAnchor" id="parameter-cli_context"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-context-info-module-parameter-cli-context"><strong>cli_context</strong></p>
 <a class="ansibleOptionLink" href="#parameter-cli_context" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>The Docker CLI context to use.</p>
-<p>If set, will ignore the <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a> and <code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CONTEXT</span></code> environment variables and the user’s Docker config.</p>
-<p>If not set, the module will follow Docker CLI’s precedence and uses <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a> if set; if not, uses <code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_CONTEXT</span></code> if set; if not, uses the current context from the Docker config; if not set, uses <code class="docutils literal notranslate"><span class="pre">default</span></code>.</p>
+<td><div class="ansible-option-cell"><p>Override for the default context’s name.</p>
+<p>This is preferably used for context selection when <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-parameter-only-current"><span class="std std-ref"><span class="pre">only_current=true</span></span></a></code>, and it is used to compute the return values <code class="ansible-return-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-return-contexts-current"><span class="std std-ref"><span class="pre">contexts[].current</span></span></a></code> and <code class="ansible-return-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-return-current-context-name"><span class="std std-ref"><span class="pre">current_context_name</span></span></a></code>.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-context-info-module-parameter-name"><strong>name</strong></p>
+<a class="ansibleOptionLink" href="#parameter-name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>A specific Docker CLI context to query.</p>
+<p>The module will fail if this context does not exist. If you simply want to query whether a context exists, do not specify this parameter and use Jinja2 to search the resulting list for a context of the given name instead.</p>
+<p>Mutually exclusive with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-parameter-only-current"><span class="std std-ref"><span class="pre">only_current</span></span></a></strong></code>.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-only_current"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-context-info-module-parameter-only-current"><strong>only_current</strong></p>
 <a class="ansibleOptionLink" href="#parameter-only_current" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>If set to <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code>, <code class="ansible-return-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-return-contexts"><span class="std std-ref"><span class="pre">contexts</span></span></a></code> will just contain the current context and none else.</p>
-<p>If set to <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code>, <code class="ansible-return-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-return-contexts"><span class="std std-ref"><span class="pre">contexts</span></span></a></code> will list all contexts.</p>
+<p>If set to <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code> (default), <code class="ansible-return-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-return-contexts"><span class="std std-ref"><span class="pre">contexts</span></span></a></code> will list all contexts, unless <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-parameter-name"><span class="std std-ref"><span class="pre">name</span></span></a></strong></code> is specified.</p>
+<p>Mutually exclusive to <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-parameter-name"><span class="std std-ref"><span class="pre">name</span></span></a></strong></code>.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">false</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -292,7 +302,7 @@ To check whether it is installed, run <code class="code docutils literal notrans
 <span class="w">      </span><span class="nt">community.docker.docker_container</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu:latest</span>
 <span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu</span>
-<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">running</span>
+<span class="w">        </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">started</span>
 </pre></div>
 </div>
 </section>
@@ -310,7 +320,7 @@ To check whether it is installed, run <code class="code docutils literal notrans
 <div class="ansibleOptionAnchor" id="return-contexts"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-context-info-module-return-contexts"><strong>contexts</strong></p>
 <a class="ansibleOptionLink" href="#return-contexts" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>A list of all contexts (<code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-parameter-only-current"><span class="std std-ref"><span class="pre">only_current=false</span></span></a></code>) or only the current context (<code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-parameter-only-current"><span class="std std-ref"><span class="pre">only_current=true</span></span></a></code>).</p>
+<td><div class="ansible-option-cell"><p>A list of all contexts (<code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-parameter-only-current"><span class="std std-ref"><span class="pre">only_current=false</span></span></a></code>, <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-parameter-name"><span class="std std-ref"><span class="pre">name</span></span></a></strong></code> not specified), only the current context (<code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-parameter-only-current"><span class="std std-ref"><span class="pre">only_current=true</span></span></a></code>), or the requested context (<code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-parameter-name"><span class="std std-ref"><span class="pre">name</span></span></a></strong></code> specified).</p>
 <p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
 </div></td>
 </tr>
@@ -422,6 +432,15 @@ To check whether it is installed, run <code class="code docutils literal notrans
 <p>Not present for <code class="ansible-return-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-context-info-module-return-contexts-name"><span class="std std-ref"><span class="pre">contexts[].name=default</span></span></a></code>.</p>
 <p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
 <p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;/home/user/.docker/contexts/tls/0123456789abcdef01234567890abcdef0123456789abcdef0123456789abcde/&quot;</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="return-current_context_name"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-context-info-module-return-current-context-name"><strong>current_context_name</strong></p>
+<a class="ansibleOptionLink" href="#return-current_context_name" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The name of the current Docker context.</p>
+<p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success</p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">&quot;default&quot;</span></code></p>
 </div></td>
 </tr>
 </tbody>
