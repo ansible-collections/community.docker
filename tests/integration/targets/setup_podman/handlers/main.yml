@@ -3,7 +3,10 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-dependencies:
-  - setup_docker
-  - setup_docker_python_deps
-  - setup_podman
+- name: Remove podman packages
+  action: "{{ ansible_facts.pkg_mgr }}"
+  args:
+    name: "{{ podman_cleanup_packages }}"
+    state: absent
+  listen: cleanup podman
+  when: not podman_skip_cleanup

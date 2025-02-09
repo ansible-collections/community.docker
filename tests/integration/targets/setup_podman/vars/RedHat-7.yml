@@ -3,7 +3,6 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-dependencies:
-  - setup_docker
-  - setup_docker_python_deps
-  - setup_podman
+# While CentOS 7 has podman, it doesn't come with a podman socket, so we treat it as whether it doesn't exist at all...
+has_podman: false
+podman_packages: []
