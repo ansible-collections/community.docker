@@ -4,6 +4,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 dependencies:
-  - setup_docker
-  - setup_docker_python_deps
-  - setup_podman
+  - setup_pkg_mgr
