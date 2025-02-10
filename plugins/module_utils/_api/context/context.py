@@ -34,7 +34,7 @@ class Context(object):
     """A context."""
 
     def __init__(self, name, orchestrator=None, host=None, endpoints=None,
-                 skip_tls_verify=False, description=None):
+                 skip_tls_verify=False, tls=False, description=None):
         if not name:
             raise Exception("Name not provided")
         self.name = name
@@ -54,7 +54,7 @@ class Context(object):
 
             self.endpoints = {
                 default_endpoint: {
-                    "Host": get_context_host(host, skip_tls_verify),
+                    "Host": get_context_host(host, skip_tls_verify or tls),
                     "SkipTLSVerify": skip_tls_verify,
                 }
             }
@@ -73,7 +73,7 @@ class Context(object):
                 continue
 
             self.endpoints[k]["Host"] = v.get("Host", get_context_host(
-                host, skip_tls_verify))
+                host, skip_tls_verify or tls))
             self.endpoints[k]["SkipTLSVerify"] = bool(v.get(
                 "SkipTLSVerify", skip_tls_verify))
 
@@ -81,7 +81,7 @@ class Context(object):
             self, name="docker", host=None, tls_cfg=None,
             skip_tls_verify=False, def_namespace=None):
         self.endpoints[name] = {
-            "Host": get_context_host(host, not skip_tls_verify),
+            "Host": get_context_host(host, not skip_tls_verify or tls_cfg is not None),
             "SkipTLSVerify": skip_tls_verify
         }
         if def_namespace:
