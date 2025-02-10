@@ -229,7 +229,6 @@ def context_to_json(context, current):
 
             # Create config for the modules
             module_config['docker_host'] = host_str
-            module_config['tls'] = not to_bool(endpoint.get('SkipTLSVerify'))
             if context.tls_cfg.get('docker'):
                 tls_cfg = context.tls_cfg['docker']
                 if tls_cfg.ca_cert:
@@ -238,7 +237,9 @@ def context_to_json(context, current):
                     module_config['client_cert'] = tls_cfg.cert[0]
                     module_config['client_key'] = tls_cfg.cert[1]
                 module_config['validate_certs'] = tls_cfg.verify
-                module_config['tls'] = to_bool(tls_cfg.verify)
+                module_config['tls'] = True
+            else:
+                module_config['tls'] = to_bool(endpoint.get('SkipTLSVerify'))
     return {
         'current': current,
         'name': context.name,
@@ -285,10 +286,10 @@ def main():
         else:
             contexts = ContextAPI.contexts()
 
-        json_contexts = [
+        json_contexts = sorted([
             context_to_json(context, context.name == current_context_name)
             for context in contexts
-        ]
+        ], key=lambda entry: entry['name'])
 
         module.exit_json(
             changed=False,

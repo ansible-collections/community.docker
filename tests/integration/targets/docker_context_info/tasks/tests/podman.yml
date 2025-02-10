@@ -1,0 +1,49 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- when: podman_cli_version is version('1.0.0', '>=')
+  block:
+    # The setup_podman role created a 'podman' context that we can use here.
+
+    - name: Get all contexts
+      community.docker.docker_context_info:
+      register: docker_contexts
+
+    - name: Ensure that there are at least two contexts
+      assert:
+        that:
+          - docker_contexts.contexts | length >= 2
+
+    - name: Get Podman context
+      community.docker.docker_context_info:
+        name: podman
+      register: docker_podman_context
+
+    - assert:
+        that:
+          - docker_podman_context.contexts | length == 1
+          - docker_podman_context.contexts[0].name == 'podman'
+          - docker_podman_context.contexts[0].current == false
+          - docker_podman_context.contexts[0].description == 'Podman'
+          - docker_podman_context.contexts[0].meta_path is string
+          - docker_podman_context.contexts[0].tls_path is string
+          - docker_podman_context.contexts[0].config.docker_host is string
+          - docker_podman_context.contexts[0].config.tls == false
+
+    - name: Run basic test with Podman context
+      module_defaults:
+        group/community.docker.docker: "{{ docker_podman_context.contexts[0].config }}"
+      block:
+
+        - name: Get info on Podman host
+          docker_host_info:
+          register: output
+
+        - name: Check for some Podman specific values
+          assert:
+            that:
+              - output.host_info.ProductLicense == 'Apache-2.0'
+              - >-
+                "Rootless" in output.host_info

@@ -34,7 +34,7 @@ class Context(object):
     """A context."""
 
     def __init__(self, name, orchestrator=None, host=None, endpoints=None,
-                 tls=False, description=None):
+                 skip_tls_verify=False, tls=False, description=None):
         if not name:
             raise Exception("Name not provided")
         self.name = name
@@ -54,8 +54,8 @@ class Context(object):
 
             self.endpoints = {
                 default_endpoint: {
-                    "Host": get_context_host(host, tls),
-                    "SkipTLSVerify": not tls
+                    "Host": get_context_host(host, skip_tls_verify or tls),
+                    "SkipTLSVerify": skip_tls_verify,
                 }
             }
             return
@@ -73,15 +73,15 @@ class Context(object):
                 continue
 
             self.endpoints[k]["Host"] = v.get("Host", get_context_host(
-                host, tls))
+                host, skip_tls_verify or tls))
             self.endpoints[k]["SkipTLSVerify"] = bool(v.get(
-                "SkipTLSVerify", not tls))
+                "SkipTLSVerify", skip_tls_verify))
 
     def set_endpoint(
             self, name="docker", host=None, tls_cfg=None,
             skip_tls_verify=False, def_namespace=None):
         self.endpoints[name] = {
-            "Host": get_context_host(host, not skip_tls_verify),
+            "Host": get_context_host(host, not skip_tls_verify or tls_cfg is not None),
             "SkipTLSVerify": skip_tls_verify
         }
         if def_namespace:
@@ -101,7 +101,7 @@ class Context(object):
                 meta["Name"],
                 orchestrator=meta["Metadata"].get("StackOrchestrator", None),
                 endpoints=meta.get("Endpoints", None),
-                description=meta.get('Description'))
+                description=meta["Metadata"].get('Description'))
             instance.context_type = meta["Metadata"].get("Type", None)
             instance._load_certs()
             instance.meta_path = get_meta_dir(name)
@@ -152,13 +152,13 @@ class Context(object):
                     cert = os.path.join(tls_dir, endpoint, filename)
                 elif filename.startswith("key"):
                     key = os.path.join(tls_dir, endpoint, filename)
-            if all([ca_cert, cert, key]):
+            if all([cert, key]) or ca_cert:
                 verify = None
                 if endpoint == "docker" and not self.endpoints["docker"].get(
                         "SkipTLSVerify", False):
                     verify = True
                 certs[endpoint] = TLSConfig(
-                    client_cert=(cert, key), ca_cert=ca_cert, verify=verify)
+                    client_cert=(cert, key) if cert and key else None, ca_cert=ca_cert, verify=verify)
         self.tls_cfg = certs
         self.tls_path = tls_dir
 
