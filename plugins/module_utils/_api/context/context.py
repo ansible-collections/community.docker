@@ -101,7 +101,7 @@ class Context(object):
                 meta["Name"],
                 orchestrator=meta["Metadata"].get("StackOrchestrator", None),
                 endpoints=meta.get("Endpoints", None),
-                description=meta.get('Description'))
+                description=meta["Metadata"].get('Description'))
             instance.context_type = meta["Metadata"].get("Type", None)
             instance._load_certs()
             instance.meta_path = get_meta_dir(name)
