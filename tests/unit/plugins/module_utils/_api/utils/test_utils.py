@@ -255,7 +255,7 @@ class ParseEnvFileTest(unittest.TestCase):
 class ParseHostTest(unittest.TestCase):
     def test_parse_host(self):
         invalid_hosts = [
-            '0.0.0.0',
+            'foo://0.0.0.0',
             'tcp://',
             'udp://127.0.0.1',
             'udp://127.0.0.1:2375',

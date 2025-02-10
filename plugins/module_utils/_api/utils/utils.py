@@ -303,12 +303,7 @@ def parse_host(addr, is_win32=False, tls=False):
     if proto in ('tcp', 'ssh'):
         port = parsed_url.port or 0
         if port <= 0:
-            if proto != 'ssh':
-                raise errors.DockerException(
-                    'Invalid bind address format: port is required:'
-                    ' {0}'.format(addr)
-                )
-            port = 22
+            port = 22 if proto == 'ssh' else (2375 if tls else 2376)
             netloc = '{0}:{1}'.format(parsed_url.netloc, port)
 
         if not parsed_url.hostname:
