@@ -2051,3 +2051,22 @@ releases:
       - 1029-sanitize-labels-fail.yml
       - 4.3.1.yml
     release_date: '2025-01-23'
+  4.4.0:
+    changes:
+      bugfixes:
+        - docker_compose_v2_run - the module has a conflict between the type of parameter
+          it expects and the one it tries to sanitize. Fix removes the label sanitization
+          step because they are already validated by the parameter definition (https://github.com/ansible-collections/community.docker/pull/1034).
+        - vendored Docker SDK for Python - do not assume that ``KeyError`` is always
+          for ``ApiVersion`` when querying version fails (https://github.com/ansible-collections/community.docker/issues/1033,
+          https://github.com/ansible-collections/community.docker/pull/1034).
+      release_summary: Feature and bugfix release.
+    fragments:
+      - 1034-do-not-sanitize-labels.yaml
+      - 1034-error-msg.yml
+      - 4.4.0.yml
+    modules:
+      - description: Retrieve information on Docker contexts for the current user.
+        name: docker_context_info
+        namespace: ''
+    release_date: '2025-02-13'
