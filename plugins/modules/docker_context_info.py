@@ -13,6 +13,8 @@ module: docker_context_info
 
 short_description: Retrieve information on Docker contexts for the current user
 
+version_added: 4.4.0
+
 description:
   - Return information on Docker contexts.
   - This includes some generic information, as well as a RV(contexts[].config) dictionary that can be used for module defaults for all community.docker modules
