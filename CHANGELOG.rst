@@ -4,6 +4,20 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v3.13.6
+=======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- docker_compose_v2_run - the module has a conflict between the type of parameter it expects and the one it tries to sanitize. Fix removes the label sanitization step because they are already validated by the parameter definition (https://github.com/ansible-collections/community.docker/pull/1034).
+- vendored Docker SDK for Python - do not assume that ``KeyError`` is always for ``ApiVersion`` when querying version fails (https://github.com/ansible-collections/community.docker/issues/1033, https://github.com/ansible-collections/community.docker/pull/1034).
+
 v3.13.5
 =======
 
