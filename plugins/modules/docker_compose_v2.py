@@ -163,7 +163,7 @@ options:
   yes:
     description:
       - When O(yes=true), pass C(--yes) to assume "yes" as answer to all prompts and run non-interactively.
-    type: int
+    type: bool
     version_added: TODO
 
 author:
