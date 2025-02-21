@@ -164,6 +164,7 @@ options:
     description:
       - When O(yes=true), pass C(--yes) to assume "yes" as answer to all prompts and run non-interactively.
     type: bool
+    default: false
     version_added: TODO
 
 author:
