@@ -478,6 +478,8 @@ class ServicesManager(BaseComposeManager):
         self.wait_timeout = parameters['wait_timeout']
         if self.compose_version >= LooseVersion('2.32.0'):
           self.yes = parameters['assume_yes']
+        else:
+          self.yes = False
 
         for key, value in self.scale.items():
             if not isinstance(key, string_types):
