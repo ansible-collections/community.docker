@@ -168,7 +168,7 @@ options:
       - This option is only available on Docker Compose 2.32.0 or newer.
     type: bool
     default: false
-    version_added: TODO
+    version_added: 4.5.0
 
 author:
   - Felix Fontein (@felixfontein)
