@@ -160,7 +160,7 @@ options:
       - When O(wait=true), wait at most this amount of seconds.
     type: int
     version_added: 3.8.0
-  yes:
+  assume_yes:
     description:
       - When O(yes=true), pass C(--yes) to assume "yes" as answer to all prompts and run non-interactively.
       - Right now a prompt is asked whenever a non-matching volume should be re-created. O(yes=false)
@@ -474,7 +474,7 @@ class ServicesManager(BaseComposeManager):
         self.scale = parameters['scale'] or {}
         self.wait = parameters['wait']
         self.wait_timeout = parameters['wait_timeout']
-        self.yes = parameters['yes']
+        self.yes = parameters['assume_yes']
 
         for key, value in self.scale.items():
             if not isinstance(key, string_types):
@@ -668,7 +668,7 @@ def main():
         wait=dict(type='bool', default=False),
         wait_timeout=dict(type='int'),
         ignore_build_events=dict(type='bool', default=True),
-        yes=dict(type='bool', default=False),
+        assume_yes=dict(type='bool', default=False),
     )
     argspec_ex = common_compose_argspec_ex()
     argument_spec.update(argspec_ex.pop('argspec'))
