@@ -453,6 +453,8 @@ from ansible_collections.community.docker.plugins.module_utils.compose_v2 import
     is_failed,
 )
 
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
+
 
 class ServicesManager(BaseComposeManager):
     def __init__(self, client):
@@ -474,7 +476,8 @@ class ServicesManager(BaseComposeManager):
         self.scale = parameters['scale'] or {}
         self.wait = parameters['wait']
         self.wait_timeout = parameters['wait_timeout']
-        self.yes = parameters['assume_yes']
+        if self.compose_version >= LooseVersion('2.32.0'):
+          self.yes = parameters['assume_yes']
 
         for key, value in self.scale.items():
             if not isinstance(key, string_types):
