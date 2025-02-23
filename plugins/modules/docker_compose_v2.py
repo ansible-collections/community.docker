@@ -162,9 +162,9 @@ options:
     version_added: 3.8.0
   assume_yes:
     description:
-      - When O(yes=true), pass C(--yes) to assume "yes" as answer to all prompts and run non-interactively.
-      - Right now a prompt is asked whenever a non-matching volume should be re-created. O(yes=false)
-        results in the question being answered by "no", which will simply re-use the existing volume.
+      - When O(assume_yes=true), pass C(--yes) to assume "yes" as answer to all prompts and run non-interactively.
+      - Right now a prompt is asked whenever a non-matching volume should be re-created. O(assume_yes=false)
+        results in the question not being answered, which will hang as it waits for stdin.
       - This option is only available on Docker Compose 2.32.0 or newer.
     type: bool
     default: false
