@@ -1,2 +1,2 @@
 minor_changes:
-  - docker_compose_v2 - add ``yes`` parameter for ``docker compose up`` (https://github.com/ansible-collections/community.docker/pull/1045).
+  - docker_compose_v2 - add ``assume_yes`` parameter for ``docker compose up`` (https://github.com/ansible-collections/community.docker/pull/1045).
