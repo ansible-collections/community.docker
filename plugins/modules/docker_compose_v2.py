@@ -160,6 +160,15 @@ options:
       - When O(wait=true), wait at most this amount of seconds.
     type: int
     version_added: 3.8.0
+  assume_yes:
+    description:
+      - When O(assume_yes=true), pass C(--yes) to assume "yes" as answer to all prompts and run non-interactively.
+      - Right now a prompt is asked whenever a non-matching volume should be re-created. O(assume_yes=false)
+        results in the question being answered by "no", which will simply re-use the existing volume.
+      - This option is only available on Docker Compose 2.32.0 or newer.
+    type: bool
+    default: false
+    version_added: 4.5.0
 
 author:
   - Felix Fontein (@felixfontein)
@@ -444,6 +453,8 @@ from ansible_collections.community.docker.plugins.module_utils.compose_v2 import
     is_failed,
 )
 
+from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
+
 
 class ServicesManager(BaseComposeManager):
     def __init__(self, client):
@@ -465,6 +476,9 @@ class ServicesManager(BaseComposeManager):
         self.scale = parameters['scale'] or {}
         self.wait = parameters['wait']
         self.wait_timeout = parameters['wait_timeout']
+        self.yes = parameters['assume_yes']
+        if self.compose_version >= LooseVersion('2.32.0') and self.yes:
+            self.fail('assume_yes=true needs Docker Compose 2.32.0 or newer, not version %s' % (self.compose_version, ))
 
         for key, value in self.scale.items():
             if not isinstance(key, string_types):
@@ -522,6 +536,8 @@ class ServicesManager(BaseComposeManager):
             args.append('--no-start')
         if dry_run:
             args.append('--dry-run')
+        if self.yes:
+            args.append('--yes')
         args.append('--')
         for service in self.services:
             args.append(service)
@@ -656,6 +672,7 @@ def main():
         wait=dict(type='bool', default=False),
         wait_timeout=dict(type='int'),
         ignore_build_events=dict(type='bool', default=True),
+        assume_yes=dict(type='bool', default=False),
     )
     argspec_ex = common_compose_argspec_ex()
     argument_spec.update(argspec_ex.pop('argspec'))
