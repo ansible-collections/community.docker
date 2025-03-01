@@ -91,6 +91,14 @@ options:
     aliases:
       - incremental
 
+  enable_ipv4:
+    description:
+      - Enable IPv4 networking.
+      - This is enabled by default, but can be explicitly disabled.
+      - Requires Docker API 1.47 or newer.
+    type: bool
+    version_added: 4.5.0
+
   enable_ipv6:
     description:
       - Enable IPv6 networking.
@@ -311,6 +319,7 @@ class TaskParameters(DockerBaseClass):
         self.internal = None
         self.labels = None
         self.debug = None
+        self.enable_ipv4 = None
         self.enable_ipv6 = None
         self.scope = None
         self.attachable = None
@@ -492,6 +501,10 @@ class DockerNetworkManager(object):
                                             parameter=value,
                                             active=net_config.get(key))
 
+        if self.parameters.enable_ipv4 is not None and self.parameters.enable_ipv4 != net.get('EnableIPv4', False):
+            differences.add('enable_ipv4',
+                            parameter=self.parameters.enable_ipv4,
+                            active=net.get('EnableIPv4', False))
         if self.parameters.enable_ipv6 is not None and self.parameters.enable_ipv6 != net.get('EnableIPv6', False):
             differences.add('enable_ipv6',
                             parameter=self.parameters.enable_ipv6,
@@ -543,8 +556,10 @@ class DockerNetworkManager(object):
                 data['ConfigOnly'] = self.parameters.config_only
             if self.parameters.config_from:
                 data['ConfigFrom'] = {'Network': self.parameters.config_from}
-            if self.parameters.enable_ipv6:
-                data['EnableIPv6'] = True
+            if self.parameters.enable_ipv6 is not None:
+                data['EnableIPv6'] = self.parameters.enable_ipv6
+            if self.parameters.enable_ipv4 is not None:
+                data['EnableIPv4'] = self.parameters.enable_ipv4
             if self.parameters.internal:
                 data['Internal'] = True
             if self.parameters.scope is not None:
@@ -703,6 +718,7 @@ def main():
             gateway=dict(type='str'),
             aux_addresses=dict(type='dict'),
         )),
+        enable_ipv4=dict(type='bool'),
         enable_ipv6=dict(type='bool'),
         internal=dict(type='bool'),
         labels=dict(type='dict', default={}),
@@ -717,6 +733,7 @@ def main():
         config_only=dict(docker_api_version='1.30'),
         scope=dict(docker_api_version='1.30'),
         attachable=dict(docker_api_version='1.26'),
+        enable_ipv4=dict(docker_api_version='1.47'),
     )
 
     client = AnsibleDockerClient(
