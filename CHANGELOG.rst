@@ -4,6 +4,20 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v4.5.0
+======
+
+Release Summary
+---------------
+
+Feature release.
+
+Minor Changes
+-------------
+
+- docker_compose_v2 - add ``assume_yes`` parameter for ``docker compose up`` (https://github.com/ansible-collections/community.docker/pull/1045).
+- docker_network - add ``enable_ipv4`` option (https://github.com/ansible-collections/community.docker/issues/1047, https://github.com/ansible-collections/community.docker/pull/1049).
+
 v4.4.0
 ======
 

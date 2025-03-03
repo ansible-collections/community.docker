@@ -2070,3 +2070,16 @@ releases:
         name: docker_context_info
         namespace: ''
     release_date: '2025-02-13'
+  4.5.0:
+    changes:
+      minor_changes:
+        - docker_compose_v2 - add ``assume_yes`` parameter for ``docker compose up``
+          (https://github.com/ansible-collections/community.docker/pull/1045).
+        - docker_network - add ``enable_ipv4`` option (https://github.com/ansible-collections/community.docker/issues/1047,
+          https://github.com/ansible-collections/community.docker/pull/1049).
+      release_summary: Feature release.
+    fragments:
+      - 1045-docker-compose-up-yes.yaml
+      - 1049-network-ipv4.yml
+      - 4.5.0.yml
+    release_date: '2025-03-03'
