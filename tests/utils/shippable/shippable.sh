@@ -59,7 +59,9 @@ function retry
 command -v pip
 pip --version
 pip list --disable-pip-version-check
-if [ "${ansible_version}" == "devel" ]; then
+if [ "${ansible_version}" == "datatagging" ]; then
+    retry pip install https://github.com/ansible/ansible/archive/refs/pull/84621/head.tar.gz --disable-pip-version-check
+elif [ "${ansible_version}" == "devel" ]; then
     retry pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 else
     retry pip install "https://github.com/ansible/ansible/archive/stable-${ansible_version}.tar.gz" --disable-pip-version-check
@@ -73,14 +75,14 @@ fi
 
 # START: HACK
 
-retry git clone --depth=1 --single-branch --branch stable-1 https://github.com/ansible-collections/community.library_inventory_filtering.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/library_inventory_filtering_v1"
+retry git clone --depth=1 --single-branch --branch ci-data-tagging https://github.com/felixfontein/community.library_inventory_filtering.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/library_inventory_filtering_v1"
 # NOTE: we're installing with git to work around Galaxy being a huge PITA (https://github.com/ansible/galaxy/issues/2429)
 # retry ansible-galaxy -vvv collection install community.library_inventory_filtering_v1
 
 if [ "${test}" == "sanity/extra" ] || [ "${test}" == "units/1" ]; then
     # Nothing further should be added to this list.
     # This is to prevent modules or plugins in this collection having a runtime dependency on other collections.
-    retry git clone --depth=1 --single-branch https://github.com/ansible-collections/community.internal_test_tools.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/internal_test_tools"
+    retry git clone --depth=1 --single-branch --branch ci-data-tagging https://github.com/felixfontein/community.internal_test_tools.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/internal_test_tools"
     # NOTE: we're installing with git to work around Galaxy being a huge PITA (https://github.com/ansible/galaxy/issues/2429)
     # retry ansible-galaxy -vvv collection install community.internal_test_tools
 fi
