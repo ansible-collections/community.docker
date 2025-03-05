@@ -65,9 +65,9 @@ jobs:
           pull-request-change-detection: 'true'
           testing-type: units
           pre-test-cmd: >-
-            git clone --depth=1 --single-branch --branch stable-1 https://github.com/ansible-collections/community.library_inventory_filtering.git ../../community/library_inventory_filtering_v1
+            git clone --depth=1 --single-branch --branch ci-data-tagging https://github.com/felixfontein/community.library_inventory_filtering.git ../../community/library_inventory_filtering_v1
             ;
-            git clone --depth=1 --single-branch --branch main https://github.com/ansible-collections/community.internal_test_tools.git ../../community/internal_test_tools
+            git clone --depth=1 --single-branch --branch ci-data-tagging https://github.com/felixfontein/community.internal_test_tools.git ../../community/internal_test_tools
 
   integration:
     runs-on: ubuntu-latest
@@ -121,7 +121,7 @@ jobs:
             ;
             git clone --depth=1 --single-branch https://github.com/ansible-collections/community.general.git ../../community/general
             ;
-            git clone --depth=1 --single-branch --branch stable-1 https://github.com/ansible-collections/community.library_inventory_filtering.git ../../community/library_inventory_filtering_v1
+            git clone --depth=1 --single-branch --branch ci-data-tagging https://github.com/felixfontein/community.library_inventory_filtering.git ../../community/library_inventory_filtering_v1
             ${{ matrix.extra-constraints && format('; echo ''{0}'' >> tests/utils/constraints.txt', matrix.extra-constraints) || '' }}
             ;
             cat tests/utils/constraints.txt
