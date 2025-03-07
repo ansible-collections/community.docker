@@ -110,10 +110,10 @@
 - name: assert UnlockKey in swarm_facts
   assert:
     that:
-      - 'output_2.swarm_facts.UnlockKey'
+      - 'output_2.swarm_facts.UnlockKey is truthy'
       - 'output_3.swarm_facts.UnlockKey is none'
       - 'output_6.swarm_facts.UnlockKey is none'
-      - 'output_7.swarm_facts.UnlockKey'
+      - 'output_7.swarm_facts.UnlockKey is truthy'
   when: docker_py_version is version('2.7.0', '>=')
 
 - assert:

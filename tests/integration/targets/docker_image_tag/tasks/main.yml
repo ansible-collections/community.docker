@@ -373,7 +373,7 @@
         that:
           - tag_11 is failed
           - >-
-            tag_11.msg == 'repository[1] must not have a digest; got: ' ~ iname_prefix ~ '-tagged-2@sha256:' ~ docker_test_image_digest_v1
+            tag_11.msg == ('repository[1] must not have a digest; got: ' ~ iname_prefix ~ '-tagged-2@sha256:' ~ docker_test_image_digest_v1)
 
     - name: Tag image 3 (fail because of image ID)
       docker_image_tag:
@@ -388,7 +388,7 @@
         that:
           - tag_12 is failed
           - >-
-            tag_12.msg == 'repository[1] must not be an image ID; got: sha256:' ~ docker_test_image_digest_v1
+            tag_12.msg == ('repository[1] must not be an image ID; got: sha256:' ~ docker_test_image_digest_v1)
 
   always:
     - name: Remove tagged images

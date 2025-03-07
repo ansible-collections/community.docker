@@ -60,7 +60,7 @@
       that:
       - result.exists
       - "'container' in result"
-      - "result.container"
+      - "result.container is truthy"
 
   - assert:
       that:
