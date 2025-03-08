@@ -355,7 +355,7 @@
     - load_image_1 is not changed
     - load_image_2 is failed
     - >-
-      "The archive did not contain image 'foo:bar'. Instead, found '" ~ docker_test_image_hello_world ~ "'." == load_image_2.msg
+      ("The archive did not contain image 'foo:bar'. Instead, found '" ~ docker_test_image_hello_world ~ "'.") == load_image_2.msg
     - load_image_3 is failed
     - '"Detected no loaded images. Archive potentially corrupt?" == load_image_3.msg'
     - load_image_4 is not changed

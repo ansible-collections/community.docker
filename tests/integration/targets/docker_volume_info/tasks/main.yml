@@ -60,7 +60,7 @@
       that:
       - result.exists
       - "'volume' in result"
-      - "result.volume"
+      - "result.volume is truthy"
 
   - assert:
       that:
