@@ -57,4 +57,4 @@ class TestDockerConnectionClass(unittest.TestCase):
         self.dc._version = None
         self.dc.remote_user = 'foo'
         (self.assertRaisesRegexp if PY2 else self.assertRaisesRegex)(
-            AnsibleError, '^Docker version check (.*?) failed: ', self.dc._get_actual_user)
+            AnsibleError, '^Docker version check (.*?) failed:', self.dc._get_actual_user)

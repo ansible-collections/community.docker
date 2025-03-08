@@ -147,7 +147,8 @@
   assert:
     that:
     # blkio_weight sometimes cannot be set, then we end up with 0 instead of the value we had
-    - not has_blkio_weight or update.diff.before.blkio_weight == 123 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([]))
+    - >-
+      not has_blkio_weight or update.diff.before.blkio_weight == 123 or ('Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([])))
     - not has_blkio_weight or update.diff.after.blkio_weight == 234
     - update.diff.before.cpu_period == 90000
     - update.diff.after.cpu_period == 50000
@@ -159,8 +160,10 @@
     - update.diff.after.memory == 50331648
     - update.diff.before.memory_reservation == 67108864
     - update.diff.after.memory_reservation == 50331648
-    - (update.diff.before.memory_swap | default(0)) == 67108864 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
-    - (update.diff.after.memory_swap | default(0)) == -1 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
+    - >-
+      (update.diff.before.memory_swap | default(0)) == 67108864 or ('Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([])))
+    - >-
+      (update.diff.after.memory_swap | default(0)) == -1 or ('Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([])))
     - "'restart_policy' not in update.diff.before"
     - update.diff.before.restart_retries == 5
     - update.diff.after.restart_retries == 2
@@ -168,7 +171,8 @@
 - name: Check diff for second update
   assert:
     that:
-    - not has_blkio_weight or update2.diff.before.blkio_weight == 234 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([]))
+    - >-
+      not has_blkio_weight or update2.diff.before.blkio_weight == 234 or ('Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([])))
     - not has_blkio_weight or update2.diff.after.blkio_weight == 135
     - update2.diff.before.cpu_period == 50000
     - update2.diff.after.cpu_period == 30000
@@ -180,8 +184,10 @@
     - update2.diff.after.memory == 33554432
     - update2.diff.before.memory_reservation == 50331648
     - update2.diff.after.memory_reservation == 31457280
-    - (update2.diff.before.memory_swap | default(0)) == -1 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
-    - (update2.diff.after.memory_swap | default(0)) == 134217728 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
+    - >-
+      (update2.diff.before.memory_swap | default(0)) == -1 or ('Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([])))
+    - >-
+      (update2.diff.after.memory_swap | default(0)) == 134217728 or ('Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([])))
     - update2.diff.before.restart_policy == 'on-failure'
     - update2.diff.after.restart_policy == 'always'
     - update2.diff.before.restart_retries == 2
@@ -190,7 +196,8 @@
 - name: Check diff for recreation
   assert:
     that:
-    - not has_blkio_weight or recreate.diff.before.blkio_weight == 135 or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([]))
+    - >-
+      not has_blkio_weight or recreate.diff.before.blkio_weight == 135 or ('Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([])))
     - not has_blkio_weight or recreate.diff.after.blkio_weight == 234
     - recreate.diff.before.cpu_period == 30000
     - recreate.diff.after.cpu_period == 50000
@@ -202,8 +209,10 @@
     - recreate.diff.after.memory == 50331648
     - recreate.diff.before.memory_reservation == 31457280
     - recreate.diff.after.memory_reservation == 50331648
-    - (recreate.diff.before.memory_swap | default(0)) == 134217728 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
-    - (recreate.diff.after.memory_swap | default(0)) == -1 or 'Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([]))
+    - >-
+      (recreate.diff.before.memory_swap | default(0)) == 134217728 or ('Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([])))
+    - >-
+      (recreate.diff.after.memory_swap | default(0)) == -1 or ('Docker warning: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.' in (create.warnings | default([])))
     - recreate.diff.before.restart_policy == 'always'
     - recreate.diff.after.restart_policy == 'on-failure'
     - recreate.diff.before.restart_retries == 0
