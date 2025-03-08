@@ -14,6 +14,7 @@ from ansible.template import Templar
 
 from ansible_collections.community.docker.plugins.inventory.docker_containers import InventoryModule
 from ansible_collections.community.docker.tests.unit.compat.mock import create_autospec
+from ansible_collections.community.internal_test_tools.tests.unit.utils.trust import make_trusted
 
 
 @pytest.fixture(scope="module")
@@ -257,7 +258,7 @@ def test_populate_filter(inventory, mocker):
         'groups': {},
         'keyed_groups': {},
         'filters': [
-            {'include': 'docker_state.Running is true'},
+            {'include': make_trusted('docker_state.Running is true')},
             {'exclude': True},
         ],
     }))
