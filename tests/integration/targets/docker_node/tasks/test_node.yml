@@ -30,9 +30,9 @@
     assert:
       that:
          - 'output is changed'
-         - 'output.actions[0] | regex_search("New Swarm cluster created: ")'
-         - 'output.swarm_facts.JoinTokens.Manager'
-         - 'output.swarm_facts.JoinTokens.Worker'
+         - '(output.actions[0] | regex_search("New Swarm cluster created: ")) is truthy'
+         - 'output.swarm_facts.JoinTokens.Manager is truthy'
+         - 'output.swarm_facts.JoinTokens.Worker is truthy'
 
   - name: Try to get docker_node_info when docker is running in swarm mode and as manager
     docker_node_info:
@@ -113,7 +113,7 @@
       that:
          - 'set_as_worker_1 is changed'
          - 'set_as_worker_2 is failed'
-         - 'set_as_worker_2.msg | regex_search("attempting to demote the last manager of the swarm")'
+         - '(set_as_worker_2.msg | regex_search("attempting to demote the last manager of the swarm")) is truthy'
 
 ####################################################################
 ## Set node as pasued ##############################################

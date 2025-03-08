@@ -141,9 +141,9 @@
     - network_mode_3 is changed
     - network_mode_3.container.HostConfig.NetworkMode == 'none'
     - network_mode_4 is changed
-    - network_mode_4.container.HostConfig.NetworkMode == 'container:' ~ cname_h1_id.container.Id
+    - network_mode_4.container.HostConfig.NetworkMode == ('container:' ~ cname_h1_id.container.Id)
     - network_mode_5 is not changed
-    - network_mode_5.container.HostConfig.NetworkMode == 'container:' ~ cname_h1_id.container.Id
+    - network_mode_5.container.HostConfig.NetworkMode == ('container:' ~ cname_h1_id.container.Id)
 
 ####################################################################
 ## networks, purge_networks for networks_cli_compatible=no #########

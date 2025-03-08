@@ -93,7 +93,8 @@
     that:
     - blkio_weight_1 is changed
     - blkio_weight_2 is not failed
-    - "blkio_weight_2 is not changed or 'Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (blkio_weight_2.warnings | default([]))"
+    - >-
+      blkio_weight_2 is not changed or ('Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (blkio_weight_2.warnings | default([])))
     - blkio_weight_3 is not failed
     - blkio_weight_3 is changed
 
@@ -210,7 +211,7 @@
     - cgroupns_mode_2 is not changed and cgroupns_mode_2 is not failed
     - >-
       cgroupns_mode_3 is changed or
-      'Docker warning: Your kernel does not support cgroup namespaces.  Cgroup namespace setting discarded.' in (cgroupns_mode_3.warnings | default([])) or
+      ('Docker warning: Your kernel does not support cgroup namespaces.  Cgroup namespace setting discarded.' in (cgroupns_mode_3.warnings | default([]))) or
       (cgroupns_mode_3 is failed and 'error mounting "cgroup" to rootfs at "/sys/fs/cgroup"' in cgroupns_mode_3.msg)
   when: docker_api_version is version('1.41', '>=') and cgroupns_mode_1 is not failed
 - assert:
@@ -2800,7 +2801,8 @@
     - kernel_memory_3 is changed
   when:
     - kernel_memory_1 is not failed or 'kernel memory accounting disabled in this runc build' not in kernel_memory_1.msg
-    - "'Docker warning: Specifying a kernel memory limit is deprecated and will be removed in a future release.' not in (kernel_memory_1.warnings | default([]))"
+    - >-
+      'Docker warning: Specifying a kernel memory limit is deprecated and will be removed in a future release.' not in (kernel_memory_1.warnings | default([]))
     # API version 1.42 seems to remove the kernel memory option completely
     - "'KernelMemory' in kernel_memory_1.container.HostConfig or docker_api_version is version('1.42', '<')"
 
@@ -3344,7 +3346,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     - memory_swappiness_1 is changed
     - memory_swappiness_2 is not changed
     - memory_swappiness_3 is changed
-  when: "'Docker warning: Your kernel does not support memory swappiness capabilities or the cgroup is not mounted. Memory swappiness discarded.' not in (memory_swappiness_1.warnings | default([]))"
+  when: >-
+    'Docker warning: Your kernel does not support memory swappiness capabilities or the cgroup is not mounted. Memory swappiness discarded.' not in (memory_swappiness_1.warnings | default([]))
 
 ####################################################################
 ## oom_killer ######################################################
@@ -3390,7 +3393,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     - oom_killer_1 is changed
     - oom_killer_2 is not changed
     - oom_killer_3 is changed
-  when: "'Docker warning: Your kernel does not support OomKillDisable. OomKillDisable discarded.' not in (oom_killer_1.warnings | default([]))"
+  when: >-
+    'Docker warning: Your kernel does not support OomKillDisable. OomKillDisable discarded.' not in (oom_killer_1.warnings | default([]))
 
 ####################################################################
 ## oom_score_adj ###################################################
@@ -3436,7 +3440,8 @@ avoid such warnings, please quote the value.' in (log_options_2.warnings | defau
     - oom_score_adj_1 is changed
     - oom_score_adj_2 is not changed
     - oom_score_adj_3 is changed
-  when: "'Docker warning: Your kernel does not support OomScoreAdj. OomScoreAdj discarded.' not in (oom_score_adj_1.warnings | default([]))"
+  when: >-
+    'Docker warning: Your kernel does not support OomScoreAdj. OomScoreAdj discarded.' not in (oom_score_adj_1.warnings | default([]))
 
 ####################################################################
 ## output_logs #####################################################
