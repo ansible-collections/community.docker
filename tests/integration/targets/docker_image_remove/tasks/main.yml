@@ -108,7 +108,7 @@
           - remove_2.diff.after.digests | length == 1
           - remove_2.deleted | length == 0
           - remove_2.untagged | length == 1
-          - remove_2.untagged[0] == iname_prefix ~ '-tagged-1:latest'
+          - remove_2.untagged[0] == (iname_prefix ~ '-tagged-1:latest')
           - remove_2_check.deleted == remove_2.deleted
           - remove_2_check.untagged == remove_2.untagged
           - info_2.images | length == 0
@@ -180,7 +180,7 @@
           - remove_4.diff.after.digests | length == 1
           - remove_4.deleted | length == 0
           - remove_4.untagged | length == 1
-          - remove_4.untagged[0] == iname_prefix ~ '-tagged-1:foo'
+          - remove_4.untagged[0] == (iname_prefix ~ '-tagged-1:foo')
           - remove_4_check.deleted == remove_4.deleted
           - remove_4_check.untagged == remove_4.untagged
           - info_3.images | length == 2

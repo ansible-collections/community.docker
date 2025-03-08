@@ -30,9 +30,9 @@
     assert:
       that:
          - 'output is changed'
-         - 'output.actions[0] | regex_search("New Swarm cluster created: ")'
-         - 'output.swarm_facts.JoinTokens.Manager'
-         - 'output.swarm_facts.JoinTokens.Worker'
+         - '(output.actions[0] | regex_search("New Swarm cluster created: ")) is truthy'
+         - 'output.swarm_facts.JoinTokens.Manager is truthy'
+         - 'output.swarm_facts.JoinTokens.Worker is truthy'
 
   - name: Try to get docker_node_info when docker is running in swarm mode and as manager
     docker_node_info:

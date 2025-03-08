@@ -63,7 +63,7 @@
       that:
       - result.exists
       - "'network' in result"
-      - "result.network"
+      - "result.network is truthy"
 
   - assert:
       that:

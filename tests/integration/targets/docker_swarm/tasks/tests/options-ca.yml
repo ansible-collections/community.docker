@@ -108,11 +108,11 @@
     assert:
       that:
       - output_1 is changed
-      - 'output_1.actions[0] | regex_search("New Swarm cluster created: ")'
+      - '(output_1.actions[0] | regex_search("New Swarm cluster created: ")) is truthy'
       - output_1.diff.before is defined
       - output_1.diff.after is defined
       - output_2 is changed
-      - 'output_2.actions[0] | regex_search("New Swarm cluster created: ")'
+      - '(output_2.actions[0] | regex_search("New Swarm cluster created: ")) is truthy'
       - output_2.diff.before is defined
       - output_2.diff.after is defined
       - output_5 is changed

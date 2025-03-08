@@ -225,7 +225,7 @@
       - result_1_diff.diff.before == ''
       - result_1_diff.diff.before_header == '/file'
       - result_1_diff.diff.after == 'Content 1\n'
-      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_1_diff.diff.after_header == (remote_tmp_dir ~ '/file_1')
       - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_3 is not changed
@@ -233,7 +233,7 @@
       - result_3_diff.diff.before == 'Content 1\n'
       - result_3_diff.diff.before_header == '/file'
       - result_3_diff.diff.after == 'Content 1\n'
-      - result_3_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_3_diff.diff.after_header == (remote_tmp_dir ~ '/file_1')
       - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4 is not changed
       - result_5.stdout | b64decode == 'Content 1\n'
@@ -243,7 +243,7 @@
       - result_6_diff.diff.before == 'Content 1\n'
       - result_6_diff.diff.before_header == '/file'
       - result_6_diff.diff.after == 'Content 1\n'
-      - result_6_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_6_diff.diff.after_header == (remote_tmp_dir ~ '/file_1')
       - result_6 == (result_6_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_7 is changed
       - result_8.stdout | b64decode == 'Content 1\n'
@@ -369,7 +369,7 @@
       - result_1_diff.diff.before == 'Content 1\n'
       - result_1_diff.diff.before_header == '/file'
       - result_1_diff.diff.after == 'Content 1\n'
-      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_1_diff.diff.after_header == (remote_tmp_dir ~ '/file_1')
       - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is not changed
       - result_2.container_path == '/file'
@@ -382,7 +382,7 @@
       - result_4_diff.diff.before == 'Content 1\n'
       - result_4_diff.diff.before_header == '/file'
       - result_4_diff.diff.after == 'Content 1\n'
-      - result_4_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_4_diff.diff.after_header == (remote_tmp_dir ~ '/file_1')
       - result_4 == (result_4_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_5 is changed
       - result_5.container_path == '/file'
@@ -506,7 +506,7 @@
       - result_1_diff.diff.before == '/file'
       - result_1_diff.diff.before_header == '/lnk'
       - result_1_diff.diff.after == 'Content 1\n'
-      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_1_diff.diff.after_header == (remote_tmp_dir ~ '/file_1')
       - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_2.container_path == '/lnk'
@@ -515,7 +515,7 @@
       - result_3_diff.diff.before == 'Content 1\n'
       - result_3_diff.diff.before_header == '/lnk'
       - result_3_diff.diff.after == 'Content 1\n'
-      - result_3_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_3_diff.diff.after_header == (remote_tmp_dir ~ '/file_1')
       - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4 is not changed
       - result_5.stdout | b64decode == 'Content 1\n'
@@ -526,7 +526,7 @@
       - result_6_diff.diff.before == 'Content 1\n'
       - result_6_diff.diff.before_header == '/lnk'
       - result_6_diff.diff.after == 'Content 1\n'
-      - result_6_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_6_diff.diff.after_header == (remote_tmp_dir ~ '/file_1')
       - result_6 == (result_6_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_7 is changed
       - result_7.container_path == '/lnk'
@@ -609,7 +609,7 @@
       - result_1_diff.diff.before == '(directory)'
       - result_1_diff.diff.before_header == '/dir'
       - result_1_diff.diff.after == 'Content 1\n'
-      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_1_diff.diff.after_header == (remote_tmp_dir ~ '/file_1')
       - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_2.container_path == '/dir'
@@ -618,7 +618,7 @@
       - result_3_diff.diff.before == 'Content 1\n'
       - result_3_diff.diff.before_header == '/dir'
       - result_3_diff.diff.after == 'Content 1\n'
-      - result_3_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_3_diff.diff.after_header == (remote_tmp_dir ~ '/file_1')
       - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4 is not changed
       - result_5.stdout | b64decode == 'Content 1\n'
@@ -671,7 +671,7 @@
       - result_1_diff.diff.before == 'Content 1\n'
       - result_1_diff.diff.before_header == '/file'
       - result_1_diff.diff.after == 'Content 2\nExtra line'
-      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_2'
+      - result_1_diff.diff.after_header == (remote_tmp_dir ~ '/file_2')
       - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_3.stdout | b64decode == 'Content 2\nExtra line'
@@ -755,7 +755,7 @@
       - result_1_diff.diff.before == 'Content 2\nExtra line'
       - result_1_diff.diff.before_header == '/file'
       - result_1_diff.diff.after == 'Content 2\nExtra line'
-      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_2'
+      - result_1_diff.diff.after_header == (remote_tmp_dir ~ '/file_2')
       - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_3 is not changed
@@ -763,7 +763,7 @@
       - result_3_diff.diff.before == 'Content 2\nExtra line'
       - result_3_diff.diff.before_header == '/file'
       - result_3_diff.diff.after == 'Content 2\nExtra line'
-      - result_3_diff.diff.after_header == remote_tmp_dir ~ '/file_2'
+      - result_3_diff.diff.after_header == (remote_tmp_dir ~ '/file_2')
       - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4 is not changed
       - result_5.stdout | b64decode == 'Content 2\nExtra line'
@@ -905,7 +905,7 @@
       - result_1_diff.diff.before == 'Content 2\nExtra line'
       - result_1_diff.diff.before_header == '/file'
       - result_1_diff.diff.after == 'Content 2\nExtra line'
-      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_2'
+      - result_1_diff.diff.after_header == (remote_tmp_dir ~ '/file_2')
       - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_3 is not changed
@@ -913,7 +913,7 @@
       - result_3_diff.diff.before == 'Content 2\nExtra line'
       - result_3_diff.diff.before_header == '/file'
       - result_3_diff.diff.after == 'Content 2\nExtra line'
-      - result_3_diff.diff.after_header == remote_tmp_dir ~ '/file_2'
+      - result_3_diff.diff.after_header == (remote_tmp_dir ~ '/file_2')
       - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4 is not changed
       - result_5.stdout | b64decode == 'Content 2\nExtra line'
@@ -923,7 +923,7 @@
       - result_6_diff.diff.before == 'Content 2\nExtra line'
       - result_6_diff.diff.before_header == '/file'
       - result_6_diff.diff.after == 'Content 2\nExtra line'
-      - result_6_diff.diff.after_header == remote_tmp_dir ~ '/file_2'
+      - result_6_diff.diff.after_header == (remote_tmp_dir ~ '/file_2')
       - result_6 == (result_6_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_7 is changed
       - result_8.stdout | b64decode == 'Content 2\nExtra line'
@@ -1039,7 +1039,7 @@
       - result_1_diff.diff.before == 'Content 2\nExtra line'
       - result_1_diff.diff.before_header == '/file'
       - result_1_diff.diff.after == 'Content 1\n'
-      - result_1_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_1_diff.diff.after_header == (remote_tmp_dir ~ '/file_1')
       - result_1 == (result_1_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_2 is changed
       - result_3 is not changed
@@ -1047,7 +1047,7 @@
       - result_3_diff.diff.before == 'Content 1\n'
       - result_3_diff.diff.before_header == '/file'
       - result_3_diff.diff.after == 'Content 1\n'
-      - result_3_diff.diff.after_header == remote_tmp_dir ~ '/file_1'
+      - result_3_diff.diff.after_header == (remote_tmp_dir ~ '/file_1')
       - result_3 == (result_3_diff | dict2items | rejectattr('key', 'eq', 'diff') | items2dict)
       - result_4 is not changed
       - result_5 is failed

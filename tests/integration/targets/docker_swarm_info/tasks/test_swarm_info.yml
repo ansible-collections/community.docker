@@ -34,9 +34,9 @@
     assert:
       that:
          - 'output is changed'
-         - 'output.actions[0] | regex_search("New Swarm cluster created: ")'
-         - 'output.swarm_facts.JoinTokens.Manager'
-         - 'output.swarm_facts.JoinTokens.Worker'
+         - '(output.actions[0] | regex_search("New Swarm cluster created: ")) is truthy'
+         - 'output.swarm_facts.JoinTokens.Manager is truthy'
+         - 'output.swarm_facts.JoinTokens.Worker is truthy'
 
   - name: Try to get docker_swarm_info when docker is running in swarm mode and as manager
     docker_swarm_info:
@@ -45,9 +45,9 @@
   - name: assert creding docker swarm facts
     assert:
       that:
-         - 'output.swarm_facts.JoinTokens.Manager'
-         - 'output.swarm_facts.JoinTokens.Worker'
-         - 'output.swarm_facts.ID'
+         - 'output.swarm_facts.JoinTokens.Manager is truthy'
+         - 'output.swarm_facts.JoinTokens.Worker is truthy'
+         - 'output.swarm_facts.ID is truthy'
          - 'output.can_talk_to_docker == true'
          - 'output.docker_swarm_active == true'
          - 'output.docker_swarm_manager == true'
@@ -61,9 +61,9 @@
   - name: assert reading swarm facts with list of nodes option
     assert:
       that:
-         - 'output.swarm_facts.JoinTokens.Manager'
-         - 'output.swarm_facts.JoinTokens.Worker'
-         - 'output.swarm_facts.ID'
+         - 'output.swarm_facts.JoinTokens.Manager is truthy'
+         - 'output.swarm_facts.JoinTokens.Worker is truthy'
+         - 'output.swarm_facts.ID is truthy'
          - 'output.nodes[0].ID is string'
          - 'output.can_talk_to_docker == true'
          - 'output.docker_swarm_active == true'
@@ -84,11 +84,11 @@
   - name: assert reading swarm facts with list of nodes and versbose output options
     assert:
       that:
-         - 'output.swarm_facts.JoinTokens.Manager'
-         - 'output.swarm_facts.JoinTokens.Worker'
-         - 'output.swarm_facts.ID'
+         - 'output.swarm_facts.JoinTokens.Manager is truthy'
+         - 'output.swarm_facts.JoinTokens.Worker is truthy'
+         - 'output.swarm_facts.ID is truthy'
          - 'output.nodes[0].ID is string'
-         - 'output.nodes[0].CreatedAt'
+         - 'output.nodes[0].CreatedAt is truthy'
          - 'output.can_talk_to_docker == true'
          - 'output.docker_swarm_active == true'
          - 'output.docker_swarm_manager == true'
@@ -104,9 +104,9 @@
   - name: assert reading reading swarm facts and using node filter (random node name)
     assert:
       that:
-         - 'output.swarm_facts.JoinTokens.Manager'
-         - 'output.swarm_facts.JoinTokens.Worker'
-         - 'output.swarm_facts.ID'
+         - 'output.swarm_facts.JoinTokens.Manager is truthy'
+         - 'output.swarm_facts.JoinTokens.Worker is truthy'
+         - 'output.swarm_facts.ID is truthy'
          - 'output.nodes | length == 1'
          - 'output.can_talk_to_docker == true'
          - 'output.docker_swarm_active == true'
@@ -127,9 +127,9 @@
   - name: assert reading reading swarm facts and using node filter (random node name)
     assert:
       that:
-         - 'output.swarm_facts.JoinTokens.Manager'
-         - 'output.swarm_facts.JoinTokens.Worker'
-         - 'output.swarm_facts.ID'
+         - 'output.swarm_facts.JoinTokens.Manager is truthy'
+         - 'output.swarm_facts.JoinTokens.Worker is truthy'
+         - 'output.swarm_facts.ID is truthy'
          - 'output.nodes | length == 0'
          - 'output.can_talk_to_docker == true'
          - 'output.docker_swarm_active == true'
