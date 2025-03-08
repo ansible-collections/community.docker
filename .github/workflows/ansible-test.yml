@@ -88,6 +88,8 @@ jobs:
           testing-type: units
           pre-test-cmd: >-
             git clone --depth=1 --single-branch --branch stable-1 https://github.com/ansible-collections/community.library_inventory_filtering.git ../../community/library_inventory_filtering_v1
+            ;
+            git clone --depth=1 --single-branch --branch main https://github.com/ansible-collections/community.internal_test_tools.git ../../community/internal_test_tools
 
   integration:
     # Ansible-test on various stable branches does not yet work well with cgroups v2.
