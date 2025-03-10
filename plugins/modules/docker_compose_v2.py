@@ -537,6 +537,7 @@ class ServicesManager(BaseComposeManager):
         if dry_run:
             args.append('--dry-run')
         if self.yes:
+            # Note that the long form is '--y', and not '--yes' as one would expect. Since this looks like a bug we're using the short form.
             args.append('-y')
         args.append('--')
         for service in self.services:
