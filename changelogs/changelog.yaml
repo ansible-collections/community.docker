@@ -2083,3 +2083,13 @@ releases:
       - 1049-network-ipv4.yml
       - 4.5.0.yml
     release_date: '2025-03-03'
+  4.5.1:
+    changes:
+      bugfixes:
+        - docker_compose_v2 - rename flag for ``assume_yes`` parameter for ``docker
+          compose up`` to ``-y`` (https://github.com/ansible-collections/community.docker/pull/1054).
+      release_summary: Bugfix release.
+    fragments:
+      - 1054-use-correct-flag-for-assume-yes.yaml
+      - 4.5.1.yml
+    release_date: '2025-03-11'
