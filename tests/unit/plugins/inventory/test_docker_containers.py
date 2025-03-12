@@ -12,8 +12,9 @@ from ansible.inventory.data import InventoryData
 from ansible.parsing.dataloader import DataLoader
 from ansible.template import Templar
 
+from ansible_collections.community.internal_test_tools.tests.unit.compat.mock import create_autospec
+
 from ansible_collections.community.docker.plugins.inventory.docker_containers import InventoryModule
-from ansible_collections.community.docker.tests.unit.compat.mock import create_autospec
 
 
 @pytest.fixture(scope="module")
