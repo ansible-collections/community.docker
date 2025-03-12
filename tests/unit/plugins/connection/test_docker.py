@@ -8,8 +8,9 @@ __metaclass__ = type
 
 from io import StringIO
 
-from ansible_collections.community.docker.tests.unit.compat import mock
-from ansible_collections.community.docker.tests.unit.compat import unittest
+from ansible_collections.community.internal_test_tools.tests.unit.compat import mock
+from ansible_collections.community.internal_test_tools.tests.unit.compat import unittest
+
 from ansible.errors import AnsibleError
 from ansible.playbook.play_context import PlayContext
 from ansible.plugins.loader import connection_loader
