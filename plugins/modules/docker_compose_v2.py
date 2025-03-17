@@ -477,7 +477,7 @@ class ServicesManager(BaseComposeManager):
         self.wait = parameters['wait']
         self.wait_timeout = parameters['wait_timeout']
         self.yes = parameters['assume_yes']
-        if self.compose_version >= LooseVersion('2.32.0') and self.yes:
+        if self.compose_version < LooseVersion('2.32.0') and self.yes:
             self.fail('assume_yes=true needs Docker Compose 2.32.0 or newer, not version %s' % (self.compose_version, ))
 
         for key, value in self.scale.items():
