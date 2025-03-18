@@ -84,6 +84,13 @@
         state: present
       register: present_3
 
+    - name: Present with --yes
+      docker_compose_v2:
+        project_src: '{{ project_src }}'
+        state: present
+        assume_yes: true
+      when: docker_compose_version is version('2.32.0', '>=')
+
     - assert:
         that:
           - present_1_check is changed
