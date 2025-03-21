@@ -162,7 +162,7 @@ options:
     version_added: 3.8.0
   assume_yes:
     description:
-      - When O(assume_yes=true), pass C(-y) to assume "yes" as answer to all prompts and run non-interactively.
+      - When O(assume_yes=true), pass C(-y)/C(--yes) to assume "yes" as answer to all prompts and run non-interactively.
       - Right now a prompt is asked whenever a non-matching volume should be re-created. O(assume_yes=false)
         results in the question being answered by "no", which will simply re-use the existing volume.
       - This option is only available on Docker Compose 2.32.0 or newer.
@@ -537,8 +537,9 @@ class ServicesManager(BaseComposeManager):
         if dry_run:
             args.append('--dry-run')
         if self.yes:
-            # Note that the long form is '--y', and not '--yes' as one would expect. Since this looks like a bug we're using the short form.
-            args.append('-y')
+            # Note that for Docker Compose 2.32.x and 2.33.x, the long form is '--y' and not '--yes'.
+            # This was fixed in Docker Compose 2.34.0 (https://github.com/docker/compose/releases/tag/v2.34.0).
+            args.append('-y' if self.compose_version < LooseVersion('2.34.0') else '--yes')
         args.append('--')
         for service in self.services:
             args.append(service)
