@@ -2093,3 +2093,15 @@ releases:
       - 1054-use-correct-flag-for-assume-yes.yaml
       - 4.5.1.yml
     release_date: '2025-03-11'
+  4.5.2:
+    changes:
+      bugfixes:
+        - docker_compose_v2 - fix version check for ``assume_yes`` (https://github.com/ansible-collections/community.docker/pull/1054).
+        - docker_compose_v2 - use ``--yes`` instead of ``-y`` from Docker Compose
+          2.34.0 on (https://github.com/ansible-collections/community.docker/pull/1060).
+      release_summary: Bugfix release.
+    fragments:
+      - 1059-fix-version-check-for-assume-yes.yaml
+      - 1060-compose-yes.yml
+      - 4.5.2.yml
+    release_date: '2025-03-22'
