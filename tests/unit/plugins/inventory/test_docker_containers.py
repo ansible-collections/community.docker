@@ -13,6 +13,7 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.template import Templar
 
 from ansible_collections.community.internal_test_tools.tests.unit.compat.mock import create_autospec
+from ansible_collections.community.internal_test_tools.tests.unit.utils.trust import make_trusted
 
 from ansible_collections.community.docker.plugins.inventory.docker_containers import InventoryModule
 
@@ -258,7 +259,7 @@ def test_populate_filter(inventory, mocker):
         'groups': {},
         'keyed_groups': {},
         'filters': [
-            {'include': 'docker_state.Running is true'},
+            {'include': make_trusted('docker_state.Running is true')},
             {'exclude': True},
         ],
     }))
