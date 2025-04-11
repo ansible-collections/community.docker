@@ -91,6 +91,7 @@
         privatekey_path: '{{ remote_tmp_dir }}/cert.key'
         subject_alt_name:
         - DNS:daemon-tls.ansible.com
+        subject_alt_name_critical: true
 
     - name: Create frontend certificate
       community.crypto.x509_certificate:
