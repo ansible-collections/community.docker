@@ -71,9 +71,19 @@
       community.crypto.openssl_csr:
         path: '{{ remote_tmp_dir }}/ca.csr'
         privatekey_path: '{{ remote_tmp_dir }}/ca.key'
+        subject:
+          commonName: Ansible test CA for Docker HTTPS connection tests
+        useCommonNameForSAN: false
         basic_constraints:
-        - 'CA:TRUE'
+          - 'CA:TRUE'
         basic_constraints_critical: true
+        key_usage:
+          - digitalSignature
+          - Certificate Sign
+        key_usage_critical: true
+        extended_key_usage:
+          - serverAuth  # the same as "TLS Web Server Authentication"
+        extended_key_usage_critical: true
 
     - name: Create CA certificate
       community.crypto.x509_certificate:
@@ -87,7 +97,8 @@
         path: '{{ remote_tmp_dir }}/cert.csr'
         privatekey_path: '{{ remote_tmp_dir }}/cert.key'
         subject_alt_name:
-        - DNS:daemon-tls.ansible.com
+          - DNS:daemon-tls.ansible.com
+        subject_alt_name_critical: true
 
     - name: Create frontend certificate
       community.crypto.x509_certificate:
