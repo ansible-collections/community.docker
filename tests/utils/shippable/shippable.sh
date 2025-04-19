@@ -67,17 +67,13 @@ fi
 
 export ANSIBLE_COLLECTIONS_PATHS="${PWD}/../../../"
 
-if [ "${test}" == "sanity/extra" ]; then
-    retry pip install junit-xml --disable-pip-version-check
-fi
-
 # START: HACK
 
 retry git clone --depth=1 --single-branch --branch stable-1 https://github.com/ansible-collections/community.library_inventory_filtering.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/library_inventory_filtering_v1"
 # NOTE: we're installing with git to work around Galaxy being a huge PITA (https://github.com/ansible/galaxy/issues/2429)
 # retry ansible-galaxy -vvv collection install community.library_inventory_filtering_v1
 
-if [ "${test}" == "sanity/extra" ] || [ "${test}" == "units/1" ]; then
+if [ "${test}" == "units/1" ]; then
     # Nothing further should be added to this list.
     # This is to prevent modules or plugins in this collection having a runtime dependency on other collections.
     retry git clone --depth=1 --single-branch https://github.com/ansible-collections/community.internal_test_tools.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/internal_test_tools"
@@ -85,7 +81,7 @@ if [ "${test}" == "sanity/extra" ] || [ "${test}" == "units/1" ]; then
     # retry ansible-galaxy -vvv collection install community.internal_test_tools
 fi
 
-if [ "${script}" != "sanity/1" ] && [ "${script}" != "units/1" ] && [ "${test}" != "sanity/extra" ]; then
+if [ "${script}" != "sanity/1" ] && [ "${script}" != "units/1" ]; then
     # To prevent Python dependencies on other collections only install other collections for integration tests
     retry git clone --depth=1 --single-branch https://github.com/ansible-collections/ansible.posix.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/ansible/posix"
     retry git clone --depth=1 --single-branch https://github.com/ansible-collections/community.crypto.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/crypto"
