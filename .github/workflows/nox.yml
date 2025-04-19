@@ -10,9 +10,9 @@ name: nox
       - main
       - stable-*
   pull_request:
-  # Run CI once per day (at 04:30 UTC)
+  # Run CI once per day (at 09:00 UTC)
   schedule:
-    - cron: '30 4 * * *'
+    - cron: '0 9 * * *'
   workflow_dispatch:
 
 jobs:
