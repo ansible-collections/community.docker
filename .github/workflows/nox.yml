@@ -3,31 +3,26 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-name: Verify REUSE
-
-on:
+name: nox
+'on':
   push:
     branches:
       - main
       - stable-*
   pull_request:
-    branches:
-      - main
-      - stable-*
   # Run CI once per day (at 04:30 UTC)
   schedule:
     - cron: '30 4 * * *'
+  workflow_dispatch:
 
 jobs:
-  check:
-    permissions:
-      contents: read
+  nox:
     runs-on: ubuntu-latest
-
+    name: "Run extra sanity tests"
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out collection
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
-
-      - name: REUSE Compliance Check
-        uses: fsfe/reuse-action@v5
+      - name: Run nox
+        uses: ansible-community/antsibull-nox@main
