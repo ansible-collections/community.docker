@@ -60,8 +60,6 @@ stages:
           targets:
             - name: Sanity
               test: 'devel/sanity/1'
-            - name: Sanity Extra # Only on devel
-              test: 'devel/sanity/extra'
             - name: Units
               test: 'devel/units/1'
   - stage: Ansible_2_18
