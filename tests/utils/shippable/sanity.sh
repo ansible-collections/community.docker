@@ -5,20 +5,10 @@
 
 set -o pipefail -eux
 
-declare -a args
-IFS='/:' read -ra args <<< "$1"
-
-group="${args[1]}"
-
 if [ "${BASE_BRANCH:-}" ]; then
     base_branch="origin/${BASE_BRANCH}"
 else
     base_branch=""
-fi
-
-if [ "${group}" == "extra" ]; then
-    ../internal_test_tools/tools/run.py --color --bot --junit
-    exit
 fi
 
 # shellcheck disable=SC2086
