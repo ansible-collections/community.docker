@@ -39,7 +39,7 @@ def test_parse_string(input, expected):
 ])
 def test_parse_int(input):
     assert parse_modern(input) == input
-    with pytest.raises(TypeError, match="^must be an octal string, got {value}$".format(value=input)):
+    with pytest.raises(TypeError, match="^must be an octal string, got {value}L?$".format(value=input)):
         parse_octal_string_only(input)
 
 

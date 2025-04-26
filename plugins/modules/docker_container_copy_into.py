@@ -848,9 +848,9 @@ def main():
             elif mode_parse == 'octal_string_only':
                 mode = parse_octal_string_only(mode)
         except (TypeError, ValueError) as e:
-            module.fail_json(msg="Error while parsing 'mode': {error}".format(error=e))
+            client.fail("Error while parsing 'mode': {error}".format(error=e))
         if mode < 0:
-            module.fail_json(msg="'mode' must not be negative; got {mode}".format(mode=mode))
+            client.fail("'mode' must not be negative; got {mode}".format(mode=mode))
 
     if content is not None:
         if client.module.params['content_is_b64']:
