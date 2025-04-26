@@ -4,6 +4,7 @@
 
 /tests/output/
 /changelogs/.plugin-cache.yaml
+/tests/integration/inventory
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
