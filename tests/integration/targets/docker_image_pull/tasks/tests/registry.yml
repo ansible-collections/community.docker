@@ -103,24 +103,24 @@
 
     - assert:
         that:
-        - pull_1_check is changed
-        - pull_1_check.diff.before.exists is false
-        - pull_1_check.diff.after.id == 'unknown'
-        - pull_1 is changed
-        - pull_1.diff.before.exists is false
-        - pull_1.diff.after.id == facts_1.images[0].Id
-        - pull_2_check is not changed
-        - pull_2_check.diff.before.id == facts_1.images[0].Id
-        - pull_2_check.diff.before == pull_2.diff.after
-        - pull_2 is not changed
-        - pull_2.diff.before.id == facts_1.images[0].Id
-        - pull_2.diff.before == pull_2.diff.after
-        - pull_3_check is changed
-        - pull_3_check.diff.before.id == facts_1.images[0].Id
-        - pull_3_check.diff.after.id == 'unknown'
-        - pull_3 is not changed
-        - pull_3.diff.before.id == facts_1.images[0].Id
-        - pull_3.diff.before == pull_2.diff.after
-        - facts_1.images | length == 1
-        - facts_2.images | length == 0
-        - facts_3.images | length == 1
+          - pull_1_check is changed
+          - pull_1_check.diff.before.exists is false
+          - pull_1_check.diff.after.id == 'unknown'
+          - pull_1 is changed
+          - pull_1.diff.before.exists is false
+          - pull_1.diff.after.id == facts_1.images[0].Id
+          - pull_2_check is not changed
+          - pull_2_check.diff.before.id == facts_1.images[0].Id
+          - pull_2_check.diff.before == pull_2.diff.after
+          - pull_2 is not changed
+          - pull_2.diff.before.id == facts_1.images[0].Id
+          - pull_2.diff.before == pull_2.diff.after
+          - pull_3_check is changed
+          - pull_3_check.diff.before.id == facts_1.images[0].Id
+          - pull_3_check.diff.after.id == 'unknown'
+          - pull_3 is not changed
+          - pull_3.diff.before.id == facts_1.images[0].Id
+          - pull_3.diff.before == pull_2.diff.after
+          - facts_1.images | length == 1
+          - facts_2.images | length == 0
+          - facts_3.images | length == 1

@@ -111,6 +111,7 @@ author:
 """
 
 EXAMPLES = r"""
+---
 - name: Create config foo (from a file on the control machine)
   community.docker.docker_config:
     name: foo

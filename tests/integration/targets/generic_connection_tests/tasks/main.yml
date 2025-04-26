@@ -13,103 +13,36 @@
     daemon_nginx_frontend: '{{ "ansible-docker-test-daemon-frontend-%0x" % ((2**32) | random) }}'
 
 - block:
-  - name: Create volume for config files
-    docker_volume:
-      name: '{{ daemon_nginx_frontend }}'
-      state: present
+    - name: Create volume for config files
+      docker_volume:
+        name: '{{ daemon_nginx_frontend }}'
+        state: present
 
-  - name: Create container for nginx frontend for daemon
-    docker_container:
-      state: stopped
-      name: '{{ daemon_nginx_frontend }}'
-      image: "{{ docker_test_image_registry_nginx }}"
-      volumes:
-        - '{{ daemon_nginx_frontend }}:/etc/nginx/'
-        - '/var/run/docker.sock:/var/run/docker.sock'
-      network_mode: '{{ current_container_network_ip | default(omit, true) }}'
-      networks: >-
-        {{
-          [dict([['name', current_container_network_ip]])]
-          if current_container_network_ip not in ['', 'bridge'] else omit
-        }}
-    register: nginx_container
+    - name: Create container for nginx frontend for daemon
+      docker_container:
+        state: stopped
+        name: '{{ daemon_nginx_frontend }}'
+        image: "{{ docker_test_image_registry_nginx }}"
+        volumes:
+          - '{{ daemon_nginx_frontend }}:/etc/nginx/'
+          - '/var/run/docker.sock:/var/run/docker.sock'
+        network_mode: '{{ current_container_network_ip | default(omit, true) }}'
+        networks: >-
+          {{
+            [dict([['name', current_container_network_ip]])]
+            if current_container_network_ip not in ['', 'bridge'] else omit
+          }}
+      register: nginx_container
 
-  - name: Copy config files
-    copy:
-      src: "{{ item }}"
-      dest: "{{ remote_tmp_dir }}/{{ item }}"
-      mode: "0644"
-    loop:
-    - nginx.conf
-
-  - name: Copy static files into volume
-    docker_container_copy_into:
-      container: '{{ daemon_nginx_frontend }}'
-      path: '{{ remote_tmp_dir }}/{{ item }}'
-      container_path: '/etc/nginx/{{ item }}'
-      owner_id: 0
-      group_id: 0
-    loop:
-    - nginx.conf
-    register: can_copy_files
-    ignore_errors: true
-
-  - when: can_copy_files is not failed
-    block:
-
-    - name: Create private keys
-      community.crypto.openssl_privatekey:
-        path: '{{ remote_tmp_dir }}/{{ item }}.key'
-        type: ECC
-        curve: secp256r1
-        force: true
+    - name: Copy config files
+      copy:
+        src: "{{ item }}"
+        dest: "{{ remote_tmp_dir }}/{{ item }}"
+        mode: "0644"
       loop:
-        - cert
-        - ca
+        - nginx.conf
 
-    - name: Create CSR for CA certificate
-      community.crypto.openssl_csr:
-        path: '{{ remote_tmp_dir }}/ca.csr'
-        privatekey_path: '{{ remote_tmp_dir }}/ca.key'
-        subject:
-          commonName: Ansible test CA for Docker HTTPS connection tests
-        useCommonNameForSAN: false
-        basic_constraints:
-          - 'CA:TRUE'
-        basic_constraints_critical: true
-        key_usage:
-          - digitalSignature
-          - Certificate Sign
-        key_usage_critical: true
-        extended_key_usage:
-          - serverAuth  # the same as "TLS Web Server Authentication"
-        extended_key_usage_critical: true
-
-    - name: Create CA certificate
-      community.crypto.x509_certificate:
-        path: '{{ remote_tmp_dir }}/ca.pem'
-        csr_path: '{{ remote_tmp_dir }}/ca.csr'
-        privatekey_path: '{{ remote_tmp_dir }}/ca.key'
-        provider: selfsigned
-
-    - name: Create CSR for frontend certificate
-      community.crypto.openssl_csr:
-        path: '{{ remote_tmp_dir }}/cert.csr'
-        privatekey_path: '{{ remote_tmp_dir }}/cert.key'
-        subject_alt_name:
-          - DNS:daemon-tls.ansible.com
-        subject_alt_name_critical: true
-
-    - name: Create frontend certificate
-      community.crypto.x509_certificate:
-        path: '{{ remote_tmp_dir }}/cert.pem'
-        csr_path: '{{ remote_tmp_dir }}/cert.csr'
-        privatekey_path: '{{ remote_tmp_dir }}/cert.key'
-        ownca_path: '{{ remote_tmp_dir }}/ca.pem'
-        ownca_privatekey_path: '{{ remote_tmp_dir }}/ca.key'
-        provider: ownca
-
-    - name: Copy dynamic files into volume
+    - name: Copy static files into volume
       docker_container_copy_into:
         container: '{{ daemon_nginx_frontend }}'
         path: '{{ remote_tmp_dir }}/{{ item }}'
@@ -117,91 +50,158 @@
         owner_id: 0
         group_id: 0
       loop:
-      - ca.pem
-      - cert.pem
-      - cert.key
+        - nginx.conf
+      register: can_copy_files
+      ignore_errors: true
 
-    - name: Start nginx frontend for daemon
-      docker_container:
-        name: '{{ daemon_nginx_frontend }}'
-        state: started
-      register: nginx_container
+    - when: can_copy_files is not failed
+      block:
 
-    - name: Output nginx container network settings
-      debug:
-        var: nginx_container.container.NetworkSettings
+        - name: Create private keys
+          community.crypto.openssl_privatekey:
+            path: '{{ remote_tmp_dir }}/{{ item }}.key'
+            type: ECC
+            curve: secp256r1
+            force: true
+          loop:
+            - cert
+            - ca
 
-    - name: Get proxied daemon URLs
-      set_fact:
-        docker_daemon_frontend_https: "https://{{ nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress if current_container_network_ip else nginx_container.container.NetworkSettings.IPAddress }}:5000"
-        docker_daemon_frontend_http: "http://{{ nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress if current_container_network_ip else nginx_container.container.NetworkSettings.IPAddress }}:6000"
+        - name: Create CSR for CA certificate
+          community.crypto.openssl_csr:
+            path: '{{ remote_tmp_dir }}/ca.csr'
+            privatekey_path: '{{ remote_tmp_dir }}/ca.key'
+            subject:
+              commonName: Ansible test CA for Docker HTTPS connection tests
+            useCommonNameForSAN: false
+            basic_constraints:
+              - 'CA:TRUE'
+            basic_constraints_critical: true
+            key_usage:
+              - digitalSignature
+              - Certificate Sign
+            key_usage_critical: true
+            extended_key_usage:
+              - serverAuth  # the same as "TLS Web Server Authentication"
+            extended_key_usage_critical: true
 
-    - name: Wait for registry frontend
-      uri:
-        url: '{{ docker_daemon_frontend_http }}/version'
-      register: result
-      until: result is success
-      retries: 5
-      delay: 1
+        - name: Create CA certificate
+          community.crypto.x509_certificate:
+            path: '{{ remote_tmp_dir }}/ca.pem'
+            csr_path: '{{ remote_tmp_dir }}/ca.csr'
+            privatekey_path: '{{ remote_tmp_dir }}/ca.key'
+            provider: selfsigned
 
-    - name: Get docker daemon information directly
-      docker_host_info:
-      register: output_direct
+        - name: Create CSR for frontend certificate
+          community.crypto.openssl_csr:
+            path: '{{ remote_tmp_dir }}/cert.csr'
+            privatekey_path: '{{ remote_tmp_dir }}/cert.key'
+            subject_alt_name:
+              - DNS:daemon-tls.ansible.com
+            subject_alt_name_critical: true
 
-    - name: Show direct host info
-      debug:
-        var: output_direct.host_info | sanitize_host_info
+        - name: Create frontend certificate
+          community.crypto.x509_certificate:
+            path: '{{ remote_tmp_dir }}/cert.pem'
+            csr_path: '{{ remote_tmp_dir }}/cert.csr'
+            privatekey_path: '{{ remote_tmp_dir }}/cert.key'
+            ownca_path: '{{ remote_tmp_dir }}/ca.pem'
+            ownca_privatekey_path: '{{ remote_tmp_dir }}/ca.key'
+            provider: ownca
 
-    - name: Get docker daemon information via HTTP
-      docker_host_info:
-        docker_host: '{{ docker_daemon_frontend_http }}'
-      register: output_http
+        - name: Copy dynamic files into volume
+          docker_container_copy_into:
+            container: '{{ daemon_nginx_frontend }}'
+            path: '{{ remote_tmp_dir }}/{{ item }}'
+            container_path: '/etc/nginx/{{ item }}'
+            owner_id: 0
+            group_id: 0
+          loop:
+            - ca.pem
+            - cert.pem
+            - cert.key
 
-    - name: Show HTTP host info
-      debug:
-        var: output_http.host_info | sanitize_host_info
+        - name: Start nginx frontend for daemon
+          docker_container:
+            name: '{{ daemon_nginx_frontend }}'
+            state: started
+          register: nginx_container
 
-    - name: Check that information matches
-      assert:
-        that:
-          - (output_direct.host_info | sanitize_host_info) == (output_http.host_info | sanitize_host_info)
+        - name: Output nginx container network settings
+          debug:
+            var: nginx_container.container.NetworkSettings
 
-    - name: Get docker daemon information via HTTPS
-      docker_host_info:
-        docker_host: '{{ docker_daemon_frontend_https }}'
-        tls_hostname: daemon-tls.ansible.com
-        ca_cert: '{{ remote_tmp_dir }}/ca.pem'
-        tls: true
-        validate_certs: true
-      register: output_https
+        - name: Get proxied daemon URLs
+          set_fact:
+            docker_daemon_frontend_https: "https://{{ nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress if current_container_network_ip else nginx_container.container.NetworkSettings.IPAddress }}:5000"
+            docker_daemon_frontend_http: "http://{{ nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress if current_container_network_ip else nginx_container.container.NetworkSettings.IPAddress }}:6000"
 
-    - name: Show HTTPS host info
-      debug:
-        var: output_https.host_info | sanitize_host_info
+        - name: Wait for registry frontend
+          uri:
+            url: '{{ docker_daemon_frontend_http }}/version'
+          register: result
+          until: result is success
+          retries: 5
+          delay: 1
 
-    - name: Check that information matches
-      assert:
-        that:
-          - (output_direct.host_info | sanitize_host_info) == (output_https.host_info | sanitize_host_info)
+        - name: Get docker daemon information directly
+          docker_host_info:
+          register: output_direct
+
+        - name: Show direct host info
+          debug:
+            var: output_direct.host_info | sanitize_host_info
+
+        - name: Get docker daemon information via HTTP
+          docker_host_info:
+            docker_host: '{{ docker_daemon_frontend_http }}'
+          register: output_http
+
+        - name: Show HTTP host info
+          debug:
+            var: output_http.host_info | sanitize_host_info
+
+        - name: Check that information matches
+          assert:
+            that:
+              - (output_direct.host_info | sanitize_host_info) == (output_http.host_info | sanitize_host_info)
+
+        - name: Get docker daemon information via HTTPS
+          docker_host_info:
+            docker_host: '{{ docker_daemon_frontend_https }}'
+            tls_hostname: daemon-tls.ansible.com
+            ca_cert: '{{ remote_tmp_dir }}/ca.pem'
+            tls: true
+            validate_certs: true
+          register: output_https
+
+        - name: Show HTTPS host info
+          debug:
+            var: output_https.host_info | sanitize_host_info
+
+        - name: Check that information matches
+          assert:
+            that:
+              - (output_direct.host_info | sanitize_host_info) == (output_https.host_info | sanitize_host_info)
 
   always:
-  - name: Obtain logs from the nginx frontend
-    command: docker logs {{ daemon_nginx_frontend }}
-    register: output
-    ignore_errors: true
-  - debug:
-      var: output.stdout_lines
-    ignore_errors: true
+    - name: Obtain logs from the nginx frontend
+      command: docker logs {{ daemon_nginx_frontend }}
+      register: output
+      ignore_errors: true
+    - debug:
+        var: output.stdout_lines
+      ignore_errors: true
 
-  - name: Remove container
-    docker_container:
-      state: absent
-      name: '{{ daemon_nginx_frontend }}'
-      force_kill: true
-    ignore_errors: true
+    - name: Remove container
+      docker_container:
+        state: absent
+        name: '{{ daemon_nginx_frontend }}'
+        force_kill: true
+      ignore_errors: true
 
-  - name: Remove volume
-    docker_volume:
-      name: '{{ daemon_nginx_frontend }}'
-      state: absent
-    ignore_errors: true
+    - name: Remove volume
+      docker_volume:
+        name: '{{ daemon_nginx_frontend }}'
+        state: absent
+      ignore_errors: true

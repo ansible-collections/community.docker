@@ -35,20 +35,20 @@
 
     - assert:
         that:
-        - present_1 is changed
-        - present_1.actions | length == 1
-        - present_1.actions[0] == ('Pulled image ' ~ docker_test_image_digest_base ~ ':sha256:' ~ docker_test_image_digest_v1)
-        - present_1.diff.before.exists is false
-        - present_1.diff.after.id is string
-        - present_2 is not changed
-        - present_2.actions | length == 1
-        - present_2.actions[0] == ('Pulled image ' ~ docker_test_image_digest_base ~ ':sha256:' ~ docker_test_image_digest_v1)
-        - present_2.diff.before.id == present_1.diff.after.id
-        - present_2.diff.after.id == present_1.diff.after.id
-        - present_3 is not changed
-        - present_3.actions | length == 0
-        - present_3.diff.before.id == present_1.diff.after.id
-        - present_3.diff.after.id == present_1.diff.after.id
+          - present_1 is changed
+          - present_1.actions | length == 1
+          - present_1.actions[0] == ('Pulled image ' ~ docker_test_image_digest_base ~ ':sha256:' ~ docker_test_image_digest_v1)
+          - present_1.diff.before.exists is false
+          - present_1.diff.after.id is string
+          - present_2 is not changed
+          - present_2.actions | length == 1
+          - present_2.actions[0] == ('Pulled image ' ~ docker_test_image_digest_base ~ ':sha256:' ~ docker_test_image_digest_v1)
+          - present_2.diff.before.id == present_1.diff.after.id
+          - present_2.diff.after.id == present_1.diff.after.id
+          - present_3 is not changed
+          - present_3.actions | length == 0
+          - present_3.diff.before.id == present_1.diff.after.id
+          - present_3.diff.after.id == present_1.diff.after.id
 
     - name: Pull image 2 (check mode)
       docker_image_pull:
@@ -67,17 +67,17 @@
 
     - assert:
         that:
-        - present_4 is changed
-        - present_4.actions | length == 1
-        - present_4.actions[0] == ('Pulled image ' ~ docker_test_image_digest_base ~ ':sha256:' ~ docker_test_image_digest_v2)
-        - present_4.diff.before.exists is false
-        - present_4.diff.after.id == 'unknown'
-        - present_5 is changed
-        - present_5.actions | length == 1
-        - present_5.actions[0] == ('Pulled image ' ~ docker_test_image_digest_base ~ ':sha256:' ~ docker_test_image_digest_v2)
-        - present_5.diff.before.exists is false
-        - present_5.diff.after.id != present_1.diff.after.id
-        - present_5.diff.after.id is string
+          - present_4 is changed
+          - present_4.actions | length == 1
+          - present_4.actions[0] == ('Pulled image ' ~ docker_test_image_digest_base ~ ':sha256:' ~ docker_test_image_digest_v2)
+          - present_4.diff.before.exists is false
+          - present_4.diff.after.id == 'unknown'
+          - present_5 is changed
+          - present_5.actions | length == 1
+          - present_5.actions[0] == ('Pulled image ' ~ docker_test_image_digest_base ~ ':sha256:' ~ docker_test_image_digest_v2)
+          - present_5.diff.before.exists is false
+          - present_5.diff.after.id != present_1.diff.after.id
+          - present_5.diff.after.id is string
 
   always:
     - name: cleanup

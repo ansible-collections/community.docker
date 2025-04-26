@@ -25,15 +25,15 @@
         # will be other containers.
         - inventory_hostname.startswith('ansible-docker-test-docker-inventory-container-')
       block:
-      - name: Run raw command
-        raw: ls /
-        register: output
+        - name: Run raw command
+          raw: ls /
+          register: output
 
-      - name: Check whether we have some directories we expect in the output
-        assert:
-          that:
-            - "'bin' in output.stdout_lines"
-            - "'dev' in output.stdout_lines"
-            - "'lib' in output.stdout_lines"
-            - "'proc' in output.stdout_lines"
-            - "'sys' in output.stdout_lines"
+        - name: Check whether we have some directories we expect in the output
+          assert:
+            that:
+              - "'bin' in output.stdout_lines"
+              - "'dev' in output.stdout_lines"
+              - "'lib' in output.stdout_lines"
+              - "'proc' in output.stdout_lines"
+              - "'sys' in output.stdout_lines"

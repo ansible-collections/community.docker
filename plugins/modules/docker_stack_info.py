@@ -66,6 +66,7 @@ results:
 """
 
 EXAMPLES = r"""
+---
 - name: Shows stack info
   community.docker.docker_stack_info:
   register: result

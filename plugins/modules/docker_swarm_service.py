@@ -694,6 +694,7 @@ rebuilt:
 """
 
 EXAMPLES = r"""
+---
 - name: Set command and arguments
   community.docker.docker_swarm_service:
     name: myservice

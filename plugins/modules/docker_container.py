@@ -996,6 +996,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Create a data container
   community.docker.docker_container:
     name: mydata

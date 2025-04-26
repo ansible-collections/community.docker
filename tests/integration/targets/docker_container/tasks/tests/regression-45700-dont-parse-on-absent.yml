@@ -29,10 +29,10 @@
     # before the container is stopped (see
     # https://github.com/ansible/ansible/issues/45486).
     networks:
-    - name: "nonexistant-network-{{ (2**32) | random }}"
+      - name: "nonexistant-network-{{ (2**32) | random }}"
     published_ports:
-    - '1:2'
-    - '3'
+      - '1:2'
+      - '3'
     links:
-    - "nonexistant-container-{{ (2**32) | random }}:test"
+      - "nonexistant-container-{{ (2**32) | random }}:test"
     state: absent

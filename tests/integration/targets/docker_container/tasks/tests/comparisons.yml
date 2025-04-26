@@ -56,9 +56,9 @@
 
 - assert:
     that:
-    - value_1 is changed
-    - value_2 is not changed
-    - value_3 is changed
+      - value_1 is changed
+      - value_2 is not changed
+      - value_3 is changed
 
 ####################################################################
 ## list ############################################################
@@ -71,8 +71,8 @@
     name: "{{ cname }}"
     state: started
     dns_servers:
-    - 1.1.1.1
-    - 8.8.8.8
+      - 1.1.1.1
+      - 8.8.8.8
   register: list_1
 
 - name: list (change, ignore)
@@ -82,7 +82,7 @@
     name: "{{ cname }}"
     state: started
     dns_servers:
-    - 9.9.9.9
+      - 9.9.9.9
     force_kill: true
     comparisons:
       dns_servers: ignore
@@ -95,7 +95,7 @@
     name: "{{ cname }}"
     state: started
     dns_servers:
-    - 9.9.9.9
+      - 9.9.9.9
     force_kill: true
     comparisons:
       dns_servers: strict
@@ -110,9 +110,9 @@
 
 - assert:
     that:
-    - list_1 is changed
-    - list_2 is not changed
-    - list_3 is changed
+      - list_1 is changed
+      - list_2 is not changed
+      - list_3 is changed
 
 ####################################################################
 ## set #############################################################
@@ -125,8 +125,8 @@
     name: "{{ cname }}"
     state: started
     groups:
-    - "1010"
-    - "1011"
+      - "1010"
+      - "1011"
   register: set_1
 
 - name: set (change, ignore)
@@ -136,9 +136,9 @@
     name: "{{ cname }}"
     state: started
     groups:
-    - "1010"
-    - "1011"
-    - "1012"
+      - "1010"
+      - "1011"
+      - "1012"
     force_kill: true
     comparisons:
       groups: ignore
@@ -151,9 +151,9 @@
     name: "{{ cname }}"
     state: started
     groups:
-    - "1010"
-    - "1011"
-    - "1012"
+      - "1010"
+      - "1011"
+      - "1012"
     force_kill: true
     comparisons:
       groups: allow_more_present
@@ -166,8 +166,8 @@
     name: "{{ cname }}"
     state: started
     groups:
-    - "1010"
-    - "1012"
+      - "1010"
+      - "1012"
     force_kill: true
     comparisons:
       groups: allow_more_present
@@ -180,8 +180,8 @@
     name: "{{ cname }}"
     state: started
     groups:
-    - "1010"
-    - "1012"
+      - "1010"
+      - "1012"
     force_kill: true
     comparisons:
       groups: strict
@@ -196,11 +196,11 @@
 
 - assert:
     that:
-    - set_1 is changed
-    - set_2 is not changed
-    - set_3 is changed
-    - set_4 is not changed
-    - set_5 is changed
+      - set_1 is changed
+      - set_2 is not changed
+      - set_3 is changed
+      - set_4 is not changed
+      - set_5 is changed
 
 ####################################################################
 ## set(dict) #######################################################
@@ -213,8 +213,8 @@
     name: "{{ cname }}"
     state: started
     devices:
-    - "/dev/random:/dev/virt-random:rwm"
-    - "/dev/urandom:/dev/virt-urandom:rwm"
+      - "/dev/random:/dev/virt-random:rwm"
+      - "/dev/urandom:/dev/virt-urandom:rwm"
   register: set_dict_1
 
 - name: set(dict) (change, ignore)
@@ -224,9 +224,9 @@
     name: "{{ cname }}"
     state: started
     devices:
-    - "/dev/random:/dev/virt-random:rwm"
-    - "/dev/urandom:/dev/virt-urandom:rwm"
-    - "/dev/null:/dev/virt-null:rwm"
+      - "/dev/random:/dev/virt-random:rwm"
+      - "/dev/urandom:/dev/virt-urandom:rwm"
+      - "/dev/null:/dev/virt-null:rwm"
     force_kill: true
     comparisons:
       devices: ignore
@@ -239,9 +239,9 @@
     name: "{{ cname }}"
     state: started
     devices:
-    - "/dev/random:/dev/virt-random:rwm"
-    - "/dev/urandom:/dev/virt-urandom:rwm"
-    - "/dev/null:/dev/virt-null:rwm"
+      - "/dev/random:/dev/virt-random:rwm"
+      - "/dev/urandom:/dev/virt-urandom:rwm"
+      - "/dev/null:/dev/virt-null:rwm"
     force_kill: true
     comparisons:
       devices: allow_more_present
@@ -254,8 +254,8 @@
     name: "{{ cname }}"
     state: started
     devices:
-    - "/dev/random:/dev/virt-random:rwm"
-    - "/dev/null:/dev/virt-null:rwm"
+      - "/dev/random:/dev/virt-random:rwm"
+      - "/dev/null:/dev/virt-null:rwm"
     force_kill: true
     comparisons:
       devices: allow_more_present
@@ -268,8 +268,8 @@
     name: "{{ cname }}"
     state: started
     devices:
-    - "/dev/random:/dev/virt-random:rwm"
-    - "/dev/null:/dev/virt-null:rwm"
+      - "/dev/random:/dev/virt-random:rwm"
+      - "/dev/null:/dev/virt-null:rwm"
     force_kill: true
     comparisons:
       devices: strict
@@ -284,11 +284,11 @@
 
 - assert:
     that:
-    - set_dict_1 is changed
-    - set_dict_2 is not changed
-    - set_dict_3 is changed
-    - set_dict_4 is not changed
-    - set_dict_5 is changed
+      - set_dict_1 is changed
+      - set_dict_2 is not changed
+      - set_dict_3 is changed
+      - set_dict_4 is not changed
+      - set_dict_5 is changed
 
 ####################################################################
 ## dict ############################################################
@@ -372,11 +372,11 @@
 
 - assert:
     that:
-    - dict_1 is changed
-    - dict_2 is not changed
-    - dict_3 is changed
-    - dict_4 is not changed
-    - dict_5 is changed
+      - dict_1 is changed
+      - dict_2 is not changed
+      - dict_3 is changed
+      - dict_4 is not changed
+      - dict_5 is changed
 
 ####################################################################
 ## wildcard ########################################################
@@ -460,7 +460,7 @@
 
 - assert:
     that:
-    - wildcard_1 is changed
-    - wildcard_2 is not changed
-    - wildcard_3 is changed
-    - wildcard_4 is not changed
+      - wildcard_1 is changed
+      - wildcard_2 is not changed
+      - wildcard_3 is changed
+      - wildcard_4 is not changed

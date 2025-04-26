@@ -18,8 +18,8 @@
 - name: assert failure when called with state=join and no remote_addrs,join_token
   assert:
     that:
-       - 'output.failed'
-       - 'output.msg == "state is join but all of the following are missing: remote_addrs, join_token"'
+      - 'output.failed'
+      - 'output.msg == "state is join but all of the following are missing: remote_addrs, join_token"'
 
 - name: Test parameters with state=remove
   docker_swarm:
@@ -30,8 +30,8 @@
 - name: assert failure when called with state=remove and no node_id
   assert:
     that:
-       - 'output.failed'
-       - 'output.msg == "state is remove but all of the following are missing: node_id"'
+      - 'output.failed'
+      - 'output.msg == "state is remove but all of the following are missing: node_id"'
 
 ####################################################################
 ## Creation ########################################################
@@ -87,27 +87,27 @@
 - name: assert changed when create a new swarm cluster
   assert:
     that:
-       - 'output_1 is changed'
-       - 'output_1.diff.before is defined'
-       - 'output_1.diff.after is defined'
-       - 'output_2 is changed'
-       - '(output_2.actions[0] | regex_search("New Swarm cluster created: ")) is truthy'
-       - 'output_2.swarm_facts.JoinTokens.Manager is truthy'
-       - 'output_2.swarm_facts.JoinTokens.Worker is truthy'
-       - 'output_2.diff.before is defined'
-       - 'output_2.diff.after is defined'
-       - 'output_3 is not changed'
-       - 'output_3.diff.before is defined'
-       - 'output_3.diff.after is defined'
-       - 'output_4 is not changed'
-       - 'output_4.diff.before is defined'
-       - 'output_4.diff.after is defined'
-       - 'output_5 is changed'
-       - 'output_5.diff.before is defined'
-       - 'output_5.diff.after is defined'
-       - 'output_6 is changed'
-       - 'output_6.diff.before is defined'
-       - 'output_6.diff.after is defined'
+      - 'output_1 is changed'
+      - 'output_1.diff.before is defined'
+      - 'output_1.diff.after is defined'
+      - 'output_2 is changed'
+      - '(output_2.actions[0] | regex_search("New Swarm cluster created: ")) is truthy'
+      - 'output_2.swarm_facts.JoinTokens.Manager is truthy'
+      - 'output_2.swarm_facts.JoinTokens.Worker is truthy'
+      - 'output_2.diff.before is defined'
+      - 'output_2.diff.after is defined'
+      - 'output_3 is not changed'
+      - 'output_3.diff.before is defined'
+      - 'output_3.diff.after is defined'
+      - 'output_4 is not changed'
+      - 'output_4.diff.before is defined'
+      - 'output_4.diff.after is defined'
+      - 'output_5 is changed'
+      - 'output_5.diff.before is defined'
+      - 'output_5.diff.after is defined'
+      - 'output_6 is changed'
+      - 'output_6.diff.before is defined'
+      - 'output_6.diff.after is defined'
 
 ####################################################################
 ## Removal #########################################################
@@ -146,18 +146,18 @@
 - name: assert changed when remove a swarm cluster
   assert:
     that:
-        - 'output_1 is changed'
-        - 'output_1.diff.before is defined'
-        - 'output_1.diff.after is defined'
-        - 'output_2 is changed'
-        - 'output_2.actions[0] == "Node has left the swarm cluster"'
-        - 'output_2.diff.before is defined'
-        - 'output_2.diff.after is defined'
-        - 'output_3 is not changed'
-        - 'output_3.diff.before is defined'
-        - 'output_3.diff.after is defined'
-        - 'output_4 is not changed'
-        - 'output_4.diff.before is defined'
-        - 'output_4.diff.after is defined'
+      - 'output_1 is changed'
+      - 'output_1.diff.before is defined'
+      - 'output_1.diff.after is defined'
+      - 'output_2 is changed'
+      - 'output_2.actions[0] == "Node has left the swarm cluster"'
+      - 'output_2.diff.before is defined'
+      - 'output_2.diff.after is defined'
+      - 'output_3 is not changed'
+      - 'output_3.diff.before is defined'
+      - 'output_3.diff.after is defined'
+      - 'output_4 is not changed'
+      - 'output_4.diff.before is defined'
+      - 'output_4.diff.after is defined'
 
 - include_tasks: cleanup.yml

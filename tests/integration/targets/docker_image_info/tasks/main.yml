@@ -9,50 +9,50 @@
 ####################################################################
 
 - block:
-  - name: Make sure image is not there
-    docker_image_remove:
-      name: "{{ docker_test_image_alpine_different }}"
+    - name: Make sure image is not there
+      docker_image_remove:
+        name: "{{ docker_test_image_alpine_different }}"
 
-  - name: Inspect a non-available image
-    docker_image_info:
-      name: "{{ docker_test_image_alpine_different }}"
-    register: result
+    - name: Inspect a non-available image
+      docker_image_info:
+        name: "{{ docker_test_image_alpine_different }}"
+      register: result
 
-  - assert:
-      that:
-      - "result.images|length == 0"
+    - assert:
+        that:
+          - "result.images|length == 0"
 
-  - name: Make sure images are there
-    docker_image_pull:
-      name: "{{ item }}"
-    loop:
-    - "{{ docker_test_image_hello_world }}"
-    - "{{ docker_test_image_alpine }}"
+    - name: Make sure images are there
+      docker_image_pull:
+        name: "{{ item }}"
+      loop:
+        - "{{ docker_test_image_hello_world }}"
+        - "{{ docker_test_image_alpine }}"
 
-  - name: Inspect an available image
-    docker_image_info:
-      name: "{{ docker_test_image_hello_world }}"
-    register: result
+    - name: Inspect an available image
+      docker_image_info:
+        name: "{{ docker_test_image_hello_world }}"
+      register: result
 
-  - assert:
-      that:
-      - "result.images|length == 1"
-      - "docker_test_image_hello_world in result.images[0].RepoTags"
+    - assert:
+        that:
+          - "result.images|length == 1"
+          - "docker_test_image_hello_world in result.images[0].RepoTags"
 
-  - name: Inspect multiple images
-    docker_image_info:
-      name:
-      - "{{ docker_test_image_hello_world }}"
-      - "{{ docker_test_image_alpine }}"
-    register: result
+    - name: Inspect multiple images
+      docker_image_info:
+        name:
+          - "{{ docker_test_image_hello_world }}"
+          - "{{ docker_test_image_alpine }}"
+      register: result
 
-  - debug: var=result
+    - debug: var=result
 
-  - assert:
-      that:
-      - "result.images|length == 2"
-      - "docker_test_image_hello_world in result.images[0].RepoTags"
-      - "docker_test_image_alpine in result.images[1].RepoTags"
+    - assert:
+        that:
+          - "result.images|length == 2"
+          - "docker_test_image_hello_world in result.images[0].RepoTags"
+          - "docker_test_image_alpine in result.images[1].RepoTags"
 
   when: docker_api_version is version('1.25', '>=')
 

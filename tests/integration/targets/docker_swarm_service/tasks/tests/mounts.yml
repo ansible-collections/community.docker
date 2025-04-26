@@ -462,8 +462,8 @@
   when: docker_py_version is version('2.6.0', '>=')
 - assert:
     that:
-    - mounts_tmpfs_size_1 is failed
-    - "'Minimum version required' in mounts_tmpfs_size_1.msg"
+      - mounts_tmpfs_size_1 is failed
+      - "'Minimum version required' in mounts_tmpfs_size_1.msg"
   when: docker_py_version is version('2.6.0', '<')
 
 ####################################################################
@@ -480,7 +480,7 @@
       - source: "{{ volume_name_1 }}"
         target: "/tmp/{{ volume_name_1 }}"
         type: "tmpfs"
-        tmpfs_mode: 0444
+        tmpfs_mode: "0444"
   register: mounts_tmpfs_mode_1
   ignore_errors: true
 
@@ -494,7 +494,7 @@
       - source: "{{ volume_name_1 }}"
         target: "/tmp/{{ volume_name_1 }}"
         type: "tmpfs"
-        tmpfs_mode: 0444
+        tmpfs_mode: "0444"
   register: mounts_tmpfs_mode_2
   ignore_errors: true
 
@@ -508,7 +508,7 @@
       - source: "{{ volume_name_1 }}"
         target: "/tmp/{{ volume_name_1 }}"
         type: "tmpfs"
-        tmpfs_mode: 0777
+        tmpfs_mode: "0777"
   register: mounts_tmpfs_mode_3
   ignore_errors: true
 
@@ -526,8 +526,8 @@
   when: docker_py_version is version('2.6.0', '>=')
 - assert:
     that:
-    - mounts_tmpfs_size_1 is failed
-    - "'Minimum version required' in mounts_tmpfs_size_1.msg"
+      - mounts_tmpfs_size_1 is failed
+      - "'Minimum version required' in mounts_tmpfs_size_1.msg"
   when: docker_py_version is version('2.6.0', '<')
 
 ####################################################################
@@ -586,8 +586,8 @@
   when: docker_py_version is version('2.6.0', '>=')
 - assert:
     that:
-    - mounts_tmpfs_source_1 is failed
-    - "'Minimum version required' in mounts_tmpfs_source_1.msg"
+      - mounts_tmpfs_source_1 is failed
+      - "'Minimum version required' in mounts_tmpfs_source_1.msg"
   when: docker_py_version is version('2.6.0', '<')
 
 ####################################################################

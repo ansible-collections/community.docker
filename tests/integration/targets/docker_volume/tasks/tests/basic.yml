@@ -50,12 +50,12 @@
 
 - assert:
     that:
-    - create_1 is changed
-    - create_2 is not changed
-    - create_3 is not changed
-    - create_4 is changed
-    - absent_1 is changed
-    - absent_2 is not changed
+      - create_1 is changed
+      - create_2 is not changed
+      - create_3 is not changed
+      - create_4 is changed
+      - absent_1 is changed
+      - absent_2 is not changed
 
 ####################################################################
 ## driver_options ##################################################
@@ -109,10 +109,10 @@
 
 - assert:
     that:
-    - driver_options_1 is changed
-    - driver_options_2 is not changed
-    - driver_options_3 is not changed
-    - driver_options_4 is changed
+      - driver_options_1 is changed
+      - driver_options_2 is not changed
+      - driver_options_3 is not changed
+      - driver_options_4 is changed
 
 ####################################################################
 ## labels ##########################################################
@@ -181,11 +181,11 @@
 
 - assert:
     that:
-    - driver_labels_invalid is failed
-    - driver_labels_invalid.msg == "The value 1.0 for 'foo' of labels is not a string or something than can be safely converted to a string!"
-    - driver_labels_1 is changed
-    - driver_labels_2 is not changed
-    - driver_labels_3 is not changed
-    - driver_labels_4 is not changed
-    - driver_labels_5 is not changed
-    - driver_labels_6 is changed
+      - driver_labels_invalid is failed
+      - driver_labels_invalid.msg == "The value 1.0 for 'foo' of labels is not a string or something than can be safely converted to a string!"
+      - driver_labels_1 is changed
+      - driver_labels_2 is not changed
+      - driver_labels_3 is not changed
+      - driver_labels_4 is not changed
+      - driver_labels_5 is not changed
+      - driver_labels_6 is changed

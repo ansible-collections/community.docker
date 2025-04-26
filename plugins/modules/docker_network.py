@@ -203,6 +203,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Create a network
   community.docker.docker_network:
     name: network_one

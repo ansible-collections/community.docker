@@ -4,8 +4,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 collections:
-- ansible.posix
-- community.crypto
-- community.general
-- community.internal_test_tools
-- community.library_inventory_filtering_v1
+  - ansible.posix
+  - community.crypto
+  - community.general
+  - community.internal_test_tools
+  - community.library_inventory_filtering_v1

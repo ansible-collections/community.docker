@@ -75,6 +75,7 @@ seealso:
 """
 
 EXAMPLES = r"""
+---
 - name: Pull an image
   community.docker.docker_image_pull:
     name: pacur/centos-7

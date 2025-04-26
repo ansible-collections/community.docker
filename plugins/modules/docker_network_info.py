@@ -40,6 +40,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Get infos on network
   community.docker.docker_network_info:
     name: mydata
@@ -68,10 +69,32 @@ network:
     - Will be V(none) if network does not exist.
   returned: always
   type: dict
-  sample: {"Attachable": false, "ConfigFrom": {"Network": ""}, "ConfigOnly": false, "Containers": {}, "Created": "2018-12-07T01:47:51.250835114-06:00",
-    "Driver": "bridge", "EnableIPv6": false, "IPAM": {"Config": [{"Gateway": "192.168.96.1", "Subnet": "192.168.96.0/20"}],
-      "Driver": "default", "Options": null}, "Id": "0856968545f22026c41c2c7c3d448319d3b4a6a03a40b148b3ac4031696d1c0a", "Ingress": false,
-    "Internal": false, "Labels": {}, "Name": "ansible-test-f2700bba", "Options": {}, "Scope": "local"}
+  sample: {
+    "Attachable": false,
+    "ConfigFrom": {"Network": ""},
+    "ConfigOnly": false,
+    "Containers": {},
+    "Created": "2018-12-07T01:47:51.250835114-06:00",
+    "Driver": "bridge",
+    "EnableIPv6": false,
+    "IPAM": {
+      "Config": [
+        {
+          "Gateway": "192.168.96.1",
+          "Subnet": "192.168.96.0/20",
+        },
+      ],
+      "Driver": "default",
+      "Options": null,
+    },
+    "Id": "0856968545f22026c41c2c7c3d448319d3b4a6a03a40b148b3ac4031696d1c0a",
+    "Ingress": false,
+    "Internal": false,
+    "Labels": {},
+    "Name": "ansible-test-f2700bba",
+    "Options": {},
+    "Scope": "local",
+  }
 """
 
 import traceback

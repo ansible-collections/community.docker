@@ -51,8 +51,8 @@
 
     - assert:
         that:
-        - create_1 is changed
-        - create_2 is not changed
+          - create_1 is changed
+          - create_2 is not changed
 
     - name: Inspect container with CLI tool
       ansible.builtin.command:
@@ -78,8 +78,8 @@
 
     - assert:
         that:
-        - start_1 is changed
-        - start_2 is not changed
+          - start_1 is changed
+          - start_2 is not changed
 
     - name: Inspect container with CLI tool
       ansible.builtin.command:
@@ -107,8 +107,8 @@
 
     - assert:
         that:
-        - remove_1 is changed
-        - remove_2 is not changed
+          - remove_1 is changed
+          - remove_2 is not changed
 
     - name: Inspect container with CLI tool
       ansible.builtin.command:

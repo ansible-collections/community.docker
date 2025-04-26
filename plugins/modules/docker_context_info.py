@@ -51,6 +51,7 @@ author:
 """
 
 EXAMPLES = r"""
+---
 - name: Get infos on contexts
   community.docker.docker_context_info:
   register: result

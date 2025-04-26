@@ -103,6 +103,7 @@ author:
 """
 
 EXAMPLES = r"""
+---
 - name: Create secret foo (from a file on the control machine)
   community.docker.docker_secret:
     name: foo

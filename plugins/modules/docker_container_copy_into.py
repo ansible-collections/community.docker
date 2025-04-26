@@ -119,6 +119,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Copy a file into the container
   community.docker.docker_container_copy_into:
     container: mydata

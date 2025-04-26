@@ -57,6 +57,7 @@ seealso:
 """
 
 EXAMPLES = r"""
+---
 - name: Push an image
   community.docker.docker_image_push:
     name: registry.example.com:5000/repo/image

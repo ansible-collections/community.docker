@@ -38,6 +38,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Get infos on volume
   community.docker.docker_volume_info:
     name: mydata

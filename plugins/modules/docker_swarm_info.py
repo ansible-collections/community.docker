@@ -89,6 +89,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Get info on Docker Swarm
   community.docker.docker_swarm_info:
   ignore_errors: true

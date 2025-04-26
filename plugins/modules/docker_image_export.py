@@ -71,6 +71,7 @@ seealso:
 """
 
 EXAMPLES = r"""
+---
 - name: Export an image
   community.docker.docker_image_export:
     name: pacur/centos-7

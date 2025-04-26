@@ -15,159 +15,159 @@
     vname: "{{ 'ansible-volume-%0x' % ((2**32) | random) }}"
 
 - block:
-  # Create objects to be pruned
-  - name: Create container (without volume)
-    docker_container:
-      name: "{{ cname }}"
-      image: "{{ docker_test_image_hello_world }}"
-      state: present
-    register: container
-  - name: Create network
-    docker_network:
-      name: "{{ nname }}"
-      state: present
-    register: network
-  - name: Create named volume
-    docker_volume:
-      name: "{{ vname }}"
-      state: present
-    register: volume
-  - name: Create anonymous volume
-    command: docker volume create
-    register: volume_anon
+    # Create objects to be pruned
+    - name: Create container (without volume)
+      docker_container:
+        name: "{{ cname }}"
+        image: "{{ docker_test_image_hello_world }}"
+        state: present
+      register: container
+    - name: Create network
+      docker_network:
+        name: "{{ nname }}"
+        state: present
+      register: network
+    - name: Create named volume
+      docker_volume:
+        name: "{{ vname }}"
+        state: present
+      register: volume
+    - name: Create anonymous volume
+      command: docker volume create
+      register: volume_anon
 
-  - name: List volumes
-    command: docker volume list
+    - name: List volumes
+      command: docker volume list
 
-  # Prune objects
-  - name: Prune everything
-    docker_prune:
-      containers: true
-      images: true
-      networks: true
-      volumes: true
-      builder_cache: true
-    register: result
-
-  # Analyze result
-  - name: Show results
-    debug:
-      var: result
-  - name: General checks
-    assert:
-      that:
-      - result is changed
-      # containers
-      - container.container.Id in result.containers
-      - "'containers_space_reclaimed' in result"
-      # images
-      - "'images_space_reclaimed' in result"
-      # networks
-      - network.network.Name in result.networks
-      # volumes
-      - volume_anon.stdout in result.volumes
-      - "'volumes_space_reclaimed' in result"
-      # builder_cache
-      - "'builder_cache_space_reclaimed' in result"
-  - name: API-version specific volumes check (API version before 1.42)
-    assert:
-      that:
-      # For API version 1.41 and before, pruning always considers all volumes
-      - volume.volume.Name in result.volumes
-    when: docker_api_version is version('1.42', '<')
-  - name: API-version specific volumes check (API version 1.42+)
-    assert:
-      that:
-      # For API version 1.41 and before, pruning considers only anonymous volumes,
-      # so our named container is not removed
-      - volume.volume.Name not in result.volumes
-    when: docker_api_version is version('1.42', '>=')
-
-  # Prune objects again
-  - name: Prune everything again (should have no change)
-    docker_prune:
-      containers: true
-      images: true
-      networks: true
-      volumes: true
-      builder_cache: true
-    register: result
-
-  # Analyze result
-  - name: Show results
-    debug:
-      var: result
-  - name: General checks
-    assert:
-      that:
-      - result is not changed
-      # containers
-      - result.containers == []
-      - result.containers_space_reclaimed == 0
-      # images
-      - result.images == []
-      - result.images_space_reclaimed == 0
-      # networks
-      - result.networks == []
-      # volumes
-      - result.volumes == []
-      # builder_cache
-      - result.builder_cache_space_reclaimed == 0
-
-  # Test with filters
-  - name: Prune with filters
-    docker_prune:
-      images: true
-      images_filters:
-        dangling: true
-    register: result
-
-  - name: Show results
-    debug:
-      var: result
-
-  - name: Prune build cache (API version 1.39+)
-    when: docker_api_version is version('1.39', '>=')
-    block:
-    - name: Prune build cache with option
+    # Prune objects
+    - name: Prune everything
       docker_prune:
-        builder_cache: true
-        builder_cache_all: true
-        builder_cache_filters:
-          until: 10m
-        builder_cache_keep_storage: 1MB
-      register: result
-
-    - name: Show results
-      debug:
-        var: result
-
-    - name: Check results
-      assert:
-        that:
-          - "'builder_cache_space_reclaimed' in result"
-          - "'builder_cache_caches_deleted' in result"
-
-  - name: Prune volumes with all filter (API version 1.42+)
-    when: docker_api_version is version('1.42', '>=')
-    block:
-    - name: Prune with filters
-      docker_prune:
+        containers: true
+        images: true
+        networks: true
         volumes: true
-        volumes_filters:
-          all: true
+        builder_cache: true
       register: result
 
+    # Analyze result
     - name: Show results
       debug:
         var: result
-
-    - name: Check results
+    - name: General checks
       assert:
         that:
           - result is changed
-          - volume.volume.Name in result.volumes
+          # containers
+          - container.container.Id in result.containers
+          - "'containers_space_reclaimed' in result"
+          # images
+          - "'images_space_reclaimed' in result"
+          # networks
+          - network.network.Name in result.networks
+          # volumes
+          - volume_anon.stdout in result.volumes
           - "'volumes_space_reclaimed' in result"
+          # builder_cache
+          - "'builder_cache_space_reclaimed' in result"
+    - name: API-version specific volumes check (API version before 1.42)
+      assert:
+        that:
+          # For API version 1.41 and before, pruning always considers all volumes
+          - volume.volume.Name in result.volumes
+      when: docker_api_version is version('1.42', '<')
+    - name: API-version specific volumes check (API version 1.42+)
+      assert:
+        that:
+          # For API version 1.41 and before, pruning considers only anonymous volumes,
+          # so our named container is not removed
+          - volume.volume.Name not in result.volumes
+      when: docker_api_version is version('1.42', '>=')
+
+    # Prune objects again
+    - name: Prune everything again (should have no change)
+      docker_prune:
+        containers: true
+        images: true
+        networks: true
+        volumes: true
+        builder_cache: true
+      register: result
+
+    # Analyze result
+    - name: Show results
+      debug:
+        var: result
+    - name: General checks
+      assert:
+        that:
+          - result is not changed
+          # containers
+          - result.containers == []
+          - result.containers_space_reclaimed == 0
+          # images
+          - result.images == []
+          - result.images_space_reclaimed == 0
+          # networks
+          - result.networks == []
+          # volumes
+          - result.volumes == []
+          # builder_cache
+          - result.builder_cache_space_reclaimed == 0
+
+    # Test with filters
+    - name: Prune with filters
+      docker_prune:
+        images: true
+        images_filters:
+          dangling: true
+      register: result
+
+    - name: Show results
+      debug:
+        var: result
+
+    - name: Prune build cache (API version 1.39+)
+      when: docker_api_version is version('1.39', '>=')
+      block:
+        - name: Prune build cache with option
+          docker_prune:
+            builder_cache: true
+            builder_cache_all: true
+            builder_cache_filters:
+              until: 10m
+            builder_cache_keep_storage: 1MB
+          register: result
+
+        - name: Show results
+          debug:
+            var: result
+
+        - name: Check results
+          assert:
+            that:
+              - "'builder_cache_space_reclaimed' in result"
+              - "'builder_cache_caches_deleted' in result"
+
+    - name: Prune volumes with all filter (API version 1.42+)
+      when: docker_api_version is version('1.42', '>=')
+      block:
+        - name: Prune with filters
+          docker_prune:
+            volumes: true
+            volumes_filters:
+              all: true
+          register: result
+
+        - name: Show results
+          debug:
+            var: result
+
+        - name: Check results
+          assert:
+            that:
+              - result is changed
+              - volume.volume.Name in result.volumes
+              - "'volumes_space_reclaimed' in result"
 
   when: docker_api_version is version('1.25', '>=')
 

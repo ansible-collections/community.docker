@@ -43,18 +43,18 @@
 
     - assert:
         that:
-        - fail_1 is failed
-        - >-
-          'Cannot find image registry.example.com:5000/foo/bar:baz' == fail_1.msg
-        - fail_2 is failed
-        - >-
-          'Cannot push an image by ID' == fail_2.msg
-        - fail_3 is failed
-        - >-
-          'Cannot push an image by digest' == fail_3.msg
-        - fail_4 is failed
-        - >-
-          '"foo/bar" is not a valid docker tag!' == fail_4.msg
-        - fail_5 is failed
-        - >-
-          '"foo bar" is not a valid docker tag!' == fail_5.msg
+          - fail_1 is failed
+          - >-
+            'Cannot find image registry.example.com:5000/foo/bar:baz' == fail_1.msg
+          - fail_2 is failed
+          - >-
+            'Cannot push an image by ID' == fail_2.msg
+          - fail_3 is failed
+          - >-
+            'Cannot push an image by digest' == fail_3.msg
+          - fail_4 is failed
+          - >-
+            '"foo/bar" is not a valid docker tag!' == fail_4.msg
+          - fail_5 is failed
+          - >-
+            '"foo bar" is not a valid docker tag!' == fail_5.msg

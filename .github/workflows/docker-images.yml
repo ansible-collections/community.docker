@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 name: Helper Docker images for testing
-on:
+'on':
   # Run CI against all pushes (direct commits, also merged PRs), Pull Requests
   push:
     branches:

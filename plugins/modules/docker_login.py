@@ -85,6 +85,7 @@ author:
 """
 
 EXAMPLES = r"""
+---
 - name: Log into DockerHub
   community.docker.docker_login:
     username: docker

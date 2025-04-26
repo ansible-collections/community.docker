@@ -30,12 +30,12 @@
   set_fact:
     docker_registry_setup_inames: []
     docker_registry_setup_cnames:
-    - '{{ docker_registry_container_name_registry }}'
-    - '{{ docker_registry_container_name_nginx }}'
-    - '{{ docker_registry_container_name_nginx2 }}'
+      - '{{ docker_registry_container_name_registry }}'
+      - '{{ docker_registry_container_name_nginx }}'
+      - '{{ docker_registry_container_name_nginx2 }}'
     docker_registry_setup_vnames:
-    - '{{ docker_registry_container_name_nginx }}'
-    - '{{ docker_registry_container_name_nginx2 }}'
+      - '{{ docker_registry_container_name_nginx }}'
+      - '{{ docker_registry_container_name_nginx2 }}'
 
 - debug:
     msg: Using test registry name {{ docker_registry_container_name_registry }} and nginx frontend names {{ docker_registry_container_name_nginx }} and {{ docker_registry_container_name_nginx2 }}
@@ -47,42 +47,42 @@
   block:
 
   # Set up registry container
-  - name: Start test registry
-    docker_container:
-      name: '{{ docker_registry_container_name_registry }}'
-      image: "{{ docker_test_image_registry }}"
-      ports: 5000
-      network_mode: '{{ current_container_network_ip | default(omit, true) }}'
-      # We need to define the alias `real-registry` here because the global `links`
-      # option for the NGINX containers (see setup-frontend.yml) does not work when
-      # using networks.
-      networks: >-
-        {{
-          [dict([['name', current_container_network_ip], ['aliases', ['real-registry']]])]
-          if current_container_network_ip not in ['', 'bridge'] else omit
-        }}
-    register: registry_container
+    - name: Start test registry
+      docker_container:
+        name: '{{ docker_registry_container_name_registry }}'
+        image: "{{ docker_test_image_registry }}"
+        ports: 5000
+        network_mode: '{{ current_container_network_ip | default(omit, true) }}'
+        # We need to define the alias `real-registry` here because the global `links`
+        # option for the NGINX containers (see setup-frontend.yml) does not work when
+        # using networks.
+        networks: >-
+          {{
+            [dict([['name', current_container_network_ip], ['aliases', ['real-registry']]])]
+            if current_container_network_ip not in ['', 'bridge'] else omit
+          }}
+      register: registry_container
 
-  - name: Get registry URL
-    set_fact:
-      registry_address: localhost:{{ registry_container.container.NetworkSettings.Ports['5000/tcp'].0.HostPort }}
+    - name: Get registry URL
+      set_fact:
+        registry_address: localhost:{{ registry_container.container.NetworkSettings.Ports['5000/tcp'].0.HostPort }}
 
-  # Set up first nginx frontend for registry
-  - include_tasks: setup-frontend.yml
-    vars:
-      docker_registry_container_name_frontend: '{{ docker_registry_container_name_nginx }}'
+    # Set up first nginx frontend for registry
+    - include_tasks: setup-frontend.yml
+      vars:
+        docker_registry_container_name_frontend: '{{ docker_registry_container_name_nginx }}'
 
-  - set_fact:
-      registry_frontend_address: '{{ docker_registry_frontend_address }}'
+    - set_fact:
+        registry_frontend_address: '{{ docker_registry_frontend_address }}'
 
-  # Set up second nginx frontend for registry
-  - include_tasks: setup-frontend.yml
-    vars:
-      docker_registry_container_name_frontend: '{{ docker_registry_container_name_nginx2 }}'
+    # Set up second nginx frontend for registry
+    - include_tasks: setup-frontend.yml
+      vars:
+        docker_registry_container_name_frontend: '{{ docker_registry_container_name_nginx2 }}'
 
-  - set_fact:
-      registry_frontend2_address: '{{ docker_registry_frontend_address }}'
+    - set_fact:
+        registry_frontend2_address: '{{ docker_registry_frontend_address }}'
 
-  # Print addresses for registry and frontends
-  - debug:
-      msg: "Registry available under {{ registry_address }}, NGINX frontends available under {{ registry_frontend_address }} and {{ registry_frontend2_address }}"
+    # Print addresses for registry and frontends
+    - debug:
+        msg: "Registry available under {{ registry_address }}, NGINX frontends available under {{ registry_frontend_address }} and {{ registry_frontend2_address }}"

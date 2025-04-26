@@ -68,6 +68,7 @@ seealso:
 """
 
 EXAMPLES = r"""
+---
 - name: Remove an image
   community.docker.docker_image_remove:
     name: pacur/centos-7

@@ -23,28 +23,28 @@
     state: present
 
 - block:
-  - name: Prevent service restart
-    copy:
-      content: exit 101
-      dest: /usr/sbin/policy-rc.d
-      backup: true
-      mode: '0755'
-    register: policy_rc_d
+    - name: Prevent service restart
+      copy:
+        content: exit 101
+        dest: /usr/sbin/policy-rc.d
+        backup: true
+        mode: '0755'
+      register: policy_rc_d
 
-  - name: Install Docker CE
-    apt:
-      name: '{{ docker_packages if needs_docker_daemon else docker_cli_packages }}'
-      state: present
+    - name: Install Docker CE
+      apt:
+        name: '{{ docker_packages if needs_docker_daemon else docker_cli_packages }}'
+        state: present
 
   always:
-  - name: Restore /usr/sbin/policy-rc.d (if needed)
-    command: mv {{ policy_rc_d.backup_file }} /usr/sbin/policy-rc.d
-    when:
-    - '"backup_file" in policy_rc_d'
+    - name: Restore /usr/sbin/policy-rc.d (if needed)
+      command: mv {{ policy_rc_d.backup_file }} /usr/sbin/policy-rc.d
+      when:
+        - '"backup_file" in policy_rc_d'
 
-  - name: Remove /usr/sbin/policy-rc.d (if needed)
-    file:
-      path: /usr/sbin/policy-rc.d
-      state: absent
-    when:
-    - '"backup_file" not in policy_rc_d'
+    - name: Remove /usr/sbin/policy-rc.d (if needed)
+      file:
+        path: /usr/sbin/policy-rc.d
+        state: absent
+      when:
+        - '"backup_file" not in policy_rc_d'

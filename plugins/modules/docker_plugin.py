@@ -86,6 +86,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Install a plugin
   community.docker.docker_plugin:
     plugin_name: plugin_one

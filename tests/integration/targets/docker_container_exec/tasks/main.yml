@@ -9,218 +9,218 @@
 ####################################################################
 
 - block:
-  - name: Create random container name
-    set_fact:
-      cname: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
+    - name: Create random container name
+      set_fact:
+        cname: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
 
-  - name: Make sure container is not there
-    docker_container:
-      name: "{{ cname }}"
-      state: absent
-      force_kill: true
+    - name: Make sure container is not there
+      docker_container:
+        name: "{{ cname }}"
+        state: absent
+        force_kill: true
 
-  - name: Execute in a non-present container
-    docker_container_exec:
-      container: "{{ cname }}"
-      command: "/bin/bash -c 'ls -a'"
-    register: result
-    ignore_errors: true
+    - name: Execute in a non-present container
+      docker_container_exec:
+        container: "{{ cname }}"
+        command: "/bin/bash -c 'ls -a'"
+      register: result
+      ignore_errors: true
 
-  - assert:
-      that:
-        - result is failed
-        - "'Could not find container' in result.msg"
+    - assert:
+        that:
+          - result is failed
+          - "'Could not find container' in result.msg"
 
-  - name: Make sure container exists
-    docker_container:
-      name: "{{ cname }}"
-      image: "{{ docker_test_image_alpine }}"
-      command: '/bin/sh -c "sleep 10m"'
-      state: started
-      force_kill: true
+    - name: Make sure container exists
+      docker_container:
+        name: "{{ cname }}"
+        image: "{{ docker_test_image_alpine }}"
+        command: '/bin/sh -c "sleep 10m"'
+        state: started
+        force_kill: true
 
-  - name: Execute in a present container (command)
-    docker_container_exec:
-      container: "{{ cname }}"
-      command: "/bin/sh -c 'ls -a'"
-    register: result_cmd
+    - name: Execute in a present container (command)
+      docker_container_exec:
+        container: "{{ cname }}"
+        command: "/bin/sh -c 'ls -a'"
+      register: result_cmd
 
-  - assert:
-      that:
-        - result_cmd.rc == 0
-        - "'stdout' in result_cmd"
-        - "'stdout_lines' in result_cmd"
-        - "'stderr' in result_cmd"
-        - "'stderr_lines' in result_cmd"
+    - assert:
+        that:
+          - result_cmd.rc == 0
+          - "'stdout' in result_cmd"
+          - "'stdout_lines' in result_cmd"
+          - "'stderr' in result_cmd"
+          - "'stderr_lines' in result_cmd"
 
-  - name: Execute in a present container (argv)
-    docker_container_exec:
-      container: "{{ cname }}"
-      argv:
-        - /bin/sh
-        - '-c'
-        - ls -a
-    register: result_argv
+    - name: Execute in a present container (argv)
+      docker_container_exec:
+        container: "{{ cname }}"
+        argv:
+          - /bin/sh
+          - '-c'
+          - ls -a
+      register: result_argv
 
-  - assert:
-      that:
-        - result_argv.rc == 0
-        - "'stdout' in result_argv"
-        - "'stdout_lines' in result_argv"
-        - "'stderr' in result_argv"
-        - "'stderr_lines' in result_argv"
-        - result_cmd.stdout == result_argv.stdout
+    - assert:
+        that:
+          - result_argv.rc == 0
+          - "'stdout' in result_argv"
+          - "'stdout_lines' in result_argv"
+          - "'stderr' in result_argv"
+          - "'stderr_lines' in result_argv"
+          - result_cmd.stdout == result_argv.stdout
 
-  - name: Execute in a present container (cat without stdin)
-    docker_container_exec:
-      container: "{{ cname }}"
-      argv:
-        - /bin/sh
-        - '-c'
-        - cat
-    register: result
+    - name: Execute in a present container (cat without stdin)
+      docker_container_exec:
+        container: "{{ cname }}"
+        argv:
+          - /bin/sh
+          - '-c'
+          - cat
+      register: result
 
-  - assert:
-      that:
-        - result.rc == 0
-        - result.stdout == ''
-        - result.stdout_lines == []
-        - result.stderr == ''
-        - result.stderr_lines == []
+    - assert:
+        that:
+          - result.rc == 0
+          - result.stdout == ''
+          - result.stdout_lines == []
+          - result.stderr == ''
+          - result.stderr_lines == []
 
-  - name: Execute in a present container (cat with stdin)
-    docker_container_exec:
-      container: "{{ cname }}"
-      argv:
-        - /bin/sh
-        - '-c'
-        - cat
-      stdin: Hello world!
-      strip_empty_ends: false
-    register: result
+    - name: Execute in a present container (cat with stdin)
+      docker_container_exec:
+        container: "{{ cname }}"
+        argv:
+          - /bin/sh
+          - '-c'
+          - cat
+        stdin: Hello world!
+        strip_empty_ends: false
+      register: result
 
-  - assert:
-      that:
-        - result.rc == 0
-        - result.stdout == 'Hello world!\n'
-        - result.stdout_lines == ['Hello world!']
-        - result.stderr == ''
-        - result.stderr_lines == []
+    - assert:
+        that:
+          - result.rc == 0
+          - result.stdout == 'Hello world!\n'
+          - result.stdout_lines == ['Hello world!']
+          - result.stderr == ''
+          - result.stderr_lines == []
 
-  - name: Execute in a present container (cat with stdin, no newline)
-    docker_container_exec:
-      container: "{{ cname }}"
-      argv:
-        - /bin/sh
-        - '-c'
-        - cat
-      stdin: Hello world!
-      stdin_add_newline: false
-      strip_empty_ends: false
-    register: result
+    - name: Execute in a present container (cat with stdin, no newline)
+      docker_container_exec:
+        container: "{{ cname }}"
+        argv:
+          - /bin/sh
+          - '-c'
+          - cat
+        stdin: Hello world!
+        stdin_add_newline: false
+        strip_empty_ends: false
+      register: result
 
-  - assert:
-      that:
-        - result.rc == 0
-        - result.stdout == 'Hello world!'
-        - result.stdout_lines == ['Hello world!']
-        - result.stderr == ''
-        - result.stderr_lines == []
+    - assert:
+        that:
+          - result.rc == 0
+          - result.stdout == 'Hello world!'
+          - result.stdout_lines == ['Hello world!']
+          - result.stderr == ''
+          - result.stderr_lines == []
 
-  - name: Execute in a present container (cat with stdin, newline but stripping)
-    docker_container_exec:
-      container: "{{ cname }}"
-      argv:
-        - /bin/sh
-        - '-c'
-        - cat
-      stdin: Hello world!
-      stdin_add_newline: true
-      strip_empty_ends: true
-    register: result
+    - name: Execute in a present container (cat with stdin, newline but stripping)
+      docker_container_exec:
+        container: "{{ cname }}"
+        argv:
+          - /bin/sh
+          - '-c'
+          - cat
+        stdin: Hello world!
+        stdin_add_newline: true
+        strip_empty_ends: true
+      register: result
 
-  - assert:
-      that:
-        - result.rc == 0
-        - result.stdout == 'Hello world!'
-        - result.stdout_lines == ['Hello world!']
-        - result.stderr == ''
-        - result.stderr_lines == []
+    - assert:
+        that:
+          - result.rc == 0
+          - result.stdout == 'Hello world!'
+          - result.stdout_lines == ['Hello world!']
+          - result.stderr == ''
+          - result.stderr_lines == []
 
-  - name: Prepare long string
-    set_fact:
-      very_long_string: "{{ 'something long ' * 10000 }}"
-      very_long_string2: "{{ 'something else ' * 5000 }}"
+    - name: Prepare long string
+      set_fact:
+        very_long_string: "{{ 'something long ' * 10000 }}"
+        very_long_string2: "{{ 'something else ' * 5000 }}"
 
-  - name: Execute in a present container (long stdin)
-    docker_container_exec:
-      container: "{{ cname }}"
-      argv:
-        - /bin/sh
-        - '-c'
-        - cat
-      stdin: |-
-        {{ very_long_string }}
-        {{ very_long_string2 }}
-    register: result
+    - name: Execute in a present container (long stdin)
+      docker_container_exec:
+        container: "{{ cname }}"
+        argv:
+          - /bin/sh
+          - '-c'
+          - cat
+        stdin: |-
+          {{ very_long_string }}
+          {{ very_long_string2 }}
+      register: result
 
-  - assert:
-      that:
-        - result is changed
-        - result.rc == 0
-        - result.stdout == (very_long_string ~ '\n' ~ very_long_string2)
-        - result.stdout_lines == [very_long_string, very_long_string2]
-        - result.stderr == ''
-        - result.stderr_lines == []
-        - "'exec_id' not in result"
+    - assert:
+        that:
+          - result is changed
+          - result.rc == 0
+          - result.stdout == (very_long_string ~ '\n' ~ very_long_string2)
+          - result.stdout_lines == [very_long_string, very_long_string2]
+          - result.stderr == ''
+          - result.stderr_lines == []
+          - "'exec_id' not in result"
 
-  - name: Execute in a present container (detached)
-    docker_container_exec:
-      container: "{{ cname }}"
-      argv:
-        - /bin/sh
-        - '-c'
-        - sleep 1m
-      detach: true
-    register: result
+    - name: Execute in a present container (detached)
+      docker_container_exec:
+        container: "{{ cname }}"
+        argv:
+          - /bin/sh
+          - '-c'
+          - sleep 1m
+        detach: true
+      register: result
 
-  - debug: var=result
+    - debug: var=result
 
-  - assert:
-      that:
-        - result is changed
-        - "'rc' not in result"
-        - "'stdout' not in result"
-        - "'stderr' not in result"
-        - result.exec_id is string
+    - assert:
+        that:
+          - result is changed
+          - "'rc' not in result"
+          - "'stdout' not in result"
+          - "'stderr' not in result"
+          - result.exec_id is string
 
-  - name: Execute in a present container (environment variable)
-    docker_container_exec:
-      container: "{{ cname }}"
-      argv:
-        - /bin/sh
-        - '-c'
-        - 'echo "$FOO" ; echo $FOO > /dev/stderr'
-      env:
-        FOO: |-
-          bar
-          baz
-    register: result
+    - name: Execute in a present container (environment variable)
+      docker_container_exec:
+        container: "{{ cname }}"
+        argv:
+          - /bin/sh
+          - '-c'
+          - 'echo "$FOO" ; echo $FOO > /dev/stderr'
+        env:
+          FOO: |-
+            bar
+            baz
+      register: result
 
-  - assert:
-      that:
-        - result.rc == 0
-        - result.stdout == 'bar\nbaz'
-        - result.stdout_lines == ['bar', 'baz']
-        - result.stderr == 'bar baz'
-        - result.stderr_lines == ['bar baz']
+    - assert:
+        that:
+          - result.rc == 0
+          - result.stdout == 'bar\nbaz'
+          - result.stdout_lines == ['bar', 'baz']
+          - result.stderr == 'bar baz'
+          - result.stderr_lines == ['bar baz']
 
   always:
-  - name: Cleanup
-    docker_container:
-      name: "{{ cname }}"
-      state: absent
-      force_kill: true
+    - name: Cleanup
+      docker_container:
+        name: "{{ cname }}"
+        state: absent
+        force_kill: true
 
   when: docker_api_version is version('1.25', '>=')
 

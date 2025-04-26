@@ -114,6 +114,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Prune containers older than 24h
   community.docker.docker_prune:
     containers: true

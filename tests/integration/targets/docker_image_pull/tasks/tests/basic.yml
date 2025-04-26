@@ -117,55 +117,55 @@
 
     - assert:
         that:
-        - present_1_check is changed
-        - present_1_check.actions | length == 1
-        - present_1_check.actions[0] == ('Pulled image ' ~ image_name)
-        - present_1_check.diff.before.exists is false
-        - present_1_check.diff.after.id == 'unknown'
-        - present_1 is changed
-        - present_1.actions | length == 1
-        - present_1.actions[0] == ('Pulled image ' ~ image_name)
-        - present_1.diff.before.exists is false
-        - present_1.diff.after.id is string
-        - present_2_check is changed
-        - present_2_check.actions | length == 1
-        - present_2_check.actions[0] == ('Pulled image ' ~ image_name)
-        - present_2_check.diff.before.id == present_1.diff.after.id
-        - present_2_check.diff.after.id == 'unknown'
-        - present_2 is not changed
-        - present_2.actions | length == 1
-        - present_2.actions[0] == ('Pulled image ' ~ image_name)
-        - present_2.diff.before.id == present_1.diff.after.id
-        - present_2.diff.after.id == present_1.diff.after.id
-        - present_3_check is changed
-        - present_3_check.actions | length == 1
-        - present_3_check.actions[0] == ('Pulled image ' ~ image_name)
-        - present_3_check.diff.before.id == present_1.diff.after.id
-        - present_3_check.diff.after.id == 'unknown'
-        - present_3 is changed
-        - present_3.actions | length == 1
-        - present_3.actions[0] == ('Pulled image ' ~ image_name)
-        - present_3.diff.before.id == present_1.diff.after.id
-        - present_3.diff.after.id != present_1.diff.after.id
-        - present_3.diff.after.id is string
-        - present_4_check is not changed
-        - present_4_check.actions | length == 0
-        - present_4_check.diff.before.id == present_3.diff.after.id
-        - present_4_check.diff.after.id == present_3.diff.after.id
-        - present_4 is not changed
-        - present_4.actions | length == 0
-        - present_4.diff.before.id == present_3.diff.after.id
-        - present_4.diff.after.id == present_3.diff.after.id
-        - present_5_check is changed
-        - present_5_check.actions | length == 1
-        - present_5_check.actions[0] == ('Pulled image ' ~ image_name)
-        - present_5_check.diff.before.id == present_3.diff.after.id
-        - present_5_check.diff.after.id == 'unknown'
-        - present_5 is changed
-        - present_5.actions | length == 1
-        - present_5.actions[0] == ('Pulled image ' ~ image_name)
-        - present_5.diff.before.id == present_3.diff.after.id
-        - present_5.diff.after.id == present_1.diff.after.id
+          - present_1_check is changed
+          - present_1_check.actions | length == 1
+          - present_1_check.actions[0] == ('Pulled image ' ~ image_name)
+          - present_1_check.diff.before.exists is false
+          - present_1_check.diff.after.id == 'unknown'
+          - present_1 is changed
+          - present_1.actions | length == 1
+          - present_1.actions[0] == ('Pulled image ' ~ image_name)
+          - present_1.diff.before.exists is false
+          - present_1.diff.after.id is string
+          - present_2_check is changed
+          - present_2_check.actions | length == 1
+          - present_2_check.actions[0] == ('Pulled image ' ~ image_name)
+          - present_2_check.diff.before.id == present_1.diff.after.id
+          - present_2_check.diff.after.id == 'unknown'
+          - present_2 is not changed
+          - present_2.actions | length == 1
+          - present_2.actions[0] == ('Pulled image ' ~ image_name)
+          - present_2.diff.before.id == present_1.diff.after.id
+          - present_2.diff.after.id == present_1.diff.after.id
+          - present_3_check is changed
+          - present_3_check.actions | length == 1
+          - present_3_check.actions[0] == ('Pulled image ' ~ image_name)
+          - present_3_check.diff.before.id == present_1.diff.after.id
+          - present_3_check.diff.after.id == 'unknown'
+          - present_3 is changed
+          - present_3.actions | length == 1
+          - present_3.actions[0] == ('Pulled image ' ~ image_name)
+          - present_3.diff.before.id == present_1.diff.after.id
+          - present_3.diff.after.id != present_1.diff.after.id
+          - present_3.diff.after.id is string
+          - present_4_check is not changed
+          - present_4_check.actions | length == 0
+          - present_4_check.diff.before.id == present_3.diff.after.id
+          - present_4_check.diff.after.id == present_3.diff.after.id
+          - present_4 is not changed
+          - present_4.actions | length == 0
+          - present_4.diff.before.id == present_3.diff.after.id
+          - present_4.diff.after.id == present_3.diff.after.id
+          - present_5_check is changed
+          - present_5_check.actions | length == 1
+          - present_5_check.actions[0] == ('Pulled image ' ~ image_name)
+          - present_5_check.diff.before.id == present_3.diff.after.id
+          - present_5_check.diff.after.id == 'unknown'
+          - present_5 is changed
+          - present_5.actions | length == 1
+          - present_5.actions[0] == ('Pulled image ' ~ image_name)
+          - present_5.diff.before.id == present_3.diff.after.id
+          - present_5.diff.after.id == present_1.diff.after.id
 
   always:
     - name: cleanup
@@ -188,9 +188,9 @@
 
 - assert:
     that:
-    - fail_1 is failed
-    - >-
-      'Cannot pull an image by ID' == fail_1.msg
-    - fail_2 is failed
-    - >-
-      '"foo/bar" is not a valid docker tag!' == fail_2.msg
+      - fail_1 is failed
+      - >-
+        'Cannot pull an image by ID' == fail_1.msg
+      - fail_2 is failed
+      - >-
+        '"foo/bar" is not a valid docker tag!' == fail_2.msg
