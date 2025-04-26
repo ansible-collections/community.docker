@@ -274,7 +274,9 @@
     content: |
       Content 1
     container_path: '/file'
+    # yamllint disable
     mode: 0770
+    # yamllint enable
     mode_parse: modern
     owner_id: 0
     group_id: 0
@@ -298,7 +300,9 @@
     content: |
       Content 1
     container_path: '/file'
+    # yamllint disable
     mode: 0707
+    # yamllint enable
     mode_parse: legacy
     owner_id: 0
     group_id: 0
