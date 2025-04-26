@@ -59,14 +59,21 @@ results:
   description:
     - List of dictionaries containing the list of tasks associated to a stack name.
   sample:
-    - {"CurrentState": "Running", "DesiredState": "Running", "Error": "", "ID": "7wqv6m02ugkw", "Image": "busybox", "Name": "test_stack.1",
-      "Node": "swarm", "Ports": ""}
+    - CurrentState: Running
+      DesiredState: Running
+      Error: ""
+      ID: 7wqv6m02ugkw
+      Image: busybox
+      Name: test_stack.1
+      Node: swarm
+      Ports: ""
   returned: always
   type: list
   elements: dict
 """
 
 EXAMPLES = r"""
+---
 - name: Shows stack info
   community.docker.docker_stack_task_info:
     name: test_stack

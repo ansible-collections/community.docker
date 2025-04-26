@@ -111,6 +111,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Run a simple command (command)
   community.docker.docker_container_exec:
     container: foo

@@ -30,12 +30,12 @@
     name: "{{ network_name }}"
     state: absent
   loop:
-  - "{{ nname_1 }}"
-  - "{{ nname_2 }}"
+    - "{{ nname_1 }}"
+    - "{{ nname_2 }}"
   loop_control:
     loop_var: network_name
 
 - assert:
     that:
-    - networks_1 is changed
-    - networks_2 is changed
+      - networks_1 is changed
+      - networks_2 is changed

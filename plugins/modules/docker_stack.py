@@ -128,6 +128,7 @@ stack_spec_diff:
 """
 
 EXAMPLES = r"""
+---
 - name: Deploy stack from a compose file
   community.docker.docker_stack:
     state: present

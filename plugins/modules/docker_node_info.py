@@ -52,6 +52,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Get info on all nodes
   community.docker.docker_node_info:
   register: result

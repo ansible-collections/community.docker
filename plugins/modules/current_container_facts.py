@@ -27,6 +27,7 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
+---
 - name: Get facts on current container
   community.docker.current_container_facts:
 

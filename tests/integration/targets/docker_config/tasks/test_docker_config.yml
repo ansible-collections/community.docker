@@ -4,313 +4,131 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - block:
-  - shell: "docker info --format '{% raw %}{{json .}}{% endraw %}' | python -m json.tool"
+    - shell: "docker info --format '{% raw %}{{json .}}{% endraw %}' | python -m json.tool"
 
-  - name: Make sure we're not already using Docker swarm
-    docker_swarm:
-      state: absent
-      force: true
+    - name: Make sure we're not already using Docker swarm
+      docker_swarm:
+        state: absent
+        force: true
 
-  - shell: "docker info --format '{% raw %}{{json .}}{% endraw %}' | python -m json.tool"
+    - shell: "docker info --format '{% raw %}{{json .}}{% endraw %}' | python -m json.tool"
 
-  - name: Create a Swarm cluster
-    docker_swarm:
-      name: default
-      state: present
-      advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
-
-  - name: Parameter name should be required
-    docker_config:
-      state: present
-    ignore_errors: true
-    register: output
-
-  - name: Assert failure when called with no name
-    assert:
-      that:
-         - 'output is failed'
-         - 'output.msg == "missing required arguments: name"'
-
-  - name: Test parameters
-    docker_config:
-      name: foo
-      state: present
-    ignore_errors: true
-    register: output
-
-  - name: Assert failure when called with no data
-    assert:
-      that:
-         - 'output is failed'
-         - 'output.msg == "state is present but any of the following are missing: data, data_src"'
-
-  - name: Create config
-    docker_config:
-      name: db_password
-      data: opensesame!
-      state: present
-    register: output
-
-  - name: Create variable config_id
-    set_fact:
-      config_id: "{{ output.config_id }}"
-
-  - name: Inspect config
-    command: "docker config inspect {{ config_id }}"
-    register: inspect
-    ignore_errors: true
-
-  - debug:
-      var: inspect
-
-  - name: Assert config creation succeeded
-    assert:
-      that:
-         - "'db_password' in inspect.stdout"
-         - "'ansible_key' in inspect.stdout"
-    when: inspect is not failed
-  - assert:
-      that:
-         - "'is too new. Maximum supported API version is' in inspect.stderr"
-    when: inspect is failed
-
-  - name: Create config again
-    docker_config:
-      name: db_password
-      data: opensesame!
-      state: present
-    register: output
-
-  - name: Assert create config is idempotent
-    assert:
-      that:
-         - output is not changed
-
-  - name: Write config into file
-    copy:
-      dest: "{{ remote_tmp_dir }}/data"
-      content: |-
-        opensesame!
-
-  - name: Create config again (from file)
-    docker_config:
-      name: db_password
-      data_src: "{{ remote_tmp_dir }}/data"
-      state: present
-    register: output
-
-  - name: Assert create config is idempotent
-    assert:
-      that:
-         - output is not changed
-
-  - name: Create config again (base64)
-    docker_config:
-      name: db_password
-      data: b3BlbnNlc2FtZSE=
-      data_is_b64: true
-      state: present
-    register: output
-
-  - name: Assert create config (base64) is idempotent
-    assert:
-      that:
-         - output is not changed
-
-  - name: Update config
-    docker_config:
-      name: db_password
-      data: newpassword!
-      state: present
-    register: output
-
-  - name: Assert config was updated
-    assert:
-      that:
-         - output is changed
-         - output.config_id != config_id
-
-  - name: Remove config
-    docker_config:
-      name: db_password
-      state: absent
-
-  - name: Check that config is removed
-    command: "docker config inspect {{ config_id }}"
-    register: output
-    ignore_errors: true
-
-  - name: Assert config was removed
-    assert:
-      that:
-        - output is failed
-
-  - name: Remove config
-    docker_config:
-      name: db_password
-      state: absent
-    register: output
-
-  - name: Assert remove config is idempotent
-    assert:
-      that:
-        - output is not changed
-
-# Rolling update
-
-  - name: Create rolling config
-    docker_config:
-      name: rolling_password
-      data: opensesame!
-      rolling_versions: true
-      state: present
-    register: original_output
-
-  - name: Create variable config_id
-    set_fact:
-      config_id: "{{ original_output.config_id }}"
-
-  - name: Inspect config
-    command: "docker config inspect {{ config_id }}"
-    register: inspect
-    ignore_errors: true
-
-  - debug:
-      var: inspect
-
-  - name: Assert config creation succeeded
-    assert:
-      that:
-         - "'rolling_password' in inspect.stdout"
-         - "'ansible_key' in inspect.stdout"
-         - "'ansible_version' in inspect.stdout"
-         - original_output.config_name == 'rolling_password_v1'
-    when: inspect is not failed
-  - assert:
-      that:
-         - "'is too new. Maximum supported API version is' in inspect.stderr"
-    when: inspect is failed
-
-  - name: Create config again
-    docker_config:
-      name: rolling_password
-      data: newpassword!
-      rolling_versions: true
-      state: present
-    register: new_output
-
-  - name: Assert that new version is created
-    assert:
-      that:
-         - new_output is changed
-         - new_output.config_id != original_output.config_id
-         - new_output.config_name != original_output.config_name
-         - new_output.config_name == 'rolling_password_v2'
-
-  - name: Remove rolling configs
-    docker_config:
-      name: rolling_password
-      rolling_versions: true
-      state: absent
-
-  - name: Check that config is removed
-    command: "docker config inspect {{ original_output.config_id }}"
-    register: output
-    ignore_errors: true
-
-  - name: Assert config was removed
-    assert:
-      that:
-        - output is failed
-
-  - name: Check that config is removed
-    command: "docker config inspect {{ new_output.config_id }}"
-    register: output
-    ignore_errors: true
-
-  - name: Assert config was removed
-    assert:
-      that:
-        - output is failed
-
-# template_driver tests
-
-  - when: docker_py_version is version('5.0.3', '>=') and docker_api_version is version('1.37', '>=')
-    block:
-
-    - name: Create regular config
-      docker_config:
-        name: db_password
-        data: opensesame!
+    - name: Create a Swarm cluster
+      docker_swarm:
+        name: default
         state: present
+        advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
 
-    - name: Update config with template_driver
+    - name: Parameter name should be required
       docker_config:
-        name: db_password
-        data: opensesame!
-        template_driver: golang
-        state: present
-      register: output
-
-    - name: Assert config was updated
-      assert:
-        that:
-           - output is changed
-
-    - name: Invalid template_driver
-      docker_config:
-        name: db_password
-        data: opensesame!
-        template_driver: "not a template driver"
         state: present
       ignore_errors: true
       register: output
 
-    - name: Assert failure when called with invalid template_driver
+    - name: Assert failure when called with no name
       assert:
         that:
-           - 'output is failed'
-           - 'output.msg == "value of template_driver must be one of: golang, got: not a template driver"'
+          - 'output is failed'
+          - 'output.msg == "missing required arguments: name"'
+
+    - name: Test parameters
+      docker_config:
+        name: foo
+        state: present
+      ignore_errors: true
+      register: output
+
+    - name: Assert failure when called with no data
+      assert:
+        that:
+          - 'output is failed'
+          - 'output.msg == "state is present but any of the following are missing: data, data_src"'
+
+    - name: Create config
+      docker_config:
+        name: db_password
+        data: opensesame!
+        state: present
+      register: output
+
+    - name: Create variable config_id
+      set_fact:
+        config_id: "{{ output.config_id }}"
+
+    - name: Inspect config
+      command: "docker config inspect {{ config_id }}"
+      register: inspect
+      ignore_errors: true
+
+    - debug:
+        var: inspect
+
+    - name: Assert config creation succeeded
+      assert:
+        that:
+          - "'db_password' in inspect.stdout"
+          - "'ansible_key' in inspect.stdout"
+      when: inspect is not failed
+    - assert:
+        that:
+          - "'is too new. Maximum supported API version is' in inspect.stderr"
+      when: inspect is failed
 
     - name: Create config again
       docker_config:
         name: db_password
         data: opensesame!
-        template_driver: golang
         state: present
       register: output
 
     - name: Assert create config is idempotent
       assert:
         that:
-           - output is not changed
+          - output is not changed
 
-    # data is the docker swarm's name
-    - name: Update config with template data
+    - name: Write config into file
+      copy:
+        dest: "{{ remote_tmp_dir }}/data"
+        content: |-
+          opensesame!
+
+    - name: Create config again (from file)
       docker_config:
         name: db_password
-        data: "{{ '{{' }} .Service.Name {{ '}}' }}"
-        template_driver: golang
+        data_src: "{{ remote_tmp_dir }}/data"
         state: present
       register: output
 
-    - name: Inspect config
-      command: "docker config inspect {{ output.config_id }}"
-      register: inspect
-
-    - name: Show inspection result
-      debug:
-        var: inspect
-
-    - name: Assert config creation succeeded
+    - name: Assert create config is idempotent
       assert:
         that:
-           - "'db_password' in inspect.stdout"
-           - "'ansible_key' in inspect.stdout"
-           # According to the API docs, 'Data' is "Base64-url-safe-encoded (RFC 4648) config data."
-           - "'\"Data\": \"e3sgLlNlcnZpY2UuTmFtZSB9fQ==\"' in inspect.stdout"
-           - "'Templating' in inspect.stdout"
-           - "'\"Name\": \"golang\"' in inspect.stdout"
+          - output is not changed
+
+    - name: Create config again (base64)
+      docker_config:
+        name: db_password
+        data: b3BlbnNlc2FtZSE=
+        data_is_b64: true
+        state: present
+      register: output
+
+    - name: Assert create config (base64) is idempotent
+      assert:
+        that:
+          - output is not changed
+
+    - name: Update config
+      docker_config:
+        name: db_password
+        data: newpassword!
+        state: present
+      register: output
+
+    - name: Assert config was updated
+      assert:
+        that:
+          - output is changed
+          - output.config_id != config_id
 
     - name: Remove config
       docker_config:
@@ -318,7 +136,7 @@
         state: absent
 
     - name: Check that config is removed
-      command: "docker config inspect {{ output.config_id }}"
+      command: "docker config inspect {{ config_id }}"
       register: output
       ignore_errors: true
 
@@ -327,8 +145,190 @@
         that:
           - output is failed
 
+    - name: Remove config
+      docker_config:
+        name: db_password
+        state: absent
+      register: output
+
+    - name: Assert remove config is idempotent
+      assert:
+        that:
+          - output is not changed
+
+  # Rolling update
+
+    - name: Create rolling config
+      docker_config:
+        name: rolling_password
+        data: opensesame!
+        rolling_versions: true
+        state: present
+      register: original_output
+
+    - name: Create variable config_id
+      set_fact:
+        config_id: "{{ original_output.config_id }}"
+
+    - name: Inspect config
+      command: "docker config inspect {{ config_id }}"
+      register: inspect
+      ignore_errors: true
+
+    - debug:
+        var: inspect
+
+    - name: Assert config creation succeeded
+      assert:
+        that:
+          - "'rolling_password' in inspect.stdout"
+          - "'ansible_key' in inspect.stdout"
+          - "'ansible_version' in inspect.stdout"
+          - original_output.config_name == 'rolling_password_v1'
+      when: inspect is not failed
+    - assert:
+        that:
+          - "'is too new. Maximum supported API version is' in inspect.stderr"
+      when: inspect is failed
+
+    - name: Create config again
+      docker_config:
+        name: rolling_password
+        data: newpassword!
+        rolling_versions: true
+        state: present
+      register: new_output
+
+    - name: Assert that new version is created
+      assert:
+        that:
+          - new_output is changed
+          - new_output.config_id != original_output.config_id
+          - new_output.config_name != original_output.config_name
+          - new_output.config_name == 'rolling_password_v2'
+
+    - name: Remove rolling configs
+      docker_config:
+        name: rolling_password
+        rolling_versions: true
+        state: absent
+
+    - name: Check that config is removed
+      command: "docker config inspect {{ original_output.config_id }}"
+      register: output
+      ignore_errors: true
+
+    - name: Assert config was removed
+      assert:
+        that:
+          - output is failed
+
+    - name: Check that config is removed
+      command: "docker config inspect {{ new_output.config_id }}"
+      register: output
+      ignore_errors: true
+
+    - name: Assert config was removed
+      assert:
+        that:
+          - output is failed
+
+  # template_driver tests
+
+    - when: docker_py_version is version('5.0.3', '>=') and docker_api_version is version('1.37', '>=')
+      block:
+
+        - name: Create regular config
+          docker_config:
+            name: db_password
+            data: opensesame!
+            state: present
+
+        - name: Update config with template_driver
+          docker_config:
+            name: db_password
+            data: opensesame!
+            template_driver: golang
+            state: present
+          register: output
+
+        - name: Assert config was updated
+          assert:
+            that:
+              - output is changed
+
+        - name: Invalid template_driver
+          docker_config:
+            name: db_password
+            data: opensesame!
+            template_driver: "not a template driver"
+            state: present
+          ignore_errors: true
+          register: output
+
+        - name: Assert failure when called with invalid template_driver
+          assert:
+            that:
+              - 'output is failed'
+              - 'output.msg == "value of template_driver must be one of: golang, got: not a template driver"'
+
+        - name: Create config again
+          docker_config:
+            name: db_password
+            data: opensesame!
+            template_driver: golang
+            state: present
+          register: output
+
+        - name: Assert create config is idempotent
+          assert:
+            that:
+              - output is not changed
+
+        # data is the docker swarm's name
+        - name: Update config with template data
+          docker_config:
+            name: db_password
+            data: "{{ '{{' }} .Service.Name {{ '}}' }}"
+            template_driver: golang
+            state: present
+          register: output
+
+        - name: Inspect config
+          command: "docker config inspect {{ output.config_id }}"
+          register: inspect
+
+        - name: Show inspection result
+          debug:
+            var: inspect
+
+        - name: Assert config creation succeeded
+          assert:
+            that:
+              - "'db_password' in inspect.stdout"
+              - "'ansible_key' in inspect.stdout"
+              # According to the API docs, 'Data' is "Base64-url-safe-encoded (RFC 4648) config data."
+              - "'\"Data\": \"e3sgLlNlcnZpY2UuTmFtZSB9fQ==\"' in inspect.stdout"
+              - "'Templating' in inspect.stdout"
+              - "'\"Name\": \"golang\"' in inspect.stdout"
+
+        - name: Remove config
+          docker_config:
+            name: db_password
+            state: absent
+
+        - name: Check that config is removed
+          command: "docker config inspect {{ output.config_id }}"
+          register: output
+          ignore_errors: true
+
+        - name: Assert config was removed
+          assert:
+            that:
+              - output is failed
+
   always:
-  - name: Remove a Swarm cluster
-    docker_swarm:
-      state: absent
-      force: true
+    - name: Remove a Swarm cluster
+      docker_swarm:
+        state: absent
+        force: true

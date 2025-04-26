@@ -41,6 +41,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Get info from a service
   community.docker.docker_swarm_service_info:
     name: myservice

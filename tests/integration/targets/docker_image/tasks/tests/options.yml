@@ -63,8 +63,8 @@
 
 - assert:
     that:
-    - buildargs_1 is changed
-    - buildargs_2 is not failed and buildargs_2 is not changed
+      - buildargs_1 is changed
+      - buildargs_2 is not failed and buildargs_2 is not changed
 
 ####################################################################
 ## build.container_limits ##########################################
@@ -102,14 +102,14 @@
 
 - assert:
     that:
-    # It *sometimes* happens that the first task does not fail.
-    # For now, we work around this by
-    #   a) requiring that if it fails, the message must
-    #      contain 'Minimum memory limit allowed is (4|6)MB', and
-    #   b) requiring that either the first task, or the second
-    #      task is changed, but not both.
-    - "not container_limits_1 is failed or ('Minimum memory limit allowed is ') in container_limits_1.msg"
-    - "container_limits_1 is changed or container_limits_2 is changed and not (container_limits_1 is changed and container_limits_2 is changed)"
+      # It *sometimes* happens that the first task does not fail.
+      # For now, we work around this by
+      #   a) requiring that if it fails, the message must
+      #      contain 'Minimum memory limit allowed is (4|6)MB', and
+      #   b) requiring that either the first task, or the second
+      #      task is changed, but not both.
+      - "not container_limits_1 is failed or ('Minimum memory limit allowed is ') in container_limits_1.msg"
+      - "container_limits_1 is changed or container_limits_2 is changed and not (container_limits_1 is changed and container_limits_2 is changed)"
 
 ####################################################################
 ## build.dockerfile ################################################
@@ -133,9 +133,9 @@
 
 - assert:
     that:
-    - dockerfile_1 is changed
-    - "('FROM ' ~ docker_test_image_alpine) in dockerfile_1.stdout"
-    - dockerfile_1['image']['Config']['WorkingDir'] == '/newdata'
+      - dockerfile_1 is changed
+      - "('FROM ' ~ docker_test_image_alpine) in dockerfile_1.stdout"
+      - dockerfile_1['image']['Config']['WorkingDir'] == '/newdata'
 
 ####################################################################
 ## build.platform ##################################################
@@ -177,8 +177,8 @@
 
 - assert:
     that:
-    - platform_1 is changed
-    - platform_2 is not failed and platform_2 is not changed
+      - platform_1 is changed
+      - platform_2 is not failed and platform_2 is not changed
 
 ####################################################################
 ## force ###########################################################
@@ -222,8 +222,8 @@
 
 - assert:
     that:
-    - force_1 is changed
-    - force_2 is not changed
+      - force_1 is changed
+      - force_2 is not changed
 
 ####################################################################
 ## load path #######################################################
@@ -350,15 +350,15 @@
 
 - assert:
     that:
-    - load_image is changed
-    - archive_image['image']['Id'] == load_image['image']['Id']
-    - load_image_1 is not changed
-    - load_image_2 is failed
-    - >-
-      ("The archive did not contain image 'foo:bar'. Instead, found '" ~ docker_test_image_hello_world ~ "'.") == load_image_2.msg
-    - load_image_3 is failed
-    - '"Detected no loaded images. Archive potentially corrupt?" == load_image_3.msg'
-    - load_image_4 is not changed
+      - load_image is changed
+      - archive_image['image']['Id'] == load_image['image']['Id']
+      - load_image_1 is not changed
+      - load_image_2 is failed
+      - >-
+        ("The archive did not contain image 'foo:bar'. Instead, found '" ~ docker_test_image_hello_world ~ "'.") == load_image_2.msg
+      - load_image_3 is failed
+      - '"Detected no loaded images. Archive potentially corrupt?" == load_image_3.msg'
+      - load_image_4 is not changed
 
 ####################################################################
 ## build.path ######################################################
@@ -416,8 +416,8 @@
 
 - assert:
     that:
-    - dockerfile_2 is changed
-    - dockerfile_2.image.Config.WorkingDir == '/first'
+      - dockerfile_2 is changed
+      - dockerfile_2.image.Config.WorkingDir == '/first'
 
 ####################################################################
 ## build.etc_hosts #################################################

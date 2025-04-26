@@ -40,6 +40,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Get infos on container
   community.docker.docker_container_info:
     name: mydata

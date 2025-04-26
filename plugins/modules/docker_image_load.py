@@ -52,6 +52,7 @@ seealso:
 """
 
 EXAMPLES = r"""
+---
 - name: Load all image(s) from the given tar file
   community.docker.docker_image_load:
     path: /path/to/images.tar

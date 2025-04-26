@@ -90,6 +90,7 @@ author:
 """
 
 EXAMPLES = r"""
+---
 - name: Set node role
   community.docker.docker_node:
     hostname: mynode

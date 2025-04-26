@@ -61,9 +61,9 @@
 
     - assert:
         that:
-        - push_1 is changed
-        - push_2 is not changed
-        - push_3 is not changed
+          - push_1 is changed
+          - push_2 is not changed
+          - push_3 is not changed
 
     - name: Get facts of local image
       docker_image_info:
@@ -102,11 +102,11 @@
 
     - assert:
         that:
-        - pull_1 is changed
-        - pull_2 is not changed
-        - facts_1.images | length == 1
-        - facts_2.images | length == 0
-        - facts_3.images | length == 1
+          - pull_1 is changed
+          - pull_2 is not changed
+          - facts_1.images | length == 1
+          - facts_2.images | length == 0
+          - facts_3.images | length == 1
 
     - name: Pull image from test registry (with digest)
       docker_image:
@@ -148,8 +148,8 @@
 
     - assert:
         that:
-        - push_1_different is changed
-        - push_2_different is not changed
+          - push_1_different is changed
+          - push_2_different is not changed
 
     - name: Tag same image with new tag
       docker_image:
@@ -178,24 +178,24 @@
 
     - assert:
         that:
-        # NOTE: This should be:
-        #   - push_1_same is changed
-        # Unfortunately docker does *NOT* report whether the tag already existed or not.
-        # Here are the logs returned by client.push() for both tasks (which are exactly the same):
-        #   push_1_same:
-        #     {"status": "The push refers to repository [localhost:32796/test/hello-world]"},
-        #     {"id": "3fc64803ca2d", "progressDetail": {}, "status": "Preparing"},
-        #     {"id": "3fc64803ca2d", "progressDetail": {}, "status": "Layer already exists"},
-        #     {"status": "newtag2: digest: sha256:92251458088c638061cda8fd8b403b76d661a4dc6b7ee71b6affcf1872557b2b size: 528"},
-        #     {"aux": {"Digest": "sha256:92251458088c638061cda8fd8b403b76d661a4dc6b7ee71b6affcf1872557b2b", "Size": 528, "Tag": "newtag2"}, "progressDetail": {}}
-        #   push_2_same:
-        #     {"status": "The push refers to repository [localhost:32796/test/hello-world]"},
-        #     {"id": "3fc64803ca2d", "progressDetail": {}, "status": "Preparing"},
-        #     {"id": "3fc64803ca2d", "progressDetail": {}, "status": "Layer already exists"},
-        #     {"status": "newtag2: digest: sha256:92251458088c638061cda8fd8b403b76d661a4dc6b7ee71b6affcf1872557b2b size: 528"},
-        #     {"aux": {"Digest": "sha256:92251458088c638061cda8fd8b403b76d661a4dc6b7ee71b6affcf1872557b2b", "Size": 528, "Tag": "newtag2"}, "progressDetail": {}}
-        - push_1_same is not changed
-        - push_2_same is not changed
+          # NOTE: This should be:
+          #   - push_1_same is changed
+          # Unfortunately docker does *NOT* report whether the tag already existed or not.
+          # Here are the logs returned by client.push() for both tasks (which are exactly the same):
+          #   push_1_same:
+          #     {"status": "The push refers to repository [localhost:32796/test/hello-world]"},
+          #     {"id": "3fc64803ca2d", "progressDetail": {}, "status": "Preparing"},
+          #     {"id": "3fc64803ca2d", "progressDetail": {}, "status": "Layer already exists"},
+          #     {"status": "newtag2: digest: sha256:92251458088c638061cda8fd8b403b76d661a4dc6b7ee71b6affcf1872557b2b size: 528"},
+          #     {"aux": {"Digest": "sha256:92251458088c638061cda8fd8b403b76d661a4dc6b7ee71b6affcf1872557b2b", "Size": 528, "Tag": "newtag2"}, "progressDetail": {}}
+          #   push_2_same:
+          #     {"status": "The push refers to repository [localhost:32796/test/hello-world]"},
+          #     {"id": "3fc64803ca2d", "progressDetail": {}, "status": "Preparing"},
+          #     {"id": "3fc64803ca2d", "progressDetail": {}, "status": "Layer already exists"},
+          #     {"status": "newtag2: digest: sha256:92251458088c638061cda8fd8b403b76d661a4dc6b7ee71b6affcf1872557b2b size: 528"},
+          #     {"aux": {"Digest": "sha256:92251458088c638061cda8fd8b403b76d661a4dc6b7ee71b6affcf1872557b2b", "Size": 528, "Tag": "newtag2"}, "progressDetail": {}}
+          - push_1_same is not changed
+          - push_2_same is not changed
 
 ####################################################################
 ## repository ######################################################
@@ -241,10 +241,10 @@
 
 - assert:
     that:
-    - repository_1 is changed
-    - repository_2 is not changed
-    - repository_3 is changed
-    - repository_4 is not changed
+      - repository_1 is changed
+      - repository_2 is not changed
+      - repository_3 is changed
+      - repository_4 is not changed
 
 - name: Get facts of image
   docker_image_info:
@@ -259,4 +259,4 @@
 
 - assert:
     that:
-    - facts_1.images | length == 1
+      - facts_1.images | length == 1

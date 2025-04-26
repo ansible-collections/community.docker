@@ -22,7 +22,7 @@
 
 - assert:
     that:
-    - absent_2 is not changed
+      - absent_2 is not changed
 
 - name: Make sure image is there
   docker_image:
@@ -44,8 +44,8 @@
 
 - assert:
     that:
-    - present_1 is changed
-    - present_2 is not changed
+      - present_1 is changed
+      - present_2 is not changed
 
 - name: Make sure tag is not there
   docker_image:
@@ -83,10 +83,10 @@
 
 - assert:
     that:
-    - tag_1 is changed
-    - tag_2 is not changed
-    - tag_3 is not changed
-    - tag_4 is not changed
+      - tag_1 is changed
+      - tag_2 is not changed
+      - tag_3 is not changed
+      - tag_4 is not changed
 
 - name: Cleanup alias tag
   docker_image:
@@ -129,11 +129,11 @@
 
 - assert:
     that:
-    - fail_1 is failed
-    - "'`repository` must not be an image ID' in fail_1.msg"
-    - fail_2 is failed
-    - "'Cannot push an image by ID' in fail_2.msg"
-    - fail_3 is failed
-    - "'Image name must not be an image ID for source=pull' in fail_3.msg"
-    - fail_4 is failed
-    - "'Image name must not be an image ID for source=build' in fail_4.msg"
+      - fail_1 is failed
+      - "'`repository` must not be an image ID' in fail_1.msg"
+      - fail_2 is failed
+      - "'Cannot push an image by ID' in fail_2.msg"
+      - fail_3 is failed
+      - "'Image name must not be an image ID for source=pull' in fail_3.msg"
+      - fail_4 is failed
+      - "'Image name must not be an image ID for source=build' in fail_4.msg"

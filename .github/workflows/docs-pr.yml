@@ -7,7 +7,7 @@ name: Collection Docs
 concurrency:
   group: docs-pr-${{ github.head_ref }}
   cancel-in-progress: true
-on:
+'on':
   pull_request_target:
     types: [opened, synchronize, reopened, closed]
 

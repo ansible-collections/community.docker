@@ -60,10 +60,10 @@
 
 - assert:
     that:
-    - start_1 is changed
-    - start_2 is changed
-    - start_3 is not changed
-    - start_4 is not changed
+      - start_1 is changed
+      - start_2 is changed
+      - start_3 is not changed
+      - start_4 is not changed
 
 ####################################################################
 ## container_default_behavior: no_defaults #########################
@@ -116,7 +116,7 @@
 
 - assert:
     that:
-    - start_1 is changed
-    - start_2 is changed
-    - start_3 is not changed
-    - start_4 is not changed
+      - start_1 is changed
+      - start_2 is changed
+      - start_3 is not changed
+      - start_4 is not changed

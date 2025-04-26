@@ -213,14 +213,14 @@
 
 - assert:
     that:
-    - networks_4.rebuilt == false
-    - networks_7.rebuilt == false
+      - networks_4.rebuilt == false
+      - networks_7.rebuilt == false
   when: docker_api_version is version('1.29', '>=') and docker_py_version is version('2.7.0', '>=')
 
 - assert:
     that:
-    - networks_4.rebuilt == true
-    - networks_7.rebuilt == true
+      - networks_4.rebuilt == true
+      - networks_7.rebuilt == true
   when: docker_api_version is version('1.29', '<') or docker_py_version is version('2.7.0', '<')
 
 ####################################################################

@@ -187,6 +187,7 @@ notes:
 """
 
 EXAMPLES = r"""
+---
 - name: Run a simple command (command)
   community.docker.docker_compose_v2_run:
     service: foo

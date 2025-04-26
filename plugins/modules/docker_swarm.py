@@ -206,6 +206,7 @@ author:
 """
 
 EXAMPLES = r"""
+---
 - name: Init a new swarm with default parameters
   community.docker.docker_swarm:
     state: present

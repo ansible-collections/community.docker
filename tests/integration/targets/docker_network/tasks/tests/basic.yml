@@ -22,9 +22,9 @@
     command: /bin/sleep 10m
     state: started
   loop:
-  - "{{ cname_1 }}"
-  - "{{ cname_2 }}"
-  - "{{ cname_3 }}"
+    - "{{ cname_1 }}"
+    - "{{ cname_2 }}"
+    - "{{ cname_3 }}"
   loop_control:
     loop_var: container_name
 
@@ -41,7 +41,7 @@
     name: "{{ nname_1 }}"
     state: present
     connected:
-    - "{{ cname_1 }}"
+      - "{{ cname_1 }}"
   register: networks_2
 
 - name: Connect network to containers 1 (idempotency)
@@ -49,7 +49,7 @@
     name: "{{ nname_1 }}"
     state: present
     connected:
-    - "{{ cname_1 }}"
+      - "{{ cname_1 }}"
   register: networks_2_idem
 
 - name: Connect network to containers 1 and 2
@@ -57,8 +57,8 @@
     name: "{{ nname_1 }}"
     state: present
     connected:
-    - "{{ cname_1 }}"
-    - "{{ cname_2 }}"
+      - "{{ cname_1 }}"
+      - "{{ cname_2 }}"
   register: networks_3
 
 - name: Connect network to containers 1 and 2 (idempotency)
@@ -66,8 +66,8 @@
     name: "{{ nname_1 }}"
     state: present
     connected:
-    - "{{ cname_1 }}"
-    - "{{ cname_2 }}"
+      - "{{ cname_1 }}"
+      - "{{ cname_2 }}"
   register: networks_3_idem
 
 - name: Connect network to container 3
@@ -75,7 +75,7 @@
     name: "{{ nname_1 }}"
     state: present
     connected:
-    - "{{ cname_3 }}"
+      - "{{ cname_3 }}"
     appends: true
   register: networks_4
 
@@ -84,7 +84,7 @@
     name: "{{ nname_1 }}"
     state: present
     connected:
-    - "{{ cname_3 }}"
+      - "{{ cname_3 }}"
     appends: true
   register: networks_4_idem
 
@@ -93,8 +93,8 @@
     name: "{{ nname_1 }}"
     state: present
     connected:
-    - "{{ cname_2 }}"
-    - "{{ cname_3 }}"
+      - "{{ cname_2 }}"
+      - "{{ cname_3 }}"
   register: networks_5
 
 - name: Disconnect network from container 1 (idempotency)
@@ -102,8 +102,8 @@
     name: "{{ nname_1 }}"
     state: present
     connected:
-    - "{{ cname_2 }}"
-    - "{{ cname_3 }}"
+      - "{{ cname_2 }}"
+      - "{{ cname_3 }}"
   register: networks_5_idem
 
 - name: Cleanup
@@ -113,15 +113,15 @@
 
 - assert:
     that:
-    - networks_1 is changed
-    - networks_2 is changed
-    - networks_2_idem is not changed
-    - networks_3 is changed
-    - networks_3_idem is not changed
-    - networks_4 is changed
-    - networks_4_idem is not changed
-    - networks_5 is changed
-    - networks_5_idem is not changed
+      - networks_1 is changed
+      - networks_2 is changed
+      - networks_2_idem is not changed
+      - networks_3 is changed
+      - networks_3_idem is not changed
+      - networks_4 is changed
+      - networks_4_idem is not changed
+      - networks_5 is changed
+      - networks_5_idem is not changed
 
 ####################################################################
 
@@ -131,8 +131,8 @@
     state: absent
     force_kill: true
   loop:
-  - "{{ cname_1 }}"
-  - "{{ cname_2 }}"
-  - "{{ cname_3 }}"
+    - "{{ cname_1 }}"
+    - "{{ cname_2 }}"
+    - "{{ cname_3 }}"
   loop_control:
     loop_var: container_name

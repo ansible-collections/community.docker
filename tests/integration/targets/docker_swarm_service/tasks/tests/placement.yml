@@ -90,8 +90,8 @@
   when: docker_api_version is version('1.27', '>=') and docker_py_version is version('2.4.0', '>=')
 - assert:
     that:
-    - placement_preferences_1 is failed
-    - "'Minimum version required' in placement_preferences_1.msg"
+      - placement_preferences_1 is failed
+      - "'Minimum version required' in placement_preferences_1.msg"
   when: docker_api_version is version('1.27', '<') or docker_py_version is version('2.4.0', '<')
 
 ####################################################################
@@ -200,8 +200,8 @@
   when: docker_api_version is version('1.27', '>=') and docker_py_version is version('2.4.0', '>=')
 - assert:
     that:
-    - constraints_1 is failed
-    - "'Minimum version required' in constraints_1.msg"
+      - constraints_1 is failed
+      - "'Minimum version required' in constraints_1.msg"
   when: docker_api_version is version('1.27', '<') or docker_py_version is version('2.4.0', '<')
 
 ####################################################################
@@ -256,6 +256,6 @@
   when: docker_api_version is version('1.40', '>=') and docker_py_version is version('4.4.3', '>=')
 - assert:
     that:
-    - replicas_max_per_node_1 is failed
-    - "'Minimum version required' in replicas_max_per_node_1.msg"
+      - replicas_max_per_node_1 is failed
+      - "'Minimum version required' in replicas_max_per_node_1.msg"
   when: docker_api_version is version('1.40', '<') or docker_py_version is version('4.4.3', '<')

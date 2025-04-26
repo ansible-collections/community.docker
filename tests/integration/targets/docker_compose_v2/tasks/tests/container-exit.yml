@@ -67,4 +67,4 @@
           - present_1.images[0].Tag == (docker_test_image_alpine | split(':') | last)
           - present_1.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
           - >-
-            ("container " ~ pname ~ '-' ~ cname ~ "-1 exited (0)") in present_1.msg 
+            ("container " ~ pname ~ '-' ~ cname ~ "-1 exited (0)") in present_1.msg

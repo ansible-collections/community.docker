@@ -91,6 +91,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Create a volume
   community.docker.docker_volume:
     name: volume_one

@@ -51,8 +51,8 @@
 
 - assert:
     that:
-    - buildargs_1 is changed
-    - buildargs_2 is not changed
+      - buildargs_1 is changed
+      - buildargs_2 is not changed
 
 ####################################################################
 ## dockerfile ######################################################
@@ -72,9 +72,9 @@
 
 - assert:
     that:
-    - dockerfile_1 is changed
-    - "('FROM ' ~ docker_test_image_alpine) in dockerfile_1.stderr"
-    - dockerfile_1['image']['Config']['WorkingDir'] == '/newdata'
+      - dockerfile_1 is changed
+      - "('FROM ' ~ docker_test_image_alpine) in dockerfile_1.stderr"
+      - dockerfile_1['image']['Config']['WorkingDir'] == '/newdata'
 
 ####################################################################
 ## platform ########################################################
@@ -106,8 +106,8 @@
 
 - assert:
     that:
-    - platform_1 is changed
-    - platform_2 is not changed
+      - platform_1 is changed
+      - platform_2 is not changed
 
 ####################################################################
 ## target ##########################################################
@@ -128,8 +128,8 @@
 
 - assert:
     that:
-    - dockerfile_2 is changed
-    - dockerfile_2.image.Config.WorkingDir == '/first'
+      - dockerfile_2 is changed
+      - dockerfile_2.image.Config.WorkingDir == '/first'
 
 ####################################################################
 ## etc_hosts #######################################################

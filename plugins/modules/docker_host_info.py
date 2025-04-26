@@ -122,6 +122,7 @@ requirements:
 """
 
 EXAMPLES = r"""
+---
 - name: Get info on docker host
   community.docker.docker_host_info:
   register: result

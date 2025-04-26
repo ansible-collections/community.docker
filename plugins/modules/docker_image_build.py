@@ -248,6 +248,7 @@ seealso:
 """
 
 EXAMPLES = r"""
+---
 - name: Build Python 3.12 image
   community.docker.docker_image_build:
     name: localhost/python/3.12:latest

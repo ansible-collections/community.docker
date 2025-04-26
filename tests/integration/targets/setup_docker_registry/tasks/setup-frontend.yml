@@ -18,9 +18,9 @@
     # `links` does not work when using a network. That's why the docker_container task
     # in setup.yml specifies `aliases` so we get the same effect.
     links:
-    - '{{ docker_registry_container_name_registry }}:real-registry'
+      - '{{ docker_registry_container_name_registry }}:real-registry'
     volumes:
-    - '{{ docker_registry_container_name_frontend }}:/etc/nginx/'
+      - '{{ docker_registry_container_name_frontend }}:/etc/nginx/'
     network_mode: '{{ current_container_network_ip | default(omit, true) }}'
     networks: >-
       {{
@@ -35,8 +35,8 @@
     dest: "{{ remote_tmp_dir }}/{{ item }}"
     mode: "0644"
   loop:
-  - nginx.conf
-  - nginx.htpasswd
+    - nginx.conf
+    - nginx.htpasswd
 
 - name: Copy static files into volume
   docker_container_copy_into:
@@ -46,74 +46,74 @@
     owner_id: 0
     group_id: 0
   loop:
-  - nginx.conf
-  - nginx.htpasswd
+    - nginx.conf
+    - nginx.htpasswd
   register: can_copy_files
   ignore_errors: true
 
 - when: can_copy_files is not failed
   block:
 
-  - name: Create private key for frontend certificate
-    community.crypto.openssl_privatekey:
-      path: '{{ remote_tmp_dir }}/cert.key'
-      type: ECC
-      curve: secp256r1
-      force: true
+    - name: Create private key for frontend certificate
+      community.crypto.openssl_privatekey:
+        path: '{{ remote_tmp_dir }}/cert.key'
+        type: ECC
+        curve: secp256r1
+        force: true
 
-  - name: Create CSR for frontend certificate
-    community.crypto.openssl_csr:
-      path: '{{ remote_tmp_dir }}/cert.csr'
-      privatekey_path: '{{ remote_tmp_dir }}/cert.key'
-      subject_alt_name:
-      - DNS:test-registry.ansible.com
+    - name: Create CSR for frontend certificate
+      community.crypto.openssl_csr:
+        path: '{{ remote_tmp_dir }}/cert.csr'
+        privatekey_path: '{{ remote_tmp_dir }}/cert.key'
+        subject_alt_name:
+          - DNS:test-registry.ansible.com
 
-  - name: Create frontend certificate
-    community.crypto.x509_certificate:
-      path: '{{ remote_tmp_dir }}/cert.pem'
-      csr_path: '{{ remote_tmp_dir }}/cert.csr'
-      privatekey_path: '{{ remote_tmp_dir }}/cert.key'
-      provider: selfsigned
+    - name: Create frontend certificate
+      community.crypto.x509_certificate:
+        path: '{{ remote_tmp_dir }}/cert.pem'
+        csr_path: '{{ remote_tmp_dir }}/cert.csr'
+        privatekey_path: '{{ remote_tmp_dir }}/cert.key'
+        provider: selfsigned
 
-  - name: Copy dynamic files into volume
-    docker_container_copy_into:
-      container: '{{ docker_registry_container_name_frontend }}'
-      path: '{{ remote_tmp_dir }}/{{ item }}'
-      container_path: '/etc/nginx/{{ item }}'
-      owner_id: 0
-      group_id: 0
-    loop:
-    - cert.pem
-    - cert.key
+    - name: Copy dynamic files into volume
+      docker_container_copy_into:
+        container: '{{ docker_registry_container_name_frontend }}'
+        path: '{{ remote_tmp_dir }}/{{ item }}'
+        container_path: '/etc/nginx/{{ item }}'
+        owner_id: 0
+        group_id: 0
+      loop:
+        - cert.pem
+        - cert.key
 
-  - name: Start nginx frontend for registry
-    docker_container:
-      name: '{{ docker_registry_container_name_frontend }}'
-      state: started
-    register: nginx_container
+    - name: Start nginx frontend for registry
+      docker_container:
+        name: '{{ docker_registry_container_name_frontend }}'
+        state: started
+      register: nginx_container
 
-  - name: Output nginx container network settings
-    debug:
-      var: nginx_container.container.NetworkSettings
+    - name: Output nginx container network settings
+      debug:
+        var: nginx_container.container.NetworkSettings
 
-  - name: Get registry URL
-    set_fact:
-      # Note that this host/port combination is used by the Docker daemon, that's why `localhost` is appropriate!
-      # This host/port combination cannot be used if the tests are running inside a docker container.
-      docker_registry_frontend_address: localhost:{{ nginx_container.container.NetworkSettings.Ports['5000/tcp'].0.HostPort }}
-      # The following host/port combination can be used from inside the docker container.
-      docker_registry_frontend_address_internal: "{{ nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress if current_container_network_ip else nginx_container.container.NetworkSettings.IPAddress }}:5000"
+    - name: Get registry URL
+      set_fact:
+        # Note that this host/port combination is used by the Docker daemon, that's why `localhost` is appropriate!
+        # This host/port combination cannot be used if the tests are running inside a docker container.
+        docker_registry_frontend_address: localhost:{{ nginx_container.container.NetworkSettings.Ports['5000/tcp'].0.HostPort }}
+        # The following host/port combination can be used from inside the docker container.
+        docker_registry_frontend_address_internal: "{{ nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress if current_container_network_ip else nginx_container.container.NetworkSettings.IPAddress }}:5000"
 
-  - name: Wait for registry frontend
-    uri:
-      url: https://{{ docker_registry_frontend_address_internal }}/v2/
-      url_username: testuser
-      url_password: hunter2
-      validate_certs: false
-    register: result
-    until: result is success
-    retries: 5
-    delay: 1
+    - name: Wait for registry frontend
+      uri:
+        url: https://{{ docker_registry_frontend_address_internal }}/v2/
+        url_username: testuser
+        url_password: hunter2
+        validate_certs: false
+      register: result
+      until: result is success
+      retries: 5
+      delay: 1
 
 - set_fact:
     docker_registry_frontend_address: 'n/a'

@@ -5,6 +5,6 @@
 
 version: '3'
 services:
-    busybox:
-        image: "{{ docker_test_image_busybox }}"
-        command: sleep 3600
+  busybox:
+    image: "{{ docker_test_image_busybox }}"
+    command: sleep 3600

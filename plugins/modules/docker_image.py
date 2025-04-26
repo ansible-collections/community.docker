@@ -263,6 +263,7 @@ seealso:
 """
 
 EXAMPLES = r"""
+---
 - name: Pull an image
   community.docker.docker_image:
     name: pacur/centos-7

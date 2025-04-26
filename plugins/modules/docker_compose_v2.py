@@ -178,6 +178,7 @@ seealso:
 """
 
 EXAMPLES = r"""
+---
 # Examples use the django example at https://docs.docker.com/compose/django. Follow it to create the
 # flask directory
 

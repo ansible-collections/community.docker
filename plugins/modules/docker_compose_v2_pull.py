@@ -75,6 +75,7 @@ seealso:
 """
 
 EXAMPLES = r"""
+---
 - name: Pull images for flask project
   community.docker.docker_compose_v2_pull:
     project_src: /path/to/flask
