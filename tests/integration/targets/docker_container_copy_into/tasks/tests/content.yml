@@ -56,7 +56,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   check_mode: true
   diff: false
   register: result_1
@@ -67,7 +68,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   check_mode: true
   diff: true
   register: result_1_diff
@@ -78,7 +80,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   register: result_2
 
 - name: Copy content (idempotent, check mode)
@@ -87,7 +90,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   check_mode: true
   diff: false
   register: result_3
@@ -98,7 +102,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   check_mode: true
   diff: true
   register: result_3_diff
@@ -109,7 +114,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   register: result_4
 
 - name: Copy content (idempotent, check mode, base 64)
@@ -118,7 +124,8 @@
     content: "{{ 'Content 1\n' | b64encode }}"
     content_is_b64: true
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   check_mode: true
   diff: false
   register: result_3b64
@@ -129,7 +136,8 @@
     content: "{{ 'Content 1\n' | b64encode }}"
     content_is_b64: true
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   check_mode: true
   diff: true
   register: result_3b64_diff
@@ -140,7 +148,8 @@
     content: "{{ 'Content 1\n' | b64encode }}"
     content_is_b64: true
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   register: result_4b64
 
 - name: Dump file
@@ -161,7 +170,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     force: true
   check_mode: true
   diff: false
@@ -173,7 +183,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     force: true
   check_mode: true
   diff: true
@@ -185,7 +196,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     force: true
   register: result_7
 
@@ -207,7 +219,8 @@
     content: |
       Some other content
     container_path: '/file'
-    mode: 0777
+    mode: "0777"
+    mode_parse: modern
     owner_id: 123
     group_id: 321
     force: false
@@ -221,7 +234,8 @@
     content: |
       Some other content
     container_path: '/file'
-    mode: 0777
+    mode: "0777"
+    mode_parse: modern
     owner_id: 123
     group_id: 321
     force: false
@@ -235,7 +249,8 @@
     content: |
       Some other content
     container_path: '/file'
-    mode: 0777
+    mode: "0777"
+    mode_parse: modern
     owner_id: 123
     group_id: 321
     force: false
@@ -252,6 +267,113 @@
         stat -c '%s %a %F %u %g %N' /file > /dev/stderr
     chdir: /root
   register: result_11
+
+- name: Copy content (octal mode, mode_parse=modern)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/file'
+    mode: 0770
+    mode_parse: modern
+    owner_id: 0
+    group_id: 0
+  register: result_12
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_13
+
+- name: Copy content (octal mode, mode_parse=legacy)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/file'
+    mode: 0707
+    mode_parse: legacy
+    owner_id: 0
+    group_id: 0
+  register: result_14
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_15
+
+- name: Copy content (string mode, mode_parse=legacy)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/file'
+    mode: "420"
+    mode_parse: legacy
+    owner_id: 0
+    group_id: 0
+  register: result_16
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_17
+
+- name: Copy content (string mode, mode_parse=octal_string_only)
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/file'
+    mode: "0600"
+    mode_parse: octal_string_only
+    owner_id: 0
+    group_id: 0
+  register: result_18
+
+- name: Dump file
+  docker_container_exec:
+    container: '{{ cname }}'
+    argv:
+      - /bin/sh
+      - "-c"
+      - >-
+        cat /file | base64;
+        stat -c '%s %a %F %u %g %N' /file > /dev/stderr
+    chdir: /root
+  register: result_19
+
+- name: Restore state for next tasks
+  docker_container_copy_into:
+    container: '{{ cname }}'
+    content: |
+      Content 1
+    container_path: '/file'
+    mode: "0644"
+    mode_parse: octal_string_only
+    owner_id: 0
+    group_id: 0
 
 - name: Check results
   assert:
@@ -302,6 +424,18 @@
       - result_10 is not changed
       - result_11.stdout | b64decode == 'Content 1\n'
       - result_11.stderr == '10 644 regular file 0 0 /file'
+      - result_12 is changed
+      - result_13.stdout | b64decode == 'Content 1\n'
+      - result_13.stderr == '10 770 regular file 0 0 /file'
+      - result_14 is changed
+      - result_15.stdout | b64decode == 'Content 1\n'
+      - result_15.stderr == '10 707 regular file 0 0 /file'
+      - result_16 is changed
+      - result_17.stdout | b64decode == 'Content 1\n'
+      - result_17.stderr == '10 644 regular file 0 0 /file'
+      - result_18 is changed
+      - result_19.stdout | b64decode == 'Content 1\n'
+      - result_19.stderr == '10 600 regular file 0 0 /file'
 
 ######################### Follow link - idempotence
 
@@ -323,7 +457,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     follow: true
   check_mode: true
   diff: false
@@ -335,7 +470,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     follow: true
   check_mode: true
   diff: true
@@ -347,7 +483,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     follow: true
   register: result_2
 
@@ -370,7 +507,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     follow: true
     force: true
   check_mode: true
@@ -383,7 +521,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     follow: true
     force: true
   check_mode: true
@@ -396,7 +535,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     follow: true
     force: true
   register: result_5
@@ -454,7 +594,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     follow: false
   check_mode: true
   diff: false
@@ -466,7 +607,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     follow: false
   check_mode: true
   diff: true
@@ -478,7 +620,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     follow: false
   register: result_2
 
@@ -488,7 +631,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   check_mode: true
   diff: false
   register: result_3
@@ -499,7 +643,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   check_mode: true
   diff: true
   register: result_3_diff
@@ -510,7 +655,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   register: result_4
 
 - name: Dump file
@@ -531,7 +677,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     force: true
   check_mode: true
   diff: false
@@ -543,7 +690,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     force: true
   check_mode: true
   diff: true
@@ -555,7 +703,8 @@
     content: |
       Content 1
     container_path: '/lnk'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     force: true
   register: result_7
 
@@ -615,7 +764,8 @@
     content: |
       Content 1
     container_path: '/dir'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     follow: false
   check_mode: true
   diff: false
@@ -627,7 +777,8 @@
     content: |
       Content 1
     container_path: '/dir'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     follow: false
   check_mode: true
   diff: true
@@ -639,7 +790,8 @@
     content: |
       Content 1
     container_path: '/dir'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
     follow: false
   register: result_2
 
@@ -649,7 +801,8 @@
     content: |
       Content 1
     container_path: '/dir'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   check_mode: true
   diff: false
   register: result_3
@@ -660,7 +813,8 @@
     content: |
       Content 1
     container_path: '/dir'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   check_mode: true
   diff: true
   register: result_3_diff
@@ -671,7 +825,8 @@
     content: |
       Content 1
     container_path: '/dir'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   register: result_4
 
 - name: Dump file
@@ -719,7 +874,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   check_mode: true
   diff: false
   register: result_1
@@ -731,7 +887,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   check_mode: true
   diff: true
   register: result_1_diff
@@ -743,7 +900,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0644
+    mode: "0644"
+    mode_parse: modern
   register: result_2
 
 - name: Dump file
@@ -781,7 +939,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
   check_mode: true
   diff: false
   register: result_1
@@ -793,7 +952,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
   check_mode: true
   diff: true
   register: result_1_diff
@@ -805,7 +965,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
   register: result_2
 
 - name: Copy content (idempotent, check mode)
@@ -815,7 +976,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
   check_mode: true
   diff: false
   register: result_3
@@ -827,7 +989,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
   check_mode: true
   diff: true
   register: result_3_diff
@@ -839,7 +1002,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
   register: result_4
 
 - name: Dump file
@@ -885,7 +1049,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 12
     group_id: 910
   check_mode: true
@@ -899,7 +1064,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 12
     group_id: 910
   check_mode: true
@@ -913,7 +1079,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 12
     group_id: 910
   register: result_2
@@ -925,7 +1092,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 12
     group_id: 910
   check_mode: true
@@ -939,7 +1107,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 12
     group_id: 910
   check_mode: true
@@ -953,7 +1122,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 12
     group_id: 910
   register: result_4
@@ -977,7 +1147,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 13
     group_id: 13
   check_mode: true
@@ -991,7 +1162,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 13
     group_id: 13
   check_mode: true
@@ -1005,7 +1177,8 @@
       Content 2
       Extra line
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 13
     group_id: 13
   register: result_7
@@ -1068,7 +1241,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 12
     group_id: 910
   check_mode: true
@@ -1081,7 +1255,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 12
     group_id: 910
   check_mode: true
@@ -1094,7 +1269,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 12
     group_id: 910
   register: result_2
@@ -1105,7 +1281,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 12
     group_id: 910
   check_mode: true
@@ -1118,7 +1295,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 12
     group_id: 910
   check_mode: true
@@ -1131,7 +1309,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
     owner_id: 12
     group_id: 910
   register: result_4
@@ -1142,7 +1321,8 @@
     content: |
       Content 1
     container_path: '/file'
-    mode: 0707
+    mode: "0707"
+    mode_parse: modern
   register: result_5
   ignore_errors: true
 
