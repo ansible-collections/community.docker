@@ -95,6 +95,7 @@ options:
     description:
       - The file mode to use when writing the file to disk.
       - Will use the file's mode from the source system if this option is not provided.
+      - Note that if you provide an octal number as a string, Ansible will parse it as a B(decimal) number.
     type: int
   force:
     description:
