@@ -6,4 +6,4 @@
 # See template for more information:
 # https://github.com/ansible/ansible/blob/devel/test/lib/ansible_test/config/config.yml
 modules:
-  python_requires: '>= 2.7'
+  python_requires: default
