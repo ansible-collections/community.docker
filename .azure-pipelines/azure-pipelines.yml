@@ -248,9 +248,8 @@ stages:
           targets:
             - name: RHEL 9.2
               test: rhel/9.2
-            # Currently always hangs in group 2
-            # - name: RHEL 8.8
-            #   test: rhel/8.8
+            - name: RHEL 8.8
+              test: rhel/8.8
             - name: RHEL 7.9
               test: rhel/7.9
           groups:
