@@ -95,8 +95,26 @@ options:
     description:
       - The file mode to use when writing the file to disk.
       - Will use the file's mode from the source system if this option is not provided.
-      - Note that if you provide an octal number as a string, Ansible will parse it as a B(decimal) number.
-    type: int
+      - This option is parsed depending on how O(mode_parse) is set.
+    type: raw
+  mode_parse:
+    description:
+      - Determines how to parse the O(mode) parameter.
+    type: str
+    choices:
+      legacy:
+        - Parses the value of O(mode) as an integer.
+        - Note that if you provide an octal number as a string to O(mode), it will be parsed as a B(decimal) number.
+          If you provide an octal integer directly, though, it will work as expected.
+        - This has been the default behavior of the module since it was added to community.docker.
+      modern:
+        - Parses the value of O(mode) as an octal string, or takes the integer value if an integer has been provided.
+        - This is how M(ansible.builtin.copy) treats its O(ansible.builtin.copy#module:mode) option.
+      octal_string_only:
+        - Rejects everything that is not a string that can be parsed as an octal number.
+        - Use this value to ensure that no accidental conversion to integers happen.
+    default: legacy
+    version_added: 4.6.0
   force:
     description:
       - If set to V(true), force writing the file (without performing any idempotency checks).
@@ -134,7 +152,8 @@ EXAMPLES = r"""
     container_path: /bin/runme
     owner_id: 0 # root
     group_id: 0 # root
-    mode: 0755 # readable and executable by all users, writable by root
+    mode: "0755" # readable and executable by all users, writable by root
+    mode_parse: modern # ensure that strings passed for 'mode' are passed as octal numbers
 """
 
 RETURN = r"""
@@ -153,6 +172,8 @@ import stat
 import traceback
 
 from ansible.module_utils._text import to_bytes, to_native, to_text
+from ansible.module_utils.common.validation import check_type_int
+from ansible.module_utils.six import integer_types, string_types
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException, NotFound
 
@@ -761,6 +782,20 @@ def copy_content_into_container(client, container, content, container_path, foll
     client.module.exit_json(**result)
 
 
+def parse_modern(mode):
+    if isinstance(mode, string_types):
+        return int(to_native(mode), 8)
+    if isinstance(mode, integer_types):
+        return mode
+    raise TypeError('must be an octal string or an integer, got {mode!r}'.format(mode=mode))
+
+
+def parse_octal_string_only(mode):
+    if isinstance(mode, string_types):
+        return int(to_native(mode), 8)
+    raise TypeError('must be an octal string, got {mode!r}'.format(mode=mode))
+
+
 def main():
     argument_spec = dict(
         container=dict(type='str', required=True),
@@ -770,7 +805,8 @@ def main():
         local_follow=dict(type='bool', default=True),
         owner_id=dict(type='int'),
         group_id=dict(type='int'),
-        mode=dict(type='int'),
+        mode=dict(type='raw'),
+        mode_parse=dict(type='str', choices=['legacy', 'modern', 'octal_string_only'], default='legacy'),
         force=dict(type='bool'),
         content=dict(type='str', no_log=True),
         content_is_b64=dict(type='bool', default=False),
@@ -801,6 +837,20 @@ def main():
     force = client.module.params['force']
     content = client.module.params['content']
     max_file_size_for_diff = client.module.params['_max_file_size_for_diff'] or 1
+
+    if mode is not None:
+        mode_parse = client.module.params['mode_parse']
+        try:
+            if mode_parse == 'legacy':
+                mode = check_type_int(mode)
+            elif mode_parse == 'modern':
+                mode = parse_modern(mode)
+            elif mode_parse == 'octal_string_only':
+                mode = parse_octal_string_only(mode)
+        except (TypeError, ValueError) as e:
+            client.fail("Error while parsing 'mode': {error}".format(error=e))
+        if mode < 0:
+            client.fail("'mode' must not be negative; got {mode}".format(mode=mode))
 
     if content is not None:
         if client.module.params['content_is_b64']:

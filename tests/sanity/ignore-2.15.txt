@@ -2,5 +2,6 @@
 plugins/inventory/docker_containers.py yamllint:unparsable-with-libyaml
 plugins/inventory/docker_machine.py yamllint:unparsable-with-libyaml
 plugins/inventory/docker_swarm.py yamllint:unparsable-with-libyaml
+plugins/modules/docker_container_copy_into.py validate-modules:invalid-documentation
 plugins/modules/docker_container_copy_into.py validate-modules:undocumented-parameter # _max_file_size_for_diff is used by the action plugin
 plugins/modules/docker_image_build.py validate-modules:invalid-documentation
