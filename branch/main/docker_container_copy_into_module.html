@@ -384,14 +384,38 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-mode"><strong>mode</strong></p>
-<a class="ansibleOptionLink" href="#parameter-mode" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
+<a class="ansibleOptionLink" href="#parameter-mode" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">any</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>The file mode to use when writing the file to disk.</p>
 <p>Will use the file’s mode from the source system if this option is not provided.</p>
-<p>Note that if you provide an octal number as a string, Ansible will parse it as a <strong>decimal</strong> number.</p>
+<p>This option is parsed depending on how <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-copy-into-module-parameter-mode-parse"><span class="std std-ref"><span class="pre">mode_parse</span></span></a></strong></code> is set.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mode_parse"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-mode-parse"><strong>mode_parse</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mode_parse" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 4.6.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Determines how to parse the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-copy-into-module-parameter-mode"><span class="std std-ref"><span class="pre">mode</span></span></a></strong></code> parameter.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul>
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;legacy&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">(default)</span>:
+Parses the value of <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-copy-into-module-parameter-mode"><span class="std std-ref"><span class="pre">mode</span></span></a></strong></code> as an integer.</p>
+<p>Note that if you provide an octal number as a string to <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-copy-into-module-parameter-mode"><span class="std std-ref"><span class="pre">mode</span></span></a></strong></code>, it will be parsed as a <strong>decimal</strong> number. If you provide an octal integer directly, though, it will work as expected.</p>
+<p>This has been the default behavior of the module since it was added to community.docker.</p>
+</li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;modern&quot;</span></code>:
+Parses the value of <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-copy-into-module-parameter-mode"><span class="std std-ref"><span class="pre">mode</span></span></a></strong></code> as an octal string, or takes the integer value if an integer has been provided.</p>
+<p>This is how <a class="reference external" href="https://docs.ansible.com/ansible/devel/collections/ansible/builtin/copy_module.html#ansible-collections-ansible-builtin-copy-module" title="(in Ansible vdevel)"><span class="xref std std-ref">ansible.builtin.copy</span></a> treats its <code class="ansible-option docutils literal notranslate"><strong><a class="reference external" href="https://docs.ansible.com/ansible/devel/collections/ansible/builtin/copy_module.html#ansible-collections-ansible-builtin-copy-module-parameter-mode" title="(in Ansible vdevel)"><span><span class="pre">mode</span></span></a></strong></code> option.</p>
+</li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;octal_string_only&quot;</span></code>:
+Rejects everything that is not a string that can be parsed as an octal number.</p>
+<p>Use this value to ensure that no accidental conversion to integers happen.</p>
+</li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-owner_id"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-owner-id"><strong>owner_id</strong></p>
 <a class="ansibleOptionLink" href="#parameter-owner_id" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -400,7 +424,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>If not provided, the module will try to determine the user and group ID for the current user in the container. This will only work if <code class="docutils literal notranslate"><span class="pre">/bin/sh</span></code> is present in the container and the <code class="docutils literal notranslate"><span class="pre">id</span></code> binary or shell builtin is available. Also the container must be running.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-path"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-path"><strong>path</strong></p>
 <a class="ansibleOptionLink" href="#parameter-path" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
@@ -408,7 +432,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Mutually exclusive with <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-copy-into-module-parameter-content"><span class="std std-ref"><span class="pre">content</span></span></a></strong></code>. One of <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-copy-into-module-parameter-content"><span class="std std-ref"><span class="pre">content</span></span></a></strong></code> and <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-community-docker-docker-container-copy-into-module-parameter-path"><span class="std std-ref"><span class="pre">path</span></span></a></strong></code> is required.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-timeout"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-timeout"><strong>timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
@@ -417,7 +441,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">60</span></code></p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-tls"><strong>tls</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
@@ -430,7 +454,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tls_hostname"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-tls-hostname"><strong>tls_hostname</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tls_hostname" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -439,7 +463,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <p>Note that this option had a default value <code class="ansible-value docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-use_ssh_client"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-use-ssh-client"><strong>use_ssh_client</strong></p>
 <a class="ansibleOptionLink" href="#parameter-use_ssh_client" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 <p><em class="ansible-option-versionadded">added in community.docker 1.5.0</em></p>
@@ -452,7 +476,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-validate_certs"></div>
 <div class="ansibleOptionAnchor" id="parameter-tls_verify"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-validate-certs"><span id="ansible-collections-community-docker-docker-container-copy-into-module-parameter-tls-verify"></span><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: tls_verify</span></p>
@@ -545,7 +569,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <span class="w">    </span><span class="nt">container_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/bin/runme</span>
 <span class="w">    </span><span class="nt">owner_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"> </span><span class="c1"># root</span>
 <span class="w">    </span><span class="nt">group_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"> </span><span class="c1"># root</span>
-<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0755</span><span class="w"> </span><span class="c1"># readable and executable by all users, writable by root</span>
+<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0755&quot;</span><span class="w"> </span><span class="c1"># readable and executable by all users, writable by root</span>
+<span class="w">    </span><span class="nt">mode_parse</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">modern</span><span class="w"> </span><span class="c1"># ensure that strings passed for &#39;mode&#39; are passed as octal numbers</span>
 </pre></div>
 </div>
 </section>
