@@ -22,7 +22,8 @@ options:
         If the environment variable is not set, the default value will be used.
     type: str
     default: unix:///var/run/docker.sock
-    aliases: [docker_url]
+    aliases:
+      - docker_url
   tls_hostname:
     description:
       - When verifying the authenticity of the Docker Host server, provide the expected name of the server.
@@ -40,7 +41,8 @@ options:
         If the environment variable is not set, the default value will be used.
     type: str
     default: auto
-    aliases: [docker_api_version]
+    aliases:
+      - docker_api_version
   timeout:
     description:
       - The maximum amount of time in seconds to wait on a response from the API.
@@ -56,21 +58,28 @@ options:
       - This option was called O(ca_cert) and got renamed to O(ca_path) in community.docker 3.6.0. The old name has been added
         as an alias and can still be used.
     type: path
-    aliases: [ca_cert, tls_ca_cert, cacert_path]
+    aliases:
+      - ca_cert
+      - tls_ca_cert
+      - cacert_path
   client_cert:
     description:
       - Path to the client's TLS certificate file.
       - If the value is not specified in the task and the environment variable E(DOCKER_CERT_PATH) is set, the file C(cert.pem)
         from the directory specified in the environment variable E(DOCKER_CERT_PATH) will be used.
     type: path
-    aliases: [tls_client_cert, cert_path]
+    aliases:
+      - tls_client_cert
+      - cert_path
   client_key:
     description:
       - Path to the client's TLS key file.
       - If the value is not specified in the task and the environment variable E(DOCKER_CERT_PATH) is set, the file C(key.pem)
         from the directory specified in the environment variable E(DOCKER_CERT_PATH) will be used.
     type: path
-    aliases: [tls_client_key, key_path]
+    aliases:
+      - tls_client_key
+      - key_path
   tls:
     description:
       - Secure the connection to the API by using TLS without verifying the authenticity of the Docker host server. Note that
@@ -93,7 +102,8 @@ options:
         If the environment variable is not set, the default value will be used.
     type: bool
     default: false
-    aliases: [tls_verify]
+    aliases:
+      - tls_verify
   debug:
     description:
       - Debug mode.
@@ -191,7 +201,8 @@ options:
         instead. If the environment variable is not set, the default value will be used.
     type: str
     default: unix:///var/run/docker.sock
-    aliases: [ docker_url ]
+    aliases:
+      - docker_url
   tls_hostname:
     description:
       - When verifying the authenticity of the Docker Host server, provide the expected name of the server.
@@ -207,7 +218,8 @@ options:
         used instead. If the environment variable is not set, the default value will be used.
     type: str
     default: auto
-    aliases: [ docker_api_version ]
+    aliases:
+      - docker_api_version
   timeout:
     description:
       - The maximum amount of time in seconds to wait on a response from the API.
@@ -223,21 +235,28 @@ options:
       - This option was called O(ca_cert) and got renamed to O(ca_path) in community.docker 3.6.0. The old name has
         been added as an alias and can still be used.
     type: path
-    aliases: [ ca_cert, tls_ca_cert, cacert_path ]
+    aliases:
+      - ca_cert
+      - tls_ca_cert
+      - cacert_path
   client_cert:
     description:
       - Path to the client's TLS certificate file.
       - If the value is not specified in the task and the environment variable E(DOCKER_CERT_PATH) is set,
         the file C(cert.pem) from the directory specified in the environment variable E(DOCKER_CERT_PATH) will be used.
     type: path
-    aliases: [ tls_client_cert, cert_path ]
+    aliases:
+      - tls_client_cert
+      - cert_path
   client_key:
     description:
       - Path to the client's TLS key file.
       - If the value is not specified in the task and the environment variable E(DOCKER_CERT_PATH) is set,
         the file C(key.pem) from the directory specified in the environment variable E(DOCKER_CERT_PATH) will be used.
     type: path
-    aliases: [ tls_client_key, key_path ]
+    aliases:
+      - tls_client_key
+      - key_path
   tls:
     description:
       - Secure the connection to the API by using TLS without verifying the authenticity of the Docker host
@@ -259,7 +278,8 @@ options:
         used instead. If the environment variable is not set, the default value will be used.
     type: bool
     default: false
-    aliases: [ tls_verify ]
+    aliases:
+      - tls_verify
   debug:
     description:
       - Debug mode
@@ -303,7 +323,8 @@ options:
       - Mutually exclusive with O(cli_context). If neither O(docker_host) nor O(cli_context) are provided, the
         value V(unix:///var/run/docker.sock) is used.
     type: str
-    aliases: [ docker_url ]
+    aliases:
+      - docker_url
   tls_hostname:
     description:
       - When verifying the authenticity of the Docker Host server, provide the expected name of the server.
@@ -318,28 +339,36 @@ options:
         used instead. If the environment variable is not set, the default value will be used.
     type: str
     default: auto
-    aliases: [ docker_api_version ]
+    aliases:
+      - docker_api_version
   ca_path:
     description:
       - Use a CA certificate when performing server verification by providing the path to a CA certificate file.
       - If the value is not specified in the task and the environment variable E(DOCKER_CERT_PATH) is set,
         the file C(ca.pem) from the directory specified in the environment variable E(DOCKER_CERT_PATH) will be used.
     type: path
-    aliases: [ ca_cert, tls_ca_cert, cacert_path ]
+    aliases:
+      - ca_cert
+      - tls_ca_cert
+      - cacert_path
   client_cert:
     description:
       - Path to the client's TLS certificate file.
       - If the value is not specified in the task and the environment variable E(DOCKER_CERT_PATH) is set,
         the file C(cert.pem) from the directory specified in the environment variable E(DOCKER_CERT_PATH) will be used.
     type: path
-    aliases: [ tls_client_cert, cert_path ]
+    aliases:
+      - tls_client_cert
+      - cert_path
   client_key:
     description:
       - Path to the client's TLS key file.
       - If the value is not specified in the task and the environment variable E(DOCKER_CERT_PATH) is set,
         the file C(key.pem) from the directory specified in the environment variable E(DOCKER_CERT_PATH) will be used.
     type: path
-    aliases: [ tls_client_key, key_path ]
+    aliases:
+      - tls_client_key
+      - key_path
   tls:
     description:
       - Secure the connection to the API by using TLS without verifying the authenticity of the Docker host
@@ -355,7 +384,8 @@ options:
         used instead. If the environment variable is not set, the default value will be used.
     type: bool
     default: false
-    aliases: [ tls_verify ]
+    aliases:
+      - tls_verify
   # debug:
   #   description:
   #     - Debug mode
