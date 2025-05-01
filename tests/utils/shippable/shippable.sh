@@ -70,7 +70,7 @@ export ANSIBLE_COLLECTIONS_PATHS="${PWD}/../../../"
 # START: HACK
 
 COMMUNITY_CRYPTO_BRANCH=main
-if [ "${ansible_version}" == "2.16" ]; then
+if [ "${ansible_version}" == "2.16" ] || [ "${ansible_version}" == "2.15" ]; then
     COMMUNITY_CRYPTO_BRANCH=stable-2
 fi
 
