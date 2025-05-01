@@ -69,6 +69,11 @@ export ANSIBLE_COLLECTIONS_PATHS="${PWD}/../../../"
 
 # START: HACK
 
+COMMUNITY_CRYPTO_BRANCH=main
+if [ "${ansible_version}" == "2.16" ] || [ "${ansible_version}" == "2.15" ]; then
+    COMMUNITY_CRYPTO_BRANCH=stable-2
+fi
+
 retry git clone --depth=1 --single-branch --branch stable-1 https://github.com/ansible-collections/community.library_inventory_filtering.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/library_inventory_filtering_v1"
 # NOTE: we're installing with git to work around Galaxy being a huge PITA (https://github.com/ansible/galaxy/issues/2429)
 # retry ansible-galaxy -vvv collection install community.library_inventory_filtering_v1
@@ -84,7 +89,7 @@ fi
 if [ "${script}" != "sanity/1" ] && [ "${script}" != "units/1" ]; then
     # To prevent Python dependencies on other collections only install other collections for integration tests
     retry git clone --depth=1 --single-branch https://github.com/ansible-collections/ansible.posix.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/ansible/posix"
-    retry git clone --depth=1 --single-branch https://github.com/ansible-collections/community.crypto.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/crypto"
+    retry git clone --depth=1 --single-branch --branch "${COMMUNITY_CRYPTO_BRANCH}" https://github.com/ansible-collections/community.crypto.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/crypto"
     retry git clone --depth=1 --single-branch https://github.com/ansible-collections/community.general.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/general"
     # NOTE: we're installing with git to work around Galaxy being a huge PITA (https://github.com/ansible/galaxy/issues/2429)
     # retry ansible-galaxy -vvv collection install ansible.posix
