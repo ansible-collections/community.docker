@@ -2105,3 +2105,13 @@ releases:
       - 1060-compose-yes.yml
       - 4.5.2.yml
     release_date: '2025-03-22'
+  4.6.0:
+    changes:
+      minor_changes:
+        - docker_container_copy_into - add ``mode_parse`` parameter which determines
+          how ``mode`` is parsed (https://github.com/ansible-collections/community.docker/pull/1074).
+      release_summary: Feature release.
+    fragments:
+      - 1074-mode-octal.yml
+      - 4.6.0.yml
+    release_date: '2025-05-02'

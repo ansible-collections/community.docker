@@ -1,2 +1,0 @@
-minor_changes:
-  - "docker_container_copy_into - add ``mode_parse`` parameter which determines how ``mode`` is parsed (https://github.com/ansible-collections/community.docker/pull/1074)."

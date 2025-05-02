@@ -4,6 +4,19 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v4.6.0
+======
+
+Release Summary
+---------------
+
+Feature release.
+
+Minor Changes
+-------------
+
+- docker_container_copy_into - add ``mode_parse`` parameter which determines how ``mode`` is parsed (https://github.com/ansible-collections/community.docker/pull/1074).
+
 v4.5.2
 ======
 
