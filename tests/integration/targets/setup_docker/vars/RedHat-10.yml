@@ -1,0 +1,17 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+docker_prereq_packages:
+  - yum-utils
+  - device-mapper-persistent-data
+  - lvm2
+  - libseccomp
+  - iptables
+
+docker_packages:
+  - docker-ce # -19.03.13
+  - docker-ce-cli # -19.03.13
+docker_cli_packages:
+  - docker-ce-cli # -19.03.13
