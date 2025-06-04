@@ -7,7 +7,7 @@
 
 [ "$MOCK_ERROR_IN" == "$1" ] && echo >&2 "Mock Docker Machine error" && exit 1
 case $1 in
-    env)        
+    env)
         cat <<'EOF'
 export DOCKER_TLS_VERIFY="1"
 export DOCKER_HOST="tcp://134.209.204.160:2376"
