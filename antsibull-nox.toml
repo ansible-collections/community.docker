@@ -3,12 +3,15 @@
 # SPDX-FileCopyrightText: 2025 Felix Fontein <felix@fontein.de>
 
 [collection_sources]
+"community.general" = "git+https://github.com/ansible-collections/community.general.git,main"
 "community.internal_test_tools" = "git+https://github.com/ansible-collections/community.internal_test_tools.git,main"
 "community.library_inventory_filtering_v1" = "git+https://github.com/ansible-collections/community.library_inventory_filtering.git,stable-1"
 
 [collection_sources_per_ansible.'2.15']
 # community.crypto's main branch needs ansible-core >= 2.17
 "community.crypto" = "git+https://github.com/ansible-collections/community.crypto.git,stable-2"
+# community.general's main branch needs ansible-core >= 2.16
+"community.general" = "git+https://github.com/ansible-collections/community.general.git,stable-10"
 
 [collection_sources_per_ansible.'2.16']
 # community.crypto's main branch needs ansible-core >= 2.17
