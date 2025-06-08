@@ -1298,7 +1298,6 @@ def _get_expected_values_command(module, client, api_version, options, image, va
     return expected_values
 
 
-
 def _needs_container_image_command(values):
     return values.get('command') == []
 
