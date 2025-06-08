@@ -1274,6 +1274,34 @@ def _preprocess_container_names(module, client, api_version, value):
     return 'container:{0}'.format(container['Id'])
 
 
+def _get_value_command(module, container, api_version, options, image, host_info):
+    value = container['Config'].get('Cmd', _SENTRY)
+    if value is _SENTRY:
+        return {}
+    return {"command": value}
+
+
+def _set_value_command(module, data, api_version, options, values):
+    if "command" not in values:
+        return
+    value = values["command"]
+    data['Cmd'] = value
+
+
+def _get_expected_values_command(module, client, api_version, options, image, values, host_info):
+    expected_values = {}
+    if 'command' in values:
+        command = values['command']
+        if command == [] and image and image["Config"].get("Cmd"):
+            command = image["Config"].get("Cmd")
+        expected_values['command'] = command
+    return expected_values
+
+
+def _needs_container_image_command(values):
+    return values.get('command') == []
+
+
 OPTION_AUTO_REMOVE.add_engine('docker_api', DockerAPIEngine.host_config_value('AutoRemove'))
 
 OPTION_BLKIO_WEIGHT.add_engine('docker_api', DockerAPIEngine.host_config_value('BlkioWeight', update_parameter='BlkioWeight'))
@@ -1286,7 +1314,12 @@ OPTION_CGROUP_NS_MODE.add_engine('docker_api', DockerAPIEngine.host_config_value
 
 OPTION_CGROUP_PARENT.add_engine('docker_api', DockerAPIEngine.host_config_value('CgroupParent'))
 
-OPTION_COMMAND.add_engine('docker_api', DockerAPIEngine.config_value('Cmd'))
+OPTION_COMMAND.add_engine('docker_api', DockerAPIEngine(
+    get_value=_get_value_command,
+    set_value=_set_value_command,
+    get_expected_values=_get_expected_values_command,
+    needs_container_image=_needs_container_image_command,
+))
 
 OPTION_CPU_PERIOD.add_engine('docker_api', DockerAPIEngine.host_config_value('CpuPeriod', update_parameter='CpuPeriod'))
 

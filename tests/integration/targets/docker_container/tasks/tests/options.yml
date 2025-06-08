@@ -385,6 +385,16 @@
     force_kill: true
   register: command_5
 
+- name: command (correct, empty list, idempotency)
+  docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command_handling: correct
+    command: []
+    name: "{{ cname }}"
+    state: present  # the container will use the default command and likely has been exited by this point, so don't use 'state: started' here
+    force_kill: true
+  register: command_6
+
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
@@ -399,6 +409,7 @@
       - command_3 is not changed
       - command_4 is changed
       - command_5 is changed
+      - command_6 is not changed
 
 ####################################################################
 ## cpu_period ######################################################
