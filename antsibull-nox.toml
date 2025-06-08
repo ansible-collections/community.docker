@@ -9,15 +9,23 @@
 
 [collection_sources_per_ansible.'2.11']
 "community.crypto" = "git+https://github.com/ansible-collections/community.crypto.git,stable-2"
+# community.general's stable-8 branch needs ansible-core >= 2.13
+"community.general" = "git+https://github.com/ansible-collections/community.general.git,stable-7"
 
 [collection_sources_per_ansible.'2.12']
 "community.crypto" = "git+https://github.com/ansible-collections/community.crypto.git,stable-2"
+# community.general's stable-8 branch needs ansible-core >= 2.13
+"community.general" = "git+https://github.com/ansible-collections/community.general.git,stable-7"
 
 [collection_sources_per_ansible.'2.13']
 "community.crypto" = "git+https://github.com/ansible-collections/community.crypto.git,stable-2"
+# community.general's stable-10 branch needs ansible-core >= 2.15
+"community.general" = "git+https://github.com/ansible-collections/community.general.git,stable-9"
 
 [collection_sources_per_ansible.'2.14']
 "community.crypto" = "git+https://github.com/ansible-collections/community.crypto.git,stable-2"
+# community.general's stable-10 branch needs ansible-core >= 2.15
+"community.general" = "git+https://github.com/ansible-collections/community.general.git,stable-9"
 
 [collection_sources_per_ansible.'2.15']
 # community.crypto's main branch needs ansible-core >= 2.17
