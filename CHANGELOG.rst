@@ -4,6 +4,20 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v3.13.7
+=======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- docker_compose_v2 - handle a (potentially unintentional) breaking change in Docker Compose 2.37.0. Note that ``ContainerName`` is no longer part of the return value (https://github.com/ansible-collections/community.docker/issues/1082, https://github.com/ansible-collections/community.docker/pull/1083).
+- docker_container - fix idempotency if ``command=[]`` and ``command_handling=correct`` (https://github.com/ansible-collections/community.docker/issues/1080, https://github.com/ansible-collections/community.docker/pull/1085).
+
 v3.13.6
 =======
 
