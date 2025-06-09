@@ -2115,3 +2115,18 @@ releases:
       - 1074-mode-octal.yml
       - 4.6.0.yml
     release_date: '2025-05-02'
+  4.6.1:
+    changes:
+      bugfixes:
+        - docker_compose_v2 - handle a (potentially unintentional) breaking change
+          in Docker Compose 2.37.0. Note that ``ContainerName`` is no longer part
+          of the return value (https://github.com/ansible-collections/community.docker/issues/1082,
+          https://github.com/ansible-collections/community.docker/pull/1083).
+        - docker_container - fix idempotency if ``command=[]`` and ``command_handling=correct``
+          (https://github.com/ansible-collections/community.docker/issues/1080, https://github.com/ansible-collections/community.docker/pull/1085).
+      release_summary: Bugfix release.
+    fragments:
+      - 1083-docker_compose_v2-images.yml
+      - 1085-docker_container-command-empty.yml
+      - 4.6.1.yml
+    release_date: '2025-06-09'
