@@ -24,13 +24,13 @@ Note that plugins (inventory plugins and connection plugins) are always executed
 
 You can install the Docker SDK for Python for Python 3.6 or later as follows:
 
-.. code-block:: bash
+.. code-block:: console
 
     $ pip install docker
 
 For Python 2.7, you need to use a version between 2.0.0 and 4.4.4 since the Python package for Docker removed support for Python 2.7 on 5.0.0. You can install the specific version of the Docker SDK for Python as follows:
 
-.. code-block:: bash
+.. code-block:: console
 
     $ pip install 'docker==4.4.4'
 
