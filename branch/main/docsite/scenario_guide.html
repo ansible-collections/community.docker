@@ -87,7 +87,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#plain-docker-daemon-images-networks-volumes-and-containers">Plain Docker daemon: images, networks, volumes, and containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#docker-compose">Docker Compose</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#docker-compose-v2">Docker Compose v2</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#docker-compose-v1">Docker Compose v1</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#docker-machine">Docker Machine</a></li>
@@ -399,26 +398,21 @@ by Docker SDK for Python.</p>
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Docker Compose</a><a class="headerlink" href="#docker-compose" title="Link to this heading"></a></h2>
 <section id="docker-compose-v2">
 <h3>Docker Compose v2<a class="headerlink" href="#docker-compose-v2" title="Link to this heading"></a></h3>
-<p>There are two modules for working with Docker compose projects:</p>
+<p>There are several modules for working with Docker Compose projects:</p>
 <blockquote>
 <div><dl class="simple">
-<dt>community.docker.docker_compose_v2</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_module.html#ansible-collections-community-docker-docker-compose-v2-module"><span class="std std-ref">community.docker.docker_compose_v2 module</span></a> allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.</p>
+<dt>community.docker.docker_compose_v2</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_module.html#ansible-collections-community-docker-docker-compose-v2-module"><span class="std std-ref">community.docker.docker_compose_v2 module</span></a> allows you to use your existing Docker Compose files to orchestrate containers on a single Docker daemon or on Swarm.</p>
 </dd>
-<dt>community.docker.docker_compose_v2_pull</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_pull_module.html#ansible-collections-community-docker-docker-compose-v2-pull-module"><span class="std std-ref">community.docker.docker_compose_v2_pull module</span></a> allows you to pull Docker compose projects.</p>
+<dt>community.docker.docker_compose_v2_exec</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_exec_module.html#ansible-collections-community-docker-docker-compose-v2-exec-module"><span class="std std-ref">community.docker.docker_compose_v2_exec module</span></a> allows you to run a command in a container of Docker Compose projects.</p>
+</dd>
+<dt>community.docker.docker_compose_v2_pull</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_pull_module.html#ansible-collections-community-docker-docker-compose-v2-pull-module"><span class="std std-ref">community.docker.docker_compose_v2_pull module</span></a> allows you to pull Docker Compose projects.</p>
+</dd>
+<dt>community.docker.docker_compose_v2_run</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_run_module.html#ansible-collections-community-docker-docker-compose-v2-run-module"><span class="std std-ref">community.docker.docker_compose_v2_run module</span></a> allows you to run a command in a new container of a Docker Compose project.</p>
 </dd>
 </dl>
 </div></blockquote>
 <p>These modules use the Docker CLI “compose” plugin (<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code>), and thus needs access to the Docker CLI tool.
 No further requirements next to to the CLI tool and its Docker Compose plugin are needed.</p>
-</section>
-<section id="docker-compose-v1">
-<h3>Docker Compose v1<a class="headerlink" href="#docker-compose-v1" title="Link to this heading"></a></h3>
-<p>The deprecated <a class="reference internal" href="../docker_compose_module.html#ansible-collections-community-docker-docker-compose-module"><span class="std std-ref">community.docker.docker_compose module</span></a>
-allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
-This module uses the out-dated and End of Life version 1.x of Docker Compose. It should mainly be used for legacy systems
-which still have to use that version of Docker Compose. <strong>The module is deprecated and will be removed from community.docker 4.0.0.</strong>
-Please use the Docker Compose v2 modules instead.</p>
-<p>You need to install the <a class="reference external" href="https://pypi.org/project/docker-compose/">old Python docker-compose</a> on the remote machines to use the Docker Compose v1 module.</p>
 </section>
 </section>
 <section id="docker-machine">
