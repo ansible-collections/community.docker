@@ -121,11 +121,14 @@
           - present_2_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
           - present_2 is not changed
           - present_2.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
-          - present_3_check is changed
+          # - present_3_check is changed   -- whether this is true depends on a combination of Docker CLI and Docker Compose version...
+          # Compose 2.37.3 with Docker 28.2.x results in 'changed', while Compose 2.37.3 with Docker 28.3.0 results in 'not changed'.
+          # It seems that Docker is now clever enough to notice that nothing is rebuilt...
           - present_3_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
           - ((present_3 is changed) if docker_compose_version is version('2.31.0', '>=') and docker_compose_version is version('2.32.2', '<') else (present_3 is not changed))
           - present_3.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
-          - present_4_check is changed
+          # - present_4_check is changed
+          # Same as above...
           - present_4_check.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
           - present_4 is not changed
           - present_4.warnings | default([]) | select('regex', ' Please report this at ') | length == 0
