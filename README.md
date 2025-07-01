@@ -39,7 +39,7 @@ For more information about communication, see the [Ansible communication guide](
 
 ## Tested with Ansible
 
-Tested with the current ansible-core 2.15, ansible-core 2.16, ansible-core 2.17, and ansible-core 2.18 releases, and the current development version of ansible-core. Ansible/ansible-base versions before 2.15.0 are not supported.
+Tested with the current ansible-core 2.15, ansible-core 2.16, ansible-core 2.17, ansible-core 2.18, and ansible-core 2.19 releases, and the current development version of ansible-core. Ansible/ansible-base versions before 2.15.0 are not supported.
 
 ## External requirements
 
