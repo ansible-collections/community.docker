@@ -51,17 +51,17 @@ pool: Standard
 stages:
 
 ### Sanity & units
-  - stage: Ansible_devel
-    displayName: Sanity & Units devel
+  - stage: Ansible_2_19
+    displayName: Sanity & Units 2.19
     dependsOn: []
     jobs:
       - template: templates/matrix.yml
         parameters:
           targets:
             - name: Sanity
-              test: 'devel/sanity/1'
+              test: '2.19/sanity/1'
             - name: Units
-              test: 'devel/units/1'
+              test: '2.19/units/1'
   - stage: Ansible_2_18
     displayName: Sanity & Units 2.18
     dependsOn: []
@@ -108,13 +108,13 @@ stages:
               test: '2.15/units/1'
 
 ### Docker
-  - stage: Docker_devel
-    displayName: Docker devel
+  - stage: Docker_2_19
+    displayName: Docker 2.19
     dependsOn: []
     jobs:
       - template: templates/matrix.yml
         parameters:
-          testFormat: devel/linux/{0}
+          testFormat: 2.19/linux/{0}
           targets:
             - name: Fedora 41
               test: fedora41
@@ -202,13 +202,13 @@ stages:
             - 6
 
 ### Community Docker
-  - stage: Docker_community_devel
-    displayName: Docker (community images) devel
+  - stage: Docker_community_2_19
+    displayName: Docker (community images) 2.19
     dependsOn: []
     jobs:
       - template: templates/matrix.yml
         parameters:
-          testFormat: devel/linux-community/{0}
+          testFormat: 2.19/linux-community/{0}
           targets:
             - name: Debian Bullseye
               test: debian-bullseye/3.9
@@ -222,13 +222,13 @@ stages:
             - 6
 
 ### Remote
-  - stage: Remote_devel
-    displayName: Remote devel
+  - stage: Remote_2_19
+    displayName: Remote 2.19
     dependsOn: []
     jobs:
       - template: templates/matrix.yml
         parameters:
-          testFormat: devel/{0}
+          testFormat: 2.19/{0}
           targets:
             - name: RHEL 9.5 with Docker SDK, urllib3, requests from sources
               test: rhel/9.5-dev-latest
@@ -318,21 +318,21 @@ stages:
   - stage: Summary
     condition: succeededOrFailed()
     dependsOn:
-      - Ansible_devel
+      - Ansible_2_19
       - Ansible_2_18
       - Ansible_2_17
       - Ansible_2_16
       - Ansible_2_15
-      - Remote_devel
+      - Remote_2_19
       - Remote_2_18
       - Remote_2_17
       - Remote_2_16
       - Remote_2_15
-      - Docker_devel
+      - Docker_2_19
       - Docker_2_18
       - Docker_2_17
       - Docker_2_16
       - Docker_2_15
-      - Docker_community_devel
+      - Docker_community_2_19
     jobs:
       - template: templates/coverage.yml
