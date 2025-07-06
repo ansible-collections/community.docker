@@ -50,6 +50,7 @@ no_unwanted_files_module_extensions = [".py"]
 no_unwanted_files_yaml_extensions = [".yml"]
 run_action_groups = true
 run_no_trailing_whitespace = true
+run_avoid_characters = true
 
 [[sessions.extra_checks.action_groups_config]]
 name = "docker"
@@ -59,6 +60,13 @@ exclusions = [
     "docker_context_info",
 ]
 doc_fragment = "community.docker.attributes.actiongroup_docker"
+
+[[sessions.extra_checks.avoid_character_group]]
+name = "tab"
+regex = "\\x09"
+skip_directories = [
+    "tests/images/",
+]
 
 [sessions.build_import_check]
 run_galaxy_importer = true
