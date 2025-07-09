@@ -1,0 +1,114 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- vars:
+    bname: "{{ name_prefix }}-build"
+    cname: "{{ name_prefix }}-cont"
+    non_existing_image: does-not-exist:latest
+    dockerfile_path: test-dockerfile
+    base_image: hello-world:latest
+    project_src: "{{ remote_tmp_dir }}/{{ bname }}"
+    test_service_non_existing: |
+      version: '3'
+      services:
+        {{ cname }}:
+          image: {{ non_existing_image }}
+          build:
+            dockerfile: Dockerfile-does-not-exist
+    test_service_simple: |
+      version: '3'
+      services:
+        {{ cname }}:
+          image: {{ docker_test_image_simple_1 }}
+          build:
+            dockerfile: {{ dockerfile_path }}
+          command: 10m
+          stop_grace_period: 1s
+    test_service_simple_dockerfile: |
+      FROM {{ base_image }}
+
+  block:
+    - name: Registering container name
+      set_fact:
+        cnames: "{{ cnames + [bname ~ '-' ~ cname ~ '-1'] + [ base_image ]}}"
+        dnetworks: "{{ dnetworks + [bname ~ '_default'] }}"
+
+    - name: Create project directory
+      file:
+        path: '{{ project_src }}'
+        state: directory
+
+    - name: Make sure images are not around
+      docker_image_remove:
+        name: '{{ item }}'
+      loop:
+        - '{{ base_image }}'
+        - '{{ non_existing_image }}'
+        - '{{ docker_test_image_simple_1 }}'
+
+####################################################################
+## Image with missing dockerfile ###################################
+####################################################################
+
+    - name: Template project file with non-existing image
+      copy:
+        dest: '{{ project_src }}/docker-compose.yml'
+        content: '{{ test_service_non_existing }}'
+
+    - name: Build (check)
+      docker_compose_v2_build:
+        project_src: '{{ project_src }}'
+      check_mode: true
+      register: build_1_check
+      ignore_errors: true
+
+    - name: Build
+      docker_compose_v2_build:
+        project_src: '{{ project_src }}'
+      register: build_1
+      ignore_errors: true
+
+    - assert:
+        that:
+          - build_1_check is failed or build_1_check is changed
+          - build_1_check is changed or build_1_check.msg.startswith('Error when processing ')
+          - build_1_check.warnings | default([]) | select('regex', 'Cannot parse event from ') | length == 0
+          - build_1 is failed
+          - build_1.msg.startswith('Error when processing ')
+          - build_1.warnings | default([]) | select('regex', 'Cannot parse event from ') | length == 0
+
+####################################################################
+## Regular image ###################################################
+####################################################################
+
+    - name: Template project file with simple dockerfile
+      copy:
+        dest: '{{ project_src }}/docker-compose.yml'
+        content: '{{ test_service_simple }}'
+
+    - name: Template dockerfile
+      copy:
+        dest: '{{ project_src }}/{{ dockerfile_path }}'
+        content: '{{ test_service_simple_dockerfile }}'
+
+    - name: Build (check)
+      docker_compose_v2_build:
+        project_src: '{{ project_src }}'
+      check_mode: true
+      register: build_1_check
+
+    - name: Build
+      docker_compose_v2_build:
+        project_src: '{{ project_src }}'
+      register: build_1
+
+    - assert:
+        that:
+          - build_1_check is changed
+          - (build_1_check.actions | selectattr('status', 'eq', 'Building') | first) is truthy
+          - build_1_check.warnings | default([]) | select('regex', 'Cannot parse event from ') | length == 0
+          - build_1 is changed
+          - (build_1.actions | selectattr('status', 'eq', 'Building') | first) is truthy
+          - build_1.warnings | default([]) | select('regex', 'Cannot parse event from ') | length == 0
