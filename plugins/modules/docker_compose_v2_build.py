@@ -41,7 +41,7 @@ options:
     default: false
   pull:
     description:
-      - If set to V(true), will attempt to pull newer version of the image
+      - If set to V(true), will attempt to pull newer version of the image.
     type: bool
     default: false
   with_dependencies:
@@ -52,7 +52,7 @@ options:
     default: false
   memory_limit:
     description:
-      - Memory limit for the build container, in bytes. Not supported by BuildKit
+      - Memory limit for the build container, in bytes. Not supported by BuildKit.
     type: int
   services:
     description:
