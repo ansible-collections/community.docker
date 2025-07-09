@@ -87,7 +87,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#plain-docker-daemon-images-networks-volumes-and-containers">Plain Docker daemon: images, networks, volumes, and containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#docker-compose">Docker Compose</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#docker-compose-v2">Docker Compose v2</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#docker-compose-v1">Docker Compose v1</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#docker-machine">Docker Machine</a></li>
@@ -198,11 +197,11 @@
 <p>Most of the modules and plugins in community.docker require the <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">Docker SDK for Python</a>. The SDK needs to be installed on the machines where the modules and plugins are executed, and for the Python version(s) with which the modules and plugins are executed. You can use the <a class="reference external" href="https://docs.ansible.com/ansible/devel/collections/community/general/python_requirements_info_module.html#ansible-collections-community-general-python-requirements-info-module" title="(in Ansible vdevel)"><span>community.general.python_requirements_info module</span></a> to make sure that the Docker SDK for Python is installed on the correct machine and for the Python version used by Ansible.</p>
 <p>Note that plugins (inventory plugins and connection plugins) are always executed in the context of Ansible itself. If you use a plugin that requires the Docker SDK for Python, you need to install it on the machine running <code class="docutils literal notranslate"><span class="pre">ansible</span></code> or <code class="docutils literal notranslate"><span class="pre">ansible-playbook</span></code> and for the same Python interpreter used by Ansible. To see which Python is used, run <code class="docutils literal notranslate"><span class="pre">ansible</span> <span class="pre">--version</span></code>.</p>
 <p>You can install the Docker SDK for Python for Python 3.6 or later as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>docker
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>docker
 </pre></div>
 </div>
 <p>For Python 2.7, you need to use a version between 2.0.0 and 4.4.4 since the Python package for Docker removed support for Python 2.7 on 5.0.0. You can install the specific version of the Docker SDK for Python as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;docker==4.4.4&#39;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;docker==4.4.4&#39;</span>
 </pre></div>
 </div>
 <p>Note that the Docker SDK for Python was called <code class="docutils literal notranslate"><span class="pre">docker-py</span></code> on PyPi before version 2.0.0. Please avoid installing this really old version, and make sure to not install both <code class="docutils literal notranslate"><span class="pre">docker</span></code> and <code class="docutils literal notranslate"><span class="pre">docker-py</span></code>. Installing both will result in a broken installation. If this happens, Ansible will detect it and inform you about it. If that happens, you must uninstall both and reinstall the correct version. If in doubt, always install <code class="docutils literal notranslate"><span class="pre">docker</span></code> and never <code class="docutils literal notranslate"><span class="pre">docker-py</span></code>.</p>
@@ -400,26 +399,21 @@ by Docker SDK for Python.</p>
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Docker Compose</a><a class="headerlink" href="#docker-compose" title="Link to this heading"></a></h2>
 <section id="docker-compose-v2">
 <h3>Docker Compose v2<a class="headerlink" href="#docker-compose-v2" title="Link to this heading"></a></h3>
-<p>There are two modules for working with Docker compose projects:</p>
+<p>There are several modules for working with Docker Compose projects:</p>
 <blockquote>
 <div><dl class="simple">
-<dt>community.docker.docker_compose_v2</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_module.html#ansible-collections-community-docker-docker-compose-v2-module"><span class="std std-ref">community.docker.docker_compose_v2 module</span></a> allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.</p>
+<dt>community.docker.docker_compose_v2</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_module.html#ansible-collections-community-docker-docker-compose-v2-module"><span class="std std-ref">community.docker.docker_compose_v2 module</span></a> allows you to use your existing Docker Compose files to orchestrate containers on a single Docker daemon or on Swarm.</p>
 </dd>
-<dt>community.docker.docker_compose_v2_pull</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_pull_module.html#ansible-collections-community-docker-docker-compose-v2-pull-module"><span class="std std-ref">community.docker.docker_compose_v2_pull module</span></a> allows you to pull Docker compose projects.</p>
+<dt>community.docker.docker_compose_v2_exec</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_exec_module.html#ansible-collections-community-docker-docker-compose-v2-exec-module"><span class="std std-ref">community.docker.docker_compose_v2_exec module</span></a> allows you to run a command in a container of Docker Compose projects.</p>
+</dd>
+<dt>community.docker.docker_compose_v2_pull</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_pull_module.html#ansible-collections-community-docker-docker-compose-v2-pull-module"><span class="std std-ref">community.docker.docker_compose_v2_pull module</span></a> allows you to pull Docker Compose projects.</p>
+</dd>
+<dt>community.docker.docker_compose_v2_run</dt><dd><p>The <a class="reference internal" href="../docker_compose_v2_run_module.html#ansible-collections-community-docker-docker-compose-v2-run-module"><span class="std std-ref">community.docker.docker_compose_v2_run module</span></a> allows you to run a command in a new container of a Docker Compose project.</p>
 </dd>
 </dl>
 </div></blockquote>
 <p>These modules use the Docker CLI “compose” plugin (<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code>), and thus needs access to the Docker CLI tool.
 No further requirements next to to the CLI tool and its Docker Compose plugin are needed.</p>
-</section>
-<section id="docker-compose-v1">
-<h3>Docker Compose v1<a class="headerlink" href="#docker-compose-v1" title="Link to this heading"></a></h3>
-<p>The deprecated <a class="reference internal" href="../docker_compose_module.html#ansible-collections-community-docker-docker-compose-module"><span class="std std-ref">community.docker.docker_compose module</span></a>
-allows you to use your existing Docker compose files to orchestrate containers on a single Docker daemon or on Swarm.
-This module uses the out-dated and End of Life version 1.x of Docker Compose. It should mainly be used for legacy systems
-which still have to use that version of Docker Compose. <strong>The module is deprecated and will be removed from community.docker 4.0.0.</strong>
-Please use the Docker Compose v2 modules instead.</p>
-<p>You need to install the <a class="reference external" href="https://pypi.org/project/docker-compose/">old Python docker-compose</a> on the remote machines to use the Docker Compose v1 module.</p>
 </section>
 </section>
 <section id="docker-machine">
