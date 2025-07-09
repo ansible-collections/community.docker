@@ -174,7 +174,10 @@ author:
   - Felix Fontein (@felixfontein)
 
 seealso:
+  - module: community.docker.docker_compose_v2_build
+  - module: community.docker.docker_compose_v2_exec
   - module: community.docker.docker_compose_v2_pull
+  - module: community.docker.docker_compose_v2_run
 """
 
 EXAMPLES = r"""
