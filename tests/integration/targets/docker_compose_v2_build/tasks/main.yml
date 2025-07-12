@@ -13,6 +13,7 @@
   set_fact:
     name_prefix: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
     cnames: []
+    inames: []
     dnetworks: []
 
 - debug:
@@ -39,6 +40,12 @@
         state: absent
         force_kill: true
       with_items: "{{ cnames }}"
+      diff: false
+
+    - name: "Make sure all images are removed"
+      docker_image_remove:
+        name: "{{ item }}"
+      with_items: "{{ inames }}"
       diff: false
 
     - name: "Make sure all networks are removed"
