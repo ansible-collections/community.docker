@@ -100,6 +100,7 @@ If you use the Ansible package and do not update collections independently, use 
     - community.docker.docker_volume_info: retrieve information on Docker volumes
   * Docker Compose:
     - community.docker.docker_compose_v2: manage Docker Compose files (Docker compose CLI plugin)
+    - community.docker.docker_compose_v2_build: build images for a Docker compose project
     - community.docker.docker_compose_v2_exec: run command in a container of a Compose service
     - community.docker.docker_compose_v2_pull: pull a Docker compose project
     - community.docker.docker_compose_v2_run: run command in a new container of a Compose service
