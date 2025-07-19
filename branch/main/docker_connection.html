@@ -4,7 +4,7 @@
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="2.18.0" name="antsibull-docs" />
+<meta content="2.19.1" name="antsibull-docs" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>community.docker.docker connection – Run tasks in docker containers &mdash; Community.Docker Collection  documentation</title>
@@ -221,10 +221,10 @@ To check whether it is installed, run <code class="code docutils literal notrans
 <li><p>Environment variable: <span class="target" id="index-1"></span><a class="reference internal" href="environment_variables.html#envvar-ANSIBLE_DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">ANSIBLE_DOCKER_TIMEOUT</span></code></a></p>
 <p><em class="ansible-option-versionadded">added in community.docker 2.2.0</em></p>
 </li>
+<li><p>CLI argument: –timeout</p></li>
 <li><p>Variable: ansible_docker_timeout</p>
 <p><em class="ansible-option-versionadded">added in community.docker 2.2.0</em></p>
 </li>
-<li><p>CLI argument: –timeout</p></li>
 </ul>
 </div></td>
 </tr>
@@ -313,10 +313,10 @@ To check whether it is installed, run <code class="code docutils literal notrans
 </div>
 </li>
 <li><p>Environment variable: <span class="target" id="index-3"></span><a class="reference external" href="https://docs.ansible.com/ansible/devel/reference_appendices/config.html#envvar-ANSIBLE_REMOTE_USER" title="(in Ansible vdevel)"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">ANSIBLE_REMOTE_USER</span></code></a></p></li>
+<li><p>CLI argument: –user</p></li>
+<li><p>Keyword: remote_user</p></li>
 <li><p>Variable: ansible_user</p></li>
 <li><p>Variable: ansible_docker_user</p></li>
-<li><p>Keyword: remote_user</p></li>
-<li><p>CLI argument: –user</p></li>
 </ul>
 </div></td>
 </tr>
@@ -342,16 +342,19 @@ To check whether it is installed, run <code class="code docutils literal notrans
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Configuration entries listed above for each entry type (Ansible variable, environment variable, and so on) have a low to high priority order.
+For example, a variable that is lower in the list will override a variable that is higher up.
+The entry types are also ordered by precedence from low to high priority order.
+For example, an ansible.cfg entry (further up in the list) is overwritten by an Ansible variable (further down in the list).</p>
+</div>
 <section id="authors">
 <h3>Authors<a class="headerlink" href="#authors" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Lorin Hochestein</p></li>
 <li><p>Leendert Brouwer</p></li>
 </ul>
-<div class="admonition hint">
-<p class="admonition-title">Hint</p>
-<p>Configuration entries for each entry type have a low to high priority order. For example, a variable that is lower in the list will override a variable that is higher up.</p>
-</div>
 </section>
 <section id="collection-links">
 <h3>Collection links<a class="headerlink" href="#collection-links" title="Link to this heading"></a></h3>
