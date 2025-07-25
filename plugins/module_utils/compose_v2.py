@@ -432,13 +432,17 @@ def parse_json_events(stderr, warn_function=None):
                 # {"dry-run":true,"id":" ","text":"build service app"}
                 resource_id = "S" + text[len("build s"):]
                 text = "Building"
-            if resource_id == "==>" and text and text.startswith("==> writing image "):
+            if isinstance(resource_id, str) and resource_id.endswith("==>") and text and text.startswith("==> writing image "):
                 # Example:
                 # {"dry-run":true,"id":"==>","text":"==> writing image dryRun-7d1043473d55bfa90e8530d35801d4e381bc69f0"}
+                # {"dry-run":true,"id":"ansible-docker-test-dc713f1f-container ==>","text":"==> writing image dryRun-5d9204268db1a73d57bbd24a25afbeacebe2bc02"}
+                # (The longer form happens since Docker Compose 2.39.0)
                 continue
-            if resource_id == "==> ==>" and text and text.startswith("naming to "):
+            if isinstance(resource_id, str) and resource_id.endswith("==> ==>") and text and text.startswith("naming to "):
                 # Example:
                 # {"dry-run":true,"id":"==> ==>","text":"naming to display-app"}
+                # {"dry-run":true,"id":"ansible-docker-test-dc713f1f-container ==> ==>","text":"naming to ansible-docker-test-dc713f1f-image"}
+                # (The longer form happens since Docker Compose 2.39.0)
                 continue
             if isinstance(resource_id, str) and ' ' in resource_id:
                 resource_type_str, resource_id = resource_id.split(' ', 1)
