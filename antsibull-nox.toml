@@ -82,8 +82,13 @@ config.dependencies.python_interpreter.package_system = "python3.11 python3.11-p
 config.dependencies.python_interpreter.python_path = "/usr/bin/python3.11"
 runtime_environment = {"ANSIBLE_PRIVATE_ROLE_VARS" = "true"}
 runtime_container_options = [
+    # Mount Docker socket into the container so we can talk to Docker outside the container
     "-v",
     "/var/run/docker.sock:/var/run/docker.sock",
+    # Need to be root so we can access /var/run/docker.sock, which usually isn't accessible by the user,
+    # but only by the group the user is in (but that group membership isn't there in the container)
+    "--user",
+    "0",
 ]
 
 [[sessions.ee_check.execution_environments]]
@@ -95,6 +100,11 @@ config.dependencies.ansible_core.package_pip = "https://github.com/ansible/ansib
 config.dependencies.ansible_runner.package_pip = "ansible-runner"
 runtime_environment = {"ANSIBLE_PRIVATE_ROLE_VARS" = "true"}
 runtime_container_options = [
+    # Mount Docker socket into the container so we can talk to Docker outside the container
     "-v",
     "/var/run/docker.sock:/var/run/docker.sock",
+    # Need to be root so we can access /var/run/docker.sock, which usually isn't accessible by the user,
+    # but only by the group the user is in (but that group membership isn't there in the container)
+    "--user",
+    "0",
 ]
