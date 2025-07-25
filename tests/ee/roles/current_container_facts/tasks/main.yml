@@ -15,11 +15,13 @@
 
 - name: Read some files
   slurp:
-    src: "{{ item }}"
+    src: "{{ path }}"
   loop:
     - /proc/self/cpuset
     - /proc/1/cgroup
     - /proc/1/environ
+  loop_control:
+    loop_var: path
 
 - name: Print facts returned by module
   debug:
