@@ -4,6 +4,19 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v4.6.2
+======
+
+Release Summary
+---------------
+
+Bugfix release for Docker Compose 2.39.0+.
+
+Bugfixes
+--------
+
+- docker_compose_v2 - adjust to new dry-run build events in Docker Compose 2.39.0+ (https://github.com/ansible-collections/community.docker/pull/1101).
+
 v4.6.1
 ======
 

@@ -2130,3 +2130,13 @@ releases:
       - 1085-docker_container-command-empty.yml
       - 4.6.1.yml
     release_date: '2025-06-09'
+  4.6.2:
+    changes:
+      bugfixes:
+        - docker_compose_v2 - adjust to new dry-run build events in Docker Compose
+          2.39.0+ (https://github.com/ansible-collections/community.docker/pull/1101).
+      release_summary: Bugfix release for Docker Compose 2.39.0+.
+    fragments:
+      - 1101-compose.yml
+      - 4.6.2.yml
+    release_date: '2025-07-26'
