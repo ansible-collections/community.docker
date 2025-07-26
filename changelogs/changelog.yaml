@@ -2030,3 +2030,13 @@ releases:
       - 1085-docker_container-command-empty.yml
       - 3.13.7.yml
     release_date: '2025-06-09'
+  3.13.8:
+    changes:
+      bugfixes:
+        - docker_compose_v2 - adjust to new dry-run build events in Docker Compose
+          2.39.0+ (https://github.com/ansible-collections/community.docker/pull/1101).
+      release_summary: Bugfix release for Docker Compose 2.39.0+.
+    fragments:
+      - 1101-compose.yml
+      - 3.13.8.yml
+    release_date: '2025-07-26'
