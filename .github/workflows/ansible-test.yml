@@ -212,18 +212,6 @@ jobs:
             docker: fedora37
             python: ''
             target: azp/6/
-          - ansible: '2.15'
-            docker: centos7
-            python: ''
-            target: azp/4/
-          - ansible: '2.15'
-            docker: centos7
-            python: ''
-            target: azp/5/
-          - ansible: '2.15'
-            docker: centos7
-            python: ''
-            target: azp/6/
 
     steps:
       - name: Perform integration testing against Ansible version ${{ matrix.ansible }} under Python ${{ matrix.python }}
