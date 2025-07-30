@@ -95,17 +95,6 @@ stages:
               test: '2.16/sanity/1'
             - name: Units
               test: '2.16/units/1'
-  - stage: Ansible_2_15
-    displayName: Sanity & Units 2.15
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          targets:
-            - name: Sanity
-              test: '2.15/sanity/1'
-            - name: Units
-              test: '2.15/units/1'
 
 ### Docker
   - stage: Docker_2_19
@@ -180,22 +169,6 @@ stages:
               test: opensuse15
             - name: Alpine 3
               test: alpine3
-          groups:
-            - 4
-            - 5
-            - 6
-  - stage: Docker_2_15
-    displayName: Docker 2.15
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.15/linux/{0}
-          targets:
-            - name: Fedora 37
-              test: fedora37
-            - name: CentOS 7
-              test: centos7
           groups:
             - 4
             - 5
@@ -286,24 +259,6 @@ stages:
             # Currently always hangs in group 2
             # - name: RHEL 8.8
             #   test: rhel/8.8
-          groups:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-  - stage: Remote_2_15
-    displayName: Remote 2.15
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.15/{0}
-          targets:
-            - name: RHEL 9.1
-              test: rhel/9.1
-            - name: RHEL 8.7
-              test: rhel/8.7
             - name: RHEL 7.9
               test: rhel/7.9
           groups:
@@ -322,17 +277,14 @@ stages:
       - Ansible_2_18
       - Ansible_2_17
       - Ansible_2_16
-      - Ansible_2_15
       - Remote_2_19
       - Remote_2_18
       - Remote_2_17
       - Remote_2_16
-      - Remote_2_15
       - Docker_2_19
       - Docker_2_18
       - Docker_2_17
       - Docker_2_16
-      - Docker_2_15
       - Docker_community_2_19
     jobs:
       - template: templates/coverage.yml

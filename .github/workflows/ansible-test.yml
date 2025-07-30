@@ -33,6 +33,7 @@ jobs:
           - '2.12'
           - '2.13'
           - '2.14'
+          - '2.15'
     runs-on: ubuntu-latest
     steps:
       - name: Perform sanity testing
@@ -59,6 +60,7 @@ jobs:
           - '2.12'
           - '2.13'
           - '2.14'
+          - '2.15'
 
     steps:
       - name: Perform unit testing against Ansible version ${{ matrix.ansible }}
@@ -195,6 +197,19 @@ jobs:
             target: azp/5/
           - ansible: '2.14'
             docker: alpine3
+            python: ''
+            target: azp/6/
+          # 2.15
+          - ansible: '2.15'
+            docker: fedora37
+            python: ''
+            target: azp/4/
+          - ansible: '2.15'
+            docker: fedora37
+            python: ''
+            target: azp/5/
+          - ansible: '2.15'
+            docker: fedora37
             python: ''
             target: azp/6/
 
