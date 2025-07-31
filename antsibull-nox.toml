@@ -78,8 +78,8 @@ test_playbooks = ["tests/ee/all.yml"]
 config.images.base_image.name = "docker.io/redhat/ubi9:latest"
 config.dependencies.ansible_core.package_pip = "https://github.com/ansible/ansible/archive/devel.tar.gz"
 config.dependencies.ansible_runner.package_pip = "ansible-runner"
-config.dependencies.python_interpreter.package_system = "python3.11 python3.11-pip python3.11-wheel python3.11-cryptography"
-config.dependencies.python_interpreter.python_path = "/usr/bin/python3.11"
+config.dependencies.python_interpreter.package_system = "python3.12 python3.12-pip python3.12-wheel python3.12-cryptography"
+config.dependencies.python_interpreter.python_path = "/usr/bin/python3.12"
 runtime_environment = {"ANSIBLE_PRIVATE_ROLE_VARS" = "true"}
 runtime_container_options = [
     # Mount Docker socket into the container so we can talk to Docker outside the container
