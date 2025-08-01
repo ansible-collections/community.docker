@@ -242,6 +242,7 @@ options:
     choices:
       - replicated
       - global
+      - replicated-job
   mounts:
     description:
       - List of dictionaries describing the service mounts.
@@ -400,7 +401,7 @@ options:
     type: bool
   replicas:
     description:
-      - Number of containers instantiated in the service. Valid only if O(mode=replicated).
+      - Number of containers instantiated in the service. Valid only if O(mode=replicated) or O(mode=replicated-job).
       - If set to V(-1), and service is not present, service replicas will be set to V(1).
       - If set to V(-1), and service is present, service replicas will be unchanged.
       - Corresponds to the C(--replicas) option of C(docker service create).
@@ -2210,6 +2211,9 @@ class DockerServiceManager(object):
             ds.replicas = mode['Replicated']['Replicas']
         elif 'Global' in mode.keys():
             ds.mode = 'global'
+        elif 'ReplicatedJob' in mode.keys():
+            ds.mode = to_text('replicated-job', encoding='utf-8')
+            ds.replicas = mode['ReplicatedJob']['TotalCompletions']
         else:
             raise Exception('Unknown service mode: %s' % mode)
 
@@ -2605,7 +2609,7 @@ def main():
         mode=dict(
             type='str',
             default='replicated',
-            choices=['replicated', 'global']
+            choices=['replicated', 'global', 'replicated-job']
         ),
         replicas=dict(type='int', default=-1),
         endpoint_mode=dict(type='str', choices=['vip', 'dnsrr']),
