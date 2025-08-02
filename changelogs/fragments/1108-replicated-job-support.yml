@@ -1,0 +1,2 @@
+minor_changes:
+  - docker_swarm_service - Add support for ``replicated-job`` mode for Swarm services (https://github.com/ansible-collections/community.docker/issues/626)
