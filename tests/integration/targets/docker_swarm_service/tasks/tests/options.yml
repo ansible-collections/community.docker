@@ -1301,6 +1301,38 @@
     replicas: 1
   register: mode_3
 
+- name: mode (change)
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: false
+    command: '/bin/sh -v -c "sleep 10m"'
+    mode: "replicated-job"
+    replicas: 1
+  register: mode_4
+  ignore_errors: true
+
+- name: mode (idempotency)
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: false
+    command: '/bin/sh -v -c "sleep 10m"'
+    mode: "replicated-job"
+    replicas: 1
+  register: mode_5
+  ignore_errors: true
+
+- name: mode (change)
+  docker_swarm_service:
+    name: "{{ service_name }}"
+    image: "{{ docker_test_image_alpine }}"
+    resolve_image: false
+    command: '/bin/sh -v -c "sleep 10m"'
+    mode: "replicated"
+    replicas: 1
+  register: mode_6
+
 - name: cleanup
   docker_swarm_service:
     name: "{{ service_name }}"
@@ -1312,6 +1344,19 @@
       - mode_1 is changed
       - mode_2 is not changed
       - mode_3 is changed
+
+- assert:
+    that:
+      - mode_4 is changed
+      - mode_5 is not changed and mode_5 is not failed
+      - mode_6 is changed
+  when: docker_api_version is version('1.41', '>=') and docker_py_version is version('6.0.0', '>=')
+
+- assert:
+    that:
+      - mode_4 is failed
+      - "'Minimum version required' in mode_4.msg"
+  when: docker_api_version is version('1.41', '<') or docker_py_version is version('6.0.0', '<')
 
 ####################################################################
 ## stop_grace_period ###############################################
