@@ -237,6 +237,7 @@ options:
       - Service replication mode.
       - Service will be removed and recreated when changed.
       - Corresponds to the C(--mode) option of C(docker service create).
+      - The value V(replicated-job) was added in community.docker 4.7.0 and requires API version >= 1.41.
     type: str
     default: replicated
     choices:

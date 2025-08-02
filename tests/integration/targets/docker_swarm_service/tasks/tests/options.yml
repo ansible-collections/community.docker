@@ -1301,13 +1301,7 @@
     replicas: 1
   register: mode_3
 
-- name: cleanup
-  docker_swarm_service:
-    name: "{{ service_name }}"
-    state: absent
-  diff: false
-
-- name: mode
+- name: mode (change)
   docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
@@ -1316,6 +1310,7 @@
     mode: "replicated-job"
     replicas: 1
   register: mode_4
+  ignore_errors: true
 
 - name: mode (idempotency)
   docker_swarm_service:
@@ -1326,6 +1321,7 @@
     mode: "replicated-job"
     replicas: 1
   register: mode_5
+  ignore_errors: true
 
 - name: mode (change)
   docker_swarm_service:
@@ -1343,15 +1339,19 @@
     state: absent
   diff: false
 
-
 - assert:
     that:
       - mode_1 is changed
       - mode_2 is not changed
       - mode_3 is changed
+
+- assert:
+    that:
       - mode_4 is changed
       - mode_5 is not changed
       - mode_6 is changed
+  when: docker_api_version is version('1.41', '>=') and docker_py_version is version('6.0.0', '>=')
+
 
 ####################################################################
 ## stop_grace_period ###############################################
