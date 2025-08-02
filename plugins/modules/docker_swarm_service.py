@@ -2758,6 +2758,12 @@ def main():
             ) is not None,
             usage_msg='set rollback_config.order'
         ),
+        mode=dict(
+            docker_py_version='6.0.0',
+            docker_api_version='1.41',
+            detect_usage=lambda c: c.module.get('mode') == 'replicated-job',
+            usage_msg='set mode'
+        ),
     )
     required_if = [
         ('state', 'present', ['image'])

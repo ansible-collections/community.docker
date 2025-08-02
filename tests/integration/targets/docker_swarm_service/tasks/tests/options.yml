@@ -1352,6 +1352,11 @@
       - mode_6 is changed
   when: docker_api_version is version('1.41', '>=') and docker_py_version is version('6.0.0', '>=')
 
+- assert:
+    that:
+      - mode_4 is failed
+      - "'Minimum version required' in mode_4.msg"
+  when: docker_api_version is version('1.41', '<') or docker_py_version is version('6.0.0', '<')
 
 ####################################################################
 ## stop_grace_period ###############################################
