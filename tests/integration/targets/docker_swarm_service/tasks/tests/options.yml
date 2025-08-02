@@ -1348,7 +1348,7 @@
 - assert:
     that:
       - mode_4 is changed
-      - mode_5 is not changed
+      - mode_5 is not changed and mode_5 is not failed
       - mode_6 is changed
   when: docker_api_version is version('1.41', '>=') and docker_py_version is version('6.0.0', '>=')
 

@@ -237,7 +237,7 @@ options:
       - Service replication mode.
       - Service will be removed and recreated when changed.
       - Corresponds to the C(--mode) option of C(docker service create).
-      - The value V(replicated-job) was added in community.docker 4.7.0 and requires API version >= 1.41.
+      - The value V(replicated-job) was added in community.docker 4.7.0, and requires API version >= 1.41 and Docker SDK for Python >= 6.0.0.
     type: str
     default: replicated
     choices:
@@ -2758,7 +2758,7 @@ def main():
             ) is not None,
             usage_msg='set rollback_config.order'
         ),
-        mode=dict(
+        mode_replicated_job=dict(
             docker_py_version='6.0.0',
             docker_api_version='1.41',
             detect_usage=lambda c: c.module.params.get('mode') == 'replicated-job',
