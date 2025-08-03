@@ -15,7 +15,7 @@ docker_test_image_busybox: quay.io/ansible/docker-test-containers:busybox
 docker_test_image_alpine: quay.io/ansible/docker-test-containers:alpine3.8
 docker_test_image_alpine_different: quay.io/ansible/docker-test-containers:alpine3.7
 docker_test_image_registry_nginx: quay.io/ansible/docker-test-containers:nginx-alpine
-docker_test_image_registry: ghcr.io/ansible-collections/community.docker/docker-distribution:2.8.3
+docker_test_image_registry: ghcr.io/ansible-collections/community.docker/docker-distribution:3.0.0
 docker_test_image_simple_1: ghcr.io/ansible-collections/simple-1:tag
 docker_test_image_simple_2: ghcr.io/ansible-collections/simple-2:tag
 docker_test_image_healthcheck: ghcr.io/ansible-collections/healthcheck:check
