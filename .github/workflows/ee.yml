@@ -43,8 +43,8 @@ jobs:
         exclude:
           - ansible_core: ''
         include:
-          - name: ansible-core devel @ RHEL UBI 9
-            ansible_core: https://github.com/ansible/ansible/archive/devel.tar.gz
+          - name: ansible-core 2.19 @ RHEL UBI 9
+            ansible_core: https://github.com/ansible/ansible/archive/stable-2.19.tar.gz
             ansible_runner: ansible-runner
             other_deps: |2
                 python_interpreter:
