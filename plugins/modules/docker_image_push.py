@@ -72,6 +72,7 @@ image:
   sample: {}
 """
 
+import base64
 import traceback
 
 from ansible.module_utils.common.text.converters import to_native
@@ -142,8 +143,11 @@ class ImagePusher(DockerBaseClass):
 
             headers = {}
             header = get_config_header(self.client, push_registry)
-            if header:
-                headers['X-Registry-Auth'] = header
+            if not header:
+                # For some reason, from Docker 28.3.3 on not specifying X-Registry-Auth seems to be invalid.
+                # See https://github.com/moby/moby/issues/50614.
+                header = base64.urlsafe_b64encode(b"{}")
+            headers['X-Registry-Auth'] = header
             response = self.client._post_json(
                 self.client._url("/images/{0}/push", self.name),
                 data=None,
