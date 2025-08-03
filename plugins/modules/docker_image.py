@@ -366,6 +366,7 @@ stdout:
     version_added: 1.0.0
 '''
 
+import base64
 import errno
 import json
 import os
@@ -719,8 +720,11 @@ class ImageManager(DockerBaseClass):
                     push_registry, dummy = resolve_repository_name(push_repository)
                     headers = {}
                     header = get_config_header(self.client, push_registry)
-                    if header:
-                        headers['X-Registry-Auth'] = header
+                    if not header:
+                        # For some reason, from Docker 28.3.3 on not specifying X-Registry-Auth seems to be invalid.
+                        # See https://github.com/moby/moby/issues/50614.
+                        header = base64.urlsafe_b64encode(b"{}")
+                    headers['X-Registry-Auth'] = header
                     response = self.client._post_json(
                         self.client._url("/images/{0}/push", push_repository),
                         data=None,
