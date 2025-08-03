@@ -237,11 +237,13 @@ options:
       - Service replication mode.
       - Service will be removed and recreated when changed.
       - Corresponds to the C(--mode) option of C(docker service create).
+      - The value V(replicated-job) was added in community.docker 4.7.0, and requires API version >= 1.41 and Docker SDK for Python >= 6.0.0.
     type: str
     default: replicated
     choices:
       - replicated
       - global
+      - replicated-job
   mounts:
     description:
       - List of dictionaries describing the service mounts.
@@ -400,7 +402,7 @@ options:
     type: bool
   replicas:
     description:
-      - Number of containers instantiated in the service. Valid only if O(mode=replicated).
+      - Number of containers instantiated in the service. Valid only if O(mode=replicated) or O(mode=replicated-job).
       - If set to V(-1), and service is not present, service replicas will be set to V(1).
       - If set to V(-1), and service is present, service replicas will be unchanged.
       - Corresponds to the C(--replicas) option of C(docker service create).
@@ -2210,6 +2212,9 @@ class DockerServiceManager(object):
             ds.replicas = mode['Replicated']['Replicas']
         elif 'Global' in mode.keys():
             ds.mode = 'global'
+        elif 'ReplicatedJob' in mode.keys():
+            ds.mode = to_text('replicated-job', encoding='utf-8')
+            ds.replicas = mode['ReplicatedJob']['TotalCompletions']
         else:
             raise Exception('Unknown service mode: %s' % mode)
 
@@ -2605,7 +2610,7 @@ def main():
         mode=dict(
             type='str',
             default='replicated',
-            choices=['replicated', 'global']
+            choices=['replicated', 'global', 'replicated-job']
         ),
         replicas=dict(type='int', default=-1),
         endpoint_mode=dict(type='str', choices=['vip', 'dnsrr']),
@@ -2752,6 +2757,12 @@ def main():
                 'order'
             ) is not None,
             usage_msg='set rollback_config.order'
+        ),
+        mode_replicated_job=dict(
+            docker_py_version='6.0.0',
+            docker_api_version='1.41',
+            detect_usage=lambda c: c.module.params.get('mode') == 'replicated-job',
+            usage_msg='set mode'
         ),
     )
     required_if = [
