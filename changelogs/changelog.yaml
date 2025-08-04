@@ -2040,3 +2040,13 @@ releases:
       - 1101-compose.yml
       - 3.13.8.yml
     release_date: '2025-07-26'
+  3.13.9:
+    changes:
+      bugfixes:
+        - docker_image, docker_image_push - work around a bug in Docker 28.3.3 that
+          prevents pushing without authentication to a registry (https://github.com/ansible-collections/community.docker/pull/1110).
+      release_summary: Bugfix release.
+    fragments:
+      - 1110-push-fix.yml
+      - 3.13.9.yml
+    release_date: '2025-08-04'
