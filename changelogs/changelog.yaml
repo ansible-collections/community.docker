@@ -2140,3 +2140,18 @@ releases:
       - 1101-compose.yml
       - 4.6.2.yml
     release_date: '2025-07-26'
+  4.7.0:
+    changes:
+      bugfixes:
+        - docker_image, docker_image_push - work around a bug in Docker 28.3.3 that
+          prevents pushing without authentication to a registry (https://github.com/ansible-collections/community.docker/pull/1110).
+      minor_changes:
+        - docker_swarm_service - add support for ``replicated-job`` mode for Swarm
+          services (https://github.com/ansible-collections/community.docker/issues/626,
+          https://github.com/ansible-collections/community.docker/pull/1108).
+      release_summary: Bugfix and feature release.
+    fragments:
+      - 1108-replicated-job-support.yml
+      - 1110-push-fix.yml
+      - 4.7.0.yml
+    release_date: '2025-08-04'

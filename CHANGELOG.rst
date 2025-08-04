@@ -4,6 +4,24 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v4.7.0
+======
+
+Release Summary
+---------------
+
+Bugfix and feature release.
+
+Minor Changes
+-------------
+
+- docker_swarm_service - add support for ``replicated-job`` mode for Swarm services (https://github.com/ansible-collections/community.docker/issues/626, https://github.com/ansible-collections/community.docker/pull/1108).
+
+Bugfixes
+--------
+
+- docker_image, docker_image_push - work around a bug in Docker 28.3.3 that prevents pushing without authentication to a registry (https://github.com/ansible-collections/community.docker/pull/1110).
+
 v4.6.2
 ======
 
