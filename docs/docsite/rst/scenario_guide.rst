@@ -95,7 +95,7 @@ The following example shows how the module default group can be used in a playbo
 .. code-block:: yaml+jinja
 
     ---
-    - name: Pull and image and start the container
+    - name: Pull image and start the container
       hosts: localhost
       gather_facts: false
       module_defaults:
