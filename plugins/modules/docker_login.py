@@ -111,7 +111,7 @@ EXAMPLES = '''
 
 RETURN = '''
 login_result:
-  description: Result from the login.
+    description: Result from the login.
     returned: when O(state=present)
     type: dict
     sample: {
