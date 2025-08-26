@@ -110,8 +110,8 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-login_results:
-  description: Results from the login.
+login_result:
+  description: Result from the login.
   returned: when O(state=present)
   type: dict
   sample: {"serveraddress": "localhost:5000", "username": "testuser"}
