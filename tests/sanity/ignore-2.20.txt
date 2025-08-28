@@ -1,4 +1,44 @@
-plugins/modules/docker_container_copy_into.py validate-modules:undocumented-parameter # _max_file_size_for_diff is used by the action plugin
+plugins/connection/docker.py pylint:ansible-bad-import-from
+plugins/connection/docker_api.py pylint:ansible-bad-import-from
+plugins/connection/nsenter.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/_import_helper.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/api/client.py pylint:ansible-bad-import-from
 plugins/module_utils/_api/api/client.py pylint:use-yield-from  # suggested construct does not work with Python 2
+plugins/module_utils/_api/auth.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/context/api.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/context/context.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/credentials/store.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/credentials/utils.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/errors.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/transport/npipesocket.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/transport/sshconn.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/transport/unixconn.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/utils/build.py pylint:ansible-bad-import-from
 plugins/module_utils/_api/utils/build.py pylint:use-yield-from  # suggested construct does not work with Python 2
+plugins/module_utils/_api/utils/json_stream.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/utils/socket.py pylint:ansible-bad-import-from
+plugins/module_utils/_api/utils/utils.py pylint:ansible-bad-import-from
+plugins/module_utils/_scramble.py pylint:ansible-bad-import-from
+plugins/module_utils/common.py pylint:ansible-bad-import-from
+plugins/module_utils/common_api.py pylint:ansible-bad-import-from
+plugins/module_utils/common_cli.py pylint:ansible-bad-import-from
+plugins/module_utils/compose_v2.py pylint:ansible-bad-import-from
+plugins/module_utils/copy.py pylint:ansible-bad-import-from
+plugins/module_utils/module_container/base.py pylint:ansible-bad-import-from
+plugins/module_utils/socket_handler.py pylint:ansible-bad-import-from
+plugins/module_utils/socket_helper.py pylint:ansible-bad-import-from
+plugins/module_utils/util.py pylint:ansible-bad-import-from
+plugins/modules/docker_compose_v2.py pylint:ansible-bad-import-from
+plugins/modules/docker_compose_v2_exec.py pylint:ansible-bad-import-from
+plugins/modules/docker_compose_v2_run.py pylint:ansible-bad-import-from
+plugins/modules/docker_container_copy_into.py pylint:ansible-bad-import-from
+plugins/modules/docker_container_copy_into.py validate-modules:undocumented-parameter # _max_file_size_for_diff is used by the action plugin
+plugins/modules/docker_container_exec.py pylint:ansible-bad-import-from
+plugins/modules/docker_context_info.py pylint:ansible-bad-import-from
+plugins/modules/docker_stack.py pylint:ansible-bad-import-from
+plugins/modules/docker_swarm_service.py pylint:ansible-bad-import-from
+plugins/modules/docker_volume.py pylint:ansible-bad-import-from
+plugins/plugin_utils/unsafe.py pylint:ansible-bad-import-from
+tests/unit/plugins/connection/test_docker.py pylint:ansible-bad-import-from
+tests/unit/plugins/module_utils/_api/utils/test_utils.py pylint:ansible-bad-import-from
 tests/unit/plugins/module_utils/test_copy.py pylint:use-yield-from  # suggested construct does not work with Python 2
