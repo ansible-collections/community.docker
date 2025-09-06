@@ -22,15 +22,11 @@ import tempfile
 import threading
 import time
 import unittest
-import sys
-
-from ansible.module_utils import six
+from http.server import BaseHTTPRequestHandler
+from socketserver import ThreadingTCPServer
 
 import pytest
 import requests
-
-if sys.version_info < (2, 7):
-    pytestmark = pytest.mark.skip('Python 2.6 is not supported')
 
 from ansible_collections.community.docker.plugins.module_utils._api import constants, errors
 from ansible_collections.community.docker.plugins.module_utils._api.api.client import APIClient
@@ -52,7 +48,7 @@ def response(status_code=200, content='', headers=None, reason=None, elapsed=0,
              request=None, raw=None):
     res = requests.Response()
     res.status_code = status_code
-    if not isinstance(content, six.binary_type):
+    if not isinstance(content, bytes):
         content = json.dumps(content).encode('ascii')
     res._content = content
     res.headers = requests.structures.CaseInsensitiveDict(headers or {})
@@ -103,7 +99,7 @@ def fake_delete(self, url, *args, **kwargs):
 
 
 def fake_read_from_socket(self, response, stream, tty=False, demux=False):
-    return six.binary_type()
+    return b""
 
 
 url_base = '{prefix}/'.format(prefix=fake_api.prefix)
@@ -202,13 +198,13 @@ class DockerApiTest(BaseAPIClientTest):
 
     def test_retrieve_server_version(self):
         client = APIClient(version="auto")
-        assert isinstance(client._version, six.string_types)
+        assert isinstance(client._version, str)
         assert not (client._version == "auto")
         client.close()
 
     def test_auto_retrieve_server_version(self):
         version = self.client._retrieve_server_version()
-        assert isinstance(version, six.string_types)
+        assert isinstance(version, str)
 
     def test_info(self):
         self.client.info()
@@ -296,9 +292,7 @@ class DockerApiTest(BaseAPIClientTest):
 
     def test_stream_helper_decoding(self):
         status_code, content = fake_api.fake_responses[url_prefix + 'events']()
-        content_str = json.dumps(content)
-        if six.PY3:
-            content_str = content_str.encode('utf-8')
+        content_str = json.dumps(content).encode('utf-8')
         body = io.BytesIO(content_str)
 
         # mock a stream interface
@@ -465,8 +459,7 @@ class TCPSocketStreamTest(unittest.TestCase):
 
     @classmethod
     def setup_class(cls):
-        cls.server = six.moves.socketserver.ThreadingTCPServer(
-            ('', 0), cls.get_handler_class())
+        cls.server = ThreadingTCPServer(('', 0), cls.get_handler_class())
         cls.thread = threading.Thread(target=cls.server.serve_forever)
         cls.thread.daemon = True
         cls.thread.start()
@@ -484,7 +477,7 @@ class TCPSocketStreamTest(unittest.TestCase):
         stdout_data = cls.stdout_data
         stderr_data = cls.stderr_data
 
-        class Handler(six.moves.BaseHTTPServer.BaseHTTPRequestHandler, object):
+        class Handler(BaseHTTPRequestHandler, object):
             def do_POST(self):
                 resp_data = self.get_resp_data()
                 self.send_response(101)

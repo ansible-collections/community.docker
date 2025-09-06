@@ -4,8 +4,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import absolute_import, division, print_function
-__metaclass__ = type
+from __future__ import annotations
 
 
 DOCUMENTATION = r"""
@@ -177,7 +176,6 @@ import traceback
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.common.text.converters import to_native, to_text
-from ansible_collections.community.docker.plugins.module_utils._six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils._api.context.api import (
     ContextAPI,
@@ -214,7 +212,7 @@ def context_to_json(context, current):
     module_config = {}
     if 'docker' in context.endpoints:
         endpoint = context.endpoints['docker']
-        if isinstance(endpoint.get('Host'), string_types):
+        if isinstance(endpoint.get('Host'), str):
             host_str = to_text(endpoint['Host'])
 
             # Adjust protocol name so that it works with the Docker CLI tool as well

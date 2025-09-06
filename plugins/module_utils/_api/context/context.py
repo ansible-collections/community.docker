@@ -7,14 +7,11 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import json
 import os
 from shutil import copyfile, rmtree
-
-from ansible_collections.community.docker.plugins.module_utils._six import raise_from
 
 from ..errors import ContextException
 from ..tls import TLSConfig
@@ -120,9 +117,9 @@ class Context(object):
                 metadata = json.load(f)
         except (OSError, KeyError, ValueError) as e:
             # unknown format
-            raise_from(Exception(
+            raise Exception(
                 "Detected corrupted meta file for context {name} : {e}".format(name=name, e=e)
-            ), e)
+            ) from e
 
         # for docker endpoints, set defaults for
         # Host and SkipTLSVerify fields

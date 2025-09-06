@@ -7,8 +7,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 DOCUMENTATION = r"""
 author:
@@ -115,9 +114,10 @@ options:
 import fcntl
 import os
 import os.path
+import selectors
 import subprocess
 import re
-from shlex import quote as shlex_quote
+from shlex import quote
 
 from ansible.errors import AnsibleError, AnsibleFileNotFound, AnsibleConnectionFailure
 from ansible.module_utils.common.process import get_bin_path
@@ -125,7 +125,6 @@ from ansible.module_utils.common.text.converters import to_bytes, to_native, to_
 from ansible.plugins.connection import ConnectionBase, BUFSIZE
 from ansible.utils.display import Display
 
-from ansible_collections.community.docker.plugins.module_utils.selectors import selectors
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 display = Display()
@@ -433,7 +432,7 @@ class Connection(ConnectionBase):
             raise AnsibleFileNotFound(
                 "file or module does not exist: %s" % to_native(in_path))
 
-        out_path = shlex_quote(out_path)
+        out_path = quote(out_path)
         # Older docker does not have native support for copying files into
         # running containers, so we use docker exec to implement this
         # Although docker version 1.8 and later provide support, the

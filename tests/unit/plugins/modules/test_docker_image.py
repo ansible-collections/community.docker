@@ -34,8 +34,7 @@ def tar_file_name(tmpdir):
     Return the name of a non-existing tar file in an existing temporary directory.
     """
 
-    # Cast to str required by Python 2.x
-    return str(tmpdir.join('foo.tar'))
+    return tmpdir.join('foo.tar')
 
 
 def test_archived_image_action_when_missing(tar_file_name):

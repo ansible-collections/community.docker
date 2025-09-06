@@ -8,8 +8,7 @@ Parse go logfmt messages.
 See https://pkg.go.dev/github.com/kr/logfmt?utm_source=godoc for information on the format.
 """
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 
 # The format is defined in https://pkg.go.dev/github.com/kr/logfmt?utm_source=godoc

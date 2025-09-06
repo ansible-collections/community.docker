@@ -6,8 +6,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import absolute_import, division, print_function
-__metaclass__ = type
+from __future__ import annotations
 
 
 DOCUMENTATION = r"""
@@ -441,7 +440,6 @@ import traceback
 
 from ansible.module_utils.common.validation import check_type_int
 from ansible.module_utils.common.text.converters import to_native
-from ansible_collections.community.docker.plugins.module_utils._six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.common_cli import (
     AnsibleModuleDockerClient,
@@ -482,7 +480,7 @@ class ServicesManager(BaseComposeManager):
             self.fail('assume_yes=true needs Docker Compose 2.32.0 or newer, not version %s' % (self.compose_version, ))
 
         for key, value in self.scale.items():
-            if not isinstance(key, string_types):
+            if not isinstance(key, str):
                 self.fail('The key %s for `scale` is not a string' % repr(key))
             try:
                 value = check_type_int(value)

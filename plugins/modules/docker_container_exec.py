@@ -4,8 +4,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import absolute_import, division, print_function
-__metaclass__ = type
+from __future__ import annotations
 
 
 DOCUMENTATION = r"""
@@ -164,18 +163,16 @@ exec_id:
   version_added: 2.1.0
 """
 
+import selectors
 import shlex
 import traceback
 
 from ansible.module_utils.common.text.converters import to_text, to_bytes, to_native
-from ansible_collections.community.docker.plugins.module_utils._six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-
-from ansible_collections.community.docker.plugins.module_utils.selectors import selectors
 
 from ansible_collections.community.docker.plugins.module_utils.socket_handler import (
     DockerSocketHandlerModule,
@@ -228,7 +225,7 @@ def main():
 
     if env is not None:
         for name, value in list(env.items()):
-            if not isinstance(value, string_types):
+            if not isinstance(value, str):
                 client.module.fail_json(
                     msg="Non-string value found for env option. Ambiguous env options must be "
                         "wrapped in quotes to avoid them being interpreted. Key: %s" % (name, ))
