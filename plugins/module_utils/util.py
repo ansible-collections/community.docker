@@ -2,18 +2,16 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 
 import json
 import re
 from datetime import timedelta
+from urllib.parse import urlparse
 
 from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.common.collections import is_sequence
-from ansible.module_utils.six import string_types
-from ansible.module_utils.six.moves.urllib.parse import urlparse
 from ansible.module_utils.common.text.converters import to_text
 
 
@@ -290,7 +288,7 @@ def sanitize_labels(labels, labels_field, client=None, module=None):
     if labels is None:
         return
     for k, v in list(labels.items()):
-        if not isinstance(k, string_types):
+        if not isinstance(k, (str, bytes)):
             fail(
                 "The key {key!r} of {field} is not a string!".format(
                     field=labels_field, key=k))
