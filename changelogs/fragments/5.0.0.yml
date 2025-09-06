@@ -1,0 +1,3 @@
+removed_features:
+  - The collection no longer supports ansible-core 2.15 and 2.16.
+    You need ansible-core 2.17.0 or newer to use community.docker 5.x.y (https://github.com/ansible-collections/community.docker/pull/1123).
