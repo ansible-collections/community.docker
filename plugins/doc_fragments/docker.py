@@ -4,8 +4,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 
 class ModuleDocFragment(object):
@@ -303,7 +302,6 @@ requirements:
   - pywin32 (when using named pipes on Windows 32)
   - paramiko (when using SSH with O(use_ssh_client=false))
   - pyOpenSSL (when using TLS)
-  - backports.ssl_match_hostname (when using TLS on Python 2)
 '''
 
     # Docker doc fragment when using the Docker CLI

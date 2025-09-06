@@ -4,8 +4,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import absolute_import, division, print_function
-__metaclass__ = type
+from __future__ import annotations
 
 
 DOCUMENTATION = r"""
@@ -173,7 +172,6 @@ import traceback
 
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
 from ansible.module_utils.common.validation import check_type_int
-from ansible_collections.community.docker.plugins.module_utils._six import integer_types, string_types
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException, NotFound
 
@@ -421,8 +419,9 @@ def add_diff_dst_from_regular_member(diff, max_file_size_for_diff, container_pat
         diff['dst_larger'] = max_file_size_for_diff
         return
 
-    tar_f = tar.extractfile(member)  # in Python 2, this *cannot* be used in `with`...
-    content = tar_f.read()
+    with tar.extractfile(member) as tar_f:
+        content = tar_f.read()
+
     if is_binary(content):
         diff['dst_binary'] = 1
     else:
@@ -546,9 +545,9 @@ def is_file_idempotent(client, container, managed_path, container_path, follow_l
             add_diff_dst_from_regular_member(diff, max_file_size_for_diff, in_path, tar, member)
             return container_path, mode, False
 
-        tar_f = tar.extractfile(member)  # in Python 2, this *cannot* be used in `with`...
-        with open(managed_path, 'rb') as local_f:
-            is_equal = are_fileobjs_equal_with_diff_of_first(tar_f, local_f, member.size, diff, max_file_size_for_diff, in_path)
+        with tar.extractfile(member) as tar_f:
+            with open(managed_path, 'rb') as local_f:
+                is_equal = are_fileobjs_equal_with_diff_of_first(tar_f, local_f, member.size, diff, max_file_size_for_diff, in_path)
         return container_path, mode, is_equal
 
     def process_symlink(in_path, member):
@@ -707,8 +706,8 @@ def is_content_idempotent(client, container, content, container_path, follow_lin
             add_diff_dst_from_regular_member(diff, max_file_size_for_diff, in_path, tar, member)
             return container_path, mode, False
 
-        tar_f = tar.extractfile(member)  # in Python 2, this *cannot* be used in `with`...
-        is_equal = are_fileobjs_equal_with_diff_of_first(tar_f, io.BytesIO(content), member.size, diff, max_file_size_for_diff, in_path)
+        with tar.extractfile(member) as tar_f:
+            is_equal = are_fileobjs_equal_with_diff_of_first(tar_f, io.BytesIO(content), member.size, diff, max_file_size_for_diff, in_path)
         return container_path, mode, is_equal
 
     def process_symlink(in_path, member):
@@ -783,15 +782,15 @@ def copy_content_into_container(client, container, content, container_path, foll
 
 
 def parse_modern(mode):
-    if isinstance(mode, string_types):
+    if isinstance(mode, str):
         return int(to_native(mode), 8)
-    if isinstance(mode, integer_types):
+    if isinstance(mode, int):
         return mode
     raise TypeError('must be an octal string or an integer, got {mode!r}'.format(mode=mode))
 
 
 def parse_octal_string_only(mode):
-    if isinstance(mode, string_types):
+    if isinstance(mode, str):
         return int(to_native(mode), 8)
     raise TypeError('must be an octal string, got {mode!r}'.format(mode=mode))
 

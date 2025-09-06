@@ -7,16 +7,13 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import errno
 import os
 import select
 import socket as pysocket
 import struct
-
-from ansible_collections.community.docker.plugins.module_utils._six import PY3, binary_type
 
 from ..transport.npipesocket import NpipeSocket
 
@@ -41,7 +38,7 @@ def read(socket, n=4096):
 
     recoverable_errors = (errno.EINTR, errno.EDEADLK, errno.EWOULDBLOCK)
 
-    if PY3 and not isinstance(socket, NpipeSocket):
+    if not isinstance(socket, NpipeSocket):
         if not hasattr(select, "poll"):
             # Limited to 1024
             select.select([socket], [], [])
@@ -53,7 +50,7 @@ def read(socket, n=4096):
     try:
         if hasattr(socket, 'recv'):
             return socket.recv(n)
-        if PY3 and isinstance(socket, getattr(pysocket, 'SocketIO')):
+        if isinstance(socket, getattr(pysocket, 'SocketIO')):
             return socket.read(n)
         return os.read(socket.fileno(), n)
     except EnvironmentError as e:
@@ -75,7 +72,7 @@ def read_exactly(socket, n):
     Reads exactly n bytes from socket
     Raises SocketError if there is not enough data
     """
-    data = binary_type()
+    data = b''
     while len(data) < n:
         next_data = read(socket, n - len(data))
         if not next_data:
@@ -163,7 +160,7 @@ def consume_socket_output(frames, demux=False):
     if demux is False:
         # If the streams are multiplexed, the generator returns strings, that
         # we just need to concatenate.
-        return binary_type().join(frames)
+        return b''.join(frames)
 
     # If the streams are demultiplexed, the generator yields tuples
     # (stdout, stderr)

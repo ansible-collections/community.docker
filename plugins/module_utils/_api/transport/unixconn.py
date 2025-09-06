@@ -7,12 +7,9 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import socket
-
-from ansible_collections.community.docker.plugins.module_utils._six import PY2
 
 from .basehttpadapter import BaseHTTPAdapter
 from .. import constants
@@ -46,12 +43,9 @@ class UnixHTTPConnection(urllib3_connection.HTTPConnection, object):
             self.disable_buffering = True
 
     def response_class(self, sock, *args, **kwargs):
-        if PY2:
-            # FIXME: We may need to disable buffering on Py3 as well,
-            # but there's no clear way to do it at the moment. See:
-            # https://github.com/docker/docker-py/issues/1799
-            kwargs['buffering'] = not self.disable_buffering
-
+        # FIXME: We may need to disable buffering on Py3,
+        # but there's no clear way to do it at the moment. See:
+        # https://github.com/docker/docker-py/issues/1799
         return super(UnixHTTPConnection, self).response_class(sock, *args, **kwargs)
 
 

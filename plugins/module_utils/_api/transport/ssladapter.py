@@ -7,8 +7,7 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 """ Resolves OpenSSL issues in some servers:
       https://lukasa.co.uk/2013/01/Choosing_SSL_Version_In_Requests/

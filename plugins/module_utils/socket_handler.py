@@ -2,16 +2,13 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 
 import os
 import os.path
 import socket as pysocket
 import struct
-
-from ansible_collections.community.docker.plugins.module_utils._six import PY2
 
 from ansible_collections.community.docker.plugins.module_utils._api.utils import socket as docker_socket
 
@@ -85,7 +82,7 @@ class DockerSocketHandlerBase(object):
                     return
                 else:
                     raise
-        elif not PY2 and isinstance(self._sock, getattr(pysocket, 'SocketIO')):
+        elif isinstance(self._sock, getattr(pysocket, 'SocketIO')):
             data = self._sock.read()
         else:
             data = os.read(self._sock.fileno())

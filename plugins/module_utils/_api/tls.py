@@ -7,12 +7,10 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import os
 import ssl
-import sys
 
 from . import errors
 from .transport.ssladapter import SSLHTTPAdapter
@@ -51,22 +49,6 @@ class TLSConfig(object):
         # If the user provides an SSL version, we should use their preference
         if ssl_version:
             self.ssl_version = ssl_version
-        elif (sys.version_info.major, sys.version_info.minor) < (3, 6):
-            # If the user provides no ssl version, we should default to
-            # TLSv1_2.  This option is the most secure, and will work for the
-            # majority of users with reasonably up-to-date software. However,
-            # before doing so, detect openssl version to ensure we can support
-            # it.
-            if ssl.OPENSSL_VERSION_INFO[:3] >= (1, 0, 1) and hasattr(
-                    ssl, 'PROTOCOL_TLSv1_2'):
-                # If the OpenSSL version is high enough to support TLSv1_2,
-                # then we should use it.
-                self.ssl_version = getattr(ssl, 'PROTOCOL_TLSv1_2')
-            else:
-                # Otherwise, TLS v1.0 seems to be the safest default;
-                # SSLv23 fails in mysterious ways:
-                # https://github.com/docker/docker-py/issues/963
-                self.ssl_version = ssl.PROTOCOL_TLSv1
         else:
             self.ssl_version = ssl.PROTOCOL_TLS_CLIENT
 

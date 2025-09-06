@@ -6,8 +6,7 @@
 
 """Provide version object to compare version numbers."""
 
-from __future__ import absolute_import, division, print_function
-__metaclass__ = type
+from __future__ import annotations
 
 
 from ansible.module_utils.compat.version import LooseVersion, StrictVersion  # noqa: F401, pylint: disable=unused-import

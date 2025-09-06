@@ -7,17 +7,13 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import traceback
-
-from ansible_collections.community.docker.plugins.module_utils._six import PY2
 
 
 REQUESTS_IMPORT_ERROR = None
 URLLIB3_IMPORT_ERROR = None
-BACKPORTS_SSL_MATCH_HOSTNAME_IMPORT_ERROR = None
 
 
 try:
@@ -41,11 +37,11 @@ except ImportError:
 
 
 try:
-    from requests.packages import urllib3
+    from requests.packages import urllib3  # pylint: disable=unused-import
     from requests.packages.urllib3 import connection as urllib3_connection  # pylint: disable=unused-import
 except ImportError:
     try:
-        import urllib3
+        import urllib3  # pylint: disable=unused-import
         from urllib3 import connection as urllib3_connection  # pylint: disable=unused-import
     except ImportError:
         URLLIB3_IMPORT_ERROR = traceback.format_exc()
@@ -76,16 +72,6 @@ except ImportError:
         urllib3_connection = FakeURLLIB3Connection()
 
 
-# Monkey-patching match_hostname with a version that supports
-# IP-address checking. Not necessary for Python 3.5 and above
-if PY2:
-    try:
-        from backports.ssl_match_hostname import match_hostname
-        urllib3.connection.match_hostname = match_hostname
-    except ImportError:
-        BACKPORTS_SSL_MATCH_HOSTNAME_IMPORT_ERROR = traceback.format_exc()
-
-
 def fail_on_missing_imports():
     if REQUESTS_IMPORT_ERROR is not None:
         from .errors import MissingRequirementException
@@ -99,9 +85,3 @@ def fail_on_missing_imports():
         raise MissingRequirementException(
             'You have to install urllib3',
             'urllib3', URLLIB3_IMPORT_ERROR)
-    if BACKPORTS_SSL_MATCH_HOSTNAME_IMPORT_ERROR is not None:
-        from .errors import MissingRequirementException
-
-        raise MissingRequirementException(
-            'You have to install backports.ssl-match-hostname',
-            'backports.ssl-match-hostname', BACKPORTS_SSL_MATCH_HOSTNAME_IMPORT_ERROR)

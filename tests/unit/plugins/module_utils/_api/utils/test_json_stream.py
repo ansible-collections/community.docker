@@ -10,13 +10,6 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-import sys
-
-import pytest
-
-if sys.version_info < (2, 7):
-    pytestmark = pytest.mark.skip('Python 2.6 is not supported')
-
 from ansible_collections.community.docker.plugins.module_utils._api.utils.json_stream import json_splitter, stream_as_text, json_stream
 
 

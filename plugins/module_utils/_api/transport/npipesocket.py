@@ -7,15 +7,12 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import functools
 import io
 import time
 import traceback
-
-from ansible_collections.community.docker.plugins.module_utils._six import PY2
 
 PYWIN32_IMPORT_ERROR = None
 try:
@@ -152,9 +149,6 @@ class NpipeSocket(object):
 
     @check_closed
     def recv_into(self, buf, nbytes=0):
-        if PY2:
-            return self._recv_into_py2(buf, nbytes)
-
         readbuf = buf
         if not isinstance(buf, memoryview):
             readbuf = memoryview(buf)
@@ -175,12 +169,6 @@ class NpipeSocket(object):
             return win32file.GetOverlappedResult(self._handle, overlapped, 0)
         finally:
             win32api.CloseHandle(event)
-
-    def _recv_into_py2(self, buf, nbytes):
-        err, data = win32file.ReadFile(self._handle, nbytes or len(buf))
-        n = len(data)
-        buf[:n] = data
-        return n
 
     @check_closed
     def send(self, string, flags=0):

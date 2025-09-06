@@ -37,8 +37,7 @@ def write_imitation_archive(file_name, image_id, repo_tags):
 
 
 def write_imitation_archive_with_manifest(file_name, manifest):
-    tf = tarfile.open(file_name, 'w')
-    try:
+    with tarfile.open(file_name, 'w') as tf:
         with TemporaryFile() as f:
             f.write(json.dumps(manifest).encode('utf-8'))
 
@@ -47,10 +46,6 @@ def write_imitation_archive_with_manifest(file_name, manifest):
 
             f.seek(0)
             tf.addfile(ti, f)
-
-    finally:
-        # In Python 2.6, this does not have __exit__
-        tf.close()
 
 
 def write_irrelevant_tar(file_name):
