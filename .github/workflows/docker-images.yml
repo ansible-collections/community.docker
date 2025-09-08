@@ -54,7 +54,7 @@ jobs:
           sudo apt-get install podman buildah
 
       - name: Set up Go 1.22
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: '1.22'
           cache: false  # true (default) results in warnings since we don't use Go modules
