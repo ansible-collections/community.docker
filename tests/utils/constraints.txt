@@ -4,7 +4,7 @@
 
 bcrypt < 3.2.0 ; python_version <= '3.6'
 certifi < 2022.5.18 ; python_version < '3.5' # certifi 2022.5.18 requires Python 3.5 or later
-cffi >= 1.14.2, != 1.14.3 # Yanked version which older versions of pip will still install
+cffi < 2.0.0 ; python_version < '3' # cffi supports Python 3.9+, but all versions except CentOS 7 with Python 2.7 get that...
 coverage >= 4.2, < 5.0.0, != 4.3.2 ; python_version <= '3.7' # features in 4.2+ required, avoid known bug in 4.3.2 on python 2.6, coverage 5.0+ incompatible
 coverage >= 4.5.4, < 5.0.0 ; python_version > '3.7' # coverage had a bug in < 4.5.4 that would cause unit tests to hang in Python 3.8, coverage 5.0+ incompatible
 cryptography >= 1.3.0, < 2.2 ; python_version < '2.7' # cryptography 2.2 drops support for python 2.6
