@@ -7,8 +7,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 DOCUMENTATION = r"""
 author:
@@ -115,18 +114,17 @@ options:
 import fcntl
 import os
 import os.path
+import selectors
 import subprocess
 import re
+from shlex import quote
 
 from ansible.errors import AnsibleError, AnsibleFileNotFound, AnsibleConnectionFailure
-from ansible.module_utils.six.moves import shlex_quote
-from ansible.module_utils.six import string_types
 from ansible.module_utils.common.process import get_bin_path
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
 from ansible.plugins.connection import ConnectionBase, BUFSIZE
 from ansible.utils.display import Display
 
-from ansible_collections.community.docker.plugins.module_utils.selectors import selectors
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 display = Display()
@@ -249,7 +247,7 @@ class Connection(ConnectionBase):
         if self.get_option('extra_env'):
             for k, v in self.get_option('extra_env').items():
                 for val, what in ((k, 'Key'), (v, 'Value')):
-                    if not isinstance(val, string_types):
+                    if not isinstance(val, (str, bytes)):
                         raise AnsibleConnectionFailure(
                             'Non-string {0} found for extra_env option. Ambiguous env options must be '
                             'wrapped in quotes to avoid them being interpreted. {1}: {2!r}'
@@ -434,7 +432,7 @@ class Connection(ConnectionBase):
             raise AnsibleFileNotFound(
                 "file or module does not exist: %s" % to_native(in_path))
 
-        out_path = shlex_quote(out_path)
+        out_path = quote(out_path)
         # Older docker does not have native support for copying files into
         # running containers, so we use docker exec to implement this
         # Although docker version 1.8 and later provide support, the

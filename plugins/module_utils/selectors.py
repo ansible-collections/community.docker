@@ -6,16 +6,7 @@
 
 """Provide selectors import."""
 
-from __future__ import absolute_import, division, print_function
-__metaclass__ = type
+from __future__ import annotations
 
 
-# Once we drop support for ansible-core 2.16, we can remove the try/except.
-
-from sys import version_info as _python_version_info
-
-
-if _python_version_info < (3, 4):
-    from ansible.module_utils.compat import selectors  # noqa: F401, pylint: disable=unused-import
-else:
-    import selectors  # noqa: F401, pylint: disable=unused-import
+import selectors  # noqa: F401, pylint: disable=unused-import

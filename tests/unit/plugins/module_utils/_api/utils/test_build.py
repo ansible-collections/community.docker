@@ -17,12 +17,8 @@ import socket
 import tarfile
 import tempfile
 import unittest
-import sys
 
 import pytest
-
-if sys.version_info < (2, 7):
-    pytestmark = pytest.mark.skip('Python 2.6 is not supported')
 
 from ansible_collections.community.docker.plugins.module_utils._api.constants import IS_WINDOWS_PLATFORM
 from ansible_collections.community.docker.plugins.module_utils._api.utils.build import exclude_paths, tar

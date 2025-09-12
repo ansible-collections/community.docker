@@ -7,8 +7,7 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import logging
 import os
@@ -16,9 +15,8 @@ import signal
 import socket
 import subprocess
 import traceback
+from queue import Empty
 
-from ansible.module_utils.six import PY3
-from ansible.module_utils.six.moves.queue import Empty
 from ansible.module_utils.six.moves.urllib_parse import urlparse
 
 from .basehttpadapter import BaseHTTPAdapter
@@ -102,8 +100,7 @@ class SSHSocket(socket.socket):
     def makefile(self, mode):
         if not self.proc:
             self.connect()
-        if PY3:
-            self.proc.stdout.channel = self
+        self.proc.stdout.channel = self
 
         return self.proc.stdout
 

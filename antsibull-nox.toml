@@ -7,16 +7,6 @@
 "community.internal_test_tools" = "git+https://github.com/ansible-collections/community.internal_test_tools.git,main"
 "community.library_inventory_filtering_v1" = "git+https://github.com/ansible-collections/community.library_inventory_filtering.git,stable-1"
 
-[collection_sources_per_ansible.'2.15']
-# community.crypto's main branch needs ansible-core >= 2.17
-"community.crypto" = "git+https://github.com/ansible-collections/community.crypto.git,stable-2"
-# community.general's main branch needs ansible-core >= 2.16
-"community.general" = "git+https://github.com/ansible-collections/community.general.git,stable-10"
-
-[collection_sources_per_ansible.'2.16']
-# community.crypto's main branch needs ansible-core >= 2.17
-"community.crypto" = "git+https://github.com/ansible-collections/community.crypto.git,stable-2"
-
 [sessions]
 
 [sessions.lint]
@@ -92,12 +82,14 @@ runtime_container_options = [
 ]
 
 [[sessions.ee_check.execution_environments]]
-name = "2.15-rocky-9"
-description = "ansible-core 2.15 @ Rocky Linux 9"
+name = "2.17-rocky-9"
+description = "ansible-core 2.17 @ Rocky Linux 9"
 test_playbooks = ["tests/ee/all.yml"]
 config.images.base_image.name = "quay.io/rockylinux/rockylinux:9"
-config.dependencies.ansible_core.package_pip = "https://github.com/ansible/ansible/archive/stable-2.15.tar.gz"
+config.dependencies.ansible_core.package_pip = "https://github.com/ansible/ansible/archive/stable-2.17.tar.gz"
 config.dependencies.ansible_runner.package_pip = "ansible-runner"
+config.dependencies.python_interpreter.package_system = "python3.11 python3.11-pip python3.11-wheel python3.11-cryptography"
+config.dependencies.python_interpreter.python_path = "/usr/bin/python3.11"
 runtime_environment = {"ANSIBLE_PRIVATE_ROLE_VARS" = "true"}
 runtime_container_options = [
     # Mount Docker socket into the container so we can talk to Docker outside the container
