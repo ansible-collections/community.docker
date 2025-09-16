@@ -228,8 +228,9 @@ stages:
           targets:
             - name: RHEL 9.6 with Docker SDK, urllib3, requests from sources
               test: rhel/9.6-dev-latest
-            - name: Ubuntu 24.04
-              test: ubuntu/24.04
+            # For some reason, Ubuntu 24.04 is *extremely* slower than RHEL 9.6
+            # - name: Ubuntu 24.04
+            #   test: ubuntu/24.04
           groups:
             - 1
             - 2
