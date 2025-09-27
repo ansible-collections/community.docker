@@ -84,21 +84,151 @@ include_devel = true
 include_devel = true
 
 [sessions.ansible_test_integration]
+session_name_template = "ansible-test-integration-{ansible_core}{dash_docker_short}{dash_remote}{dash_python_version}{dash_target_dashized}"
+display_name_template = "main+Ⓐ{ansible_core}{plus_docker_short}{plus_remote}{plus_py_python_version}{plus_target}{plus_force_docker_sdk_for_python_dev}{plus_force_docker_sdk_for_python_pypi}"
+description_template = "Run main integration tests with ansible-core {ansible_core}{comma_docker_short}{comma_remote}{comma_py_python_version}{comma_target}{comma_force_docker_sdk_for_python_dev}{comma_force_docker_sdk_for_python_pypi}"
 
-session_name_template = "ansible-test-integration-{ansible_core}{dash_docker_short}{dash_python_version}{dash_target_dashized}"
-display_name_template = "main+Ⓐ{ansible_core}{plus_docker_short}{plus_py_python_version}{plus_target}"
-description_template = "Run main integration tests with ansible-core {ansible_core}{comma_docker_short}{comma_py_python_version}{comma_target}"
+[sessions.ansible_test_integration.ansible_vars]
+force_docker_sdk_for_python_dev = { type = "value", value = false, template_value = "" }
+force_docker_sdk_for_python_pypi = { type = "value", value = false, template_value = "" }
 
-[[sessions.ansible_test_integration.sessions]]
+##################################################################################################
+
+# Ansible-core 2.15:
+
+[[sessions.ansible_test_integration.groups]]
+session_name = "ansible-test-integration-2.15"
+description = "Meta session for running all ansible-test-integration-2.15-* sessions."
+
+[[sessions.ansible_test_integration.groups.sessions]]
 ansible_core = "2.15"
 target = [ "azp/4/", "azp/5/" ]
 docker = [ "fedora37" ]
 
-[[sessions.ansible_test_integration.sessions]]
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "2.15"
+target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
+remote = [ "rhel/9.1", "rhel/8.7", "rhel/7.9" ]
+
+# Ansible-core 2.16:
+
+[[sessions.ansible_test_integration.groups]]
+session_name = "ansible-test-integration-2.16"
+description = "Meta session for running all ansible-test-integration-2.16-* sessions."
+
+[[sessions.ansible_test_integration.groups.sessions]]
 ansible_core = "2.16"
 target = [ "azp/4/", "azp/5/" ]
 docker = [ "fedora38", "opensuse15", "alpine3" ]
-# "centos7" does not work in GHA.
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "2.16"
+target = [ "azp/4/", "azp/5/" ]
+docker = [ "centos7" ]
+# "centos7" does not work in GHA:
+tags = [ "no-gha" ]
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "2.16"
+target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
+remote = [ "rhel/8.8", "rhel/7.9" ]
+
+# Ansible-core 2.17:
+
+[[sessions.ansible_test_integration.groups]]
+session_name = "ansible-test-integration-2.17"
+description = "Meta session for running all ansible-test-integration-2.17-* sessions."
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "2.17"
+target = [ "azp/4/", "azp/5/" ]
+docker = [ "fedora39", "ubuntu2004", "alpine319" ]
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "2.17"
+target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
+remote = [ "rhel/9.3" ]
+
+# Ansible-core 2.18:
+
+[[sessions.ansible_test_integration.groups]]
+session_name = "ansible-test-integration-2.18"
+description = "Meta session for running all ansible-test-integration-2.18-* sessions."
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "2.18"
+target = [ "azp/4/", "azp/5/" ]
+docker = [ "fedora40", "ubuntu2204", "alpine320" ]
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "2.18"
+target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
+remote = [ "rhel/9.4" ]
+
+# Ansible-core 2.19:
+
+[[sessions.ansible_test_integration.groups]]
+session_name = "ansible-test-integration-2.19"
+description = "Meta session for running all ansible-test-integration-2.19-* sessions."
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "2.19"
+target = [ "azp/4/", "azp/5/" ]
+docker = [ "fedora42", "alpine321" ]
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "2.19"
+target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
+remote = [ "rhel/9.5", "ubuntu/22.04" ]
+
+# Ansible-core devel:
+
+[[sessions.ansible_test_integration.groups]]
+session_name = "ansible-test-integration-devel"
+description = "Meta session for running all ansible-test-integration-devel-* sessions."
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "devel"
+target = [ "azp/4/", "azp/5/" ]
+docker = [ "fedora42", "ubuntu2204", "ubuntu2404", "alpine322" ]
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "devel"
+target = [ "azp/4/", "azp/5/" ]
+python_version = "3.9"
+docker = "quay.io/ansible-community/test-image:debian-bullseye"
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "devel"
+target = [ "azp/4/", "azp/5/" ]
+python_version = "3.11"
+docker = "quay.io/ansible-community/test-image:debian-bookworm"
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "devel"
+target = [ "azp/4/", "azp/5/" ]
+python_version = "3.13"
+docker = "quay.io/ansible-community/test-image:debian-13-trixie"
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "devel"
+target = [ "azp/4/", "azp/5/" ]
+python_version = "3.13"
+docker = "quay.io/ansible-community/test-image:archlinux"
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "devel"
+target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
+remote = [ "rhel/9.6" ]
+ansible_vars = { force_docker_sdk_for_python_dev = { type = "value", value = true, template_value = "sdk-dev-latest" } }
+
+# For some reason, Ubuntu 24.04 is *extremely* slower than RHEL 9.6
+# [[sessions.ansible_test_integration.groups.sessions]]
+# ansible_core = "devel"
+# target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
+# remote = [ "ubuntu/24.04" ]
+
+##################################################################################################
 
 [[sessions.ee_check.execution_environments]]
 name = "devel-ubi-9"
