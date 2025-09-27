@@ -3,6 +3,7 @@
 # SPDX-FileCopyrightText: 2025 Felix Fontein <felix@fontein.de>
 
 [collection_sources]
+"ansible.posix" = "git+https://github.com/ansible-collections/ansible.posix.git,main"
 "community.general" = "git+https://github.com/ansible-collections/community.general.git,main"
 "community.internal_test_tools" = "git+https://github.com/ansible-collections/community.internal_test_tools.git,main"
 "community.library_inventory_filtering_v1" = "git+https://github.com/ansible-collections/community.library_inventory_filtering.git,stable-1"
@@ -75,6 +76,23 @@ skip_directories = [
 
 [sessions.build_import_check]
 run_galaxy_importer = true
+
+[sessions.ansible_test_sanity]
+include_devel = true
+
+[sessions.ansible_test_units]
+include_devel = true
+
+[sessions.ansible_test_integration]
+
+session_name_template = "ansible-test-integration-{ansible_core}{dash_docker_short}{dash_python_version}{dash_target_dashized}"
+display_name_template = "main+Ⓐ{ansible_core}{plus_docker_short}{plus_py_python_version}{plus_target}"
+description_template = "Run main integration tests with ansible-core {ansible_core}{comma_docker_short}{comma_py_python_version}{comma_target}"
+
+[[sessions.ansible_test_integration.sessions]]
+ansible_core = "2.15"
+target = [ "azp/4/", "azp/5/" ]
+docker = [ "fedora37" ]
 
 [[sessions.ee_check.execution_environments]]
 name = "devel-ubi-9"
