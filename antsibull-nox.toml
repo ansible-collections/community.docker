@@ -94,6 +94,11 @@ ansible_core = "2.15"
 target = [ "azp/4/", "azp/5/" ]
 docker = [ "fedora37" ]
 
+[[sessions.ansible_test_integration.sessions]]
+ansible_core = "2.16"
+target = [ "azp/4/", "azp/5/" ]
+docker = [ "fedora38", "centos7", "opensuse15", "alpine3" ]
+
 [[sessions.ee_check.execution_environments]]
 name = "devel-ubi-9"
 description = "ansible-core devel @ RHEL UBI 9"
