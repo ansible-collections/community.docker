@@ -1036,18 +1036,48 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mounts/create_mountpoint"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-mounts-create-mountpoint"><strong>create_mountpoint</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mounts/create_mountpoint" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 4.8.0</em></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Create mount point on host if missing.</p>
+<p>Requires Docker API 1.42+.</p>
+<p>Only valid for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-mounts-type"><span class="std std-ref"><span class="pre">mounts[].type=bind</span></span></a></code>.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-mounts/labels"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-mounts-labels"><strong>labels</strong></p>
 <a class="ansibleOptionLink" href="#parameter-mounts/labels" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>User-defined name and labels for the volume. Only valid for the <code class="ansible-value docutils literal notranslate"><span class="pre">volume</span></code> type.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-mounts/no_copy"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-mounts-no-copy"><strong>no_copy</strong></p>
 <a class="ansibleOptionLink" href="#parameter-mounts/no_copy" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>False if the volume should be populated with the data from the target. Only valid for the <code class="ansible-value docutils literal notranslate"><span class="pre">volume</span></code> type.</p>
 <p>The default value is <code class="ansible-value docutils literal notranslate"><span class="pre">false</span></code>.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mounts/non_recursive"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-mounts-non-recursive"><strong>non_recursive</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mounts/non_recursive" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 4.8.0</em></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Disable recursive bind mount.</p>
+<p>Requires Docker API 1.40+.</p>
+<p>Only valid for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-mounts-type"><span class="std std-ref"><span class="pre">mounts[].type=bind</span></span></a></code>.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
@@ -1084,6 +1114,36 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mounts/read_only_force_recursive"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-mounts-read-only-force-recursive"><strong>read_only_force_recursive</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mounts/read_only_force_recursive" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 4.8.0</em></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Raise an error if the mount cannot be made recursively read-only.</p>
+<p>Requires Docker API 1.44+.</p>
+<p>Only valid for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-mounts-type"><span class="std std-ref"><span class="pre">mounts[].type=bind</span></span></a></code>.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mounts/read_only_non_recursive"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-mounts-read-only-non-recursive"><strong>read_only_non_recursive</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mounts/read_only_non_recursive" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 4.8.0</em></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Make the mount non-recursively read-only, but still leave the mount recursive (unless NonRecursive is set to true in conjunction).</p>
+<p>Requires Docker API 1.44+.</p>
+<p>Only valid for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-mounts-type"><span class="std std-ref"><span class="pre">mounts[].type=bind</span></span></a></code>.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-mounts/source"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-mounts-source"><strong>source</strong></p>
 <a class="ansibleOptionLink" href="#parameter-mounts/source" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -1093,17 +1153,38 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mounts/subpath"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-mounts-subpath"><strong>subpath</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mounts/subpath" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 4.8.0</em></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Source path inside the volume/image. Must be relative without any back traversals.</p>
+<p>Requires Docker API 1.45+.</p>
+<p>Only valid for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-mounts-type"><span class="std std-ref"><span class="pre">mounts[].type=volume</span></span></a></code> or <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-mounts-type"><span class="std std-ref"><span class="pre">mounts[].type=image</span></span></a></code>.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-mounts/target"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-mounts-target"><strong>target</strong></p>
 <a class="ansibleOptionLink" href="#parameter-mounts/target" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Path inside the container.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-mounts/tmpfs_mode"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-mounts-tmpfs-mode"><strong>tmpfs_mode</strong></p>
 <a class="ansibleOptionLink" href="#parameter-mounts/tmpfs_mode" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The permission mode for the tmpfs mount.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mounts/tmpfs_options"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-container-module-parameter-mounts-tmpfs-options"><strong>tmpfs_options</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mounts/tmpfs_options" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
+<p><em class="ansible-option-versionadded">added in community.docker 4.8.0</em></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Options to be passed to the tmpfs mount.</p>
+<p>Every list element must be a dictionary with one key and a value. All keys must be strings, and values can be either a string or <code class="ansible-value docutils literal notranslate"><span class="pre">null</span></code>/<code class="ansible-value docutils literal notranslate"><span class="pre">none</span></code> for a flag.</p>
+<p>Requires Docker API 1.46+.</p>
+<p>Only valid for <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-community-docker-docker-container-module-parameter-mounts-type"><span class="std std-ref"><span class="pre">mounts[].type=tmpfs</span></span></a></code>.</p>
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
@@ -1121,12 +1202,16 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The mount type.</p>
 <p>Note that <code class="ansible-value docutils literal notranslate"><span class="pre">npipe</span></code> is only supported by Docker for Windows.</p>
+<p><code class="ansible-value docutils literal notranslate"><span class="pre">cluster</span></code> requires Docker API 1.42+ and has been added in community.docker 4.8.0.</p>
+<p><code class="ansible-value docutils literal notranslate"><span class="pre">image</span></code> requires Docker API 1.47+ and has been added in community.docker 4.8.0.</p>
 <p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
 <ul class="simple">
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;bind&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;npipe&quot;</span></code></p></li>
 <li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;tmpfs&quot;</span></code></p></li>
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;volume&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;cluster&quot;</span></code></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;image&quot;</span></code></p></li>
 </ul>
 </div></td>
 </tr>
