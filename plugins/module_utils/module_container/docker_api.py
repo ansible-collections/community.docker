@@ -120,17 +120,6 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.utils 
 _DEFAULT_IP_REPLACEMENT_STRING = '[[DEFAULT_IP:iewahhaeB4Sae6Aen8IeShairoh4zeph7xaekoh8Geingunaesaeweiy3ooleiwi]]'
 
 
-_MOUNT_OPTION_TYPES = dict(
-    volume_driver='volume',
-    volume_options='volume',
-    propagation='bind',
-    no_copy='volume',
-    labels='volume',
-    tmpfs_size='tmpfs',
-    tmpfs_mode='tmpfs',
-)
-
-
 def _get_ansible_type(type):
     if type == 'set':
         return 'list'
@@ -934,6 +923,12 @@ def _get_values_mounts(module, container, api_version, options, image, host_info
                 'volume_options': mount.get('VolumeOptions', empty_dict).get('DriverConfig', empty_dict).get('Options', empty_dict),
                 'tmpfs_size': mount.get('TmpfsOptions', empty_dict).get('SizeBytes'),
                 'tmpfs_mode': mount.get('TmpfsOptions', empty_dict).get('Mode'),
+                'non_recursive': mount.get('BindOptions', empty_dict).get('NonRecursive'),
+                'create_mountpoint': mount.get('BindOptions', empty_dict).get('CreateMountpoint'),
+                'read_only_non_recursive': mount.get('BindOptions', empty_dict).get('ReadOnlyNonRecursive'),
+                'read_only_force_recursive': mount.get('BindOptions', empty_dict).get('ReadOnlyForceRecursive'),
+                'subpath': mount.get('VolumeOptions', empty_dict).get('Subpath') or mount.get('ImageOptions', empty_dict).get('Subpath'),
+                'tmpfs_options': mount.get('TmpfsOptions', empty_dict).get('Options'),
             })
         mounts = result
     result = {}
@@ -1026,10 +1021,19 @@ def _set_values_mounts(module, data, api_version, options, values):
             if 'consistency' in mount:
                 mount_res['Consistency'] = mount['consistency']
             if mount_type == 'bind':
+                bind_opts = {}
                 if 'propagation' in mount:
-                    mount_res['BindOptions'] = {
-                        'Propagation': mount['propagation'],
-                    }
+                    bind_opts['Propagation'] = mount['propagation']
+                if 'non_recursive' in mount:
+                    bind_opts['NonRecursive'] = mount['non_recursive']
+                if 'create_mountpoint' in mount:
+                    bind_opts['CreateMountpoint'] = mount['create_mountpoint']
+                if 'read_only_non_recursive' in mount:
+                    bind_opts['ReadOnlyNonRecursive'] = mount['read_only_non_recursive']
+                if 'read_only_force_recursive' in mount:
+                    bind_opts['ReadOnlyForceRecursive'] = mount['read_only_force_recursive']
+                if bind_opts:
+                    mount_res['BindOptions'] = bind_opts
             if mount_type == 'volume':
                 volume_opts = {}
                 if mount.get('no_copy'):
@@ -1043,6 +1047,8 @@ def _set_values_mounts(module, data, api_version, options, values):
                     if mount.get('volume_options'):
                         driver_config['Options'] = mount.get('volume_options')
                     volume_opts['DriverConfig'] = driver_config
+                if 'subpath' in mount:
+                    volume_opts['Subpath'] = mount['subpath']
                 if volume_opts:
                     mount_res['VolumeOptions'] = volume_opts
             if mount_type == 'tmpfs':
@@ -1051,8 +1057,16 @@ def _set_values_mounts(module, data, api_version, options, values):
                     tmpfs_opts['Mode'] = mount.get('tmpfs_mode')
                 if mount.get('tmpfs_size'):
                     tmpfs_opts['SizeBytes'] = mount.get('tmpfs_size')
+                if 'tmpfs_options' in mount:
+                    tmpfs_opts['Options'] = mount['tmpfs_options']
                 if tmpfs_opts:
                     mount_res['TmpfsOptions'] = tmpfs_opts
+            if mount_type == 'image':
+                image_opts = {}
+                if 'subpath' in mount:
+                    image_opts['Subpath'] = mount['subpath']
+                if image_opts:
+                    mount_res['ImageOptions'] = image_opts
             mounts.append(mount_res)
         data['HostConfig']['Mounts'] = mounts
     if 'volumes' in values:
@@ -1486,6 +1500,40 @@ OPTION_MOUNTS_VOLUMES.add_engine('docker_api', DockerAPIEngine(
     get_value=_get_values_mounts,
     get_expected_values=_get_expected_values_mounts,
     set_value=_set_values_mounts,
+    extra_option_minimal_versions={
+        'mounts.non_recursive': {
+            'docker_api_version': '1.40',
+            'detect_usage': lambda c: any(mount.get('non_recursive') is not None for mount in (c.module.params['mounts'] or [])),
+        },
+        'mounts.create_mountpoint': {
+            'docker_api_version': '1.42',
+            'detect_usage': lambda c: any(mount.get('create_mountpoint') is not None for mount in (c.module.params['mounts'] or [])),
+        },
+        'mounts.type=cluster': {
+            'docker_api_version': '1.42',
+            'detect_usage': lambda c: any(mount.get('type') == 'cluster' for mount in (c.module.params['mounts'] or [])),
+        },
+        'mounts.read_only_non_recursive': {
+            'docker_api_version': '1.44',
+            'detect_usage': lambda c: any(mount.get('read_only_non_recursive') is not None for mount in (c.module.params['mounts'] or [])),
+        },
+        'mounts.read_only_force_recursive': {
+            'docker_api_version': '1.44',
+            'detect_usage': lambda c: any(mount.get('read_only_force_recursive') is not None for mount in (c.module.params['mounts'] or [])),
+        },
+        'mounts.subpath': {
+            'docker_api_version': '1.45',
+            'detect_usage': lambda c: any(mount.get('subpath') is not None for mount in (c.module.params['mounts'] or [])),
+        },
+        'mounts.tmpfs_options': {
+            'docker_api_version': '1.46',
+            'detect_usage': lambda c: any(mount.get('tmpfs_options') is not None for mount in (c.module.params['mounts'] or [])),
+        },
+        'mounts.type=image': {
+            'docker_api_version': '1.47',
+            'detect_usage': lambda c: any(mount.get('type') == 'image' for mount in (c.module.params['mounts'] or [])),
+        },
+    },
 ))
 
 OPTION_PORTS.add_engine('docker_api', DockerAPIEngine(

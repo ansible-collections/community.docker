@@ -38,13 +38,19 @@ _DEFAULT_IP_REPLACEMENT_STRING = '[[DEFAULT_IP:iewahhaeB4Sae6Aen8IeShairoh4zeph7
 
 
 _MOUNT_OPTION_TYPES = dict(
-    volume_driver='volume',
-    volume_options='volume',
-    propagation='bind',
-    no_copy='volume',
-    labels='volume',
-    tmpfs_size='tmpfs',
-    tmpfs_mode='tmpfs',
+    create_mountpoint=('bind',),
+    labels=('volume',),
+    no_copy=('volume',),
+    non_recursive=('bind',),
+    propagation=('bind',),
+    read_only_force_recursive=('bind',),
+    read_only_non_recursive=('bind',),
+    subpath=('volume', 'image'),
+    tmpfs_size=('tmpfs',),
+    tmpfs_mode=('tmpfs',),
+    tmpfs_options=('tmpfs',),
+    volume_driver=('volume',),
+    volume_options=('volume',),
 )
 
 
@@ -583,12 +589,18 @@ def _preprocess_mounts(module, values):
             mount_dict = dict(mount)
 
             # Sanity checks
-            if mount['source'] is None and mount_type not in ('tmpfs', 'volume'):
+            if mount['source'] is None and mount_type not in ('tmpfs', 'volume', 'image', 'cluster'):
                 module.fail_json(msg='source must be specified for mount "{0}" of type "{1}"'.format(target, mount_type))
-            for option, req_mount_type in _MOUNT_OPTION_TYPES.items():
-                if mount[option] is not None and mount_type != req_mount_type:
+            for option, req_mount_types in _MOUNT_OPTION_TYPES.items():
+                if mount[option] is not None and mount_type not in req_mount_types:
                     module.fail_json(
-                        msg='{0} cannot be specified for mount "{1}" of type "{2}" (needs type "{3}")'.format(option, target, mount_type, req_mount_type)
+                        msg='{0} cannot be specified for mount "{1}" of type "{2}" (needs type{3} "{4}")'.format(
+                            option,
+                            target,
+                            mount_type,
+                            "" if len(req_mount_types) == 1 else "s",
+                            '", "'.join(req_mount_types),
+                        )
                     )
 
             # Streamline options
@@ -607,6 +619,18 @@ def _preprocess_mounts(module, values):
                     mount_dict['tmpfs_mode'] = int(mount_dict['tmpfs_mode'], 8)
                 except Exception as dummy:
                     module.fail_json(msg='tmp_fs mode of mount "{0}" is not an octal string!'.format(target))
+            if mount_dict['tmpfs_options']:
+                opts = []
+                for idx, opt in enumerate(mount_dict['tmpfs_options']):
+                    if len(opt) != 1:
+                        module.fail_json(msg='tmpfs_options[{1}] of mount "{0}" must be a one-element dictionary!'.format(target, idx + 1))
+                    k, v = list(opt.items())[0]
+                    if not isinstance(k, str):
+                        module.fail_json(msg='key {2!r} in tmpfs_options[{1}] of mount "{0}" must be a string!'.format(target, idx + 1, k))
+                    if v is not None and not isinstance(v, str):
+                        module.fail_json(msg='value {2!r} in tmpfs_options[{1}] of mount "{0}" must be a string or null/none!'.format(target, idx + 1, v))
+                    opts.append([k, v] if v is not None else [k])
+                mount_dict['tmpfs_options'] = opts
 
             # Add result to list
             mounts.append(omit_none_from_dict(mount_dict))
@@ -1169,7 +1193,7 @@ OPTION_MOUNTS_VOLUMES = (
     .add_option('mounts', type='set', elements='dict', ansible_suboptions=dict(
         target=dict(type='str', required=True),
         source=dict(type='str'),
-        type=dict(type='str', choices=['bind', 'volume', 'tmpfs', 'npipe'], default='volume'),
+        type=dict(type='str', choices=['bind', 'volume', 'tmpfs', 'npipe', 'cluster', 'image'], default='volume'),
         read_only=dict(type='bool'),
         consistency=dict(type='str', choices=['default', 'consistent', 'cached', 'delegated']),
         propagation=dict(type='str', choices=['private', 'rprivate', 'shared', 'rshared', 'slave', 'rslave']),
@@ -1179,6 +1203,12 @@ OPTION_MOUNTS_VOLUMES = (
         volume_options=dict(type='dict'),
         tmpfs_size=dict(type='str'),
         tmpfs_mode=dict(type='str'),
+        non_recursive=dict(type='bool'),
+        create_mountpoint=dict(type='bool'),
+        read_only_non_recursive=dict(type='bool'),
+        read_only_force_recursive=dict(type='bool'),
+        subpath=dict(type='str'),
+        tmpfs_options=dict(type='list', elements='dict'),
     ))
     .add_option('volumes', type='set', elements='str')
     .add_option('volume_binds', type='set', elements='str', not_an_ansible_option=True, copy_comparison_from='volumes')

@@ -580,12 +580,16 @@ options:
         description:
           - The mount type.
           - Note that V(npipe) is only supported by Docker for Windows.
+          - V(cluster) requires Docker API 1.42+ and has been added in community.docker 4.8.0.
+          - V(image) requires Docker API 1.47+ and has been added in community.docker 4.8.0.
         type: str
         choices:
           - bind
           - npipe
           - tmpfs
           - volume
+          - cluster
+          - image
         default: volume
       read_only:
         description:
@@ -600,6 +604,13 @@ options:
           - consistent
           - default
           - delegated
+      create_mountpoint:
+        description:
+          - Create mount point on host if missing.
+          - Requires Docker API 1.42+.
+          - Only valid for O(mounts[].type=bind).
+        type: bool
+        version_added: 4.8.0
       propagation:
         description:
           - Propagation mode. Only valid for the V(bind) type.
@@ -616,6 +627,27 @@ options:
           - False if the volume should be populated with the data from the target. Only valid for the V(volume) type.
           - The default value is V(false).
         type: bool
+      non_recursive:
+        description:
+          - Disable recursive bind mount.
+          - Requires Docker API 1.40+.
+          - Only valid for O(mounts[].type=bind).
+        type: bool
+        version_added: 4.8.0
+      read_only_non_recursive:
+        description:
+          - Make the mount non-recursively read-only, but still leave the mount recursive (unless NonRecursive is set to true in conjunction).
+          - Requires Docker API 1.44+.
+          - Only valid for O(mounts[].type=bind).
+        type: bool
+        version_added: 4.8.0
+      read_only_force_recursive:
+        description:
+          - Raise an error if the mount cannot be made recursively read-only.
+          - Requires Docker API 1.44+.
+          - Only valid for O(mounts[].type=bind).
+        type: bool
+        version_added: 4.8.0
       labels:
         description:
           - User-defined name and labels for the volume. Only valid for the V(volume) type.
@@ -630,6 +662,13 @@ options:
           - Dictionary of options specific to the chosen volume_driver. See L(here,https://docs.docker.com/storage/volumes/#use-a-volume-driver)
             for details.
         type: dict
+      subpath:
+        type: str
+        description:
+          - Source path inside the volume/image. Must be relative without any back traversals.
+          - Requires Docker API 1.45+.
+          - Only valid for O(mounts[].type=volume) or O(mounts[].type=image).
+        version_added: 4.8.0
       tmpfs_size:
         description:
           - The size for the tmpfs mount in bytes in format <number>[<unit>].
@@ -641,6 +680,16 @@ options:
         description:
           - The permission mode for the tmpfs mount.
         type: str
+      tmpfs_options:
+        type: list
+        elements: dict
+        description:
+          - Options to be passed to the tmpfs mount.
+          - Every list element must be a dictionary with one key and a value.
+            All keys must be strings, and values can be either a string or V(null)/V(none) for a flag.
+          - Requires Docker API 1.46+.
+          - Only valid for O(mounts[].type=tmpfs).
+        version_added: 4.8.0
   name:
     description:
       - Assign a name to a new container or match an existing container.
