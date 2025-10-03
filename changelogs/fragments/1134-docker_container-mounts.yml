@@ -1,2 +1,0 @@
-minor_changes:
-  - "docker_container - support missing fields and new mount types in ``mounts`` (https://github.com/ansible-collections/community.docker/issues/1129, https://github.com/ansible-collections/community.docker/pull/1134)."

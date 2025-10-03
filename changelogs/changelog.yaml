@@ -2155,3 +2155,16 @@ releases:
       - 1110-push-fix.yml
       - 4.7.0.yml
     release_date: '2025-08-04'
+  4.8.0:
+    changes:
+      bugfixes:
+        - Avoid deprecated functionality in ansible-core 2.20 (https://github.com/ansible-collections/community.docker/pull/1117).
+      minor_changes:
+        - docker_container - support missing fields and new mount types in ``mounts``
+          (https://github.com/ansible-collections/community.docker/issues/1129, https://github.com/ansible-collections/community.docker/pull/1134).
+      release_summary: Bugfix and feature release.
+    fragments:
+      - 1117-deprecations.yml
+      - 1134-docker_container-mounts.yml
+      - 4.8.0.yml
+    release_date: '2025-10-03'
