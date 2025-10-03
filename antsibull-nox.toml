@@ -222,11 +222,14 @@ target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
 remote = [ "rhel/9.6" ]
 ansible_vars = { force_docker_sdk_for_python_dev = { type = "value", value = true, template_value = "sdk-dev-latest" } }
 
-# For some reason, Ubuntu 24.04 is *extremely* slower than RHEL 9.6
-# [[sessions.ansible_test_integration.groups.sessions]]
-# ansible_core = "devel"
-# target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
-# remote = [ "ubuntu/24.04" ]
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "devel"
+target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
+remote = [
+    "rhel/10.0",
+    # For some reason, Ubuntu 24.04 is *extremely* slower than RHEL 9.6
+    # "ubuntu/24.04",
+]
 
 ##################################################################################################
 
