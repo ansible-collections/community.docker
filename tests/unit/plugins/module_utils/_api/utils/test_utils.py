@@ -19,7 +19,7 @@ import tempfile
 import unittest
 import sys
 
-from ansible.module_utils.six import PY3
+from ansible_collections.community.docker.plugins.module_utils._six import PY3
 
 import pytest
 

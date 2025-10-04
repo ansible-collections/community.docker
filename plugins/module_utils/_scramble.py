@@ -9,7 +9,7 @@ import base64
 import random
 
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
-from ansible.module_utils.six import PY2
+from ansible_collections.community.docker.plugins.module_utils._six import PY2
 
 
 def generate_insecure_key():

@@ -15,7 +15,7 @@ from functools import partial
 
 from ansible.module_utils.common.text.converters import to_native, to_text
 from ansible.module_utils.common.text.formatters import human_to_bytes
-from ansible.module_utils.six import string_types
+from ansible_collections.community.docker.plugins.module_utils._six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
     clean_dict_booleans_for_docker_api,

@@ -11,7 +11,7 @@ import os
 import os.path
 import socket as pysocket
 
-from ansible.module_utils.six import PY2
+from ansible_collections.community.docker.plugins.module_utils._six import PY2
 
 
 def make_file_unblocking(file):

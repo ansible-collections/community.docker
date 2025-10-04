@@ -13,7 +13,7 @@ __metaclass__ = type
 from ._import_helper import HTTPError as _HTTPError
 
 from ansible.module_utils.common.text.converters import to_native
-from ansible.module_utils.six import raise_from
+from ansible_collections.community.docker.plugins.module_utils._six import raise_from
 
 
 class DockerException(Exception):

@@ -14,7 +14,7 @@ import errno
 import json
 import subprocess
 
-from ansible.module_utils.six import PY3, binary_type
+from ansible_collections.community.docker.plugins.module_utils._six import PY3, binary_type
 
 from . import constants
 from . import errors

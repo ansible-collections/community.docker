@@ -169,7 +169,7 @@ import shlex
 import traceback
 
 from ansible.module_utils.common.text.converters import to_text, to_native
-from ansible.module_utils.six import string_types
+from ansible_collections.community.docker.plugins.module_utils._six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.common_cli import (
     AnsibleModuleDockerClient,

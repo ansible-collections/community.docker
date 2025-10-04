@@ -16,7 +16,7 @@ import select
 import socket as pysocket
 import struct
 
-from ansible.module_utils.six import PY3, binary_type
+from ansible_collections.community.docker.plugins.module_utils._six import PY3, binary_type
 
 from ..transport.npipesocket import NpipeSocket
 

@@ -13,7 +13,7 @@ import shlex
 from ansible.module_utils.basic import AnsibleModule, env_fallback
 from ansible.module_utils.common.process import get_bin_path
 from ansible.module_utils.common.text.converters import to_native
-from ansible.module_utils.six import string_types
+from ansible_collections.community.docker.plugins.module_utils._six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 

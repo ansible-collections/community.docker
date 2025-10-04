@@ -14,7 +14,7 @@ import base64
 import json
 import logging
 
-from ansible.module_utils.six import iteritems, string_types
+from ansible_collections.community.docker.plugins.module_utils._six import iteritems, string_types
 
 from . import errors
 from .credentials.store import Store
