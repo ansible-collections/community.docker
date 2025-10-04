@@ -110,7 +110,6 @@ import os.path
 
 from ansible.errors import AnsibleFileNotFound, AnsibleConnectionFailure
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
-from ansible.module_utils.six import string_types
 from ansible.plugins.connection import ConnectionBase
 from ansible.utils.display import Display
 
@@ -244,7 +243,7 @@ class Connection(ConnectionBase):
             data['Env'] = []
             for k, v in self.get_option('extra_env').items():
                 for val, what in ((k, 'Key'), (v, 'Value')):
-                    if not isinstance(val, string_types):
+                    if not isinstance(val, (str, bytes)):
                         raise AnsibleConnectionFailure(
                             'Non-string {0} found for extra_env option. Ambiguous env options must be '
                             'wrapped in quotes to avoid them being interpreted. {1}: {2!r}'

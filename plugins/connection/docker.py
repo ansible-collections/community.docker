@@ -117,10 +117,9 @@ import os
 import os.path
 import subprocess
 import re
+from shlex import quote as shlex_quote
 
 from ansible.errors import AnsibleError, AnsibleFileNotFound, AnsibleConnectionFailure
-from ansible.module_utils.six.moves import shlex_quote
-from ansible.module_utils.six import string_types
 from ansible.module_utils.common.process import get_bin_path
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
 from ansible.plugins.connection import ConnectionBase, BUFSIZE
@@ -249,7 +248,7 @@ class Connection(ConnectionBase):
         if self.get_option('extra_env'):
             for k, v in self.get_option('extra_env').items():
                 for val, what in ((k, 'Key'), (v, 'Value')):
-                    if not isinstance(val, string_types):
+                    if not isinstance(val, (str, bytes)):
                         raise AnsibleConnectionFailure(
                             'Non-string {0} found for extra_env option. Ambiguous env options must be '
                             'wrapped in quotes to avoid them being interpreted. {1}: {2!r}'
