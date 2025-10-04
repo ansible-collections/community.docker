@@ -248,7 +248,7 @@ class Connection(ConnectionBase):
         if self.get_option('extra_env'):
             for k, v in self.get_option('extra_env').items():
                 for val, what in ((k, 'Key'), (v, 'Value')):
-                    if not isinstance(val, (str, bytes)):
+                    if not isinstance(val, str):
                         raise AnsibleConnectionFailure(
                             'Non-string {0} found for extra_env option. Ambiguous env options must be '
                             'wrapped in quotes to avoid them being interpreted. {1}: {2!r}'
