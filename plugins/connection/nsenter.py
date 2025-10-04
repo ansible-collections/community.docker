@@ -47,7 +47,6 @@ import fcntl
 
 import ansible.constants as C
 from ansible.errors import AnsibleError
-from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
 from ansible.plugins.connection import ConnectionBase
 from ansible.utils.display import Display
@@ -111,7 +110,7 @@ class Connection(ConnectionBase):
             "--",
         ]
 
-        if isinstance(cmd, (text_type, binary_type)):
+        if isinstance(cmd, (str, bytes)):
             cmd_parts = nsenter_cmd_parts + [cmd]
             cmd = to_bytes(" ".join(cmd_parts))
         else:
@@ -138,8 +137,8 @@ class Connection(ConnectionBase):
 
         p = subprocess.Popen(
             cmd,
-            shell=isinstance(cmd, (text_type, binary_type)),
-            executable=executable if isinstance(cmd, (text_type, binary_type)) else None,
+            shell=isinstance(cmd, (str, bytes)),
+            executable=executable if isinstance(cmd, (str, bytes)) else None,
             cwd=self.cwd,
             stdin=stdin,
             stdout=subprocess.PIPE,
