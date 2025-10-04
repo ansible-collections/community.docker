@@ -4,8 +4,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import absolute_import, division, print_function
-__metaclass__ = type
+from __future__ import annotations
 
 DOCUMENTATION = r"""
 module: docker_swarm_service
@@ -870,7 +869,6 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
 )
 
 from ansible.module_utils.basic import human_to_bytes
-from ansible_collections.community.docker.plugins.module_utils._six import string_types
 from ansible.module_utils.common.text.converters import to_text, to_native
 
 try:
@@ -904,11 +902,11 @@ def get_docker_environment(env, env_files):
             parsed_env_file = parse_env_file(env_file)
             for name, value in parsed_env_file.items():
                 env_dict[name] = str(value)
-    if env is not None and isinstance(env, string_types):
+    if env is not None and isinstance(env, str):
         env = env.split(',')
     if env is not None and isinstance(env, dict):
         for name, value in env.items():
-            if not isinstance(value, string_types):
+            if not isinstance(value, str):
                 raise ValueError(
                     'Non-string value found for env option. '
                     'Ambiguous env options must be wrapped in quotes to avoid YAML parsing. Key: %s' % name
@@ -943,7 +941,7 @@ def get_docker_networks(networks, network_ids):
         return None
     parsed_networks = []
     for network in networks:
-        if isinstance(network, string_types):
+        if isinstance(network, str):
             parsed_network = {'name': network}
         elif isinstance(network, dict):
             if 'name' not in network:
@@ -957,7 +955,7 @@ def get_docker_networks(networks, network_ids):
                 if not isinstance(aliases, list):
                     raise TypeError('"aliases" network option is only allowed as a list')
                 if not all(
-                    isinstance(alias, string_types) for alias in aliases
+                    isinstance(alias, str) for alias in aliases
                 ):
                     raise TypeError('Only strings are allowed as network aliases.')
                 parsed_network['aliases'] = aliases
@@ -991,7 +989,7 @@ def get_nanoseconds_from_raw_option(name, value):
         return None
     elif isinstance(value, int):
         return value
-    elif isinstance(value, string_types):
+    elif isinstance(value, str):
         try:
             return int(value)
         except ValueError:
@@ -1070,7 +1068,7 @@ def has_list_changed(new_list, old_list, sort_lists=True, sort_key=None):
     for new_item, old_item in zip_data:
         is_same_type = type(new_item) == type(old_item)  # noqa: E721, pylint: disable=unidiomatic-typecheck
         if not is_same_type:
-            if isinstance(new_item, string_types) and isinstance(old_item, string_types):
+            if isinstance(new_item, str) and isinstance(old_item, str):
                 # Even though the types are different between these items,
                 # they are both strings. Try matching on the same string type.
                 try:
@@ -1474,13 +1472,13 @@ class DockerService(DockerBaseClass):
         s.networks = get_docker_networks(ap['networks'], network_ids)
 
         s.command = ap['command']
-        if isinstance(s.command, string_types):
+        if isinstance(s.command, str):
             s.command = shlex.split(s.command)
         elif isinstance(s.command, list):
             invalid_items = [
                 (index, item)
                 for index, item in enumerate(s.command)
-                if not isinstance(item, string_types)
+                if not isinstance(item, str)
             ]
             if invalid_items:
                 errors = ', '.join(

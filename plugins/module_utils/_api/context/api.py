@@ -7,13 +7,10 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import json
 import os
-
-from ansible_collections.community.docker.plugins.module_utils._six import raise_from
 
 from .. import errors
 
@@ -148,9 +145,9 @@ class ContextAPI(object):
                             raise ValueError('"default" is a reserved context name')
                         names.append(name)
                     except Exception as e:
-                        raise_from(errors.ContextException(
+                        raise errors.ContextException(
                             "Failed to load metafile {filepath}: {e}".format(filepath=filepath, e=e),
-                        ), e)
+                        ) from e
 
         contexts = [cls.get_default_context()]
         for name in names:

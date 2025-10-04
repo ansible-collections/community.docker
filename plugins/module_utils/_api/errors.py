@@ -7,13 +7,11 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 from ._import_helper import HTTPError as _HTTPError
 
 from ansible.module_utils.common.text.converters import to_native
-from ansible_collections.community.docker.plugins.module_utils._six import raise_from
 
 
 class DockerException(Exception):
@@ -43,7 +41,7 @@ def create_api_error_from_http_exception(e):
             cls = ImageNotFound
         else:
             cls = NotFound
-    raise_from(cls(e, response=response, explanation=explanation), e)
+    raise cls(e, response=response, explanation=explanation) from e
 
 
 class APIError(_HTTPError, DockerException):

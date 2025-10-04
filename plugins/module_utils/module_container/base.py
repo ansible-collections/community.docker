@@ -3,8 +3,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import absolute_import, division, print_function
-__metaclass__ = type
+from __future__ import annotations
 
 import abc
 import os
@@ -15,7 +14,6 @@ from functools import partial
 
 from ansible.module_utils.common.text.converters import to_native, to_text
 from ansible.module_utils.common.text.formatters import human_to_bytes
-from ansible_collections.community.docker.plugins.module_utils._six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
     clean_dict_booleans_for_docker_api,
@@ -461,7 +459,7 @@ def _preprocess_env(module, values):
             final_env[name] = to_text(value, errors='surrogate_or_strict')
     if 'env' in values:
         for name, value in values['env'].items():
-            if not isinstance(value, string_types):
+            if not isinstance(value, str):
                 module.fail_json(msg='Non-string value found for env option. Ambiguous env options must be '
                                      'wrapped in quotes to avoid them being interpreted. Key: %s' % (name, ))
             final_env[name] = to_text(value, errors='surrogate_or_strict')
@@ -695,7 +693,7 @@ def _preprocess_log(module, values):
     if 'log_options' in values:
         options = {}
         for k, v in values['log_options'].items():
-            if not isinstance(v, string_types):
+            if not isinstance(v, str):
                 module.warn(
                     "Non-string value found for log_options option '%s'. The value is automatically converted to '%s'. "
                     "If this is not correct, or you want to avoid such warnings, please quote the value." % (
@@ -780,7 +778,7 @@ def _preprocess_ports(module, values):
         # Any published port should also be exposed
         for publish_port in values['published_ports']:
             match = False
-            if isinstance(publish_port, string_types) and '/' in publish_port:
+            if isinstance(publish_port, str) and '/' in publish_port:
                 port, protocol = publish_port.split('/')
                 port = int(port)
             else:
@@ -789,7 +787,7 @@ def _preprocess_ports(module, values):
             for exposed_port in exposed:
                 if exposed_port[1] != protocol:
                     continue
-                if isinstance(exposed_port[0], string_types) and '-' in exposed_port[0]:
+                if isinstance(exposed_port[0], str) and '-' in exposed_port[0]:
                     start_port, end_port = exposed_port[0].split('-')
                     if int(start_port) <= port <= int(end_port):
                         match = True

@@ -7,14 +7,11 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import base64
 import json
 import logging
-
-from ansible_collections.community.docker.plugins.module_utils._six import iteritems, string_types
 
 from . import errors
 from .credentials.store import Store
@@ -111,7 +108,7 @@ class AuthConfig(dict):
         """
 
         conf = {}
-        for registry, entry in iteritems(entries):
+        for registry, entry in entries.items():
             if not isinstance(entry, dict):
                 log.debug('Config entry for key %s is not auth config', registry)
                 # We sometimes fall back to parsing the whole config as if it
@@ -242,7 +239,7 @@ class AuthConfig(dict):
             log.debug("Found %s", repr(registry))
             return self.auths[registry]
 
-        for key, conf in iteritems(self.auths):
+        for key, conf in self.auths.items():
             if resolve_index_name(key) == registry:
                 log.debug("Found %s", repr(key))
                 return conf
@@ -326,7 +323,7 @@ def convert_to_hostname(url):
 
 
 def decode_auth(auth):
-    if isinstance(auth, string_types):
+    if isinstance(auth, str):
         auth = auth.encode('ascii')
     s = base64.b64decode(auth)
     login, pwd = s.split(b':', 1)

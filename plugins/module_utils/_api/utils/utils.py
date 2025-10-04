@@ -7,8 +7,7 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import base64
 import collections
@@ -19,8 +18,6 @@ import shlex
 import string
 from ansible_collections.community.docker.plugins.module_utils.version import StrictVersion
 
-from ansible_collections.community.docker.plugins.module_utils._six import PY2, PY3, binary_type, integer_types, iteritems, string_types, text_type
-
 from .. import errors
 from ..constants import DEFAULT_HTTP_HOST
 from ..constants import DEFAULT_UNIX_SOCKET
@@ -28,10 +25,7 @@ from ..constants import DEFAULT_NPIPE
 from ..constants import BYTE_UNITS
 from ..tls import TLSConfig
 
-if PY2:
-    from urlparse import urlparse, urlunparse
-else:
-    from urllib.parse import urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse
 
 
 URLComponents = collections.namedtuple(
@@ -55,9 +49,7 @@ def create_ipam_config(*args, **kwargs):
 
 
 def decode_json_header(header):
-    data = base64.b64decode(header)
-    if PY3:
-        data = data.decode('utf-8')
+    data = base64.b64decode(header).decode('utf-8')
     return json.loads(data)
 
 
@@ -97,7 +89,7 @@ def _convert_port_binding(binding):
         if len(binding) == 2:
             result['HostPort'] = binding[1]
             result['HostIp'] = binding[0]
-        elif isinstance(binding[0], string_types):
+        elif isinstance(binding[0], str):
             result['HostIp'] = binding[0]
         else:
             result['HostPort'] = binding[0]
@@ -121,7 +113,7 @@ def _convert_port_binding(binding):
 
 def convert_port_bindings(port_bindings):
     result = {}
-    for k, v in iteritems(port_bindings):
+    for k, v in port_bindings.items():
         key = str(k)
         if '/' not in key:
             key += '/tcp'
@@ -138,7 +130,7 @@ def convert_volume_binds(binds):
 
     result = []
     for k, v in binds.items():
-        if isinstance(k, binary_type):
+        if isinstance(k, bytes):
             k = k.decode('utf-8')
 
         if isinstance(v, dict):
@@ -149,7 +141,7 @@ def convert_volume_binds(binds):
                 )
 
             bind = v['bind']
-            if isinstance(bind, binary_type):
+            if isinstance(bind, bytes):
                 bind = bind.decode('utf-8')
 
             if 'ro' in v:
@@ -175,15 +167,11 @@ def convert_volume_binds(binds):
                 else:
                     mode = v['propagation']
 
-            result.append(
-                text_type('{0}:{1}:{2}').format(k, bind, mode)
-            )
+            result.append('{0}:{1}:{2}'.format(k, bind, mode))
         else:
-            if isinstance(v, binary_type):
+            if isinstance(v, bytes):
                 v = v.decode('utf-8')
-            result.append(
-                text_type('{0}:{1}:rw').format(k, v)
-            )
+            result.append('{0}:{1}:rw'.format(k, v))
     return result
 
 
@@ -199,7 +187,7 @@ def convert_tmpfs_mounts(tmpfs):
 
     result = {}
     for mount in tmpfs:
-        if isinstance(mount, string_types):
+        if isinstance(mount, str):
             if ":" in mount:
                 name, options = mount.split(":", 1)
             else:
@@ -224,7 +212,7 @@ def convert_service_networks(networks):
 
     result = []
     for n in networks:
-        if isinstance(n, string_types):
+        if isinstance(n, str):
             n = {'Target': n}
         result.append(n)
     return result
@@ -333,7 +321,7 @@ def parse_devices(devices):
         if isinstance(device, dict):
             device_list.append(device)
             continue
-        if not isinstance(device, string_types):
+        if not isinstance(device, str):
             raise errors.DockerException(
                 'Invalid device type {0}'.format(type(device))
             )
@@ -403,20 +391,20 @@ def kwargs_from_env(ssl_version=None, assert_hostname=None, environment=None):
 
 def convert_filters(filters):
     result = {}
-    for k, v in iteritems(filters):
+    for k, v in filters.items():
         if isinstance(v, bool):
             v = 'true' if v else 'false'
         if not isinstance(v, list):
             v = [v, ]
         result[k] = [
-            str(item) if not isinstance(item, string_types) else item
+            str(item) if not isinstance(item, str) else item
             for item in v
         ]
     return json.dumps(result)
 
 
 def parse_bytes(s):
-    if isinstance(s, integer_types + (float,)):
+    if isinstance(s, (int, float)):
         return s
     if len(s) == 0:
         return 0
@@ -458,7 +446,7 @@ def parse_bytes(s):
 
 def normalize_links(links):
     if isinstance(links, dict):
-        links = iteritems(links)
+        links = links.items()
 
     return ['{0}:{1}'.format(k, v) if v else k for k, v in sorted(links)]
 
@@ -493,8 +481,6 @@ def parse_env_file(env_file):
 
 
 def split_command(command):
-    if PY2 and not isinstance(command, binary_type):
-        command = command.encode('utf-8')
     return shlex.split(command)
 
 
@@ -502,22 +488,22 @@ def format_environment(environment):
     def format_env(key, value):
         if value is None:
             return key
-        if isinstance(value, binary_type):
+        if isinstance(value, bytes):
             value = value.decode('utf-8')
 
         return u'{key}={value}'.format(key=key, value=value)
-    return [format_env(*var) for var in iteritems(environment)]
+    return [format_env(*var) for var in environment.items()]
 
 
 def format_extra_hosts(extra_hosts, task=False):
     # Use format dictated by Swarm API if container is part of a task
     if task:
         return [
-            '{0} {1}'.format(v, k) for k, v in sorted(iteritems(extra_hosts))
+            '{0} {1}'.format(v, k) for k, v in sorted(extra_hosts.items())
         ]
 
     return [
-        '{0}:{1}'.format(k, v) for k, v in sorted(iteritems(extra_hosts))
+        '{0}:{1}'.format(k, v) for k, v in sorted(extra_hosts.items())
     ]
 
 

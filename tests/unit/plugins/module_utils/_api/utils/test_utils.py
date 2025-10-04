@@ -17,14 +17,8 @@ import os.path
 import shutil
 import tempfile
 import unittest
-import sys
-
-from ansible_collections.community.docker.plugins.module_utils._six import PY3
 
 import pytest
-
-if sys.version_info < (2, 7):
-    pytestmark = pytest.mark.skip('Python 2.6 is not supported')
 
 from ansible_collections.community.docker.plugins.module_utils._api.api.client import APIClient
 from ansible_collections.community.docker.plugins.module_utils._api.constants import IS_WINDOWS_PLATFORM
@@ -456,11 +450,7 @@ class UtilsTest(unittest.TestCase):
 
     def test_decode_json_header(self):
         obj = {'a': 'b', 'c': 1}
-        data = None
-        if PY3:
-            data = base64.urlsafe_b64encode(bytes(json.dumps(obj), 'utf-8'))
-        else:
-            data = base64.urlsafe_b64encode(json.dumps(obj))
+        data = base64.urlsafe_b64encode(bytes(json.dumps(obj), 'utf-8'))
         decoded_data = decode_json_header(data)
         assert obj == decoded_data
 
@@ -468,10 +458,6 @@ class UtilsTest(unittest.TestCase):
 class SplitCommandTest(unittest.TestCase):
     def test_split_command_with_unicode(self):
         assert split_command(u'echo μμ') == ['echo', 'μμ']
-
-    @pytest.mark.skipif(PY3, reason="shlex doesn't support bytes in py3")
-    def test_split_command_with_bytes(self):
-        assert split_command('echo μμ') == ['echo', 'μμ']
 
 
 class FormatEnvironmentTest(unittest.TestCase):

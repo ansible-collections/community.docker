@@ -5,8 +5,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import absolute_import, division, print_function
-__metaclass__ = type
+from __future__ import annotations
 
 
 DOCUMENTATION = r"""
@@ -121,7 +120,6 @@ volume:
 import traceback
 
 from ansible.module_utils.common.text.converters import to_native
-from ansible_collections.community.docker.plugins.module_utils._six import iteritems
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
@@ -150,7 +148,7 @@ class TaskParameters(DockerBaseClass):
         self.recreate = None
         self.debug = None
 
-        for key, value in iteritems(client.module.params):
+        for key, value in client.module.params.items():
             setattr(self, key, value)
 
 
@@ -211,7 +209,7 @@ class DockerVolumeManager(object):
                                 parameter=self.parameters.driver_options,
                                 active=self.existing_volume.get('Options'))
             else:
-                for key, value in iteritems(self.parameters.driver_options):
+                for key, value in self.parameters.driver_options.items():
                     if (not self.existing_volume['Options'].get(key) or
                             value != self.existing_volume['Options'][key]):
                         differences.add('driver_options.%s' % key,

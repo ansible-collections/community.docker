@@ -2,16 +2,13 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 
 import fcntl
 import os
 import os.path
 import socket as pysocket
-
-from ansible_collections.community.docker.plugins.module_utils._six import PY2
 
 
 def make_file_unblocking(file):
@@ -49,7 +46,7 @@ def shutdown_writing(sock, log=_empty_writer):
             # probably: "TypeError: shutdown() takes 1 positional argument but 2 were given"
             log('Shutting down for writing not possible; trying shutdown instead: {0}'.format(e))
             sock.shutdown()
-    elif not PY2 and isinstance(sock, getattr(pysocket, 'SocketIO')):
+    elif isinstance(sock, getattr(pysocket, 'SocketIO')):
         sock._sock.shutdown(pysocket.SHUT_WR)
     else:
         log('No idea how to signal end of writing')

@@ -7,14 +7,11 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import errno
 import json
 import subprocess
-
-from ansible_collections.community.docker.plugins.module_utils._six import PY3, binary_type
 
 from . import constants
 from . import errors
@@ -42,7 +39,7 @@ class Store(object):
         """ Retrieve credentials for `server`. If no credentials are found,
             a `StoreError` will be raised.
         """
-        if not isinstance(server, binary_type):
+        if not isinstance(server, bytes):
             server = server.encode('utf-8')
         data = self._execute('get', server)
         result = json.loads(data.decode('utf-8'))
@@ -73,7 +70,7 @@ class Store(object):
         """ Erase credentials for `server`. Raises a `StoreError` if an error
             occurs.
         """
-        if not isinstance(server, binary_type):
+        if not isinstance(server, bytes):
             server = server.encode('utf-8')
         self._execute('erase', server)
 
@@ -87,20 +84,9 @@ class Store(object):
         output = None
         env = create_environment_dict(self.environment)
         try:
-            if PY3:
-                output = subprocess.check_output(
-                    [self.exe, subcmd], input=data_input, env=env,
-                )
-            else:
-                process = subprocess.Popen(
-                    [self.exe, subcmd], stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE, env=env,
-                )
-                output, dummy = process.communicate(data_input)
-                if process.returncode != 0:
-                    raise subprocess.CalledProcessError(
-                        returncode=process.returncode, cmd='', output=output
-                    )
+            output = subprocess.check_output(
+                [self.exe, subcmd], input=data_input, env=env,
+            )
         except subprocess.CalledProcessError as e:
             raise errors.process_store_error(e, self.program)
         except OSError as e:
