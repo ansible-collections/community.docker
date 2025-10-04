@@ -177,7 +177,7 @@ import traceback
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.common.text.converters import to_native, to_text
-from ansible.module_utils.six import string_types
+from ansible_collections.community.docker.plugins.module_utils._six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils._api.context.api import (
     ContextAPI,

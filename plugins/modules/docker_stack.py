@@ -161,7 +161,7 @@ import os
 import tempfile
 import traceback
 
-from ansible.module_utils.six import string_types
+from ansible_collections.community.docker.plugins.module_utils._six import string_types
 from time import sleep
 
 from ansible.module_utils.common.text.converters import to_native

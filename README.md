@@ -160,5 +160,6 @@ This collection is primarily licensed and distributed as a whole under the GNU G
 See [LICENSES/GPL-3.0-or-later.txt](https://github.com/ansible-collections/community.docker/blob/main/COPYING) for the full text.
 
 Parts of the collection are licensed under the [Apache 2.0 license](https://github.com/ansible-collections/community.docker/blob/main/LICENSES/Apache-2.0.txt). This mostly applies to files vendored from the [Docker SDK for Python](https://github.com/docker/docker-py/).
+Also `plugins/module_utils/_six.py` is licensed under the [MIT license](https://github.com/ansible-collections/community.dns/blob/main/LICENSES/MIT.txt).
 
 All files have a machine readable `SDPX-License-Identifier:` comment denoting its respective license(s) or an equivalent entry in an accompanying `.license` file. Only changelog fragments (which will not be part of a release) are covered by a blanket statement in `REUSE.toml`. This conforms to the [REUSE specification](https://reuse.software/spec/).

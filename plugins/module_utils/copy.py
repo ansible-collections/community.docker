@@ -16,7 +16,7 @@ import stat
 import tarfile
 
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
-from ansible.module_utils.six import raise_from
+from ansible_collections.community.docker.plugins.module_utils._six import raise_from
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, NotFound
 

@@ -14,7 +14,7 @@ import json
 import os
 from shutil import copyfile, rmtree
 
-from ansible.module_utils.six import raise_from
+from ansible_collections.community.docker.plugins.module_utils._six import raise_from
 
 from ..errors import ContextException
 from ..tls import TLSConfig

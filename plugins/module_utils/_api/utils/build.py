@@ -17,7 +17,7 @@ import re
 import tarfile
 import tempfile
 
-from ansible.module_utils.six import PY3
+from ansible_collections.community.docker.plugins.module_utils._six import PY3
 
 from . import fnmatch
 from ..constants import IS_WINDOWS_PLATFORM, WINDOWS_LONGPATH_PREFIX

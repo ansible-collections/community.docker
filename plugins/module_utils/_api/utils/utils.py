@@ -19,7 +19,7 @@ import shlex
 import string
 from ansible_collections.community.docker.plugins.module_utils.version import StrictVersion
 
-from ansible.module_utils.six import PY2, PY3, binary_type, integer_types, iteritems, string_types, text_type
+from ansible_collections.community.docker.plugins.module_utils._six import PY2, PY3, binary_type, integer_types, iteritems, string_types, text_type
 
 from .. import errors
 from ..constants import DEFAULT_HTTP_HOST

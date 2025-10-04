@@ -13,7 +13,7 @@ __metaclass__ = type
 import json
 import os
 
-from ansible.module_utils.six import raise_from
+from ansible_collections.community.docker.plugins.module_utils._six import raise_from
 
 from .. import errors
 

@@ -17,7 +17,7 @@ from collections import namedtuple
 
 from ansible.module_utils.basic import missing_required_lib
 from ansible.module_utils.common.text.converters import to_native
-from ansible.module_utils.six import string_types
+from ansible_collections.community.docker.plugins.module_utils._six import string_types
 from ansible.module_utils.six.moves import shlex_quote
 
 from ansible_collections.community.docker.plugins.module_utils.util import DockerBaseClass

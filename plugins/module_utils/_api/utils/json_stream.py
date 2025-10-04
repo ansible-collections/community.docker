@@ -13,7 +13,7 @@ __metaclass__ = type
 import json
 import json.decoder
 
-from ansible.module_utils.six import text_type
+from ansible_collections.community.docker.plugins.module_utils._six import text_type
 
 from ..errors import StreamParseError
 

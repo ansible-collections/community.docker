@@ -13,7 +13,7 @@ __metaclass__ = type
 import os
 import sys
 
-from ansible.module_utils.six import PY2
+from ansible_collections.community.docker.plugins.module_utils._six import PY2
 
 if PY2:
     from distutils.spawn import find_executable as which

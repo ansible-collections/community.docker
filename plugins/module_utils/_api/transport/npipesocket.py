@@ -15,7 +15,7 @@ import io
 import time
 import traceback
 
-from ansible.module_utils.six import PY2
+from ansible_collections.community.docker.plugins.module_utils._six import PY2
 
 PYWIN32_IMPORT_ERROR = None
 try:
