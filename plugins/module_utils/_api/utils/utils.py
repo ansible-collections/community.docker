@@ -491,7 +491,7 @@ def format_environment(environment):
         if isinstance(value, bytes):
             value = value.decode('utf-8')
 
-        return u'{key}={value}'.format(key=key, value=value)
+        return '{key}={value}'.format(key=key, value=value)
     return [format_env(*var) for var in environment.items()]
 
 

@@ -186,8 +186,8 @@ class Connection(ConnectionBase):
         super(Connection, self)._connect()
         if not self._connected:
             self.actual_user = self.get_option('remote_user')
-            display.vvv(u"ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
-                self.actual_user or u'?'), host=self.get_option('remote_addr')
+            display.vvv("ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
+                self.actual_user or '?'), host=self.get_option('remote_addr')
             )
             if self.client is None:
                 self.client = AnsibleDockerClient(self, min_docker_api_version=MIN_DOCKER_API)
@@ -197,12 +197,12 @@ class Connection(ConnectionBase):
                 # Since we are not setting the actual_user, look it up so we have it for logging later
                 # Only do this if display verbosity is high enough that we'll need the value
                 # This saves overhead from calling into docker when we do not need to
-                display.vvv(u"Trying to determine actual user")
+                display.vvv("Trying to determine actual user")
                 result = self._call_client(lambda: self.client.get_json('/containers/{0}/json', self.get_option('remote_addr')))
                 if result.get('Config'):
                     self.actual_user = result['Config'].get('User')
                     if self.actual_user is not None:
-                        display.vvv(u"Actual user is '{0}'".format(self.actual_user))
+                        display.vvv("Actual user is '{0}'".format(self.actual_user))
 
     def exec_command(self, cmd, in_data=None, sudoable=False):
         """ Run a command on the docker host """
@@ -214,7 +214,7 @@ class Connection(ConnectionBase):
         do_become = self.become and self.become.expect_prompt() and sudoable
 
         display.vvv(
-            u"EXEC {0}{1}{2}".format(
+            "EXEC {0}{1}{2}".format(
                 to_text(command),
                 ', with stdin ({0} bytes)'.format(len(in_data)) if in_data is not None else '',
                 ', with become prompt' if do_become else '',
@@ -248,7 +248,7 @@ class Connection(ConnectionBase):
                             'wrapped in quotes to avoid them being interpreted. {1}: {2!r}'
                             .format(what.lower(), what, val)
                         )
-                data['Env'].append(u'{0}={1}'.format(to_text(k, errors='surrogate_or_strict'), to_text(v, errors='surrogate_or_strict')))
+                data['Env'].append('{0}={1}'.format(to_text(k, errors='surrogate_or_strict'), to_text(v, errors='surrogate_or_strict')))
 
         if self.get_option('working_dir') is not None:
             data['WorkingDir'] = self.get_option('working_dir')

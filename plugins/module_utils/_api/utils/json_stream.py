@@ -52,7 +52,7 @@ def json_stream(stream):
     return split_buffer(stream, json_splitter, json_decoder.decode)
 
 
-def line_splitter(buffer, separator=u'\n'):
+def line_splitter(buffer, separator='\n'):
     index = buffer.find(str(separator))
     if index == -1:
         return None

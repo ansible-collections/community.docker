@@ -76,7 +76,7 @@ class Connection(ConnectionBase):
 
         if not self._connected:
             display.vvv(
-                u"ESTABLISH NSENTER CONNECTION FOR USER: {0}".format(
+                "ESTABLISH NSENTER CONNECTION FOR USER: {0}".format(
                     self._play_context.remote_user
                 ),
                 host=self._play_context.remote_addr,
@@ -115,7 +115,7 @@ class Connection(ConnectionBase):
             cmd_parts = nsenter_cmd_parts + cmd
             cmd = [to_bytes(arg) for arg in cmd_parts]
 
-        display.vvv(u"EXEC {0}".format(to_text(cmd)), host=self._play_context.remote_addr)
+        display.vvv("EXEC {0}".format(to_text(cmd)), host=self._play_context.remote_addr)
         display.debug("opening command with Popen()")
 
         master = None
@@ -204,7 +204,7 @@ class Connection(ConnectionBase):
         in_path = unfrackpath(in_path, basedir=self.cwd)
         out_path = unfrackpath(out_path, basedir=self.cwd)
 
-        display.vvv(u"PUT {0} to {1}".format(in_path, out_path), host=self._play_context.remote_addr)
+        display.vvv("PUT {0} to {1}".format(in_path, out_path), host=self._play_context.remote_addr)
         try:
             with open(to_bytes(in_path, errors="surrogate_or_strict"), "rb") as in_file:
                 in_data = in_file.read()
@@ -222,7 +222,7 @@ class Connection(ConnectionBase):
 
         try:
             rc, out, err = self.exec_command(cmd=["cat", in_path])
-            display.vvv(u"FETCH {0} TO {1}".format(in_path, out_path), host=self._play_context.remote_addr)
+            display.vvv("FETCH {0} TO {1}".format(in_path, out_path), host=self._play_context.remote_addr)
             if rc != 0:
                 raise AnsibleError("failed to transfer file to {0}: {1}".format(in_path, err))
             with open(to_bytes(out_path, errors='surrogate_or_strict'), 'wb') as out_file:

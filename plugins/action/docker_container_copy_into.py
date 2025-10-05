@@ -28,11 +28,11 @@ class ActionModule(ActionBase):
 
         result = merge_hash(result, self._execute_module(task_vars=task_vars, wrap_async=self._task.async_val))
 
-        if u'diff' in result and result[u'diff'].get(u'scrambled_diff'):
+        if 'diff' in result and result['diff'].get('scrambled_diff'):
             # Scrambling is not done for security, but to avoid no_log screwing up the diff
-            diff = result[u'diff']
-            key = base64.b64decode(diff.pop(u'scrambled_diff'))
-            for k in (u'before', u'after'):
+            diff = result['diff']
+            key = base64.b64decode(diff.pop('scrambled_diff'))
+            for k in ('before', 'after'):
                 if k in diff:
                     diff[k] = unscramble(diff[k], key)
 

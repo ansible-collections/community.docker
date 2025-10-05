@@ -121,7 +121,7 @@ stack_spec_diff:
     definition.
   sample: >
     "stack_spec_diff":
-    {'test_stack_test_service': {u'TaskTemplate': {u'ContainerSpec': {delete: [u'Env']}}}}
+    {'test_stack_test_service': {'TaskTemplate': {'ContainerSpec': {delete: ['Env']}}}}
   returned: on change
   type: dict
 """

@@ -159,8 +159,8 @@ class DockerVolumeManager(object):
         self.parameters = TaskParameters(client)
         self.check_mode = self.client.check_mode
         self.results = {
-            u'changed': False,
-            u'actions': []
+            'changed': False,
+            'actions': []
         }
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()
@@ -185,10 +185,10 @@ class DockerVolumeManager(object):
         except APIError as e:
             self.client.fail(to_native(e))
 
-        if volumes[u'Volumes'] is None:
+        if volumes['Volumes'] is None:
             return None
 
-        for volume in volumes[u'Volumes']:
+        for volume in volumes['Volumes']:
             if volume['Name'] == self.parameters.volume_name:
                 return volume
 

@@ -166,8 +166,8 @@ class Connection(ConnectionBase):
 
     @staticmethod
     def _sanitize_version(version):
-        version = re.sub(u'[^0-9a-zA-Z.]', u'', version)
-        version = re.sub(u'^v', u'', version)
+        version = re.sub('[^0-9a-zA-Z.]', '', version)
+        version = re.sub('^v', '', version)
         return version
 
     def _old_docker_version(self):
@@ -196,8 +196,8 @@ class Connection(ConnectionBase):
 
         cmd, cmd_output, err, returncode = self._old_docker_version()
         if returncode == 0:
-            for line in to_text(cmd_output, errors='surrogate_or_strict').split(u'\n'):
-                if line.startswith(u'Server version:'):  # old docker versions
+            for line in to_text(cmd_output, errors='surrogate_or_strict').split('\n'):
+                if line.startswith('Server version:'):  # old docker versions
                     return self._sanitize_version(line.split()[2])
 
         cmd, cmd_output, err, returncode = self._new_docker_version()
@@ -218,12 +218,12 @@ class Connection(ConnectionBase):
         out = to_text(out, errors='surrogate_or_strict')
 
         if p.returncode != 0:
-            display.warning(u'unable to retrieve default user from docker container: %s %s' % (out, to_text(err)))
+            display.warning('unable to retrieve default user from docker container: %s %s' % (out, to_text(err)))
             self._container_user_cache[container] = None
             return None
 
         # The default exec user is root, unless it was changed in the Dockerfile with USER
-        user = out.strip() or u'root'
+        user = out.strip() or 'root'
         self._container_user_cache[container] = user
         return user
 
@@ -257,7 +257,7 @@ class Connection(ConnectionBase):
 
         if self.get_option('working_dir') is not None:
             local_cmd += [b'-w', to_bytes(self.get_option('working_dir'), errors='surrogate_or_strict')]
-            if self.docker_version != u'dev' and LooseVersion(self.docker_version) < LooseVersion(u'18.06'):
+            if self.docker_version != 'dev' and LooseVersion(self.docker_version) < LooseVersion('18.06'):
                 # https://github.com/docker/cli/pull/732, first appeared in release 18.06.0
                 raise AnsibleConnectionFailure(
                     'Providing the working directory requires Docker CLI version 18.06 or newer. You have Docker CLI version {0}.'
@@ -302,24 +302,24 @@ class Connection(ConnectionBase):
             self._set_docker_args()
 
             self._version = self._get_docker_version()
-            if self._version == u'dev':
-                display.warning(u'Docker version number is "dev". Will assume latest version.')
-            if self._version != u'dev' and LooseVersion(self._version) < LooseVersion(u'1.3'):
+            if self._version == 'dev':
+                display.warning('Docker version number is "dev". Will assume latest version.')
+            if self._version != 'dev' and LooseVersion(self._version) < LooseVersion('1.3'):
                 raise AnsibleError('docker connection type requires docker 1.3 or higher')
         return self._version
 
     def _get_actual_user(self):
         if self.remote_user is not None:
             # An explicit user is provided
-            if self.docker_version == u'dev' or LooseVersion(self.docker_version) >= LooseVersion(u'1.7'):
+            if self.docker_version == 'dev' or LooseVersion(self.docker_version) >= LooseVersion('1.7'):
                 # Support for specifying the exec user was added in docker 1.7
                 return self.remote_user
             else:
                 self.remote_user = None
                 actual_user = self._get_docker_remote_user()
                 if actual_user != self.get_option('remote_user'):
-                    display.warning(u'docker {0} does not support remote_user, using container default: {1}'
-                                    .format(self.docker_version, self.actual_user or u'?'))
+                    display.warning('docker {0} does not support remote_user, using container default: {1}'
+                                    .format(self.docker_version, self.actual_user or '?'))
                 return actual_user
         elif self._display.verbosity > 2:
             # Since we are not setting the actual_user, look it up so we have it for logging later
@@ -335,8 +335,8 @@ class Connection(ConnectionBase):
         if not self._connected:
             self._set_conn_data()
             actual_user = self._get_actual_user()
-            display.vvv(u"ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
-                actual_user or u'?'), host=self.get_option('remote_addr')
+            display.vvv("ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
+                actual_user or '?'), host=self.get_option('remote_addr')
             )
             self._connected = True
 
@@ -349,7 +349,7 @@ class Connection(ConnectionBase):
 
         local_cmd = self._build_exec_cmd([self._play_context.executable, '-c', cmd])
 
-        display.vvv(u"EXEC {0}".format(to_text(local_cmd)), host=self.get_option('remote_addr'))
+        display.vvv("EXEC {0}".format(to_text(local_cmd)), host=self.get_option('remote_addr'))
         display.debug("opening command with Popen()")
 
         local_cmd = [to_bytes(i, errors='surrogate_or_strict') for i in local_cmd]

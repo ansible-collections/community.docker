@@ -207,7 +207,7 @@ def test_has_list_changed(docker_swarm_service):
     )
     assert docker_swarm_service.has_list_changed(
         ['sleep', '3400'],
-        [u'sleep', u'3600'],
+        ['sleep', '3600'],
         sort_lists=False
     )
 

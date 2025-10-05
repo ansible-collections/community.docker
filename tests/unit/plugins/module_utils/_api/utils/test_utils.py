@@ -176,23 +176,23 @@ class ConverVolumeBindsTest(unittest.TestCase):
         assert convert_volume_binds(data) == ['/mnt/vol1:/data:rw']
 
     def test_convert_volume_binds_unicode_bytes_input(self):
-        expected = [u'/mnt/지연:/unicode/박:rw']
+        expected = ['/mnt/지연:/unicode/박:rw']
 
         data = {
-            u'/mnt/지연'.encode('utf-8'): {
-                'bind': u'/unicode/박'.encode('utf-8'),
-                'mode': u'rw'
+            '/mnt/지연'.encode('utf-8'): {
+                'bind': '/unicode/박'.encode('utf-8'),
+                'mode': 'rw'
             }
         }
         assert convert_volume_binds(data) == expected
 
     def test_convert_volume_binds_unicode_unicode_input(self):
-        expected = [u'/mnt/지연:/unicode/박:rw']
+        expected = ['/mnt/지연:/unicode/박:rw']
 
         data = {
-            u'/mnt/지연': {
-                'bind': u'/unicode/박',
-                'mode': u'rw'
+            '/mnt/지연': {
+                'bind': '/unicode/박',
+                'mode': 'rw'
             }
         }
         assert convert_volume_binds(data) == expected
@@ -457,7 +457,7 @@ class UtilsTest(unittest.TestCase):
 
 class SplitCommandTest(unittest.TestCase):
     def test_split_command_with_unicode(self):
-        assert split_command(u'echo μμ') == ['echo', 'μμ']
+        assert split_command('echo μμ') == ['echo', 'μμ']
 
 
 class FormatEnvironmentTest(unittest.TestCase):
@@ -465,7 +465,7 @@ class FormatEnvironmentTest(unittest.TestCase):
         env_dict = {
             'ARTIST_NAME': b'\xec\x86\xa1\xec\xa7\x80\xec\x9d\x80'
         }
-        assert format_environment(env_dict) == [u'ARTIST_NAME=송지은']
+        assert format_environment(env_dict) == ['ARTIST_NAME=송지은']
 
     def test_format_env_no_value(self):
         env_dict = {

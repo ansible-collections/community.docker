@@ -93,9 +93,9 @@ def log_debug(msg, pretty_print=False):
     with open('docker.log', 'a') as log_file:
         if pretty_print:
             log_file.write(json.dumps(msg, sort_keys=True, indent=4, separators=(',', ': ')))
-            log_file.write(u'\n')
+            log_file.write('\n')
         else:
-            log_file.write(msg + u'\n')
+            log_file.write(f"{msg}\n")
 
 
 class DockerBaseClass(object):

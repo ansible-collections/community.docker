@@ -389,8 +389,8 @@ class DockerNetworkManager(object):
         self.parameters = TaskParameters(client)
         self.check_mode = self.client.check_mode
         self.results = {
-            u'changed': False,
-            u'actions': []
+            'changed': False,
+            'actions': []
         }
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()

@@ -33,12 +33,12 @@ class TestStreamAsText:
     def test_stream_with_non_utf_unicode_character(self):
         stream = [b'\xed\xf3\xf3']
         output, = stream_as_text(stream)
-        assert output == u'���'
+        assert output == '���'
 
     def test_stream_with_utf_character(self):
-        stream = [u'ěĝ'.encode('utf-8')]
+        stream = ['ěĝ'.encode('utf-8')]
         output, = stream_as_text(stream)
-        assert output == u'ěĝ'
+        assert output == 'ěĝ'
 
 
 class TestJsonStream:

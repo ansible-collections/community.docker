@@ -55,15 +55,15 @@ class APIClient(
         >>> import docker
         >>> client = docker.APIClient(base_url='unix://var/run/docker.sock')
         >>> client.version()
-        {u'ApiVersion': u'1.33',
-         u'Arch': u'amd64',
-         u'BuildTime': u'2017-11-19T18:46:37.000000000+00:00',
-         u'GitCommit': u'f4ffd2511c',
-         u'GoVersion': u'go1.9.2',
-         u'KernelVersion': u'4.14.3-1-ARCH',
-         u'MinAPIVersion': u'1.12',
-         u'Os': u'linux',
-         u'Version': u'17.10.0-ce'}
+        {'ApiVersion': '1.33',
+         'Arch': 'amd64',
+         'BuildTime': '2017-11-19T18:46:37.000000000+00:00',
+         'GitCommit': 'f4ffd2511c',
+         'GoVersion': 'go1.9.2',
+         'KernelVersion': '4.14.3-1-ARCH',
+         'MinAPIVersion': '1.12',
+         'Os': 'linux',
+         'Version': '17.10.0-ce'}
 
     Args:
         base_url (str): URL to the Docker server. For example,
