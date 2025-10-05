@@ -12,8 +12,7 @@ from datetime import timedelta
 
 from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.common.collections import is_sequence
-from ansible_collections.community.docker.plugins.module_utils._six import string_types
-from ansible.module_utils.six.moves.urllib.parse import urlparse
+from ansible_collections.community.docker.plugins.module_utils._six import string_types, urlparse
 from ansible.module_utils.common.text.converters import to_text
 
 
