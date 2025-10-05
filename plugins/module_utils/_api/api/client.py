@@ -15,8 +15,7 @@ import logging
 import struct
 from functools import partial
 
-from ansible_collections.community.docker.plugins.module_utils._six import PY3, binary_type, iteritems, string_types, raise_from
-from ansible.module_utils.six.moves.urllib.parse import quote
+from ansible_collections.community.docker.plugins.module_utils._six import PY3, binary_type, iteritems, string_types, raise_from, quote
 
 from .. import auth
 from .._import_helper import fail_on_missing_imports

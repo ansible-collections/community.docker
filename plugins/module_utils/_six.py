@@ -47,6 +47,11 @@ if PY3:
 
     def iteritems(d):
         return d.items()
+
+    from shlex import quote as shlex_quote  # pylint: disable=unused-import
+    from collections.abc import Mapping, Sequence  # pylint: disable=unused-import
+    from queue import Empty  # pylint: disable=unused-import
+    from urllib.parse import quote, urlparse  # pylint: disable=unused-import
 else:
     string_types = (basestring,)  # noqa: F821, pylint: disable=undefined-variable
     integer_types = (int, long)  # noqa: F821, pylint: disable=undefined-variable
@@ -56,6 +61,11 @@ else:
     def iteritems(d):
         return d.iteritems()
 
+    from pipes import quote as shlex_quote
+    from collections import Mapping, Sequence
+    from Queue import Empty
+    from urllib import quote
+    from urlparse import urlparse
 
 if PY3:
     import builtins as _builtins

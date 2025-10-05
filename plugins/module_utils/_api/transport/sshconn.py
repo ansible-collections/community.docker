@@ -17,9 +17,7 @@ import socket
 import subprocess
 import traceback
 
-from ansible_collections.community.docker.plugins.module_utils._six import PY3
-from ansible.module_utils.six.moves.queue import Empty
-from ansible.module_utils.six.moves.urllib_parse import urlparse
+from ansible_collections.community.docker.plugins.module_utils._six import PY3, Empty, urlparse
 
 from .basehttpadapter import BaseHTTPAdapter
 from .. import constants
