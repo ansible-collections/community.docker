@@ -7,8 +7,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 # Docker Community Collection
 
 [![Documentation](https://img.shields.io/badge/docs-brightgreen.svg)](https://docs.ansible.com/ansible/devel/collections/community/docker/)
-[![Build Status](https://dev.azure.com/ansible/community.docker/_apis/build/status/CI?branchName=main)](https://dev.azure.com/ansible/community.docker/_build?definitionId=25)
-[![Nox CI](https://github.com/ansible-collections/community.docker/actions/workflows/nox.yml/badge.svg?branch=main)](https://github.com/ansible-collections/community.docker/actions)
+[![Build Status](https://dev.azure.com/ansible/community.docker/_apis/build/status/CI?branchName=stable-4)](https://dev.azure.com/ansible/community.docker/_build?definitionId=25)
+[![Nox CI](https://github.com/ansible-collections/community.docker/actions/workflows/nox.yml/badge.svg?branch=stable-4)](https://github.com/ansible-collections/community.docker/actions)
 [![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/community.docker)](https://codecov.io/gh/ansible-collections/community.docker)
 [![REUSE status](https://api.reuse.software/badge/github.com/ansible-collections/community.docker)](https://api.reuse.software/info/github.com/ansible-collections/community.docker)
 
@@ -60,7 +60,7 @@ Browsing the [**latest** collection documentation](https://docs.ansible.com/ansi
 
 Browsing the [**devel** collection documentation](https://docs.ansible.com/ansible/devel/collections/community/docker) shows docs for the _latest version released on Galaxy_.
 
-We also separately publish [**latest commit** collection documentation](https://ansible-collections.github.io/community.docker/branch/main/) which shows docs for the _latest commit in the `main` branch_.
+We also separately publish [**latest commit** collection documentation](https://ansible-collections.github.io/community.docker/branch/stable-4/) which shows docs for the _latest commit in the `stable-4` branch_.
 
 If you use the Ansible package and do not update collections independently, use **latest**. If you install or update this collection directly from Galaxy, use **devel**. If you are looking to contribute, use **latest commit**.
 
@@ -141,7 +141,7 @@ You can find more information in the [developer guide for collections](https://d
 
 ## Release notes
 
-See the [changelog](https://github.com/ansible-collections/community.docker/tree/main/CHANGELOG.md).
+See the [changelog](https://github.com/ansible-collections/community.docker/tree/stable-4/CHANGELOG.md).
 
 ## More information
 
@@ -157,9 +157,9 @@ See the [changelog](https://github.com/ansible-collections/community.docker/tree
 
 This collection is primarily licensed and distributed as a whole under the GNU General Public License v3.0 or later.
 
-See [LICENSES/GPL-3.0-or-later.txt](https://github.com/ansible-collections/community.docker/blob/main/COPYING) for the full text.
+See [LICENSES/GPL-3.0-or-later.txt](https://github.com/ansible-collections/community.docker/blob/stable-4/COPYING) for the full text.
 
-Parts of the collection are licensed under the [Apache 2.0 license](https://github.com/ansible-collections/community.docker/blob/main/LICENSES/Apache-2.0.txt). This mostly applies to files vendored from the [Docker SDK for Python](https://github.com/docker/docker-py/).
-Also `plugins/module_utils/_six.py` is licensed under the [MIT license](https://github.com/ansible-collections/community.dns/blob/main/LICENSES/MIT.txt).
+Parts of the collection are licensed under the [Apache 2.0 license](https://github.com/ansible-collections/community.docker/blob/stable-4/LICENSES/Apache-2.0.txt). This mostly applies to files vendored from the [Docker SDK for Python](https://github.com/docker/docker-py/).
+Also `plugins/module_utils/_six.py` is licensed under the [MIT license](https://github.com/ansible-collections/community.dns/blob/stable-4/LICENSES/MIT.txt).
 
 All files have a machine readable `SDPX-License-Identifier:` comment denoting its respective license(s) or an equivalent entry in an accompanying `.license` file. Only changelog fragments (which will not be part of a release) are covered by a blanket statement in `REUSE.toml`. This conforms to the [REUSE specification](https://reuse.software/spec/).
