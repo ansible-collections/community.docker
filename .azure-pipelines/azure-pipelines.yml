@@ -29,6 +29,7 @@ schedules:
     always: true
     branches:
       include:
+        - stable-4
         - stable-3
 
 variables:
