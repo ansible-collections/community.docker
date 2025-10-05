@@ -2168,3 +2168,22 @@ releases:
       - 1134-docker_container-mounts.yml
       - 4.8.0.yml
     release_date: '2025-10-03'
+  4.8.1:
+    changes:
+      bugfixes:
+        - Avoid remaining usages of deprecated ``ansible.module_utils.six`` (https://github.com/ansible-collections/community.docker/pull/1133).
+        - Avoid usage of deprecated ``ansible.module_utils.six`` in all code that
+          does not have to support Python 2 (https://github.com/ansible-collections/community.docker/pull/1137,
+          https://github.com/ansible-collections/community.docker/pull/1139).
+        - Avoid usage of deprecated ``ansible.module_utils.six`` in some of the code
+          that still supports Python 2 (https://github.com/ansible-collections/community.docker/pull/1138).
+      minor_changes:
+        - Note that some new code in ``plugins/module_utils/_six.py`` is MIT licensed
+          (https://github.com/ansible-collections/community.docker/pull/1138).
+      release_summary: Maintenance release.
+    fragments:
+      - 1137-six.yml
+      - 1138-six.yml
+      - 1139-six.yml
+      - 4.8.1.yml
+    release_date: '2025-10-05'

@@ -1,2 +1,0 @@
-bugfixes:
-  - "Avoid remaining usages of deprecated ``ansible.module_utils.six`` (https://github.com/ansible-collections/community.docker/pull/1133)."
