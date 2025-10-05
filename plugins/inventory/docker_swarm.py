@@ -4,9 +4,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import (absolute_import, division, print_function)
-
-__metaclass__ = type
+from __future__ import annotations
 
 DOCUMENTATION = r"""
 name: docker_swarm
@@ -14,7 +12,6 @@ author:
   - Stefan Heitmüller (@morph027) <stefan.heitmueller@gmx.com>
 short_description: Ansible dynamic inventory plugin for Docker swarm nodes
 requirements:
-  - python >= 2.7
   - L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0
 extends_documentation_fragment:
   - ansible.builtin.constructed

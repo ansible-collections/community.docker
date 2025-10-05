@@ -7,8 +7,7 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import io
 import os
@@ -16,8 +15,6 @@ import random
 import re
 import tarfile
 import tempfile
-
-from ansible_collections.community.docker.plugins.module_utils._six import PY3
 
 from . import fnmatch
 from ..constants import IS_WINDOWS_PLATFORM, WINDOWS_LONGPATH_PREFIX
@@ -131,13 +128,7 @@ def mkbuildcontext(dockerfile):
     f = tempfile.NamedTemporaryFile()
     t = tarfile.open(mode='w', fileobj=f)
     if isinstance(dockerfile, io.StringIO):
-        dfinfo = tarfile.TarInfo('Dockerfile')
-        if PY3:
-            raise TypeError('Please use io.BytesIO to create in-memory '
-                            'Dockerfiles with Python 3')
-        else:
-            dfinfo.size = len(dockerfile.getvalue())
-            dockerfile.seek(0)
+        raise TypeError('Please use io.BytesIO to create in-memory Dockerfiles')
     elif isinstance(dockerfile, io.BytesIO):
         dfinfo = tarfile.TarInfo('Dockerfile')
         dfinfo.size = len(dockerfile.getvalue())
@@ -225,8 +216,7 @@ class PatternMatcher(object):
                             break
                     if skip:
                         continue
-                for sub in rec_walk(cur):
-                    yield sub
+                yield from rec_walk(cur)
 
         return rec_walk(root)
 

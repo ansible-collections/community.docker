@@ -2,8 +2,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 
 import abc
@@ -13,7 +12,6 @@ import shlex
 from ansible.module_utils.basic import AnsibleModule, env_fallback
 from ansible.module_utils.common.process import get_bin_path
 from ansible.module_utils.common.text.converters import to_native
-from ansible_collections.community.docker.plugins.module_utils._six import string_types
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
@@ -86,7 +84,7 @@ class AnsibleDockerClientBase(object):
         self._info = None
 
         if needs_api_version:
-            if not isinstance(self._version.get('Server'), dict) or not isinstance(self._version['Server'].get('ApiVersion'), string_types):
+            if not isinstance(self._version.get('Server'), dict) or not isinstance(self._version['Server'].get('ApiVersion'), str):
                 self.fail('Cannot determine Docker Daemon information. Are you maybe using podman instead of docker?')
             self.docker_api_version_str = to_native(self._version['Server']['ApiVersion'])
             self.docker_api_version = LooseVersion(self.docker_api_version_str)
@@ -118,9 +116,7 @@ class AnsibleDockerClientBase(object):
         return ' '.join(shlex.quote(a) for a in self._compose_cmd(args))
 
     @abc.abstractmethod
-    # def call_cli(self, *args, check_rc=False, data=None, cwd=None, environ_update=None):
-    def call_cli(self, *args, **kwargs):
-        # Python 2.7 does not like anything than '**kwargs' after '*args', so we have to do this manually...
+    def call_cli(self, *args, check_rc=False, data=None, cwd=None, environ_update=None):
         pass
 
     # def call_cli_json(self, *args, check_rc=False, data=None, cwd=None, environ_update=None, warn_on_stderr=False):
@@ -320,16 +316,7 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
             common_args, min_docker_api_version=min_docker_api_version, needs_api_version=needs_api_version,
         )
 
-    # def call_cli(self, *args, check_rc=False, data=None, cwd=None, environ_update=None):
-    def call_cli(self, *args, **kwargs):
-        # Python 2.7 does not like anything than '**kwargs' after '*args', so we have to do this manually...
-        check_rc = kwargs.pop('check_rc', False)
-        data = kwargs.pop('data', None)
-        cwd = kwargs.pop('cwd', None)
-        environ_update = kwargs.pop('environ_update', None)
-        if kwargs:
-            raise TypeError("call_cli() got an unexpected keyword argument '%s'" % list(kwargs)[0])
-
+    def call_cli(self, *args, check_rc=False, data=None, cwd=None, environ_update=None):
         environment = self._environment.copy()
         if environ_update:
             environment.update(environ_update)

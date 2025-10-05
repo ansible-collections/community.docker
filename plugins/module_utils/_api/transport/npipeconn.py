@@ -7,10 +7,9 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
-from ansible_collections.community.docker.plugins.module_utils._six import Empty
+from queue import Empty
 
 from .. import constants
 from .._import_helper import HTTPAdapter, urllib3, urllib3_connection

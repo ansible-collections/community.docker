@@ -2,8 +2,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 
 import abc
@@ -12,9 +11,9 @@ import platform
 import re
 import sys
 import traceback
+from collections.abc import Mapping, Sequence
 
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
-from ansible_collections.community.docker.plugins.module_utils._six import Mapping, Sequence, string_types
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE, BOOLEANS_FALSE
 
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
@@ -209,10 +208,8 @@ class AnsibleDockerClientBase(Client):
                       "state." % (platform.node(), sys.executable))
 
         if not HAS_DOCKER_PY:
-            msg = missing_required_lib("Docker SDK for Python: docker>=5.0.0 (Python >= 3.6) or "
-                                       "docker<5.0.0 (Python 2.7)")
-            msg = msg + ", for example via `pip install docker` (Python >= 3.6) or " \
-                + "`pip install docker==4.4.4` (Python 2.7). The error was: %s"
+            msg = missing_required_lib("Docker SDK for Python: docker>=5.0.0")
+            msg = msg + ", for example via `pip install docker`. The error was: %s"
             self.fail(msg % HAS_DOCKER_ERROR, exception=HAS_DOCKER_TRACEBACK)
 
         if self.docker_py_version < LooseVersion(min_docker_version):
@@ -695,5 +692,5 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
         if isinstance(result, Sequence):
             for warning in result:
                 self.module.warn('Docker warning: {0}'.format(warning))
-        elif isinstance(result, string_types) and result:
+        elif isinstance(result, str) and result:
             self.module.warn('Docker warning: {0}'.format(result))

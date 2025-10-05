@@ -7,13 +7,10 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import json
 import json.decoder
-
-from ansible_collections.community.docker.plugins.module_utils._six import text_type
 
 from ..errors import StreamParseError
 
@@ -29,7 +26,7 @@ def stream_as_text(stream):
     instead of byte streams.
     """
     for data in stream:
-        if not isinstance(data, text_type):
+        if not isinstance(data, str):
             data = data.decode('utf-8', 'replace')
         yield data
 
@@ -56,7 +53,7 @@ def json_stream(stream):
 
 
 def line_splitter(buffer, separator=u'\n'):
-    index = buffer.find(text_type(separator))
+    index = buffer.find(str(separator))
     if index == -1:
         return None
     return buffer[:index + 1], buffer[index + 1:]
@@ -70,7 +67,7 @@ def split_buffer(stream, splitter=None, decoder=lambda a: a):
     of the input.
     """
     splitter = splitter or line_splitter
-    buffered = text_type('')
+    buffered = ''
 
     for data in stream_as_text(stream):
         buffered += data

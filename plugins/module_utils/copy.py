@@ -2,8 +2,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import base64
 import datetime
@@ -16,7 +15,6 @@ import stat
 import tarfile
 
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
-from ansible_collections.community.docker.plugins.module_utils._six import raise_from
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, NotFound
 
@@ -126,12 +124,7 @@ def _regular_content_tar_generator(content, out_file, user_id, group_id, mode, u
     tarinfo.uid = user_id
     tarinfo.gid = group_id
     tarinfo.size = len(content)
-    try:
-        tarinfo.mtime = int(datetime.datetime.now().timestamp())
-    except AttributeError:
-        # Python 2 (or more precisely: Python < 3.3) has no timestamp(). Use the following
-        # expression for Python 2:
-        tarinfo.mtime = int((datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)).total_seconds())
+    tarinfo.mtime = int(datetime.datetime.now().timestamp())
     tarinfo.type = tarfile.REGTYPE
     tarinfo.linkname = ''
     if user_name:
@@ -346,9 +339,9 @@ def fetch_file(client, container, in_path, out_path, follow_links=False, log=Non
         if not follow_links and os.path.exists(b_out_path):
             os.unlink(b_out_path)
 
-        in_f = tar.extractfile(member)  # in Python 2, this *cannot* be used in `with`...
-        with open(b_out_path, 'wb') as out_f:
-            shutil.copyfileobj(in_f, out_f)
+        with tar.extractfile(member) as in_f:
+            with open(b_out_path, 'wb') as out_f:
+                shutil.copyfileobj(in_f, out_f)
         return in_path
 
     def process_symlink(in_path, member):
@@ -385,16 +378,10 @@ def _execute_command(client, container, command, log=None, check_rc=False):
     try:
         exec_data = client.post_json_to_json('/containers/{0}/exec', container, data=data)
     except NotFound as e:
-        raise_from(
-            DockerFileCopyError('Could not find container "{container}"'.format(container=container)),
-            e,
-        )
+        raise DockerFileCopyError('Could not find container "{container}"'.format(container=container)) from e
     except APIError as e:
         if e.response is not None and e.response.status_code == 409:
-            raise_from(
-                DockerFileCopyError('Cannot execute command in paused container "{container}"'.format(container=container)),
-                e,
-            )
+            raise DockerFileCopyError('Cannot execute command in paused container "{container}"'.format(container=container)) from e
         raise
     exec_id = exec_data['Id']
 

@@ -2,8 +2,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import json
 import os
@@ -31,18 +30,7 @@ class ImageArchiveManifestSummary(object):
 
 
 class ImageArchiveInvalidException(Exception):
-    def __init__(self, message, cause):
-        '''
-        :param message: Exception message
-        :type message: str
-        :param cause: Inner exception that this exception wraps
-        :type cause: Exception | None
-        '''
-
-        super(ImageArchiveInvalidException, self).__init__(message)
-
-        # Python 2 does not support causes
-        self.cause = cause
+    pass
 
 
 def api_image_id(archive_image_id):
@@ -84,26 +72,19 @@ def load_archived_image_manifest(archive_path):
         if not os.path.isfile(archive_path):
             return None
 
-        tf = tarfile.open(archive_path, 'r')
-        try:
+        with tarfile.open(archive_path, 'r') as tf:
             try:
-                ef = tf.extractfile('manifest.json')
                 try:
-                    text = ef.read().decode('utf-8')
-                    manifest = json.loads(text)
+                    with tf.extractfile('manifest.json') as ef:
+                        manifest = json.load(ef)
                 except Exception as exc:
                     raise ImageArchiveInvalidException(
-                        "Failed to decode and deserialize manifest.json: %s" % to_native(exc),
-                        exc
-                    )
-                finally:
-                    # In Python 2.6, this does not have __exit__
-                    ef.close()
+                        "Failed to decode and deserialize manifest.json: %s" % to_native(exc)
+                    ) from exc
 
                 if len(manifest) == 0:
                     raise ImageArchiveInvalidException(
-                        "Expected to have at least one entry in manifest.json but found none",
-                        None
+                        "Expected to have at least one entry in manifest.json but found none"
                     )
 
                 result = []
@@ -112,9 +93,8 @@ def load_archived_image_manifest(archive_path):
                         config_file = meta['Config']
                     except KeyError as exc:
                         raise ImageArchiveInvalidException(
-                            "Failed to get Config entry from {0}th manifest in manifest.json: {1}".format(index + 1, to_native(exc)),
-                            exc
-                        )
+                            "Failed to get Config entry from {0}th manifest in manifest.json: {1}".format(index + 1, to_native(exc))
+                        ) from exc
 
                     # Extracts hash without 'sha256:' prefix
                     try:
@@ -122,9 +102,8 @@ def load_archived_image_manifest(archive_path):
                         image_id = os.path.splitext(config_file)[0]
                     except Exception as exc:
                         raise ImageArchiveInvalidException(
-                            "Failed to extract image id from config file name %s: %s" % (config_file, to_native(exc)),
-                            exc
-                        )
+                            "Failed to extract image id from config file name %s: %s" % (config_file, to_native(exc))
+                        ) from exc
 
                     for prefix in (
                         'blobs/sha256/',  # Moby 25.0.0, Docker API 1.44
@@ -136,9 +115,8 @@ def load_archived_image_manifest(archive_path):
                         repo_tags = meta['RepoTags']
                     except KeyError as exc:
                         raise ImageArchiveInvalidException(
-                            "Failed to get RepoTags entry from {0}th manifest in manifest.json: {1}".format(index + 1, to_native(exc)),
-                            exc
-                        )
+                            "Failed to get RepoTags entry from {0}th manifest in manifest.json: {1}".format(index + 1, to_native(exc))
+                        ) from exc
 
                     result.append(ImageArchiveManifestSummary(
                         image_id=image_id,
@@ -150,18 +128,13 @@ def load_archived_image_manifest(archive_path):
                 raise
             except Exception as exc:
                 raise ImageArchiveInvalidException(
-                    "Failed to extract manifest.json from tar file %s: %s" % (archive_path, to_native(exc)),
-                    exc
-                )
-
-        finally:
-            # In Python 2.6, TarFile does not have __exit__
-            tf.close()
+                    "Failed to extract manifest.json from tar file %s: %s" % (archive_path, to_native(exc))
+                ) from exc
 
     except ImageArchiveInvalidException:
         raise
     except Exception as exc:
-        raise ImageArchiveInvalidException("Failed to open tar file %s: %s" % (archive_path, to_native(exc)), exc)
+        raise ImageArchiveInvalidException("Failed to open tar file %s: %s" % (archive_path, to_native(exc))) from exc
 
 
 def archived_image_manifest(archive_path):
@@ -189,6 +162,5 @@ def archived_image_manifest(archive_path):
     if len(results) == 1:
         return results[0]
     raise ImageArchiveInvalidException(
-        "Expected to have one entry in manifest.json but found %s" % len(results),
-        None
+        "Expected to have one entry in manifest.json but found %s" % len(results)
     )

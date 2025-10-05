@@ -3,8 +3,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 
 import json
@@ -14,10 +13,10 @@ import shutil
 import tempfile
 import traceback
 from collections import namedtuple
+from shlex import quote
 
 from ansible.module_utils.basic import missing_required_lib
 from ansible.module_utils.common.text.converters import to_native
-from ansible_collections.community.docker.plugins.module_utils._six import shlex_quote, string_types
 
 from ansible_collections.community.docker.plugins.module_utils.util import DockerBaseClass
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
@@ -461,7 +460,7 @@ def parse_json_events(stderr, warn_function=None):
             elif text in DOCKER_PULL_PROGRESS_DONE or line_data.get('text') in DOCKER_PULL_PROGRESS_WORKING:
                 resource_type = ResourceType.IMAGE_LAYER
                 status, text = text, status
-            elif status is None and isinstance(text, string_types) and text.startswith('Skipped - '):
+            elif status is None and isinstance(text, str) and text.startswith('Skipped - '):
                 status, text = text.split(' - ', 1)
             elif line_data.get('level') in _JSON_LEVEL_TO_STATUS_MAP and 'msg' in line_data:
                 status = _JSON_LEVEL_TO_STATUS_MAP[line_data['level']]
@@ -629,7 +628,7 @@ def update_failed(result, events, args, stdout, stderr, rc, cli):
         errors.append('Return code {code} is non-zero'.format(code=rc))
     result['failed'] = True
     result['msg'] = '\n'.join(errors)
-    result['cmd'] = ' '.join(shlex_quote(arg) for arg in [cli] + args)
+    result['cmd'] = ' '.join(quote(arg) for arg in [cli] + args)
     result['stdout'] = to_native(stdout)
     result['stderr'] = to_native(stderr)
     result['rc'] = rc

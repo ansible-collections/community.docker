@@ -62,7 +62,7 @@ def test_archived_image_manifest_raises_when_file_not_a_tar():
         archived_image_manifest(__file__)
         raise AssertionError()
     except ImageArchiveInvalidException as e:
-        assert isinstance(e.cause, tarfile.ReadError)
+        assert isinstance(e.__cause__, tarfile.ReadError)
         assert str(__file__) in str(e)
 
 
@@ -73,8 +73,8 @@ def test_archived_image_manifest_raises_when_tar_missing_manifest(tar_file_name)
         archived_image_manifest(tar_file_name)
         raise AssertionError()
     except ImageArchiveInvalidException as e:
-        assert isinstance(e.cause, KeyError)
-        assert 'manifest.json' in str(e.cause)
+        assert isinstance(e.__cause__, KeyError)
+        assert 'manifest.json' in str(e.__cause__)
 
 
 def test_archived_image_manifest_raises_when_manifest_missing_id(tar_file_name):
@@ -90,5 +90,5 @@ def test_archived_image_manifest_raises_when_manifest_missing_id(tar_file_name):
         archived_image_manifest(tar_file_name)
         raise AssertionError()
     except ImageArchiveInvalidException as e:
-        assert isinstance(e.cause, KeyError)
-        assert 'Config' in str(e.cause)
+        assert isinstance(e.__cause__, KeyError)
+        assert 'Config' in str(e.__cause__)

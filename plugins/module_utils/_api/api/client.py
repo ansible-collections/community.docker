@@ -7,15 +7,13 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
+from __future__ import annotations
 
 import json
 import logging
 import struct
 from functools import partial
-
-from ansible_collections.community.docker.plugins.module_utils._six import PY3, binary_type, iteritems, string_types, raise_from, quote
+from urllib.parse import quote
 
 from .. import auth
 from .._import_helper import fail_on_missing_imports
@@ -183,11 +181,11 @@ class APIClient(
             self.base_url = base_url
 
         # version detection needs to be after unix adapter mounting
-        if version is None or (isinstance(version, string_types) and version.lower() == 'auto'):
+        if version is None or (isinstance(version, str) and version.lower() == 'auto'):
             self._version = self._retrieve_server_version()
         else:
             self._version = version
-        if not isinstance(self._version, string_types):
+        if not isinstance(self._version, str):
             raise DockerException(
                 'Version parameter must be a string or None. Found {0}'.format(
                     type(version).__name__
@@ -247,7 +245,7 @@ class APIClient(
 
     def _url(self, pathfmt, *args, **kwargs):
         for arg in args:
-            if not isinstance(arg, string_types):
+            if not isinstance(arg, str):
                 raise ValueError(
                     'Expected a string but found {0} ({1}) '
                     'instead'.format(arg, type(arg))
@@ -268,7 +266,7 @@ class APIClient(
         try:
             response.raise_for_status()
         except _HTTPError as e:
-            raise_from(create_api_error_from_http_exception(e), e)
+            create_api_error_from_http_exception(e)
 
     def _result(self, response, json=False, binary=False):
         if json and binary:
@@ -286,7 +284,7 @@ class APIClient(
         # so we do this disgusting thing here.
         data2 = {}
         if data is not None and isinstance(data, dict):
-            for k, v in iteritems(data):
+            for k, v in data.items():
                 if v is not None:
                     data2[k] = v
         elif data is not None:
@@ -310,12 +308,10 @@ class APIClient(
             sock = response.raw._fp.fp.raw.sock
         elif self.base_url.startswith('http+docker://ssh'):
             sock = response.raw._fp.fp.channel
-        elif PY3:
+        else:
             sock = response.raw._fp.fp.raw
             if self.base_url.startswith("https://"):
                 sock = sock._sock
-        else:
-            sock = response.raw._fp.fp._sock
         try:
             # Keep a reference to the response to stop it being garbage
             # collected. If the response is garbage collected, it will
@@ -333,8 +329,7 @@ class APIClient(
 
         if response.raw._fp.chunked:
             if decode:
-                for chunk in json_stream.json_stream(self._stream_helper(response, False)):
-                    yield chunk
+                yield from json_stream.json_stream(self._stream_helper(response, False))
             else:
                 reader = response.raw
                 while not reader.closed:
@@ -396,8 +391,7 @@ class APIClient(
         socket = self._get_raw_response_socket(response)
         self._disable_socket_timeout(socket)
 
-        for out in response.iter_content(chunk_size, decode):
-            yield out
+        yield from response.iter_content(chunk_size, decode)
 
     def _read_from_socket(self, response, stream, tty=True, demux=False):
         """Consume all data from the socket, close the response and return the
@@ -468,7 +462,7 @@ class APIClient(
                 self._result(res, binary=True)
 
         self._raise_for_status(res)
-        sep = binary_type()
+        sep = b''
         if stream:
             return self._multiplexed_response_stream_helper(res)
         else:

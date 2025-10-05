@@ -13,8 +13,7 @@ from ansible_collections.community.docker.plugins.module_utils.copy import (
 
 
 def _simple_generator(sequence):
-    for elt in sequence:
-        yield elt
+    yield from sequence
 
 
 @pytest.mark.parametrize('chunks, read_sizes', [
