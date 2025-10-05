@@ -323,7 +323,8 @@ def dict_to_list(dictionary, concat='='):
 def _quote_csv(input):
     if input.strip() == input and all(i not in input for i in '",\r\n'):
         return input
-    return '"{0}"'.format(input.replace('"', '""'))
+    input = input.replace('"', '""')
+    return f'"{input}"'
 
 
 class ImageBuilder(DockerBaseClass):
@@ -349,33 +350,29 @@ class ImageBuilder(DockerBaseClass):
 
         buildx = self.client.get_client_plugin_info('buildx')
         if buildx is None:
-            self.fail('Docker CLI {0} does not have the buildx plugin installed'.format(self.client.get_cli()))
+            self.fail(f'Docker CLI {self.client.get_cli()} does not have the buildx plugin installed')
         buildx_version = buildx['Version'].lstrip('v')
 
         if self.secrets:
             for secret in self.secrets:
                 if secret['type'] in ('env', 'value'):
                     if LooseVersion(buildx_version) < LooseVersion('0.6.0'):
-                        self.fail('The Docker buildx plugin has version {version}, but 0.6.0 is needed for secrets of type=env and type=value'.format(
-                            version=buildx_version,
-                        ))
+                        self.fail(f'The Docker buildx plugin has version {buildx_version}, but 0.6.0 is needed for secrets of type=env and type=value')
         if self.outputs and len(self.outputs) > 1:
             if LooseVersion(buildx_version) < LooseVersion('0.13.0'):
-                self.fail('The Docker buildx plugin has version {version}, but 0.13.0 is needed to specify more than one output'.format(
-                    version=buildx_version,
-                ))
+                self.fail(f'The Docker buildx plugin has version {buildx_version}, but 0.13.0 is needed to specify more than one output')
 
         self.path = parameters['path']
         if not os.path.isdir(self.path):
-            self.fail('"{0}" is not an existing directory'.format(self.path))
+            self.fail(f'"{self.path}" is not an existing directory')
         self.dockerfile = parameters['dockerfile']
         if self.dockerfile and not os.path.isfile(os.path.join(self.path, self.dockerfile)):
-            self.fail('"{0}" is not an existing file'.format(os.path.join(self.path, self.dockerfile)))
+            self.fail(f'"{os.path.join(self.path, self.dockerfile)}" is not an existing file')
 
         self.name = parameters['name']
         self.tag = parameters['tag']
         if not is_valid_tag(self.tag, allow_empty=True):
-            self.fail('"{0}" is not a valid docker tag'.format(self.tag))
+            self.fail(f'"{self.tag}" is not a valid docker tag')
         if is_image_name_id(self.name):
             self.fail('Image name must not be a digest')
 
@@ -406,11 +403,8 @@ class ImageBuilder(DockerBaseClass):
                 })
                 if LooseVersion(buildx_version) < LooseVersion('0.13.0'):
                     self.fail(
-                        "The output does not include an image with name {name_tag}, and the Docker"
-                        " buildx plugin has version {version} which only supports one output.".format(
-                            name_tag=name_tag,
-                            version=buildx_version,
-                        ),
+                        f"The output does not include an image with name {name_tag}, and the Docker"
+                        f" buildx plugin has version {buildx_version} which only supports one output."
                     )
 
     def fail(self, msg, **kwargs):
@@ -450,41 +444,47 @@ class ImageBuilder(DockerBaseClass):
         if self.secrets:
             random_prefix = None
             for index, secret in enumerate(self.secrets):
+                sid = secret['id']
                 if secret['type'] == 'file':
-                    args.extend(['--secret', 'id={id},type=file,src={src}'.format(id=secret['id'], src=secret['src'])])
+                    src = secret['src']
+                    args.extend(['--secret', f'id={sid},type=file,src={src}'])
                 if secret['type'] == 'env':
-                    args.extend(['--secret', 'id={id},type=env,env={env}'.format(id=secret['id'], env=secret['src'])])
+                    env = secret['src']
+                    args.extend(['--secret', f'id={sid},type=env,env={env}'])
                 if secret['type'] == 'value':
                     # We pass values on using environment variables. The user has been warned in the documentation
                     # that they should only use this mechanism when being comfortable with it.
                     if random_prefix is None:
                         # Use /dev/urandom to generate some entropy to make the environment variable's name unguessable
                         random_prefix = base64.b64encode(os.urandom(16)).decode('utf-8').replace('=', '')
-                    env_name = 'ANSIBLE_DOCKER_COMPOSE_ENV_SECRET_{random}_{id}'.format(
-                        random=random_prefix,
-                        id=index,
-                    )
+                    env_name = f'ANSIBLE_DOCKER_COMPOSE_ENV_SECRET_{random_prefix}_{index}'
                     environ_update[env_name] = secret['value']
-                    args.extend(['--secret', 'id={id},type=env,env={env}'.format(id=secret['id'], env=env_name)])
+                    args.extend(['--secret', f'id={sid},type=env,env={env_name}'])
         if self.outputs:
             for output in self.outputs:
                 subargs = []
                 if output['type'] == 'local':
-                    subargs.extend(['type=local', 'dest={dest}'.format(dest=output['dest'])])
+                    dest = output['dest']
+                    subargs.extend(['type=local', f'dest={dest}'])
                 if output['type'] == 'tar':
-                    subargs.extend(['type=tar', 'dest={dest}'.format(dest=output['dest'])])
+                    dest = output['dest']
+                    subargs.extend(['type=tar', f'dest={dest}'])
                 if output['type'] == 'oci':
-                    subargs.extend(['type=oci', 'dest={dest}'.format(dest=output['dest'])])
+                    dest = output['dest']
+                    subargs.extend(['type=oci', f'dest={dest}'])
                 if output['type'] == 'docker':
                     subargs.append('type=docker')
+                    dest = output['dest']
                     if output['dest'] is not None:
-                        subargs.append('dest={dest}'.format(dest=output['dest']))
+                        subargs.append(f'dest={dest}')
                     if output['context'] is not None:
-                        subargs.append('context={context}'.format(context=output['context']))
+                        context = output['context']
+                        subargs.append(f'context={context}')
                 if output['type'] == 'image':
                     subargs.append('type=image')
                     if output['name'] is not None:
-                        subargs.append('name={name}'.format(name=','.join(output['name'])))
+                        name = ','.join(output['name'])
+                        subargs.append(f'name={name}')
                     if output['push']:
                         subargs.append('push=true')
                 if subargs:
@@ -590,7 +590,7 @@ def main():
         results = ImageBuilder(client).build_image()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

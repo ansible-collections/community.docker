@@ -88,8 +88,6 @@ nodes:
 
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common import (
     RequestException,
 )
@@ -149,10 +147,10 @@ def main():
             nodes=nodes,
         )
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}',
             exception=traceback.format_exc())
 
 

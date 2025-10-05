@@ -74,7 +74,7 @@ def fake_resp(method, url, *args, **kwargs):
     elif (url, method) in fake_api.fake_responses:
         key = (url, method)
     if not key:
-        raise Exception('{method} {url}'.format(method=method, url=url))
+        raise Exception(f'{method} {url}')
     status_code, content = fake_api.fake_responses[key]()
     return response(status_code=status_code, content=content)
 
@@ -102,10 +102,8 @@ def fake_read_from_socket(self, response, stream, tty=False, demux=False):
     return b""
 
 
-url_base = '{prefix}/'.format(prefix=fake_api.prefix)
-url_prefix = '{0}v{1}/'.format(
-    url_base,
-    DEFAULT_DOCKER_API_VERSION)
+url_base = f'{fake_api.prefix}/'
+url_prefix = f'{url_base}v{DEFAULT_DOCKER_API_VERSION}/'
 
 
 class BaseAPIClientTest(unittest.TestCase):
@@ -147,22 +145,18 @@ class DockerApiTest(BaseAPIClientTest):
 
     def test_url_valid_resource(self):
         url = self.client._url('/hello/{0}/world', 'somename')
-        assert url == '{0}{1}'.format(url_prefix, 'hello/somename/world')
+        assert url == f'{url_prefix}hello/somename/world'
 
         url = self.client._url(
             '/hello/{0}/world/{1}', 'somename', 'someothername'
         )
-        assert url == '{0}{1}'.format(
-            url_prefix, 'hello/somename/world/someothername'
-        )
+        assert url == f'{url_prefix}hello/somename/world/someothername'
 
         url = self.client._url('/hello/{0}/world', 'some?name')
-        assert url == '{0}{1}'.format(url_prefix, 'hello/some%3Fname/world')
+        assert url == f'{url_prefix}hello/some%3Fname/world'
 
         url = self.client._url("/images/{0}/push", "localhost:5000/image")
-        assert url == '{0}{1}'.format(
-            url_prefix, 'images/localhost:5000/image/push'
-        )
+        assert url == f'{url_prefix}images/localhost:5000/image/push'
 
     def test_url_invalid_resource(self):
         with pytest.raises(ValueError):
@@ -170,13 +164,13 @@ class DockerApiTest(BaseAPIClientTest):
 
     def test_url_no_resource(self):
         url = self.client._url('/simple')
-        assert url == '{0}{1}'.format(url_prefix, 'simple')
+        assert url == f'{url_prefix}simple'
 
     def test_url_unversioned_api(self):
         url = self.client._url(
             '/hello/{0}/world', 'somename', versioned_api=False
         )
-        assert url == '{0}{1}'.format(url_base, 'hello/somename/world')
+        assert url == f'{url_base}hello/somename/world'
 
     def test_version(self):
         self.client.version()
@@ -463,8 +457,7 @@ class TCPSocketStreamTest(unittest.TestCase):
         cls.thread = threading.Thread(target=cls.server.serve_forever)
         cls.thread.daemon = True
         cls.thread.start()
-        cls.address = 'http://{0}:{1}'.format(
-            socket.gethostname(), cls.server.server_address[1])
+        cls.address = f'http://{socket.gethostname()}:{cls.server.server_address[1]}'
 
     @classmethod
     def teardown_class(cls):
@@ -503,7 +496,7 @@ class TCPSocketStreamTest(unittest.TestCase):
                     data += stderr_data
                     return data
                 else:
-                    raise Exception('Unknown path {path}'.format(path=path))
+                    raise Exception(f'Unknown path {path}')
 
             @staticmethod
             def frame_header(stream, data):

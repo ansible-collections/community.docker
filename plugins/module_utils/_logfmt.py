@@ -98,7 +98,7 @@ class _Parser(object):
             try:
                 v += _HEX_DICT[self.line[self.index]]
             except KeyError:
-                raise InvalidLogFmt('Invalid unicode escape digit {digit!r}'.format(digit=self.line[self.index]))
+                raise InvalidLogFmt(f'Invalid unicode escape digit {self.line[self.index]!r}')
         self.index += 6
         return chr(v)
 
@@ -170,7 +170,8 @@ def parse_line(line, logrus_mode=False):
             if cur in _ESCAPE_DICT:
                 value.append(_ESCAPE_DICT[cur])
             elif cur != 'u':
-                raise InvalidLogFmt('Unknown escape sequence {seq!r}'.format(seq='\\' + cur))
+                es = f"\\{cur}"
+                raise InvalidLogFmt(f'Unknown escape sequence {es!r}')
             else:
                 parser.prev()
                 value.append(parser.parse_unicode_sequence())

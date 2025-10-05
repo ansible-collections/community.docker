@@ -59,17 +59,13 @@ class APIError(_HTTPError, DockerException):
         message = super(APIError, self).__str__()
 
         if self.is_client_error():
-            message = '{0} Client Error for {1}: {2}'.format(
-                self.response.status_code, self.response.url,
-                self.response.reason)
+            message = f'{self.response.status_code} Client Error for {self.response.url}: {self.response.reason}'
 
         elif self.is_server_error():
-            message = '{0} Server Error for {1}: {2}'.format(
-                self.response.status_code, self.response.url,
-                self.response.reason)
+            message = f'{self.response.status_code} Server Error for {self.response.url}: {self.response.reason}'
 
         if self.explanation:
-            message = '{0} ("{1}")'.format(message, self.explanation)
+            message = f'{message} ("{self.explanation}")'
 
         return message
 
@@ -146,9 +142,8 @@ class ContainerError(DockerException):
         self.image = image
         self.stderr = stderr
 
-        err = ": {0}".format(stderr) if stderr is not None else ""
-        msg = ("Command '{0}' in image '{1}' returned non-zero exit "
-               "status {2}{3}").format(command, image, exit_status, err)
+        err = f": {stderr}" if stderr is not None else ""
+        msg = f"Command '{command}' in image '{image}' returned non-zero exit status {exit_status}{err}"
 
         super(ContainerError, self).__init__(msg)
 
@@ -170,8 +165,8 @@ class ImageLoadError(DockerException):
 
 
 def create_unexpected_kwargs_error(name, kwargs):
-    quoted_kwargs = ["'{0}'".format(k) for k in sorted(kwargs)]
-    text = ["{0}() ".format(name)]
+    quoted_kwargs = [f"'{k}'" for k in sorted(kwargs)]
+    text = [f"{name}() "]
     if len(quoted_kwargs) == 1:
         text.append("got an unexpected keyword argument ")
     else:
@@ -185,7 +180,7 @@ class MissingContextParameter(DockerException):
         self.param = param
 
     def __str__(self):
-        return ("missing parameter: {0}".format(self.param))
+        return f"missing parameter: {self.param}"
 
 
 class ContextAlreadyExists(DockerException):
@@ -193,7 +188,7 @@ class ContextAlreadyExists(DockerException):
         self.name = name
 
     def __str__(self):
-        return ("context {0} already exists".format(self.name))
+        return f"context {self.name} already exists"
 
 
 class ContextException(DockerException):
@@ -209,7 +204,7 @@ class ContextNotFound(DockerException):
         self.name = name
 
     def __str__(self):
-        return ("context '{0}' not found".format(self.name))
+        return f"context '{self.name}' not found"
 
 
 class MissingRequirementException(DockerException):

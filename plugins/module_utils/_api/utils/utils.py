@@ -136,8 +136,7 @@ def convert_volume_binds(binds):
         if isinstance(v, dict):
             if 'ro' in v and 'mode' in v:
                 raise ValueError(
-                    'Binding cannot contain both "ro" and "mode": {0}'
-                    .format(repr(v))
+                    f'Binding cannot contain both "ro" and "mode": {v!r}'
                 )
 
             bind = v['bind']
@@ -167,11 +166,11 @@ def convert_volume_binds(binds):
                 else:
                     mode = v['propagation']
 
-            result.append('{0}:{1}:{2}'.format(k, bind, mode))
+            result.append(f'{k}:{bind}:{mode}')
         else:
             if isinstance(v, bytes):
                 v = v.decode('utf-8')
-            result.append('{0}:{1}:rw'.format(k, v))
+            result.append(f'{k}:{v}:rw')
     return result
 
 
@@ -181,8 +180,7 @@ def convert_tmpfs_mounts(tmpfs):
 
     if not isinstance(tmpfs, list):
         raise ValueError(
-            'Expected tmpfs value to be either a list or a dict, found: {0}'
-            .format(type(tmpfs).__name__)
+            f'Expected tmpfs value to be either a list or a dict, found: {type(tmpfs).__name__}'
         )
 
     result = {}
@@ -196,8 +194,7 @@ def convert_tmpfs_mounts(tmpfs):
 
         else:
             raise ValueError(
-                "Expected item in tmpfs list to be a string, found: {0}"
-                .format(type(mount).__name__)
+                f"Expected item in tmpfs list to be a string, found: {type(mount).__name__}"
             )
 
         result[name] = options
@@ -257,14 +254,14 @@ def parse_host(addr, is_win32=False, tls=False):
 
     if proto not in ('tcp', 'unix', 'npipe', 'ssh'):
         raise errors.DockerException(
-            "Invalid bind address protocol: {0}".format(addr)
+            f"Invalid bind address protocol: {addr}"
         )
 
     if proto == 'tcp' and not parsed_url.netloc:
         # "tcp://" is exceptionally disallowed by convention;
         # omitting a hostname for other protocols is fine
         raise errors.DockerException(
-            'Invalid bind address format: {0}'.format(addr)
+            f'Invalid bind address format: {addr}'
         )
 
     if any([
@@ -272,13 +269,12 @@ def parse_host(addr, is_win32=False, tls=False):
         parsed_url.password
     ]):
         raise errors.DockerException(
-            'Invalid bind address format: {0}'.format(addr)
+            f'Invalid bind address format: {addr}'
         )
 
     if parsed_url.path and proto == 'ssh':
         raise errors.DockerException(
-            'Invalid bind address format: no path allowed for this protocol:'
-            ' {0}'.format(addr)
+            f'Invalid bind address format: no path allowed for this protocol: {addr}'
         )
     else:
         path = parsed_url.path
@@ -292,19 +288,19 @@ def parse_host(addr, is_win32=False, tls=False):
         port = parsed_url.port or 0
         if port <= 0:
             port = 22 if proto == 'ssh' else (2375 if tls else 2376)
-            netloc = '{0}:{1}'.format(parsed_url.netloc, port)
+            netloc = f'{parsed_url.netloc}:{port}'
 
         if not parsed_url.hostname:
-            netloc = '{0}:{1}'.format(DEFAULT_HTTP_HOST, port)
+            netloc = f'{DEFAULT_HTTP_HOST}:{port}'
 
     # Rewrite schemes to fit library internals (requests adapters)
     if proto == 'tcp':
-        proto = 'http{0}'.format('s' if tls else '')
+        proto = f"http{'s' if tls else ''}"
     elif proto == 'unix':
         proto = 'http+unix'
 
     if proto in ('http+unix', 'npipe'):
-        return "{0}://{1}".format(proto, path).rstrip('/')
+        return f"{proto}://{path}".rstrip('/')
     return urlunparse(URLComponents(
         scheme=proto,
         netloc=netloc,
@@ -323,7 +319,7 @@ def parse_devices(devices):
             continue
         if not isinstance(device, str):
             raise errors.DockerException(
-                'Invalid device type {0}'.format(type(device))
+                f'Invalid device type {type(device)}'
             )
         device_mapping = device.split(':')
         if device_mapping:
@@ -428,17 +424,14 @@ def parse_bytes(s):
             digits = float(digits_part)
         except ValueError:
             raise errors.DockerException(
-                'Failed converting the string value for memory ({0}) to'
-                ' an integer.'.format(digits_part)
+                f'Failed converting the string value for memory ({digits_part}) to an integer.'
             )
 
         # Reconvert to long for the final result
         s = int(digits * units[suffix])
     else:
         raise errors.DockerException(
-            'The specified value for memory ({0}) should specify the'
-            ' units. The postfix should be one of the `b` `k` `m` `g`'
-            ' characters'.format(s)
+            f'The specified value for memory ({s}) should specify the units. The postfix should be one of the `b` `k` `m` `g` characters'
         )
 
     return s
@@ -448,7 +441,7 @@ def normalize_links(links):
     if isinstance(links, dict):
         links = links.items()
 
-    return ['{0}:{1}'.format(k, v) if v else k for k, v in sorted(links)]
+    return [f'{k}:{v}' if v else k for k, v in sorted(links)]
 
 
 def parse_env_file(env_file):
@@ -473,9 +466,7 @@ def parse_env_file(env_file):
                 k, v = parse_line
                 environment[k] = v
             else:
-                raise errors.DockerException(
-                    'Invalid line in environment file {0}:\n{1}'.format(
-                        env_file, line))
+                raise errors.DockerException(f'Invalid line in environment file {env_file}:\n{line}')
 
     return environment
 
@@ -491,7 +482,7 @@ def format_environment(environment):
         if isinstance(value, bytes):
             value = value.decode('utf-8')
 
-        return '{key}={value}'.format(key=key, value=value)
+        return f'{key}={value}'
     return [format_env(*var) for var in environment.items()]
 
 
@@ -499,11 +490,11 @@ def format_extra_hosts(extra_hosts, task=False):
     # Use format dictated by Swarm API if container is part of a task
     if task:
         return [
-            '{0} {1}'.format(v, k) for k, v in sorted(extra_hosts.items())
+            f'{v} {k}' for k, v in sorted(extra_hosts.items())
         ]
 
     return [
-        '{0}:{1}'.format(k, v) for k, v in sorted(extra_hosts.items())
+        f'{k}:{v}' for k, v in sorted(extra_hosts.items())
     ]
 
 

@@ -125,12 +125,9 @@ def _get_tls_config(fail_function, **kwargs):
         if assert_hostname is not None:
             fail_function(
                 "tls_hostname is not compatible with Docker SDK for Python 7.0.0+. You are using"
-                " Docker SDK for Python {docker_py_version}. The tls_hostname option (value: {tls_hostname})"
+                f" Docker SDK for Python {docker_version}. The tls_hostname option (value: {assert_hostname})"
                 " has either been set directly or with the environment variable DOCKER_TLS_HOSTNAME."
-                " Make sure it is not set, or switch to an older version of Docker SDK for Python.".format(
-                    docker_py_version=docker_version,
-                    tls_hostname=assert_hostname,
-                )
+                " Make sure it is not set, or switch to an older version of Docker SDK for Python."
             )
     # Filter out all None parameters
     kwargs = dict((k, v) for k, v in kwargs.items() if v is not None)
@@ -691,6 +688,6 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
             result = result.get(key)
         if isinstance(result, Sequence):
             for warning in result:
-                self.module.warn('Docker warning: {0}'.format(warning))
+                self.module.warn(f'Docker warning: {warning}')
         elif isinstance(result, str) and result:
-            self.module.warn('Docker warning: {0}'.format(result))
+            self.module.warn(f'Docker warning: {result}')

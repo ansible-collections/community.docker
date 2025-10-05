@@ -249,9 +249,8 @@ class Connection(ConnectionBase):
                 for val, what in ((k, 'Key'), (v, 'Value')):
                     if not isinstance(val, str):
                         raise AnsibleConnectionFailure(
-                            'Non-string {0} found for extra_env option. Ambiguous env options must be '
-                            'wrapped in quotes to avoid them being interpreted. {1}: {2!r}'
-                            .format(what.lower(), what, val)
+                            f'Non-string {what.lower()} found for extra_env option. Ambiguous env options must be '
+                            f'wrapped in quotes to avoid them being interpreted. {what}: {val!r}'
                         )
                 local_cmd += [b'-e', b'%s=%s' % (to_bytes(k, errors='surrogate_or_strict'), to_bytes(v, errors='surrogate_or_strict'))]
 
@@ -260,8 +259,7 @@ class Connection(ConnectionBase):
             if self.docker_version != 'dev' and LooseVersion(self.docker_version) < LooseVersion('18.06'):
                 # https://github.com/docker/cli/pull/732, first appeared in release 18.06.0
                 raise AnsibleConnectionFailure(
-                    'Providing the working directory requires Docker CLI version 18.06 or newer. You have Docker CLI version {0}.'
-                    .format(self.docker_version)
+                    f'Providing the working directory requires Docker CLI version 18.06 or newer. You have Docker CLI version {self.docker_version}.'
                 )
 
         if self.get_option('privileged'):
@@ -318,8 +316,7 @@ class Connection(ConnectionBase):
                 self.remote_user = None
                 actual_user = self._get_docker_remote_user()
                 if actual_user != self.get_option('remote_user'):
-                    display.warning('docker {0} does not support remote_user, using container default: {1}'
-                                    .format(self.docker_version, self.actual_user or '?'))
+                    display.warning(f'docker {self.docker_version} does not support remote_user, using container default: {self.actual_user or "?"}')
                 return actual_user
         elif self._display.verbosity > 2:
             # Since we are not setting the actual_user, look it up so we have it for logging later
@@ -335,9 +332,7 @@ class Connection(ConnectionBase):
         if not self._connected:
             self._set_conn_data()
             actual_user = self._get_actual_user()
-            display.vvv("ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
-                actual_user or '?'), host=self.get_option('remote_addr')
-            )
+            display.vvv(f"ESTABLISH DOCKER CONNECTION FOR USER: {actual_user or '?'}", host=self.get_option('remote_addr'))
             self._connected = True
 
     def exec_command(self, cmd, in_data=None, sudoable=False):
@@ -349,7 +344,7 @@ class Connection(ConnectionBase):
 
         local_cmd = self._build_exec_cmd([self._play_context.executable, '-c', cmd])
 
-        display.vvv("EXEC {0}".format(to_text(local_cmd)), host=self.get_option('remote_addr'))
+        display.vvv(f"EXEC {to_text(local_cmd)}", host=self.get_option('remote_addr'))
         display.debug("opening command with Popen()")
 
         local_cmd = [to_bytes(i, errors='surrogate_or_strict') for i in local_cmd]

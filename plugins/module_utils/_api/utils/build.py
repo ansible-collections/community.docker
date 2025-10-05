@@ -107,7 +107,7 @@ def create_archive(root, files=None, fileobj=None, gzip=False,
                     t.addfile(i, f)
             except IOError:
                 raise IOError(
-                    'Can not read file in context: {0}'.format(full_path)
+                    f'Can not read file in context: {full_path}'
                 )
         else:
             # Directories, FIFOs, symlinks... do not need to be read.
@@ -271,18 +271,13 @@ def process_dockerfile(dockerfile, path):
         abs_dockerfile = os.path.join(path, dockerfile)
         if IS_WINDOWS_PLATFORM and path.startswith(
                 WINDOWS_LONGPATH_PREFIX):
-            abs_dockerfile = '{0}{1}'.format(
-                WINDOWS_LONGPATH_PREFIX,
-                os.path.normpath(
-                    abs_dockerfile[len(WINDOWS_LONGPATH_PREFIX):]
-                )
-            )
+            abs_dockerfile = f'{WINDOWS_LONGPATH_PREFIX}{os.path.normpath(abs_dockerfile[len(WINDOWS_LONGPATH_PREFIX):])}'
     if (os.path.splitdrive(path)[0] != os.path.splitdrive(abs_dockerfile)[0] or
             os.path.relpath(abs_dockerfile, path).startswith('..')):
         # Dockerfile not in context - read data to insert into tar later
         with open(abs_dockerfile) as df:
             return (
-                '.dockerfile.{random:x}'.format(random=random.getrandbits(160)),
+                f'.dockerfile.{random.getrandbits(160):x}',
                 df.read()
             )
 

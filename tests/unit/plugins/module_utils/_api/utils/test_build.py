@@ -431,9 +431,7 @@ class TarTest(unittest.TestCase):
         with pytest.raises(IOError) as ei:
             tar(base)
 
-        assert 'Can not read file in context: {full_path}'.format(full_path=full_path) in (
-            ei.exconly()
-        )
+        assert f'Can not read file in context: {full_path}' in ei.exconly()
 
     @pytest.mark.skipif(IS_WINDOWS_PLATFORM, reason='No symlinks on Windows')
     def test_tar_with_file_symlinks(self):

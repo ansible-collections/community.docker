@@ -112,7 +112,7 @@ class ImagePusher(DockerBaseClass):
         if is_image_name_id(self.name):
             self.client.fail("Cannot push an image by ID")
         if not is_valid_tag(self.tag, allow_empty=True):
-            self.client.fail('"{0}" is not a valid docker tag!'.format(self.tag))
+            self.client.fail(f'"{self.tag}" is not a valid docker tag!')
 
         # If name contains a tag, it takes precedence over tag parameter.
         repo, repo_tag = parse_repository_tag(self.name)
@@ -123,7 +123,7 @@ class ImagePusher(DockerBaseClass):
         if is_image_name_id(self.tag):
             self.client.fail("Cannot push an image by digest")
         if not is_valid_tag(self.tag, allow_empty=False):
-            self.client.fail('"{0}" is not a valid docker tag!'.format(self.tag))
+            self.client.fail(f'"{self.tag}" is not a valid docker tag!')
 
     def push(self):
         image = self.client.find_image(name=self.name, tag=self.tag)
@@ -190,10 +190,10 @@ def main():
         results = ImagePusher(client).push()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

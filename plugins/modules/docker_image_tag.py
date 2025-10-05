@@ -153,7 +153,7 @@ class ImageTagger(DockerBaseClass):
         self.name = parameters['name']
         self.tag = parameters['tag']
         if not is_valid_tag(self.tag, allow_empty=True):
-            self.fail('"{0}" is not a valid docker tag'.format(self.tag))
+            self.fail(f'"{self.tag}" is not a valid docker tag')
 
         # If name contains a tag, it takes precedence over tag parameter.
         if not is_image_name_id(self.name):
@@ -264,10 +264,10 @@ def main():
         results = ImageTagger(client).tag_images()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

@@ -355,7 +355,7 @@ def validate_cidr(cidr):
         return 'ipv4'
     elif CIDR_IPV6.match(cidr):
         return 'ipv6'
-    raise ValueError('"{0}" is not a valid CIDR'.format(cidr))
+    raise ValueError(f'"{cidr}" is not a valid CIDR')
 
 
 def normalize_ipam_config_key(key):
@@ -621,10 +621,10 @@ class DockerNetworkManager(object):
             return bool(container)
 
         except DockerException as e:
-            self.client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+            self.client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
         except RequestException as e:
             self.client.fail(
-                'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+                f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
                 exception=traceback.format_exc())
 
     def connect_containers(self):
@@ -638,7 +638,7 @@ class DockerNetworkManager(object):
                     self.client.post_json('/networks/{0}/connect', self.parameters.name, data=data)
                 self.results['actions'].append("Connected container %s" % (name,))
                 self.results['changed'] = True
-                self.diff_tracker.add('connected.{0}'.format(name), parameter=True, active=False)
+                self.diff_tracker.add(f'connected.{name}', parameter=True, active=False)
 
     def disconnect_missing(self):
         if not self.existing_network:
@@ -664,7 +664,7 @@ class DockerNetworkManager(object):
             self.client.post_json('/networks/{0}/disconnect', self.parameters.name, data=data)
         self.results['actions'].append("Disconnected container %s" % (container_name,))
         self.results['changed'] = True
-        self.diff_tracker.add('connected.{0}'.format(container_name),
+        self.diff_tracker.add(f'connected.{container_name}',
                               parameter=False,
                               active=True)
 
@@ -747,10 +747,10 @@ def main():
         cm = DockerNetworkManager(client)
         client.module.exit_json(**cm.results)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

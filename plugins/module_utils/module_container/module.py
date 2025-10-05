@@ -102,11 +102,11 @@ class ContainerManager(DockerBaseClass):
             if re.match(r'^\[[0-9a-fA-F:]+\]$', self.param_default_host_ip):
                 valid_ip = True
             if re.match(r'^[0-9a-fA-F:]+$', self.param_default_host_ip):
-                self.param_default_host_ip = '[{0}]'.format(self.param_default_host_ip)
+                self.param_default_host_ip = f'[{self.param_default_host_ip}]'
                 valid_ip = True
             if not valid_ip:
                 self.fail('The value of default_host_ip must be an empty string, an IPv4 address, '
-                          'or an IPv6 address. Got "{0}" instead.'.format(self.param_default_host_ip))
+                          f'or an IPv6 address. Got "{self.param_default_host_ip}" instead.')
 
     def _collect_all_options(self, active_options):
         all_options = {}
@@ -228,8 +228,8 @@ class ContainerManager(DockerBaseClass):
             if result is None:
                 if accept_removal:
                     return result
-                msg = 'Encontered vanished container while waiting for container "{0}"'
-                self.fail(msg.format(container_id))
+                msg = f'Encontered vanished container while waiting for container "{container_id}"'
+                self.fail(msg)
             # Check container state
             state_info = result.get('State') or {}
             if health_state:
@@ -238,13 +238,13 @@ class ContainerManager(DockerBaseClass):
             if complete_states is not None and state in complete_states:
                 return result
             if wait_states is not None and state not in wait_states:
-                msg = 'Encontered unexpected state "{1}" while waiting for container "{0}"'
-                self.fail(msg.format(container_id, state), container=result)
+                msg = f'Encontered unexpected state "{state}" while waiting for container "{container_id}"'
+                self.fail(msg, container=result)
             # Wait
             if max_wait is not None:
                 if total_wait > max_wait or delay < 1E-4:
-                    msg = 'Timeout of {1} seconds exceeded while waiting for container "{0}"'
-                    self.fail(msg.format(container_id, max_wait), container=result)
+                    msg = f'Timeout of {max_wait} seconds exceeded while waiting for container "{container_id}"'
+                    self.fail(msg, container=result)
                 if total_wait + delay > max_wait:
                     delay = max_wait - total_wait
             sleep(delay)
@@ -674,7 +674,7 @@ class ContainerManager(DockerBaseClass):
                     self.diff['differences'] = [dict(network_differences=network_differences)]
                 for netdiff in network_differences:
                     self.diff_tracker.add(
-                        'network.{0}'.format(netdiff['parameter']['name']),
+                        f"network.{netdiff['parameter']['name']}",
                         parameter=netdiff['parameter'],
                         active=netdiff['container']
                     )
@@ -691,7 +691,7 @@ class ContainerManager(DockerBaseClass):
                     self.diff['differences'] = [dict(purge_networks=extra_networks)]
                 for extra_network in extra_networks:
                     self.diff_tracker.add(
-                        'network.{0}'.format(extra_network['name']),
+                        f"network.{extra_network['name']}",
                         active=extra_network
                     )
                 self.results['changed'] = True

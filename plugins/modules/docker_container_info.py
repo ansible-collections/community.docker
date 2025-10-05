@@ -77,8 +77,6 @@ container:
 
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
@@ -105,10 +103,10 @@ def main():
             container=container,
         )
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

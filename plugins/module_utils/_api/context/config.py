@@ -29,7 +29,7 @@ def get_current_context_name_with_source():
     if docker_cfg_path:
         try:
             with open(docker_cfg_path) as f:
-                return json.load(f).get("currentContext", "default"), "configuration file {file}".format(file=docker_cfg_path)
+                return json.load(f).get("currentContext", "default"), f"configuration file {docker_cfg_path}"
         except Exception:
             pass
     return "default", "fallback value"

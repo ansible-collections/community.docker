@@ -128,11 +128,7 @@ class AnsibleDockerClientBase(object):
         try:
             data = json.loads(stdout)
         except Exception as exc:
-            self.fail('Error while parsing JSON output of {cmd}: {exc}\nJSON output: {stdout}'.format(
-                cmd=self._compose_cmd_str(args),
-                exc=to_native(exc),
-                stdout=to_native(stdout),
-            ))
+            self.fail(f'Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_native(stdout)}')
         return rc, data, stderr
 
     # def call_cli_json_stream(self, *args, check_rc=False, data=None, cwd=None, environ_update=None, warn_on_stderr=False):
@@ -148,11 +144,7 @@ class AnsibleDockerClientBase(object):
                 if line.startswith(b'{'):
                     result.append(json.loads(line))
         except Exception as exc:
-            self.fail('Error while parsing JSON output of {cmd}: {exc}\nJSON output: {stdout}'.format(
-                cmd=self._compose_cmd_str(args),
-                exc=to_native(exc),
-                stdout=to_native(stdout),
-            ))
+            self.fail(f'Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_native(stdout)}')
         return rc, result, stderr
 
     @abc.abstractmethod
@@ -188,7 +180,7 @@ class AnsibleDockerClientBase(object):
         if the tag exists.
         '''
         dummy, images, dummy = self.call_cli_json_stream(
-            'image', 'ls', '--format', '{{ json . }}', '--no-trunc', '--filter', 'reference={0}'.format(name),
+            'image', 'ls', '--format', '{{ json . }}', '--no-trunc', '--filter', f'reference={name}',
             check_rc=True,
         )
         if tag:

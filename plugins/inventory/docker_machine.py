@@ -131,11 +131,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         command = [self.DOCKER_MACHINE_PATH]
         command.extend(args)
-        display.debug('Executing command {0}'.format(command))
+        display.debug(f'Executing command {command}')
         try:
             result = subprocess.check_output(command)
         except subprocess.CalledProcessError as e:
-            display.warning('Exception {0} caught while executing command {1}, this was the original exception: {2}'.format(type(e).__name__, command, e))
+            display.warning(f'Exception {type(e).__name__} caught while executing command {command}, this was the original exception: {e}')
             raise e
 
         return to_text(result).strip()
@@ -203,14 +203,14 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def _should_skip_host(self, machine_name, env_var_tuples, daemon_env):
         if not env_var_tuples:
-            warning_prefix = 'Unable to fetch Docker daemon env vars from Docker Machine for host {0}'.format(machine_name)
+            warning_prefix = f'Unable to fetch Docker daemon env vars from Docker Machine for host {machine_name}'
             if daemon_env in ('require', 'require-silently'):
                 if daemon_env == 'require':
-                    display.warning('{0}: host will be skipped'.format(warning_prefix))
+                    display.warning(f'{warning_prefix}: host will be skipped')
                 return True
             else:  # 'optional', 'optional-silently'
                 if daemon_env == 'optional':
-                    display.warning('{0}: host will lack dm_DOCKER_xxx variables'.format(warning_prefix))
+                    display.warning(f'{warning_prefix}: host will lack dm_DOCKER_xxx variables')
         return False
 
     def _populate(self):
@@ -261,7 +261,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
                 # set variables based on Docker Machine env variables
                 for kv in env_var_tuples:
-                    self.inventory.set_variable(machine_name, 'dm_{0}'.format(kv[0]), make_unsafe(kv[1]))
+                    self.inventory.set_variable(machine_name, f'dm_{kv[0]}', make_unsafe(kv[1]))
 
                 if self.get_option('verbose_output'):
                     self.inventory.set_variable(machine_name, 'docker_machine_node_attributes', unsafe_node_attrs)

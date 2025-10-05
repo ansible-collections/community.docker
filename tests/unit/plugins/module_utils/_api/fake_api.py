@@ -15,7 +15,7 @@ from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.c
 
 from . import fake_stat
 
-CURRENT_VERSION = 'v{api_version}'.format(api_version=DEFAULT_DOCKER_API_VERSION)
+CURRENT_VERSION = f'v{DEFAULT_DOCKER_API_VERSION}'
 
 FAKE_CONTAINER_ID = '3cc2351ab11b'
 FAKE_IMAGE_ID = 'e9aa60c60128'
@@ -539,131 +539,117 @@ if constants.IS_WINDOWS_PLATFORM:
     prefix = 'http+docker://localnpipe'
 
 fake_responses = {
-    '{prefix}/version'.format(prefix=prefix):
+    f'{prefix}/version':
     get_fake_version,
-    '{prefix}/{CURRENT_VERSION}/version'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/version':
     get_fake_version,
-    '{prefix}/{CURRENT_VERSION}/info'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/info':
     get_fake_info,
-    '{prefix}/{CURRENT_VERSION}/auth'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/auth':
     post_fake_auth,
-    '{prefix}/{CURRENT_VERSION}/_ping'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/_ping':
     get_fake_ping,
-    '{prefix}/{CURRENT_VERSION}/images/search'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/images/search':
     get_fake_search,
-    '{prefix}/{CURRENT_VERSION}/images/json'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/images/json':
     get_fake_images,
-    '{prefix}/{CURRENT_VERSION}/images/test_image/history'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/images/test_image/history':
     get_fake_image_history,
-    '{prefix}/{CURRENT_VERSION}/images/create'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/images/create':
     post_fake_import_image,
-    '{prefix}/{CURRENT_VERSION}/containers/json'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/json':
     get_fake_containers,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/start'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/start':
     post_fake_start_container,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/resize'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/resize':
     post_fake_resize_container,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/json'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/json':
     get_fake_inspect_container,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/rename'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/rename':
     post_fake_rename_container,
-    '{prefix}/{CURRENT_VERSION}/images/e9aa60c60128/tag'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/images/e9aa60c60128/tag':
     post_fake_tag_image,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/wait'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/wait':
     get_fake_wait,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/logs'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/logs':
     get_fake_logs,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/changes'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/changes':
     get_fake_diff,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/export'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/export':
     get_fake_export,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/update'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/update':
     post_fake_update_container,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/exec'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/exec':
     post_fake_exec_create,
-    '{prefix}/{CURRENT_VERSION}/exec/d5d177f121dc/start'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/exec/d5d177f121dc/start':
     post_fake_exec_start,
-    '{prefix}/{CURRENT_VERSION}/exec/d5d177f121dc/json'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/exec/d5d177f121dc/json':
     get_fake_exec_inspect,
-    '{prefix}/{CURRENT_VERSION}/exec/d5d177f121dc/resize'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/exec/d5d177f121dc/resize':
     post_fake_exec_resize,
 
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/stats'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/stats':
     get_fake_stats,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/top'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/top':
     get_fake_top,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/stop'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/stop':
     post_fake_stop_container,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/kill'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/kill':
     post_fake_kill_container,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/pause'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/pause':
     post_fake_pause_container,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/unpause'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/unpause':
     post_fake_unpause_container,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/restart'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/restart':
     post_fake_restart_container,
-    '{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b':
     delete_fake_remove_container,
-    '{prefix}/{CURRENT_VERSION}/images/create'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/images/create':
     post_fake_image_create,
-    '{prefix}/{CURRENT_VERSION}/images/e9aa60c60128'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/images/e9aa60c60128':
     delete_fake_remove_image,
-    '{prefix}/{CURRENT_VERSION}/images/e9aa60c60128/get'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/images/e9aa60c60128/get':
     get_fake_get_image,
-    '{prefix}/{CURRENT_VERSION}/images/load'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/images/load':
     post_fake_load_image,
-    '{prefix}/{CURRENT_VERSION}/images/test_image/json'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/images/test_image/json':
     get_fake_inspect_image,
-    '{prefix}/{CURRENT_VERSION}/images/test_image/insert'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/images/test_image/insert':
     get_fake_insert_image,
-    '{prefix}/{CURRENT_VERSION}/images/test_image/push'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/images/test_image/push':
     post_fake_push,
-    '{prefix}/{CURRENT_VERSION}/commit'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/commit':
     post_fake_commit,
-    '{prefix}/{CURRENT_VERSION}/containers/create'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/containers/create':
     post_fake_create_container,
-    '{prefix}/{CURRENT_VERSION}/build'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/build':
     post_fake_build_container,
-    '{prefix}/{CURRENT_VERSION}/events'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/events':
     get_fake_events,
-    ('{prefix}/{CURRENT_VERSION}/volumes'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION), 'GET'):
+    (f'{prefix}/{CURRENT_VERSION}/volumes', 'GET'):
     get_fake_volume_list,
-    ('{prefix}/{CURRENT_VERSION}/volumes/create'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION), 'POST'):
+    (f'{prefix}/{CURRENT_VERSION}/volumes/create', 'POST'):
     get_fake_volume,
-    ('{1}/{0}/volumes/{2}'.format(
-        CURRENT_VERSION, prefix, FAKE_VOLUME_NAME
-    ), 'GET'):
+    (f'{prefix}/{CURRENT_VERSION}/volumes/{FAKE_VOLUME_NAME}', 'GET'):
     get_fake_volume,
-    ('{1}/{0}/volumes/{2}'.format(
-        CURRENT_VERSION, prefix, FAKE_VOLUME_NAME
-    ), 'DELETE'):
+    (f'{prefix}/{CURRENT_VERSION}/volumes/{FAKE_VOLUME_NAME}', 'DELETE'):
     fake_remove_volume,
-    ('{1}/{0}/nodes/{2}/update?version=1'.format(
-        CURRENT_VERSION, prefix, FAKE_NODE_ID
-    ), 'POST'):
+    (f'{prefix}/{CURRENT_VERSION}/nodes/{FAKE_NODE_ID}/update?version=1', 'POST'):
     post_fake_update_node,
-    ('{prefix}/{CURRENT_VERSION}/swarm/join'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION), 'POST'):
+    (f'{prefix}/{CURRENT_VERSION}/swarm/join', 'POST'):
     post_fake_join_swarm,
-    ('{prefix}/{CURRENT_VERSION}/networks'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION), 'GET'):
+    (f'{prefix}/{CURRENT_VERSION}/networks', 'GET'):
     get_fake_network_list,
-    ('{prefix}/{CURRENT_VERSION}/networks/create'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION), 'POST'):
+    (f'{prefix}/{CURRENT_VERSION}/networks/create', 'POST'):
     post_fake_network,
-    ('{1}/{0}/networks/{2}'.format(
-        CURRENT_VERSION, prefix, FAKE_NETWORK_ID
-    ), 'GET'):
+    (f'{prefix}/{CURRENT_VERSION}/networks/{FAKE_NETWORK_ID}', 'GET'):
     get_fake_network,
-    ('{1}/{0}/networks/{2}'.format(
-        CURRENT_VERSION, prefix, FAKE_NETWORK_ID
-    ), 'DELETE'):
+    (f'{prefix}/{CURRENT_VERSION}/networks/{FAKE_NETWORK_ID}', 'DELETE'):
     delete_fake_network,
-    ('{1}/{0}/networks/{2}/connect'.format(
-        CURRENT_VERSION, prefix, FAKE_NETWORK_ID
-    ), 'POST'):
+    (f'{prefix}/{CURRENT_VERSION}/networks/{FAKE_NETWORK_ID}/connect', 'POST'):
     post_fake_network_connect,
-    ('{1}/{0}/networks/{2}/disconnect'.format(
-        CURRENT_VERSION, prefix, FAKE_NETWORK_ID
-    ), 'POST'):
+    (f'{prefix}/{CURRENT_VERSION}/networks/{FAKE_NETWORK_ID}/disconnect', 'POST'):
     post_fake_network_disconnect,
-    '{prefix}/{CURRENT_VERSION}/secrets/create'.format(prefix=prefix, CURRENT_VERSION=CURRENT_VERSION):
+    f'{prefix}/{CURRENT_VERSION}/secrets/create':
     post_fake_secret,
 }

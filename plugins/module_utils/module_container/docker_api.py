@@ -389,10 +389,10 @@ class DockerAPIEngineDriver(EngineDriver):
         try:
             runner()
         except DockerException as e:
-            client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+            client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
         except RequestException as e:
             client.fail(
-                'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+                f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
                 exception=traceback.format_exc())
 
 
@@ -611,7 +611,7 @@ def _get_default_host_ip(module, client):
             network = client.get_network(network_data['name'])
             if network is None:
                 client.fail(
-                    "Cannot inspect the network '{0}' to determine the default IP".format(network_data['name']),
+                    f"Cannot inspect the network '{network_data['name']}' to determine the default IP",
                 )
             if network.get('Driver') == 'bridge' and network.get('Options', {}).get('com.docker.network.bridge.host_binding_ipv4'):
                 ip = network['Options']['com.docker.network.bridge.host_binding_ipv4']
@@ -832,9 +832,10 @@ def _ignore_mismatching_label_result(module, client, api_version, option, image,
                 # Format label for error message
                 would_remove_labels.append('"%s"' % (label, ))
         if would_remove_labels:
+            labels = ', '.join(would_remove_labels)
             msg = ("Some labels should be removed but are present in the base image. You can set image_label_mismatch to 'ignore' to ignore"
-                   " this error. Labels: {0}")
-            client.fail(msg.format(', '.join(would_remove_labels)))
+                   f" this error. Labels: {labels}")
+            client.fail(msg)
     return False
 
 
@@ -1282,9 +1283,9 @@ def _preprocess_container_names(module, client, api_version, value):
     if container is None:
         # If we cannot find the container, issue a warning and continue with
         # what the user specified.
-        module.warn('Cannot find a container with name or ID "{0}"'.format(container_name))
+        module.warn(f'Cannot find a container with name or ID "{container_name}"')
         return value
-    return 'container:{0}'.format(container['Id'])
+    return f"container:{container['Id']}"
 
 
 def _get_value_command(module, container, api_version, options, image, host_info):

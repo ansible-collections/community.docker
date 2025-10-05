@@ -288,7 +288,7 @@ class ParseHostTest(unittest.TestCase):
         }
 
         for host in invalid_hosts:
-            msg = 'Should have failed to parse invalid host: {0}'.format(host)
+            msg = f'Should have failed to parse invalid host: {host}'
             with self.assertRaises(DockerException, msg=msg):
                 parse_host(host, None)
 
@@ -296,7 +296,7 @@ class ParseHostTest(unittest.TestCase):
             self.assertEqual(
                 parse_host(host, None),
                 expected,
-                msg='Failed to parse valid host: {0}'.format(host),
+                msg=f'Failed to parse valid host: {host}',
             )
 
     def test_parse_host_empty_value(self):
@@ -347,14 +347,14 @@ class ParseRepositoryTagTest(unittest.TestCase):
         )
 
     def test_index_image_sha(self):
-        assert parse_repository_tag("root@sha256:{sha}".format(sha=self.sha)) == (
-            "root", "sha256:{sha}".format(sha=self.sha)
+        assert parse_repository_tag(f"root@sha256:{self.sha}") == (
+            "root", f"sha256:{self.sha}"
         )
 
     def test_private_reg_image_sha(self):
         assert parse_repository_tag(
-            "url:5000/repo@sha256:{sha}".format(sha=self.sha)
-        ) == ("url:5000/repo", "sha256:{sha}".format(sha=self.sha))
+            f"url:5000/repo@sha256:{self.sha}"
+        ) == ("url:5000/repo", f"sha256:{self.sha}")
 
 
 class ParseDeviceTest(unittest.TestCase):

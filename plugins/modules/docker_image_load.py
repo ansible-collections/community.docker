@@ -82,8 +82,6 @@ images:
 import errno
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
@@ -127,19 +125,19 @@ class ImageManager(DockerBaseClass):
         # Load image(s) from file
         load_output = []
         try:
-            self.log("Opening image {0}".format(self.path))
+            self.log(f"Opening image {self.path}")
             with open(self.path, 'rb') as image_tar:
-                self.log("Loading images from {0}".format(self.path))
+                self.log(f"Loading images from {self.path}")
                 res = self.client._post(self.client._url("/images/load"), data=image_tar, stream=True)
                 for line in self.client._stream_helper(res, decode=True):
                     self.log(line, pretty_print=True)
                     self._extract_output_line(line, load_output)
         except EnvironmentError as exc:
             if exc.errno == errno.ENOENT:
-                self.client.fail("Error opening archive {0} - {1}".format(self.path, to_native(exc)))
-            self.client.fail("Error loading archive {0} - {1}".format(self.path, to_native(exc)), stdout='\n'.join(load_output))
+                self.client.fail(f"Error opening archive {self.path} - {exc}")
+            self.client.fail(f"Error loading archive {self.path} - {exc}", stdout='\n'.join(load_output))
         except Exception as exc:
-            self.client.fail("Error loading archive {0} - {1}".format(self.path, to_native(exc)), stdout='\n'.join(load_output))
+            self.client.fail(f"Error loading archive {self.path} - {exc}", stdout='\n'.join(load_output))
 
         # Collect loaded images
         loaded_images = []
@@ -160,7 +158,7 @@ class ImageManager(DockerBaseClass):
                 image_name, tag = image_name.rsplit(':', 1)
                 images.append(self.client.find_image(image_name, tag))
             else:
-                self.client.module.warn('Image name "{0}" is neither ID nor has a tag'.format(image_name))
+                self.client.module.warn(f'Image name "{image_name}" is neither ID nor has a tag')
 
         self.results['image_names'] = loaded_images
         self.results['images'] = images
@@ -185,10 +183,10 @@ def main():
         ImageManager(client, results)
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

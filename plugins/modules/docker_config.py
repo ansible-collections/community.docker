@@ -242,7 +242,7 @@ class ConfigManager(DockerBaseClass):
                 with open(data_src, 'rb') as f:
                     self.data = f.read()
             except Exception as exc:
-                self.client.fail('Error while reading {src}: {error}'.format(src=data_src, error=to_native(exc)))
+                self.client.fail(f'Error while reading {data_src}: {exc}')
         self.labels = parameters.get('labels')
         self.force = parameters.get('force')
         self.rolling_versions = parameters.get('rolling_versions')
@@ -287,7 +287,7 @@ class ConfigManager(DockerBaseClass):
             self.configs = [
                 config
                 for config in configs
-                if config['Spec']['Name'].startswith('{name}_v'.format(name=self.name))
+                if config['Spec']['Name'].startswith(f'{self.name}_v')
             ]
             self.configs.sort(key=self.get_version)
         else:
@@ -305,7 +305,7 @@ class ConfigManager(DockerBaseClass):
         if self.rolling_versions:
             self.version += 1
             labels['ansible_version'] = str(self.version)
-            self.name = '{name}_v{version}'.format(name=self.name, version=self.version)
+            self.name = f'{self.name}_v{self.version}'
         if self.labels:
             labels.update(self.labels)
 
@@ -425,10 +425,10 @@ def main():
         ConfigManager(client, results)()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}',
             exception=traceback.format_exc())
 
 

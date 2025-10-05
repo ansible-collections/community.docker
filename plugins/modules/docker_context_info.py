@@ -175,7 +175,7 @@ current_context_name:
 import traceback
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.common.text.converters import to_native, to_text
+from ansible.module_utils.common.text.converters import to_text
 
 from ansible_collections.community.docker.plugins.module_utils._api.context.api import (
     ContextAPI,
@@ -226,7 +226,7 @@ def context_to_json(context, current):
             if proto == 'http+unix':
                 proto = 'unix'
             if proto:
-                host_str = "{0}://{1}".format(proto, host_str)
+                host_str = f"{proto}://{host_str}"
 
             # Create config for the modules
             module_config['docker_host'] = host_str
@@ -274,15 +274,12 @@ def main():
         if module.params['name']:
             contexts = [ContextAPI.get_context(module.params['name'])]
             if not contexts[0]:
-                module.fail_json(msg="There is no context of name {name!r}".format(name=module.params['name']))
+                module.fail_json(msg=f"There is no context of name {module.params['name']!r}")
         elif module.params['only_current']:
             contexts = [ContextAPI.get_context(current_context_name)]
             if not contexts[0]:
                 module.fail_json(
-                    msg="There is no context of name {name!r}, which is configured as the default context ({source})".format(
-                        name=current_context_name,
-                        source=current_context_source,
-                    ),
+                    msg=f"There is no context of name {current_context_name!r}, which is configured as the default context ({current_context_source})",
                 )
         else:
             contexts = ContextAPI.contexts()
@@ -298,9 +295,9 @@ def main():
             current_context_name=current_context_name,
         )
     except ContextException as e:
-        module.fail_json(msg='Error when handling Docker contexts: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        module.fail_json(msg=f'Error when handling Docker contexts: {e}', exception=traceback.format_exc())
     except DockerException as e:
-        module.fail_json(msg='An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        module.fail_json(msg=f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

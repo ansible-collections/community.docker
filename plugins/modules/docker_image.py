@@ -826,7 +826,7 @@ class ImageManager(DockerBaseClass):
         container_limits = self.container_limits or {}
         for key in container_limits.keys():
             if key not in CONTAINER_LIMITS_KEYS:
-                raise DockerException('Invalid container_limits key {key}'.format(key=key))
+                raise DockerException(f'Invalid container_limits key {key}')
 
         dockerfile = self.dockerfile
         if self.build_path.startswith(('http://', 'https://', 'git://', 'github.com/', 'git@')):
@@ -1068,7 +1068,7 @@ def main():
     )
 
     if not is_valid_tag(client.module.params['tag'], allow_empty=True):
-        client.fail('"{0}" is not a valid docker tag!'.format(client.module.params['tag']))
+        client.fail(f'"{client.module.params["tag"]}" is not a valid docker tag!')
 
     if client.module.params['source'] == 'build':
         if not client.module.params['build'] or not client.module.params['build'].get('path'):
@@ -1084,10 +1084,10 @@ def main():
         ImageManager(client, results)
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

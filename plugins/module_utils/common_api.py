@@ -577,6 +577,6 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
             result = result.get(key)
         if isinstance(result, Sequence):
             for warning in result:
-                self.module.warn('Docker warning: {0}'.format(warning))
+                self.module.warn(f'Docker warning: {warning}')
         elif isinstance(result, str) and result:
-            self.module.warn('Docker warning: {0}'.format(result))
+            self.module.warn(f'Docker warning: {result}')

@@ -439,7 +439,6 @@ actions:
 import traceback
 
 from ansible.module_utils.common.validation import check_type_int
-from ansible.module_utils.common.text.converters import to_native
 
 from ansible_collections.community.docker.plugins.module_utils.common_cli import (
     AnsibleModuleDockerClient,
@@ -691,7 +690,7 @@ def main():
         manager.cleanup()
         client.module.exit_json(**result)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

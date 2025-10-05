@@ -340,7 +340,7 @@ def main():
                     )
             client.module.exit_json(changed=False)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
 
 
 if __name__ == "__main__":

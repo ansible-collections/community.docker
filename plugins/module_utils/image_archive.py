@@ -93,7 +93,7 @@ def load_archived_image_manifest(archive_path):
                         config_file = meta['Config']
                     except KeyError as exc:
                         raise ImageArchiveInvalidException(
-                            "Failed to get Config entry from {0}th manifest in manifest.json: {1}".format(index + 1, to_native(exc))
+                            f"Failed to get Config entry from {index + 1}th manifest in manifest.json: {exc}"
                         ) from exc
 
                     # Extracts hash without 'sha256:' prefix
@@ -102,7 +102,7 @@ def load_archived_image_manifest(archive_path):
                         image_id = os.path.splitext(config_file)[0]
                     except Exception as exc:
                         raise ImageArchiveInvalidException(
-                            "Failed to extract image id from config file name %s: %s" % (config_file, to_native(exc))
+                            f"Failed to extract image id from config file name {config_file}: {exc}"
                         ) from exc
 
                     for prefix in (
@@ -115,7 +115,7 @@ def load_archived_image_manifest(archive_path):
                         repo_tags = meta['RepoTags']
                     except KeyError as exc:
                         raise ImageArchiveInvalidException(
-                            "Failed to get RepoTags entry from {0}th manifest in manifest.json: {1}".format(index + 1, to_native(exc))
+                            f"Failed to get RepoTags entry from {index + 1}th manifest in manifest.json: {exc}"
                         ) from exc
 
                     result.append(ImageArchiveManifestSummary(

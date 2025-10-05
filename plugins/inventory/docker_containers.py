@@ -268,19 +268,19 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             # Add container to groups
             image_name = config.get('Image')
             if image_name and add_legacy_groups:
-                groups.append('image_{0}'.format(image_name))
+                groups.append(f'image_{image_name}')
 
             stack_name = labels.get('com.docker.stack.namespace')
             if stack_name:
                 full_facts['docker_stack'] = stack_name
                 if add_legacy_groups:
-                    groups.append('stack_{0}'.format(stack_name))
+                    groups.append(f'stack_{stack_name}')
 
             service_name = labels.get('com.docker.swarm.service.name')
             if service_name:
                 full_facts['docker_service'] = service_name
                 if add_legacy_groups:
-                    groups.append('service_{0}'.format(service_name))
+                    groups.append(f'service_{service_name}')
 
             ansible_connection = None
             if connection_type == 'ssh':
@@ -383,9 +383,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             self._populate(client)
         except DockerException as e:
             raise AnsibleError(
-                'An unexpected Docker error occurred: {0}'.format(e)
+                f'An unexpected Docker error occurred: {e}'
             )
         except RequestException as e:
             raise AnsibleError(
-                'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(e)
+                f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}'
             )

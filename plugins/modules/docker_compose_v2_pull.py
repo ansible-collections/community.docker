@@ -112,8 +112,6 @@ actions:
 
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common_cli import (
     AnsibleModuleDockerClient,
     DockerException,
@@ -139,12 +137,12 @@ class PullManager(BaseComposeManager):
 
         if self.policy != 'always' and self.compose_version < LooseVersion('2.22.0'):
             # https://github.com/docker/compose/pull/10981 - 2.22.0
-            self.fail('A pull policy other than always is only supported since Docker Compose 2.22.0. {0} has version {1}'.format(
-                self.client.get_cli(), self.compose_version))
+            self.fail(
+                f'A pull policy other than always is only supported since Docker Compose 2.22.0. {self.client.get_cli()} has version {self.compose_version}')
         if self.ignore_buildable and self.compose_version < LooseVersion('2.15.0'):
             # https://github.com/docker/compose/pull/10134 - 2.15.0
-            self.fail('--ignore-buildable is only supported since Docker Compose 2.15.0. {0} has version {1}'.format(
-                self.client.get_cli(), self.compose_version))
+            self.fail(
+                f'--ignore-buildable is only supported since Docker Compose 2.15.0. {self.client.get_cli()} has version {self.compose_version}')
 
     def get_pull_cmd(self, dry_run, no_start=False):
         args = self.get_base_args() + ['pull']
@@ -196,7 +194,7 @@ def main():
         manager.cleanup()
         client.module.exit_json(**result)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected docker error occurred: {e}', exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

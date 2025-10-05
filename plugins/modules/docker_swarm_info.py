@@ -367,10 +367,10 @@ def main():
         results.update(client.fail_results)
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}',
             exception=traceback.format_exc())
 
 

@@ -76,9 +76,7 @@ class Connection(ConnectionBase):
 
         if not self._connected:
             display.vvv(
-                "ESTABLISH NSENTER CONNECTION FOR USER: {0}".format(
-                    self._play_context.remote_user
-                ),
+                f"ESTABLISH NSENTER CONNECTION FOR USER: {self._play_context.remote_user}",
                 host=self._play_context.remote_addr,
             )
             self._connected = True
@@ -104,7 +102,7 @@ class Connection(ConnectionBase):
             "--pid",
             "--uts",
             "--preserve-credentials",
-            "--target={0}".format(self._nsenter_pid),
+            f"--target={self._nsenter_pid}",
             "--",
         ]
 
@@ -115,7 +113,7 @@ class Connection(ConnectionBase):
             cmd_parts = nsenter_cmd_parts + cmd
             cmd = [to_bytes(arg) for arg in cmd_parts]
 
-        display.vvv("EXEC {0}".format(to_text(cmd)), host=self._play_context.remote_addr)
+        display.vvv(f"EXEC {to_text(cmd)}", host=self._play_context.remote_addr)
         display.debug("opening command with Popen()")
 
         master = None
@@ -204,15 +202,15 @@ class Connection(ConnectionBase):
         in_path = unfrackpath(in_path, basedir=self.cwd)
         out_path = unfrackpath(out_path, basedir=self.cwd)
 
-        display.vvv("PUT {0} to {1}".format(in_path, out_path), host=self._play_context.remote_addr)
+        display.vvv(f"PUT {in_path} to {out_path}", host=self._play_context.remote_addr)
         try:
             with open(to_bytes(in_path, errors="surrogate_or_strict"), "rb") as in_file:
                 in_data = in_file.read()
             rc, out, err = self.exec_command(cmd=["tee", out_path], in_data=in_data)
             if rc != 0:
-                raise AnsibleError("failed to transfer file to {0}: {1}".format(out_path, err))
+                raise AnsibleError(f"failed to transfer file to {out_path}: {err}")
         except IOError as e:
-            raise AnsibleError("failed to transfer file to {0}: {1}".format(out_path, to_native(e)))
+            raise AnsibleError(f"failed to transfer file to {out_path}: {e}")
 
     def fetch_file(self, in_path, out_path):
         super(Connection, self).fetch_file(in_path, out_path)
@@ -222,13 +220,13 @@ class Connection(ConnectionBase):
 
         try:
             rc, out, err = self.exec_command(cmd=["cat", in_path])
-            display.vvv("FETCH {0} TO {1}".format(in_path, out_path), host=self._play_context.remote_addr)
+            display.vvv(f"FETCH {in_path} TO {out_path}", host=self._play_context.remote_addr)
             if rc != 0:
-                raise AnsibleError("failed to transfer file to {0}: {1}".format(in_path, err))
+                raise AnsibleError(f"failed to transfer file to {in_path}: {err}")
             with open(to_bytes(out_path, errors='surrogate_or_strict'), 'wb') as out_file:
                 out_file.write(out)
         except IOError as e:
-            raise AnsibleError("failed to transfer file to {0}: {1}".format(to_native(out_path), to_native(e)))
+            raise AnsibleError(f"failed to transfer file to {to_native(out_path)}: {e}")
 
     def close(self):
         ''' terminate the connection; nothing to do here '''

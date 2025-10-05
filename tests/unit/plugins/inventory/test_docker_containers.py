@@ -107,8 +107,8 @@ class FakeClient(object):
                 'Image': host['Config']['Image'],
                 'ImageId': host['Image'],
             })
-            self.get_results['/containers/{0}/json'.format(host['Name'])] = host
-            self.get_results['/containers/{0}/json'.format(host['Id'])] = host
+            self.get_results[f"/containers/{host['Name']}/json"] = host
+            self.get_results[f"/containers/{host['Id']}/json"] = host
         self.get_results['/containers/json'] = list_reply
 
     def get_json(self, url, *param, **kwargs):

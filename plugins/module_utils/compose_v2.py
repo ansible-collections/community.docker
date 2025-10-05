@@ -271,10 +271,10 @@ def _extract_event(line, warn_function=None):
     if match:
         if warn_function:
             if match.group('msg'):
-                msg = '{rid}: {msg}'
+                msg = f"{match.group('resource_id')}: {match.group('msg')}"
             else:
-                msg = 'Unspecified warning for {rid}'
-            warn_function(msg.format(rid=match.group('resource_id'), msg=match.group('msg')))
+                msg = f"Unspecified warning for {match.group('resource_id')}"
+            warn_function(msg)
         return None, True
     match = _RE_PULL_PROGRESS.match(line)
     if match:
@@ -323,9 +323,8 @@ def _warn_missing_dry_run_prefix(line, warn_missing_dry_run_prefix, warn_functio
         # This could be a bug, a change of docker compose's output format, ...
         # Tell the user to report it to us :-)
         warn_function(
-            'Event line is missing dry-run mode marker: {0!r}. Please report this at '
+            f'Event line is missing dry-run mode marker: {line!r}. Please report this at '
             'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
-            .format(line)
         )
 
 
@@ -334,9 +333,8 @@ def _warn_unparsable_line(line, warn_function):
     # Tell the user to report it to us :-)
     if warn_function:
         warn_function(
-            'Cannot parse event from line: {0!r}. Please report this at '
+            f'Cannot parse event from line: {line!r}. Please report this at '
             'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
-            .format(line)
         )
 
 
@@ -382,9 +380,8 @@ def parse_json_events(stderr, warn_function=None):
                 continue
             if warn_function:
                 warn_function(
-                    'Cannot parse event from non-JSON line: {0!r}. Please report this at '
+                    f'Cannot parse event from non-JSON line: {line!r}. Please report this at '
                     'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
-                    .format(line)
                 )
             continue
         try:
@@ -392,9 +389,8 @@ def parse_json_events(stderr, warn_function=None):
         except Exception as exc:
             if warn_function:
                 warn_function(
-                    'Cannot parse event from line: {0!r}: {1}. Please report this at '
+                    f'Cannot parse event from line: {line!r}: {exc}. Please report this at '
                     'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
-                    .format(line, exc)
                 )
             continue
         if line_data.get('tail'):
@@ -449,9 +445,8 @@ def parse_json_events(stderr, warn_function=None):
                 except KeyError:
                     if warn_function:
                         warn_function(
-                            'Unknown resource type {0!r} in line {1!r}. Please report this at '
+                            f'Unknown resource type {resource_type_str!r} in line {line!r}. Please report this at '
                             'https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md'
-                            .format(resource_type_str, line)
                         )
                     resource_type = ResourceType.UNKNOWN
             elif text in DOCKER_STATUS_PULL:
@@ -589,11 +584,7 @@ def emit_warnings(events, warn_function):
     for event in events:
         # If a message is present, assume it is a warning
         if (event.status is None and event.msg is not None) or event.status in DOCKER_STATUS_WARNING:
-            warn_function('Docker compose: {resource_type} {resource_id}: {msg}'.format(
-                resource_type=event.resource_type,
-                resource_id=event.resource_id,
-                msg=event.msg,
-            ))
+            warn_function(f'Docker compose: {event.resource_type} {event.resource_id}: {event.msg}')
 
 
 def is_failed(events, rc):
@@ -610,22 +601,17 @@ def update_failed(result, events, args, stdout, stderr, rc, cli):
         if event.status in DOCKER_STATUS_ERROR:
             if event.resource_id is None:
                 if event.resource_type == 'unknown':
-                    msg = 'General error: ' if event.resource_type == 'unknown' else 'Error when processing {resource_type}: '
+                    msg = 'General error: ' if event.resource_type == 'unknown' else f'Error when processing {event.resource_type}: '
             else:
-                msg = 'Error when processing {resource_type} {resource_id}: '
+                msg = f'Error when processing {event.resource_type} {event.resource_id}: '
                 if event.resource_type == 'unknown':
-                    msg = 'Error when processing {resource_id}: '
+                    msg = f'Error when processing {event.resource_id}: '
                     if event.resource_id == '':
                         msg = 'General error: '
-            msg += '{status}' if event.msg is None else '{msg}'
-            errors.append(msg.format(
-                resource_type=event.resource_type,
-                resource_id=event.resource_id,
-                status=event.status,
-                msg=event.msg,
-            ))
+            msg += f'{event.status}' if event.msg is None else f'{event.msg}'
+            errors.append(msg)
     if not errors:
-        errors.append('Return code {code} is non-zero'.format(code=rc))
+        errors.append(f'Return code {rc} is non-zero')
     result['failed'] = True
     result['msg'] = '\n'.join(errors)
     result['cmd'] = ' '.join(quote(arg) for arg in [cli] + args)
@@ -706,24 +692,20 @@ class BaseComposeManager(DockerBaseClass):
         compose_version = self.get_compose_version()
         self.compose_version = LooseVersion(compose_version)
         if self.compose_version < LooseVersion(min_version):
-            self.fail('Docker CLI {cli} has the compose plugin with version {version}; need version {min_version} or later'.format(
-                cli=self.client.get_cli(),
-                version=compose_version,
-                min_version=min_version,
-            ))
+            self.fail(f'Docker CLI {self.client.get_cli()} has the compose plugin with version {compose_version}; need version {min_version} or later')
 
         if not os.path.isdir(self.project_src):
-            self.fail('"{0}" is not a directory'.format(self.project_src))
+            self.fail(f'"{self.project_src}" is not a directory')
 
         self.check_files_existing = parameters['check_files_existing']
         if self.files:
             for file in self.files:
                 path = os.path.join(self.project_src, file)
                 if not os.path.exists(path):
-                    self.fail('Cannot find Compose file "{0}" relative to project directory "{1}"'.format(file, self.project_src))
+                    self.fail(f'Cannot find Compose file "{file}" relative to project directory "{self.project_src}"')
         elif self.check_files_existing and all(not os.path.exists(os.path.join(self.project_src, f)) for f in DOCKER_COMPOSE_FILES):
             filenames = ', '.join(DOCKER_COMPOSE_FILES[:-1])
-            self.fail('"{0}" does not contain {1}, or {2}'.format(self.project_src, filenames, DOCKER_COMPOSE_FILES[-1]))
+            self.fail(f'"{self.project_src}" does not contain {filenames}, or {DOCKER_COMPOSE_FILES[-1]}')
 
         # Support for JSON output was added in Compose 2.29.0 (https://github.com/docker/compose/releases/tag/v2.29.0);
         # more precisely in https://github.com/docker/compose/pull/11478
@@ -747,12 +729,11 @@ class BaseComposeManager(DockerBaseClass):
     def get_compose_version_from_api(self):
         compose = self.client.get_client_plugin_info('compose')
         if compose is None:
-            self.fail('Docker CLI {0} does not have the compose plugin installed'.format(self.client.get_cli()))
+            self.fail(f'Docker CLI {self.client.get_cli()} does not have the compose plugin installed')
         if compose['Version'] == 'dev':
             self.fail(
-                'Docker CLI {0} has a compose plugin installed, but it reports version "dev".'
+                f'Docker CLI {self.client.get_cli()} has a compose plugin installed, but it reports version "dev".'
                 ' Please use a version of the plugin that returns a proper version.'
-                .format(self.client.get_cli())
             )
         return compose['Version'].lstrip('v')
 

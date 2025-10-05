@@ -289,13 +289,9 @@ def sanitize_labels(labels, labels_field, client=None, module=None):
         return
     for k, v in list(labels.items()):
         if not isinstance(k, str):
-            fail(
-                "The key {key!r} of {field} is not a string!".format(
-                    field=labels_field, key=k))
+            fail(f"The key {k!r} of {labels_field} is not a string!")
         if isinstance(v, (bool, float)):
-            fail(
-                "The value {value!r} for {key!r} of {field} is not a string or something than can be safely converted to a string!".format(
-                    field=labels_field, key=k, value=v))
+            fail(f"The value {v!r} for {k!r} of {labels_field} is not a string or something than can be safely converted to a string!")
         labels[k] = to_text(v)
 
 
@@ -389,8 +385,7 @@ def normalize_healthcheck(healthcheck, normalize_test=False):
                     value = int(value)
                 except ValueError:
                     raise ValueError(
-                        'Cannot parse number of retries for healthcheck. '
-                        'Expected an integer, got "{0}".'.format(value)
+                        f'Cannot parse number of retries for healthcheck. Expected an integer, got "{value}".'
                     )
             if key == 'test' and value and normalize_test:
                 value = normalize_healthcheck_test(value)

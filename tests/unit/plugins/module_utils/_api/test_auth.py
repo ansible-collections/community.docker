@@ -252,7 +252,7 @@ class LoadConfigTest(unittest.TestCase):
         cfg_path = os.path.join(folder, '.dockercfg')
         auth_ = base64.b64encode(b'sakuya:izayoi').decode('ascii')
         with open(cfg_path, 'w') as f:
-            f.write('auth = {auth}\n'.format(auth=auth_))
+            f.write(f'auth = {auth_}\n')
             f.write('email = sakuya@scarlet.net')
 
         cfg = auth.load_config(cfg_path)
@@ -309,14 +309,12 @@ class LoadConfigTest(unittest.TestCase):
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
 
-        dockercfg_path = os.path.join(folder,
-                                      '.{0}.dockercfg'.format(
-                                          random.randrange(100000)))
+        dockercfg_path = os.path.join(folder, f'.{random.randrange(100000)}.dockercfg')
         registry = 'https://your.private.registry.io'
         auth_ = base64.b64encode(b'sakuya:izayoi').decode('ascii')
         config = {
             registry: {
-                'auth': '{auth}'.format(auth=auth_),
+                'auth': f'{auth_}',
                 'email': 'sakuya@scarlet.net'
             }
         }
@@ -342,7 +340,7 @@ class LoadConfigTest(unittest.TestCase):
         auth_ = base64.b64encode(b'sakuya:izayoi').decode('ascii')
         config = {
             registry: {
-                'auth': '{auth}'.format(auth=auth_),
+                'auth': f'{auth_}',
                 'email': 'sakuya@scarlet.net'
             }
         }
@@ -370,7 +368,7 @@ class LoadConfigTest(unittest.TestCase):
         config = {
             'auths': {
                 registry: {
-                    'auth': '{auth}'.format(auth=auth_),
+                    'auth': f'{auth_}',
                     'email': 'sakuya@scarlet.net'
                 }
             }
@@ -399,7 +397,7 @@ class LoadConfigTest(unittest.TestCase):
         config = {
             'auths': {
                 registry: {
-                    'auth': '{auth}'.format(auth=auth_),
+                    'auth': f'{auth_}',
                     'email': 'sakuya@scarlet.net'
                 }
             }
