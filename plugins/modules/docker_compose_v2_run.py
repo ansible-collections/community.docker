@@ -297,7 +297,7 @@ class ExecManager(BaseComposeManager):
                 if not isinstance(value, str):
                     self.fail(
                         "Non-string value found for env option. Ambiguous env options must be "
-                        "wrapped in quotes to avoid them being interpreted. Key: %s" % (name, )
+                        f"wrapped in quotes to avoid them being interpreted. Key: {name}"
                     )
                 self.env[name] = to_text(value, errors='surrogate_or_strict')
 

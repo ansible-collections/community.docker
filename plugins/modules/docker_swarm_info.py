@@ -192,8 +192,6 @@ except ImportError:
     # missing Docker SDK for Python handled in ansible.module_utils.docker_common
     pass
 
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.swarm import AnsibleDockerSwarmClient
 from ansible_collections.community.docker.plugins.module_utils.common import RequestException
 from ansible_collections.community.docker.plugins.module_utils.util import (
@@ -231,7 +229,7 @@ class DockerSwarmManager(DockerBaseClass):
         try:
             return self.client.inspect_swarm()
         except APIError as exc:
-            self.client.fail("Error inspecting docker swarm: %s" % to_native(exc))
+            self.client.fail(f"Error inspecting docker swarm: {exc}")
 
     def get_docker_items_list(self, docker_object=None, filters=None):
         items = None
@@ -245,8 +243,7 @@ class DockerSwarmManager(DockerBaseClass):
             elif docker_object == 'services':
                 items = self.client.services(filters=filters)
         except APIError as exc:
-            self.client.fail("Error inspecting docker swarm for object '%s': %s" %
-                             (docker_object, to_native(exc)))
+            self.client.fail(f"Error inspecting docker swarm for object '{docker_object}': {exc}")
 
         if self.verbose_output:
             return items

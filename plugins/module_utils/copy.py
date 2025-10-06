@@ -156,7 +156,7 @@ def put_file(client, container, in_path, out_path, user_id, group_id, mode=None,
     """Transfer a file from local to Docker container."""
     if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
         raise DockerFileNotFound(
-            "file or module does not exist: %s" % to_native(in_path))
+            f"file or module does not exist: {to_native(in_path)}")
 
     b_in_path = to_bytes(in_path, errors='surrogate_or_strict')
 
@@ -212,7 +212,7 @@ def stat_file(client, container, in_path, follow_links=False, log=None):
         considered_in_paths.add(in_path)
 
         if log:
-            log('FETCH: Stating "%s"' % in_path)
+            log(f'FETCH: Stating "{in_path}"')
 
         response = client._head(
             client._url('/containers/{0}/archive', container),
@@ -288,7 +288,7 @@ def fetch_file_ex(client, container, in_path, process_none, process_regular, pro
         considered_in_paths.add(in_path)
 
         if log:
-            log('FETCH: Fetching "%s"' % in_path)
+            log(f'FETCH: Fetching "{in_path}"')
         try:
             stream = client.get_raw_stream(
                 '/containers/{0}/archive', container,
@@ -318,7 +318,7 @@ def fetch_file_ex(client, container, in_path, process_none, process_regular, pro
                     return process_symlink(in_path, symlink_member)
                 in_path = os.path.join(os.path.split(in_path)[0], symlink_member.linkname)
                 if log:
-                    log('FETCH: Following symbolic link to "%s"' % in_path)
+                    log(f'FETCH: Following symbolic link to "{in_path}"')
                 continue
             if found:
                 return result
@@ -350,7 +350,7 @@ def fetch_file(client, container, in_path, out_path, follow_links=False, log=Non
         return in_path
 
     def process_other(in_path, member):
-        raise DockerFileCopyError('Remote file "%s" is not a regular file or a symbolic link' % in_path)
+        raise DockerFileCopyError(f'Remote file "{in_path}" is not a regular file or a symbolic link')
 
     return fetch_file_ex(client, container, in_path, process_none, process_regular, process_symlink, process_other, follow_links=follow_links, log=log)
 

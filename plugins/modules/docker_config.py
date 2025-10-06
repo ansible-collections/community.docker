@@ -214,7 +214,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     compare_generic,
     sanitize_labels,
 )
-from ansible.module_utils.common.text.converters import to_native, to_bytes
+from ansible.module_utils.common.text.converters import to_bytes
 
 
 class ConfigManager(DockerBaseClass):
@@ -281,7 +281,7 @@ class ConfigManager(DockerBaseClass):
         try:
             configs = self.client.configs(filters={'name': self.name})
         except APIError as exc:
-            self.client.fail("Error accessing config %s: %s" % (self.name, to_native(exc)))
+            self.client.fail(f"Error accessing config {self.name}: {exc}")
 
         if self.rolling_versions:
             self.configs = [
@@ -320,7 +320,7 @@ class ConfigManager(DockerBaseClass):
                 config_id = self.client.create_config(self.name, self.data, labels=labels, **kwargs)
                 self.configs += self.client.configs(filters={'id': config_id})
         except APIError as exc:
-            self.client.fail("Error creating config: %s" % to_native(exc))
+            self.client.fail(f"Error creating config: {exc}")
 
         if isinstance(config_id, dict):
             config_id = config_id['ID']
@@ -332,7 +332,7 @@ class ConfigManager(DockerBaseClass):
             if not self.check_mode:
                 self.client.remove_config(config['ID'])
         except APIError as exc:
-            self.client.fail("Error removing config %s: %s" % (config['Spec']['Name'], to_native(exc)))
+            self.client.fail(f"Error removing config {config['Spec']['Name']}: {exc}")
 
     def present(self):
         ''' Handles state == 'present', creating or updating the config '''

@@ -202,7 +202,7 @@ class Connection(ConnectionBase):
 
         cmd, cmd_output, err, returncode = self._new_docker_version()
         if returncode:
-            raise AnsibleError('Docker version check (%s) failed: %s' % (to_native(cmd), to_native(err)))
+            raise AnsibleError(f'Docker version check ({to_native(cmd)}) failed: {to_native(err)}')
 
         return self._sanitize_version(to_text(cmd_output, errors='surrogate_or_strict'))
 
@@ -218,7 +218,7 @@ class Connection(ConnectionBase):
         out = to_text(out, errors='surrogate_or_strict')
 
         if p.returncode != 0:
-            display.warning('unable to retrieve default user from docker container: %s %s' % (out, to_text(err)))
+            display.warning(f'unable to retrieve default user from docker container: {out} {to_text(err)}')
             self._container_user_cache[container] = None
             return None
 
@@ -252,7 +252,7 @@ class Connection(ConnectionBase):
                             f'Non-string {what.lower()} found for extra_env option. Ambiguous env options must be '
                             f'wrapped in quotes to avoid them being interpreted. {what}: {val!r}'
                         )
-                local_cmd += [b'-e', b'%s=%s' % (to_bytes(k, errors='surrogate_or_strict'), to_bytes(v, errors='surrogate_or_strict'))]
+                local_cmd += [b'-e', b"%s=%s" % (to_bytes(k, errors='surrogate_or_strict'), to_bytes(v, errors='surrogate_or_strict'))]
 
         if self.get_option('working_dir') is not None:
             local_cmd += [b'-w', to_bytes(self.get_option('working_dir'), errors='surrogate_or_strict')]
@@ -420,12 +420,12 @@ class Connection(ConnectionBase):
         """ Transfer a file from local to docker container """
         self._set_conn_data()
         super(Connection, self).put_file(in_path, out_path)
-        display.vvv("PUT %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
+        display.vvv(f"PUT {in_path} TO {out_path}", host=self.get_option('remote_addr'))
 
         out_path = self._prefix_login_path(out_path)
         if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
             raise AnsibleFileNotFound(
-                "file or module does not exist: %s" % to_native(in_path))
+                f"file or module does not exist: {to_native(in_path)}")
 
         out_path = quote(out_path)
         # Older docker does not have native support for copying files into
@@ -437,7 +437,7 @@ class Connection(ConnectionBase):
                 count = ' count=0'
             else:
                 count = ''
-            args = self._build_exec_cmd([self._play_context.executable, "-c", "dd of=%s bs=%s%s" % (out_path, BUFSIZE, count)])
+            args = self._build_exec_cmd([self._play_context.executable, "-c", f"dd of={out_path} bs={BUFSIZE}{count}"])
             args = [to_bytes(i, errors='surrogate_or_strict') for i in args]
             try:
                 p = subprocess.Popen(args, stdin=in_file, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -446,21 +446,20 @@ class Connection(ConnectionBase):
             stdout, stderr = p.communicate()
 
             if p.returncode != 0:
-                raise AnsibleError("failed to transfer file %s to %s:\n%s\n%s" %
-                                   (to_native(in_path), to_native(out_path), to_native(stdout), to_native(stderr)))
+                raise AnsibleError(f"failed to transfer file {to_native(in_path)} to {to_native(out_path)}:\n{to_native(stdout)}\n{to_native(stderr)}")
 
     def fetch_file(self, in_path, out_path):
         """ Fetch a file from container to local. """
         self._set_conn_data()
         super(Connection, self).fetch_file(in_path, out_path)
-        display.vvv("FETCH %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
+        display.vvv(f"FETCH {in_path} TO {out_path}", host=self.get_option('remote_addr'))
 
         in_path = self._prefix_login_path(in_path)
         # out_path is the final file path, but docker takes a directory, not a
         # file path
         out_dir = os.path.dirname(out_path)
 
-        args = [self.docker_cmd, "cp", "%s:%s" % (self.get_option('remote_addr'), in_path), out_dir]
+        args = [self.docker_cmd, "cp", f"{self.get_option('remote_addr')}:{in_path}", out_dir]
         args = [to_bytes(i, errors='surrogate_or_strict') for i in args]
 
         p = subprocess.Popen(args, stdin=subprocess.PIPE,
@@ -476,7 +475,7 @@ class Connection(ConnectionBase):
         if p.returncode != 0:
             # Older docker does not have native support for fetching files command `cp`
             # If `cp` fails, try to use `dd` instead
-            args = self._build_exec_cmd([self._play_context.executable, "-c", "dd if=%s bs=%s" % (in_path, BUFSIZE)])
+            args = self._build_exec_cmd([self._play_context.executable, "-c", f"dd if={in_path} bs={BUFSIZE}"])
             args = [to_bytes(i, errors='surrogate_or_strict') for i in args]
             with open(to_bytes(actual_out_path, errors='surrogate_or_strict'), 'wb') as out_file:
                 try:
@@ -487,7 +486,7 @@ class Connection(ConnectionBase):
                 stdout, stderr = p.communicate()
 
                 if p.returncode != 0:
-                    raise AnsibleError("failed to fetch file %s to %s:\n%s\n%s" % (in_path, out_path, stdout, stderr))
+                    raise AnsibleError(f"failed to fetch file {in_path} to {out_path}:\n{stdout}\n{stderr}")
 
         # Rename if needed
         if actual_out_path != out_path:

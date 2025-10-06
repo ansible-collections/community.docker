@@ -8,7 +8,7 @@ from __future__ import annotations
 import re
 from time import sleep
 
-from ansible.module_utils.common.text.converters import to_native, to_text
+from ansible.module_utils.common.text.converters import to_text
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DifferenceTracker,
@@ -157,23 +157,23 @@ class ContainerManager(DockerBaseClass):
                 key_main = comp_aliases.get(key)
                 if key_main is None:
                     if key_main in all_module_options:
-                        self.fail("The module option '%s' cannot be specified in the comparisons dict, "
-                                  "since it does not correspond to container's state!" % key)
+                        self.fail(f"The module option '{key}' cannot be specified in the comparisons dict, "
+                                  "since it does not correspond to container's state!")
                     if key not in self.all_options or self.all_options[key].not_an_ansible_option:
-                        self.fail("Unknown module option '%s' in comparisons dict!" % key)
+                        self.fail(f"Unknown module option '{key}' in comparisons dict!")
                     key_main = key
                 if key_main in comp_aliases_used:
-                    self.fail("Both '%s' and '%s' (aliases of %s) are specified in comparisons dict!" % (key, comp_aliases_used[key_main], key_main))
+                    self.fail(f"Both '{key}' and '{comp_aliases_used[key_main]}' (aliases of {key_main}) are specified in comparisons dict!")
                 comp_aliases_used[key_main] = key
                 # Check value and update accordingly
                 if value in ('strict', 'ignore'):
                     self.all_options[key_main].comparison = value
                 elif value == 'allow_more_present':
                     if self.all_options[key_main].comparison_type == 'value':
-                        self.fail("Option '%s' is a value and not a set/list/dict, so its comparison cannot be %s" % (key, value))
+                        self.fail(f"Option '{key}' is a value and not a set/list/dict, so its comparison cannot be {value}")
                     self.all_options[key_main].comparison = value
                 else:
-                    self.fail("Unknown comparison mode '%s'!" % value)
+                    self.fail(f"Unknown comparison mode '{value}'!")
         # Copy values
         for option in self.all_options.values():
             if option.copy_comparison_from is not None:
@@ -373,9 +373,7 @@ class ContainerManager(DockerBaseClass):
                         else:
                             self.engine_driver.unpause_container(self.client, container.id)
                     except Exception as exc:
-                        self.fail("Error %s container %s: %s" % (
-                            "pausing" if self.param_paused else "unpausing", container.id, to_native(exc)
-                        ))
+                        self.fail(f"Error {'pausing' if self.param_paused else 'unpausing'} container {container.id}: {exc}")
                     container = self._get_container(container.id)
                 self.results['changed'] = True
                 self.results['actions'].append(dict(set_paused=self.param_paused))
@@ -440,14 +438,14 @@ class ContainerManager(DockerBaseClass):
         if is_image_name_id(image_parameter):
             image = self.engine_driver.inspect_image_by_id(self.client, image_parameter)
             if image is None:
-                self.client.fail("Cannot find image with ID %s" % (image_parameter, ))
+                self.client.fail(f"Cannot find image with ID {image_parameter}")
         else:
             repository, tag = parse_repository_tag(image_parameter)
             if not tag:
                 tag = "latest"
             image = self.engine_driver.inspect_image_by_name(self.client, repository, tag)
             if not image and self.param_pull == "never":
-                self.client.fail("Cannot find image with name %s:%s, and pull=never" % (repository, tag))
+                self.client.fail(f"Cannot find image with name {repository}:{tag}, and pull=never")
             if not image or self.param_pull == "always":
                 if not self.check_mode:
                     self.log("Pull the image.")
@@ -455,16 +453,16 @@ class ContainerManager(DockerBaseClass):
                         self.client, repository, tag, platform=self.module.params['platform'])
                     if alreadyToLatest:
                         self.results['changed'] = False
-                        self.results['actions'].append(dict(pulled_image="%s:%s" % (repository, tag), changed=False))
+                        self.results['actions'].append(dict(pulled_image=f"{repository}:{tag}", changed=False))
                     else:
                         self.results['changed'] = True
-                        self.results['actions'].append(dict(pulled_image="%s:%s" % (repository, tag), changed=True))
+                        self.results['actions'].append(dict(pulled_image=f"{repository}:{tag}", changed=True))
                 elif not image or self.param_pull_check_mode_behavior == 'always':
                     # If the image is not there, or pull_check_mode_behavior == 'always', claim we'll
                     # pull. (Implicitly: if the image is there, claim it already was latest unless
                     # pull_check_mode_behavior == 'always'.)
                     self.results['changed'] = True
-                    action = dict(pulled_image="%s:%s" % (repository, tag))
+                    action = dict(pulled_image=f"{repository}:{tag}")
                     if not image:
                         action['changed'] = True
                     self.results['actions'].append(action)
@@ -620,7 +618,7 @@ class ContainerManager(DockerBaseClass):
                 if network.get('links'):
                     expected_links = []
                     for link, alias in network['links']:
-                        expected_links.append("%s:%s" % (link, alias))
+                        expected_links.append(f"{link}:{alias}")
                     if not compare_generic(expected_links, network_info.get('Links'), 'allow_more_present', 'set'):
                         diff = True
                 if network.get('mac_address') and network['mac_address'] != network_info.get('MacAddress'):
@@ -707,18 +705,17 @@ class ContainerManager(DockerBaseClass):
                     try:
                         self.engine_driver.disconnect_container_from_network(self.client, container.id, diff['parameter']['id'])
                     except Exception as exc:
-                        self.fail("Error disconnecting container from network %s - %s" % (diff['parameter']['name'],
-                                                                                          to_native(exc)))
+                        self.fail(f"Error disconnecting container from network {diff['parameter']['name']} - {exc}")
             # connect to the network
             self.results['actions'].append(dict(added_to_network=diff['parameter']['name'], network_parameters=diff['parameter']))
             if not self.check_mode:
                 params = {key: value for key, value in diff['parameter'].items() if key not in ('id', 'name')}
                 try:
-                    self.log("Connecting container to network %s" % diff['parameter']['id'])
+                    self.log(f"Connecting container to network {diff['parameter']['id']}")
                     self.log(params, pretty_print=True)
                     self.engine_driver.connect_container_to_network(self.client, container.id, diff['parameter']['id'], params)
                 except Exception as exc:
-                    self.fail("Error connecting container to network %s - %s" % (diff['parameter']['name'], to_native(exc)))
+                    self.fail(f"Error connecting container to network {diff['parameter']['name']} - {exc}")
         return self._get_container(container.id)
 
     def _purge_networks(self, container, networks):
@@ -728,14 +725,13 @@ class ContainerManager(DockerBaseClass):
                 try:
                     self.engine_driver.disconnect_container_from_network(self.client, container.id, network['name'])
                 except Exception as exc:
-                    self.fail("Error disconnecting container from network %s - %s" % (network['name'],
-                                                                                      to_native(exc)))
+                    self.fail(f"Error disconnecting container from network {network['name']} - {exc}")
         return self._get_container(container.id)
 
     def container_create(self, image):
         create_parameters = self._compose_create_parameters(image)
         self.log("create container")
-        self.log("image: %s parameters:" % image)
+        self.log(f"image: {image} parameters:")
         self.log(create_parameters, pretty_print=True)
         networks = {}
         if self.param_networks_cli_compatible and self.module.params['networks']:
@@ -754,19 +750,19 @@ class ContainerManager(DockerBaseClass):
             try:
                 container_id = self.engine_driver.create_container(self.client, self.param_name, create_parameters, networks=networks)
             except Exception as exc:
-                self.fail("Error creating container: %s" % to_native(exc))
+                self.fail(f"Error creating container: {exc}")
             return self._get_container(container_id)
         return new_container
 
     def container_start(self, container_id):
-        self.log("start container %s" % (container_id))
+        self.log(f"start container {container_id}")
         self.results['actions'].append(dict(started=container_id))
         self.results['changed'] = True
         if not self.check_mode:
             try:
                 self.engine_driver.start_container(self.client, container_id)
             except Exception as exc:
-                self.fail("Error starting container %s: %s" % (container_id, to_native(exc)))
+                self.fail(f"Error starting container {container_id}: {exc}")
 
             if self.module.params['detach'] is False:
                 status = self.engine_driver.wait_for_container(self.client, container_id)
@@ -798,18 +794,18 @@ class ContainerManager(DockerBaseClass):
 
     def container_remove(self, container_id, link=False, force=False):
         volume_state = (not self.param_keep_volumes)
-        self.log("remove container container:%s v:%s link:%s force%s" % (container_id, volume_state, link, force))
+        self.log(f"remove container container:{container_id} v:{volume_state} link:{link} force{force}")
         self.results['actions'].append(dict(removed=container_id, volume_state=volume_state, link=link, force=force))
         self.results['changed'] = True
         if not self.check_mode:
             try:
                 self.engine_driver.remove_container(self.client, container_id, remove_volumes=volume_state, link=link, force=force)
             except Exception as exc:
-                self.client.fail("Error removing container %s: %s" % (container_id, to_native(exc)))
+                self.client.fail(f"Error removing container {container_id}: {exc}")
 
     def container_update(self, container_id, update_parameters):
         if update_parameters:
-            self.log("update container %s" % (container_id))
+            self.log(f"update container {container_id}")
             self.log(update_parameters, pretty_print=True)
             self.results['actions'].append(dict(updated=container_id, update_parameters=update_parameters))
             self.results['changed'] = True
@@ -817,7 +813,7 @@ class ContainerManager(DockerBaseClass):
                 try:
                     self.engine_driver.update_container(self.client, container_id, update_parameters)
                 except Exception as exc:
-                    self.fail("Error updating container %s: %s" % (container_id, to_native(exc)))
+                    self.fail(f"Error updating container {container_id}: {exc}")
         return self._get_container(container_id)
 
     def container_kill(self, container_id):
@@ -827,7 +823,7 @@ class ContainerManager(DockerBaseClass):
             try:
                 self.engine_driver.kill_container(self.client, container_id, kill_signal=self.param_kill_signal)
             except Exception as exc:
-                self.fail("Error killing container %s: %s" % (container_id, to_native(exc)))
+                self.fail(f"Error killing container {container_id}: {exc}")
 
     def container_restart(self, container_id):
         self.results['actions'].append(dict(restarted=container_id, timeout=self.module.params['stop_timeout']))
@@ -836,7 +832,7 @@ class ContainerManager(DockerBaseClass):
             try:
                 self.engine_driver.restart_container(self.client, container_id, self.module.params['stop_timeout'] or 10)
             except Exception as exc:
-                self.fail("Error restarting container %s: %s" % (container_id, to_native(exc)))
+                self.fail(f"Error restarting container {container_id}: {exc}")
         return self._get_container(container_id)
 
     def container_stop(self, container_id):
@@ -849,7 +845,7 @@ class ContainerManager(DockerBaseClass):
             try:
                 self.engine_driver.stop_container(self.client, container_id, self.module.params['stop_timeout'])
             except Exception as exc:
-                self.fail("Error stopping container %s: %s" % (container_id, to_native(exc)))
+                self.fail(f"Error stopping container {container_id}: {exc}")
 
 
 def run_module(engine_driver):

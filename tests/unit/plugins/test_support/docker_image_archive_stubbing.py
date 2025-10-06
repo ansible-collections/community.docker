@@ -28,7 +28,7 @@ def write_imitation_archive(file_name, image_id, repo_tags):
 
     manifest = [
         {
-            'Config': '%s.json' % image_id,
+            'Config': f'{image_id}.json',
             'RepoTags': repo_tags
         }
     ]

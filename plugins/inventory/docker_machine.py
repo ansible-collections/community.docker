@@ -279,8 +279,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 self._add_host_to_keyed_groups(self.get_option('keyed_groups'), unsafe_node_attrs, machine_name, strict=strict)
 
         except Exception as e:
-            raise AnsibleError('Unable to fetch hosts from Docker Machine, this was the original exception: %s' %
-                               to_native(e), orig_exc=e)
+            raise AnsibleError(f'Unable to fetch hosts from Docker Machine, this was the original exception: {e}') from e
 
     def verify_file(self, path):
         """Return the possibility of a file being consumable by this plugin."""

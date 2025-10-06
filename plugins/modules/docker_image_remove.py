@@ -99,8 +99,6 @@ untagged:
 
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
@@ -171,7 +169,7 @@ class ImageRemover(DockerBaseClass):
         else:
             image = self.client.find_image(name, self.tag)
             if self.tag:
-                name = "%s:%s" % (self.name, self.tag)
+                name = f"{self.name}:{self.tag}"
 
         if self.diff:
             results['diff'] = dict(before=self.get_diff_state(image))
@@ -182,7 +180,7 @@ class ImageRemover(DockerBaseClass):
             return results
 
         results['changed'] = True
-        results['actions'].append("Removed image %s" % (name))
+        results['actions'].append(f"Removed image {name}")
         results['image'] = image
 
         if not self.check_mode:
@@ -192,7 +190,7 @@ class ImageRemover(DockerBaseClass):
                 # If the image vanished while we were trying to remove it, do not fail
                 res = []
             except Exception as exc:
-                self.fail("Error removing image %s - %s" % (name, to_native(exc)))
+                self.fail(f"Error removing image {name} - {exc}")
 
             for entry in res:
                 if entry.get('Untagged'):

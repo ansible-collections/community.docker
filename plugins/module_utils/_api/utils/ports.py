@@ -49,9 +49,9 @@ def build_port_bindings(ports):
 
 
 def _raise_invalid_port(port):
-    raise ValueError('Invalid port "%s", should be '
+    raise ValueError(f'Invalid port "{port}", should be '
                      '[[remote_ip:]remote_port[-remote_port]:]'
-                     'port[/protocol]' % port)
+                     'port[/protocol]')
 
 
 def port_range(start, end, proto, randomly_available_port=False):

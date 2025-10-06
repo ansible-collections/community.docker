@@ -206,7 +206,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     compare_generic,
     sanitize_labels,
 )
-from ansible.module_utils.common.text.converters import to_native, to_bytes
+from ansible.module_utils.common.text.converters import to_bytes
 
 
 class SecretManager(DockerBaseClass):
@@ -272,7 +272,7 @@ class SecretManager(DockerBaseClass):
         try:
             secrets = self.client.secrets(filters={'name': self.name})
         except APIError as exc:
-            self.client.fail("Error accessing secret %s: %s" % (self.name, to_native(exc)))
+            self.client.fail(f"Error accessing secret {self.name}: {exc}")
 
         if self.rolling_versions:
             self.secrets = [
@@ -305,7 +305,7 @@ class SecretManager(DockerBaseClass):
                 secret_id = self.client.create_secret(self.name, self.data, labels=labels)
                 self.secrets += self.client.secrets(filters={'id': secret_id})
         except APIError as exc:
-            self.client.fail("Error creating secret: %s" % to_native(exc))
+            self.client.fail(f"Error creating secret: {exc}")
 
         if isinstance(secret_id, dict):
             secret_id = secret_id['ID']
@@ -317,7 +317,7 @@ class SecretManager(DockerBaseClass):
             if not self.check_mode:
                 self.client.remove_secret(secret['ID'])
         except APIError as exc:
-            self.client.fail("Error removing secret %s: %s" % (secret['Spec']['Name'], to_native(exc)))
+            self.client.fail(f"Error removing secret {secret['Spec']['Name']}: {exc}")
 
     def present(self):
         ''' Handles state == 'present', creating or updating the secret '''

@@ -149,7 +149,6 @@ keyed_groups:
 '''
 
 from ansible.errors import AnsibleError
-from ansible.module_utils.common.text.converters import to_native
 from ansible_collections.community.docker.plugins.module_utils.common import get_connect_params
 from ansible_collections.community.docker.plugins.module_utils.util import update_tls_hostname
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
@@ -255,8 +254,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                                                unsafe_node_attrs['ID'],
                                                strict=strict)
         except Exception as e:
-            raise AnsibleError('Unable to fetch hosts from Docker swarm API, this was the original exception: %s' %
-                               to_native(e))
+            raise AnsibleError(f'Unable to fetch hosts from Docker swarm API, this was the original exception: {e}')
 
     def verify_file(self, path):
         """Return the possibly of a file being consumable by this plugin."""

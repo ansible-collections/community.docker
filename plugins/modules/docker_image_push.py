@@ -74,8 +74,6 @@ image:
 import base64
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
@@ -128,7 +126,7 @@ class ImagePusher(DockerBaseClass):
     def push(self):
         image = self.client.find_image(name=self.name, tag=self.tag)
         if not image:
-            self.client.fail('Cannot find image %s:%s' % (self.name, self.tag))
+            self.client.fail(f'Cannot find image {self.name}:{self.tag}')
 
         results = dict(
             changed=False,
@@ -138,7 +136,7 @@ class ImagePusher(DockerBaseClass):
 
         push_registry, push_repo = resolve_repository_name(self.name)
         try:
-            results['actions'].append('Pushed image %s:%s' % (self.name, self.tag))
+            results['actions'].append(f'Pushed image {self.name}:{self.tag}')
 
             headers = {}
             header = get_config_header(self.client, push_registry)
@@ -165,12 +163,10 @@ class ImagePusher(DockerBaseClass):
         except Exception as exc:
             if 'unauthorized' in str(exc):
                 if 'authentication required' in str(exc):
-                    self.client.fail("Error pushing image %s/%s:%s - %s. Try logging into %s first." %
-                                     (push_registry, push_repo, self.tag, to_native(exc), push_registry))
+                    self.client.fail(f"Error pushing image {push_registry}/{push_repo}:{self.tag} - {exc}. Try logging into {push_registry} first.")
                 else:
-                    self.client.fail("Error pushing image %s/%s:%s - %s. Does the repository exist?" %
-                                     (push_registry, push_repo, self.tag, str(exc)))
-            self.client.fail("Error pushing image %s:%s: %s" % (self.name, self.tag, to_native(exc)))
+                    self.client.fail(f"Error pushing image {push_registry}/{push_repo}:{self.tag} - {exc}. Does the repository exist?")
+            self.client.fail(f"Error pushing image {self.name}:{self.tag}: {exc}")
 
         return results
 

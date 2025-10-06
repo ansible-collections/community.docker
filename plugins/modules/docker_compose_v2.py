@@ -476,17 +476,17 @@ class ServicesManager(BaseComposeManager):
         self.wait_timeout = parameters['wait_timeout']
         self.yes = parameters['assume_yes']
         if self.compose_version < LooseVersion('2.32.0') and self.yes:
-            self.fail('assume_yes=true needs Docker Compose 2.32.0 or newer, not version %s' % (self.compose_version, ))
+            self.fail(f'assume_yes=true needs Docker Compose 2.32.0 or newer, not version {self.compose_version}')
 
         for key, value in self.scale.items():
             if not isinstance(key, str):
-                self.fail('The key %s for `scale` is not a string' % repr(key))
+                self.fail(f'The key {key!r} for `scale` is not a string')
             try:
                 value = check_type_int(value)
             except TypeError as exc:
-                self.fail('The value %s for `scale[%s]` is not an integer' % (repr(value), repr(key)))
+                self.fail(f'The value {value!r} for `scale[{key!r}]` is not an integer')
             if value < 0:
-                self.fail('The value %s for `scale[%s]` is negative' % (repr(value), repr(key)))
+                self.fail(f'The value {value!r} for `scale[{key!r}]` is negative')
             self.scale[key] = value
 
     def run(self):
@@ -519,13 +519,13 @@ class ServicesManager(BaseComposeManager):
         if not self.dependencies:
             args.append('--no-deps')
         if self.timeout is not None:
-            args.extend(['--timeout', '%d' % self.timeout])
+            args.extend(['--timeout', f'{self.timeout}'])
         if self.build == 'always':
             args.append('--build')
         elif self.build == 'never':
             args.append('--no-build')
         for key, value in sorted(self.scale.items()):
-            args.extend(['--scale', '%s=%d' % (key, value)])
+            args.extend(['--scale', f'{key}={value}'])
         if self.wait:
             args.append('--wait')
             if self.wait_timeout is not None:
@@ -556,7 +556,7 @@ class ServicesManager(BaseComposeManager):
     def get_stop_cmd(self, dry_run):
         args = self.get_base_args() + ['stop']
         if self.timeout is not None:
-            args.extend(['--timeout', '%d' % self.timeout])
+            args.extend(['--timeout', f'{self.timeout}'])
         if dry_run:
             args.append('--dry-run')
         args.append('--')
@@ -609,7 +609,7 @@ class ServicesManager(BaseComposeManager):
         if not self.dependencies:
             args.append('--no-deps')
         if self.timeout is not None:
-            args.extend(['--timeout', '%d' % self.timeout])
+            args.extend(['--timeout', f'{self.timeout}'])
         if dry_run:
             args.append('--dry-run')
         args.append('--')
@@ -636,7 +636,7 @@ class ServicesManager(BaseComposeManager):
         if self.remove_volumes:
             args.append('--volumes')
         if self.timeout is not None:
-            args.extend(['--timeout', '%d' % self.timeout])
+            args.extend(['--timeout', f'{self.timeout}'])
         if dry_run:
             args.append('--dry-run')
         args.append('--')

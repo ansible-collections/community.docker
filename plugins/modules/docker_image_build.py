@@ -313,11 +313,11 @@ def convert_to_bytes(value, module, name, unlimited_value=None):
             return unlimited_value
         return human_to_bytes(value)
     except ValueError as exc:
-        module.fail_json(msg='Failed to convert %s to bytes: %s' % (name, to_native(exc)))
+        module.fail_json(msg=f'Failed to convert {name} to bytes: {exc}')
 
 
 def dict_to_list(dictionary, concat='='):
-    return ['%s%s%s' % (k, concat, v) for k, v in sorted(dictionary.items())]
+    return [f'{k}{concat}{v}' for k, v in sorted(dictionary.items())]
 
 
 def _quote_csv(input):
@@ -387,7 +387,7 @@ class ImageBuilder(DockerBaseClass):
 
         if self.outputs:
             found = False
-            name_tag = '%s:%s' % (self.name, self.tag)
+            name_tag = f'{self.name}:{self.tag}'
             for output in self.outputs:
                 if output['type'] == 'image':
                     if not output['name']:
@@ -417,7 +417,7 @@ class ImageBuilder(DockerBaseClass):
     def add_args(self, args):
         environ_update = {}
         if not self.outputs:
-            args.extend(['--tag', '%s:%s' % (self.name, self.tag)])
+            args.extend(['--tag', f'{self.name}:{self.tag}'])
         if self.dockerfile:
             args.extend(['--file', os.path.join(self.path, self.dockerfile)])
         if self.cache_from:
@@ -510,7 +510,7 @@ class ImageBuilder(DockerBaseClass):
             args.extend(['--', self.path])
             rc, stdout, stderr = self.client.call_cli(*args, environ_update=environ_update)
             if rc != 0:
-                self.fail('Building %s:%s failed' % (self.name, self.tag), stdout=to_native(stdout), stderr=to_native(stderr), command=args)
+                self.fail(f'Building {self.name}:{self.tag} failed', stdout=to_native(stdout), stderr=to_native(stderr), command=args)
             results['stdout'] = to_native(stdout)
             results['stderr'] = to_native(stderr)
             results['image'] = self.client.find_image(self.name, self.tag) or {}

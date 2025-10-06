@@ -102,7 +102,6 @@ tagged_images:
 
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
 from ansible.module_utils.common.text.formatters import human_to_bytes
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
@@ -130,7 +129,7 @@ def convert_to_bytes(value, module, name, unlimited_value=None):
             return unlimited_value
         return human_to_bytes(value)
     except ValueError as exc:
-        module.fail_json(msg='Failed to convert %s to bytes: %s' % (name, to_native(exc)))
+        module.fail_json(msg=f'Failed to convert {name} to bytes: {exc}')
 
 
 def image_info(name, tag, image):
@@ -168,12 +167,12 @@ class ImageTagger(DockerBaseClass):
         self.repositories = []
         for i, repository in enumerate(parameters['repository']):
             if is_image_name_id(repository):
-                self.fail("repository[%d] must not be an image ID; got: %s" % (i + 1, repository))
+                self.fail(f"repository[{i + 1}] must not be an image ID; got: {repository}")
             repo, repo_tag = parse_repository_tag(repository)
             if not repo_tag:
                 repo_tag = parameters['tag']
             elif not is_valid_tag(repo_tag, allow_empty=False):
-                self.fail("repository[%d] must not have a digest; got: %s" % (i + 1, repository))
+                self.fail(f"repository[{i + 1}] must not have a digest; got: {repository}")
             self.repositories.append((repo, repo_tag))
 
     def fail(self, msg):
@@ -186,16 +185,16 @@ class ImageTagger(DockerBaseClass):
             if tagged_image['Id'] == image['Id']:
                 return (
                     False,
-                    "target image already exists (%s) and is as expected" % tagged_image['Id'],
+                    f"target image already exists ({tagged_image['Id']}) and is as expected",
                     tagged_image,
                 )
             if self.keep_existing_images:
                 return (
                     False,
-                    "target image already exists (%s) and is not as expected, but kept" % tagged_image['Id'],
+                    f"target image already exists ({tagged_image['Id']}) and is not as expected, but kept",
                     tagged_image,
                 )
-            msg = "target image existed (%s) and was not as expected" % tagged_image['Id']
+            msg = f"target image existed ({tagged_image['Id']}) and was not as expected"
         else:
             msg = "target image did not exist"
 
@@ -211,7 +210,7 @@ class ImageTagger(DockerBaseClass):
                 if res.status_code != 201:
                     raise Exception("Tag operation failed.")
             except Exception as exc:
-                self.fail("Error: failed to tag image as %s:%s - %s" % (name, tag, to_native(exc)))
+                self.fail(f"Error: failed to tag image as {name}:{tag} - {exc}")
 
         return True, msg, tagged_image
 
@@ -221,7 +220,7 @@ class ImageTagger(DockerBaseClass):
         else:
             image = self.client.find_image(name=self.name, tag=self.tag)
             if not image:
-                self.fail("Cannot find image %s:%s" % (self.name, self.tag))
+                self.fail(f"Cannot find image {self.name}:{self.tag}")
 
         before = []
         after = []
@@ -239,10 +238,10 @@ class ImageTagger(DockerBaseClass):
             after.append(image_info(repository, tag, image if tagged else old_image))
             if tagged:
                 results['changed'] = True
-                results['actions'].append('Tagged image %s as %s:%s: %s' % (image['Id'], repository, tag, msg))
-                tagged_images.append('%s:%s' % (repository, tag))
+                results['actions'].append(f"Tagged image {image['Id']} as {repository}:{tag}: {msg}")
+                tagged_images.append(f'{repository}:{tag}')
             else:
-                results['actions'].append('Not tagged image %s as %s:%s: %s' % (image['Id'], repository, tag, msg))
+                results['actions'].append(f"Not tagged image {image['Id']} as {repository}:{tag}: {msg}")
 
         return results
 

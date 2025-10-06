@@ -321,7 +321,7 @@ class Connection(ConnectionBase):
     def put_file(self, in_path, out_path):
         """ Transfer a file from local to docker container """
         super(Connection, self).put_file(in_path, out_path)
-        display.vvv("PUT %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
+        display.vvv(f"PUT {in_path} TO {out_path}", host=self.get_option('remote_addr'))
 
         out_path = self._prefix_login_path(out_path)
 
@@ -363,7 +363,7 @@ class Connection(ConnectionBase):
     def fetch_file(self, in_path, out_path):
         """ Fetch a file from container to local. """
         super(Connection, self).fetch_file(in_path, out_path)
-        display.vvv("FETCH %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
+        display.vvv(f"FETCH {in_path} TO {out_path}", host=self.get_option('remote_addr'))
 
         in_path = self._prefix_login_path(in_path)
 

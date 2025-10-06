@@ -176,7 +176,7 @@ class ImagePuller(DockerBaseClass):
             if compare_platform_strings(wanted_platform, image_platform):
                 return results
 
-        results['actions'].append('Pulled image %s:%s' % (self.name, self.tag))
+        results['actions'].append(f'Pulled image {self.name}:{self.tag}')
         if self.check_mode:
             results['changed'] = True
             results['diff']['after'] = image_info(dict(Id='unknown'))

@@ -681,7 +681,7 @@ class BaseComposeManager(DockerBaseClass):
                 with open(compose_file, 'wb') as f:
                     yaml.dump(parameters['definition'], f, encoding="utf-8", Dumper=_SafeDumper)
             except Exception as exc:
-                self.fail("Error writing to %s - %s" % (compose_file, to_native(exc)))
+                self.fail(f"Error writing to {compose_file} - {exc}")
         else:
             self.project_src = os.path.abspath(parameters['project_src'])
 

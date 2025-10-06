@@ -198,7 +198,7 @@ class SwarmNodeManager(DockerBaseClass):
         try:
             node_info = self.client.inspect_node(node_id=self.parameters.hostname)
         except APIError as exc:
-            self.client.fail("Failed to get node information for %s" % to_native(exc))
+            self.client.fail(f"Failed to get node information for {exc}")
 
         changed = False
         node_spec = dict(
@@ -247,9 +247,8 @@ class SwarmNodeManager(DockerBaseClass):
                                 changed = True
                         else:
                             self.client.module.warn(
-                                "Label '%s' listed both in 'labels' and 'labels_to_remove'. "
-                                "Keeping the assigned label value."
-                                % to_native(key))
+                                f"Label '{to_native(key)}' listed both in 'labels' and 'labels_to_remove'. "
+                                "Keeping the assigned label value.")
                     else:
                         if node_spec['Labels'].get(key):
                             node_spec['Labels'].pop(key)
@@ -261,7 +260,7 @@ class SwarmNodeManager(DockerBaseClass):
                     self.client.update_node(node_id=node_info['ID'], version=node_info['Version']['Index'],
                                             node_spec=node_spec)
                 except APIError as exc:
-                    self.client.fail("Failed to update node : %s" % to_native(exc))
+                    self.client.fail(f"Failed to update node : {exc}")
             self.results['node'] = self.client.get_node_inspect(node_id=node_info['ID'])
             self.results['changed'] = changed
         else:

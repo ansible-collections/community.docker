@@ -15,8 +15,6 @@ except ImportError:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
     pass
 
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
 
 from ansible_collections.community.docker.plugins.module_utils.common import AnsibleDockerClient
@@ -38,7 +36,7 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
         try:
             info = self.info()
         except APIError as exc:
-            self.fail("Failed to get node information for %s" % to_native(exc))
+            self.fail(f"Failed to get node information for {exc}")
 
         if info:
             json_str = json.dumps(info, ensure_ascii=False)
@@ -166,9 +164,9 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
             if exc.status_code == 404:
                 if skip_missing:
                     return None
-            self.fail("Error while reading from Swarm manager: %s" % to_native(exc))
+            self.fail(f"Error while reading from Swarm manager: {exc}")
         except Exception as exc:
-            self.fail("Error inspecting swarm node: %s" % exc)
+            self.fail(f"Error inspecting swarm node: {exc}")
 
         json_str = json.dumps(node_info, ensure_ascii=False)
         node_info = json.loads(json_str)
@@ -197,9 +195,9 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
         except APIError as exc:
             if exc.status_code == 503:
                 self.fail("Cannot inspect node: To inspect node execute module on Swarm Manager")
-            self.fail("Error while reading from Swarm manager: %s" % to_native(exc))
+            self.fail(f"Error while reading from Swarm manager: {exc}")
         except Exception as exc:
-            self.fail("Error inspecting swarm node: %s" % exc)
+            self.fail(f"Error inspecting swarm node: {exc}")
 
         json_str = json.dumps(node_info, ensure_ascii=False)
         node_info = json.loads(json_str)
@@ -265,15 +263,15 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
             service_info = self.inspect_service(service_id)
         except NotFound as exc:
             if skip_missing is False:
-                self.fail("Error while reading from Swarm manager: %s" % to_native(exc))
+                self.fail(f"Error while reading from Swarm manager: {exc}")
             else:
                 return None
         except APIError as exc:
             if exc.status_code == 503:
                 self.fail("Cannot inspect service: To inspect service execute module on Swarm Manager")
-            self.fail("Error inspecting swarm service: %s" % exc)
+            self.fail(f"Error inspecting swarm service: {exc}")
         except Exception as exc:
-            self.fail("Error inspecting swarm service: %s" % exc)
+            self.fail(f"Error inspecting swarm service: {exc}")
 
         json_str = json.dumps(service_info, ensure_ascii=False)
         service_info = json.loads(json_str)

@@ -90,8 +90,8 @@ class Connection(ConnectionBase):
         executable = C.DEFAULT_EXECUTABLE.split()[0] if C.DEFAULT_EXECUTABLE else None
 
         if not os.path.exists(to_bytes(executable, errors='surrogate_or_strict')):
-            raise AnsibleError("failed to find the executable specified %s."
-                               " Please verify if the executable exists and re-try." % executable)
+            raise AnsibleError(f"failed to find the executable specified {executable}."
+                               " Please verify if the executable exists and re-try.")
 
         # Rewrite the provided command to prefix it with nsenter
         nsenter_cmd_parts = [
@@ -129,7 +129,7 @@ class Connection(ConnectionBase):
             try:
                 master, stdin = pty.openpty()
             except (IOError, OSError) as e:
-                display.debug("Unable to open pty: %s" % to_native(e))
+                display.debug(f"Unable to open pty: {e}")
 
         p = subprocess.Popen(
             cmd,

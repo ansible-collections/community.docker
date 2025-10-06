@@ -213,8 +213,6 @@ disk_usage:
 
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
@@ -259,7 +257,7 @@ class DockerHostManager(DockerBaseClass):
         try:
             return self.client.info()
         except APIError as exc:
-            self.client.fail("Error inspecting docker host: %s" % to_native(exc))
+            self.client.fail(f"Error inspecting docker host: {exc}")
 
     def get_docker_disk_usage_facts(self):
         try:
@@ -268,7 +266,7 @@ class DockerHostManager(DockerBaseClass):
             else:
                 return dict(LayersSize=self.client.df()['LayersSize'])
         except APIError as exc:
-            self.client.fail("Error inspecting docker host: %s" % to_native(exc))
+            self.client.fail(f"Error inspecting docker host: {exc}")
 
     def get_docker_items_list(self, docker_object=None, filters=None, verbose=False):
         items = None
@@ -311,7 +309,7 @@ class DockerHostManager(DockerBaseClass):
                 items = self.client.get_json('/volumes', params=params)
                 items = items['Volumes']
         except APIError as exc:
-            self.client.fail("Error inspecting docker host for object '%s': %s" % (docker_object, to_native(exc)))
+            self.client.fail(f"Error inspecting docker host for object '{docker_object}': {exc}")
 
         if self.verbose_output:
             return items

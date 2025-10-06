@@ -90,7 +90,7 @@ class AnsibleDockerClientBase(object):
             self.docker_api_version = LooseVersion(self.docker_api_version_str)
             min_docker_api_version = min_docker_api_version or '1.25'
             if self.docker_api_version < LooseVersion(min_docker_api_version):
-                self.fail('Docker API version is %s. Minimum version required is %s.' % (self.docker_api_version_str, min_docker_api_version))
+                self.fail(f'Docker API version is {self.docker_api_version_str}. Minimum version required is {min_docker_api_version}.')
         else:
             self.docker_api_version_str = None
             self.docker_api_version = None
@@ -184,8 +184,8 @@ class AnsibleDockerClientBase(object):
             check_rc=True,
         )
         if tag:
-            lookup = "%s:%s" % (name, tag)
-            lookup_digest = "%s@%s" % (name, tag)
+            lookup = f"{name}:{tag}"
+            lookup_digest = f"{name}@{tag}"
             response = images
             images = []
             for image in response:
@@ -201,7 +201,7 @@ class AnsibleDockerClientBase(object):
         if not name:
             return None
 
-        self.log("Find image %s:%s" % (name, tag))
+        self.log(f"Find image {name}:{tag}")
         images = self._image_lookup(name, tag)
         if not images:
             # In API <= 1.20 seeing 'docker.io/<name>' as the name of images pulled from docker hub
@@ -209,40 +209,40 @@ class AnsibleDockerClientBase(object):
             if registry == 'docker.io':
                 # If docker.io is explicitly there in name, the image
                 # is not found in some cases (#41509)
-                self.log("Check for docker.io image: %s" % repo_name)
+                self.log(f"Check for docker.io image: {repo_name}")
                 images = self._image_lookup(repo_name, tag)
                 if not images and repo_name.startswith('library/'):
                     # Sometimes library/xxx images are not found
                     lookup = repo_name[len('library/'):]
-                    self.log("Check for docker.io image: %s" % lookup)
+                    self.log(f"Check for docker.io image: {lookup}")
                     images = self._image_lookup(lookup, tag)
                 if not images:
                     # Last case for some Docker versions: if docker.io was not there,
                     # it can be that the image was not found either
                     # (https://github.com/ansible/ansible/pull/15586)
-                    lookup = "%s/%s" % (registry, repo_name)
-                    self.log("Check for docker.io image: %s" % lookup)
+                    lookup = f"{registry}/{repo_name}"
+                    self.log(f"Check for docker.io image: {lookup}")
                     images = self._image_lookup(lookup, tag)
                 if not images and '/' not in repo_name:
                     # This seems to be happening with podman-docker
                     # (https://github.com/ansible-collections/community.docker/issues/291)
-                    lookup = "%s/library/%s" % (registry, repo_name)
-                    self.log("Check for docker.io image: %s" % lookup)
+                    lookup = f"{registry}/library/{repo_name}"
+                    self.log(f"Check for docker.io image: {lookup}")
                     images = self._image_lookup(lookup, tag)
 
         if len(images) > 1:
-            self.fail("Daemon returned more than one result for %s:%s" % (name, tag))
+            self.fail(f"Daemon returned more than one result for {name}:{tag}")
 
         if len(images) == 1:
             rc, image, stderr = self.call_cli_json('image', 'inspect', images[0]['ID'])
             if not image:
-                self.log("Image %s:%s not found." % (name, tag))
+                self.log(f"Image {name}:{tag} not found.")
                 return None
             if rc != 0:
-                self.fail("Error inspecting image %s:%s - %s" % (name, tag, to_native(stderr)))
+                self.fail(f"Error inspecting image {name}:{tag} - {to_native(stderr)}")
             return image[0]
 
-        self.log("Image %s:%s not found." % (name, tag))
+        self.log(f"Image {name}:{tag} not found.")
         return None
 
     def find_image_by_id(self, image_id, accept_missing_image=False):
@@ -252,15 +252,15 @@ class AnsibleDockerClientBase(object):
         if not image_id:
             return None
 
-        self.log("Find image %s (by ID)" % image_id)
+        self.log(f"Find image {image_id} (by ID)")
         rc, image, stderr = self.call_cli_json('image', 'inspect', image_id)
         if not image:
             if not accept_missing_image:
-                self.fail("Error inspecting image ID %s - %s" % (image_id, to_native(stderr)))
-            self.log("Image %s not found." % image_id)
+                self.fail(f"Error inspecting image ID {image_id} - {to_native(stderr)}")
+            self.log(f"Image {image_id} not found.")
             return None
         if rc != 0:
-            self.fail("Error inspecting image ID %s - %s" % (image_id, to_native(stderr)))
+            self.fail(f"Error inspecting image ID {image_id} - {to_native(stderr)}")
         return image[0]
 
 

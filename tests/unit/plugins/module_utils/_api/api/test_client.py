@@ -395,7 +395,7 @@ class UnixSocketStreamTest(unittest.TestCase):
         lines = []
         for i in range(0, 50):
             line = str(i).encode()
-            lines += [('%x' % len(line)).encode(), line]
+            lines += [f'{len(line):x}'.encode(), line]
         lines.append(b'0')
         lines.append(b'')
 
@@ -566,7 +566,7 @@ class UserAgentTest(unittest.TestCase):
         self.patcher = mock.patch.object(
             APIClient,
             'send',
-            return_value=fake_resp("GET", "%s/version" % fake_api.prefix)
+            return_value=fake_resp("GET", f"{fake_api.prefix}/version")
         )
         self.mock_send = self.patcher.start()
 

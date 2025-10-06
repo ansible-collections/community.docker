@@ -72,8 +72,6 @@ volume:
 
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
@@ -87,7 +85,7 @@ def get_existing_volume(client, volume_name):
     except NotFound as dummy:
         return None
     except Exception as exc:
-        client.fail("Error inspecting volume: %s" % to_native(exc))
+        client.fail(f"Error inspecting volume: {exc}")
 
 
 def main():

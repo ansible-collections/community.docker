@@ -36,7 +36,7 @@ DOCKER_COMMON_ARGS = dict(
 )
 
 DOCKER_COMMON_ARGS_VARS = dict([
-    [option_name, 'ansible_docker_%s' % option_name]
+    [option_name, f'ansible_docker_{option_name}']
     for option_name in DOCKER_COMMON_ARGS
     if option_name != 'debug'
 ])
@@ -324,7 +324,7 @@ def convert_duration_to_nanosecond(time_str):
     Return time duration in nanosecond.
     """
     if not isinstance(time_str, str):
-        raise ValueError('Missing unit in duration - %s' % time_str)
+        raise ValueError(f'Missing unit in duration - {time_str}')
 
     regex = re.compile(
         r'^(((?P<hours>\d+)h)?'
@@ -336,7 +336,7 @@ def convert_duration_to_nanosecond(time_str):
     parts = regex.match(time_str)
 
     if not parts:
-        raise ValueError('Invalid time duration - %s' % time_str)
+        raise ValueError(f'Invalid time duration - {time_str}')
 
     parts = parts.groupdict()
     time_params = {}

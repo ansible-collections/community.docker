@@ -228,7 +228,7 @@ def main():
             if not isinstance(value, str):
                 client.module.fail_json(
                     msg="Non-string value found for env option. Ambiguous env options must be "
-                        "wrapped in quotes to avoid them being interpreted. Key: %s" % (name, ))
+                        f"wrapped in quotes to avoid them being interpreted. Key: {name}")
             env[name] = to_text(value, errors='surrogate_or_strict')
 
     if command is not None:

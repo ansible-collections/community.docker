@@ -184,7 +184,7 @@ except ImportError:
 
 def docker_stack_services(client, stack_name):
     rc, out, err = client.call_cli("stack", "services", stack_name, "--format", "{{.Name}}")
-    if to_native(err) == "Nothing found in stack: %s\n" % stack_name:
+    if to_native(err) == f"Nothing found in stack: {stack_name}\n":
         return []
     return to_native(out).strip().split('\n')
 
@@ -230,7 +230,7 @@ def docker_stack_rm(client, stack_name, retries, interval):
         command += ["--detach=false"]
     rc, out, err = client.call_cli(*command)
 
-    while to_native(err) != "Nothing found in stack: %s\n" % stack_name and retries > 0:
+    while to_native(err) != f"Nothing found in stack: {stack_name}\n" and retries > 0:
         sleep(interval)
         retries = retries - 1
         rc, out, err = client.call_cli(*command)
@@ -281,7 +281,7 @@ def main():
                 elif isinstance(compose_def, str):
                     compose_files.append(compose_def)
                 else:
-                    client.fail("compose element '%s' must be a string or a dictionary" % compose_def)
+                    client.fail(f"compose element '{compose_def}' must be a string or a dictionary")
 
             before_stack_services = docker_stack_inspect(client, name)
 

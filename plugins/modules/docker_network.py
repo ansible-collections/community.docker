@@ -454,7 +454,7 @@ class DockerNetworkManager(object):
             else:
                 for key, value in self.parameters.driver_options.items():
                     if not (key in net['Options']) or value != net['Options'][key]:
-                        differences.add('driver_options.%s' % key,
+                        differences.add(f'driver_options.{key}',
                                         parameter=value,
                                         active=net['Options'].get(key))
 
@@ -497,7 +497,7 @@ class DockerNetworkManager(object):
                             # (but have default value None if not specified)
                             continue
                         if value != net_config.get(key):
-                            differences.add('ipam_config[%s].%s' % (idx, key),
+                            differences.add(f'ipam_config[{idx}].{key}',
                                             parameter=value,
                                             active=net_config.get(key))
 
@@ -536,7 +536,7 @@ class DockerNetworkManager(object):
             else:
                 for key, value in self.parameters.labels.items():
                     if not (key in net['Labels']) or value != net['Labels'][key]:
-                        differences.add('labels.%s' % key,
+                        differences.add(f'labels.{key}',
                                         parameter=value,
                                         active=net['Labels'].get(key))
 
@@ -596,7 +596,7 @@ class DockerNetworkManager(object):
                 resp = self.client.post_json_to_json('/networks/create', data=data)
                 self.client.report_warnings(resp, ['Warning'])
                 self.existing_network = self.client.get_network(network_id=resp['Id'])
-            self.results['actions'].append("Created network %s with driver %s" % (self.parameters.name, self.parameters.driver))
+            self.results['actions'].append(f"Created network {self.parameters.name} with driver {self.parameters.driver}")
             self.results['changed'] = True
 
     def remove_network(self):
@@ -607,7 +607,7 @@ class DockerNetworkManager(object):
                 if self.existing_network.get('Scope', 'local') == 'swarm':
                     while self.get_existing_network():
                         time.sleep(0.1)
-            self.results['actions'].append("Removed network %s" % (self.parameters.name,))
+            self.results['actions'].append(f"Removed network {self.parameters.name}")
             self.results['changed'] = True
 
     def is_container_connected(self, container_name):
@@ -636,7 +636,7 @@ class DockerNetworkManager(object):
                         "EndpointConfig": None,
                     }
                     self.client.post_json('/networks/{0}/connect', self.parameters.name, data=data)
-                self.results['actions'].append("Connected container %s" % (name,))
+                self.results['actions'].append(f"Connected container {name}")
                 self.results['changed'] = True
                 self.diff_tracker.add(f'connected.{name}', parameter=True, active=False)
 
@@ -662,7 +662,7 @@ class DockerNetworkManager(object):
         if not self.check_mode:
             data = {"Container": container_name, "Force": True}
             self.client.post_json('/networks/{0}/disconnect', self.parameters.name, data=data)
-        self.results['actions'].append("Disconnected container %s" % (container_name,))
+        self.results['actions'].append(f"Disconnected container {container_name}")
         self.results['changed'] = True
         self.diff_tracker.add(f'connected.{container_name}',
                               parameter=False,

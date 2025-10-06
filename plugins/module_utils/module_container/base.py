@@ -12,7 +12,7 @@ import shlex
 
 from functools import partial
 
-from ansible.module_utils.common.text.converters import to_native, to_text
+from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.common.text.formatters import human_to_bytes
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
@@ -56,7 +56,7 @@ def _get_ansible_type(type):
     if type == 'set':
         return 'list'
     if type not in ('list', 'dict', 'bool', 'int', 'float', 'str'):
-        raise Exception('Invalid type "%s"' % (type, ))
+        raise Exception(f'Invalid type "{type}"')
     return type
 
 
@@ -461,11 +461,11 @@ def _preprocess_env(module, values):
         for name, value in values['env'].items():
             if not isinstance(value, str):
                 module.fail_json(msg='Non-string value found for env option. Ambiguous env options must be '
-                                     'wrapped in quotes to avoid them being interpreted. Key: %s' % (name, ))
+                                     f'wrapped in quotes to avoid them being interpreted. Key: {name}')
             final_env[name] = to_text(value, errors='surrogate_or_strict')
     formatted_env = []
     for key, value in final_env.items():
-        formatted_env.append('%s=%s' % (key, value))
+        formatted_env.append(f'{key}={value}')
     return {
         'env': formatted_env,
     }
@@ -491,7 +491,7 @@ def _preprocess_convert_to_bytes(module, values, name, unlimited_value=None):
         values[name] = value
         return values
     except ValueError as exc:
-        module.fail_json(msg='Failed to convert %s to bytes: %s' % (name, to_native(exc)))
+        module.fail_json(msg=f'Failed to convert {name} to bytes: {exc}')
 
 
 def _preprocess_mac_address(module, values):
@@ -641,13 +641,13 @@ def _preprocess_mounts(module, values):
                     if re.match(r'[.~]', host):
                         host = os.path.abspath(os.path.expanduser(host))
                     check_collision(container, 'volumes')
-                    new_vols.append("%s:%s:%s" % (host, container, mode))
+                    new_vols.append(f"{host}:{container}:{mode}")
                     continue
                 elif len(parts) == 2:
                     if not _is_volume_permissions(parts[1]) and re.match(r'[.~]', parts[0]):
                         host = os.path.abspath(os.path.expanduser(parts[0]))
                         check_collision(parts[1], 'volumes')
-                        new_vols.append("%s:%s:rw" % (host, parts[1]))
+                        new_vols.append(f"{host}:{parts[1]}:rw")
                         continue
             check_collision(parts[min(1, len(parts) - 1)], 'volumes')
             new_vols.append(vol)
@@ -665,7 +665,7 @@ def _preprocess_mounts(module, values):
                     if not _is_volume_permissions(parts[1]):
                         host, container, mode = (parts + ['rw'])
             if host is not None:
-                new_binds.append('%s:%s:%s' % (host, container, mode))
+                new_binds.append(f'{host}:{container}:{mode}')
         values['volume_binds'] = new_binds
     return values
 
@@ -690,12 +690,12 @@ def _preprocess_log(module, values):
         options = {}
         for k, v in values['log_options'].items():
             if not isinstance(v, str):
+                value = to_text(v, errors='surrogate_or_strict')
                 module.warn(
-                    "Non-string value found for log_options option '%s'. The value is automatically converted to '%s'. "
-                    "If this is not correct, or you want to avoid such warnings, please quote the value." % (
-                        k, to_text(v, errors='surrogate_or_strict'))
+                    f"Non-string value found for log_options option '{k}'. The value is automatically converted to {value!r}. "
+                    "If this is not correct, or you want to avoid such warnings, please quote the value."
                 )
-            v = to_text(v, errors='surrogate_or_strict')
+                v = value
             options[k] = v
         result['log_options'] = options
     return result
@@ -744,8 +744,8 @@ def _preprocess_ports(module, values):
                     port_binds = len(container_ports) * [(ipaddr,)]
             else:
                 module.fail_json(
-                    msg='Invalid port description "%s" - expected 1 to 3 colon-separated parts, but got %d. '
-                        'Maybe you forgot to use square brackets ([...]) around an IPv6 address?' % (port, p_len)
+                    msg=f'Invalid port description "{port}" - expected 1 to 3 colon-separated parts, but got {p_len}. '
+                        'Maybe you forgot to use square brackets ([...]) around an IPv6 address?'
                 )
 
             for bind, container_port in zip(port_binds, container_ports):
