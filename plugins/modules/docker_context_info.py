@@ -19,9 +19,9 @@ description:
   - This includes some generic information, as well as a RV(contexts[].config) dictionary that can be used for module defaults for all community.docker modules
     that use the C(community.docker.docker) module defaults group.
 extends_documentation_fragment:
-  - community.docker.attributes
-  - community.docker.attributes.info_module
-  - community.docker.attributes.idempotent_not_modify_state
+  - community.docker._attributes
+  - community.docker._attributes.info_module
+  - community.docker._attributes.idempotent_not_modify_state
 
 options:
   only_current:

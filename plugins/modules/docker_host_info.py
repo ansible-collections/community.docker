@@ -20,10 +20,10 @@ description:
   - The output differs depending on API version of the docker daemon.
   - If the docker daemon cannot be contacted or does not meet the API version requirements, the module will fail.
 extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
-  - community.docker.attributes.idempotent_not_modify_state
+  - community.docker._docker.api_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
+  - community.docker._attributes.idempotent_not_modify_state
 
 attributes:
   check_mode:
@@ -220,11 +220,11 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
     convert_filters,
 )
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
+from ansible_collections.community.docker.plugins.module_utils._common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DockerBaseClass,
     clean_dict_booleans_for_docker_api,
 )

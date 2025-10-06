@@ -2,6 +2,9 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# Note that this module util is **PRIVATE** to the collection. It can have breaking changes at any time.
+# Do not use this from other collections or standalone plugins/modules!
+
 from __future__ import annotations
 
 import abc
@@ -14,7 +17,7 @@ from collections.abc import Mapping, Sequence
 
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE, BOOLEANS_TRUE
-from ansible_collections.community.docker.plugins.module_utils.version import (
+from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
 
@@ -81,49 +84,49 @@ except ImportError:
 
 
 # pylint: disable=unused-import
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     BYTE_SUFFIXES,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DEFAULT_DOCKER_REGISTRY,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DEFAULT_TLS_HOSTNAME,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DOCKER_COMMON_ARGS_VARS,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DifferenceTracker,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DockerBaseClass,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     clean_dict_booleans_for_docker_api,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     compare_dict_allow_more_present,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     compare_generic,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     convert_duration_to_nanosecond,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     is_image_name_id,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     is_valid_tag,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     omit_none_from_dict,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     parse_healthcheck,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (  # noqa: F401
+from ansible_collections.community.docker.plugins.module_utils._util import (  # noqa: F401
     DEFAULT_DOCKER_HOST,
     DEFAULT_TIMEOUT_SECONDS,
     DEFAULT_TLS,

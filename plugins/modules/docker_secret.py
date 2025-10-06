@@ -19,10 +19,10 @@ description:
     the O(force) option is set.
   - Updates to secrets are performed by removing the secret and creating it again.
 extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_2_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker
+  - community.docker._docker.docker_py_2_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -199,11 +199,11 @@ except ImportError:
     pass
 
 from ansible.module_utils.common.text.converters import to_bytes
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils._common import (
     AnsibleDockerClient,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DockerBaseClass,
     compare_generic,
     sanitize_labels,

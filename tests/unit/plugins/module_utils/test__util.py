@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import pytest
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     compare_dict_allow_more_present,
     compare_generic,
     convert_duration_to_nanosecond,

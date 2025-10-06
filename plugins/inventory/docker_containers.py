@@ -18,7 +18,7 @@ author:
   - Felix Fontein (@felixfontein)
 extends_documentation_fragment:
   - ansible.builtin.constructed
-  - community.docker.docker.api_documentation
+  - community.docker._docker.api_documentation
   - community.library_inventory_filtering_v1.inventory_filter
 description:
   - Reads inventories from the Docker API.
@@ -177,16 +177,18 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
     APIError,
     DockerException,
 )
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
+from ansible_collections.community.docker.plugins.module_utils._common_api import (
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DOCKER_COMMON_ARGS_VARS,
 )
-from ansible_collections.community.docker.plugins.plugin_utils.common_api import (
+from ansible_collections.community.docker.plugins.plugin_utils._common_api import (
     AnsibleDockerClient,
 )
-from ansible_collections.community.docker.plugins.plugin_utils.unsafe import make_unsafe
+from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
+    make_unsafe,
+)
 from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import (
     filter_host,
     parse_filters,

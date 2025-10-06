@@ -19,9 +19,9 @@ description:
   - Note that the module is B(not idempotent) in the sense of classical Ansible modules. The only idempotence check is whether
     the built image already exists. This check can be disabled with the O(rebuild) option.
 extends_documentation_fragment:
-  - community.docker.docker.cli_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker.cli_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -288,17 +288,17 @@ from ansible.module_utils.common.text.formatters import human_to_bytes
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
     parse_repository_tag,
 )
-from ansible_collections.community.docker.plugins.module_utils.common_cli import (
+from ansible_collections.community.docker.plugins.module_utils._common_cli import (
     AnsibleModuleDockerClient,
     DockerException,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DockerBaseClass,
     clean_dict_booleans_for_docker_api,
     is_image_name_id,
     is_valid_tag,
 )
-from ansible_collections.community.docker.plugins.module_utils.version import (
+from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
 

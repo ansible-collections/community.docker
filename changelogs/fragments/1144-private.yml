@@ -1,0 +1,3 @@
+breaking_changes:
+  - "All doc fragments, module utils, and plugin utils are from now on private. They can change at any time, and have breaking changes even in bugfix releases
+     (https://github.com/ansible-collections/community.docker/pull/1144)."

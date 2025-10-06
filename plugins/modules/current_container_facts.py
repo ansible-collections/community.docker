@@ -19,10 +19,10 @@ description:
 author:
   - Felix Fontein (@felixfontein)
 extends_documentation_fragment:
-  - community.docker.attributes
-  - community.docker.attributes.facts
-  - community.docker.attributes.facts_module
-  - community.docker.attributes.idempotent_not_modify_state
+  - community.docker._attributes
+  - community.docker._attributes.facts
+  - community.docker._attributes.facts_module
+  - community.docker._attributes.idempotent_not_modify_state
 """
 
 EXAMPLES = r"""

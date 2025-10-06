@@ -14,10 +14,10 @@ description:
   - Create a new Swarm cluster.
   - Add/Remove nodes or managers to an existing cluster.
 extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_1_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker
+  - community.docker._docker.docker_py_1_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -300,14 +300,14 @@ except ImportError:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
     pass
 
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils._common import (
     DockerBaseClass,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.swarm import (
+from ansible_collections.community.docker.plugins.module_utils._swarm import (
     AnsibleDockerSwarmClient,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DifferenceTracker,
     sanitize_labels,
 )

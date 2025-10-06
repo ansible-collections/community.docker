@@ -17,12 +17,12 @@ description:
   - Essentially returns the output of C(docker node inspect <name>).
   - Must be executed on a host running as Swarm Manager, otherwise the module will fail.
 extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_1_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
-  - community.docker.attributes.info_module
-  - community.docker.attributes.idempotent_not_modify_state
+  - community.docker._docker
+  - community.docker._docker.docker_py_1_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
+  - community.docker._attributes.info_module
+  - community.docker._attributes.idempotent_not_modify_state
 
 options:
   name:
@@ -88,10 +88,10 @@ nodes:
 
 import traceback
 
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils._common import (
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.swarm import (
+from ansible_collections.community.docker.plugins.module_utils._swarm import (
     AnsibleDockerSwarmClient,
 )
 

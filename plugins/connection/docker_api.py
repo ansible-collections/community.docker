@@ -19,8 +19,8 @@ notes:
   - Does B(not work with TCP TLS sockets)! This is caused by the inability to send C(close_notify) without closing the connection
     with Python's C(SSLSocket)s. See U(https://github.com/ansible-collections/community.docker/issues/605) for more information.
 extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-  - community.docker.docker.var_names
+  - community.docker._docker.api_documentation
+  - community.docker._docker.var_names
 options:
   remote_user:
     type: str
@@ -117,22 +117,22 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
     DockerException,
     NotFound,
 )
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
+from ansible_collections.community.docker.plugins.module_utils._common_api import (
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.copy import (
+from ansible_collections.community.docker.plugins.module_utils._copy import (
     DockerFileCopyError,
     DockerFileNotFound,
     fetch_file,
     put_file,
 )
-from ansible_collections.community.docker.plugins.module_utils.version import (
+from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
-from ansible_collections.community.docker.plugins.plugin_utils.common_api import (
+from ansible_collections.community.docker.plugins.plugin_utils._common_api import (
     AnsibleDockerClient,
 )
-from ansible_collections.community.docker.plugins.plugin_utils.socket_handler import (
+from ansible_collections.community.docker.plugins.plugin_utils._socket_handler import (
     DockerSocketHandler,
 )
 

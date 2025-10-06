@@ -14,11 +14,11 @@ short_description: Retrieve facts about Docker volumes
 description:
   - Performs largely the same function as the C(docker volume inspect) CLI subcommand.
 extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
-  - community.docker.attributes.info_module
-  - community.docker.attributes.idempotent_not_modify_state
+  - community.docker._docker.api_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
+  - community.docker._attributes.info_module
+  - community.docker._attributes.idempotent_not_modify_state
 
 options:
   name:
@@ -76,7 +76,7 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
     DockerException,
     NotFound,
 )
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
+from ansible_collections.community.docker.plugins.module_utils._common_api import (
     AnsibleDockerClient,
     RequestException,
 )

@@ -14,9 +14,9 @@ description:
   - Create/remove Docker networks and connect containers to them.
   - Performs largely the same function as the C(docker network) CLI subcommand.
 extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker.api_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -289,11 +289,11 @@ from ansible.module_utils.common.text.converters import to_native
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     DockerException,
 )
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
+from ansible_collections.community.docker.plugins.module_utils._common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DifferenceTracker,
     DockerBaseClass,
     clean_dict_booleans_for_docker_api,

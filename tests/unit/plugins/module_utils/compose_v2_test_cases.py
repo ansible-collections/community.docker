@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from ansible_collections.community.docker.plugins.module_utils.compose_v2 import (
+from ansible_collections.community.docker.plugins.module_utils._compose_v2 import (
     Event,
 )
 

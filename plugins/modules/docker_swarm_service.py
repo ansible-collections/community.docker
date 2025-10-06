@@ -19,10 +19,10 @@ description:
   - Manages docker services through a swarm manager node.
   - This modules does not support updating services in a stack.
 extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_2_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker
+  - community.docker._docker.docker_py_2_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -856,11 +856,11 @@ import traceback
 
 from ansible.module_utils.basic import human_to_bytes
 from ansible.module_utils.common.text.converters import to_text
-from ansible_collections.community.docker.plugins.module_utils.common import (
+from ansible_collections.community.docker.plugins.module_utils._common import (
     AnsibleDockerClient,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DifferenceTracker,
     DockerBaseClass,
     clean_dict_booleans_for_docker_api,
@@ -868,7 +868,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     parse_healthcheck,
     sanitize_labels,
 )
-from ansible_collections.community.docker.plugins.module_utils.version import (
+from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
 

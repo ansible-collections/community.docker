@@ -125,7 +125,7 @@ from ansible.module_utils.common.process import get_bin_path
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
 from ansible.plugins.connection import BUFSIZE, ConnectionBase
 from ansible.utils.display import Display
-from ansible_collections.community.docker.plugins.module_utils.version import (
+from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
 

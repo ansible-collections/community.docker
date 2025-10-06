@@ -18,11 +18,11 @@ description:
   - Uses Docker Compose to run a command in a new container for a service.
   - This encapsulates C(docker compose run).
 extends_documentation_fragment:
-  - community.docker.compose_v2
-  - community.docker.compose_v2.minimum_version
-  - community.docker.docker.cli_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._compose_v2
+  - community.docker._compose_v2.minimum_version
+  - community.docker._docker.cli_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -241,11 +241,11 @@ import shlex
 import traceback
 
 from ansible.module_utils.common.text.converters import to_text
-from ansible_collections.community.docker.plugins.module_utils.common_cli import (
+from ansible_collections.community.docker.plugins.module_utils._common_cli import (
     AnsibleModuleDockerClient,
     DockerException,
 )
-from ansible_collections.community.docker.plugins.module_utils.compose_v2 import (
+from ansible_collections.community.docker.plugins.module_utils._compose_v2 import (
     BaseComposeManager,
     common_compose_argspec_ex,
 )

@@ -2,6 +2,9 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# Note that this module util is **PRIVATE** to the collection. It can have breaking changes at any time.
+# Do not use this from other collections or standalone plugins/modules!
+
 from __future__ import annotations
 
 import abc
@@ -14,7 +17,7 @@ from ansible.module_utils.common.text.converters import to_native
 from ansible_collections.community.docker.plugins.module_utils._api.auth import (
     resolve_repository_name,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (  # noqa: F401, pylint: disable=unused-import
+from ansible_collections.community.docker.plugins.module_utils._util import (  # noqa: F401, pylint: disable=unused-import
     DEFAULT_DOCKER_HOST,
     DEFAULT_TLS,
     DEFAULT_TLS_VERIFY,
@@ -22,7 +25,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import (  # 
     DOCKER_REQUIRED_TOGETHER,
     sanitize_result,
 )
-from ansible_collections.community.docker.plugins.module_utils.version import (
+from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
 
