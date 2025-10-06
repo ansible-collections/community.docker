@@ -46,21 +46,7 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.utils 
     convert_filters,
     parse_repository_tag,
 )
-
-# pylint: disable=unused-import
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    DEFAULT_DOCKER_REGISTRY,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    DEFAULT_TLS_HOSTNAME,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    is_image_name_id,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    is_valid_tag,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (  # noqa: F401
+from ansible_collections.community.docker.plugins.module_utils._util import (  # noqa: F401, pylint: disable=unused-import
     DEFAULT_DOCKER_HOST,
     DEFAULT_TIMEOUT_SECONDS,
     DEFAULT_TLS,
@@ -71,9 +57,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (  #
     sanitize_result,
     update_tls_hostname,
 )
-
-
-# pylint: enable=unused-import
 
 
 def _get_tls_config(fail_function, **kwargs):

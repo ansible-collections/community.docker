@@ -83,50 +83,7 @@ except ImportError:
         pass
 
 
-# pylint: disable=unused-import
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    BYTE_SUFFIXES,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    DEFAULT_DOCKER_REGISTRY,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    DEFAULT_TLS_HOSTNAME,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    DOCKER_COMMON_ARGS_VARS,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    DifferenceTracker,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    DockerBaseClass,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    clean_dict_booleans_for_docker_api,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    compare_dict_allow_more_present,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    compare_generic,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    convert_duration_to_nanosecond,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    is_image_name_id,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    is_valid_tag,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    omit_none_from_dict,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (
-    parse_healthcheck,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils._util import (  # noqa: F401
+from ansible_collections.community.docker.plugins.module_utils._util import (  # noqa: F401, pylint: disable=unused-import
     DEFAULT_DOCKER_HOST,
     DEFAULT_TIMEOUT_SECONDS,
     DEFAULT_TLS,
@@ -137,9 +94,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (  #
     sanitize_result,
     update_tls_hostname,
 )
-
-
-# pylint: enable=unused-import
 
 
 MIN_DOCKER_VERSION = "1.8.0"
