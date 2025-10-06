@@ -18,9 +18,9 @@ _VALID_STR = re.compile('^[A-Za-z0-9_-]+$')
 
 def _validate_part(string, part, part_name):
     if not part:
-        raise ValueError(f'Invalid platform string "{string}": {part} is empty')
+        raise ValueError(f'Invalid platform string "{string}": {part_name} is empty')
     if not _VALID_STR.match(part):
-        raise ValueError(f'Invalid platform string "{string}": {part} has invalid characters')
+        raise ValueError(f'Invalid platform string "{string}": {part_name} has invalid characters')
     return part
 
 
