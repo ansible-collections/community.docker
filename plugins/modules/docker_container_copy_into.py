@@ -451,7 +451,7 @@ def is_file_idempotent(client, container, managed_path, container_path, follow_l
         file_stat = os.stat(managed_path) if local_follow_links else os.lstat(managed_path)
     except OSError as exc:
         if exc.errno == 2:
-            raise DockerFileNotFound('Cannot find local file {managed_path}'.format(managed_path=managed_path))
+            raise DockerFileNotFound(f'Cannot find local file {managed_path}')
         raise
     if mode is None:
         mode = stat.S_IMODE(file_stat.st_mode)
@@ -786,13 +786,13 @@ def parse_modern(mode):
         return int(to_native(mode), 8)
     if isinstance(mode, int):
         return mode
-    raise TypeError('must be an octal string or an integer, got {mode!r}'.format(mode=mode))
+    raise TypeError(f'must be an octal string or an integer, got {mode!r}')
 
 
 def parse_octal_string_only(mode):
     if isinstance(mode, str):
         return int(to_native(mode), 8)
-    raise TypeError('must be an octal string, got {mode!r}'.format(mode=mode))
+    raise TypeError(f'must be an octal string, got {mode!r}')
 
 
 def main():
@@ -847,16 +847,16 @@ def main():
             elif mode_parse == 'octal_string_only':
                 mode = parse_octal_string_only(mode)
         except (TypeError, ValueError) as e:
-            client.fail("Error while parsing 'mode': {error}".format(error=e))
+            client.fail(f"Error while parsing 'mode': {e}")
         if mode < 0:
-            client.fail("'mode' must not be negative; got {mode}".format(mode=mode))
+            client.fail(f"'mode' must not be negative; got {mode}")
 
     if content is not None:
         if client.module.params['content_is_b64']:
             try:
                 content = base64.b64decode(content)
             except Exception as e:  # depending on Python version and error, multiple different exceptions can be raised
-                client.fail('Cannot Base64 decode the content option: {0}'.format(e))
+                client.fail(f'Cannot Base64 decode the content option: {e}')
         else:
             content = to_bytes(content)
 
@@ -901,21 +901,21 @@ def main():
             # Can happen if a user explicitly passes `content: null` or `path: null`...
             client.fail('One of path and content must be supplied')
     except NotFound as exc:
-        client.fail('Could not find container "{1}" or resource in it ({0})'.format(exc, container))
+        client.fail(f'Could not find container "{container}" or resource in it ({exc})')
     except APIError as exc:
-        client.fail('An unexpected Docker error occurred for container "{1}": {0}'.format(exc, container), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred for container "{container}": {exc}', exception=traceback.format_exc())
     except DockerException as exc:
-        client.fail('An unexpected Docker error occurred for container "{1}": {0}'.format(exc, container), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred for container "{container}": {exc}', exception=traceback.format_exc())
     except RequestException as exc:
         client.fail(
-            'An unexpected requests error occurred for container "{1}" when trying to talk to the Docker daemon: {0}'.format(exc, container),
+            f'An unexpected requests error occurred for container "{container}" when trying to talk to the Docker daemon: {exc}',
             exception=traceback.format_exc())
     except DockerUnexpectedError as exc:
-        client.fail('Unexpected error: {exc}'.format(exc=to_native(exc)), exception=traceback.format_exc())
+        client.fail(f'Unexpected error: {exc}', exception=traceback.format_exc())
     except DockerFileCopyError as exc:
         client.fail(to_native(exc))
     except OSError as exc:
-        client.fail('Unexpected error: {exc}'.format(exc=to_native(exc)), exception=traceback.format_exc())
+        client.fail(f'Unexpected error: {exc}', exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

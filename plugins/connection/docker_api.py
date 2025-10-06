@@ -146,27 +146,27 @@ class Connection(ConnectionBase):
     has_pipelining = True
 
     def _call_client(self, callable, not_found_can_be_resource=False):
+        remote_addr = self.get_option('remote_addr')
         try:
             return callable()
         except NotFound as e:
             if not_found_can_be_resource:
-                raise AnsibleConnectionFailure('Could not find container "{1}" or resource in it ({0})'.format(e, self.get_option('remote_addr')))
+                raise AnsibleConnectionFailure(f'Could not find container "{remote_addr}" or resource in it ({e})')
             else:
-                raise AnsibleConnectionFailure('Could not find container "{1}" ({0})'.format(e, self.get_option('remote_addr')))
+                raise AnsibleConnectionFailure(f'Could not find container "{remote_addr}" ({e})')
         except APIError as e:
             if e.response is not None and e.response.status_code == 409:
-                raise AnsibleConnectionFailure('The container "{1}" has been paused ({0})'.format(e, self.get_option('remote_addr')))
+                raise AnsibleConnectionFailure(f'The container "{remote_addr}" has been paused ({e})')
             self.client.fail(
-                'An unexpected Docker error occurred for container "{1}": {0}'.format(e, self.get_option('remote_addr'))
+                f'An unexpected Docker error occurred for container "{remote_addr}": {e}'
             )
         except DockerException as e:
             self.client.fail(
-                'An unexpected Docker error occurred for container "{1}": {0}'.format(e, self.get_option('remote_addr'))
+                f'An unexpected Docker error occurred for container "{remote_addr}": {e}'
             )
         except RequestException as e:
             self.client.fail(
-                'An unexpected requests error occurred for container "{1}" when trying to talk to the Docker daemon: {0}'
-                .format(e, self.get_option('remote_addr'))
+                f'An unexpected requests error occurred for container "{remote_addr}" when trying to talk to the Docker daemon: {e}'
             )
 
     def __init__(self, play_context, new_stdin, *args, **kwargs):
@@ -186,9 +186,7 @@ class Connection(ConnectionBase):
         super(Connection, self)._connect()
         if not self._connected:
             self.actual_user = self.get_option('remote_user')
-            display.vvv(u"ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
-                self.actual_user or u'?'), host=self.get_option('remote_addr')
-            )
+            display.vvv(f"ESTABLISH DOCKER CONNECTION FOR USER: {self.actual_user or '?'}", host=self.get_option('remote_addr'))
             if self.client is None:
                 self.client = AnsibleDockerClient(self, min_docker_api_version=MIN_DOCKER_API)
             self._connected = True
@@ -197,12 +195,12 @@ class Connection(ConnectionBase):
                 # Since we are not setting the actual_user, look it up so we have it for logging later
                 # Only do this if display verbosity is high enough that we'll need the value
                 # This saves overhead from calling into docker when we do not need to
-                display.vvv(u"Trying to determine actual user")
+                display.vvv("Trying to determine actual user")
                 result = self._call_client(lambda: self.client.get_json('/containers/{0}/json', self.get_option('remote_addr')))
                 if result.get('Config'):
                     self.actual_user = result['Config'].get('User')
                     if self.actual_user is not None:
-                        display.vvv(u"Actual user is '{0}'".format(self.actual_user))
+                        display.vvv(f"Actual user is '{self.actual_user}'")
 
     def exec_command(self, cmd, in_data=None, sudoable=False):
         """ Run a command on the docker host """
@@ -213,12 +211,10 @@ class Connection(ConnectionBase):
 
         do_become = self.become and self.become.expect_prompt() and sudoable
 
+        stdin_part = f', with stdin ({len(in_data)} bytes)' if in_data is not None else ''
+        become_part = ', with become prompt' if do_become else ''
         display.vvv(
-            u"EXEC {0}{1}{2}".format(
-                to_text(command),
-                ', with stdin ({0} bytes)'.format(len(in_data)) if in_data is not None else '',
-                ', with become prompt' if do_become else '',
-            ),
+            f"EXEC {to_text(command)}{stdin_part}{become_part}",
             host=self.get_option('remote_addr')
         )
 
@@ -244,19 +240,19 @@ class Connection(ConnectionBase):
                 for val, what in ((k, 'Key'), (v, 'Value')):
                     if not isinstance(val, str):
                         raise AnsibleConnectionFailure(
-                            'Non-string {0} found for extra_env option. Ambiguous env options must be '
-                            'wrapped in quotes to avoid them being interpreted. {1}: {2!r}'
-                            .format(what.lower(), what, val)
+                            f'Non-string {what.lower()} found for extra_env option. Ambiguous env options must be '
+                            f'wrapped in quotes to avoid them being interpreted. {what}: {val!r}'
                         )
-                data['Env'].append(u'{0}={1}'.format(to_text(k, errors='surrogate_or_strict'), to_text(v, errors='surrogate_or_strict')))
+                kk = to_text(k, errors='surrogate_or_strict')
+                vv = to_text(v, errors='surrogate_or_strict')
+                data['Env'].append(f'{kk}={vv}')
 
         if self.get_option('working_dir') is not None:
             data['WorkingDir'] = self.get_option('working_dir')
             if self.client.docker_api_version < LooseVersion('1.35'):
                 raise AnsibleConnectionFailure(
                     'Providing the working directory requires Docker API version 1.35 or newer.'
-                    ' The Docker daemon the connection is using has API version {0}.'
-                    .format(self.client.docker_api_version_str)
+                    f' The Docker daemon the connection is using has API version {self.client.docker_api_version_str}.'
                 )
 
         exec_data = self._call_client(lambda: self.client.post_json_to_json('/containers/{0}/exec', self.get_option('remote_addr'), data=data))
@@ -325,23 +321,23 @@ class Connection(ConnectionBase):
     def put_file(self, in_path, out_path):
         """ Transfer a file from local to docker container """
         super(Connection, self).put_file(in_path, out_path)
-        display.vvv("PUT %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
+        display.vvv(f"PUT {in_path} TO {out_path}", host=self.get_option('remote_addr'))
 
         out_path = self._prefix_login_path(out_path)
 
         if self.actual_user not in self.ids:
             dummy, ids, dummy = self.exec_command(b'id -u && id -g')
+            remote_addr = self.get_option('remote_addr')
             try:
                 user_id, group_id = ids.splitlines()
                 self.ids[self.actual_user] = int(user_id), int(group_id)
                 display.vvvv(
-                    'PUT: Determined uid={0} and gid={1} for user "{2}"'.format(user_id, group_id, self.actual_user),
-                    host=self.get_option('remote_addr')
+                    f'PUT: Determined uid={user_id} and gid={group_id} for user "{self.actual_user}"',
+                    host=remote_addr
                 )
             except Exception as e:
                 raise AnsibleConnectionFailure(
-                    'Error while determining user and group ID of current user in container "{1}": {0}\nGot value: {2!r}'
-                    .format(e, self.get_option('remote_addr'), ids)
+                    f'Error while determining user and group ID of current user in container "{remote_addr}": {e}\nGot value: {ids!r}'
                 )
 
         user_id, group_id = self.ids[self.actual_user]
@@ -367,7 +363,7 @@ class Connection(ConnectionBase):
     def fetch_file(self, in_path, out_path):
         """ Fetch a file from container to local. """
         super(Connection, self).fetch_file(in_path, out_path)
-        display.vvv("FETCH %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
+        display.vvv(f"FETCH {in_path} TO {out_path}", host=self.get_option('remote_addr'))
 
         in_path = self._prefix_login_path(in_path)
 

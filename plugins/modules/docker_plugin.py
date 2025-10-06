@@ -162,7 +162,7 @@ class TaskParameters(DockerBaseClass):
 
 
 def prepare_options(options):
-    return ['%s=%s' % (k, v if v is not None else "") for k, v in options.items()] if options else []
+    return [f'{k}={v if v is not None else ""}' for k, v in options.items()] if options else []
 
 
 def parse_options(options_list):
@@ -227,7 +227,7 @@ class DockerPluginManager(object):
                     if ((not existing_options.get(key) and value) or
                             not value or
                             value != existing_options[key]):
-                        differences.add('plugin_options.%s' % key,
+                        differences.add(f'plugin_options.{key}',
                                         parameter=value,
                                         active=existing_options.get(key))
 
@@ -262,7 +262,7 @@ class DockerPluginManager(object):
                 except APIError as e:
                     self.client.fail(to_native(e))
 
-            self.actions.append("Installed plugin %s" % self.preferred_name)
+            self.actions.append(f"Installed plugin {self.preferred_name}")
             self.changed = True
 
     def remove_plugin(self):
@@ -274,7 +274,7 @@ class DockerPluginManager(object):
                 except APIError as e:
                     self.client.fail(to_native(e))
 
-            self.actions.append("Removed plugin %s" % self.preferred_name)
+            self.actions.append(f"Removed plugin {self.preferred_name}")
             self.changed = True
 
     def update_plugin(self):
@@ -287,7 +287,7 @@ class DockerPluginManager(object):
                         self.client.post_json('/plugins/{0}/set', self.preferred_name, data=data)
                     except APIError as e:
                         self.client.fail(to_native(e))
-                self.actions.append("Updated plugin %s settings" % self.preferred_name)
+                self.actions.append(f"Updated plugin {self.preferred_name} settings")
                 self.changed = True
         else:
             self.client.fail("Cannot update the plugin: Plugin does not exist")
@@ -322,7 +322,7 @@ class DockerPluginManager(object):
                         self.client.post_json('/plugins/{0}/enable', self.preferred_name, params={'timeout': timeout})
                     except APIError as e:
                         self.client.fail(to_native(e))
-                self.actions.append("Enabled plugin %s" % self.preferred_name)
+                self.actions.append(f"Enabled plugin {self.preferred_name}")
                 self.changed = True
         else:
             self.install_plugin()
@@ -331,7 +331,7 @@ class DockerPluginManager(object):
                     self.client.post_json('/plugins/{0}/enable', self.preferred_name, params={'timeout': timeout})
                 except APIError as e:
                     self.client.fail(to_native(e))
-            self.actions.append("Enabled plugin %s" % self.preferred_name)
+            self.actions.append(f"Enabled plugin {self.preferred_name}")
             self.changed = True
 
     def disable(self):
@@ -342,7 +342,7 @@ class DockerPluginManager(object):
                         self.client.post_json('/plugins/{0}/disable', self.preferred_name)
                     except APIError as e:
                         self.client.fail(to_native(e))
-                self.actions.append("Disable plugin %s" % self.preferred_name)
+                self.actions.append(f"Disable plugin {self.preferred_name}")
                 self.changed = True
         else:
             self.client.fail("Plugin not found: Plugin does not exist.")
@@ -384,10 +384,10 @@ def main():
         cm = DockerPluginManager(client)
         client.module.exit_json(**cm.result)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

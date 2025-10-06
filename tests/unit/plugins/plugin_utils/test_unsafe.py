@@ -22,14 +22,14 @@ from ansible_collections.community.docker.plugins.plugin_utils.unsafe import (
 
 TEST_MAKE_UNSAFE = [
     (
-        _make_trusted(u'text'),
+        _make_trusted('text'),
         [],
         [
             (),
         ],
     ),
     (
-        _make_trusted(u'{{text}}'),
+        _make_trusted('{{text}}'),
         [
             (),
         ],
@@ -117,7 +117,7 @@ def test_make_unsafe_idempotence():
 
 def test_make_unsafe_dict_key():
     value = {
-        _make_trusted(u'test'): 2,
+        _make_trusted('test'): 2,
     }
     if not SUPPORTS_DATA_TAGGING:
         value[_make_trusted(b"test")] = 1
@@ -127,7 +127,7 @@ def test_make_unsafe_dict_key():
         assert _is_trusted(obj)
 
     value = {
-        _make_trusted(u'{{test}}'): 2,
+        _make_trusted('{{test}}'): 2,
     }
     if not SUPPORTS_DATA_TAGGING:
         value[_make_trusted(b"{{test}}")] = 1
@@ -138,7 +138,7 @@ def test_make_unsafe_dict_key():
 
 
 def test_make_unsafe_set():
-    value = set([_make_trusted(u'test')])
+    value = set([_make_trusted('test')])
     if not SUPPORTS_DATA_TAGGING:
         value.add(_make_trusted(b"test"))
     unsafe_value = make_unsafe(value)
@@ -146,7 +146,7 @@ def test_make_unsafe_set():
     for obj in unsafe_value:
         assert _is_trusted(obj)
 
-    value = set([_make_trusted(u'{{test}}')])
+    value = set([_make_trusted('{{test}}')])
     if not SUPPORTS_DATA_TAGGING:
         value.add(_make_trusted(b"{{test}}"))
     unsafe_value = make_unsafe(value)

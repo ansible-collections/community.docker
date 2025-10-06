@@ -146,14 +146,14 @@ class ContextAPI(object):
                         names.append(name)
                     except Exception as e:
                         raise errors.ContextException(
-                            "Failed to load metafile {filepath}: {e}".format(filepath=filepath, e=e),
+                            f"Failed to load metafile {filepath}: {e}"
                         ) from e
 
         contexts = [cls.get_default_context()]
         for name in names:
             context = Context.load_context(name)
             if not context:
-                raise errors.ContextException("Context {context} cannot be found".format(context=name))
+                raise errors.ContextException(f"Context {name} cannot be found")
             contexts.append(context)
         return contexts
 
@@ -174,7 +174,7 @@ class ContextAPI(object):
         err = write_context_name_to_docker_config(name)
         if err:
             raise errors.ContextException(
-                'Failed to set current context: {err}'.format(err=err))
+                f'Failed to set current context: {err}')
 
     @classmethod
     def remove_context(cls, name):

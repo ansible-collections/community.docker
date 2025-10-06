@@ -32,4 +32,4 @@ def test_validate_cidr_positives(cidr, expected):
 def test_validate_cidr_negatives(cidr):
     with pytest.raises(ValueError) as e:
         validate_cidr(cidr)
-    assert '"{0}" is not a valid CIDR'.format(cidr) == str(e.value)
+    assert f'"{cidr}" is not a valid CIDR' == str(e.value)

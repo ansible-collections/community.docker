@@ -172,7 +172,6 @@ filters:
 import re
 
 from ansible.errors import AnsibleError
-from ansible.module_utils.common.text.converters import to_native
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
@@ -198,7 +197,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
     NAME = 'community.docker.docker_containers'
 
     def _slugify(self, value):
-        return 'docker_%s' % (re.sub(r'[^\w-]', '_', value).lower().lstrip('_'))
+        slug = re.sub(r'[^\w-]', '_', value).lower().lstrip('_')
+        return f'docker_{slug}'
 
     def _populate(self, client):
         strict = self.get_option('strict')
@@ -221,7 +221,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             }
             containers = client.get_json('/containers/json', params=params)
         except APIError as exc:
-            raise AnsibleError("Error listing containers: %s" % to_native(exc))
+            raise AnsibleError(f"Error listing containers: {exc}")
 
         if add_legacy_groups:
             self.inventory.add_group('running')
@@ -255,7 +255,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             try:
                 inspect = client.get_json('/containers/{0}/json', id)
             except APIError as exc:
-                raise AnsibleError("Error inspecting container %s - %s" % (name, str(exc)))
+                raise AnsibleError(f"Error inspecting container {name} - {exc}")
 
             state = inspect.get('State') or dict()
             config = inspect.get('Config') or dict()
@@ -268,19 +268,19 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             # Add container to groups
             image_name = config.get('Image')
             if image_name and add_legacy_groups:
-                groups.append('image_{0}'.format(image_name))
+                groups.append(f'image_{image_name}')
 
             stack_name = labels.get('com.docker.stack.namespace')
             if stack_name:
                 full_facts['docker_stack'] = stack_name
                 if add_legacy_groups:
-                    groups.append('stack_{0}'.format(stack_name))
+                    groups.append(f'stack_{stack_name}')
 
             service_name = labels.get('com.docker.swarm.service.name')
             if service_name:
                 full_facts['docker_service'] = service_name
                 if add_legacy_groups:
-                    groups.append('service_{0}'.format(service_name))
+                    groups.append(f'service_{service_name}')
 
             ansible_connection = None
             if connection_type == 'ssh':
@@ -289,7 +289,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                     # Lookup the public facing port Nat'ed to ssh port.
                     network_settings = inspect.get('NetworkSettings') or {}
                     port_settings = network_settings.get('Ports') or {}
-                    port = port_settings.get('%d/tcp' % (ssh_port, ))[0]
+                    port = port_settings.get(f'{ssh_port}/tcp')[0]
                 except (IndexError, AttributeError, TypeError):
                     port = dict()
 
@@ -383,9 +383,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             self._populate(client)
         except DockerException as e:
             raise AnsibleError(
-                'An unexpected Docker error occurred: {0}'.format(e)
+                f'An unexpected Docker error occurred: {e}'
             )
         except RequestException as e:
             raise AnsibleError(
-                'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(e)
+                f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}'
             )

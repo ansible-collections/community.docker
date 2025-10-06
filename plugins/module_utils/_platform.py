@@ -18,9 +18,9 @@ _VALID_STR = re.compile('^[A-Za-z0-9_-]+$')
 
 def _validate_part(string, part, part_name):
     if not part:
-        raise ValueError('Invalid platform string "{string}": {part} is empty'.format(string=string, part=part_name))
+        raise ValueError(f'Invalid platform string "{string}": {part_name} is empty')
     if not _VALID_STR.match(part):
-        raise ValueError('Invalid platform string "{string}": {part} has invalid characters'.format(string=string, part=part_name))
+        raise ValueError(f'Invalid platform string "{string}": {part_name} has invalid characters')
     return part
 
 
@@ -123,16 +123,16 @@ class _Platform(object):
                     arch=arch or None,
                     variant=variant or None,
                 )
-            raise ValueError('Invalid platform string "{0}": unknown OS or architecture'.format(string))
+            raise ValueError(f'Invalid platform string "{string}": unknown OS or architecture')
         os = _validate_part(string, parts[0], 'OS')
         if not os:
-            raise ValueError('Invalid platform string "{0}": OS is empty'.format(string))
+            raise ValueError(f'Invalid platform string "{string}": OS is empty')
         arch = _validate_part(string, parts[1], 'architecture') if len(parts) > 1 else None
         if arch is not None and not arch:
-            raise ValueError('Invalid platform string "{0}": architecture is empty'.format(string))
+            raise ValueError(f'Invalid platform string "{string}": architecture is empty')
         variant = _validate_part(string, parts[2], 'variant') if len(parts) > 2 else None
         if variant is not None and not variant:
-            raise ValueError('Invalid platform string "{0}": variant is empty'.format(string))
+            raise ValueError(f'Invalid platform string "{string}": variant is empty')
         arch, variant = _normalize_arch(arch, variant or '')
         if len(parts) == 2 and arch == 'arm' and variant == 'v7':
             variant = None
@@ -155,7 +155,7 @@ class _Platform(object):
         return '/'.join(parts)
 
     def __repr__(self):
-        return '_Platform(os={os!r}, arch={arch!r}, variant={variant!r})'.format(os=self.os, arch=self.arch, variant=self.variant)
+        return f'_Platform(os={self.os!r}, arch={self.arch!r}, variant={self.variant!r})'
 
     def __eq__(self, other):
         return self.os == other.os and self.arch == other.arch and self.variant == other.variant

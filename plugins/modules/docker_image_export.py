@@ -95,8 +95,6 @@ images:
 
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
@@ -135,7 +133,7 @@ class ImageExportManager(DockerBaseClass):
         self.tag = parameters['tag']
 
         if not is_valid_tag(self.tag, allow_empty=True):
-            self.fail('"{0}" is not a valid docker tag'.format(self.tag))
+            self.fail(f'"{self.tag}" is not a valid docker tag')
 
         # If name contains a tag, it takes precedence over tag parameter.
         self.names = []
@@ -146,7 +144,7 @@ class ImageExportManager(DockerBaseClass):
                 repo, repo_tag = parse_repository_tag(name)
                 if not repo_tag:
                     repo_tag = self.tag
-                self.names.append({'name': repo, 'tag': repo_tag, 'joined': '%s:%s' % (repo, repo_tag)})
+                self.names.append({'name': repo, 'tag': repo_tag, 'joined': f'{repo}:{repo_tag}'})
 
         if not self.names:
             self.fail('At least one image name must be specified')
@@ -163,7 +161,7 @@ class ImageExportManager(DockerBaseClass):
             if archived_images is None:
                 return 'Overwriting since no image is present in archive'
         except ImageArchiveInvalidException as exc:
-            self.log('Unable to extract manifest summary from archive: %s' % to_native(exc))
+            self.log(f'Unable to extract manifest summary from archive: {exc}')
             return 'Overwriting an unreadable archive file'
 
         left_names = list(self.names)
@@ -175,11 +173,9 @@ class ImageExportManager(DockerBaseClass):
                     found = True
                     break
             if not found:
-                return 'Overwriting archive since it contains unexpected image %s named %s' % (
-                    archived_image.image_id, ', '.join(archived_image.repo_tags)
-                )
+                return f'Overwriting archive since it contains unexpected image {archived_image.image_id} named {", ".join(archived_image.repo_tags)}'
         if left_names:
-            return 'Overwriting archive since it is missing image(s) %s' % (', '.join([name['joined'] for name in left_names]))
+            return f"Overwriting archive since it is missing image(s) {', '.join([name['joined'] for name in left_names])}"
 
         return None
 
@@ -189,13 +185,13 @@ class ImageExportManager(DockerBaseClass):
                 for chunk in chunks:
                     fd.write(chunk)
         except Exception as exc:
-            self.fail("Error writing image archive %s - %s" % (self.path, to_native(exc)))
+            self.fail(f"Error writing image archive {self.path} - {exc}")
 
     def export_images(self):
         image_names = [name['joined'] for name in self.names]
         image_names_str = ', '.join(image_names)
         if len(image_names) == 1:
-            self.log("Getting archive of image %s" % image_names[0])
+            self.log(f"Getting archive of image {image_names[0]}")
             try:
                 chunks = self.client._stream_raw_result(
                     self.client._get(self.client._url('/images/{0}/get', image_names[0]), stream=True),
@@ -203,9 +199,9 @@ class ImageExportManager(DockerBaseClass):
                     False,
                 )
             except Exception as exc:
-                self.fail("Error getting image %s - %s" % (image_names[0], to_native(exc)))
+                self.fail(f"Error getting image {image_names[0]} - {exc}")
         else:
-            self.log("Getting archive of images %s" % image_names_str)
+            self.log(f"Getting archive of images {image_names_str}")
             try:
                 chunks = self.client._stream_raw_result(
                     self.client._get(
@@ -217,7 +213,7 @@ class ImageExportManager(DockerBaseClass):
                     False,
                 )
             except Exception as exc:
-                self.fail("Error getting images %s - %s" % (image_names_str, to_native(exc)))
+                self.fail(f"Error getting images {image_names_str} - {exc}")
 
         self.write_chunks(chunks)
 
@@ -233,7 +229,7 @@ class ImageExportManager(DockerBaseClass):
             else:
                 image = self.client.find_image(name=name['name'], tag=name['tag'])
             if not image:
-                self.fail("Image %s not found" % name['joined'])
+                self.fail(f"Image {name['joined']} not found")
             images.append(image)
 
             # Will have a 'sha256:' prefix
@@ -272,10 +268,10 @@ def main():
         results = ImageExportManager(client).run()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

@@ -89,7 +89,7 @@ class DockerSocketHandlerBase(object):
         if data is None:
             # no data available
             return
-        self._log('read {0} bytes'.format(len(data)))
+        self._log(f'read {len(data)} bytes')
         if len(data) == 0:
             # Stream EOF
             self._eof = True
@@ -123,7 +123,7 @@ class DockerSocketHandlerBase(object):
         if len(self._write_buffer) > 0:
             written = write_to_socket(self._sock, self._write_buffer)
             self._write_buffer = self._write_buffer[written:]
-            self._log('wrote {0} bytes, {1} are left'.format(written, len(self._write_buffer)))
+            self._log(f'wrote {written} bytes, {len(self._write_buffer)} are left')
             if len(self._write_buffer) > 0:
                 self._selector.modify(self._sock, self._selectors.EVENT_READ | self._selectors.EVENT_WRITE)
             else:
@@ -147,14 +147,13 @@ class DockerSocketHandlerBase(object):
                     return True
                 if timeout is not None:
                     timeout -= PARAMIKO_POLL_TIMEOUT
-        self._log('select... ({0})'.format(timeout))
+        self._log(f'select... ({timeout})')
         events = self._selector.select(timeout)
         for key, event in events:
             if key.fileobj == self._sock:
-                self._log(
-                    'select event read:{0} write:{1}'.format(
-                        event & self._selectors.EVENT_READ != 0,
-                        event & self._selectors.EVENT_WRITE != 0))
+                ev_read = event & self._selectors.EVENT_READ != 0
+                ev_write = event & self._selectors.EVENT_WRITE != 0
+                self._log(f'select event read:{ev_read} write:{ev_write}')
                 if event & self._selectors.EVENT_READ != 0:
                     self._read()
                 if event & self._selectors.EVENT_WRITE != 0:
@@ -183,7 +182,7 @@ class DockerSocketHandlerBase(object):
             elif stream_id == docker_socket.STDERR:
                 stderr.append(data)
             else:
-                raise ValueError('{0} is not a valid stream ID'.format(stream_id))
+                raise ValueError(f'{stream_id} is not a valid stream ID')
 
         self.end_of_writing()
 

@@ -137,8 +137,6 @@ images:
 
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
@@ -160,7 +158,7 @@ class ImageManager(DockerBaseClass):
         self.client = client
         self.results = results
         self.name = self.client.module.params.get('name')
-        self.log("Gathering facts for images: %s" % (str(self.name)))
+        self.log(f"Gathering facts for images: {self.name}")
 
         if self.name:
             self.results['images'] = self.get_facts()
@@ -185,13 +183,13 @@ class ImageManager(DockerBaseClass):
 
         for name in names:
             if is_image_name_id(name):
-                self.log('Fetching image %s (ID)' % (name))
+                self.log(f'Fetching image {name} (ID)')
                 image = self.client.find_image_by_id(name, accept_missing_image=True)
             else:
                 repository, tag = parse_repository_tag(name)
                 if not tag:
                     tag = 'latest'
-                self.log('Fetching image %s:%s' % (repository, tag))
+                self.log(f'Fetching image {repository}:{tag}')
                 image = self.client.find_image(name=repository, tag=tag)
             if image:
                 results.append(image)
@@ -210,7 +208,7 @@ class ImageManager(DockerBaseClass):
             except NotFound:
                 inspection = None
             except Exception as exc:
-                self.fail("Error inspecting image %s - %s" % (image['Id'], to_native(exc)))
+                self.fail(f"Error inspecting image {image['Id']} - {exc}")
             results.append(inspection)
         return results
 
@@ -234,10 +232,10 @@ def main():
         ImageManager(client, results)
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

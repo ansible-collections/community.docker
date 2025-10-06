@@ -30,9 +30,7 @@ class Store(object):
         self.environment = environment
         if self.exe is None:
             raise errors.InitializationError(
-                '{0} not installed or not available in PATH'.format(
-                    self.program
-                )
+                f'{self.program} not installed or not available in PATH'
             )
 
     def get(self, server):
@@ -50,7 +48,7 @@ class Store(object):
         # raise CredentialsNotFound
         if result['Username'] == '' and result['Secret'] == '':
             raise errors.CredentialsNotFound(
-                'No matching credentials in {0}'.format(self.program)
+                f'No matching credentials in {self.program}'
             )
 
         return result
@@ -92,14 +90,10 @@ class Store(object):
         except OSError as e:
             if e.errno == errno.ENOENT:
                 raise errors.StoreError(
-                    '{0} not installed or not available in PATH'.format(
-                        self.program
-                    )
+                    f'{self.program} not installed or not available in PATH'
                 )
             else:
                 raise errors.StoreError(
-                    'Unexpected OS error "{0}", errno={1}'.format(
-                        e.strerror, e.errno
-                    )
+                    f'Unexpected OS error "{e.strerror}", errno={e.errno}'
                 )
         return output

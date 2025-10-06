@@ -19,7 +19,7 @@ from .credentials.errors import StoreError, CredentialsNotFound
 from .utils import config
 
 INDEX_NAME = 'docker.io'
-INDEX_URL = 'https://index.{0}/v1/'.format(INDEX_NAME)
+INDEX_URL = f'https://index.{INDEX_NAME}/v1/'
 TOKEN_USERNAME = '<token>'
 
 log = logging.getLogger(__name__)
@@ -28,14 +28,13 @@ log = logging.getLogger(__name__)
 def resolve_repository_name(repo_name):
     if '://' in repo_name:
         raise errors.InvalidRepository(
-            'Repository name cannot contain a scheme ({0})'.format(repo_name)
+            f'Repository name cannot contain a scheme ({repo_name})'
         )
 
     index_name, remote_name = split_repo_name(repo_name)
     if index_name[0] == '-' or index_name[-1] == '-':
         raise errors.InvalidRepository(
-            'Invalid index name ({0}). Cannot begin or end with a'
-            ' hyphen.'.format(index_name)
+            f'Invalid index name ({index_name}). Cannot begin or end with a hyphen.'
         )
     return resolve_index_name(index_name), remote_name
 
@@ -117,9 +116,7 @@ class AuthConfig(dict):
                 # keys is not formatted properly.
                 if raise_on_error:
                     raise errors.InvalidConfigFile(
-                        'Invalid configuration for registry {0}'.format(
-                            registry
-                        )
+                        f'Invalid configuration for registry {registry}'
                     )
                 return {}
             if 'identitytoken' in entry:
@@ -272,7 +269,7 @@ class AuthConfig(dict):
             return None
         except StoreError as e:
             raise errors.DockerException(
-                'Credentials store error: {0}'.format(repr(e))
+                f'Credentials store error: {e}'
             )
 
     def _get_store_instance(self, name):

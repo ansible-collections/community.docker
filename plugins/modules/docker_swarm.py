@@ -309,8 +309,6 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
 
 from ansible_collections.community.docker.plugins.module_utils.swarm import AnsibleDockerSwarmClient
 
-from ansible.module_utils.common.text.converters import to_native
-
 
 class TaskParameters(DockerBaseClass):
     def __init__(self):
@@ -531,7 +529,7 @@ class SwarmManager(DockerBaseClass):
             try:
                 self.client.init_swarm(**init_arguments)
             except APIError as exc:
-                self.client.fail("Can not create a new Swarm Cluster: %s" % to_native(exc))
+                self.client.fail(f"Can not create a new Swarm Cluster: {exc}")
 
         if not self.client.check_if_swarm_manager():
             if not self.check_mode:
@@ -539,7 +537,7 @@ class SwarmManager(DockerBaseClass):
 
         self.created = True
         self.inspect_swarm()
-        self.results['actions'].append("New Swarm cluster created: %s" % (self.swarm_info.get('ID')))
+        self.results['actions'].append(f"New Swarm cluster created: {self.swarm_info.get('ID')}")
         self.differences.add('state', parameter='present', active='absent')
         self.results['changed'] = True
         self.results['swarm_facts'] = {
@@ -567,7 +565,7 @@ class SwarmManager(DockerBaseClass):
                     rotate_worker_token=self.parameters.rotate_worker_token,
                     rotate_manager_token=self.parameters.rotate_manager_token)
         except APIError as exc:
-            self.client.fail("Can not update a Swarm Cluster: %s" % to_native(exc))
+            self.client.fail(f"Can not update a Swarm Cluster: {exc}")
             return
 
         self.inspect_swarm()
@@ -590,7 +588,7 @@ class SwarmManager(DockerBaseClass):
             try:
                 self.client.join_swarm(**join_arguments)
             except APIError as exc:
-                self.client.fail("Can not join the Swarm Cluster: %s" % to_native(exc))
+                self.client.fail(f"Can not join the Swarm Cluster: {exc}")
         self.results['actions'].append("New node is added to swarm cluster")
         self.differences.add('joined', parameter=True, active=False)
         self.results['changed'] = True
@@ -603,7 +601,7 @@ class SwarmManager(DockerBaseClass):
             try:
                 self.client.leave_swarm(force=self.force)
             except APIError as exc:
-                self.client.fail("This node can not leave the Swarm Cluster: %s" % to_native(exc))
+                self.client.fail(f"This node can not leave the Swarm Cluster: {exc}")
         self.results['actions'].append("Node has left the swarm cluster")
         self.differences.add('joined', parameter='absent', active='present')
         self.results['changed'] = True
@@ -624,7 +622,7 @@ class SwarmManager(DockerBaseClass):
             try:
                 self.client.remove_node(node_id=self.node_id, force=self.force)
             except APIError as exc:
-                self.client.fail("Can not remove the node from the Swarm Cluster: %s" % to_native(exc))
+                self.client.fail(f"Can not remove the node from the Swarm Cluster: {exc}")
         self.results['actions'].append("Node is removed from swarm cluster.")
         self.differences.add('joined', parameter=False, active=True)
         self.results['changed'] = True
@@ -707,10 +705,10 @@ def main():
         SwarmManager(client, results)()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}',
             exception=traceback.format_exc())
 
 

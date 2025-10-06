@@ -230,7 +230,6 @@ builder_cache_caches_deleted:
 
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
 from ansible.module_utils.common.text.formatters import human_to_bytes
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
@@ -276,7 +275,7 @@ def main():
         try:
             builder_cache_keep_storage = human_to_bytes(client.module.params.get('builder_cache_keep_storage'))
         except ValueError as exc:
-            client.module.fail_json(msg='Error while parsing value of builder_cache_keep_storage: {0}'.format(exc))
+            client.module.fail_json(msg=f'Error while parsing value of builder_cache_keep_storage: {exc}')
 
     try:
         result = dict()
@@ -337,10 +336,10 @@ def main():
         result['changed'] = changed
         client.module.exit_json(**result)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

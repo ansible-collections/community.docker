@@ -167,7 +167,7 @@ rc:
 import shlex
 import traceback
 
-from ansible.module_utils.common.text.converters import to_text, to_native
+from ansible.module_utils.common.text.converters import to_text
 
 from ansible_collections.community.docker.plugins.module_utils.common_cli import (
     AnsibleModuleDockerClient,
@@ -211,7 +211,7 @@ class ExecManager(BaseComposeManager):
                 if not isinstance(value, str):
                     self.fail(
                         "Non-string value found for env option. Ambiguous env options must be "
-                        "wrapped in quotes to avoid them being interpreted. Key: %s" % (name, )
+                        f"wrapped in quotes to avoid them being interpreted. Key: {name}"
                     )
                 self.env[name] = to_text(value, errors='surrogate_or_strict')
 
@@ -232,7 +232,7 @@ class ExecManager(BaseComposeManager):
         if self.env:
             for name, value in list(self.env.items()):
                 args.append('--env')
-                args.append('{0}={1}'.format(name, value))
+                args.append(f'{name}={value}')
         args.append('--')
         args.append(self.service)
         args.extend(self.argv)
@@ -295,7 +295,7 @@ def main():
         manager.cleanup()
         client.module.exit_json(**result)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
 
 
 if __name__ == '__main__':

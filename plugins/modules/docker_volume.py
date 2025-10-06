@@ -159,8 +159,8 @@ class DockerVolumeManager(object):
         self.parameters = TaskParameters(client)
         self.check_mode = self.client.check_mode
         self.results = {
-            u'changed': False,
-            u'actions': []
+            'changed': False,
+            'actions': []
         }
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()
@@ -185,10 +185,10 @@ class DockerVolumeManager(object):
         except APIError as e:
             self.client.fail(to_native(e))
 
-        if volumes[u'Volumes'] is None:
+        if volumes['Volumes'] is None:
             return None
 
-        for volume in volumes[u'Volumes']:
+        for volume in volumes['Volumes']:
             if volume['Name'] == self.parameters.volume_name:
                 return volume
 
@@ -212,14 +212,14 @@ class DockerVolumeManager(object):
                 for key, value in self.parameters.driver_options.items():
                     if (not self.existing_volume['Options'].get(key) or
                             value != self.existing_volume['Options'][key]):
-                        differences.add('driver_options.%s' % key,
+                        differences.add(f'driver_options.{key}',
                                         parameter=value,
                                         active=self.existing_volume['Options'].get(key))
         if self.parameters.labels:
             existing_labels = self.existing_volume.get('Labels') or {}
             for label in self.parameters.labels:
                 if existing_labels.get(label) != self.parameters.labels.get(label):
-                    differences.add('labels.%s' % label,
+                    differences.add(f'labels.{label}',
                                     parameter=self.parameters.labels.get(label),
                                     active=existing_labels.get(label))
 
@@ -241,7 +241,7 @@ class DockerVolumeManager(object):
                 except APIError as e:
                     self.client.fail(to_native(e))
 
-            self.results['actions'].append("Created volume %s with driver %s" % (self.parameters.volume_name, self.parameters.driver))
+            self.results['actions'].append(f"Created volume {self.parameters.volume_name} with driver {self.parameters.driver}")
             self.results['changed'] = True
 
     def remove_volume(self):
@@ -252,7 +252,7 @@ class DockerVolumeManager(object):
                 except APIError as e:
                     self.client.fail(to_native(e))
 
-            self.results['actions'].append("Removed volume %s" % self.parameters.volume_name)
+            self.results['actions'].append(f"Removed volume {self.parameters.volume_name}")
             self.results['changed'] = True
 
     def present(self):
@@ -304,10 +304,10 @@ def main():
         cm = DockerVolumeManager(client)
         client.module.exit_json(**cm.results)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

@@ -44,7 +44,7 @@ def shutdown_writing(sock, log=_empty_writer):
             sock.shutdown(pysocket.SHUT_WR)
         except TypeError as e:
             # probably: "TypeError: shutdown() takes 1 positional argument but 2 were given"
-            log('Shutting down for writing not possible; trying shutdown instead: {0}'.format(e))
+            log(f'Shutting down for writing not possible; trying shutdown instead: {e}')
             sock.shutdown()
     elif isinstance(sock, getattr(pysocket, 'SocketIO')):
         sock._sock.shutdown(pysocket.SHUT_WR)

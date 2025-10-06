@@ -59,7 +59,7 @@ def _get_tls_config(fail_function, **kwargs):
         tls_config = TLSConfig(**kwargs)
         return tls_config
     except TLSParameterError as exc:
-        fail_function("TLS config error: %s" % exc)
+        fail_function(f"TLS config error: {exc}")
 
 
 def is_using_tls(auth_data):
@@ -115,14 +115,14 @@ class AnsibleDockerClientBase(Client):
         except MissingRequirementException as exc:
             self.fail(missing_required_lib(exc.requirement), exception=exc.import_exception)
         except APIError as exc:
-            self.fail("Docker API error: %s" % exc)
+            self.fail(f"Docker API error: {exc}")
         except Exception as exc:
-            self.fail("Error connecting: %s" % exc)
+            self.fail(f"Error connecting: {exc}")
 
         self.docker_api_version = LooseVersion(self.docker_api_version_str)
         min_docker_api_version = min_docker_api_version or '1.25'
         if self.docker_api_version < LooseVersion(min_docker_api_version):
-            self.fail('Docker API version is %s. Minimum version required is %s.' % (self.docker_api_version_str, min_docker_api_version))
+            self.fail(f'Docker API version is {self.docker_api_version_str}. Minimum version required is {min_docker_api_version}.')
 
     def log(self, msg, pretty_print=False):
         pass
@@ -219,23 +219,23 @@ class AnsibleDockerClientBase(Client):
     def _handle_ssl_error(self, error):
         match = re.match(r"hostname.*doesn\'t match (\'.*\')", str(error))
         if match:
-            self.fail("You asked for verification that Docker daemons certificate's hostname matches %s. "
-                      "The actual certificate's hostname is %s. Most likely you need to set DOCKER_TLS_HOSTNAME "
-                      "or pass `tls_hostname` with a value of %s. You may also use TLS without verification by "
-                      "setting the `tls` parameter to true."
-                      % (self.auth_params['tls_hostname'], match.group(1), match.group(1)))
-        self.fail("SSL Exception: %s" % (error))
+            hostname = self.auth_params['tls_hostname']
+            self.fail(f"You asked for verification that Docker daemons certificate's hostname matches {hostname}. "
+                      f"The actual certificate's hostname is {match.group(1)}. Most likely you need to set DOCKER_TLS_HOSTNAME "
+                      f"or pass `tls_hostname` with a value of {match.group(1)}. You may also use TLS without verification by "
+                      "setting the `tls` parameter to true.")
+        self.fail(f"SSL Exception: {error}")
 
     def get_container_by_id(self, container_id):
         try:
-            self.log("Inspecting container Id %s" % container_id)
+            self.log(f"Inspecting container Id {container_id}")
             result = self.get_json('/containers/{0}/json', container_id)
             self.log("Completed container inspection")
             return result
         except NotFound as dummy:
             return None
         except Exception as exc:
-            self.fail("Error inspecting container: %s" % exc)
+            self.fail(f"Error inspecting container: {exc}")
 
     def get_container(self, name=None):
         '''
@@ -258,7 +258,7 @@ class AnsibleDockerClientBase(Client):
             }
             containers = self.get_json("/containers/json", params=params)
             for container in containers:
-                self.log("testing container: %s" % (container['Names']))
+                self.log(f"testing container: {container['Names']}")
                 if isinstance(container['Names'], list) and search_name in container['Names']:
                     result = container
                     break
@@ -271,7 +271,7 @@ class AnsibleDockerClientBase(Client):
         except SSLError as exc:
             self._handle_ssl_error(exc)
         except Exception as exc:
-            self.fail("Error retrieving container list: %s" % exc)
+            self.fail(f"Error retrieving container list: {exc}")
 
         if result is None:
             return None
@@ -291,7 +291,7 @@ class AnsibleDockerClientBase(Client):
             try:
                 networks = self.get_json("/networks")
                 for network in networks:
-                    self.log("testing network: %s" % (network['Name']))
+                    self.log(f"testing network: {network['Name']}")
                     if name == network['Name']:
                         result = network
                         break
@@ -301,20 +301,20 @@ class AnsibleDockerClientBase(Client):
             except SSLError as exc:
                 self._handle_ssl_error(exc)
             except Exception as exc:
-                self.fail("Error retrieving network list: %s" % exc)
+                self.fail(f"Error retrieving network list: {exc}")
 
         if result is not None:
             network_id = result['Id']
 
         if network_id is not None:
             try:
-                self.log("Inspecting network Id %s" % network_id)
+                self.log(f"Inspecting network Id {network_id}")
                 result = self.get_json('/networks/{0}', network_id)
                 self.log("Completed network inspection")
             except NotFound as dummy:
                 return None
             except Exception as exc:
-                self.fail("Error inspecting network: %s" % exc)
+                self.fail(f"Error inspecting network: {exc}")
 
         return result
 
@@ -336,10 +336,10 @@ class AnsibleDockerClientBase(Client):
                 params['filters'] = convert_filters({'reference': name})
             images = self.get_json("/images/json", params=params)
         except Exception as exc:
-            self.fail("Error searching for image %s - %s" % (name, str(exc)))
+            self.fail(f"Error searching for image {name} - {exc}")
         if tag:
-            lookup = "%s:%s" % (name, tag)
-            lookup_digest = "%s@%s" % (name, tag)
+            lookup = f"{name}:{tag}"
+            lookup_digest = f"{name}@{tag}"
             response = images
             images = []
             for image in response:
@@ -357,7 +357,7 @@ class AnsibleDockerClientBase(Client):
         if not name:
             return None
 
-        self.log("Find image %s:%s" % (name, tag))
+        self.log(f"Find image {name}:{tag}")
         images = self._image_lookup(name, tag)
         if not images:
             # In API <= 1.20 seeing 'docker.io/<name>' as the name of images pulled from docker hub
@@ -365,40 +365,40 @@ class AnsibleDockerClientBase(Client):
             if registry == 'docker.io':
                 # If docker.io is explicitly there in name, the image
                 # is not found in some cases (#41509)
-                self.log("Check for docker.io image: %s" % repo_name)
+                self.log(f"Check for docker.io image: {repo_name}")
                 images = self._image_lookup(repo_name, tag)
                 if not images and repo_name.startswith('library/'):
                     # Sometimes library/xxx images are not found
                     lookup = repo_name[len('library/'):]
-                    self.log("Check for docker.io image: %s" % lookup)
+                    self.log(f"Check for docker.io image: {lookup}")
                     images = self._image_lookup(lookup, tag)
                 if not images:
                     # Last case for some Docker versions: if docker.io was not there,
                     # it can be that the image was not found either
                     # (https://github.com/ansible/ansible/pull/15586)
-                    lookup = "%s/%s" % (registry, repo_name)
-                    self.log("Check for docker.io image: %s" % lookup)
+                    lookup = f"{registry}/{repo_name}"
+                    self.log(f"Check for docker.io image: {lookup}")
                     images = self._image_lookup(lookup, tag)
                 if not images and '/' not in repo_name:
                     # This seems to be happening with podman-docker
                     # (https://github.com/ansible-collections/community.docker/issues/291)
-                    lookup = "%s/library/%s" % (registry, repo_name)
-                    self.log("Check for docker.io image: %s" % lookup)
+                    lookup = f"{registry}/library/{repo_name}"
+                    self.log(f"Check for docker.io image: {lookup}")
                     images = self._image_lookup(lookup, tag)
 
         if len(images) > 1:
-            self.fail("Daemon returned more than one result for %s:%s" % (name, tag))
+            self.fail(f"Daemon returned more than one result for {name}:{tag}")
 
         if len(images) == 1:
             try:
                 return self.get_json('/images/{0}/json', images[0]['Id'])
             except NotFound:
-                self.log("Image %s:%s not found." % (name, tag))
+                self.log(f"Image {name}:{tag} not found.")
                 return None
             except Exception as exc:
-                self.fail("Error inspecting image %s:%s - %s" % (name, tag, str(exc)))
+                self.fail(f"Error inspecting image {name}:{tag} - {exc}")
 
-        self.log("Image %s:%s not found." % (name, tag))
+        self.log(f"Image {name}:{tag} not found.")
         return None
 
     def find_image_by_id(self, image_id, accept_missing_image=False):
@@ -408,22 +408,22 @@ class AnsibleDockerClientBase(Client):
         if not image_id:
             return None
 
-        self.log("Find image %s (by ID)" % image_id)
+        self.log(f"Find image {image_id} (by ID)")
         try:
             return self.get_json('/images/{0}/json', image_id)
         except NotFound as exc:
             if not accept_missing_image:
-                self.fail("Error inspecting image ID %s - %s" % (image_id, str(exc)))
-            self.log("Image %s not found." % image_id)
+                self.fail(f"Error inspecting image ID {image_id} - {exc}")
+            self.log(f"Image {image_id} not found.")
             return None
         except Exception as exc:
-            self.fail("Error inspecting image ID %s - %s" % (image_id, str(exc)))
+            self.fail(f"Error inspecting image ID {image_id} - {exc}")
 
     def pull_image(self, name, tag="latest", platform=None):
         '''
         Pull an image
         '''
-        self.log("Pulling image %s:%s" % (name, tag))
+        self.log(f"Pulling image {name}:{tag}")
         old_tag = self.find_image(name, tag)
         try:
             repository, image_tag = parse_repository_tag(name)
@@ -450,13 +450,11 @@ class AnsibleDockerClientBase(Client):
                 if line.get('error'):
                     if line.get('errorDetail'):
                         error_detail = line.get('errorDetail')
-                        self.fail("Error pulling %s - code: %s message: %s" % (name,
-                                                                               error_detail.get('code'),
-                                                                               error_detail.get('message')))
+                        self.fail(f"Error pulling {name} - code: {error_detail.get('code')} message: {error_detail.get('message')}")
                     else:
-                        self.fail("Error pulling %s - %s" % (name, line.get('error')))
+                        self.fail(f"Error pulling {name} - {line.get('error')}")
         except Exception as exc:
-            self.fail("Error pulling image %s:%s - %s" % (name, tag, str(exc)))
+            self.fail(f"Error pulling image {name}:{tag} - {exc}")
 
         new_tag = self.find_image(name, tag)
 
@@ -547,13 +545,12 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
                     if 'usage_msg' in data:
                         usg = data['usage_msg']
                     else:
-                        usg = 'set %s option' % (option, )
+                        usg = f'set {option} option'
                     if not support_docker_api:
-                        msg = 'Docker API version is %s. Minimum version required is %s to %s.'
-                        msg = msg % (self.docker_api_version_str, data['docker_api_version'], usg)
+                        msg = f"Docker API version is {self.docker_api_version_str}. Minimum version required is {data['docker_api_version']} to {usg}."
                     else:
                         # should not happen
-                        msg = 'Cannot %s with your configuration.' % (usg, )
+                        msg = f'Cannot {usg} with your configuration.'
                     self.fail(msg)
 
     def report_warnings(self, result, warnings_key=None):
@@ -577,6 +574,6 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
             result = result.get(key)
         if isinstance(result, Sequence):
             for warning in result:
-                self.module.warn('Docker warning: {0}'.format(warning))
+                self.module.warn(f'Docker warning: {warning}')
         elif isinstance(result, str) and result:
-            self.module.warn('Docker warning: {0}'.format(result))
+            self.module.warn(f'Docker warning: {result}')

@@ -169,7 +169,7 @@ def consume_socket_output(frames, demux=False):
         # It is guaranteed that for each frame, one and only one stream
         # is not None.
         if frame == (None, None):
-            raise AssertionError('frame must be (None, None), but got %s' % (frame, ))
+            raise AssertionError(f'frame must be (None, None), but got {frame}')
         if frame[0] is not None:
             if out[0] is None:
                 out[0] = frame[0]
@@ -193,4 +193,4 @@ def demux_adaptor(stream_id, data):
     elif stream_id == STDERR:
         return (None, data)
     else:
-        raise ValueError('{0} is not a valid stream'.format(stream_id))
+        raise ValueError(f'{stream_id} is not a valid stream')

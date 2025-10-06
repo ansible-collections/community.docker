@@ -206,7 +206,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     compare_generic,
     sanitize_labels,
 )
-from ansible.module_utils.common.text.converters import to_native, to_bytes
+from ansible.module_utils.common.text.converters import to_bytes
 
 
 class SecretManager(DockerBaseClass):
@@ -234,7 +234,7 @@ class SecretManager(DockerBaseClass):
                 with open(data_src, 'rb') as f:
                     self.data = f.read()
             except Exception as exc:
-                self.client.fail('Error while reading {src}: {error}'.format(src=data_src, error=to_native(exc)))
+                self.client.fail(f'Error while reading {data_src}: {exc}')
         self.labels = parameters.get('labels')
         self.force = parameters.get('force')
         self.rolling_versions = parameters.get('rolling_versions')
@@ -272,13 +272,13 @@ class SecretManager(DockerBaseClass):
         try:
             secrets = self.client.secrets(filters={'name': self.name})
         except APIError as exc:
-            self.client.fail("Error accessing secret %s: %s" % (self.name, to_native(exc)))
+            self.client.fail(f"Error accessing secret {self.name}: {exc}")
 
         if self.rolling_versions:
             self.secrets = [
                 secret
                 for secret in secrets
-                if secret['Spec']['Name'].startswith('{name}_v'.format(name=self.name))
+                if secret['Spec']['Name'].startswith(f'{self.name}_v')
             ]
             self.secrets.sort(key=self.get_version)
         else:
@@ -296,7 +296,7 @@ class SecretManager(DockerBaseClass):
         if self.rolling_versions:
             self.version += 1
             labels['ansible_version'] = str(self.version)
-            self.name = '{name}_v{version}'.format(name=self.name, version=self.version)
+            self.name = f'{self.name}_v{self.version}'
         if self.labels:
             labels.update(self.labels)
 
@@ -305,7 +305,7 @@ class SecretManager(DockerBaseClass):
                 secret_id = self.client.create_secret(self.name, self.data, labels=labels)
                 self.secrets += self.client.secrets(filters={'id': secret_id})
         except APIError as exc:
-            self.client.fail("Error creating secret: %s" % to_native(exc))
+            self.client.fail(f"Error creating secret: {exc}")
 
         if isinstance(secret_id, dict):
             secret_id = secret_id['ID']
@@ -317,7 +317,7 @@ class SecretManager(DockerBaseClass):
             if not self.check_mode:
                 self.client.remove_secret(secret['ID'])
         except APIError as exc:
-            self.client.fail("Error removing secret %s: %s" % (secret['Spec']['Name'], to_native(exc)))
+            self.client.fail(f"Error removing secret {secret['Spec']['Name']}: {exc}")
 
     def present(self):
         ''' Handles state == 'present', creating or updating the secret '''
@@ -397,10 +397,10 @@ def main():
         SecretManager(client, results)()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}',
             exception=traceback.format_exc())
 
 

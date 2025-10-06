@@ -55,15 +55,15 @@ class APIClient(
         >>> import docker
         >>> client = docker.APIClient(base_url='unix://var/run/docker.sock')
         >>> client.version()
-        {u'ApiVersion': u'1.33',
-         u'Arch': u'amd64',
-         u'BuildTime': u'2017-11-19T18:46:37.000000000+00:00',
-         u'GitCommit': u'f4ffd2511c',
-         u'GoVersion': u'go1.9.2',
-         u'KernelVersion': u'4.14.3-1-ARCH',
-         u'MinAPIVersion': u'1.12',
-         u'Os': u'linux',
-         u'Version': u'17.10.0-ce'}
+        {'ApiVersion': '1.33',
+         'Arch': 'amd64',
+         'BuildTime': '2017-11-19T18:46:37.000000000+00:00',
+         'GitCommit': 'f4ffd2511c',
+         'GoVersion': 'go1.9.2',
+         'KernelVersion': '4.14.3-1-ARCH',
+         'MinAPIVersion': '1.12',
+         'Os': 'linux',
+         'Version': '17.10.0-ce'}
 
     Args:
         base_url (str): URL to the Docker server. For example,
@@ -187,14 +187,11 @@ class APIClient(
             self._version = version
         if not isinstance(self._version, str):
             raise DockerException(
-                'Version parameter must be a string or None. Found {0}'.format(
-                    type(version).__name__
-                )
+                f'Version parameter must be a string or None. Found {type(version).__name__}'
             )
         if utils.version_lt(self._version, MINIMUM_DOCKER_API_VERSION):
             raise InvalidVersion(
-                'API versions below {0} are no longer supported by this '
-                'library.'.format(MINIMUM_DOCKER_API_VERSION)
+                f'API versions below {MINIMUM_DOCKER_API_VERSION} are no longer supported by this library.'
             )
 
     def _retrieve_server_version(self):
@@ -202,7 +199,7 @@ class APIClient(
             version_result = self.version(api_version=False)
         except Exception as e:
             raise DockerException(
-                'Error while fetching server API version: {0}'.format(e)
+                f'Error while fetching server API version: {e}'
             )
 
         try:
@@ -214,7 +211,7 @@ class APIClient(
             )
         except Exception as e:
             raise DockerException(
-                'Error while fetching server API version: {0}. Response seems to be broken.'.format(e)
+                f'Error while fetching server API version: {e}. Response seems to be broken.'
             )
 
     def _set_request_timeout(self, kwargs):
@@ -247,19 +244,16 @@ class APIClient(
         for arg in args:
             if not isinstance(arg, str):
                 raise ValueError(
-                    'Expected a string but found {0} ({1}) '
-                    'instead'.format(arg, type(arg))
+                    f'Expected a string but found {arg} ({type(arg)}) instead'
                 )
 
         quote_f = partial(quote, safe="/:")
         args = map(quote_f, args)
 
         if kwargs.get('versioned_api', True):
-            return '{0}/v{1}{2}'.format(
-                self.base_url, self._version, pathfmt.format(*args)
-            )
+            return f'{self.base_url}/v{self._version}{pathfmt.format(*args)}'
         else:
-            return '{0}{1}'.format(self.base_url, pathfmt.format(*args))
+            return f'{self.base_url}{pathfmt.format(*args)}'
 
     def _raise_for_status(self, response):
         """Raises stored :class:`APIError`, if one occurred."""

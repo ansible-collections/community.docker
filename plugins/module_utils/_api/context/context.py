@@ -62,7 +62,7 @@ class Context(object):
             if not isinstance(v, dict):
                 # unknown format
                 raise ContextException(
-                    "Unknown endpoint format for context {name}: {v}".format(name=name, v=v),
+                    f"Unknown endpoint format for context {name}: {v}",
                 )
 
             self.endpoints[k] = v
@@ -118,7 +118,7 @@ class Context(object):
         except (OSError, KeyError, ValueError) as e:
             # unknown format
             raise Exception(
-                "Detected corrupted meta file for context {name} : {e}".format(name=name, e=e)
+                f"Detected corrupted meta file for context {name} : {e}"
             ) from e
 
         # for docker endpoints, set defaults for
@@ -193,7 +193,7 @@ class Context(object):
             rmtree(self.tls_path)
 
     def __repr__(self):
-        return "<{classname}: '{name}'>".format(classname=self.__class__.__name__, name=self.name)
+        return f"<{self.__class__.__name__}: '{self.name}'>"
 
     def __str__(self):
         return json.dumps(self.__call__(), indent=2)

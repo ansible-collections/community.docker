@@ -176,23 +176,23 @@ class ConverVolumeBindsTest(unittest.TestCase):
         assert convert_volume_binds(data) == ['/mnt/vol1:/data:rw']
 
     def test_convert_volume_binds_unicode_bytes_input(self):
-        expected = [u'/mnt/지연:/unicode/박:rw']
+        expected = ['/mnt/지연:/unicode/박:rw']
 
         data = {
-            u'/mnt/지연'.encode('utf-8'): {
-                'bind': u'/unicode/박'.encode('utf-8'),
-                'mode': u'rw'
+            '/mnt/지연'.encode('utf-8'): {
+                'bind': '/unicode/박'.encode('utf-8'),
+                'mode': 'rw'
             }
         }
         assert convert_volume_binds(data) == expected
 
     def test_convert_volume_binds_unicode_unicode_input(self):
-        expected = [u'/mnt/지연:/unicode/박:rw']
+        expected = ['/mnt/지연:/unicode/박:rw']
 
         data = {
-            u'/mnt/지연': {
-                'bind': u'/unicode/박',
-                'mode': u'rw'
+            '/mnt/지연': {
+                'bind': '/unicode/박',
+                'mode': 'rw'
             }
         }
         assert convert_volume_binds(data) == expected
@@ -288,7 +288,7 @@ class ParseHostTest(unittest.TestCase):
         }
 
         for host in invalid_hosts:
-            msg = 'Should have failed to parse invalid host: {0}'.format(host)
+            msg = f'Should have failed to parse invalid host: {host}'
             with self.assertRaises(DockerException, msg=msg):
                 parse_host(host, None)
 
@@ -296,7 +296,7 @@ class ParseHostTest(unittest.TestCase):
             self.assertEqual(
                 parse_host(host, None),
                 expected,
-                msg='Failed to parse valid host: {0}'.format(host),
+                msg=f'Failed to parse valid host: {host}',
             )
 
     def test_parse_host_empty_value(self):
@@ -347,14 +347,14 @@ class ParseRepositoryTagTest(unittest.TestCase):
         )
 
     def test_index_image_sha(self):
-        assert parse_repository_tag("root@sha256:{sha}".format(sha=self.sha)) == (
-            "root", "sha256:{sha}".format(sha=self.sha)
+        assert parse_repository_tag(f"root@sha256:{self.sha}") == (
+            "root", f"sha256:{self.sha}"
         )
 
     def test_private_reg_image_sha(self):
         assert parse_repository_tag(
-            "url:5000/repo@sha256:{sha}".format(sha=self.sha)
-        ) == ("url:5000/repo", "sha256:{sha}".format(sha=self.sha))
+            f"url:5000/repo@sha256:{self.sha}"
+        ) == ("url:5000/repo", f"sha256:{self.sha}")
 
 
 class ParseDeviceTest(unittest.TestCase):
@@ -457,7 +457,7 @@ class UtilsTest(unittest.TestCase):
 
 class SplitCommandTest(unittest.TestCase):
     def test_split_command_with_unicode(self):
-        assert split_command(u'echo μμ') == ['echo', 'μμ']
+        assert split_command('echo μμ') == ['echo', 'μμ']
 
 
 class FormatEnvironmentTest(unittest.TestCase):
@@ -465,7 +465,7 @@ class FormatEnvironmentTest(unittest.TestCase):
         env_dict = {
             'ARTIST_NAME': b'\xec\x86\xa1\xec\xa7\x80\xec\x9d\x80'
         }
-        assert format_environment(env_dict) == [u'ARTIST_NAME=송지은']
+        assert format_environment(env_dict) == ['ARTIST_NAME=송지은']
 
     def test_format_env_no_value(self):
         env_dict = {

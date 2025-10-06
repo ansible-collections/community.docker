@@ -121,7 +121,7 @@ import json
 import os
 import traceback
 
-from ansible.module_utils.common.text.converters import to_bytes, to_text, to_native
+from ansible.module_utils.common.text.converters import to_bytes, to_text
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
@@ -305,12 +305,12 @@ class LoginManager(DockerBaseClass):
         :return: None
         '''
 
-        self.results['actions'].append("Logged into %s" % (self.registry_url))
-        self.log("Log into %s with username %s" % (self.registry_url, self.username))
+        self.results['actions'].append(f"Logged into {self.registry_url}")
+        self.log(f"Log into {self.registry_url} with username {self.username}")
         try:
             response = self._login(self.reauthorize)
         except Exception as exc:
-            self.fail("Logging into %s for user %s failed - %s" % (self.registry_url, self.username, to_native(exc)))
+            self.fail(f"Logging into {self.registry_url} for user {self.username} failed - {exc}")
 
         # If user is already logged in, then response contains password for user
         if 'password' in response:
@@ -321,7 +321,7 @@ class LoginManager(DockerBaseClass):
                 try:
                     response = self._login(True)
                 except Exception as exc:
-                    self.fail("Logging into %s for user %s failed - %s" % (self.registry_url, self.username, to_native(exc)))
+                    self.fail(f"Logging into {self.registry_url} for user {self.username} failed - {exc}")
             response.pop('password', None)
         self.results['login_result'] = response
 
@@ -341,7 +341,7 @@ class LoginManager(DockerBaseClass):
             store.get(self.registry_url)
         except CredentialsNotFound:
             # get raises an exception on not found.
-            self.log("Credentials for %s not present, doing nothing." % (self.registry_url))
+            self.log(f"Credentials for {self.registry_url} not present, doing nothing.")
             self.results['changed'] = False
             return
 
@@ -372,9 +372,8 @@ class LoginManager(DockerBaseClass):
         if current['Username'] != self.username or current['Secret'] != self.password or self.reauthorize:
             if not self.check_mode:
                 store.store(self.registry_url, self.username, self.password)
-            self.log("Writing credentials to configured helper %s for %s" % (store.program, self.registry_url))
-            self.results['actions'].append("Wrote credentials to configured helper %s for %s" % (
-                store.program, self.registry_url))
+            self.log(f"Writing credentials to configured helper {store.program} for {self.registry_url}")
+            self.results['actions'].append(f"Wrote credentials to configured helper {store.program} for {self.registry_url}")
             self.results['changed'] = True
 
     def get_credential_store_instance(self, registry, dockercfg_path):
@@ -394,7 +393,7 @@ class LoginManager(DockerBaseClass):
         # Make sure that there is a credential helper before trying to instantiate a
         # Store object.
         if store_name:
-            self.log("Found credential store %s" % store_name)
+            self.log(f"Found credential store {store_name}")
             return Store(store_name, environment=credstore_env)
 
         return DockerFileStore(dockercfg_path)
@@ -435,10 +434,10 @@ def main():
             del results['actions']
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

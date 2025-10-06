@@ -8,8 +8,6 @@ import json
 import os
 import tarfile
 
-from ansible.module_utils.common.text.converters import to_native
-
 
 class ImageArchiveManifestSummary(object):
     '''
@@ -45,7 +43,7 @@ def api_image_id(archive_image_id):
     :rtype: str
     '''
 
-    return 'sha256:%s' % archive_image_id
+    return f'sha256:{archive_image_id}'
 
 
 def load_archived_image_manifest(archive_path):
@@ -79,7 +77,7 @@ def load_archived_image_manifest(archive_path):
                         manifest = json.load(ef)
                 except Exception as exc:
                     raise ImageArchiveInvalidException(
-                        "Failed to decode and deserialize manifest.json: %s" % to_native(exc)
+                        f"Failed to decode and deserialize manifest.json: {exc}"
                     ) from exc
 
                 if len(manifest) == 0:
@@ -93,7 +91,7 @@ def load_archived_image_manifest(archive_path):
                         config_file = meta['Config']
                     except KeyError as exc:
                         raise ImageArchiveInvalidException(
-                            "Failed to get Config entry from {0}th manifest in manifest.json: {1}".format(index + 1, to_native(exc))
+                            f"Failed to get Config entry from {index + 1}th manifest in manifest.json: {exc}"
                         ) from exc
 
                     # Extracts hash without 'sha256:' prefix
@@ -102,7 +100,7 @@ def load_archived_image_manifest(archive_path):
                         image_id = os.path.splitext(config_file)[0]
                     except Exception as exc:
                         raise ImageArchiveInvalidException(
-                            "Failed to extract image id from config file name %s: %s" % (config_file, to_native(exc))
+                            f"Failed to extract image id from config file name {config_file}: {exc}"
                         ) from exc
 
                     for prefix in (
@@ -115,7 +113,7 @@ def load_archived_image_manifest(archive_path):
                         repo_tags = meta['RepoTags']
                     except KeyError as exc:
                         raise ImageArchiveInvalidException(
-                            "Failed to get RepoTags entry from {0}th manifest in manifest.json: {1}".format(index + 1, to_native(exc))
+                            f"Failed to get RepoTags entry from {index + 1}th manifest in manifest.json: {exc}"
                         ) from exc
 
                     result.append(ImageArchiveManifestSummary(
@@ -128,13 +126,13 @@ def load_archived_image_manifest(archive_path):
                 raise
             except Exception as exc:
                 raise ImageArchiveInvalidException(
-                    "Failed to extract manifest.json from tar file %s: %s" % (archive_path, to_native(exc))
+                    f"Failed to extract manifest.json from tar file {archive_path}: {exc}"
                 ) from exc
 
     except ImageArchiveInvalidException:
         raise
     except Exception as exc:
-        raise ImageArchiveInvalidException("Failed to open tar file %s: %s" % (archive_path, to_native(exc))) from exc
+        raise ImageArchiveInvalidException(f"Failed to open tar file {archive_path}: {exc}") from exc
 
 
 def archived_image_manifest(archive_path):
@@ -162,5 +160,5 @@ def archived_image_manifest(archive_path):
     if len(results) == 1:
         return results[0]
     raise ImageArchiveInvalidException(
-        "Expected to have one entry in manifest.json but found %s" % len(results)
+        f"Expected to have one entry in manifest.json but found {len(results)}"
     )

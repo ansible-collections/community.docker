@@ -12,7 +12,7 @@ import shlex
 
 from functools import partial
 
-from ansible.module_utils.common.text.converters import to_native, to_text
+from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.common.text.formatters import human_to_bytes
 
 from ansible_collections.community.docker.plugins.module_utils.util import (
@@ -56,7 +56,7 @@ def _get_ansible_type(type):
     if type == 'set':
         return 'list'
     if type not in ('list', 'dict', 'bool', 'int', 'float', 'str'):
-        raise Exception('Invalid type "%s"' % (type, ))
+        raise Exception(f'Invalid type "{type}"')
     return type
 
 
@@ -365,15 +365,15 @@ def _parse_port_range(range_or_port, module):
         try:
             start, end = [int(port) for port in range_or_port.split('-')]
         except Exception:
-            module.fail_json(msg='Invalid port range: "{0}"'.format(range_or_port))
+            module.fail_json(msg=f'Invalid port range: "{range_or_port}"')
         if end < start:
-            module.fail_json(msg='Invalid port range: "{0}"'.format(range_or_port))
+            module.fail_json(msg=f'Invalid port range: "{range_or_port}"')
         return list(range(start, end + 1))
     else:
         try:
             return [int(range_or_port)]
         except Exception:
-            module.fail_json(msg='Invalid port: "{0}"'.format(range_or_port))
+            module.fail_json(msg=f'Invalid port: "{range_or_port}"')
 
 
 def _split_colon_ipv6(text, module):
@@ -391,7 +391,7 @@ def _split_colon_ipv6(text, module):
             break
         j = text.find(']', i)
         if j < 0:
-            module.fail_json(msg='Cannot find closing "]" in input "{0}" for opening "[" at index {1}!'.format(text, i + 1))
+            module.fail_json(msg=f'Cannot find closing "]" in input "{text}" for opening "[" at index {i + 1}!')
         result.extend(text[start:i].split(':'))
         k = text.find(':', j)
         if k < 0:
@@ -461,11 +461,11 @@ def _preprocess_env(module, values):
         for name, value in values['env'].items():
             if not isinstance(value, str):
                 module.fail_json(msg='Non-string value found for env option. Ambiguous env options must be '
-                                     'wrapped in quotes to avoid them being interpreted. Key: %s' % (name, ))
+                                     f'wrapped in quotes to avoid them being interpreted. Key: {name}')
             final_env[name] = to_text(value, errors='surrogate_or_strict')
     formatted_env = []
     for key, value in final_env.items():
-        formatted_env.append('%s=%s' % (key, value))
+        formatted_env.append(f'{key}={value}')
     return {
         'env': formatted_env,
     }
@@ -491,7 +491,7 @@ def _preprocess_convert_to_bytes(module, values, name, unlimited_value=None):
         values[name] = value
         return values
     except ValueError as exc:
-        module.fail_json(msg='Failed to convert %s to bytes: %s' % (name, to_native(exc)))
+        module.fail_json(msg=f'Failed to convert {name} to bytes: {exc}')
 
 
 def _preprocess_mac_address(module, values):
@@ -571,9 +571,9 @@ def _preprocess_mounts(module, values):
     def check_collision(t, name):
         if t in last:
             if name == last[t]:
-                module.fail_json(msg='The mount point "{0}" appears twice in the {1} option'.format(t, name))
+                module.fail_json(msg=f'The mount point "{t}" appears twice in the {name} option')
             else:
-                module.fail_json(msg='The mount point "{0}" appears both in the {1} and {2} option'.format(t, name, last[t]))
+                module.fail_json(msg=f'The mount point "{t}" appears both in the {name} and {last[t]} option')
         last[t] = name
 
     if 'mounts' in values:
@@ -588,17 +588,13 @@ def _preprocess_mounts(module, values):
 
             # Sanity checks
             if mount['source'] is None and mount_type not in ('tmpfs', 'volume', 'image', 'cluster'):
-                module.fail_json(msg='source must be specified for mount "{0}" of type "{1}"'.format(target, mount_type))
+                module.fail_json(msg=f'source must be specified for mount "{target}" of type "{mount_type}"')
             for option, req_mount_types in _MOUNT_OPTION_TYPES.items():
                 if mount[option] is not None and mount_type not in req_mount_types:
+                    type_plural = "" if len(req_mount_types) == 1 else "s"
+                    type_list = '", "'.join(req_mount_types)
                     module.fail_json(
-                        msg='{0} cannot be specified for mount "{1}" of type "{2}" (needs type{3} "{4}")'.format(
-                            option,
-                            target,
-                            mount_type,
-                            "" if len(req_mount_types) == 1 else "s",
-                            '", "'.join(req_mount_types),
-                        )
+                        msg=f'{option} cannot be specified for mount "{target}" of type "{mount_type}" (needs type{type_plural} "{type_list}")'
                     )
 
             # Streamline options
@@ -611,22 +607,22 @@ def _preprocess_mounts(module, values):
                 try:
                     mount_dict['tmpfs_size'] = human_to_bytes(mount_dict['tmpfs_size'])
                 except ValueError as exc:
-                    module.fail_json(msg='Failed to convert tmpfs_size of mount "{0}" to bytes: {1}'.format(target, to_native(exc)))
+                    module.fail_json(msg=f'Failed to convert tmpfs_size of mount "{target}" to bytes: {exc}')
             if mount_dict['tmpfs_mode'] is not None:
                 try:
                     mount_dict['tmpfs_mode'] = int(mount_dict['tmpfs_mode'], 8)
                 except Exception as dummy:
-                    module.fail_json(msg='tmp_fs mode of mount "{0}" is not an octal string!'.format(target))
+                    module.fail_json(msg=f'tmp_fs mode of mount "{target}" is not an octal string!')
             if mount_dict['tmpfs_options']:
                 opts = []
                 for idx, opt in enumerate(mount_dict['tmpfs_options']):
                     if len(opt) != 1:
-                        module.fail_json(msg='tmpfs_options[{1}] of mount "{0}" must be a one-element dictionary!'.format(target, idx + 1))
+                        module.fail_json(msg=f'tmpfs_options[{idx + 1}] of mount "{target}" must be a one-element dictionary!')
                     k, v = list(opt.items())[0]
                     if not isinstance(k, str):
-                        module.fail_json(msg='key {2!r} in tmpfs_options[{1}] of mount "{0}" must be a string!'.format(target, idx + 1, k))
+                        module.fail_json(msg=f'key {k!r} in tmpfs_options[{idx + 1}] of mount "{target}" must be a string!')
                     if v is not None and not isinstance(v, str):
-                        module.fail_json(msg='value {2!r} in tmpfs_options[{1}] of mount "{0}" must be a string or null/none!'.format(target, idx + 1, v))
+                        module.fail_json(msg=f'value {v!r} in tmpfs_options[{idx + 1}] of mount "{target}" must be a string or null/none!')
                     opts.append([k, v] if v is not None else [k])
                 mount_dict['tmpfs_options'] = opts
 
@@ -641,17 +637,17 @@ def _preprocess_mounts(module, values):
                 if len(parts) == 3:
                     host, container, mode = parts
                     if not _is_volume_permissions(mode):
-                        module.fail_json(msg='Found invalid volumes mode: {0}'.format(mode))
+                        module.fail_json(msg=f'Found invalid volumes mode: {mode}')
                     if re.match(r'[.~]', host):
                         host = os.path.abspath(os.path.expanduser(host))
                     check_collision(container, 'volumes')
-                    new_vols.append("%s:%s:%s" % (host, container, mode))
+                    new_vols.append(f"{host}:{container}:{mode}")
                     continue
                 elif len(parts) == 2:
                     if not _is_volume_permissions(parts[1]) and re.match(r'[.~]', parts[0]):
                         host = os.path.abspath(os.path.expanduser(parts[0]))
                         check_collision(parts[1], 'volumes')
-                        new_vols.append("%s:%s:rw" % (host, parts[1]))
+                        new_vols.append(f"{host}:{parts[1]}:rw")
                         continue
             check_collision(parts[min(1, len(parts) - 1)], 'volumes')
             new_vols.append(vol)
@@ -664,12 +660,12 @@ def _preprocess_mounts(module, values):
                 if len(parts) == 3:
                     host, container, mode = parts
                     if not _is_volume_permissions(mode):
-                        module.fail_json(msg='Found invalid volumes mode: {0}'.format(mode))
+                        module.fail_json(msg=f'Found invalid volumes mode: {mode}')
                 elif len(parts) == 2:
                     if not _is_volume_permissions(parts[1]):
                         host, container, mode = (parts + ['rw'])
             if host is not None:
-                new_binds.append('%s:%s:%s' % (host, container, mode))
+                new_binds.append(f'{host}:{container}:{mode}')
         values['volume_binds'] = new_binds
     return values
 
@@ -694,12 +690,12 @@ def _preprocess_log(module, values):
         options = {}
         for k, v in values['log_options'].items():
             if not isinstance(v, str):
+                value = to_text(v, errors='surrogate_or_strict')
                 module.warn(
-                    "Non-string value found for log_options option '%s'. The value is automatically converted to '%s'. "
-                    "If this is not correct, or you want to avoid such warnings, please quote the value." % (
-                        k, to_text(v, errors='surrogate_or_strict'))
+                    f"Non-string value found for log_options option '{k}'. The value is automatically converted to {value!r}. "
+                    "If this is not correct, or you want to avoid such warnings, please quote the value."
                 )
-            v = to_text(v, errors='surrogate_or_strict')
+                v = value
             options[k] = v
         result['log_options'] = options
     return result
@@ -735,7 +731,7 @@ def _preprocess_ports(module, values):
                 if not re.match(r'^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$', parts[0]) and not re.match(r'^\[[0-9a-fA-F:]+(?:|%[^\]/]+)\]$', ipaddr):
                     module.fail_json(
                         msg='Bind addresses for published ports must be IPv4 or IPv6 addresses, not hostnames. '
-                            'Use the dig lookup to resolve hostnames. (Found hostname: {0})'.format(ipaddr)
+                            f'Use the dig lookup to resolve hostnames. (Found hostname: {ipaddr})'
                     )
                 if re.match(r'^\[[0-9a-fA-F:]+\]$', ipaddr):
                     ipaddr = ipaddr[1:-1]
@@ -748,12 +744,12 @@ def _preprocess_ports(module, values):
                     port_binds = len(container_ports) * [(ipaddr,)]
             else:
                 module.fail_json(
-                    msg='Invalid port description "%s" - expected 1 to 3 colon-separated parts, but got %d. '
-                        'Maybe you forgot to use square brackets ([...]) around an IPv6 address?' % (port, p_len)
+                    msg=f'Invalid port description "{port}" - expected 1 to 3 colon-separated parts, but got {p_len}. '
+                        'Maybe you forgot to use square brackets ([...]) around an IPv6 address?'
                 )
 
             for bind, container_port in zip(port_binds, container_ports):
-                idx = '{0}/{1}'.format(container_port, protocol) if protocol else container_port
+                idx = f'{container_port}/{protocol}' if protocol else container_port
                 if idx in binds:
                     old_bind = binds[idx]
                     if isinstance(old_bind, list):

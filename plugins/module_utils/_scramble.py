@@ -35,7 +35,7 @@ def unscramble(value, key):
     '''Do NOT use this for cryptographic purposes!'''
     if len(key) < 1:
         raise ValueError('Key must be at least one byte')
-    if not value.startswith(u'=S='):
+    if not value.startswith('=S='):
         raise ValueError('Value does not start with indicator')
     value = base64.b64decode(value[3:])
     k = key[0]

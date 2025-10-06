@@ -167,7 +167,7 @@ import selectors
 import shlex
 import traceback
 
-from ansible.module_utils.common.text.converters import to_text, to_bytes, to_native
+from ansible.module_utils.common.text.converters import to_text, to_bytes
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
@@ -228,7 +228,7 @@ def main():
             if not isinstance(value, str):
                 client.module.fail_json(
                     msg="Non-string value found for env option. Ambiguous env options must be "
-                        "wrapped in quotes to avoid them being interpreted. Key: %s" % (name, ))
+                        f"wrapped in quotes to avoid them being interpreted. Key: {name}")
             env[name] = to_text(value, errors='surrogate_or_strict')
 
     if command is not None:
@@ -295,16 +295,16 @@ def main():
                 rc=result.get('ExitCode') or 0,
             )
     except NotFound:
-        client.fail('Could not find container "{0}"'.format(container))
+        client.fail(f'Could not find container "{container}"')
     except APIError as e:
         if e.response is not None and e.response.status_code == 409:
-            client.fail('The container "{0}" has been paused ({1})'.format(container, to_native(e)))
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+            client.fail(f'The container "{container}" has been paused ({e})')
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except DockerException as e:
-        client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
             exception=traceback.format_exc())
 
 

@@ -75,7 +75,7 @@ def test_get_docker_environment(mocker, docker_swarm_service):
     mocker.patch.object(
         docker_swarm_service,
         'format_environment',
-        side_effect=lambda d: ['{0}={1}'.format(key, value) for key, value in d.items()],
+        side_effect=lambda d: [f'{key}={value}' for key, value in d.items()],
     )
     # Test with env dict and file
     result = docker_swarm_service.get_docker_environment(
@@ -207,7 +207,7 @@ def test_has_list_changed(docker_swarm_service):
     )
     assert docker_swarm_service.has_list_changed(
         ['sleep', '3400'],
-        [u'sleep', u'3600'],
+        ['sleep', '3600'],
         sort_lists=False
     )
 

@@ -156,7 +156,7 @@ def put_file(client, container, in_path, out_path, user_id, group_id, mode=None,
     """Transfer a file from local to Docker container."""
     if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
         raise DockerFileNotFound(
-            "file or module does not exist: %s" % to_native(in_path))
+            f"file or module does not exist: {to_native(in_path)}")
 
     b_in_path = to_bytes(in_path, errors='surrogate_or_strict')
 
@@ -172,13 +172,13 @@ def put_file(client, container, in_path, out_path, user_id, group_id, mode=None,
     elif stat.S_ISLNK(file_stat.st_mode):
         stream = _symlink_tar_generator(b_in_path, file_stat, out_file, user_id, group_id, mode=mode, user_name=user_name)
     else:
+        file_part = ' referenced by' if follow_links else ''
         raise DockerFileCopyError(
-            'File{0} {1} is neither a regular file nor a symlink (stat mode {2}).'.format(
-                ' referenced by' if follow_links else '', in_path, oct(file_stat.st_mode)))
+            f'File{file_part} {in_path} is neither a regular file nor a symlink (stat mode {oct(file_stat.st_mode)}).')
 
     ok = _put_archive(client, container, out_dir, stream)
     if not ok:
-        raise DockerUnexpectedError('Unknown error while creating file "{0}" in container "{1}".'.format(out_path, container))
+        raise DockerUnexpectedError(f'Unknown error while creating file "{out_path}" in container "{container}".')
 
 
 def put_file_content(client, container, content, out_path, user_id, group_id, mode, user_name=None):
@@ -189,7 +189,7 @@ def put_file_content(client, container, content, out_path, user_id, group_id, mo
 
     ok = _put_archive(client, container, out_dir, stream)
     if not ok:
-        raise DockerUnexpectedError('Unknown error while creating file "{0}" in container "{1}".'.format(out_path, container))
+        raise DockerUnexpectedError(f'Unknown error while creating file "{out_path}" in container "{container}".')
 
 
 def stat_file(client, container, in_path, follow_links=False, log=None):
@@ -208,11 +208,11 @@ def stat_file(client, container, in_path, follow_links=False, log=None):
 
     while True:
         if in_path in considered_in_paths:
-            raise DockerFileCopyError('Found infinite symbolic link loop when trying to stating "{0}"'.format(in_path))
+            raise DockerFileCopyError(f'Found infinite symbolic link loop when trying to stating "{in_path}"')
         considered_in_paths.add(in_path)
 
         if log:
-            log('FETCH: Stating "%s"' % in_path)
+            log(f'FETCH: Stating "{in_path}"')
 
         response = client._head(
             client._url('/containers/{0}/archive', container),
@@ -226,8 +226,7 @@ def stat_file(client, container, in_path, follow_links=False, log=None):
             stat_data = json.loads(base64.b64decode(header))
         except Exception as exc:
             raise DockerUnexpectedError(
-                'When retrieving information for {in_path} from {container}, obtained header {header!r} that cannot be loaded as JSON: {exc}'
-                .format(in_path=in_path, container=container, header=header, exc=exc)
+                f'When retrieving information for {in_path} from {container}, obtained header {header!r} that cannot be loaded as JSON: {exc}'
             )
 
         # https://pkg.go.dev/io/fs#FileMode: bit 32 - 5 means ModeSymlink
@@ -285,11 +284,11 @@ def fetch_file_ex(client, container, in_path, process_none, process_regular, pro
 
     while True:
         if in_path in considered_in_paths:
-            raise DockerFileCopyError('Found infinite symbolic link loop when trying to fetch "{0}"'.format(in_path))
+            raise DockerFileCopyError(f'Found infinite symbolic link loop when trying to fetch "{in_path}"')
         considered_in_paths.add(in_path)
 
         if log:
-            log('FETCH: Fetching "%s"' % in_path)
+            log(f'FETCH: Fetching "{in_path}"')
         try:
             stream = client.get_raw_stream(
                 '/containers/{0}/archive', container,
@@ -319,7 +318,7 @@ def fetch_file_ex(client, container, in_path, process_none, process_regular, pro
                     return process_symlink(in_path, symlink_member)
                 in_path = os.path.join(os.path.split(in_path)[0], symlink_member.linkname)
                 if log:
-                    log('FETCH: Following symbolic link to "%s"' % in_path)
+                    log(f'FETCH: Following symbolic link to "{in_path}"')
                 continue
             if found:
                 return result
@@ -331,8 +330,7 @@ def fetch_file(client, container, in_path, out_path, follow_links=False, log=Non
 
     def process_none(in_path):
         raise DockerFileNotFound(
-            'File {in_path} does not exist in container {container}'
-            .format(in_path=in_path, container=container)
+            f'File {in_path} does not exist in container {container}'
         )
 
     def process_regular(in_path, tar, member):
@@ -352,14 +350,14 @@ def fetch_file(client, container, in_path, out_path, follow_links=False, log=Non
         return in_path
 
     def process_other(in_path, member):
-        raise DockerFileCopyError('Remote file "%s" is not a regular file or a symbolic link' % in_path)
+        raise DockerFileCopyError(f'Remote file "{in_path}" is not a regular file or a symbolic link')
 
     return fetch_file_ex(client, container, in_path, process_none, process_regular, process_symlink, process_other, follow_links=follow_links, log=log)
 
 
 def _execute_command(client, container, command, log=None, check_rc=False):
     if log:
-        log('Executing {command} in {container}'.format(command=command, container=container))
+        log(f'Executing {command} in {container}')
 
     data = {
         'Container': container,
@@ -378,10 +376,10 @@ def _execute_command(client, container, command, log=None, check_rc=False):
     try:
         exec_data = client.post_json_to_json('/containers/{0}/exec', container, data=data)
     except NotFound as e:
-        raise DockerFileCopyError('Could not find container "{container}"'.format(container=container)) from e
+        raise DockerFileCopyError(f'Could not find container "{container}"') from e
     except APIError as e:
         if e.response is not None and e.response.status_code == 409:
-            raise DockerFileCopyError('Cannot execute command in paused container "{container}"'.format(container=container)) from e
+            raise DockerFileCopyError(f'Cannot execute command in paused container "{container}"') from e
         raise
     exec_id = exec_data['Id']
 
@@ -398,12 +396,12 @@ def _execute_command(client, container, command, log=None, check_rc=False):
     stderr = stderr or b''
 
     if log:
-        log('Exit code {rc}, stdout {stdout!r}, stderr {stderr!r}'.format(rc=rc, stdout=stdout, stderr=stderr))
+        log(f'Exit code {rc}, stdout {stdout!r}, stderr {stderr!r}')
 
     if check_rc and rc != 0:
+        command_str = ' '.join(command)
         raise DockerUnexpectedError(
-            'Obtained unexpected exit code {rc} when running "{command}" in {container}.\nSTDOUT: {stdout}\nSTDERR: {stderr}'
-            .format(command=' '.join(command), container=container, rc=rc, stdout=stdout, stderr=stderr)
+            f'Obtained unexpected exit code {rc} when running "{command_str}" in {container}.\nSTDOUT: {stdout}\nSTDERR: {stderr}'
         )
 
     return rc, stdout, stderr
@@ -415,8 +413,7 @@ def determine_user_group(client, container, log=None):
     stdout_lines = stdout.splitlines()
     if len(stdout_lines) != 2:
         raise DockerUnexpectedError(
-            'Expected two-line output to obtain user and group ID for container {container}, but got {lc} lines:\n{stdout}'
-            .format(container=container, lc=len(stdout_lines), stdout=stdout)
+            f'Expected two-line output to obtain user and group ID for container {container}, but got {len(stdout_lines)} lines:\n{stdout}'
         )
 
     user_id, group_id = stdout_lines
@@ -424,6 +421,5 @@ def determine_user_group(client, container, log=None):
         return int(user_id), int(group_id)
     except ValueError:
         raise DockerUnexpectedError(
-            'Expected two-line output with numeric IDs to obtain user and group ID for container {container}, but got "{l1}" and "{l2}" instead'
-            .format(container=container, l1=user_id, l2=group_id)
+            f'Expected two-line output with numeric IDs to obtain user and group ID for container {container}, but got "{user_id}" and "{group_id}" instead'
         )

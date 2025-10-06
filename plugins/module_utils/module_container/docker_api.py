@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native, to_text
+from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.common.text.formatters import human_to_bytes
 
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
@@ -123,7 +123,7 @@ def _get_ansible_type(type):
     if type == 'set':
         return 'list'
     if type not in ('list', 'dict', 'bool', 'int', 'float', 'str'):
-        raise Exception('Invalid type "%s"' % (type, ))
+        raise Exception(f'Invalid type "{type}"')
     return type
 
 
@@ -248,8 +248,9 @@ class DockerAPIEngineDriver(EngineDriver):
                     value = normalize_links(value)
                 params[dest_para] = value
         if parameters:
+            ups = ', '.join([f'"{p}"' for p in sorted(parameters)])
             raise Exception(
-                'Unknown parameter(s) for connect_container_to_network for Docker API driver: %s' % (', '.join(['"%s"' % p for p in sorted(parameters)])))
+                f'Unknown parameter(s) for connect_container_to_network for Docker API driver: {ups}')
         ipam_config = {}
         for param in ('IPv4Address', 'IPv6Address'):
             if param in params:
@@ -307,7 +308,7 @@ class DockerAPIEngineDriver(EngineDriver):
             output = client._get_result_tty(False, res, config['Config']['Tty'])
             return output, True
         else:
-            return "Result logged using `%s` driver" % logging_driver, False
+            return f"Result logged using `{logging_driver}` driver", False
 
     def update_container(self, client, container_id, update_parameters):
         result = client.post_json_to_json('/containers/{0}/update', container_id, data=update_parameters)
@@ -343,13 +344,13 @@ class DockerAPIEngineDriver(EngineDriver):
                     # New docker daemon versions do not allow containers to be removed
                     # if they are paused. Make sure we do not end up in an infinite loop.
                     if count == 3:
-                        raise Exception('%s [tried to unpause three times]' % to_native(exc))
+                        raise Exception(f'{exc} [tried to unpause three times]')
                     count += 1
                     # Unpause
                     try:
                         self.unpause_container(client, container_id)
                     except Exception as exc2:
-                        raise Exception('%s [while unpausing]' % to_native(exc2))
+                        raise Exception(f'{exc2} [while unpausing]')
                     # Now try again
                     continue
                 raise
@@ -369,13 +370,13 @@ class DockerAPIEngineDriver(EngineDriver):
                     # New docker daemon versions do not allow containers to be removed
                     # if they are paused. Make sure we do not end up in an infinite loop.
                     if count == 3:
-                        raise Exception('%s [tried to unpause three times]' % to_native(exc))
+                        raise Exception(f'{exc} [tried to unpause three times]')
                     count += 1
                     # Unpause
                     try:
                         self.unpause_container(client, container_id)
                     except Exception as exc2:
-                        raise Exception('%s [while unpausing]' % to_native(exc2))
+                        raise Exception(f'{exc2} [while unpausing]')
                     # Now try again
                     continue
                 if 'removal of container ' in exc.explanation and ' is already in progress' in exc.explanation:
@@ -389,10 +390,10 @@ class DockerAPIEngineDriver(EngineDriver):
         try:
             runner()
         except DockerException as e:
-            client.fail('An unexpected Docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+            client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
         except RequestException as e:
             client.fail(
-                'An unexpected requests error occurred when trying to talk to the Docker daemon: {0}'.format(to_native(e)),
+                f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
                 exception=traceback.format_exc())
 
 
@@ -611,7 +612,7 @@ def _get_default_host_ip(module, client):
             network = client.get_network(network_data['name'])
             if network is None:
                 client.fail(
-                    "Cannot inspect the network '{0}' to determine the default IP".format(network_data['name']),
+                    f"Cannot inspect the network '{network_data['name']}' to determine the default IP",
                 )
             if network.get('Driver') == 'bridge' and network.get('Options', {}).get('com.docker.network.bridge.host_binding_ipv4'):
                 ip = network['Options']['com.docker.network.bridge.host_binding_ipv4']
@@ -658,7 +659,7 @@ def _get_expected_env_value(module, client, api_version, image, value, sentry):
             expected_env[parts[0]] = parts[1]
     param_env = []
     for key, env_value in expected_env.items():
-        param_env.append("%s=%s" % (key, env_value))
+        param_env.append(f"{key}={env_value}")
     return param_env
 
 
@@ -744,7 +745,7 @@ def _preprocess_etc_hosts(module, client, api_version, value):
         return value
     results = []
     for key, value in value.items():
-        results.append('%s%s%s' % (key, ':', value))
+        results.append(f'{key}:{value}')
     return results
 
 
@@ -783,7 +784,7 @@ def _preprocess_convert_to_bytes(module, values, name, unlimited_value=None):
         values[name] = value
         return values
     except ValueError as exc:
-        module.fail_json(msg='Failed to convert %s to bytes: %s' % (name, to_native(exc)))
+        module.fail_json(msg=f'Failed to convert {name} to bytes: {exc}')
 
 
 def _get_image_labels(image):
@@ -815,7 +816,7 @@ def _preprocess_links(module, client, api_version, value):
             link, alias = parsed_link
         else:
             link, alias = parsed_link[0], parsed_link[0]
-        result.append('/%s:/%s/%s' % (link, module.params['name'], alias))
+        result.append(f"/{link}:/{module.params['name']}/{alias}")
 
     return result
 
@@ -830,11 +831,12 @@ def _ignore_mismatching_label_result(module, client, api_version, option, image,
         for label in image_labels:
             if label not in labels_param:
                 # Format label for error message
-                would_remove_labels.append('"%s"' % (label, ))
+                would_remove_labels.append(f'"{label}"')
         if would_remove_labels:
+            labels = ', '.join(would_remove_labels)
             msg = ("Some labels should be removed but are present in the base image. You can set image_label_mismatch to 'ignore' to ignore"
-                   " this error. Labels: {0}")
-            client.fail(msg.format(', '.join(would_remove_labels)))
+                   f" this error. Labels: {labels}")
+            client.fail(msg)
     return False
 
 
@@ -860,7 +862,7 @@ def _preprocess_network_values(module, client, api_version, options, values):
         for network in values['networks']:
             network['id'] = _get_network_id(module, client, network['name'])
             if not network['id']:
-                client.fail("Parameter error: network named %s could not be found. Does it exist?" % (network['name'], ))
+                client.fail(f"Parameter error: network named {network['name']} could not be found. Does it exist?")
 
     if 'network_mode' in values:
         values['network_mode'] = _preprocess_container_names(module, client, api_version, values['network_mode'])
@@ -878,7 +880,7 @@ def _get_network_id(module, client, network_name):
                 break
         return network_id
     except Exception as exc:
-        client.fail("Error getting network id for %s - %s" % (network_name, to_native(exc)))
+        client.fail(f"Error getting network id for {network_name} - {exc}")
 
 
 def _get_values_network(module, container, api_version, options, image, host_info):
@@ -947,7 +949,7 @@ def _get_bind_from_dict(volume_dict):
             if isinstance(config, dict) and config.get('bind'):
                 container_path = config.get('bind')
                 mode = config.get('mode', 'rw')
-                results.append("%s:%s:%s" % (host_path, container_path, mode))
+                results.append(f"{host_path}:{container_path}:{mode}")
     return results
 
 
@@ -1133,7 +1135,7 @@ def _get_expected_values_platform(module, client, api_version, options, image, v
                 daemon_arch=host_info.get('Architecture') if host_info else None,
             )
         except ValueError as exc:
-            module.fail_json(msg='Error while parsing platform parameer: %s' % (to_native(exc), ))
+            module.fail_json(msg=f'Error while parsing platform parameer: {exc}')
     return expected_values
 
 
@@ -1203,7 +1205,7 @@ def _get_expected_values_ports(module, client, api_version, options, image, valu
         expected_bound_ports = {}
         for container_port, config in values['published_ports'].items():
             if isinstance(container_port, int):
-                container_port = "%s/tcp" % container_port
+                container_port = f"{container_port}/tcp"
             if len(config) == 1:
                 if isinstance(config[0], int):
                     expected_bound_ports[container_port] = [{'HostIp': "0.0.0.0", 'HostPort': config[0]}]
@@ -1243,7 +1245,7 @@ def _set_values_ports(module, data, api_version, options, values):
                 if len(port_definition) == 2:
                     proto = port_definition[1]
                 port = port_definition[0]
-            exposed_ports['%s/%s' % (port, proto)] = {}
+            exposed_ports[f'{port}/{proto}'] = {}
         data['ExposedPorts'] = exposed_ports
     if 'published_ports' in values:
         if 'HostConfig' not in data:
@@ -1282,9 +1284,9 @@ def _preprocess_container_names(module, client, api_version, value):
     if container is None:
         # If we cannot find the container, issue a warning and continue with
         # what the user specified.
-        module.warn('Cannot find a container with name or ID "{0}"'.format(container_name))
+        module.warn(f'Cannot find a container with name or ID "{container_name}"')
         return value
-    return 'container:{0}'.format(container['Id'])
+    return f"container:{container['Id']}"
 
 
 def _get_value_command(module, container, api_version, options, image, host_info):

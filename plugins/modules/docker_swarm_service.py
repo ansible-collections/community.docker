@@ -869,7 +869,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
 )
 
 from ansible.module_utils.basic import human_to_bytes
-from ansible.module_utils.common.text.converters import to_text, to_native
+from ansible.module_utils.common.text.converters import to_text
 
 try:
     from docker import types
@@ -909,7 +909,7 @@ def get_docker_environment(env, env_files):
             if not isinstance(value, str):
                 raise ValueError(
                     'Non-string value found for env option. '
-                    'Ambiguous env options must be wrapped in quotes to avoid YAML parsing. Key: %s' % name
+                    f'Ambiguous env options must be wrapped in quotes to avoid YAML parsing. Key: {name}'
                 )
             env_dict[name] = str(value)
     elif env is not None and isinstance(env, list):
@@ -921,7 +921,7 @@ def get_docker_environment(env, env_files):
             env_dict[name] = value
     elif env is not None:
         raise ValueError(
-            'Invalid type for env %s (%s). Only list or dict allowed.' % (env, type(env))
+            f'Invalid type for env {env} ({type(env)}). Only list or dict allowed.'
         )
     env_list = format_environment(env_dict)
     if not env_list:
@@ -968,7 +968,7 @@ def get_docker_networks(networks, network_ids):
             if network:
                 invalid_keys = ', '.join(network.keys())
                 raise TypeError(
-                    '%s are not valid keys for the networks option' % invalid_keys
+                    f'{invalid_keys} are not valid keys for the networks option'
                 )
 
         else:
@@ -979,7 +979,7 @@ def get_docker_networks(networks, network_ids):
         try:
             parsed_network['id'] = network_ids[network_name]
         except KeyError as e:
-            raise ValueError('Could not find a network named: %s.' % e)
+            raise ValueError(f'Could not find a network named: {e}.')
         parsed_networks.append(parsed_network)
     return parsed_networks or []
 
@@ -996,8 +996,7 @@ def get_nanoseconds_from_raw_option(name, value):
             return convert_duration_to_nanosecond(value)
     else:
         raise ValueError(
-            'Invalid type for %s %s (%s). Only string or int allowed.'
-            % (name, value, type(value))
+            f'Invalid type for {name} {value} ({type(value)}). Only string or int allowed.'
         )
 
 
@@ -1385,7 +1384,7 @@ class DockerService(DockerBaseClass):
             try:
                 memory = human_to_bytes(memory)
             except ValueError as exc:
-                raise Exception('Failed to convert limit_memory to bytes: %s' % exc)
+                raise Exception(f'Failed to convert limit_memory to bytes: {exc}')
         return {
             'limit_cpu': cpus,
             'limit_memory': memory,
@@ -1407,7 +1406,7 @@ class DockerService(DockerBaseClass):
             try:
                 memory = human_to_bytes(memory)
             except ValueError as exc:
-                raise Exception('Failed to convert reserve_memory to bytes: %s' % exc)
+                raise Exception(f'Failed to convert reserve_memory to bytes: {exc}')
         return {
             'reserve_cpu': cpus,
             'reserve_memory': memory,
@@ -1483,21 +1482,19 @@ class DockerService(DockerBaseClass):
             if invalid_items:
                 errors = ', '.join(
                     [
-                        '%s (%s) at index %s' % (item, type(item), index)
+                        f'{item} ({type(item)}) at index {index}'
                         for index, item in invalid_items
                     ]
                 )
                 raise Exception(
                     'All items in a command list need to be strings. '
-                    'Check quoting. Invalid items: %s.'
-                    % errors
+                    f'Check quoting. Invalid items: {errors}.'
                 )
             s.command = ap['command']
         elif s.command is not None:
             raise ValueError(
-                'Invalid type for command %s (%s). '
+                f'Invalid type for command {s.command} ({type(s.command)}). '
                 'Only string or list allowed. Check quoting.'
-                % (s.command, type(s.command))
             )
 
         s.env = get_docker_environment(ap['env'], ap['env_files'])
@@ -1577,7 +1574,7 @@ class DockerService(DockerBaseClass):
                         tmpfs_size = human_to_bytes(tmpfs_size)
                     except ValueError as exc:
                         raise ValueError(
-                            'Failed to convert tmpfs_size to bytes: %s' % exc
+                            f'Failed to convert tmpfs_size to bytes: {exc}'
                         )
 
                 service_m['tmpfs_size'] = tmpfs_size
@@ -2214,7 +2211,7 @@ class DockerServiceManager(object):
             ds.mode = to_text('replicated-job', encoding='utf-8')
             ds.replicas = mode['ReplicatedJob']['TotalCompletions']
         else:
-            raise Exception('Unknown service mode: %s' % mode)
+            raise Exception(f'Unknown service mode: {mode}')
 
         raw_data_mounts = task_template_data['ContainerSpec'].get('Mounts')
         if raw_data_mounts:
@@ -2314,7 +2311,7 @@ class DockerServiceManager(object):
         name = repo + ':' + tag
         distribution_data = self.client.inspect_distribution(name)
         digest = distribution_data['Descriptor']['digest']
-        return '%s@%s' % (name, digest)
+        return f'{name}@{digest}'
 
     def get_networks_names_ids(self):
         return dict(
@@ -2341,7 +2338,7 @@ class DockerServiceManager(object):
         for secret_name in secret_names:
             if secret_name not in secrets:
                 self.client.fail(
-                    'Could not find a secret named "%s"' % secret_name
+                    f'Could not find a secret named "{secret_name}"'
                 )
         return secrets
 
@@ -2365,7 +2362,7 @@ class DockerServiceManager(object):
         for config_name in config_names:
             if config_name not in configs:
                 self.client.fail(
-                    'Could not find a config named "%s"' % config_name
+                    f'Could not find a config named "{config_name}"'
                 )
         return configs
 
@@ -2381,16 +2378,14 @@ class DockerServiceManager(object):
             )
         except DockerException as e:
             self.client.fail(
-                'Error looking for an image named %s: %s'
-                % (image, to_native(e))
+                f'Error looking for an image named {image}: {e}'
             )
 
         try:
             current_service = self.get_service(module.params['name'])
         except Exception as e:
             self.client.fail(
-                'Error looking for service named %s: %s'
-                % (module.params['name'], to_native(e))
+                f"Error looking for service named {module.params['name']}: {e}"
             )
         try:
             secret_ids = self.get_missing_secret_ids()
@@ -2407,7 +2402,7 @@ class DockerServiceManager(object):
             )
         except Exception as e:
             return self.client.fail(
-                'Error parsing module parameters: %s' % to_native(e)
+                f'Error parsing module parameters: {e}'
             )
 
         changed = False
@@ -2792,10 +2787,10 @@ def main():
 
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail('An unexpected docker error occurred: {0}'.format(to_native(e)), exception=traceback.format_exc())
+        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
     except RequestException as e:
         client.fail(
-            'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {0}'.format(to_native(e)),
+            f'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}',
             exception=traceback.format_exc())
 
 

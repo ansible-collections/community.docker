@@ -166,8 +166,8 @@ class Connection(ConnectionBase):
 
     @staticmethod
     def _sanitize_version(version):
-        version = re.sub(u'[^0-9a-zA-Z.]', u'', version)
-        version = re.sub(u'^v', u'', version)
+        version = re.sub('[^0-9a-zA-Z.]', '', version)
+        version = re.sub('^v', '', version)
         return version
 
     def _old_docker_version(self):
@@ -196,13 +196,13 @@ class Connection(ConnectionBase):
 
         cmd, cmd_output, err, returncode = self._old_docker_version()
         if returncode == 0:
-            for line in to_text(cmd_output, errors='surrogate_or_strict').split(u'\n'):
-                if line.startswith(u'Server version:'):  # old docker versions
+            for line in to_text(cmd_output, errors='surrogate_or_strict').split('\n'):
+                if line.startswith('Server version:'):  # old docker versions
                     return self._sanitize_version(line.split()[2])
 
         cmd, cmd_output, err, returncode = self._new_docker_version()
         if returncode:
-            raise AnsibleError('Docker version check (%s) failed: %s' % (to_native(cmd), to_native(err)))
+            raise AnsibleError(f'Docker version check ({to_native(cmd)}) failed: {to_native(err)}')
 
         return self._sanitize_version(to_text(cmd_output, errors='surrogate_or_strict'))
 
@@ -218,12 +218,12 @@ class Connection(ConnectionBase):
         out = to_text(out, errors='surrogate_or_strict')
 
         if p.returncode != 0:
-            display.warning(u'unable to retrieve default user from docker container: %s %s' % (out, to_text(err)))
+            display.warning(f'unable to retrieve default user from docker container: {out} {to_text(err)}')
             self._container_user_cache[container] = None
             return None
 
         # The default exec user is root, unless it was changed in the Dockerfile with USER
-        user = out.strip() or u'root'
+        user = out.strip() or 'root'
         self._container_user_cache[container] = user
         return user
 
@@ -249,19 +249,17 @@ class Connection(ConnectionBase):
                 for val, what in ((k, 'Key'), (v, 'Value')):
                     if not isinstance(val, str):
                         raise AnsibleConnectionFailure(
-                            'Non-string {0} found for extra_env option. Ambiguous env options must be '
-                            'wrapped in quotes to avoid them being interpreted. {1}: {2!r}'
-                            .format(what.lower(), what, val)
+                            f'Non-string {what.lower()} found for extra_env option. Ambiguous env options must be '
+                            f'wrapped in quotes to avoid them being interpreted. {what}: {val!r}'
                         )
-                local_cmd += [b'-e', b'%s=%s' % (to_bytes(k, errors='surrogate_or_strict'), to_bytes(v, errors='surrogate_or_strict'))]
+                local_cmd += [b'-e', b"%s=%s" % (to_bytes(k, errors='surrogate_or_strict'), to_bytes(v, errors='surrogate_or_strict'))]
 
         if self.get_option('working_dir') is not None:
             local_cmd += [b'-w', to_bytes(self.get_option('working_dir'), errors='surrogate_or_strict')]
-            if self.docker_version != u'dev' and LooseVersion(self.docker_version) < LooseVersion(u'18.06'):
+            if self.docker_version != 'dev' and LooseVersion(self.docker_version) < LooseVersion('18.06'):
                 # https://github.com/docker/cli/pull/732, first appeared in release 18.06.0
                 raise AnsibleConnectionFailure(
-                    'Providing the working directory requires Docker CLI version 18.06 or newer. You have Docker CLI version {0}.'
-                    .format(self.docker_version)
+                    f'Providing the working directory requires Docker CLI version 18.06 or newer. You have Docker CLI version {self.docker_version}.'
                 )
 
         if self.get_option('privileged'):
@@ -302,24 +300,23 @@ class Connection(ConnectionBase):
             self._set_docker_args()
 
             self._version = self._get_docker_version()
-            if self._version == u'dev':
-                display.warning(u'Docker version number is "dev". Will assume latest version.')
-            if self._version != u'dev' and LooseVersion(self._version) < LooseVersion(u'1.3'):
+            if self._version == 'dev':
+                display.warning('Docker version number is "dev". Will assume latest version.')
+            if self._version != 'dev' and LooseVersion(self._version) < LooseVersion('1.3'):
                 raise AnsibleError('docker connection type requires docker 1.3 or higher')
         return self._version
 
     def _get_actual_user(self):
         if self.remote_user is not None:
             # An explicit user is provided
-            if self.docker_version == u'dev' or LooseVersion(self.docker_version) >= LooseVersion(u'1.7'):
+            if self.docker_version == 'dev' or LooseVersion(self.docker_version) >= LooseVersion('1.7'):
                 # Support for specifying the exec user was added in docker 1.7
                 return self.remote_user
             else:
                 self.remote_user = None
                 actual_user = self._get_docker_remote_user()
                 if actual_user != self.get_option('remote_user'):
-                    display.warning(u'docker {0} does not support remote_user, using container default: {1}'
-                                    .format(self.docker_version, self.actual_user or u'?'))
+                    display.warning(f'docker {self.docker_version} does not support remote_user, using container default: {self.actual_user or "?"}')
                 return actual_user
         elif self._display.verbosity > 2:
             # Since we are not setting the actual_user, look it up so we have it for logging later
@@ -335,9 +332,7 @@ class Connection(ConnectionBase):
         if not self._connected:
             self._set_conn_data()
             actual_user = self._get_actual_user()
-            display.vvv(u"ESTABLISH DOCKER CONNECTION FOR USER: {0}".format(
-                actual_user or u'?'), host=self.get_option('remote_addr')
-            )
+            display.vvv(f"ESTABLISH DOCKER CONNECTION FOR USER: {actual_user or '?'}", host=self.get_option('remote_addr'))
             self._connected = True
 
     def exec_command(self, cmd, in_data=None, sudoable=False):
@@ -349,7 +344,7 @@ class Connection(ConnectionBase):
 
         local_cmd = self._build_exec_cmd([self._play_context.executable, '-c', cmd])
 
-        display.vvv(u"EXEC {0}".format(to_text(local_cmd)), host=self.get_option('remote_addr'))
+        display.vvv(f"EXEC {to_text(local_cmd)}", host=self.get_option('remote_addr'))
         display.debug("opening command with Popen()")
 
         local_cmd = [to_bytes(i, errors='surrogate_or_strict') for i in local_cmd]
@@ -425,12 +420,12 @@ class Connection(ConnectionBase):
         """ Transfer a file from local to docker container """
         self._set_conn_data()
         super(Connection, self).put_file(in_path, out_path)
-        display.vvv("PUT %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
+        display.vvv(f"PUT {in_path} TO {out_path}", host=self.get_option('remote_addr'))
 
         out_path = self._prefix_login_path(out_path)
         if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
             raise AnsibleFileNotFound(
-                "file or module does not exist: %s" % to_native(in_path))
+                f"file or module does not exist: {to_native(in_path)}")
 
         out_path = quote(out_path)
         # Older docker does not have native support for copying files into
@@ -442,7 +437,7 @@ class Connection(ConnectionBase):
                 count = ' count=0'
             else:
                 count = ''
-            args = self._build_exec_cmd([self._play_context.executable, "-c", "dd of=%s bs=%s%s" % (out_path, BUFSIZE, count)])
+            args = self._build_exec_cmd([self._play_context.executable, "-c", f"dd of={out_path} bs={BUFSIZE}{count}"])
             args = [to_bytes(i, errors='surrogate_or_strict') for i in args]
             try:
                 p = subprocess.Popen(args, stdin=in_file, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -451,21 +446,20 @@ class Connection(ConnectionBase):
             stdout, stderr = p.communicate()
 
             if p.returncode != 0:
-                raise AnsibleError("failed to transfer file %s to %s:\n%s\n%s" %
-                                   (to_native(in_path), to_native(out_path), to_native(stdout), to_native(stderr)))
+                raise AnsibleError(f"failed to transfer file {to_native(in_path)} to {to_native(out_path)}:\n{to_native(stdout)}\n{to_native(stderr)}")
 
     def fetch_file(self, in_path, out_path):
         """ Fetch a file from container to local. """
         self._set_conn_data()
         super(Connection, self).fetch_file(in_path, out_path)
-        display.vvv("FETCH %s TO %s" % (in_path, out_path), host=self.get_option('remote_addr'))
+        display.vvv(f"FETCH {in_path} TO {out_path}", host=self.get_option('remote_addr'))
 
         in_path = self._prefix_login_path(in_path)
         # out_path is the final file path, but docker takes a directory, not a
         # file path
         out_dir = os.path.dirname(out_path)
 
-        args = [self.docker_cmd, "cp", "%s:%s" % (self.get_option('remote_addr'), in_path), out_dir]
+        args = [self.docker_cmd, "cp", f"{self.get_option('remote_addr')}:{in_path}", out_dir]
         args = [to_bytes(i, errors='surrogate_or_strict') for i in args]
 
         p = subprocess.Popen(args, stdin=subprocess.PIPE,
@@ -481,7 +475,7 @@ class Connection(ConnectionBase):
         if p.returncode != 0:
             # Older docker does not have native support for fetching files command `cp`
             # If `cp` fails, try to use `dd` instead
-            args = self._build_exec_cmd([self._play_context.executable, "-c", "dd if=%s bs=%s" % (in_path, BUFSIZE)])
+            args = self._build_exec_cmd([self._play_context.executable, "-c", f"dd if={in_path} bs={BUFSIZE}"])
             args = [to_bytes(i, errors='surrogate_or_strict') for i in args]
             with open(to_bytes(actual_out_path, errors='surrogate_or_strict'), 'wb') as out_file:
                 try:
@@ -492,7 +486,7 @@ class Connection(ConnectionBase):
                 stdout, stderr = p.communicate()
 
                 if p.returncode != 0:
-                    raise AnsibleError("failed to fetch file %s to %s:\n%s\n%s" % (in_path, out_path, stdout, stderr))
+                    raise AnsibleError(f"failed to fetch file {in_path} to {out_path}:\n{stdout}\n{stderr}")
 
         # Rename if needed
         if actual_out_path != out_path:
