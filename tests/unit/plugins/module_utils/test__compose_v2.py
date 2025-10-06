@@ -228,7 +228,11 @@ EXTRA_TEST_CASES = [
         "2.28.1",
         False,
         False,
-        " bash_1 Skipped \n" " bash_2 Pulling \n" " bash_2 Pulled \n",
+        # fmt: off
+        " bash_1 Skipped \n"
+        " bash_2 Pulling \n"
+        " bash_2 Pulled \n",
+        # fmt: on
         [
             Event(
                 "unknown",
