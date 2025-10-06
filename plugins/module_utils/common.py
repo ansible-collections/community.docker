@@ -468,7 +468,7 @@ class AnsibleDockerClientBase(Client):
                 self.log(f"Image {name}:{tag} not found.")
                 return None
             except Exception as exc:
-                self.fail(f"Error inspecting image {name}:{tag} - {exc!s}")
+                self.fail(f"Error inspecting image {name}:{tag} - {exc}")
             return inspection
 
         self.log(f"Image {name}:{tag} not found.")
@@ -486,11 +486,11 @@ class AnsibleDockerClientBase(Client):
             inspection = self.inspect_image(image_id)
         except NotFound as exc:
             if not accept_missing_image:
-                self.fail(f"Error inspecting image ID {image_id} - {exc!s}")
+                self.fail(f"Error inspecting image ID {image_id} - {exc}")
             self.log(f"Image {image_id} not found.")
             return None
         except Exception as exc:
-            self.fail(f"Error inspecting image ID {image_id} - {exc!s}")
+            self.fail(f"Error inspecting image ID {image_id} - {exc}")
         return inspection
 
     def _image_lookup(self, name, tag):
@@ -502,7 +502,7 @@ class AnsibleDockerClientBase(Client):
         try:
             response = self.images(name=name)
         except Exception as exc:
-            self.fail(f"Error searching for image {name} - {exc!s}")
+            self.fail(f"Error searching for image {name} - {exc}")
         images = response
         if tag:
             lookup = f"{name}:{tag}"
@@ -539,7 +539,7 @@ class AnsibleDockerClientBase(Client):
                     else:
                         self.fail(f"Error pulling {name} - {line.get('error')}")
         except Exception as exc:
-            self.fail(f"Error pulling image {name}:{tag} - {exc!s}")
+            self.fail(f"Error pulling image {name}:{tag} - {exc}")
 
         new_tag = self.find_image(name, tag)
 

@@ -158,7 +158,7 @@ class ImageManager(DockerBaseClass):
         self.client = client
         self.results = results
         self.name = self.client.module.params.get('name')
-        self.log(f"Gathering facts for images: {self.name!s}")
+        self.log(f"Gathering facts for images: {self.name}")
 
         if self.name:
             self.results['images'] = self.get_facts()

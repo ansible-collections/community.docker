@@ -255,7 +255,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             try:
                 inspect = client.get_json('/containers/{0}/json', id)
             except APIError as exc:
-                raise AnsibleError(f"Error inspecting container {name} - {exc!s}")
+                raise AnsibleError(f"Error inspecting container {name} - {exc}")
 
             state = inspect.get('State') or dict()
             config = inspect.get('Config') or dict()
