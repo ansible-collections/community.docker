@@ -144,13 +144,13 @@ except ImportError:
 
 from ansible.module_utils.common.text.converters import to_native
 from ansible_collections.community.docker.plugins.module_utils._common import (
-    DockerBaseClass,
     RequestException,
 )
 from ansible_collections.community.docker.plugins.module_utils._swarm import (
     AnsibleDockerSwarmClient,
 )
 from ansible_collections.community.docker.plugins.module_utils._util import (
+    DockerBaseClass,
     sanitize_labels,
 )
 

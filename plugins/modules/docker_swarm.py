@@ -301,7 +301,6 @@ except ImportError:
     pass
 
 from ansible_collections.community.docker.plugins.module_utils._common import (
-    DockerBaseClass,
     RequestException,
 )
 from ansible_collections.community.docker.plugins.module_utils._swarm import (
@@ -309,6 +308,7 @@ from ansible_collections.community.docker.plugins.module_utils._swarm import (
 )
 from ansible_collections.community.docker.plugins.module_utils._util import (
     DifferenceTracker,
+    DockerBaseClass,
     sanitize_labels,
 )
 
