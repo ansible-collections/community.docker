@@ -81,7 +81,7 @@ class SSHSocket(socket.socket):
     def _write(self, data):
         if not self.proc or self.proc.stdin.closed:
             raise Exception(
-                "SSH subprocess not initiated." "connect() must be called first."
+                "SSH subprocess not initiated. connect() must be called first."
             )
         written = self.proc.stdin.write(data)
         self.proc.stdin.flush()
@@ -96,7 +96,7 @@ class SSHSocket(socket.socket):
     def recv(self, n):
         if not self.proc:
             raise Exception(
-                "SSH subprocess not initiated." "connect() must be called first."
+                "SSH subprocess not initiated. connect() must be called first."
             )
         return self.proc.stdout.read(n)
 
@@ -166,7 +166,7 @@ class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
             if self.block:
                 raise urllib3.exceptions.EmptyPoolError(
                     self,
-                    "Pool reached maximum size and no more " "connections are allowed.",
+                    "Pool reached maximum size and no more connections are allowed.",
                 )
             pass  # Oh well, we'll create a new connection then
 

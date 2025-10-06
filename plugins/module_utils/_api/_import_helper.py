@@ -43,9 +43,9 @@ except ImportError:
 
 try:
     from requests.packages import urllib3  # pylint: disable=unused-import
-    from requests.packages.urllib3 import (
-        connection as urllib3_connection,  # pylint: disable=unused-import
-    )
+
+    # pylint: disable-next=unused-import
+    from requests.packages.urllib3 import connection as urllib3_connection
 except ImportError:
     try:
         import urllib3  # pylint: disable=unused-import

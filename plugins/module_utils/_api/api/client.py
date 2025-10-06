@@ -231,7 +231,7 @@ class APIClient(_Session, DaemonApiMixin):
             return version_result["ApiVersion"]
         except KeyError:
             raise DockerException(
-                'Invalid response from docker daemon: key "ApiVersion"' " is missing."
+                'Invalid response from docker daemon: key "ApiVersion" is missing.'
             )
         except Exception as e:
             raise DockerException(

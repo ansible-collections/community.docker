@@ -68,7 +68,7 @@ class TLSConfig(object):
                 tls_cert, tls_key = client_cert
             except ValueError:
                 raise errors.TLSParameterError(
-                    "client_cert must be a tuple of" " (client certificate, key file)"
+                    "client_cert must be a tuple of (client certificate, key file)"
                 )
 
             if not (tls_cert and tls_key) or (

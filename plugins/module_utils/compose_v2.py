@@ -214,9 +214,7 @@ _RE_WARNING_EVENT = re.compile(
     r"$" % "|".join(re.escape(status) for status in DOCKER_STATUS_WARNING)
 )
 
-_RE_CONTINUE_EVENT = re.compile(
-    r"^" r"\s*" r"(?P<resource_id>\S+)" r"\s+" r"-" r"\s*" r"(?P<msg>\S(?:|.*\S))" r"$"
-)
+_RE_CONTINUE_EVENT = re.compile(r"^\s*(?P<resource_id>\S+)\s+-\s*(?P<msg>\S(?:|.*\S))$")
 
 _RE_SKIPPED_EVENT = re.compile(
     r"^"
@@ -229,11 +227,9 @@ _RE_SKIPPED_EVENT = re.compile(
     r"$"
 )
 
-_RE_BUILD_START_EVENT = re.compile(
-    r"^" r"\s*" r"build service" r"\s+" r"(?P<resource_id>\S+)" r"$"
-)
+_RE_BUILD_START_EVENT = re.compile(r"^\s*build service\s+(?P<resource_id>\S+)$")
 
-_RE_BUILD_PROGRESS_EVENT = re.compile(r"^" r"\s*" r"==>" r"\s+" r"(?P<msg>.*)" r"$")
+_RE_BUILD_PROGRESS_EVENT = re.compile(r"^\s*==>\s+(?P<msg>.*)$")
 
 # The following needs to be kept in sync with the MINIMUM_VERSION compose_v2 docs fragment
 MINIMUM_COMPOSE_VERSION = "2.18.0"

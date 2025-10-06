@@ -80,6 +80,7 @@ except ImportError:
         pass
 
 
+# pylint: disable=unused-import
 from ansible_collections.community.docker.plugins.module_utils.util import (
     BYTE_SUFFIXES,  # TODO: remove
 )
@@ -122,7 +123,7 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
 from ansible_collections.community.docker.plugins.module_utils.util import (
     parse_healthcheck,  # TODO: remove
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (  # noqa: F401, pylint: disable=unused-import
+from ansible_collections.community.docker.plugins.module_utils.util import (  # noqa: F401
     DEFAULT_DOCKER_HOST,
     DEFAULT_TIMEOUT_SECONDS,
     DEFAULT_TLS,
@@ -133,6 +134,9 @@ from ansible_collections.community.docker.plugins.module_utils.util import (  # 
     sanitize_result,
     update_tls_hostname,
 )
+
+
+# pylint: enable=unused-import
 
 
 MIN_DOCKER_VERSION = "1.8.0"

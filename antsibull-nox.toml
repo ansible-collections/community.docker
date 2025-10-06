@@ -16,8 +16,9 @@ stable_branches = [ "stable-*" ]
 [sessions]
 
 [sessions.lint]
-run_isort = false
-run_black = false
+run_isort = true
+isort_config = ".isort.cfg"
+run_black = true
 run_flake8 = false
 run_pylint = false
 run_yamllint = true
