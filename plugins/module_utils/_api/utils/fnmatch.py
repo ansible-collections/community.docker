@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+
 """Filename matching with shell patterns.
 
 fnmatch(FILENAME, PATTERN) matches according to the local convention.
@@ -22,6 +23,7 @@ corresponding to PATTERN.  (It does not compile it.)
 """
 
 import re
+
 
 __all__ = ["fnmatch", "fnmatchcase", "translate"]
 
@@ -77,50 +79,50 @@ def translate(pat):
     There is no way to quote meta-characters.
     """
     i, n = 0, len(pat)
-    res = '^'
+    res = "^"
     while i < n:
         c = pat[i]
         i = i + 1
-        if c == '*':
-            if i < n and pat[i] == '*':
+        if c == "*":
+            if i < n and pat[i] == "*":
                 # is some flavor of "**"
                 i = i + 1
                 # Treat **/ as ** so eat the "/"
-                if i < n and pat[i] == '/':
+                if i < n and pat[i] == "/":
                     i = i + 1
                 if i >= n:
                     # is "**EOF" - to align with .gitignore just accept all
-                    res = res + '.*'
+                    res = res + ".*"
                 else:
                     # is "**"
                     # Note that this allows for any # of /'s (even 0) because
                     # the .* will eat everything, even /'s
-                    res = res + '(.*/)?'
+                    res = res + "(.*/)?"
             else:
                 # is "*" so map it to anything but "/"
-                res = res + '[^/]*'
-        elif c == '?':
+                res = res + "[^/]*"
+        elif c == "?":
             # "?" is any char except "/"
-            res = res + '[^/]'
-        elif c == '[':
+            res = res + "[^/]"
+        elif c == "[":
             j = i
-            if j < n and pat[j] == '!':
+            if j < n and pat[j] == "!":
                 j = j + 1
-            if j < n and pat[j] == ']':
+            if j < n and pat[j] == "]":
                 j = j + 1
-            while j < n and pat[j] != ']':
+            while j < n and pat[j] != "]":
                 j = j + 1
             if j >= n:
-                res = res + '\\['
+                res = res + "\\["
             else:
-                stuff = pat[i:j].replace('\\', '\\\\')
+                stuff = pat[i:j].replace("\\", "\\\\")
                 i = j + 1
-                if stuff[0] == '!':
-                    stuff = '^' + stuff[1:]
-                elif stuff[0] == '^':
-                    stuff = '\\' + stuff
-                res = f'{res}[{stuff}]'
+                if stuff[0] == "!":
+                    stuff = "^" + stuff[1:]
+                elif stuff[0] == "^":
+                    stuff = "\\" + stuff
+                res = f"{res}[{stuff}]"
         else:
             res = res + re.escape(c)
 
-    return res + '$'
+    return res + "$"

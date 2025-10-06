@@ -27,7 +27,7 @@ def stream_as_text(stream):
     """
     for data in stream:
         if not isinstance(data, str):
-            data = data.decode('utf-8', 'replace')
+            data = data.decode("utf-8", "replace")
         yield data
 
 
@@ -38,7 +38,7 @@ def json_splitter(buffer):
     buffer = buffer.strip()
     try:
         obj, index = json_decoder.raw_decode(buffer)
-        rest = buffer[json.decoder.WHITESPACE.match(buffer, index).end():]
+        rest = buffer[json.decoder.WHITESPACE.match(buffer, index).end() :]
         return obj, rest
     except ValueError:
         return None
@@ -52,11 +52,11 @@ def json_stream(stream):
     return split_buffer(stream, json_splitter, json_decoder.decode)
 
 
-def line_splitter(buffer, separator='\n'):
+def line_splitter(buffer, separator="\n"):
     index = buffer.find(str(separator))
     if index == -1:
         return None
-    return buffer[:index + 1], buffer[index + 1:]
+    return buffer[: index + 1], buffer[index + 1 :]
 
 
 def split_buffer(stream, splitter=None, decoder=lambda a: a):
@@ -67,7 +67,7 @@ def split_buffer(stream, splitter=None, decoder=lambda a: a):
     of the input.
     """
     splitter = splitter or line_splitter
-    buffered = ''
+    buffered = ""
 
     for data in stream_as_text(stream):
         buffered += data

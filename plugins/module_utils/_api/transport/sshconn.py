@@ -18,10 +18,10 @@ import traceback
 from queue import Empty
 from urllib.parse import urlparse
 
-from .basehttpadapter import BaseHTTPAdapter
 from .. import constants
-
 from .._import_helper import HTTPAdapter, urllib3, urllib3_connection
+from .basehttpadapter import BaseHTTPAdapter
+
 
 PARAMIKO_IMPORT_ERROR = None
 try:
@@ -35,51 +35,54 @@ RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
 
 class SSHSocket(socket.socket):
     def __init__(self, host):
-        super(SSHSocket, self).__init__(
-            socket.AF_INET, socket.SOCK_STREAM)
+        super(SSHSocket, self).__init__(socket.AF_INET, socket.SOCK_STREAM)
         self.host = host
         self.port = None
         self.user = None
-        if ':' in self.host:
-            self.host, self.port = self.host.split(':')
-        if '@' in self.host:
-            self.user, self.host = self.host.split('@')
+        if ":" in self.host:
+            self.host, self.port = self.host.split(":")
+        if "@" in self.host:
+            self.user, self.host = self.host.split("@")
 
         self.proc = None
 
     def connect(self, **kwargs):
-        args = ['ssh']
+        args = ["ssh"]
         if self.user:
-            args = args + ['-l', self.user]
+            args = args + ["-l", self.user]
 
         if self.port:
-            args = args + ['-p', self.port]
+            args = args + ["-p", self.port]
 
-        args = args + ['--', self.host, 'docker system dial-stdio']
+        args = args + ["--", self.host, "docker system dial-stdio"]
 
         preexec_func = None
         if not constants.IS_WINDOWS_PLATFORM:
+
             def f():
                 signal.signal(signal.SIGINT, signal.SIG_IGN)
+
             preexec_func = f
 
         env = dict(os.environ)
 
         # drop LD_LIBRARY_PATH and SSL_CERT_FILE
-        env.pop('LD_LIBRARY_PATH', None)
-        env.pop('SSL_CERT_FILE', None)
+        env.pop("LD_LIBRARY_PATH", None)
+        env.pop("SSL_CERT_FILE", None)
 
         self.proc = subprocess.Popen(
             args,
             env=env,
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
-            preexec_fn=preexec_func)
+            preexec_fn=preexec_func,
+        )
 
     def _write(self, data):
         if not self.proc or self.proc.stdin.closed:
-            raise Exception('SSH subprocess not initiated.'
-                            'connect() must be called first.')
+            raise Exception(
+                "SSH subprocess not initiated." "connect() must be called first."
+            )
         written = self.proc.stdin.write(data)
         self.proc.stdin.flush()
         return written
@@ -92,8 +95,9 @@ class SSHSocket(socket.socket):
 
     def recv(self, n):
         if not self.proc:
-            raise Exception('SSH subprocess not initiated.'
-                            'connect() must be called first.')
+            raise Exception(
+                "SSH subprocess not initiated." "connect() must be called first."
+            )
         return self.proc.stdout.read(n)
 
     def makefile(self, mode):
@@ -106,16 +110,14 @@ class SSHSocket(socket.socket):
     def close(self):
         if not self.proc or self.proc.stdin.closed:
             return
-        self.proc.stdin.write(b'\n\n')
+        self.proc.stdin.write(b"\n\n")
         self.proc.stdin.flush()
         self.proc.terminate()
 
 
 class SSHConnection(urllib3_connection.HTTPConnection, object):
     def __init__(self, ssh_transport=None, timeout=60, host=None):
-        super(SSHConnection, self).__init__(
-            'localhost', timeout=timeout
-        )
+        super(SSHConnection, self).__init__("localhost", timeout=timeout)
         self.ssh_transport = ssh_transport
         self.timeout = timeout
         self.ssh_host = host
@@ -124,7 +126,7 @@ class SSHConnection(urllib3_connection.HTTPConnection, object):
         if self.ssh_transport:
             sock = self.ssh_transport.open_session()
             sock.settimeout(self.timeout)
-            sock.exec_command('docker system dial-stdio')
+            sock.exec_command("docker system dial-stdio")
         else:
             sock = SSHSocket(self.ssh_host)
             sock.settimeout(self.timeout)
@@ -134,11 +136,11 @@ class SSHConnection(urllib3_connection.HTTPConnection, object):
 
 
 class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
-    scheme = 'ssh'
+    scheme = "ssh"
 
     def __init__(self, ssh_client=None, timeout=60, maxsize=10, host=None):
         super(SSHConnectionPool, self).__init__(
-            'localhost', timeout=timeout, maxsize=maxsize
+            "localhost", timeout=timeout, maxsize=maxsize
         )
         self.ssh_transport = None
         self.timeout = timeout
@@ -164,8 +166,7 @@ class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
             if self.block:
                 raise urllib3.exceptions.EmptyPoolError(
                     self,
-                    "Pool reached maximum size and no more "
-                    "connections are allowed."
+                    "Pool reached maximum size and no more " "connections are allowed.",
                 )
             pass  # Oh well, we'll create a new connection then
 
@@ -175,21 +176,29 @@ class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
 class SSHHTTPAdapter(BaseHTTPAdapter):
 
     __attrs__ = HTTPAdapter.__attrs__ + [
-        'pools', 'timeout', 'ssh_client', 'ssh_params', 'max_pool_size'
+        "pools",
+        "timeout",
+        "ssh_client",
+        "ssh_params",
+        "max_pool_size",
     ]
 
-    def __init__(self, base_url, timeout=60,
-                 pool_connections=constants.DEFAULT_NUM_POOLS,
-                 max_pool_size=constants.DEFAULT_MAX_POOL_SIZE,
-                 shell_out=False):
+    def __init__(
+        self,
+        base_url,
+        timeout=60,
+        pool_connections=constants.DEFAULT_NUM_POOLS,
+        max_pool_size=constants.DEFAULT_MAX_POOL_SIZE,
+        shell_out=False,
+    ):
         self.ssh_client = None
         if not shell_out:
             self._create_paramiko_client(base_url)
             self._connect()
 
         self.ssh_host = base_url
-        if base_url.startswith('ssh://'):
-            self.ssh_host = base_url[len('ssh://'):]
+        if base_url.startswith("ssh://"):
+            self.ssh_host = base_url[len("ssh://") :]
 
         self.timeout = timeout
         self.max_pool_size = max_pool_size
@@ -213,18 +222,18 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
             with open(ssh_config_file) as f:
                 conf.parse(f)
             host_config = conf.lookup(base_url.hostname)
-            if 'proxycommand' in host_config:
+            if "proxycommand" in host_config:
                 self.ssh_params["sock"] = paramiko.ProxyCommand(
-                    host_config['proxycommand']
+                    host_config["proxycommand"]
                 )
-            if 'hostname' in host_config:
-                self.ssh_params['hostname'] = host_config['hostname']
-            if base_url.port is None and 'port' in host_config:
-                self.ssh_params['port'] = host_config['port']
-            if base_url.username is None and 'user' in host_config:
-                self.ssh_params['username'] = host_config['user']
-            if 'identityfile' in host_config:
-                self.ssh_params['key_filename'] = host_config['identityfile']
+            if "hostname" in host_config:
+                self.ssh_params["hostname"] = host_config["hostname"]
+            if base_url.port is None and "port" in host_config:
+                self.ssh_params["port"] = host_config["port"]
+            if base_url.username is None and "user" in host_config:
+                self.ssh_params["username"] = host_config["user"]
+            if "identityfile" in host_config:
+                self.ssh_params["key_filename"] = host_config["identityfile"]
 
         self.ssh_client.load_system_host_keys()
         self.ssh_client.set_missing_host_key_policy(paramiko.RejectPolicy())
@@ -239,7 +248,7 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
                 ssh_client=self.ssh_client,
                 timeout=self.timeout,
                 maxsize=self.max_pool_size,
-                host=self.ssh_host
+                host=self.ssh_host,
             )
         with self.pools.lock:
             pool = self.pools.get(url)
@@ -254,7 +263,7 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
                 ssh_client=self.ssh_client,
                 timeout=self.timeout,
                 maxsize=self.max_pool_size,
-                host=self.ssh_host
+                host=self.ssh_host,
             )
             self.pools[url] = pool
 

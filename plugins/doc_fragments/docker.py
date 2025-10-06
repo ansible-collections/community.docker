@@ -123,7 +123,7 @@ notes:
 
     # For plugins: allow to define common options with Ansible variables
 
-    VAR_NAMES = r'''
+    VAR_NAMES = r"""
 options:
   docker_host:
     vars:
@@ -154,11 +154,11 @@ options:
   validate_certs:
     vars:
       - name: ansible_docker_validate_certs
-'''
+"""
 
     # Additional, more specific stuff for minimal Docker SDK for Python version < 2.0
 
-    DOCKER_PY_1_DOCUMENTATION = r'''
+    DOCKER_PY_1_DOCUMENTATION = r"""
 options: {}
 notes:
   - This module uses the L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) to
@@ -170,12 +170,12 @@ requirements:
      modules should *not* be installed at the same time. Also note that when both modules are
      installed and one of them is uninstalled, the other might no longer function and a reinstall
      of it is required."
-'''
+"""
 
     # Additional, more specific stuff for minimal Docker SDK for Python version >= 2.0.
     # Note that Docker SDK for Python >= 2.0 requires Python 2.7 or newer.
 
-    DOCKER_PY_2_DOCUMENTATION = r'''
+    DOCKER_PY_2_DOCUMENTATION = r"""
 options: {}
 notes:
   - This module uses the L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) to
@@ -186,10 +186,10 @@ requirements:
      Python module has been superseded by L(docker,https://pypi.org/project/docker/)
      (see L(here,https://github.com/docker/docker-py/issues/1310) for details).
      This module does *not* work with docker-py."
-'''
+"""
 
     # Docker doc fragment when using the vendored API access code
-    API_DOCUMENTATION = r'''
+    API_DOCUMENTATION = r"""
 options:
   docker_host:
     description:
@@ -302,10 +302,10 @@ requirements:
   - pywin32 (when using named pipes on Windows 32)
   - paramiko (when using SSH with O(use_ssh_client=false))
   - pyOpenSSL (when using TLS)
-'''
+"""
 
     # Docker doc fragment when using the Docker CLI
-    CLI_DOCUMENTATION = r'''
+    CLI_DOCUMENTATION = r"""
 options:
   docker_cli:
     description:
@@ -403,4 +403,4 @@ notes:
     U(https://docs.docker.com/machine/reference/env/) for more details.
   - This module does B(not) use the L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) to
     communicate with the Docker daemon. It directly calls the Docker CLI program.
-'''
+"""

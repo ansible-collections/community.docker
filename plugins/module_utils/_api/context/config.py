@@ -17,19 +17,23 @@ from ..constants import DEFAULT_UNIX_SOCKET, IS_WINDOWS_PLATFORM
 from ..utils.config import find_config_file, get_default_config_file
 from ..utils.utils import parse_host
 
+
 METAFILE = "meta.json"
 
 
 def get_current_context_name_with_source():
-    if os.environ.get('DOCKER_HOST'):
+    if os.environ.get("DOCKER_HOST"):
         return "default", "DOCKER_HOST environment variable set"
-    if os.environ.get('DOCKER_CONTEXT'):
-        return os.environ['DOCKER_CONTEXT'], "DOCKER_CONTEXT environment variable set"
+    if os.environ.get("DOCKER_CONTEXT"):
+        return os.environ["DOCKER_CONTEXT"], "DOCKER_CONTEXT environment variable set"
     docker_cfg_path = find_config_file()
     if docker_cfg_path:
         try:
             with open(docker_cfg_path) as f:
-                return json.load(f).get("currentContext", "default"), f"configuration file {docker_cfg_path}"
+                return (
+                    json.load(f).get("currentContext", "default"),
+                    f"configuration file {docker_cfg_path}",
+                )
         except Exception:
             pass
     return "default", "fallback value"
@@ -40,7 +44,7 @@ def get_current_context_name():
 
 
 def write_context_name_to_docker_config(name=None):
-    if name == 'default':
+    if name == "default":
         name = None
     docker_cfg_path = find_config_file()
     config = {}
@@ -67,7 +71,7 @@ def write_context_name_to_docker_config(name=None):
 
 
 def get_context_id(name):
-    return hashlib.sha256(name.encode('utf-8')).hexdigest()
+    return hashlib.sha256(name.encode("utf-8")).hexdigest()
 
 
 def get_context_dir():

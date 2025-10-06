@@ -98,16 +98,18 @@ network:
 
 import traceback
 
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    DockerException,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
 
 
 def main():
     argument_spec = dict(
-        name=dict(type='str', required=True),
+        name=dict(type="str", required=True),
     )
 
     client = AnsibleDockerClient(
@@ -116,7 +118,7 @@ def main():
     )
 
     try:
-        network = client.get_network(client.module.params['name'])
+        network = client.get_network(client.module.params["name"])
 
         client.module.exit_json(
             changed=False,
@@ -124,12 +126,16 @@ def main():
             network=network,
         )
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

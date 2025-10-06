@@ -213,17 +213,21 @@ disk_usage:
 
 import traceback
 
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    APIError,
+    DockerException,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
+    convert_filters,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     clean_dict_booleans_for_docker_api,
 )
-from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException, APIError
-from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import convert_filters
 
 
 class DockerHostManager(DockerBaseClass):
@@ -234,24 +238,28 @@ class DockerHostManager(DockerBaseClass):
 
         self.client = client
         self.results = results
-        self.verbose_output = self.client.module.params['verbose_output']
+        self.verbose_output = self.client.module.params["verbose_output"]
 
-        listed_objects = ['volumes', 'networks', 'containers', 'images']
+        listed_objects = ["volumes", "networks", "containers", "images"]
 
-        self.results['host_info'] = self.get_docker_host_info()
+        self.results["host_info"] = self.get_docker_host_info()
         # At this point we definitely know that we can talk to the Docker daemon
-        self.results['can_talk_to_docker'] = True
-        self.client.fail_results['can_talk_to_docker'] = True
+        self.results["can_talk_to_docker"] = True
+        self.client.fail_results["can_talk_to_docker"] = True
 
-        if self.client.module.params['disk_usage']:
-            self.results['disk_usage'] = self.get_docker_disk_usage_facts()
+        if self.client.module.params["disk_usage"]:
+            self.results["disk_usage"] = self.get_docker_disk_usage_facts()
 
         for docker_object in listed_objects:
             if self.client.module.params[docker_object]:
                 returned_name = docker_object
                 filter_name = docker_object + "_filters"
-                filters = clean_dict_booleans_for_docker_api(client.module.params.get(filter_name), True)
-                self.results[returned_name] = self.get_docker_items_list(docker_object, filters)
+                filters = clean_dict_booleans_for_docker_api(
+                    client.module.params.get(filter_name), True
+                )
+                self.results[returned_name] = self.get_docker_items_list(
+                    docker_object, filters
+                )
 
     def get_docker_host_info(self):
         try:
@@ -264,7 +272,7 @@ class DockerHostManager(DockerBaseClass):
             if self.verbose_output:
                 return self.client.df()
             else:
-                return dict(LayersSize=self.client.df()['LayersSize'])
+                return dict(LayersSize=self.client.df()["LayersSize"])
         except APIError as exc:
             self.client.fail(f"Error inspecting docker host: {exc}")
 
@@ -272,44 +280,52 @@ class DockerHostManager(DockerBaseClass):
         items = None
         items_list = []
 
-        header_containers = ['Id', 'Image', 'Command', 'Created', 'Status', 'Ports', 'Names']
-        header_volumes = ['Driver', 'Name']
-        header_images = ['Id', 'RepoTags', 'Created', 'Size']
-        header_networks = ['Id', 'Driver', 'Name', 'Scope']
+        header_containers = [
+            "Id",
+            "Image",
+            "Command",
+            "Created",
+            "Status",
+            "Ports",
+            "Names",
+        ]
+        header_volumes = ["Driver", "Name"]
+        header_images = ["Id", "RepoTags", "Created", "Size"]
+        header_networks = ["Id", "Driver", "Name", "Scope"]
 
         filter_arg = dict()
         if filters:
-            filter_arg['filters'] = filters
+            filter_arg["filters"] = filters
         try:
-            if docker_object == 'containers':
+            if docker_object == "containers":
                 params = {
-                    'limit': -1,
-                    'all': 1 if self.client.module.params['containers_all'] else 0,
-                    'size': 0,
-                    'trunc_cmd': 0,
-                    'filters': convert_filters(filters) if filters else None,
+                    "limit": -1,
+                    "all": 1 if self.client.module.params["containers_all"] else 0,
+                    "size": 0,
+                    "trunc_cmd": 0,
+                    "filters": convert_filters(filters) if filters else None,
                 }
                 items = self.client.get_json("/containers/json", params=params)
-            elif docker_object == 'networks':
-                params = {
-                    'filters': convert_filters(filters or {})
-                }
+            elif docker_object == "networks":
+                params = {"filters": convert_filters(filters or {})}
                 items = self.client.get_json("/networks", params=params)
-            elif docker_object == 'images':
+            elif docker_object == "images":
                 params = {
-                    'only_ids': 0,
-                    'all': 0,
-                    'filters': convert_filters(filters) if filters else None,
+                    "only_ids": 0,
+                    "all": 0,
+                    "filters": convert_filters(filters) if filters else None,
                 }
                 items = self.client.get_json("/images/json", params=params)
-            elif docker_object == 'volumes':
+            elif docker_object == "volumes":
                 params = {
-                    'filters': convert_filters(filters) if filters else None,
+                    "filters": convert_filters(filters) if filters else None,
                 }
-                items = self.client.get_json('/volumes', params=params)
-                items = items['Volumes']
+                items = self.client.get_json("/volumes", params=params)
+                items = items["Volumes"]
         except APIError as exc:
-            self.client.fail(f"Error inspecting docker host for object '{docker_object}': {exc}")
+            self.client.fail(
+                f"Error inspecting docker host for object '{docker_object}': {exc}"
+            )
 
         if self.verbose_output:
             return items
@@ -317,16 +333,16 @@ class DockerHostManager(DockerBaseClass):
         for item in items:
             item_record = dict()
 
-            if docker_object == 'containers':
+            if docker_object == "containers":
                 for key in header_containers:
                     item_record[key] = item.get(key)
-            elif docker_object == 'networks':
+            elif docker_object == "networks":
                 for key in header_networks:
                     item_record[key] = item.get(key)
-            elif docker_object == 'images':
+            elif docker_object == "images":
                 for key in header_images:
                     item_record[key] = item.get(key)
-            elif docker_object == 'volumes':
+            elif docker_object == "volumes":
                 for key in header_volumes:
                     item_record[key] = item.get(key)
             items_list.append(item_record)
@@ -336,17 +352,17 @@ class DockerHostManager(DockerBaseClass):
 
 def main():
     argument_spec = dict(
-        containers=dict(type='bool', default=False),
-        containers_all=dict(type='bool', default=False),
-        containers_filters=dict(type='dict'),
-        images=dict(type='bool', default=False),
-        images_filters=dict(type='dict'),
-        networks=dict(type='bool', default=False),
-        networks_filters=dict(type='dict'),
-        volumes=dict(type='bool', default=False),
-        volumes_filters=dict(type='dict'),
-        disk_usage=dict(type='bool', default=False),
-        verbose_output=dict(type='bool', default=False),
+        containers=dict(type="bool", default=False),
+        containers_all=dict(type="bool", default=False),
+        containers_filters=dict(type="dict"),
+        images=dict(type="bool", default=False),
+        images_filters=dict(type="dict"),
+        networks=dict(type="bool", default=False),
+        networks_filters=dict(type="dict"),
+        volumes=dict(type="bool", default=False),
+        volumes_filters=dict(type="dict"),
+        disk_usage=dict(type="bool", default=False),
+        verbose_output=dict(type="bool", default=False),
     )
 
     client = AnsibleDockerClient(
@@ -356,9 +372,12 @@ def main():
             can_talk_to_docker=False,
         ),
     )
-    if client.module.params['api_version'] is None or client.module.params['api_version'].lower() == 'auto':
+    if (
+        client.module.params["api_version"] is None
+        or client.module.params["api_version"].lower() == "auto"
+    ):
         # At this point we know that we can talk to Docker, since we asked it for the API version
-        client.fail_results['can_talk_to_docker'] = True
+        client.fail_results["can_talk_to_docker"] = True
 
     try:
         results = dict(
@@ -368,12 +387,16 @@ def main():
         DockerHostManager(client, results)
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

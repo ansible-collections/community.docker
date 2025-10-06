@@ -7,7 +7,9 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
+
 __metaclass__ = type
 
-DEFAULT_DOCKER_API_VERSION = '1.45'
+DEFAULT_DOCKER_API_VERSION = "1.45"

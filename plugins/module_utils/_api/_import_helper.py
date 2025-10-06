@@ -18,8 +18,13 @@ URLLIB3_IMPORT_ERROR = None
 
 try:
     from requests import Session  # noqa: F401, pylint: disable=unused-import
-    from requests.adapters import HTTPAdapter  # noqa: F401, pylint: disable=unused-import
-    from requests.exceptions import HTTPError, InvalidSchema  # noqa: F401, pylint: disable=unused-import
+    from requests.adapters import (  # noqa: F401, pylint: disable=unused-import
+        HTTPAdapter,
+    )
+    from requests.exceptions import (  # noqa: F401, pylint: disable=unused-import
+        HTTPError,
+        InvalidSchema,
+    )
 except ImportError:
     REQUESTS_IMPORT_ERROR = traceback.format_exc()
 
@@ -38,11 +43,15 @@ except ImportError:
 
 try:
     from requests.packages import urllib3  # pylint: disable=unused-import
-    from requests.packages.urllib3 import connection as urllib3_connection  # pylint: disable=unused-import
+    from requests.packages.urllib3 import (
+        connection as urllib3_connection,  # pylint: disable=unused-import
+    )
 except ImportError:
     try:
         import urllib3  # pylint: disable=unused-import
-        from urllib3 import connection as urllib3_connection  # pylint: disable=unused-import
+        from urllib3 import (
+            connection as urllib3_connection,  # pylint: disable=unused-import
+        )
     except ImportError:
         URLLIB3_IMPORT_ERROR = traceback.format_exc()
 
@@ -77,11 +86,11 @@ def fail_on_missing_imports():
         from .errors import MissingRequirementException
 
         raise MissingRequirementException(
-            'You have to install requests',
-            'requests', REQUESTS_IMPORT_ERROR)
+            "You have to install requests", "requests", REQUESTS_IMPORT_ERROR
+        )
     if URLLIB3_IMPORT_ERROR is not None:
         from .errors import MissingRequirementException
 
         raise MissingRequirementException(
-            'You have to install urllib3',
-            'urllib3', URLLIB3_IMPORT_ERROR)
+            "You have to install urllib3", "urllib3", URLLIB3_IMPORT_ERROR
+        )

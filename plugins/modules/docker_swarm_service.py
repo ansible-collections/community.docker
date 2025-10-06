@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+
 DOCUMENTATION = r"""
 module: docker_swarm_service
 author:
@@ -853,8 +854,8 @@ import shlex
 import time
 import traceback
 
-from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
-
+from ansible.module_utils.basic import human_to_bytes
+from ansible.module_utils.common.text.converters import to_text
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
     RequestException,
@@ -862,26 +863,27 @@ from ansible_collections.community.docker.plugins.module_utils.common import (
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DifferenceTracker,
     DockerBaseClass,
+    clean_dict_booleans_for_docker_api,
     convert_duration_to_nanosecond,
     parse_healthcheck,
-    clean_dict_booleans_for_docker_api,
     sanitize_labels,
 )
+from ansible_collections.community.docker.plugins.module_utils.version import (
+    LooseVersion,
+)
 
-from ansible.module_utils.basic import human_to_bytes
-from ansible.module_utils.common.text.converters import to_text
 
 try:
     from docker import types
-    from docker.utils import (
-        parse_repository_tag,
-        parse_env_file,
-        format_environment,
-    )
     from docker.errors import (
         APIError,
         DockerException,
         NotFound,
+    )
+    from docker.utils import (
+        format_environment,
+        parse_env_file,
+        parse_repository_tag,
     )
 except ImportError:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
@@ -903,25 +905,27 @@ def get_docker_environment(env, env_files):
             for name, value in parsed_env_file.items():
                 env_dict[name] = str(value)
     if env is not None and isinstance(env, str):
-        env = env.split(',')
+        env = env.split(",")
     if env is not None and isinstance(env, dict):
         for name, value in env.items():
             if not isinstance(value, str):
                 raise ValueError(
-                    'Non-string value found for env option. '
-                    f'Ambiguous env options must be wrapped in quotes to avoid YAML parsing. Key: {name}'
+                    "Non-string value found for env option. "
+                    f"Ambiguous env options must be wrapped in quotes to avoid YAML parsing. Key: {name}"
                 )
             env_dict[name] = str(value)
     elif env is not None and isinstance(env, list):
         for item in env:
             try:
-                name, value = item.split('=', 1)
+                name, value = item.split("=", 1)
             except ValueError:
-                raise ValueError('Invalid environment variable found in list, needs to be in format KEY=VALUE.')
+                raise ValueError(
+                    "Invalid environment variable found in list, needs to be in format KEY=VALUE."
+                )
             env_dict[name] = value
     elif env is not None:
         raise ValueError(
-            f'Invalid type for env {env} ({type(env)}). Only list or dict allowed.'
+            f"Invalid type for env {env} ({type(env)}). Only list or dict allowed."
         )
     env_list = format_environment(env_dict)
     if not env_list:
@@ -942,44 +946,44 @@ def get_docker_networks(networks, network_ids):
     parsed_networks = []
     for network in networks:
         if isinstance(network, str):
-            parsed_network = {'name': network}
+            parsed_network = {"name": network}
         elif isinstance(network, dict):
-            if 'name' not in network:
+            if "name" not in network:
                 raise TypeError(
                     '"name" is required when networks are passed as dictionaries.'
                 )
-            name = network.pop('name')
-            parsed_network = {'name': name}
-            aliases = network.pop('aliases', None)
+            name = network.pop("name")
+            parsed_network = {"name": name}
+            aliases = network.pop("aliases", None)
             if aliases is not None:
                 if not isinstance(aliases, list):
-                    raise TypeError('"aliases" network option is only allowed as a list')
-                if not all(
-                    isinstance(alias, str) for alias in aliases
-                ):
-                    raise TypeError('Only strings are allowed as network aliases.')
-                parsed_network['aliases'] = aliases
-            options = network.pop('options', None)
+                    raise TypeError(
+                        '"aliases" network option is only allowed as a list'
+                    )
+                if not all(isinstance(alias, str) for alias in aliases):
+                    raise TypeError("Only strings are allowed as network aliases.")
+                parsed_network["aliases"] = aliases
+            options = network.pop("options", None)
             if options is not None:
                 if not isinstance(options, dict):
-                    raise TypeError('Only dict is allowed as network options.')
-                parsed_network['options'] = clean_dict_booleans_for_docker_api(options)
+                    raise TypeError("Only dict is allowed as network options.")
+                parsed_network["options"] = clean_dict_booleans_for_docker_api(options)
             # Check if any invalid keys left
             if network:
-                invalid_keys = ', '.join(network.keys())
+                invalid_keys = ", ".join(network.keys())
                 raise TypeError(
-                    f'{invalid_keys} are not valid keys for the networks option'
+                    f"{invalid_keys} are not valid keys for the networks option"
                 )
 
         else:
             raise TypeError(
-                'Only a list of strings or dictionaries are allowed to be passed as networks.'
+                "Only a list of strings or dictionaries are allowed to be passed as networks."
             )
-        network_name = parsed_network.pop('name')
+        network_name = parsed_network.pop("name")
         try:
-            parsed_network['id'] = network_ids[network_name]
+            parsed_network["id"] = network_ids[network_name]
         except KeyError as e:
-            raise ValueError(f'Could not find a network named: {e}.')
+            raise ValueError(f"Could not find a network named: {e}.")
         parsed_networks.append(parsed_network)
     return parsed_networks or []
 
@@ -996,7 +1000,7 @@ def get_nanoseconds_from_raw_option(name, value):
             return convert_duration_to_nanosecond(value)
     else:
         raise ValueError(
-            f'Invalid type for {name} {value} ({type(value)}). Only string or int allowed.'
+            f"Invalid type for {name} {value} ({type(value)}). Only string or int allowed."
         )
 
 
@@ -1017,8 +1021,7 @@ def has_dict_changed(new_dict, old_dict):
     if not old_dict and new_dict:
         return True
     defined_options = dict(
-        (option, value) for option, value in new_dict.items()
-        if value is not None
+        (option, value) for option, value in new_dict.items() if value is not None
     )
     for option, value in defined_options.items():
         old_value = old_dict.get(option)
@@ -1042,9 +1045,7 @@ def has_list_changed(new_list, old_list, sort_lists=True, sort_key=None):
 
         if unsorted_list and isinstance(unsorted_list[0], dict):
             if not sort_key:
-                raise Exception(
-                    'A sort key was not specified when sorting list'
-                )
+                raise Exception("A sort key was not specified when sorting list")
             else:
                 return sorted(unsorted_list, key=lambda k: k[sort_key])
 
@@ -1065,7 +1066,9 @@ def has_list_changed(new_list, old_list, sort_lists=True, sort_key=None):
     else:
         zip_data = zip(new_list, old_list)
     for new_item, old_item in zip_data:
-        is_same_type = type(new_item) == type(old_item)  # noqa: E721, pylint: disable=unidiomatic-typecheck
+        is_same_type = type(new_item) == type(
+            old_item
+        )  # noqa: E721, pylint: disable=unidiomatic-typecheck
         if not is_same_type:
             if isinstance(new_item, str) and isinstance(old_item, str):
                 # Even though the types are different between these items,
@@ -1101,18 +1104,18 @@ def have_networks_changed(new_networks, old_networks):
         return True
 
     zip_data = zip(
-        sorted(new_networks, key=lambda k: k['id']),
-        sorted(old_networks, key=lambda k: k['id'])
+        sorted(new_networks, key=lambda k: k["id"]),
+        sorted(old_networks, key=lambda k: k["id"]),
     )
 
     for new_item, old_item in zip_data:
         new_item = dict(new_item)
         old_item = dict(old_item)
         # Sort the aliases
-        if 'aliases' in new_item:
-            new_item['aliases'] = sorted(new_item['aliases'] or [])
-        if 'aliases' in old_item:
-            old_item['aliases'] = sorted(old_item['aliases'] or [])
+        if "aliases" in new_item:
+            new_item["aliases"] = sorted(new_item["aliases"] or [])
+        if "aliases" in old_item:
+            old_item["aliases"] = sorted(old_item["aliases"] or [])
 
         if has_dict_changed(new_item, old_item):
             return True
@@ -1184,221 +1187,205 @@ class DockerService(DockerBaseClass):
 
     def get_facts(self):
         return {
-            'image': self.image,
-            'mounts': self.mounts,
-            'configs': self.configs,
-            'networks': self.networks,
-            'command': self.command,
-            'args': self.args,
-            'tty': self.tty,
-            'dns': self.dns,
-            'dns_search': self.dns_search,
-            'dns_options': self.dns_options,
-            'healthcheck': self.healthcheck,
-            'healthcheck_disabled': self.healthcheck_disabled,
-            'hostname': self.hostname,
-            'hosts': self.hosts,
-            'env': self.env,
-            'force_update': self.force_update,
-            'groups': self.groups,
-            'log_driver': self.log_driver,
-            'log_driver_options': self.log_driver_options,
-            'publish': self.publish,
-            'constraints': self.constraints,
-            'replicas_max_per_node': self.replicas_max_per_node,
-            'placement_preferences': self.placement_preferences,
-            'labels': self.labels,
-            'container_labels': self.container_labels,
-            'sysctls': self.sysctls,
-            'mode': self.mode,
-            'replicas': self.replicas,
-            'endpoint_mode': self.endpoint_mode,
-            'restart_policy': self.restart_policy,
-            'secrets': self.secrets,
-            'stop_grace_period': self.stop_grace_period,
-            'stop_signal': self.stop_signal,
-            'limit_cpu': self.limit_cpu,
-            'limit_memory': self.limit_memory,
-            'read_only': self.read_only,
-            'reserve_cpu': self.reserve_cpu,
-            'reserve_memory': self.reserve_memory,
-            'restart_policy_delay': self.restart_policy_delay,
-            'restart_policy_attempts': self.restart_policy_attempts,
-            'restart_policy_window': self.restart_policy_window,
-            'rollback_config': self.rollback_config,
-            'update_delay': self.update_delay,
-            'update_parallelism': self.update_parallelism,
-            'update_failure_action': self.update_failure_action,
-            'update_monitor': self.update_monitor,
-            'update_max_failure_ratio': self.update_max_failure_ratio,
-            'update_order': self.update_order,
-            'user': self.user,
-            'working_dir': self.working_dir,
-            'init': self.init,
-            'cap_add': self.cap_add,
-            'cap_drop': self.cap_drop,
+            "image": self.image,
+            "mounts": self.mounts,
+            "configs": self.configs,
+            "networks": self.networks,
+            "command": self.command,
+            "args": self.args,
+            "tty": self.tty,
+            "dns": self.dns,
+            "dns_search": self.dns_search,
+            "dns_options": self.dns_options,
+            "healthcheck": self.healthcheck,
+            "healthcheck_disabled": self.healthcheck_disabled,
+            "hostname": self.hostname,
+            "hosts": self.hosts,
+            "env": self.env,
+            "force_update": self.force_update,
+            "groups": self.groups,
+            "log_driver": self.log_driver,
+            "log_driver_options": self.log_driver_options,
+            "publish": self.publish,
+            "constraints": self.constraints,
+            "replicas_max_per_node": self.replicas_max_per_node,
+            "placement_preferences": self.placement_preferences,
+            "labels": self.labels,
+            "container_labels": self.container_labels,
+            "sysctls": self.sysctls,
+            "mode": self.mode,
+            "replicas": self.replicas,
+            "endpoint_mode": self.endpoint_mode,
+            "restart_policy": self.restart_policy,
+            "secrets": self.secrets,
+            "stop_grace_period": self.stop_grace_period,
+            "stop_signal": self.stop_signal,
+            "limit_cpu": self.limit_cpu,
+            "limit_memory": self.limit_memory,
+            "read_only": self.read_only,
+            "reserve_cpu": self.reserve_cpu,
+            "reserve_memory": self.reserve_memory,
+            "restart_policy_delay": self.restart_policy_delay,
+            "restart_policy_attempts": self.restart_policy_attempts,
+            "restart_policy_window": self.restart_policy_window,
+            "rollback_config": self.rollback_config,
+            "update_delay": self.update_delay,
+            "update_parallelism": self.update_parallelism,
+            "update_failure_action": self.update_failure_action,
+            "update_monitor": self.update_monitor,
+            "update_max_failure_ratio": self.update_max_failure_ratio,
+            "update_order": self.update_order,
+            "user": self.user,
+            "working_dir": self.working_dir,
+            "init": self.init,
+            "cap_add": self.cap_add,
+            "cap_drop": self.cap_drop,
         }
 
     @property
     def can_update_networks(self):
         # Before Docker API 1.29 adding/removing networks was not supported
-        return (
-            self.docker_api_version >= LooseVersion('1.29') and
-            self.docker_py_version >= LooseVersion('2.7')
-        )
+        return self.docker_api_version >= LooseVersion(
+            "1.29"
+        ) and self.docker_py_version >= LooseVersion("2.7")
 
     @property
     def can_use_task_template_networks(self):
         # In Docker API 1.25 attaching networks to TaskTemplate is preferred over Spec
-        return self.docker_py_version >= LooseVersion('2.7')
+        return self.docker_py_version >= LooseVersion("2.7")
 
     @staticmethod
     def get_restart_config_from_ansible_params(params):
-        restart_config = params['restart_config'] or {}
+        restart_config = params["restart_config"] or {}
         condition = get_value(
-            'condition',
+            "condition",
             restart_config,
         )
         delay = get_value(
-            'delay',
+            "delay",
             restart_config,
         )
-        delay = get_nanoseconds_from_raw_option(
-            'restart_policy_delay',
-            delay
-        )
+        delay = get_nanoseconds_from_raw_option("restart_policy_delay", delay)
         max_attempts = get_value(
-            'max_attempts',
+            "max_attempts",
             restart_config,
         )
         window = get_value(
-            'window',
+            "window",
             restart_config,
         )
-        window = get_nanoseconds_from_raw_option(
-            'restart_policy_window',
-            window
-        )
+        window = get_nanoseconds_from_raw_option("restart_policy_window", window)
         return {
-            'restart_policy': condition,
-            'restart_policy_delay': delay,
-            'restart_policy_attempts': max_attempts,
-            'restart_policy_window': window
+            "restart_policy": condition,
+            "restart_policy_delay": delay,
+            "restart_policy_attempts": max_attempts,
+            "restart_policy_window": window,
         }
 
     @staticmethod
     def get_update_config_from_ansible_params(params):
-        update_config = params['update_config'] or {}
+        update_config = params["update_config"] or {}
         parallelism = get_value(
-            'parallelism',
+            "parallelism",
             update_config,
         )
         delay = get_value(
-            'delay',
+            "delay",
             update_config,
         )
-        delay = get_nanoseconds_from_raw_option(
-            'update_delay',
-            delay
-        )
+        delay = get_nanoseconds_from_raw_option("update_delay", delay)
         failure_action = get_value(
-            'failure_action',
+            "failure_action",
             update_config,
         )
         monitor = get_value(
-            'monitor',
+            "monitor",
             update_config,
         )
-        monitor = get_nanoseconds_from_raw_option(
-            'update_monitor',
-            monitor
-        )
+        monitor = get_nanoseconds_from_raw_option("update_monitor", monitor)
         max_failure_ratio = get_value(
-            'max_failure_ratio',
+            "max_failure_ratio",
             update_config,
         )
         order = get_value(
-            'order',
+            "order",
             update_config,
         )
         return {
-            'update_parallelism': parallelism,
-            'update_delay': delay,
-            'update_failure_action': failure_action,
-            'update_monitor': monitor,
-            'update_max_failure_ratio': max_failure_ratio,
-            'update_order': order
+            "update_parallelism": parallelism,
+            "update_delay": delay,
+            "update_failure_action": failure_action,
+            "update_monitor": monitor,
+            "update_max_failure_ratio": max_failure_ratio,
+            "update_order": order,
         }
 
     @staticmethod
     def get_rollback_config_from_ansible_params(params):
-        if params['rollback_config'] is None:
+        if params["rollback_config"] is None:
             return None
-        rollback_config = params['rollback_config'] or {}
+        rollback_config = params["rollback_config"] or {}
         delay = get_nanoseconds_from_raw_option(
-            'rollback_config.delay',
-            rollback_config.get('delay')
+            "rollback_config.delay", rollback_config.get("delay")
         )
         monitor = get_nanoseconds_from_raw_option(
-            'rollback_config.monitor',
-            rollback_config.get('monitor')
+            "rollback_config.monitor", rollback_config.get("monitor")
         )
         return {
-            'parallelism': rollback_config.get('parallelism'),
-            'delay': delay,
-            'failure_action': rollback_config.get('failure_action'),
-            'monitor': monitor,
-            'max_failure_ratio': rollback_config.get('max_failure_ratio'),
-            'order': rollback_config.get('order'),
-
+            "parallelism": rollback_config.get("parallelism"),
+            "delay": delay,
+            "failure_action": rollback_config.get("failure_action"),
+            "monitor": monitor,
+            "max_failure_ratio": rollback_config.get("max_failure_ratio"),
+            "order": rollback_config.get("order"),
         }
 
     @staticmethod
     def get_logging_from_ansible_params(params):
-        logging_config = params['logging'] or {}
+        logging_config = params["logging"] or {}
         driver = get_value(
-            'driver',
+            "driver",
             logging_config,
         )
         options = get_value(
-            'options',
+            "options",
             logging_config,
         )
         return {
-            'log_driver': driver,
-            'log_driver_options': options,
+            "log_driver": driver,
+            "log_driver_options": options,
         }
 
     @staticmethod
     def get_limits_from_ansible_params(params):
-        limits = params['limits'] or {}
+        limits = params["limits"] or {}
         cpus = get_value(
-            'cpus',
+            "cpus",
             limits,
         )
         memory = get_value(
-            'memory',
+            "memory",
             limits,
         )
         if memory is not None:
             try:
                 memory = human_to_bytes(memory)
             except ValueError as exc:
-                raise Exception(f'Failed to convert limit_memory to bytes: {exc}')
+                raise Exception(f"Failed to convert limit_memory to bytes: {exc}")
         return {
-            'limit_cpu': cpus,
-            'limit_memory': memory,
+            "limit_cpu": cpus,
+            "limit_memory": memory,
         }
 
     @staticmethod
     def get_reservations_from_ansible_params(params):
-        reservations = params['reservations'] or {}
+        reservations = params["reservations"] or {}
         cpus = get_value(
-            'cpus',
+            "cpus",
             reservations,
         )
         memory = get_value(
-            'memory',
+            "memory",
             reservations,
         )
 
@@ -1406,30 +1393,24 @@ class DockerService(DockerBaseClass):
             try:
                 memory = human_to_bytes(memory)
             except ValueError as exc:
-                raise Exception(f'Failed to convert reserve_memory to bytes: {exc}')
+                raise Exception(f"Failed to convert reserve_memory to bytes: {exc}")
         return {
-            'reserve_cpu': cpus,
-            'reserve_memory': memory,
+            "reserve_cpu": cpus,
+            "reserve_memory": memory,
         }
 
     @staticmethod
     def get_placement_from_ansible_params(params):
-        placement = params['placement'] or {}
-        constraints = get_value(
-            'constraints',
-            placement
-        )
+        placement = params["placement"] or {}
+        constraints = get_value("constraints", placement)
 
-        preferences = placement.get('preferences')
-        replicas_max_per_node = get_value(
-            'replicas_max_per_node',
-            placement
-        )
+        preferences = placement.get("preferences")
+        replicas_max_per_node = get_value("replicas_max_per_node", placement)
 
         return {
-            'constraints': constraints,
-            'placement_preferences': preferences,
-            'replicas_max_per_node': replicas_max_per_node,
+            "constraints": constraints,
+            "placement_preferences": preferences,
+            "replicas_max_per_node": replicas_max_per_node,
         }
 
     @classmethod
@@ -1445,32 +1426,32 @@ class DockerService(DockerBaseClass):
     ):
         s = DockerService(client.docker_api_version, client.docker_py_version)
         s.image = image_digest
-        s.args = ap['args']
-        s.endpoint_mode = ap['endpoint_mode']
-        s.dns = ap['dns']
-        s.dns_search = ap['dns_search']
-        s.dns_options = ap['dns_options']
-        s.healthcheck, s.healthcheck_disabled = parse_healthcheck(ap['healthcheck'])
-        s.hostname = ap['hostname']
-        s.hosts = ap['hosts']
-        s.tty = ap['tty']
-        s.labels = ap['labels']
-        sanitize_labels(s.labels, 'labels', client)
-        s.container_labels = ap['container_labels']
-        sanitize_labels(s.container_labels, 'container_labels', client)
-        s.sysctls = ap['sysctls']
-        s.mode = ap['mode']
-        s.stop_signal = ap['stop_signal']
-        s.user = ap['user']
-        s.working_dir = ap['working_dir']
-        s.read_only = ap['read_only']
-        s.init = ap['init']
-        s.cap_add = ap['cap_add']
-        s.cap_drop = ap['cap_drop']
+        s.args = ap["args"]
+        s.endpoint_mode = ap["endpoint_mode"]
+        s.dns = ap["dns"]
+        s.dns_search = ap["dns_search"]
+        s.dns_options = ap["dns_options"]
+        s.healthcheck, s.healthcheck_disabled = parse_healthcheck(ap["healthcheck"])
+        s.hostname = ap["hostname"]
+        s.hosts = ap["hosts"]
+        s.tty = ap["tty"]
+        s.labels = ap["labels"]
+        sanitize_labels(s.labels, "labels", client)
+        s.container_labels = ap["container_labels"]
+        sanitize_labels(s.container_labels, "container_labels", client)
+        s.sysctls = ap["sysctls"]
+        s.mode = ap["mode"]
+        s.stop_signal = ap["stop_signal"]
+        s.user = ap["user"]
+        s.working_dir = ap["working_dir"]
+        s.read_only = ap["read_only"]
+        s.init = ap["init"]
+        s.cap_add = ap["cap_add"]
+        s.cap_drop = ap["cap_drop"]
 
-        s.networks = get_docker_networks(ap['networks'], network_ids)
+        s.networks = get_docker_networks(ap["networks"], network_ids)
 
-        s.command = ap['command']
+        s.command = ap["command"]
         if isinstance(s.command, str):
             s.command = shlex.split(s.command)
         elif isinstance(s.command, list):
@@ -1480,24 +1461,24 @@ class DockerService(DockerBaseClass):
                 if not isinstance(item, str)
             ]
             if invalid_items:
-                errors = ', '.join(
+                errors = ", ".join(
                     [
-                        f'{item} ({type(item)}) at index {index}'
+                        f"{item} ({type(item)}) at index {index}"
                         for index, item in invalid_items
                     ]
                 )
                 raise Exception(
-                    'All items in a command list need to be strings. '
-                    f'Check quoting. Invalid items: {errors}.'
+                    "All items in a command list need to be strings. "
+                    f"Check quoting. Invalid items: {errors}."
                 )
-            s.command = ap['command']
+            s.command = ap["command"]
         elif s.command is not None:
             raise ValueError(
-                f'Invalid type for command {s.command} ({type(s.command)}). '
-                'Only string or list allowed. Check quoting.'
+                f"Invalid type for command {s.command} ({type(s.command)}). "
+                "Only string or list allowed. Check quoting."
             )
 
-        s.env = get_docker_environment(ap['env'], ap['env_files'])
+        s.env = get_docker_environment(ap["env"], ap["env_files"])
         s.rollback_config = cls.get_rollback_config_from_ansible_params(ap)
 
         update_config = cls.get_update_config_from_ansible_params(ap)
@@ -1524,86 +1505,90 @@ class DockerService(DockerBaseClass):
         for key, value in placement.items():
             setattr(s, key, value)
 
-        if ap['stop_grace_period'] is not None:
-            s.stop_grace_period = convert_duration_to_nanosecond(ap['stop_grace_period'])
+        if ap["stop_grace_period"] is not None:
+            s.stop_grace_period = convert_duration_to_nanosecond(
+                ap["stop_grace_period"]
+            )
 
-        if ap['force_update']:
-            s.force_update = int(str(time.time()).replace('.', ''))
+        if ap["force_update"]:
+            s.force_update = int(str(time.time()).replace(".", ""))
 
-        if ap['groups'] is not None:
+        if ap["groups"] is not None:
             # In case integers are passed as groups, we need to convert them to
             # strings as docker internally treats them as strings.
-            s.groups = [str(g) for g in ap['groups']]
+            s.groups = [str(g) for g in ap["groups"]]
 
-        if ap['replicas'] == -1:
+        if ap["replicas"] == -1:
             if old_service:
                 s.replicas = old_service.replicas
             else:
                 s.replicas = 1
         else:
-            s.replicas = ap['replicas']
+            s.replicas = ap["replicas"]
 
-        if ap['publish'] is not None:
+        if ap["publish"] is not None:
             s.publish = []
-            for param_p in ap['publish']:
+            for param_p in ap["publish"]:
                 service_p = {}
-                service_p['protocol'] = param_p['protocol']
-                service_p['mode'] = param_p['mode']
-                service_p['published_port'] = param_p['published_port']
-                service_p['target_port'] = param_p['target_port']
+                service_p["protocol"] = param_p["protocol"]
+                service_p["mode"] = param_p["mode"]
+                service_p["published_port"] = param_p["published_port"]
+                service_p["target_port"] = param_p["target_port"]
                 s.publish.append(service_p)
 
-        if ap['mounts'] is not None:
+        if ap["mounts"] is not None:
             s.mounts = []
-            for param_m in ap['mounts']:
+            for param_m in ap["mounts"]:
                 service_m = {}
-                service_m['readonly'] = param_m['readonly']
-                service_m['type'] = param_m['type']
-                if param_m['source'] is None and param_m['type'] != 'tmpfs':
-                    raise ValueError('Source must be specified for mounts which are not of type tmpfs')
-                service_m['source'] = param_m['source'] or ''
-                service_m['target'] = param_m['target']
-                service_m['labels'] = param_m['labels']
-                service_m['no_copy'] = param_m['no_copy']
-                service_m['propagation'] = param_m['propagation']
-                service_m['driver_config'] = param_m['driver_config']
-                service_m['tmpfs_mode'] = param_m['tmpfs_mode']
-                tmpfs_size = param_m['tmpfs_size']
+                service_m["readonly"] = param_m["readonly"]
+                service_m["type"] = param_m["type"]
+                if param_m["source"] is None and param_m["type"] != "tmpfs":
+                    raise ValueError(
+                        "Source must be specified for mounts which are not of type tmpfs"
+                    )
+                service_m["source"] = param_m["source"] or ""
+                service_m["target"] = param_m["target"]
+                service_m["labels"] = param_m["labels"]
+                service_m["no_copy"] = param_m["no_copy"]
+                service_m["propagation"] = param_m["propagation"]
+                service_m["driver_config"] = param_m["driver_config"]
+                service_m["tmpfs_mode"] = param_m["tmpfs_mode"]
+                tmpfs_size = param_m["tmpfs_size"]
                 if tmpfs_size is not None:
                     try:
                         tmpfs_size = human_to_bytes(tmpfs_size)
                     except ValueError as exc:
                         raise ValueError(
-                            f'Failed to convert tmpfs_size to bytes: {exc}'
+                            f"Failed to convert tmpfs_size to bytes: {exc}"
                         )
 
-                service_m['tmpfs_size'] = tmpfs_size
+                service_m["tmpfs_size"] = tmpfs_size
                 s.mounts.append(service_m)
 
-        if ap['configs'] is not None:
+        if ap["configs"] is not None:
             s.configs = []
-            for param_m in ap['configs']:
+            for param_m in ap["configs"]:
                 service_c = {}
-                config_name = param_m['config_name']
-                service_c['config_id'] = param_m['config_id'] or config_ids[config_name]
-                service_c['config_name'] = config_name
-                service_c['filename'] = param_m['filename'] or config_name
-                service_c['uid'] = param_m['uid']
-                service_c['gid'] = param_m['gid']
-                service_c['mode'] = param_m['mode']
+                config_name = param_m["config_name"]
+                service_c["config_id"] = param_m["config_id"] or config_ids[config_name]
+                service_c["config_name"] = config_name
+                service_c["filename"] = param_m["filename"] or config_name
+                service_c["uid"] = param_m["uid"]
+                service_c["gid"] = param_m["gid"]
+                service_c["mode"] = param_m["mode"]
                 s.configs.append(service_c)
 
-        if ap['secrets'] is not None:
+        if ap["secrets"] is not None:
             s.secrets = []
-            for param_m in ap['secrets']:
+            for param_m in ap["secrets"]:
                 service_s = {}
-                secret_name = param_m['secret_name']
-                service_s['secret_id'] = param_m['secret_id'] or secret_ids[secret_name]
-                service_s['secret_name'] = secret_name
-                service_s['filename'] = param_m['filename'] or secret_name
-                service_s['uid'] = param_m['uid']
-                service_s['gid'] = param_m['gid']
-                service_s['mode'] = param_m['mode']
+                secret_name = param_m["secret_name"]
+                service_s["secret_id"] = param_m["secret_id"] or secret_ids[secret_name]
+                service_s["secret_name"] = secret_name
+                service_s["filename"] = param_m["filename"] or secret_name
+                service_s["uid"] = param_m["uid"]
+                service_s["gid"] = param_m["gid"]
+                service_s["mode"] = param_m["mode"]
                 s.secrets.append(service_s)
 
         return s
@@ -1613,113 +1598,232 @@ class DockerService(DockerBaseClass):
         needs_rebuild = False
         force_update = False
         if self.endpoint_mode is not None and self.endpoint_mode != os.endpoint_mode:
-            differences.add('endpoint_mode', parameter=self.endpoint_mode, active=os.endpoint_mode)
+            differences.add(
+                "endpoint_mode", parameter=self.endpoint_mode, active=os.endpoint_mode
+            )
         if has_list_changed(self.env, os.env):
-            differences.add('env', parameter=self.env, active=os.env)
+            differences.add("env", parameter=self.env, active=os.env)
         if self.log_driver is not None and self.log_driver != os.log_driver:
-            differences.add('log_driver', parameter=self.log_driver, active=os.log_driver)
-        if self.log_driver_options is not None and self.log_driver_options != (os.log_driver_options or {}):
-            differences.add('log_opt', parameter=self.log_driver_options, active=os.log_driver_options)
+            differences.add(
+                "log_driver", parameter=self.log_driver, active=os.log_driver
+            )
+        if self.log_driver_options is not None and self.log_driver_options != (
+            os.log_driver_options or {}
+        ):
+            differences.add(
+                "log_opt",
+                parameter=self.log_driver_options,
+                active=os.log_driver_options,
+            )
         if self.mode != os.mode:
             needs_rebuild = True
-            differences.add('mode', parameter=self.mode, active=os.mode)
-        if has_list_changed(self.mounts, os.mounts, sort_key='target'):
-            differences.add('mounts', parameter=self.mounts, active=os.mounts)
-        if has_list_changed(self.configs, os.configs, sort_key='config_name'):
-            differences.add('configs', parameter=self.configs, active=os.configs)
-        if has_list_changed(self.secrets, os.secrets, sort_key='secret_name'):
-            differences.add('secrets', parameter=self.secrets, active=os.secrets)
+            differences.add("mode", parameter=self.mode, active=os.mode)
+        if has_list_changed(self.mounts, os.mounts, sort_key="target"):
+            differences.add("mounts", parameter=self.mounts, active=os.mounts)
+        if has_list_changed(self.configs, os.configs, sort_key="config_name"):
+            differences.add("configs", parameter=self.configs, active=os.configs)
+        if has_list_changed(self.secrets, os.secrets, sort_key="secret_name"):
+            differences.add("secrets", parameter=self.secrets, active=os.secrets)
         if have_networks_changed(self.networks, os.networks):
-            differences.add('networks', parameter=self.networks, active=os.networks)
+            differences.add("networks", parameter=self.networks, active=os.networks)
             needs_rebuild = not self.can_update_networks
         if self.replicas != os.replicas:
-            differences.add('replicas', parameter=self.replicas, active=os.replicas)
+            differences.add("replicas", parameter=self.replicas, active=os.replicas)
         if has_list_changed(self.command, os.command, sort_lists=False):
-            differences.add('command', parameter=self.command, active=os.command)
+            differences.add("command", parameter=self.command, active=os.command)
         if has_list_changed(self.args, os.args, sort_lists=False):
-            differences.add('args', parameter=self.args, active=os.args)
+            differences.add("args", parameter=self.args, active=os.args)
         if has_list_changed(self.constraints, os.constraints):
-            differences.add('constraints', parameter=self.constraints, active=os.constraints)
-        if self.replicas_max_per_node is not None and self.replicas_max_per_node != os.replicas_max_per_node:
-            differences.add('replicas_max_per_node', parameter=self.replicas_max_per_node, active=os.replicas_max_per_node)
-        if has_list_changed(self.placement_preferences, os.placement_preferences, sort_lists=False):
-            differences.add('placement_preferences', parameter=self.placement_preferences, active=os.placement_preferences)
+            differences.add(
+                "constraints", parameter=self.constraints, active=os.constraints
+            )
+        if (
+            self.replicas_max_per_node is not None
+            and self.replicas_max_per_node != os.replicas_max_per_node
+        ):
+            differences.add(
+                "replicas_max_per_node",
+                parameter=self.replicas_max_per_node,
+                active=os.replicas_max_per_node,
+            )
+        if has_list_changed(
+            self.placement_preferences, os.placement_preferences, sort_lists=False
+        ):
+            differences.add(
+                "placement_preferences",
+                parameter=self.placement_preferences,
+                active=os.placement_preferences,
+            )
         if has_list_changed(self.groups, os.groups):
-            differences.add('groups', parameter=self.groups, active=os.groups)
+            differences.add("groups", parameter=self.groups, active=os.groups)
         if self.labels is not None and self.labels != (os.labels or {}):
-            differences.add('labels', parameter=self.labels, active=os.labels)
+            differences.add("labels", parameter=self.labels, active=os.labels)
         if self.limit_cpu is not None and self.limit_cpu != os.limit_cpu:
-            differences.add('limit_cpu', parameter=self.limit_cpu, active=os.limit_cpu)
+            differences.add("limit_cpu", parameter=self.limit_cpu, active=os.limit_cpu)
         if self.limit_memory is not None and self.limit_memory != os.limit_memory:
-            differences.add('limit_memory', parameter=self.limit_memory, active=os.limit_memory)
+            differences.add(
+                "limit_memory", parameter=self.limit_memory, active=os.limit_memory
+            )
         if self.reserve_cpu is not None and self.reserve_cpu != os.reserve_cpu:
-            differences.add('reserve_cpu', parameter=self.reserve_cpu, active=os.reserve_cpu)
+            differences.add(
+                "reserve_cpu", parameter=self.reserve_cpu, active=os.reserve_cpu
+            )
         if self.reserve_memory is not None and self.reserve_memory != os.reserve_memory:
-            differences.add('reserve_memory', parameter=self.reserve_memory, active=os.reserve_memory)
-        if self.container_labels is not None and self.container_labels != (os.container_labels or {}):
-            differences.add('container_labels', parameter=self.container_labels, active=os.container_labels)
+            differences.add(
+                "reserve_memory",
+                parameter=self.reserve_memory,
+                active=os.reserve_memory,
+            )
+        if self.container_labels is not None and self.container_labels != (
+            os.container_labels or {}
+        ):
+            differences.add(
+                "container_labels",
+                parameter=self.container_labels,
+                active=os.container_labels,
+            )
         if self.sysctls is not None and self.sysctls != (os.sysctls or {}):
-            differences.add('sysctls', parameter=self.sysctls, active=os.sysctls)
+            differences.add("sysctls", parameter=self.sysctls, active=os.sysctls)
         if self.stop_signal is not None and self.stop_signal != os.stop_signal:
-            differences.add('stop_signal', parameter=self.stop_signal, active=os.stop_signal)
-        if self.stop_grace_period is not None and self.stop_grace_period != os.stop_grace_period:
-            differences.add('stop_grace_period', parameter=self.stop_grace_period, active=os.stop_grace_period)
+            differences.add(
+                "stop_signal", parameter=self.stop_signal, active=os.stop_signal
+            )
+        if (
+            self.stop_grace_period is not None
+            and self.stop_grace_period != os.stop_grace_period
+        ):
+            differences.add(
+                "stop_grace_period",
+                parameter=self.stop_grace_period,
+                active=os.stop_grace_period,
+            )
         if self.has_publish_changed(os.publish):
-            differences.add('publish', parameter=self.publish, active=os.publish)
+            differences.add("publish", parameter=self.publish, active=os.publish)
         if self.read_only is not None and self.read_only != os.read_only:
-            differences.add('read_only', parameter=self.read_only, active=os.read_only)
+            differences.add("read_only", parameter=self.read_only, active=os.read_only)
         if self.restart_policy is not None and self.restart_policy != os.restart_policy:
-            differences.add('restart_policy', parameter=self.restart_policy, active=os.restart_policy)
-        if self.restart_policy_attempts is not None and self.restart_policy_attempts != os.restart_policy_attempts:
-            differences.add('restart_policy_attempts', parameter=self.restart_policy_attempts, active=os.restart_policy_attempts)
-        if self.restart_policy_delay is not None and self.restart_policy_delay != os.restart_policy_delay:
-            differences.add('restart_policy_delay', parameter=self.restart_policy_delay, active=os.restart_policy_delay)
-        if self.restart_policy_window is not None and self.restart_policy_window != os.restart_policy_window:
-            differences.add('restart_policy_window', parameter=self.restart_policy_window, active=os.restart_policy_window)
+            differences.add(
+                "restart_policy",
+                parameter=self.restart_policy,
+                active=os.restart_policy,
+            )
+        if (
+            self.restart_policy_attempts is not None
+            and self.restart_policy_attempts != os.restart_policy_attempts
+        ):
+            differences.add(
+                "restart_policy_attempts",
+                parameter=self.restart_policy_attempts,
+                active=os.restart_policy_attempts,
+            )
+        if (
+            self.restart_policy_delay is not None
+            and self.restart_policy_delay != os.restart_policy_delay
+        ):
+            differences.add(
+                "restart_policy_delay",
+                parameter=self.restart_policy_delay,
+                active=os.restart_policy_delay,
+            )
+        if (
+            self.restart_policy_window is not None
+            and self.restart_policy_window != os.restart_policy_window
+        ):
+            differences.add(
+                "restart_policy_window",
+                parameter=self.restart_policy_window,
+                active=os.restart_policy_window,
+            )
         if has_dict_changed(self.rollback_config, os.rollback_config):
-            differences.add('rollback_config', parameter=self.rollback_config, active=os.rollback_config)
+            differences.add(
+                "rollback_config",
+                parameter=self.rollback_config,
+                active=os.rollback_config,
+            )
         if self.update_delay is not None and self.update_delay != os.update_delay:
-            differences.add('update_delay', parameter=self.update_delay, active=os.update_delay)
-        if self.update_parallelism is not None and self.update_parallelism != os.update_parallelism:
-            differences.add('update_parallelism', parameter=self.update_parallelism, active=os.update_parallelism)
-        if self.update_failure_action is not None and self.update_failure_action != os.update_failure_action:
-            differences.add('update_failure_action', parameter=self.update_failure_action, active=os.update_failure_action)
+            differences.add(
+                "update_delay", parameter=self.update_delay, active=os.update_delay
+            )
+        if (
+            self.update_parallelism is not None
+            and self.update_parallelism != os.update_parallelism
+        ):
+            differences.add(
+                "update_parallelism",
+                parameter=self.update_parallelism,
+                active=os.update_parallelism,
+            )
+        if (
+            self.update_failure_action is not None
+            and self.update_failure_action != os.update_failure_action
+        ):
+            differences.add(
+                "update_failure_action",
+                parameter=self.update_failure_action,
+                active=os.update_failure_action,
+            )
         if self.update_monitor is not None and self.update_monitor != os.update_monitor:
-            differences.add('update_monitor', parameter=self.update_monitor, active=os.update_monitor)
-        if self.update_max_failure_ratio is not None and self.update_max_failure_ratio != os.update_max_failure_ratio:
-            differences.add('update_max_failure_ratio', parameter=self.update_max_failure_ratio, active=os.update_max_failure_ratio)
+            differences.add(
+                "update_monitor",
+                parameter=self.update_monitor,
+                active=os.update_monitor,
+            )
+        if (
+            self.update_max_failure_ratio is not None
+            and self.update_max_failure_ratio != os.update_max_failure_ratio
+        ):
+            differences.add(
+                "update_max_failure_ratio",
+                parameter=self.update_max_failure_ratio,
+                active=os.update_max_failure_ratio,
+            )
         if self.update_order is not None and self.update_order != os.update_order:
-            differences.add('update_order', parameter=self.update_order, active=os.update_order)
+            differences.add(
+                "update_order", parameter=self.update_order, active=os.update_order
+            )
         has_image_changed, change = self.has_image_changed(os.image)
         if has_image_changed:
-            differences.add('image', parameter=self.image, active=change)
+            differences.add("image", parameter=self.image, active=change)
         if self.user and self.user != os.user:
-            differences.add('user', parameter=self.user, active=os.user)
+            differences.add("user", parameter=self.user, active=os.user)
         if has_list_changed(self.dns, os.dns, sort_lists=False):
-            differences.add('dns', parameter=self.dns, active=os.dns)
+            differences.add("dns", parameter=self.dns, active=os.dns)
         if has_list_changed(self.dns_search, os.dns_search, sort_lists=False):
-            differences.add('dns_search', parameter=self.dns_search, active=os.dns_search)
+            differences.add(
+                "dns_search", parameter=self.dns_search, active=os.dns_search
+            )
         if has_list_changed(self.dns_options, os.dns_options):
-            differences.add('dns_options', parameter=self.dns_options, active=os.dns_options)
+            differences.add(
+                "dns_options", parameter=self.dns_options, active=os.dns_options
+            )
         if self.has_healthcheck_changed(os):
-            differences.add('healthcheck', parameter=self.healthcheck, active=os.healthcheck)
+            differences.add(
+                "healthcheck", parameter=self.healthcheck, active=os.healthcheck
+            )
         if self.hostname is not None and self.hostname != os.hostname:
-            differences.add('hostname', parameter=self.hostname, active=os.hostname)
+            differences.add("hostname", parameter=self.hostname, active=os.hostname)
         if self.hosts is not None and self.hosts != (os.hosts or {}):
-            differences.add('hosts', parameter=self.hosts, active=os.hosts)
+            differences.add("hosts", parameter=self.hosts, active=os.hosts)
         if self.tty is not None and self.tty != os.tty:
-            differences.add('tty', parameter=self.tty, active=os.tty)
+            differences.add("tty", parameter=self.tty, active=os.tty)
         if self.working_dir is not None and self.working_dir != os.working_dir:
-            differences.add('working_dir', parameter=self.working_dir, active=os.working_dir)
+            differences.add(
+                "working_dir", parameter=self.working_dir, active=os.working_dir
+            )
         if self.force_update:
             force_update = True
         if self.init is not None and self.init != os.init:
-            differences.add('init', parameter=self.init, active=os.init)
+            differences.add("init", parameter=self.init, active=os.init)
         if has_list_changed(self.cap_add, os.cap_add):
-            differences.add('cap_add', parameter=self.cap_add, active=os.cap_add)
+            differences.add("cap_add", parameter=self.cap_add, active=os.cap_add)
         if has_list_changed(self.cap_drop, os.cap_drop):
-            differences.add('cap_drop', parameter=self.cap_drop, active=os.cap_drop)
-        return not differences.empty or force_update, differences, needs_rebuild, force_update
+            differences.add("cap_drop", parameter=self.cap_drop, active=os.cap_drop)
+        return (
+            not differences.empty or force_update,
+            differences,
+            needs_rebuild,
+            force_update,
+        )
 
     def has_healthcheck_changed(self, old_publish):
         if self.healthcheck_disabled is False and self.healthcheck is None:
@@ -1727,7 +1831,7 @@ class DockerService(DockerBaseClass):
         if self.healthcheck_disabled:
             if old_publish.healthcheck is None:
                 return False
-            if old_publish.healthcheck.get('test') == ['NONE']:
+            if old_publish.healthcheck.get("test") == ["NONE"]:
                 return False
         return self.healthcheck != old_publish.healthcheck
 
@@ -1739,14 +1843,18 @@ class DockerService(DockerBaseClass):
             return True
 
         def publish_sorter(item):
-            return (item.get('published_port') or 0, item.get('target_port') or 0, item.get('protocol') or '')
+            return (
+                item.get("published_port") or 0,
+                item.get("target_port") or 0,
+                item.get("protocol") or "",
+            )
 
         publish = sorted(self.publish, key=publish_sorter)
         old_publish = sorted(old_publish, key=publish_sorter)
         for publish_item, old_publish_item in zip(publish, old_publish):
             ignored_keys = set()
-            if not publish_item.get('mode'):
-                ignored_keys.add('mode')
+            if not publish_item.get("mode"):
+                ignored_keys.add("mode")
             # Create copies of publish_item dicts where keys specified in ignored_keys are left out
             filtered_old_publish_item = dict(
                 (k, v) for k, v in old_publish_item.items() if k not in ignored_keys
@@ -1759,8 +1867,8 @@ class DockerService(DockerBaseClass):
         return False
 
     def has_image_changed(self, old_image):
-        if '@' not in self.image:
-            old_image = old_image.split('@')[0]
+        if "@" not in self.image:
+            old_image = old_image.split("@")[0]
         return self.image != old_image, old_image
 
     def build_container_spec(self):
@@ -1769,16 +1877,16 @@ class DockerService(DockerBaseClass):
             mounts = []
             for mount_config in self.mounts:
                 mount_options = {
-                    'target': 'target',
-                    'source': 'source',
-                    'type': 'type',
-                    'readonly': 'read_only',
-                    'propagation': 'propagation',
-                    'labels': 'labels',
-                    'no_copy': 'no_copy',
-                    'driver_config': 'driver_config',
-                    'tmpfs_size': 'tmpfs_size',
-                    'tmpfs_mode': 'tmpfs_mode'
+                    "target": "target",
+                    "source": "source",
+                    "type": "type",
+                    "readonly": "read_only",
+                    "propagation": "propagation",
+                    "labels": "labels",
+                    "no_copy": "no_copy",
+                    "driver_config": "driver_config",
+                    "tmpfs_size": "tmpfs_size",
+                    "tmpfs_mode": "tmpfs_mode",
                 }
                 mount_args = {}
                 for option, mount_arg in mount_options.items():
@@ -1793,21 +1901,21 @@ class DockerService(DockerBaseClass):
             configs = []
             for config_config in self.configs:
                 config_args = {
-                    'config_id': config_config['config_id'],
-                    'config_name': config_config['config_name']
+                    "config_id": config_config["config_id"],
+                    "config_name": config_config["config_name"],
                 }
-                filename = config_config.get('filename')
+                filename = config_config.get("filename")
                 if filename:
-                    config_args['filename'] = filename
-                uid = config_config.get('uid')
+                    config_args["filename"] = filename
+                uid = config_config.get("uid")
                 if uid:
-                    config_args['uid'] = uid
-                gid = config_config.get('gid')
+                    config_args["uid"] = uid
+                gid = config_config.get("gid")
                 if gid:
-                    config_args['gid'] = gid
-                mode = config_config.get('mode')
+                    config_args["gid"] = gid
+                mode = config_config.get("mode")
                 if mode:
-                    config_args['mode'] = mode
+                    config_args["mode"] = mode
 
                 configs.append(types.ConfigReference(**config_args))
 
@@ -1816,92 +1924,92 @@ class DockerService(DockerBaseClass):
             secrets = []
             for secret_config in self.secrets:
                 secret_args = {
-                    'secret_id': secret_config['secret_id'],
-                    'secret_name': secret_config['secret_name']
+                    "secret_id": secret_config["secret_id"],
+                    "secret_name": secret_config["secret_name"],
                 }
-                filename = secret_config.get('filename')
+                filename = secret_config.get("filename")
                 if filename:
-                    secret_args['filename'] = filename
-                uid = secret_config.get('uid')
+                    secret_args["filename"] = filename
+                uid = secret_config.get("uid")
                 if uid:
-                    secret_args['uid'] = uid
-                gid = secret_config.get('gid')
+                    secret_args["uid"] = uid
+                gid = secret_config.get("gid")
                 if gid:
-                    secret_args['gid'] = gid
-                mode = secret_config.get('mode')
+                    secret_args["gid"] = gid
+                mode = secret_config.get("mode")
                 if mode:
-                    secret_args['mode'] = mode
+                    secret_args["mode"] = mode
 
                 secrets.append(types.SecretReference(**secret_args))
 
         dns_config_args = {}
         if self.dns is not None:
-            dns_config_args['nameservers'] = self.dns
+            dns_config_args["nameservers"] = self.dns
         if self.dns_search is not None:
-            dns_config_args['search'] = self.dns_search
+            dns_config_args["search"] = self.dns_search
         if self.dns_options is not None:
-            dns_config_args['options'] = self.dns_options
+            dns_config_args["options"] = self.dns_options
         dns_config = types.DNSConfig(**dns_config_args) if dns_config_args else None
 
         container_spec_args = {}
         if self.command is not None:
-            container_spec_args['command'] = self.command
+            container_spec_args["command"] = self.command
         if self.args is not None:
-            container_spec_args['args'] = self.args
+            container_spec_args["args"] = self.args
         if self.env is not None:
-            container_spec_args['env'] = self.env
+            container_spec_args["env"] = self.env
         if self.user is not None:
-            container_spec_args['user'] = self.user
+            container_spec_args["user"] = self.user
         if self.container_labels is not None:
-            container_spec_args['labels'] = self.container_labels
+            container_spec_args["labels"] = self.container_labels
         if self.sysctls is not None:
-            container_spec_args['sysctls'] = self.sysctls
+            container_spec_args["sysctls"] = self.sysctls
         if self.healthcheck is not None:
-            container_spec_args['healthcheck'] = types.Healthcheck(**self.healthcheck)
+            container_spec_args["healthcheck"] = types.Healthcheck(**self.healthcheck)
         elif self.healthcheck_disabled:
-            container_spec_args['healthcheck'] = types.Healthcheck(test=['NONE'])
+            container_spec_args["healthcheck"] = types.Healthcheck(test=["NONE"])
         if self.hostname is not None:
-            container_spec_args['hostname'] = self.hostname
+            container_spec_args["hostname"] = self.hostname
         if self.hosts is not None:
-            container_spec_args['hosts'] = self.hosts
+            container_spec_args["hosts"] = self.hosts
         if self.read_only is not None:
-            container_spec_args['read_only'] = self.read_only
+            container_spec_args["read_only"] = self.read_only
         if self.stop_grace_period is not None:
-            container_spec_args['stop_grace_period'] = self.stop_grace_period
+            container_spec_args["stop_grace_period"] = self.stop_grace_period
         if self.stop_signal is not None:
-            container_spec_args['stop_signal'] = self.stop_signal
+            container_spec_args["stop_signal"] = self.stop_signal
         if self.tty is not None:
-            container_spec_args['tty'] = self.tty
+            container_spec_args["tty"] = self.tty
         if self.groups is not None:
-            container_spec_args['groups'] = self.groups
+            container_spec_args["groups"] = self.groups
         if self.working_dir is not None:
-            container_spec_args['workdir'] = self.working_dir
+            container_spec_args["workdir"] = self.working_dir
         if secrets is not None:
-            container_spec_args['secrets'] = secrets
+            container_spec_args["secrets"] = secrets
         if mounts is not None:
-            container_spec_args['mounts'] = mounts
+            container_spec_args["mounts"] = mounts
         if dns_config is not None:
-            container_spec_args['dns_config'] = dns_config
+            container_spec_args["dns_config"] = dns_config
         if configs is not None:
-            container_spec_args['configs'] = configs
+            container_spec_args["configs"] = configs
         if self.init is not None:
-            container_spec_args['init'] = self.init
+            container_spec_args["init"] = self.init
         if self.cap_add is not None:
-            container_spec_args['cap_add'] = self.cap_add
+            container_spec_args["cap_add"] = self.cap_add
         if self.cap_drop is not None:
-            container_spec_args['cap_drop'] = self.cap_drop
+            container_spec_args["cap_drop"] = self.cap_drop
 
         return types.ContainerSpec(self.image, **container_spec_args)
 
     def build_placement(self):
         placement_args = {}
         if self.constraints is not None:
-            placement_args['constraints'] = self.constraints
+            placement_args["constraints"] = self.constraints
         if self.replicas_max_per_node is not None:
-            placement_args['maxreplicas'] = self.replicas_max_per_node
+            placement_args["maxreplicas"] = self.replicas_max_per_node
         if self.placement_preferences is not None:
-            placement_args['preferences'] = [
-                {key.title(): {'SpreadDescriptor': value}}
+            placement_args["preferences"] = [
+                {key.title(): {"SpreadDescriptor": value}}
                 for preference in self.placement_preferences
                 for key, value in preference.items()
             ]
@@ -1910,67 +2018,73 @@ class DockerService(DockerBaseClass):
     def build_update_config(self):
         update_config_args = {}
         if self.update_parallelism is not None:
-            update_config_args['parallelism'] = self.update_parallelism
+            update_config_args["parallelism"] = self.update_parallelism
         if self.update_delay is not None:
-            update_config_args['delay'] = self.update_delay
+            update_config_args["delay"] = self.update_delay
         if self.update_failure_action is not None:
-            update_config_args['failure_action'] = self.update_failure_action
+            update_config_args["failure_action"] = self.update_failure_action
         if self.update_monitor is not None:
-            update_config_args['monitor'] = self.update_monitor
+            update_config_args["monitor"] = self.update_monitor
         if self.update_max_failure_ratio is not None:
-            update_config_args['max_failure_ratio'] = self.update_max_failure_ratio
+            update_config_args["max_failure_ratio"] = self.update_max_failure_ratio
         if self.update_order is not None:
-            update_config_args['order'] = self.update_order
+            update_config_args["order"] = self.update_order
         return types.UpdateConfig(**update_config_args) if update_config_args else None
 
     def build_log_driver(self):
         log_driver_args = {}
         if self.log_driver is not None:
-            log_driver_args['name'] = self.log_driver
+            log_driver_args["name"] = self.log_driver
         if self.log_driver_options is not None:
-            log_driver_args['options'] = self.log_driver_options
+            log_driver_args["options"] = self.log_driver_options
         return types.DriverConfig(**log_driver_args) if log_driver_args else None
 
     def build_restart_policy(self):
         restart_policy_args = {}
         if self.restart_policy is not None:
-            restart_policy_args['condition'] = self.restart_policy
+            restart_policy_args["condition"] = self.restart_policy
         if self.restart_policy_delay is not None:
-            restart_policy_args['delay'] = self.restart_policy_delay
+            restart_policy_args["delay"] = self.restart_policy_delay
         if self.restart_policy_attempts is not None:
-            restart_policy_args['max_attempts'] = self.restart_policy_attempts
+            restart_policy_args["max_attempts"] = self.restart_policy_attempts
         if self.restart_policy_window is not None:
-            restart_policy_args['window'] = self.restart_policy_window
-        return types.RestartPolicy(**restart_policy_args) if restart_policy_args else None
+            restart_policy_args["window"] = self.restart_policy_window
+        return (
+            types.RestartPolicy(**restart_policy_args) if restart_policy_args else None
+        )
 
     def build_rollback_config(self):
         if self.rollback_config is None:
             return None
         rollback_config_options = [
-            'parallelism',
-            'delay',
-            'failure_action',
-            'monitor',
-            'max_failure_ratio',
-            'order',
+            "parallelism",
+            "delay",
+            "failure_action",
+            "monitor",
+            "max_failure_ratio",
+            "order",
         ]
         rollback_config_args = {}
         for option in rollback_config_options:
             value = self.rollback_config.get(option)
             if value is not None:
                 rollback_config_args[option] = value
-        return types.RollbackConfig(**rollback_config_args) if rollback_config_args else None
+        return (
+            types.RollbackConfig(**rollback_config_args)
+            if rollback_config_args
+            else None
+        )
 
     def build_resources(self):
         resources_args = {}
         if self.limit_cpu is not None:
-            resources_args['cpu_limit'] = int(self.limit_cpu * 1000000000.0)
+            resources_args["cpu_limit"] = int(self.limit_cpu * 1000000000.0)
         if self.limit_memory is not None:
-            resources_args['mem_limit'] = self.limit_memory
+            resources_args["mem_limit"] = self.limit_memory
         if self.reserve_cpu is not None:
-            resources_args['cpu_reservation'] = int(self.reserve_cpu * 1000000000.0)
+            resources_args["cpu_reservation"] = int(self.reserve_cpu * 1000000000.0)
         if self.reserve_memory is not None:
-            resources_args['mem_reservation'] = self.reserve_memory
+            resources_args["mem_reservation"] = self.reserve_memory
         return types.Resources(**resources_args) if resources_args else None
 
     def build_task_template(self, container_spec, placement=None):
@@ -1980,23 +2094,23 @@ class DockerService(DockerBaseClass):
 
         task_template_args = {}
         if placement is not None:
-            task_template_args['placement'] = placement
+            task_template_args["placement"] = placement
         if log_driver is not None:
-            task_template_args['log_driver'] = log_driver
+            task_template_args["log_driver"] = log_driver
         if restart_policy is not None:
-            task_template_args['restart_policy'] = restart_policy
+            task_template_args["restart_policy"] = restart_policy
         if resources is not None:
-            task_template_args['resources'] = resources
+            task_template_args["resources"] = resources
         if self.force_update:
-            task_template_args['force_update'] = self.force_update
+            task_template_args["force_update"] = self.force_update
         if self.can_use_task_template_networks:
             networks = self.build_networks()
             if networks:
-                task_template_args['networks'] = networks
+                task_template_args["networks"] = networks
         return types.TaskTemplate(container_spec=container_spec, **task_template_args)
 
     def build_service_mode(self):
-        if self.mode == 'global':
+        if self.mode == "global":
             self.replicas = None
         return types.ServiceMode(self.mode, replicas=self.replicas)
 
@@ -2005,11 +2119,11 @@ class DockerService(DockerBaseClass):
         if self.networks is not None:
             networks = []
             for network in self.networks:
-                docker_network = {'Target': network['id']}
-                if 'aliases' in network:
-                    docker_network['Aliases'] = network['aliases']
-                if 'options' in network:
-                    docker_network['DriverOpts'] = network['options']
+                docker_network = {"Target": network["id"]}
+                if "aliases" in network:
+                    docker_network["Aliases"] = network["aliases"]
+                if "options" in network:
+                    docker_network["DriverOpts"] = network["options"]
                 networks.append(docker_network)
         return networks
 
@@ -2019,17 +2133,17 @@ class DockerService(DockerBaseClass):
             ports = []
             for port in self.publish:
                 port_spec = {
-                    'Protocol': port['protocol'],
-                    'TargetPort': port['target_port']
+                    "Protocol": port["protocol"],
+                    "TargetPort": port["target_port"],
                 }
-                if port.get('published_port'):
-                    port_spec['PublishedPort'] = port['published_port']
-                if port.get('mode'):
-                    port_spec['PublishMode'] = port['mode']
+                if port.get("published_port"):
+                    port_spec["PublishedPort"] = port["published_port"]
+                if port.get("mode"):
+                    port_spec["PublishMode"] = port["mode"]
                 ports.append(port_spec)
-            endpoint_spec_args['ports'] = ports
+            endpoint_spec_args["ports"] = ports
         if self.endpoint_mode is not None:
-            endpoint_spec_args['mode'] = self.endpoint_mode
+            endpoint_spec_args["mode"] = self.endpoint_mode
         return types.EndpointSpec(**endpoint_spec_args) if endpoint_spec_args else None
 
     def build_docker_service(self):
@@ -2042,19 +2156,19 @@ class DockerService(DockerBaseClass):
         service_mode = self.build_service_mode()
         endpoint_spec = self.build_endpoint_spec()
 
-        service = {'task_template': task_template, 'mode': service_mode}
+        service = {"task_template": task_template, "mode": service_mode}
         if update_config:
-            service['update_config'] = update_config
+            service["update_config"] = update_config
         if rollback_config:
-            service['rollback_config'] = rollback_config
+            service["rollback_config"] = rollback_config
         if endpoint_spec:
-            service['endpoint_spec'] = endpoint_spec
+            service["endpoint_spec"] = endpoint_spec
         if self.labels:
-            service['labels'] = self.labels
+            service["labels"] = self.labels
         if not self.can_use_task_template_networks:
             networks = self.build_networks()
             if networks:
-                service['networks'] = networks
+                service["networks"] = networks
         return service
 
 
@@ -2070,213 +2184,233 @@ class DockerServiceManager(object):
             raw_data = self.client.inspect_service(name)
         except NotFound:
             return None
-        ds = DockerService(self.client.docker_api_version, self.client.docker_py_version)
+        ds = DockerService(
+            self.client.docker_api_version, self.client.docker_py_version
+        )
 
-        task_template_data = raw_data['Spec']['TaskTemplate']
-        ds.image = task_template_data['ContainerSpec']['Image']
-        ds.user = task_template_data['ContainerSpec'].get('User')
-        ds.env = task_template_data['ContainerSpec'].get('Env')
-        ds.command = task_template_data['ContainerSpec'].get('Command')
-        ds.args = task_template_data['ContainerSpec'].get('Args')
-        ds.groups = task_template_data['ContainerSpec'].get('Groups')
-        ds.stop_grace_period = task_template_data['ContainerSpec'].get('StopGracePeriod')
-        ds.stop_signal = task_template_data['ContainerSpec'].get('StopSignal')
-        ds.working_dir = task_template_data['ContainerSpec'].get('Dir')
-        ds.read_only = task_template_data['ContainerSpec'].get('ReadOnly')
-        ds.cap_add = task_template_data['ContainerSpec'].get('CapabilityAdd')
-        ds.cap_drop = task_template_data['ContainerSpec'].get('CapabilityDrop')
-        ds.sysctls = task_template_data['ContainerSpec'].get('Sysctls')
+        task_template_data = raw_data["Spec"]["TaskTemplate"]
+        ds.image = task_template_data["ContainerSpec"]["Image"]
+        ds.user = task_template_data["ContainerSpec"].get("User")
+        ds.env = task_template_data["ContainerSpec"].get("Env")
+        ds.command = task_template_data["ContainerSpec"].get("Command")
+        ds.args = task_template_data["ContainerSpec"].get("Args")
+        ds.groups = task_template_data["ContainerSpec"].get("Groups")
+        ds.stop_grace_period = task_template_data["ContainerSpec"].get(
+            "StopGracePeriod"
+        )
+        ds.stop_signal = task_template_data["ContainerSpec"].get("StopSignal")
+        ds.working_dir = task_template_data["ContainerSpec"].get("Dir")
+        ds.read_only = task_template_data["ContainerSpec"].get("ReadOnly")
+        ds.cap_add = task_template_data["ContainerSpec"].get("CapabilityAdd")
+        ds.cap_drop = task_template_data["ContainerSpec"].get("CapabilityDrop")
+        ds.sysctls = task_template_data["ContainerSpec"].get("Sysctls")
 
-        healthcheck_data = task_template_data['ContainerSpec'].get('Healthcheck')
+        healthcheck_data = task_template_data["ContainerSpec"].get("Healthcheck")
         if healthcheck_data:
             options = {
-                'Test': 'test',
-                'Interval': 'interval',
-                'Timeout': 'timeout',
-                'StartPeriod': 'start_period',
-                'Retries': 'retries'
+                "Test": "test",
+                "Interval": "interval",
+                "Timeout": "timeout",
+                "StartPeriod": "start_period",
+                "Retries": "retries",
             }
             healthcheck = dict(
-                (options[key], value) for key, value in healthcheck_data.items()
+                (options[key], value)
+                for key, value in healthcheck_data.items()
                 if value is not None and key in options
             )
             ds.healthcheck = healthcheck
 
-        update_config_data = raw_data['Spec'].get('UpdateConfig')
+        update_config_data = raw_data["Spec"].get("UpdateConfig")
         if update_config_data:
-            ds.update_delay = update_config_data.get('Delay')
-            ds.update_parallelism = update_config_data.get('Parallelism')
-            ds.update_failure_action = update_config_data.get('FailureAction')
-            ds.update_monitor = update_config_data.get('Monitor')
-            ds.update_max_failure_ratio = update_config_data.get('MaxFailureRatio')
-            ds.update_order = update_config_data.get('Order')
+            ds.update_delay = update_config_data.get("Delay")
+            ds.update_parallelism = update_config_data.get("Parallelism")
+            ds.update_failure_action = update_config_data.get("FailureAction")
+            ds.update_monitor = update_config_data.get("Monitor")
+            ds.update_max_failure_ratio = update_config_data.get("MaxFailureRatio")
+            ds.update_order = update_config_data.get("Order")
 
-        rollback_config_data = raw_data['Spec'].get('RollbackConfig')
+        rollback_config_data = raw_data["Spec"].get("RollbackConfig")
         if rollback_config_data:
             ds.rollback_config = {
-                'parallelism': rollback_config_data.get('Parallelism'),
-                'delay': rollback_config_data.get('Delay'),
-                'failure_action': rollback_config_data.get('FailureAction'),
-                'monitor': rollback_config_data.get('Monitor'),
-                'max_failure_ratio': rollback_config_data.get('MaxFailureRatio'),
-                'order': rollback_config_data.get('Order'),
+                "parallelism": rollback_config_data.get("Parallelism"),
+                "delay": rollback_config_data.get("Delay"),
+                "failure_action": rollback_config_data.get("FailureAction"),
+                "monitor": rollback_config_data.get("Monitor"),
+                "max_failure_ratio": rollback_config_data.get("MaxFailureRatio"),
+                "order": rollback_config_data.get("Order"),
             }
 
-        dns_config = task_template_data['ContainerSpec'].get('DNSConfig')
+        dns_config = task_template_data["ContainerSpec"].get("DNSConfig")
         if dns_config:
-            ds.dns = dns_config.get('Nameservers')
-            ds.dns_search = dns_config.get('Search')
-            ds.dns_options = dns_config.get('Options')
+            ds.dns = dns_config.get("Nameservers")
+            ds.dns_search = dns_config.get("Search")
+            ds.dns_options = dns_config.get("Options")
 
-        ds.hostname = task_template_data['ContainerSpec'].get('Hostname')
+        ds.hostname = task_template_data["ContainerSpec"].get("Hostname")
 
-        hosts = task_template_data['ContainerSpec'].get('Hosts')
+        hosts = task_template_data["ContainerSpec"].get("Hosts")
         if hosts:
             hosts = [
-                list(reversed(host.split(":", 1)))
-                if ":" in host
-                else host.split(" ", 1)
+                (
+                    list(reversed(host.split(":", 1)))
+                    if ":" in host
+                    else host.split(" ", 1)
+                )
                 for host in hosts
             ]
             ds.hosts = dict((hostname, ip) for ip, hostname in hosts)
-        ds.tty = task_template_data['ContainerSpec'].get('TTY')
+        ds.tty = task_template_data["ContainerSpec"].get("TTY")
 
-        placement = task_template_data.get('Placement')
+        placement = task_template_data.get("Placement")
         if placement:
-            ds.constraints = placement.get('Constraints')
-            ds.replicas_max_per_node = placement.get('MaxReplicas')
+            ds.constraints = placement.get("Constraints")
+            ds.replicas_max_per_node = placement.get("MaxReplicas")
             placement_preferences = []
-            for preference in placement.get('Preferences', []):
+            for preference in placement.get("Preferences", []):
                 placement_preferences.append(
                     dict(
-                        (key.lower(), value['SpreadDescriptor'])
+                        (key.lower(), value["SpreadDescriptor"])
                         for key, value in preference.items()
                     )
                 )
             ds.placement_preferences = placement_preferences or None
 
-        restart_policy_data = task_template_data.get('RestartPolicy')
+        restart_policy_data = task_template_data.get("RestartPolicy")
         if restart_policy_data:
-            ds.restart_policy = restart_policy_data.get('Condition')
-            ds.restart_policy_delay = restart_policy_data.get('Delay')
-            ds.restart_policy_attempts = restart_policy_data.get('MaxAttempts')
-            ds.restart_policy_window = restart_policy_data.get('Window')
+            ds.restart_policy = restart_policy_data.get("Condition")
+            ds.restart_policy_delay = restart_policy_data.get("Delay")
+            ds.restart_policy_attempts = restart_policy_data.get("MaxAttempts")
+            ds.restart_policy_window = restart_policy_data.get("Window")
 
-        raw_data_endpoint_spec = raw_data['Spec'].get('EndpointSpec')
+        raw_data_endpoint_spec = raw_data["Spec"].get("EndpointSpec")
         if raw_data_endpoint_spec:
-            ds.endpoint_mode = raw_data_endpoint_spec.get('Mode')
-            raw_data_ports = raw_data_endpoint_spec.get('Ports')
+            ds.endpoint_mode = raw_data_endpoint_spec.get("Mode")
+            raw_data_ports = raw_data_endpoint_spec.get("Ports")
             if raw_data_ports:
                 ds.publish = []
                 for port in raw_data_ports:
-                    ds.publish.append({
-                        'protocol': port['Protocol'],
-                        'mode': port.get('PublishMode', None),
-                        'published_port': port.get('PublishedPort', None),
-                        'target_port': int(port['TargetPort'])
-                    })
+                    ds.publish.append(
+                        {
+                            "protocol": port["Protocol"],
+                            "mode": port.get("PublishMode", None),
+                            "published_port": port.get("PublishedPort", None),
+                            "target_port": int(port["TargetPort"]),
+                        }
+                    )
 
-        raw_data_limits = task_template_data.get('Resources', {}).get('Limits')
+        raw_data_limits = task_template_data.get("Resources", {}).get("Limits")
         if raw_data_limits:
-            raw_cpu_limits = raw_data_limits.get('NanoCPUs')
+            raw_cpu_limits = raw_data_limits.get("NanoCPUs")
             if raw_cpu_limits:
                 ds.limit_cpu = float(raw_cpu_limits) / 1000000000
 
-            raw_memory_limits = raw_data_limits.get('MemoryBytes')
+            raw_memory_limits = raw_data_limits.get("MemoryBytes")
             if raw_memory_limits:
                 ds.limit_memory = int(raw_memory_limits)
 
-        raw_data_reservations = task_template_data.get('Resources', {}).get('Reservations')
+        raw_data_reservations = task_template_data.get("Resources", {}).get(
+            "Reservations"
+        )
         if raw_data_reservations:
-            raw_cpu_reservations = raw_data_reservations.get('NanoCPUs')
+            raw_cpu_reservations = raw_data_reservations.get("NanoCPUs")
             if raw_cpu_reservations:
                 ds.reserve_cpu = float(raw_cpu_reservations) / 1000000000
 
-            raw_memory_reservations = raw_data_reservations.get('MemoryBytes')
+            raw_memory_reservations = raw_data_reservations.get("MemoryBytes")
             if raw_memory_reservations:
                 ds.reserve_memory = int(raw_memory_reservations)
 
-        ds.labels = raw_data['Spec'].get('Labels')
-        ds.log_driver = task_template_data.get('LogDriver', {}).get('Name')
-        ds.log_driver_options = task_template_data.get('LogDriver', {}).get('Options')
-        ds.container_labels = task_template_data['ContainerSpec'].get('Labels')
+        ds.labels = raw_data["Spec"].get("Labels")
+        ds.log_driver = task_template_data.get("LogDriver", {}).get("Name")
+        ds.log_driver_options = task_template_data.get("LogDriver", {}).get("Options")
+        ds.container_labels = task_template_data["ContainerSpec"].get("Labels")
 
-        mode = raw_data['Spec']['Mode']
-        if 'Replicated' in mode.keys():
-            ds.mode = to_text('replicated', encoding='utf-8')
-            ds.replicas = mode['Replicated']['Replicas']
-        elif 'Global' in mode.keys():
-            ds.mode = 'global'
-        elif 'ReplicatedJob' in mode.keys():
-            ds.mode = to_text('replicated-job', encoding='utf-8')
-            ds.replicas = mode['ReplicatedJob']['TotalCompletions']
+        mode = raw_data["Spec"]["Mode"]
+        if "Replicated" in mode.keys():
+            ds.mode = to_text("replicated", encoding="utf-8")
+            ds.replicas = mode["Replicated"]["Replicas"]
+        elif "Global" in mode.keys():
+            ds.mode = "global"
+        elif "ReplicatedJob" in mode.keys():
+            ds.mode = to_text("replicated-job", encoding="utf-8")
+            ds.replicas = mode["ReplicatedJob"]["TotalCompletions"]
         else:
-            raise Exception(f'Unknown service mode: {mode}')
+            raise Exception(f"Unknown service mode: {mode}")
 
-        raw_data_mounts = task_template_data['ContainerSpec'].get('Mounts')
+        raw_data_mounts = task_template_data["ContainerSpec"].get("Mounts")
         if raw_data_mounts:
             ds.mounts = []
             for mount_data in raw_data_mounts:
-                bind_options = mount_data.get('BindOptions', {})
-                volume_options = mount_data.get('VolumeOptions', {})
-                tmpfs_options = mount_data.get('TmpfsOptions', {})
-                driver_config = volume_options.get('DriverConfig', {})
-                driver_config = dict(
-                    (key.lower(), value) for key, value in driver_config.items()
-                ) or None
-                ds.mounts.append({
-                    'source': mount_data.get('Source', ''),
-                    'type': mount_data['Type'],
-                    'target': mount_data['Target'],
-                    'readonly': mount_data.get('ReadOnly'),
-                    'propagation': bind_options.get('Propagation'),
-                    'no_copy': volume_options.get('NoCopy'),
-                    'labels': volume_options.get('Labels'),
-                    'driver_config': driver_config,
-                    'tmpfs_mode': tmpfs_options.get('Mode'),
-                    'tmpfs_size': tmpfs_options.get('SizeBytes'),
-                })
+                bind_options = mount_data.get("BindOptions", {})
+                volume_options = mount_data.get("VolumeOptions", {})
+                tmpfs_options = mount_data.get("TmpfsOptions", {})
+                driver_config = volume_options.get("DriverConfig", {})
+                driver_config = (
+                    dict((key.lower(), value) for key, value in driver_config.items())
+                    or None
+                )
+                ds.mounts.append(
+                    {
+                        "source": mount_data.get("Source", ""),
+                        "type": mount_data["Type"],
+                        "target": mount_data["Target"],
+                        "readonly": mount_data.get("ReadOnly"),
+                        "propagation": bind_options.get("Propagation"),
+                        "no_copy": volume_options.get("NoCopy"),
+                        "labels": volume_options.get("Labels"),
+                        "driver_config": driver_config,
+                        "tmpfs_mode": tmpfs_options.get("Mode"),
+                        "tmpfs_size": tmpfs_options.get("SizeBytes"),
+                    }
+                )
 
-        raw_data_configs = task_template_data['ContainerSpec'].get('Configs')
+        raw_data_configs = task_template_data["ContainerSpec"].get("Configs")
         if raw_data_configs:
             ds.configs = []
             for config_data in raw_data_configs:
-                ds.configs.append({
-                    'config_id': config_data['ConfigID'],
-                    'config_name': config_data['ConfigName'],
-                    'filename': config_data['File'].get('Name'),
-                    'uid': config_data['File'].get('UID'),
-                    'gid': config_data['File'].get('GID'),
-                    'mode': config_data['File'].get('Mode')
-                })
+                ds.configs.append(
+                    {
+                        "config_id": config_data["ConfigID"],
+                        "config_name": config_data["ConfigName"],
+                        "filename": config_data["File"].get("Name"),
+                        "uid": config_data["File"].get("UID"),
+                        "gid": config_data["File"].get("GID"),
+                        "mode": config_data["File"].get("Mode"),
+                    }
+                )
 
-        raw_data_secrets = task_template_data['ContainerSpec'].get('Secrets')
+        raw_data_secrets = task_template_data["ContainerSpec"].get("Secrets")
         if raw_data_secrets:
             ds.secrets = []
             for secret_data in raw_data_secrets:
-                ds.secrets.append({
-                    'secret_id': secret_data['SecretID'],
-                    'secret_name': secret_data['SecretName'],
-                    'filename': secret_data['File'].get('Name'),
-                    'uid': secret_data['File'].get('UID'),
-                    'gid': secret_data['File'].get('GID'),
-                    'mode': secret_data['File'].get('Mode')
-                })
+                ds.secrets.append(
+                    {
+                        "secret_id": secret_data["SecretID"],
+                        "secret_name": secret_data["SecretName"],
+                        "filename": secret_data["File"].get("Name"),
+                        "uid": secret_data["File"].get("UID"),
+                        "gid": secret_data["File"].get("GID"),
+                        "mode": secret_data["File"].get("Mode"),
+                    }
+                )
 
-        raw_networks_data = task_template_data.get('Networks', raw_data['Spec'].get('Networks'))
+        raw_networks_data = task_template_data.get(
+            "Networks", raw_data["Spec"].get("Networks")
+        )
         if raw_networks_data:
             ds.networks = []
             for network_data in raw_networks_data:
-                network = {'id': network_data['Target']}
-                if 'Aliases' in network_data:
-                    network['aliases'] = network_data['Aliases']
-                if 'DriverOpts' in network_data:
-                    network['options'] = network_data['DriverOpts']
+                network = {"id": network_data["Target"]}
+                if "Aliases" in network_data:
+                    network["aliases"] = network_data["Aliases"]
+                if "DriverOpts" in network_data:
+                    network["options"] = network_data["DriverOpts"]
                 ds.networks.append(network)
-        ds.service_version = raw_data['Version']['Index']
-        ds.service_id = raw_data['ID']
+        ds.service_version = raw_data["Version"]["Index"]
+        ds.service_id = raw_data["ID"]
 
-        ds.init = task_template_data['ContainerSpec'].get('Init', False)
+        ds.init = task_template_data["ContainerSpec"].get("Init", False)
         return ds
 
     def update_service(self, name, old_service, new_service):
@@ -2285,37 +2419,34 @@ class DockerServiceManager(object):
             old_service.service_id,
             old_service.service_version,
             name=name,
-            **service_data
+            **service_data,
         )
         # Prior to Docker SDK 4.0.0 no warnings were returned and will thus be ignored.
         # (see https://github.com/docker/docker-py/pull/2272)
-        self.client.report_warnings(result, ['Warning'])
+        self.client.report_warnings(result, ["Warning"])
 
     def create_service(self, name, service):
         service_data = service.build_docker_service()
         result = self.client.create_service(name=name, **service_data)
-        self.client.report_warnings(result, ['Warning'])
+        self.client.report_warnings(result, ["Warning"])
 
     def remove_service(self, name):
         self.client.remove_service(name)
 
     def get_image_digest(self, name, resolve=False):
-        if (
-            not name
-            or not resolve
-        ):
+        if not name or not resolve:
             return name
         repo, tag = parse_repository_tag(name)
         if not tag:
-            tag = 'latest'
-        name = repo + ':' + tag
+            tag = "latest"
+        name = repo + ":" + tag
         distribution_data = self.client.inspect_distribution(name)
-        digest = distribution_data['Descriptor']['digest']
-        return f'{name}@{digest}'
+        digest = distribution_data["Descriptor"]["digest"]
+        return f"{name}@{digest}"
 
     def get_networks_names_ids(self):
         return dict(
-            (network['Name'], network['Id']) for network in self.client.networks()
+            (network["Name"], network["Id"]) for network in self.client.networks()
         )
 
     def get_missing_secret_ids(self):
@@ -2323,23 +2454,21 @@ class DockerServiceManager(object):
         Resolve missing secret ids by looking them up by name
         """
         secret_names = [
-            secret['secret_name']
-            for secret in self.client.module.params.get('secrets') or []
-            if secret['secret_id'] is None
+            secret["secret_name"]
+            for secret in self.client.module.params.get("secrets") or []
+            if secret["secret_id"] is None
         ]
         if not secret_names:
             return {}
-        secrets = self.client.secrets(filters={'name': secret_names})
+        secrets = self.client.secrets(filters={"name": secret_names})
         secrets = dict(
-            (secret['Spec']['Name'], secret['ID'])
+            (secret["Spec"]["Name"], secret["ID"])
             for secret in secrets
-            if secret['Spec']['Name'] in secret_names
+            if secret["Spec"]["Name"] in secret_names
         )
         for secret_name in secret_names:
             if secret_name not in secrets:
-                self.client.fail(
-                    f'Could not find a secret named "{secret_name}"'
-                )
+                self.client.fail(f'Could not find a secret named "{secret_name}"')
         return secrets
 
     def get_missing_config_ids(self):
@@ -2347,42 +2476,37 @@ class DockerServiceManager(object):
         Resolve missing config ids by looking them up by name
         """
         config_names = [
-            config['config_name']
-            for config in self.client.module.params.get('configs') or []
-            if config['config_id'] is None
+            config["config_name"]
+            for config in self.client.module.params.get("configs") or []
+            if config["config_id"] is None
         ]
         if not config_names:
             return {}
-        configs = self.client.configs(filters={'name': config_names})
+        configs = self.client.configs(filters={"name": config_names})
         configs = dict(
-            (config['Spec']['Name'], config['ID'])
+            (config["Spec"]["Name"], config["ID"])
             for config in configs
-            if config['Spec']['Name'] in config_names
+            if config["Spec"]["Name"] in config_names
         )
         for config_name in config_names:
             if config_name not in configs:
-                self.client.fail(
-                    f'Could not find a config named "{config_name}"'
-                )
+                self.client.fail(f'Could not find a config named "{config_name}"')
         return configs
 
     def run(self):
         self.diff_tracker = DifferenceTracker()
         module = self.client.module
 
-        image = module.params['image']
+        image = module.params["image"]
         try:
             image_digest = self.get_image_digest(
-                name=image,
-                resolve=module.params['resolve_image']
+                name=image, resolve=module.params["resolve_image"]
             )
         except DockerException as e:
-            self.client.fail(
-                f'Error looking for an image named {image}: {e}'
-            )
+            self.client.fail(f"Error looking for an image named {image}: {e}")
 
         try:
-            current_service = self.get_service(module.params['name'])
+            current_service = self.get_service(module.params["name"])
         except Exception as e:
             self.client.fail(
                 f"Error looking for service named {module.params['name']}: {e}"
@@ -2401,21 +2525,19 @@ class DockerServiceManager(object):
                 self.client,
             )
         except Exception as e:
-            return self.client.fail(
-                f'Error parsing module parameters: {e}'
-            )
+            return self.client.fail(f"Error parsing module parameters: {e}")
 
         changed = False
-        msg = 'noop'
+        msg = "noop"
         rebuilt = False
         differences = DifferenceTracker()
         facts = {}
 
         if current_service:
-            if module.params['state'] == 'absent':
+            if module.params["state"] == "absent":
                 if not module.check_mode:
-                    self.remove_service(module.params['name'])
-                msg = 'Service removed'
+                    self.remove_service(module.params["name"])
+                msg = "Service removed"
                 changed = True
             else:
                 changed, differences, need_rebuild, force_update = new_service.compare(
@@ -2425,43 +2547,36 @@ class DockerServiceManager(object):
                     self.diff_tracker.merge(differences)
                     if need_rebuild:
                         if not module.check_mode:
-                            self.remove_service(module.params['name'])
-                            self.create_service(
-                                module.params['name'],
-                                new_service
-                            )
-                        msg = 'Service rebuilt'
+                            self.remove_service(module.params["name"])
+                            self.create_service(module.params["name"], new_service)
+                        msg = "Service rebuilt"
                         rebuilt = True
                     else:
                         if not module.check_mode:
                             self.update_service(
-                                module.params['name'],
-                                current_service,
-                                new_service
+                                module.params["name"], current_service, new_service
                             )
-                        msg = 'Service updated'
+                        msg = "Service updated"
                         rebuilt = False
                 else:
                     if force_update:
                         if not module.check_mode:
                             self.update_service(
-                                module.params['name'],
-                                current_service,
-                                new_service
+                                module.params["name"], current_service, new_service
                             )
-                        msg = 'Service forcefully updated'
+                        msg = "Service forcefully updated"
                         rebuilt = False
                         changed = True
                     else:
-                        msg = 'Service unchanged'
+                        msg = "Service unchanged"
                 facts = new_service.get_facts()
         else:
-            if module.params['state'] == 'absent':
-                msg = 'Service absent'
+            if module.params["state"] == "absent":
+                msg = "Service absent"
             else:
                 if not module.check_mode:
-                    self.create_service(module.params['name'], new_service)
-                msg = 'Service created'
+                    self.create_service(module.params["name"], new_service)
+                msg = "Service created"
                 changed = True
                 facts = new_service.get_facts()
 
@@ -2474,7 +2589,7 @@ class DockerServiceManager(object):
             except APIError as e:
                 # Sometimes Version.Index will have changed between an inspect and
                 # update. If this is encountered we'll retry the update.
-                if self.retries > 0 and 'update out of sequence' in str(e.explanation):
+                if self.retries > 0 and "update out of sequence" in str(e.explanation):
                     self.retries -= 1
                     time.sleep(1)
                 else:
@@ -2482,291 +2597,331 @@ class DockerServiceManager(object):
 
 
 def _detect_publish_mode_usage(client):
-    for publish_def in client.module.params['publish'] or []:
-        if publish_def.get('mode'):
+    for publish_def in client.module.params["publish"] or []:
+        if publish_def.get("mode"):
             return True
     return False
 
 
 def _detect_healthcheck_start_period(client):
-    if client.module.params['healthcheck']:
-        return client.module.params['healthcheck']['start_period'] is not None
+    if client.module.params["healthcheck"]:
+        return client.module.params["healthcheck"]["start_period"] is not None
     return False
 
 
 def _detect_mount_tmpfs_usage(client):
-    for mount in client.module.params['mounts'] or []:
-        if mount.get('type') == 'tmpfs':
+    for mount in client.module.params["mounts"] or []:
+        if mount.get("type") == "tmpfs":
             return True
-        if mount.get('tmpfs_size') is not None:
+        if mount.get("tmpfs_size") is not None:
             return True
-        if mount.get('tmpfs_mode') is not None:
+        if mount.get("tmpfs_mode") is not None:
             return True
     return False
 
 
 def _detect_update_config_failure_action_rollback(client):
-    rollback_config_failure_action = (
-        (client.module.params['update_config'] or {}).get('failure_action')
+    rollback_config_failure_action = (client.module.params["update_config"] or {}).get(
+        "failure_action"
     )
-    return rollback_config_failure_action == 'rollback'
+    return rollback_config_failure_action == "rollback"
 
 
 def main():
     argument_spec = dict(
-        name=dict(type='str', required=True),
-        image=dict(type='str'),
-        state=dict(type='str', default='present', choices=['present', 'absent']),
-        mounts=dict(type='list', elements='dict', options=dict(
-            source=dict(type='str'),
-            target=dict(type='str', required=True),
-            type=dict(
-                type='str',
-                default='bind',
-                choices=['bind', 'volume', 'tmpfs', 'npipe'],
+        name=dict(type="str", required=True),
+        image=dict(type="str"),
+        state=dict(type="str", default="present", choices=["present", "absent"]),
+        mounts=dict(
+            type="list",
+            elements="dict",
+            options=dict(
+                source=dict(type="str"),
+                target=dict(type="str", required=True),
+                type=dict(
+                    type="str",
+                    default="bind",
+                    choices=["bind", "volume", "tmpfs", "npipe"],
+                ),
+                readonly=dict(type="bool"),
+                labels=dict(type="dict"),
+                propagation=dict(
+                    type="str",
+                    choices=[
+                        "shared",
+                        "slave",
+                        "private",
+                        "rshared",
+                        "rslave",
+                        "rprivate",
+                    ],
+                ),
+                no_copy=dict(type="bool"),
+                driver_config=dict(
+                    type="dict",
+                    options=dict(name=dict(type="str"), options=dict(type="dict")),
+                ),
+                tmpfs_size=dict(type="str"),
+                tmpfs_mode=dict(type="int"),
             ),
-            readonly=dict(type='bool'),
-            labels=dict(type='dict'),
-            propagation=dict(
-                type='str',
-                choices=[
-                    'shared',
-                    'slave',
-                    'private',
-                    'rshared',
-                    'rslave',
-                    'rprivate'
-                ]
-            ),
-            no_copy=dict(type='bool'),
-            driver_config=dict(type='dict', options=dict(
-                name=dict(type='str'),
-                options=dict(type='dict')
-            )),
-            tmpfs_size=dict(type='str'),
-            tmpfs_mode=dict(type='int')
-        )),
-        configs=dict(type='list', elements='dict', options=dict(
-            config_id=dict(type='str'),
-            config_name=dict(type='str', required=True),
-            filename=dict(type='str'),
-            uid=dict(type='str'),
-            gid=dict(type='str'),
-            mode=dict(type='int'),
-        )),
-        secrets=dict(type='list', elements='dict', no_log=False, options=dict(
-            secret_id=dict(type='str', no_log=False),
-            secret_name=dict(type='str', required=True, no_log=False),
-            filename=dict(type='str'),
-            uid=dict(type='str'),
-            gid=dict(type='str'),
-            mode=dict(type='int'),
-        )),
-        networks=dict(type='list', elements='raw'),
-        command=dict(type='raw'),
-        args=dict(type='list', elements='str'),
-        env=dict(type='raw'),
-        env_files=dict(type='list', elements='path'),
-        force_update=dict(type='bool', default=False),
-        groups=dict(type='list', elements='str'),
-        logging=dict(type='dict', options=dict(
-            driver=dict(type='str'),
-            options=dict(type='dict'),
-        )),
-        publish=dict(type='list', elements='dict', options=dict(
-            published_port=dict(type='int', required=False),
-            target_port=dict(type='int', required=True),
-            protocol=dict(type='str', default='tcp', choices=['tcp', 'udp']),
-            mode=dict(type='str', choices=['ingress', 'host']),
-        )),
-        placement=dict(type='dict', options=dict(
-            constraints=dict(type='list', elements='str'),
-            preferences=dict(type='list', elements='dict'),
-            replicas_max_per_node=dict(type='int'),
-        )),
-        tty=dict(type='bool'),
-        dns=dict(type='list', elements='str'),
-        dns_search=dict(type='list', elements='str'),
-        dns_options=dict(type='list', elements='str'),
-        healthcheck=dict(type='dict', options=dict(
-            test=dict(type='raw'),
-            interval=dict(type='str'),
-            timeout=dict(type='str'),
-            start_period=dict(type='str'),
-            retries=dict(type='int'),
-        )),
-        hostname=dict(type='str'),
-        hosts=dict(type='dict'),
-        labels=dict(type='dict'),
-        container_labels=dict(type='dict'),
-        sysctls=dict(type='dict'),
-        mode=dict(
-            type='str',
-            default='replicated',
-            choices=['replicated', 'global', 'replicated-job']
         ),
-        replicas=dict(type='int', default=-1),
-        endpoint_mode=dict(type='str', choices=['vip', 'dnsrr']),
-        stop_grace_period=dict(type='str'),
-        stop_signal=dict(type='str'),
-        limits=dict(type='dict', options=dict(
-            cpus=dict(type='float'),
-            memory=dict(type='str'),
-        )),
-        read_only=dict(type='bool'),
-        reservations=dict(type='dict', options=dict(
-            cpus=dict(type='float'),
-            memory=dict(type='str'),
-        )),
-        resolve_image=dict(type='bool', default=False),
-        restart_config=dict(type='dict', options=dict(
-            condition=dict(type='str', choices=['none', 'on-failure', 'any']),
-            delay=dict(type='str'),
-            max_attempts=dict(type='int'),
-            window=dict(type='str'),
-        )),
-        rollback_config=dict(type='dict', options=dict(
-            parallelism=dict(type='int'),
-            delay=dict(type='str'),
-            failure_action=dict(
-                type='str',
-                choices=['continue', 'pause']
+        configs=dict(
+            type="list",
+            elements="dict",
+            options=dict(
+                config_id=dict(type="str"),
+                config_name=dict(type="str", required=True),
+                filename=dict(type="str"),
+                uid=dict(type="str"),
+                gid=dict(type="str"),
+                mode=dict(type="int"),
             ),
-            monitor=dict(type='str'),
-            max_failure_ratio=dict(type='float'),
-            order=dict(type='str'),
-        )),
-        update_config=dict(type='dict', options=dict(
-            parallelism=dict(type='int'),
-            delay=dict(type='str'),
-            failure_action=dict(
-                type='str',
-                choices=['continue', 'pause', 'rollback']
+        ),
+        secrets=dict(
+            type="list",
+            elements="dict",
+            no_log=False,
+            options=dict(
+                secret_id=dict(type="str", no_log=False),
+                secret_name=dict(type="str", required=True, no_log=False),
+                filename=dict(type="str"),
+                uid=dict(type="str"),
+                gid=dict(type="str"),
+                mode=dict(type="int"),
             ),
-            monitor=dict(type='str'),
-            max_failure_ratio=dict(type='float'),
-            order=dict(type='str'),
-        )),
-        user=dict(type='str'),
-        working_dir=dict(type='str'),
-        init=dict(type='bool'),
-        cap_add=dict(type='list', elements='str'),
-        cap_drop=dict(type='list', elements='str'),
+        ),
+        networks=dict(type="list", elements="raw"),
+        command=dict(type="raw"),
+        args=dict(type="list", elements="str"),
+        env=dict(type="raw"),
+        env_files=dict(type="list", elements="path"),
+        force_update=dict(type="bool", default=False),
+        groups=dict(type="list", elements="str"),
+        logging=dict(
+            type="dict",
+            options=dict(
+                driver=dict(type="str"),
+                options=dict(type="dict"),
+            ),
+        ),
+        publish=dict(
+            type="list",
+            elements="dict",
+            options=dict(
+                published_port=dict(type="int", required=False),
+                target_port=dict(type="int", required=True),
+                protocol=dict(type="str", default="tcp", choices=["tcp", "udp"]),
+                mode=dict(type="str", choices=["ingress", "host"]),
+            ),
+        ),
+        placement=dict(
+            type="dict",
+            options=dict(
+                constraints=dict(type="list", elements="str"),
+                preferences=dict(type="list", elements="dict"),
+                replicas_max_per_node=dict(type="int"),
+            ),
+        ),
+        tty=dict(type="bool"),
+        dns=dict(type="list", elements="str"),
+        dns_search=dict(type="list", elements="str"),
+        dns_options=dict(type="list", elements="str"),
+        healthcheck=dict(
+            type="dict",
+            options=dict(
+                test=dict(type="raw"),
+                interval=dict(type="str"),
+                timeout=dict(type="str"),
+                start_period=dict(type="str"),
+                retries=dict(type="int"),
+            ),
+        ),
+        hostname=dict(type="str"),
+        hosts=dict(type="dict"),
+        labels=dict(type="dict"),
+        container_labels=dict(type="dict"),
+        sysctls=dict(type="dict"),
+        mode=dict(
+            type="str",
+            default="replicated",
+            choices=["replicated", "global", "replicated-job"],
+        ),
+        replicas=dict(type="int", default=-1),
+        endpoint_mode=dict(type="str", choices=["vip", "dnsrr"]),
+        stop_grace_period=dict(type="str"),
+        stop_signal=dict(type="str"),
+        limits=dict(
+            type="dict",
+            options=dict(
+                cpus=dict(type="float"),
+                memory=dict(type="str"),
+            ),
+        ),
+        read_only=dict(type="bool"),
+        reservations=dict(
+            type="dict",
+            options=dict(
+                cpus=dict(type="float"),
+                memory=dict(type="str"),
+            ),
+        ),
+        resolve_image=dict(type="bool", default=False),
+        restart_config=dict(
+            type="dict",
+            options=dict(
+                condition=dict(type="str", choices=["none", "on-failure", "any"]),
+                delay=dict(type="str"),
+                max_attempts=dict(type="int"),
+                window=dict(type="str"),
+            ),
+        ),
+        rollback_config=dict(
+            type="dict",
+            options=dict(
+                parallelism=dict(type="int"),
+                delay=dict(type="str"),
+                failure_action=dict(type="str", choices=["continue", "pause"]),
+                monitor=dict(type="str"),
+                max_failure_ratio=dict(type="float"),
+                order=dict(type="str"),
+            ),
+        ),
+        update_config=dict(
+            type="dict",
+            options=dict(
+                parallelism=dict(type="int"),
+                delay=dict(type="str"),
+                failure_action=dict(
+                    type="str", choices=["continue", "pause", "rollback"]
+                ),
+                monitor=dict(type="str"),
+                max_failure_ratio=dict(type="float"),
+                order=dict(type="str"),
+            ),
+        ),
+        user=dict(type="str"),
+        working_dir=dict(type="str"),
+        init=dict(type="bool"),
+        cap_add=dict(type="list", elements="str"),
+        cap_drop=dict(type="list", elements="str"),
     )
 
     option_minimal_versions = dict(
-        dns=dict(docker_py_version='2.6.0'),
-        dns_options=dict(docker_py_version='2.6.0'),
-        dns_search=dict(docker_py_version='2.6.0'),
-        endpoint_mode=dict(docker_py_version='3.0.0'),
-        force_update=dict(docker_py_version='2.1.0'),
-        healthcheck=dict(docker_py_version='2.6.0'),
-        hostname=dict(docker_py_version='2.2.0'),
-        hosts=dict(docker_py_version='2.6.0'),
-        groups=dict(docker_py_version='2.6.0'),
-        tty=dict(docker_py_version='2.4.0'),
-        secrets=dict(docker_py_version='2.4.0'),
-        configs=dict(docker_py_version='2.6.0', docker_api_version='1.30'),
-        stop_signal=dict(docker_py_version='2.6.0', docker_api_version='1.28'),
-        publish=dict(docker_py_version='3.0.0'),
-        read_only=dict(docker_py_version='2.6.0', docker_api_version='1.28'),
-        resolve_image=dict(docker_api_version='1.30', docker_py_version='3.2.0'),
-        rollback_config=dict(docker_py_version='3.5.0', docker_api_version='1.28'),
-        init=dict(docker_py_version='4.0.0', docker_api_version='1.37'),
-        cap_add=dict(docker_py_version='5.0.3', docker_api_version='1.41'),
-        cap_drop=dict(docker_py_version='5.0.3', docker_api_version='1.41'),
-        sysctls=dict(docker_py_version='6.0.0', docker_api_version='1.40'),
+        dns=dict(docker_py_version="2.6.0"),
+        dns_options=dict(docker_py_version="2.6.0"),
+        dns_search=dict(docker_py_version="2.6.0"),
+        endpoint_mode=dict(docker_py_version="3.0.0"),
+        force_update=dict(docker_py_version="2.1.0"),
+        healthcheck=dict(docker_py_version="2.6.0"),
+        hostname=dict(docker_py_version="2.2.0"),
+        hosts=dict(docker_py_version="2.6.0"),
+        groups=dict(docker_py_version="2.6.0"),
+        tty=dict(docker_py_version="2.4.0"),
+        secrets=dict(docker_py_version="2.4.0"),
+        configs=dict(docker_py_version="2.6.0", docker_api_version="1.30"),
+        stop_signal=dict(docker_py_version="2.6.0", docker_api_version="1.28"),
+        publish=dict(docker_py_version="3.0.0"),
+        read_only=dict(docker_py_version="2.6.0", docker_api_version="1.28"),
+        resolve_image=dict(docker_api_version="1.30", docker_py_version="3.2.0"),
+        rollback_config=dict(docker_py_version="3.5.0", docker_api_version="1.28"),
+        init=dict(docker_py_version="4.0.0", docker_api_version="1.37"),
+        cap_add=dict(docker_py_version="5.0.3", docker_api_version="1.41"),
+        cap_drop=dict(docker_py_version="5.0.3", docker_api_version="1.41"),
+        sysctls=dict(docker_py_version="6.0.0", docker_api_version="1.40"),
         # specials
         publish_mode=dict(
-            docker_py_version='3.0.0',
+            docker_py_version="3.0.0",
             detect_usage=_detect_publish_mode_usage,
-            usage_msg='set publish.mode'
+            usage_msg="set publish.mode",
         ),
         healthcheck_start_period=dict(
-            docker_py_version='2.6.0',
-            docker_api_version='1.29',
+            docker_py_version="2.6.0",
+            docker_api_version="1.29",
             detect_usage=_detect_healthcheck_start_period,
-            usage_msg='set healthcheck.start_period'
+            usage_msg="set healthcheck.start_period",
         ),
         update_config_max_failure_ratio=dict(
-            docker_py_version='2.1.0',
-            detect_usage=lambda c: (c.module.params['update_config'] or {}).get(
-                'max_failure_ratio'
-            ) is not None,
-            usage_msg='set update_config.max_failure_ratio'
+            docker_py_version="2.1.0",
+            detect_usage=lambda c: (c.module.params["update_config"] or {}).get(
+                "max_failure_ratio"
+            )
+            is not None,
+            usage_msg="set update_config.max_failure_ratio",
         ),
         update_config_failure_action=dict(
-            docker_py_version='3.5.0',
-            docker_api_version='1.28',
+            docker_py_version="3.5.0",
+            docker_api_version="1.28",
             detect_usage=_detect_update_config_failure_action_rollback,
-            usage_msg='set update_config.failure_action.rollback'
+            usage_msg="set update_config.failure_action.rollback",
         ),
         update_config_monitor=dict(
-            docker_py_version='2.1.0',
-            detect_usage=lambda c: (c.module.params['update_config'] or {}).get(
-                'monitor'
-            ) is not None,
-            usage_msg='set update_config.monitor'
+            docker_py_version="2.1.0",
+            detect_usage=lambda c: (c.module.params["update_config"] or {}).get(
+                "monitor"
+            )
+            is not None,
+            usage_msg="set update_config.monitor",
         ),
         update_config_order=dict(
-            docker_py_version='2.7.0',
-            docker_api_version='1.29',
-            detect_usage=lambda c: (c.module.params['update_config'] or {}).get(
-                'order'
-            ) is not None,
-            usage_msg='set update_config.order'
+            docker_py_version="2.7.0",
+            docker_api_version="1.29",
+            detect_usage=lambda c: (c.module.params["update_config"] or {}).get("order")
+            is not None,
+            usage_msg="set update_config.order",
         ),
         placement_config_preferences=dict(
-            docker_py_version='2.4.0',
-            docker_api_version='1.27',
-            detect_usage=lambda c: (c.module.params['placement'] or {}).get(
-                'preferences'
-            ) is not None,
-            usage_msg='set placement.preferences'
+            docker_py_version="2.4.0",
+            docker_api_version="1.27",
+            detect_usage=lambda c: (c.module.params["placement"] or {}).get(
+                "preferences"
+            )
+            is not None,
+            usage_msg="set placement.preferences",
         ),
         placement_config_constraints=dict(
-            docker_py_version='2.4.0',
-            detect_usage=lambda c: (c.module.params['placement'] or {}).get(
-                'constraints'
-            ) is not None,
-            usage_msg='set placement.constraints'
+            docker_py_version="2.4.0",
+            detect_usage=lambda c: (c.module.params["placement"] or {}).get(
+                "constraints"
+            )
+            is not None,
+            usage_msg="set placement.constraints",
         ),
         placement_config_replicas_max_per_node=dict(
-            docker_py_version='4.4.3',
-            docker_api_version='1.40',
-            detect_usage=lambda c: (c.module.params['placement'] or {}).get(
-                'replicas_max_per_node'
-            ) is not None,
-            usage_msg='set placement.replicas_max_per_node'
+            docker_py_version="4.4.3",
+            docker_api_version="1.40",
+            detect_usage=lambda c: (c.module.params["placement"] or {}).get(
+                "replicas_max_per_node"
+            )
+            is not None,
+            usage_msg="set placement.replicas_max_per_node",
         ),
         mounts_tmpfs=dict(
-            docker_py_version='2.6.0',
+            docker_py_version="2.6.0",
             detect_usage=_detect_mount_tmpfs_usage,
-            usage_msg='set mounts.tmpfs'
+            usage_msg="set mounts.tmpfs",
         ),
         rollback_config_order=dict(
-            docker_api_version='1.29',
-            detect_usage=lambda c: (c.module.params['rollback_config'] or {}).get(
-                'order'
-            ) is not None,
-            usage_msg='set rollback_config.order'
+            docker_api_version="1.29",
+            detect_usage=lambda c: (c.module.params["rollback_config"] or {}).get(
+                "order"
+            )
+            is not None,
+            usage_msg="set rollback_config.order",
         ),
         mode_replicated_job=dict(
-            docker_py_version='6.0.0',
-            docker_api_version='1.41',
-            detect_usage=lambda c: c.module.params.get('mode') == 'replicated-job',
-            usage_msg='set mode'
+            docker_py_version="6.0.0",
+            docker_api_version="1.41",
+            detect_usage=lambda c: c.module.params.get("mode") == "replicated-job",
+            usage_msg="set mode",
         ),
     )
-    required_if = [
-        ('state', 'present', ['image'])
-    ]
+    required_if = [("state", "present", ["image"])]
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         required_if=required_if,
         supports_check_mode=True,
-        min_docker_version='2.0.2',
+        min_docker_version="2.0.2",
         option_minimal_versions=option_minimal_versions,
     )
 
@@ -2783,16 +2938,20 @@ def main():
         )
         if client.module._diff:
             before, after = dsm.diff_tracker.get_before_after()
-            results['diff'] = dict(before=before, after=after)
+            results["diff"] = dict(before=before, after=after)
 
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -7,18 +7,20 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
+
 __metaclass__ = type
 
+import json
 import os
-import unittest
 import shutil
 import tempfile
-import json
-
-from pytest import mark, fixture
+import unittest
 
 from ansible_collections.community.docker.plugins.module_utils._api.utils import config
+from pytest import fixture, mark
+
 
 try:
     from unittest import mock
@@ -33,46 +35,46 @@ class FindConfigFileTest(unittest.TestCase):
         self.mkdir = tmpdir.mkdir
 
     def test_find_config_fallback(self):
-        tmpdir = self.mkdir('test_find_config_fallback')
+        tmpdir = self.mkdir("test_find_config_fallback")
 
-        with mock.patch.dict(os.environ, {'HOME': str(tmpdir)}):
+        with mock.patch.dict(os.environ, {"HOME": str(tmpdir)}):
             assert config.find_config_file() is None
 
     def test_find_config_from_explicit_path(self):
-        tmpdir = self.mkdir('test_find_config_from_explicit_path')
-        config_path = tmpdir.ensure('my-config-file.json')
+        tmpdir = self.mkdir("test_find_config_from_explicit_path")
+        config_path = tmpdir.ensure("my-config-file.json")
 
         assert config.find_config_file(str(config_path)) == str(config_path)
 
     def test_find_config_from_environment(self):
-        tmpdir = self.mkdir('test_find_config_from_environment')
-        config_path = tmpdir.ensure('config.json')
+        tmpdir = self.mkdir("test_find_config_from_environment")
+        config_path = tmpdir.ensure("config.json")
 
-        with mock.patch.dict(os.environ, {'DOCKER_CONFIG': str(tmpdir)}):
+        with mock.patch.dict(os.environ, {"DOCKER_CONFIG": str(tmpdir)}):
             assert config.find_config_file() == str(config_path)
 
     @mark.skipif("sys.platform == 'win32'")
     def test_find_config_from_home_posix(self):
-        tmpdir = self.mkdir('test_find_config_from_home_posix')
-        config_path = tmpdir.ensure('.docker', 'config.json')
+        tmpdir = self.mkdir("test_find_config_from_home_posix")
+        config_path = tmpdir.ensure(".docker", "config.json")
 
-        with mock.patch.dict(os.environ, {'HOME': str(tmpdir)}):
+        with mock.patch.dict(os.environ, {"HOME": str(tmpdir)}):
             assert config.find_config_file() == str(config_path)
 
     @mark.skipif("sys.platform == 'win32'")
     def test_find_config_from_home_legacy_name(self):
-        tmpdir = self.mkdir('test_find_config_from_home_legacy_name')
-        config_path = tmpdir.ensure('.dockercfg')
+        tmpdir = self.mkdir("test_find_config_from_home_legacy_name")
+        config_path = tmpdir.ensure(".dockercfg")
 
-        with mock.patch.dict(os.environ, {'HOME': str(tmpdir)}):
+        with mock.patch.dict(os.environ, {"HOME": str(tmpdir)}):
             assert config.find_config_file() == str(config_path)
 
     @mark.skipif("sys.platform != 'win32'")
     def test_find_config_from_home_windows(self):
-        tmpdir = self.mkdir('test_find_config_from_home_windows')
-        config_path = tmpdir.ensure('.docker', 'config.json')
+        tmpdir = self.mkdir("test_find_config_from_home_windows")
+        config_path = tmpdir.ensure(".docker", "config.json")
 
-        with mock.patch.dict(os.environ, {'USERPROFILE': str(tmpdir)}):
+        with mock.patch.dict(os.environ, {"USERPROFILE": str(tmpdir)}):
             assert config.find_config_file() == str(config_path)
 
 
@@ -89,32 +91,24 @@ class LoadConfigTest(unittest.TestCase):
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
 
-        dockercfg_path = os.path.join(folder, 'config.json')
+        dockercfg_path = os.path.join(folder, "config.json")
         config_data = {
-            'HttpHeaders': {
-                'Name': 'Spike',
-                'Surname': 'Spiegel'
-            },
+            "HttpHeaders": {"Name": "Spike", "Surname": "Spiegel"},
         }
 
-        with open(dockercfg_path, 'w') as f:
+        with open(dockercfg_path, "w") as f:
             json.dump(config_data, f)
 
         cfg = config.load_general_config(dockercfg_path)
-        assert 'HttpHeaders' in cfg
-        assert cfg['HttpHeaders'] == {
-            'Name': 'Spike',
-            'Surname': 'Spiegel'
-        }
+        assert "HttpHeaders" in cfg
+        assert cfg["HttpHeaders"] == {"Name": "Spike", "Surname": "Spiegel"}
 
     def test_load_config_detach_keys(self):
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
-        dockercfg_path = os.path.join(folder, 'config.json')
-        config_data = {
-            'detachKeys': 'ctrl-q, ctrl-u, ctrl-i'
-        }
-        with open(dockercfg_path, 'w') as f:
+        dockercfg_path = os.path.join(folder, "config.json")
+        config_data = {"detachKeys": "ctrl-q, ctrl-u, ctrl-i"}
+        with open(dockercfg_path, "w") as f:
             json.dump(config_data, f)
 
         cfg = config.load_general_config(dockercfg_path)
@@ -123,13 +117,11 @@ class LoadConfigTest(unittest.TestCase):
     def test_load_config_from_env(self):
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
-        dockercfg_path = os.path.join(folder, 'config.json')
-        config_data = {
-            'detachKeys': 'ctrl-q, ctrl-u, ctrl-i'
-        }
-        with open(dockercfg_path, 'w') as f:
+        dockercfg_path = os.path.join(folder, "config.json")
+        config_data = {"detachKeys": "ctrl-q, ctrl-u, ctrl-i"}
+        with open(dockercfg_path, "w") as f:
             json.dump(config_data, f)
 
-        with mock.patch.dict(os.environ, {'DOCKER_CONFIG': folder}):
+        with mock.patch.dict(os.environ, {"DOCKER_CONFIG": folder}):
             cfg = config.load_general_config(None)
         assert cfg == config_data

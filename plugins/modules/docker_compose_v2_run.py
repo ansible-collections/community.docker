@@ -241,12 +241,10 @@ import shlex
 import traceback
 
 from ansible.module_utils.common.text.converters import to_text
-
 from ansible_collections.community.docker.plugins.module_utils.common_cli import (
     AnsibleModuleDockerClient,
     DockerException,
 )
-
 from ansible_collections.community.docker.plugins.module_utils.compose_v2 import (
     BaseComposeManager,
     common_compose_argspec_ex,
@@ -258,39 +256,39 @@ class ExecManager(BaseComposeManager):
         super(ExecManager, self).__init__(client)
         parameters = self.client.module.params
 
-        self.service = parameters['service']
-        self.build = parameters['build']
-        self.cap_add = parameters['cap_add']
-        self.cap_drop = parameters['cap_drop']
-        self.entrypoint = parameters['entrypoint']
-        self.interactive = parameters['interactive']
-        self.labels = parameters['labels']
-        self.name = parameters['name']
-        self.no_deps = parameters['no_deps']
-        self.publish = parameters['publish']
-        self.quiet_pull = parameters['quiet_pull']
-        self.remove_orphans = parameters['remove_orphans']
-        self.do_cleanup = parameters['cleanup']
-        self.service_ports = parameters['service_ports']
-        self.use_aliases = parameters['use_aliases']
-        self.volumes = parameters['volumes']
-        self.chdir = parameters['chdir']
-        self.detach = parameters['detach']
-        self.user = parameters['user']
-        self.stdin = parameters['stdin']
-        self.strip_empty_ends = parameters['strip_empty_ends']
-        self.tty = parameters['tty']
-        self.env = parameters['env']
+        self.service = parameters["service"]
+        self.build = parameters["build"]
+        self.cap_add = parameters["cap_add"]
+        self.cap_drop = parameters["cap_drop"]
+        self.entrypoint = parameters["entrypoint"]
+        self.interactive = parameters["interactive"]
+        self.labels = parameters["labels"]
+        self.name = parameters["name"]
+        self.no_deps = parameters["no_deps"]
+        self.publish = parameters["publish"]
+        self.quiet_pull = parameters["quiet_pull"]
+        self.remove_orphans = parameters["remove_orphans"]
+        self.do_cleanup = parameters["cleanup"]
+        self.service_ports = parameters["service_ports"]
+        self.use_aliases = parameters["use_aliases"]
+        self.volumes = parameters["volumes"]
+        self.chdir = parameters["chdir"]
+        self.detach = parameters["detach"]
+        self.user = parameters["user"]
+        self.stdin = parameters["stdin"]
+        self.strip_empty_ends = parameters["strip_empty_ends"]
+        self.tty = parameters["tty"]
+        self.env = parameters["env"]
 
-        self.argv = parameters['argv']
-        if parameters['command'] is not None:
-            self.argv = shlex.split(parameters['command'])
+        self.argv = parameters["argv"]
+        if parameters["command"] is not None:
+            self.argv = shlex.split(parameters["command"])
 
         if self.detach and self.stdin is not None:
-            self.mail('If detach=true, stdin cannot be provided.')
+            self.mail("If detach=true, stdin cannot be provided.")
 
-        if self.stdin is not None and parameters['stdin_add_newline']:
-            self.stdin += '\n'
+        if self.stdin is not None and parameters["stdin_add_newline"]:
+            self.stdin += "\n"
 
         if self.env is not None:
             for name, value in list(self.env.items()):
@@ -299,58 +297,58 @@ class ExecManager(BaseComposeManager):
                         "Non-string value found for env option. Ambiguous env options must be "
                         f"wrapped in quotes to avoid them being interpreted. Key: {name}"
                     )
-                self.env[name] = to_text(value, errors='surrogate_or_strict')
+                self.env[name] = to_text(value, errors="surrogate_or_strict")
 
     def get_run_cmd(self, dry_run, no_start=False):
-        args = self.get_base_args(plain_progress=True) + ['run']
+        args = self.get_base_args(plain_progress=True) + ["run"]
         if self.build:
-            args.append('--build')
+            args.append("--build")
         if self.cap_add:
             for cap in self.cap_add:
-                args.extend(['--cap-add', cap])
+                args.extend(["--cap-add", cap])
         if self.cap_drop:
             for cap in self.cap_drop:
-                args.extend(['--cap-drop', cap])
+                args.extend(["--cap-drop", cap])
         if self.entrypoint is not None:
-            args.extend(['--entrypoint', self.entrypoint])
+            args.extend(["--entrypoint", self.entrypoint])
         if not self.interactive:
-            args.append('--no-interactive')
+            args.append("--no-interactive")
         if self.labels:
             for label in self.labels:
-                args.extend(['--label', label])
+                args.extend(["--label", label])
         if self.name is not None:
-            args.extend(['--name', self.name])
+            args.extend(["--name", self.name])
         if self.no_deps:
-            args.append('--no-deps')
+            args.append("--no-deps")
         if self.publish:
             for publish in self.publish:
-                args.extend(['--publish', publish])
+                args.extend(["--publish", publish])
         if self.quiet_pull:
-            args.append('--quiet-pull')
+            args.append("--quiet-pull")
         if self.remove_orphans:
-            args.append('--remove-orphans')
+            args.append("--remove-orphans")
         if self.do_cleanup:
-            args.append('--rm')
+            args.append("--rm")
         if self.service_ports:
-            args.append('--service-ports')
+            args.append("--service-ports")
         if self.use_aliases:
-            args.append('--use-aliases')
+            args.append("--use-aliases")
         if self.volumes:
             for volume in self.volumes:
-                args.extend(['--volume', volume])
+                args.extend(["--volume", volume])
         if self.chdir is not None:
-            args.extend(['--workdir', self.chdir])
+            args.extend(["--workdir", self.chdir])
         if self.detach:
-            args.extend(['--detach'])
+            args.extend(["--detach"])
         if self.user is not None:
-            args.extend(['--user', self.user])
+            args.extend(["--user", self.user])
         if not self.tty:
-            args.append('--no-TTY')
+            args.append("--no-TTY")
         if self.env:
             for name, value in list(self.env.items()):
-                args.append('--env')
-                args.append(f'{name}={value}')
-        args.append('--')
+                args.append("--env")
+                args.append(f"{name}={value}")
+        args.append("--")
         args.append(self.service)
         if self.argv:
             args.extend(self.argv)
@@ -359,67 +357,67 @@ class ExecManager(BaseComposeManager):
     def run(self):
         args = self.get_run_cmd(self.check_mode)
         kwargs = {
-            'cwd': self.project_src,
+            "cwd": self.project_src,
         }
         if self.stdin is not None:
-            kwargs['data'] = self.stdin.encode('utf-8')
+            kwargs["data"] = self.stdin.encode("utf-8")
         if self.detach:
-            kwargs['check_rc'] = True
+            kwargs["check_rc"] = True
         rc, stdout, stderr = self.client.call_cli(*args, **kwargs)
         if self.detach:
             return {
-                'container_id': stdout.strip(),
+                "container_id": stdout.strip(),
             }
         stdout = to_text(stdout)
         stderr = to_text(stderr)
         if self.strip_empty_ends:
-            stdout = stdout.rstrip('\r\n')
-            stderr = stderr.rstrip('\r\n')
+            stdout = stdout.rstrip("\r\n")
+            stderr = stderr.rstrip("\r\n")
         return {
-            'changed': True,
-            'rc': rc,
-            'stdout': stdout,
-            'stderr': stderr,
+            "changed": True,
+            "rc": rc,
+            "stdout": stdout,
+            "stderr": stderr,
         }
 
 
 def main():
     argument_spec = dict(
-        service=dict(type='str', required=True),
-        argv=dict(type='list', elements='str'),
-        command=dict(type='str'),
-        build=dict(type='bool', default=False),
-        cap_add=dict(type='list', elements='str'),
-        cap_drop=dict(type='list', elements='str'),
-        entrypoint=dict(type='str'),
-        interactive=dict(type='bool', default=True),
-        labels=dict(type='list', elements='str'),
-        name=dict(type='str'),
-        no_deps=dict(type='bool', default=False),
-        publish=dict(type='list', elements='str'),
-        quiet_pull=dict(type='bool', default=False),
-        remove_orphans=dict(type='bool', default=False),
-        cleanup=dict(type='bool', default=False),
-        service_ports=dict(type='bool', default=False),
-        use_aliases=dict(type='bool', default=False),
-        volumes=dict(type='list', elements='str'),
-        chdir=dict(type='str'),
-        detach=dict(type='bool', default=False),
-        user=dict(type='str'),
-        stdin=dict(type='str'),
-        stdin_add_newline=dict(type='bool', default=True),
-        strip_empty_ends=dict(type='bool', default=True),
-        tty=dict(type='bool', default=True),
-        env=dict(type='dict'),
+        service=dict(type="str", required=True),
+        argv=dict(type="list", elements="str"),
+        command=dict(type="str"),
+        build=dict(type="bool", default=False),
+        cap_add=dict(type="list", elements="str"),
+        cap_drop=dict(type="list", elements="str"),
+        entrypoint=dict(type="str"),
+        interactive=dict(type="bool", default=True),
+        labels=dict(type="list", elements="str"),
+        name=dict(type="str"),
+        no_deps=dict(type="bool", default=False),
+        publish=dict(type="list", elements="str"),
+        quiet_pull=dict(type="bool", default=False),
+        remove_orphans=dict(type="bool", default=False),
+        cleanup=dict(type="bool", default=False),
+        service_ports=dict(type="bool", default=False),
+        use_aliases=dict(type="bool", default=False),
+        volumes=dict(type="list", elements="str"),
+        chdir=dict(type="str"),
+        detach=dict(type="bool", default=False),
+        user=dict(type="str"),
+        stdin=dict(type="str"),
+        stdin_add_newline=dict(type="bool", default=True),
+        strip_empty_ends=dict(type="bool", default=True),
+        tty=dict(type="bool", default=True),
+        env=dict(type="dict"),
     )
     argspec_ex = common_compose_argspec_ex()
-    argument_spec.update(argspec_ex.pop('argspec'))
+    argument_spec.update(argspec_ex.pop("argspec"))
 
     client = AnsibleModuleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=False,
         needs_api_version=False,
-        **argspec_ex
+        **argspec_ex,
     )
 
     try:
@@ -428,8 +426,11 @@ def main():
         manager.cleanup()
         client.module.exit_json(**result)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

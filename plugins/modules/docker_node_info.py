@@ -91,7 +91,10 @@ import traceback
 from ansible_collections.community.docker.plugins.module_utils.common import (
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.swarm import AnsibleDockerSwarmClient
+from ansible_collections.community.docker.plugins.module_utils.swarm import (
+    AnsibleDockerSwarmClient,
+)
+
 
 try:
     from docker.errors import DockerException
@@ -104,22 +107,24 @@ def get_node_facts(client):
 
     results = []
 
-    if client.module.params['self'] is True:
+    if client.module.params["self"] is True:
         self_node_id = client.get_swarm_node_id()
         node_info = client.get_node_inspect(node_id=self_node_id)
         results.append(node_info)
         return results
 
-    if client.module.params['name'] is None:
+    if client.module.params["name"] is None:
         node_info = client.get_all_nodes_inspect()
         return node_info
 
-    nodes = client.module.params['name']
+    nodes = client.module.params["name"]
     if not isinstance(nodes, list):
         nodes = [nodes]
 
     for next_node_name in nodes:
-        next_node_info = client.get_node_inspect(node_id=next_node_name, skip_missing=True)
+        next_node_info = client.get_node_inspect(
+            node_id=next_node_name, skip_missing=True
+        )
         if next_node_info:
             results.append(next_node_info)
     return results
@@ -127,14 +132,14 @@ def get_node_facts(client):
 
 def main():
     argument_spec = dict(
-        name=dict(type='list', elements='str'),
-        self=dict(type='bool', default=False),
+        name=dict(type="list", elements="str"),
+        self=dict(type="bool", default=False),
     )
 
     client = AnsibleDockerSwarmClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        min_docker_version='2.4.0',
+        min_docker_version="2.4.0",
     )
 
     client.fail_task_if_not_swarm_manager()
@@ -147,12 +152,16 @@ def main():
             nodes=nodes,
         )
     except DockerException as e:
-        client.fail(f'An unexpected docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

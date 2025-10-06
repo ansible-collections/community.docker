@@ -107,7 +107,7 @@ options:
     version_added: 3.5.0
 """
 
-EXAMPLES = '''
+EXAMPLES = """
 ---
 # Minimal example using local Docker daemon
 plugin: community.docker.docker_containers
@@ -167,13 +167,16 @@ filters:
       inventory_hostname.startswith("a")
   # Exclude all containers that did not match any of the above filters
   - exclude: true
-'''
+"""
 
 import re
 
 from ansible.errors import AnsibleError
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
-
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    APIError,
+    DockerException,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     RequestException,
 )
@@ -183,64 +186,66 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
 from ansible_collections.community.docker.plugins.plugin_utils.common_api import (
     AnsibleDockerClient,
 )
-
-from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException
 from ansible_collections.community.docker.plugins.plugin_utils.unsafe import make_unsafe
-from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import parse_filters, filter_host
+from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import (
+    filter_host,
+    parse_filters,
+)
+
 
 MIN_DOCKER_API = None
 
 
 class InventoryModule(BaseInventoryPlugin, Constructable):
-    ''' Host inventory parser for ansible using Docker daemon as source. '''
+    """Host inventory parser for ansible using Docker daemon as source."""
 
-    NAME = 'community.docker.docker_containers'
+    NAME = "community.docker.docker_containers"
 
     def _slugify(self, value):
-        slug = re.sub(r'[^\w-]', '_', value).lower().lstrip('_')
-        return f'docker_{slug}'
+        slug = re.sub(r"[^\w-]", "_", value).lower().lstrip("_")
+        return f"docker_{slug}"
 
     def _populate(self, client):
-        strict = self.get_option('strict')
+        strict = self.get_option("strict")
 
-        ssh_port = self.get_option('private_ssh_port')
-        default_ip = self.get_option('default_ip')
-        hostname = self.get_option('docker_host')
-        verbose_output = self.get_option('verbose_output')
-        connection_type = self.get_option('connection_type')
-        add_legacy_groups = self.get_option('add_legacy_groups')
+        ssh_port = self.get_option("private_ssh_port")
+        default_ip = self.get_option("default_ip")
+        hostname = self.get_option("docker_host")
+        verbose_output = self.get_option("verbose_output")
+        connection_type = self.get_option("connection_type")
+        add_legacy_groups = self.get_option("add_legacy_groups")
 
         try:
             params = {
-                'limit': -1,
-                'all': 1,
-                'size': 0,
-                'trunc_cmd': 0,
-                'since': None,
-                'before': None,
+                "limit": -1,
+                "all": 1,
+                "size": 0,
+                "trunc_cmd": 0,
+                "since": None,
+                "before": None,
             }
-            containers = client.get_json('/containers/json', params=params)
+            containers = client.get_json("/containers/json", params=params)
         except APIError as exc:
             raise AnsibleError(f"Error listing containers: {exc}")
 
         if add_legacy_groups:
-            self.inventory.add_group('running')
-            self.inventory.add_group('stopped')
+            self.inventory.add_group("running")
+            self.inventory.add_group("stopped")
 
         extra_facts = {}
-        if self.get_option('configure_docker_daemon'):
+        if self.get_option("configure_docker_daemon"):
             for option_name, var_name in DOCKER_COMMON_ARGS_VARS.items():
                 value = self.get_option(option_name)
                 if value is not None:
                     extra_facts[var_name] = value
 
-        filters = parse_filters(self.get_option('filters'))
+        filters = parse_filters(self.get_option("filters"))
         for container in containers:
-            id = container.get('Id')
+            id = container.get("Id")
             short_id = id[:13]
 
             try:
-                name = container.get('Names', list())[0].lstrip('/')
+                name = container.get("Names", list())[0].lstrip("/")
                 full_name = name
             except IndexError:
                 name = short_id
@@ -253,66 +258,72 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             full_facts = dict()
 
             try:
-                inspect = client.get_json('/containers/{0}/json', id)
+                inspect = client.get_json("/containers/{0}/json", id)
             except APIError as exc:
                 raise AnsibleError(f"Error inspecting container {name} - {exc}")
 
-            state = inspect.get('State') or dict()
-            config = inspect.get('Config') or dict()
-            labels = config.get('Labels') or dict()
+            state = inspect.get("State") or dict()
+            config = inspect.get("Config") or dict()
+            labels = config.get("Labels") or dict()
 
-            running = state.get('Running')
+            running = state.get("Running")
 
             groups = []
 
             # Add container to groups
-            image_name = config.get('Image')
+            image_name = config.get("Image")
             if image_name and add_legacy_groups:
-                groups.append(f'image_{image_name}')
+                groups.append(f"image_{image_name}")
 
-            stack_name = labels.get('com.docker.stack.namespace')
+            stack_name = labels.get("com.docker.stack.namespace")
             if stack_name:
-                full_facts['docker_stack'] = stack_name
+                full_facts["docker_stack"] = stack_name
                 if add_legacy_groups:
-                    groups.append(f'stack_{stack_name}')
+                    groups.append(f"stack_{stack_name}")
 
-            service_name = labels.get('com.docker.swarm.service.name')
+            service_name = labels.get("com.docker.swarm.service.name")
             if service_name:
-                full_facts['docker_service'] = service_name
+                full_facts["docker_service"] = service_name
                 if add_legacy_groups:
-                    groups.append(f'service_{service_name}')
+                    groups.append(f"service_{service_name}")
 
             ansible_connection = None
-            if connection_type == 'ssh':
+            if connection_type == "ssh":
                 # Figure out ssh IP and Port
                 try:
                     # Lookup the public facing port Nat'ed to ssh port.
-                    network_settings = inspect.get('NetworkSettings') or {}
-                    port_settings = network_settings.get('Ports') or {}
-                    port = port_settings.get(f'{ssh_port}/tcp')[0]
+                    network_settings = inspect.get("NetworkSettings") or {}
+                    port_settings = network_settings.get("Ports") or {}
+                    port = port_settings.get(f"{ssh_port}/tcp")[0]
                 except (IndexError, AttributeError, TypeError):
                     port = dict()
 
                 try:
-                    ip = default_ip if port['HostIp'] == '0.0.0.0' else port['HostIp']
+                    ip = default_ip if port["HostIp"] == "0.0.0.0" else port["HostIp"]
                 except KeyError:
-                    ip = ''
+                    ip = ""
 
-                facts.update(dict(
-                    ansible_ssh_host=ip,
-                    ansible_ssh_port=port.get('HostPort', 0),
-                ))
-            elif connection_type == 'docker-cli':
-                facts.update(dict(
-                    ansible_host=full_name,
-                ))
-                ansible_connection = 'community.docker.docker'
-            elif connection_type == 'docker-api':
-                facts.update(dict(
-                    ansible_host=full_name,
-                ))
+                facts.update(
+                    dict(
+                        ansible_ssh_host=ip,
+                        ansible_ssh_port=port.get("HostPort", 0),
+                    )
+                )
+            elif connection_type == "docker-cli":
+                facts.update(
+                    dict(
+                        ansible_host=full_name,
+                    )
+                )
+                ansible_connection = "community.docker.docker"
+            elif connection_type == "docker-api":
+                facts.update(
+                    dict(
+                        ansible_host=full_name,
+                    )
+                )
                 facts.update(extra_facts)
-                ansible_connection = 'community.docker.docker_api'
+                ansible_connection = "community.docker.docker_api"
 
             full_facts.update(facts)
             for key, value in inspect.items():
@@ -323,8 +334,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
             if ansible_connection:
                 for d in (facts, full_facts):
-                    if 'ansible_connection' not in d:
-                        d['ansible_connection'] = ansible_connection
+                    if "ansible_connection" not in d:
+                        d["ansible_connection"] = ansible_connection
 
             if not filter_host(self, name, full_facts, filters):
                 continue
@@ -342,11 +353,17 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
             # Use constructed if applicable
             # Composed variables
-            self._set_composite_vars(self.get_option('compose'), full_facts, name, strict=strict)
+            self._set_composite_vars(
+                self.get_option("compose"), full_facts, name, strict=strict
+            )
             # Complex groups based on jinja2 conditionals, hosts that meet the conditional are added to group
-            self._add_host_to_composed_groups(self.get_option('groups'), full_facts, name, strict=strict)
+            self._add_host_to_composed_groups(
+                self.get_option("groups"), full_facts, name, strict=strict
+            )
             # Create groups based on variable values and add the corresponding hosts to it
-            self._add_host_to_keyed_groups(self.get_option('keyed_groups'), full_facts, name, strict=strict)
+            self._add_host_to_keyed_groups(
+                self.get_option("keyed_groups"), full_facts, name, strict=strict
+            )
 
             # We need to do this last since we also add a group called `name`.
             # When we do this before a set_variable() call, the variables are assigned
@@ -362,15 +379,15 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 self.inventory.add_host(name, group=hostname)
 
                 if running is True:
-                    self.inventory.add_host(name, group='running')
+                    self.inventory.add_host(name, group="running")
                 else:
-                    self.inventory.add_host(name, group='stopped')
+                    self.inventory.add_host(name, group="stopped")
 
     def verify_file(self, path):
         """Return the possibly of a file being consumable by this plugin."""
-        return (
-            super(InventoryModule, self).verify_file(path) and
-            path.endswith(('docker.yaml', 'docker.yml')))
+        return super(InventoryModule, self).verify_file(path) and path.endswith(
+            ("docker.yaml", "docker.yml")
+        )
 
     def _create_client(self):
         return AnsibleDockerClient(self, min_docker_api_version=MIN_DOCKER_API)
@@ -382,10 +399,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         try:
             self._populate(client)
         except DockerException as e:
-            raise AnsibleError(
-                f'An unexpected Docker error occurred: {e}'
-            )
+            raise AnsibleError(f"An unexpected Docker error occurred: {e}")
         except RequestException as e:
             raise AnsibleError(
-                f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}'
+                f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}"
             )

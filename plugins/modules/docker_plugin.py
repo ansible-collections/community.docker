@@ -131,19 +131,20 @@ actions:
 import traceback
 
 from ansible.module_utils.common.text.converters import to_native
-
+from ansible_collections.community.docker.plugins.module_utils._api import auth
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    APIError,
+    DockerException,
+    NotFound,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
-    RequestException
+    RequestException,
 )
-
 from ansible_collections.community.docker.plugins.module_utils.util import (
-    DockerBaseClass,
     DifferenceTracker,
+    DockerBaseClass,
 )
-
-from ansible_collections.community.docker.plugins.module_utils._api import auth
-from ansible_collections.community.docker.plugins.module_utils._api.errors import APIError, DockerException, NotFound
 
 
 class TaskParameters(DockerBaseClass):
@@ -162,11 +163,15 @@ class TaskParameters(DockerBaseClass):
 
 
 def prepare_options(options):
-    return [f'{k}={v if v is not None else ""}' for k, v in options.items()] if options else []
+    return (
+        [f'{k}={v if v is not None else ""}' for k, v in options.items()]
+        if options
+        else []
+    )
 
 
 def parse_options(options_list):
-    return dict(x.split('=', 1) for x in options_list) if options_list else {}
+    return dict(x.split("=", 1) for x in options_list) if options_list else {}
 
 
 class DockerPluginManager(object):
@@ -187,23 +192,25 @@ class DockerPluginManager(object):
         self.existing_plugin = self.get_existing_plugin()
 
         state = self.parameters.state
-        if state == 'present':
+        if state == "present":
             self.present()
-        elif state == 'absent':
+        elif state == "absent":
             self.absent()
-        elif state == 'enable':
+        elif state == "enable":
             self.enable()
-        elif state == 'disable':
+        elif state == "disable":
             self.disable()
 
         if self.diff or self.check_mode or self.parameters.debug:
             if self.diff:
-                self.diff_result['before'], self.diff_result['after'] = self.diff_tracker.get_before_after()
+                self.diff_result["before"], self.diff_result["after"] = (
+                    self.diff_tracker.get_before_after()
+                )
             self.diff = self.diff_result
 
     def get_existing_plugin(self):
         try:
-            return self.client.get_json('/plugins/{0}/json', self.preferred_name)
+            return self.client.get_json("/plugins/{0}/json", self.preferred_name)
         except NotFound:
             return None
         except APIError as e:
@@ -217,19 +224,27 @@ class DockerPluginManager(object):
         """
         differences = DifferenceTracker()
         if self.parameters.plugin_options:
-            settings = self.existing_plugin.get('Settings')
+            settings = self.existing_plugin.get("Settings")
             if not settings:
-                differences.add('plugin_options', parameters=self.parameters.plugin_options, active=settings)
+                differences.add(
+                    "plugin_options",
+                    parameters=self.parameters.plugin_options,
+                    active=settings,
+                )
             else:
-                existing_options = parse_options(settings.get('Env'))
+                existing_options = parse_options(settings.get("Env"))
 
                 for key, value in self.parameters.plugin_options.items():
-                    if ((not existing_options.get(key) and value) or
-                            not value or
-                            value != existing_options[key]):
-                        differences.add(f'plugin_options.{key}',
-                                        parameter=value,
-                                        active=existing_options.get(key))
+                    if (
+                        (not existing_options.get(key) and value)
+                        or not value
+                        or value != existing_options[key]
+                    ):
+                        differences.add(
+                            f"plugin_options.{key}",
+                            parameter=value,
+                            active=existing_options.get(key),
+                        )
 
         return differences
 
@@ -239,26 +254,42 @@ class DockerPluginManager(object):
                 try:
                     # Get privileges
                     headers = {}
-                    registry, repo_name = auth.resolve_repository_name(self.parameters.plugin_name)
+                    registry, repo_name = auth.resolve_repository_name(
+                        self.parameters.plugin_name
+                    )
                     header = auth.get_config_header(self.client, registry)
                     if header:
-                        headers['X-Registry-Auth'] = header
-                    privileges = self.client.get_json('/plugins/privileges', params={'remote': self.parameters.plugin_name}, headers=headers)
+                        headers["X-Registry-Auth"] = header
+                    privileges = self.client.get_json(
+                        "/plugins/privileges",
+                        params={"remote": self.parameters.plugin_name},
+                        headers=headers,
+                    )
                     # Pull plugin
                     params = {
-                        'remote': self.parameters.plugin_name,
+                        "remote": self.parameters.plugin_name,
                     }
                     if self.parameters.alias:
-                        params['name'] = self.parameters.alias
-                    response = self.client._post_json(self.client._url('/plugins/pull'), params=params, headers=headers, data=privileges, stream=True)
+                        params["name"] = self.parameters.alias
+                    response = self.client._post_json(
+                        self.client._url("/plugins/pull"),
+                        params=params,
+                        headers=headers,
+                        data=privileges,
+                        stream=True,
+                    )
                     self.client._raise_for_status(response)
                     for data in self.client._stream_helper(response, decode=True):
                         pass
                     # Inspect and configure plugin
-                    self.existing_plugin = self.client.get_json('/plugins/{0}/json', self.preferred_name)
+                    self.existing_plugin = self.client.get_json(
+                        "/plugins/{0}/json", self.preferred_name
+                    )
                     if self.parameters.plugin_options:
                         data = prepare_options(self.parameters.plugin_options)
-                        self.client.post_json('/plugins/{0}/set', self.preferred_name, data=data)
+                        self.client.post_json(
+                            "/plugins/{0}/set", self.preferred_name, data=data
+                        )
                 except APIError as e:
                     self.client.fail(to_native(e))
 
@@ -270,7 +301,9 @@ class DockerPluginManager(object):
         if self.existing_plugin:
             if not self.check_mode:
                 try:
-                    self.client.delete_call('/plugins/{0}', self.preferred_name, params={'force': force})
+                    self.client.delete_call(
+                        "/plugins/{0}", self.preferred_name, params={"force": force}
+                    )
                 except APIError as e:
                     self.client.fail(to_native(e))
 
@@ -284,7 +317,9 @@ class DockerPluginManager(object):
                 if not self.check_mode:
                     try:
                         data = prepare_options(self.parameters.plugin_options)
-                        self.client.post_json('/plugins/{0}/set', self.preferred_name, data=data)
+                        self.client.post_json(
+                            "/plugins/{0}/set", self.preferred_name, data=data
+                        )
                     except APIError as e:
                         self.client.fail(to_native(e))
                 self.actions.append(f"Updated plugin {self.preferred_name} settings")
@@ -297,7 +332,9 @@ class DockerPluginManager(object):
         if self.existing_plugin:
             differences = self.has_different_config()
 
-        self.diff_tracker.add('exists', parameter=True, active=self.existing_plugin is not None)
+        self.diff_tracker.add(
+            "exists", parameter=True, active=self.existing_plugin is not None
+        )
 
         if self.existing_plugin:
             self.update_plugin()
@@ -316,10 +353,14 @@ class DockerPluginManager(object):
     def enable(self):
         timeout = self.parameters.enable_timeout
         if self.existing_plugin:
-            if not self.existing_plugin.get('Enabled'):
+            if not self.existing_plugin.get("Enabled"):
                 if not self.check_mode:
                     try:
-                        self.client.post_json('/plugins/{0}/enable', self.preferred_name, params={'timeout': timeout})
+                        self.client.post_json(
+                            "/plugins/{0}/enable",
+                            self.preferred_name,
+                            params={"timeout": timeout},
+                        )
                     except APIError as e:
                         self.client.fail(to_native(e))
                 self.actions.append(f"Enabled plugin {self.preferred_name}")
@@ -328,7 +369,11 @@ class DockerPluginManager(object):
             self.install_plugin()
             if not self.check_mode:
                 try:
-                    self.client.post_json('/plugins/{0}/enable', self.preferred_name, params={'timeout': timeout})
+                    self.client.post_json(
+                        "/plugins/{0}/enable",
+                        self.preferred_name,
+                        params={"timeout": timeout},
+                    )
                 except APIError as e:
                     self.client.fail(to_native(e))
             self.actions.append(f"Enabled plugin {self.preferred_name}")
@@ -336,10 +381,12 @@ class DockerPluginManager(object):
 
     def disable(self):
         if self.existing_plugin:
-            if self.existing_plugin.get('Enabled'):
+            if self.existing_plugin.get("Enabled"):
                 if not self.check_mode:
                     try:
-                        self.client.post_json('/plugins/{0}/disable', self.preferred_name)
+                        self.client.post_json(
+                            "/plugins/{0}/disable", self.preferred_name
+                        )
                     except APIError as e:
                         self.client.fail(to_native(e))
                 self.actions.append(f"Disable plugin {self.preferred_name}")
@@ -350,30 +397,36 @@ class DockerPluginManager(object):
     @property
     def result(self):
         plugin_data = {}
-        if self.parameters.state != 'absent':
+        if self.parameters.state != "absent":
             try:
-                plugin_data = self.client.get_json('/plugins/{0}/json', self.preferred_name)
+                plugin_data = self.client.get_json(
+                    "/plugins/{0}/json", self.preferred_name
+                )
             except NotFound:
                 # This can happen in check mode
                 pass
         result = {
-            'actions': self.actions,
-            'changed': self.changed,
-            'diff': self.diff,
-            'plugin': plugin_data,
+            "actions": self.actions,
+            "changed": self.changed,
+            "diff": self.diff,
+            "plugin": plugin_data,
         }
         return dict((k, v) for k, v in result.items() if v is not None)
 
 
 def main():
     argument_spec = dict(
-        alias=dict(type='str'),
-        plugin_name=dict(type='str', required=True),
-        state=dict(type='str', default='present', choices=['present', 'absent', 'enable', 'disable']),
-        plugin_options=dict(type='dict', default={}),
-        debug=dict(type='bool', default=False),
-        force_remove=dict(type='bool', default=False),
-        enable_timeout=dict(type='int', default=0),
+        alias=dict(type="str"),
+        plugin_name=dict(type="str", required=True),
+        state=dict(
+            type="str",
+            default="present",
+            choices=["present", "absent", "enable", "disable"],
+        ),
+        plugin_options=dict(type="dict", default={}),
+        debug=dict(type="bool", default=False),
+        force_remove=dict(type="bool", default=False),
+        enable_timeout=dict(type="int", default=0),
     )
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
@@ -384,12 +437,16 @@ def main():
         cm = DockerPluginManager(client)
         client.module.exit_json(**cm.result)
     except DockerException as e:
-        client.fail(f'An unexpected docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

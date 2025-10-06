@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+
 DOCUMENTATION = r"""
 module: docker_stack_info
 author: "Jose Angel Munoz (@imjoseangel)"
@@ -78,7 +79,6 @@ import json
 import traceback
 
 from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common_cli import (
     AnsibleModuleDockerClient,
     DockerException,
@@ -86,31 +86,36 @@ from ansible_collections.community.docker.plugins.module_utils.common_cli import
 
 
 def docker_stack_list(module):
-    docker_bin = module.get_bin_path('docker', required=True)
+    docker_bin = module.get_bin_path("docker", required=True)
     rc, out, err = module.run_command(
-        [docker_bin, "stack", "ls", "--format={{json .}}"])
+        [docker_bin, "stack", "ls", "--format={{json .}}"]
+    )
 
     return rc, out.strip(), err.strip()
 
 
 def main():
     client = AnsibleModuleDockerClient(
-        argument_spec={
-        },
+        argument_spec={},
         supports_check_mode=True,
     )
 
     try:
-        rc, ret, stderr = client.call_cli_json_stream('stack', 'ls', '--format={{json .}}', check_rc=True)
+        rc, ret, stderr = client.call_cli_json_stream(
+            "stack", "ls", "--format={{json .}}", check_rc=True
+        )
         client.module.exit_json(
             changed=False,
             rc=rc,
-            stdout='\n'.join([json.dumps(entry) for entry in ret]),
+            stdout="\n".join([json.dumps(entry) for entry in ret]),
             stderr=to_native(stderr).strip(),
             results=ret,
         )
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
 if __name__ == "__main__":

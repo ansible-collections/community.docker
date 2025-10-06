@@ -82,11 +82,11 @@ from ansible.module_utils.basic import AnsibleModule
 def main():
     module = AnsibleModule(dict(), supports_check_mode=True)
 
-    cpuset_path = '/proc/self/cpuset'
-    mountinfo_path = '/proc/self/mountinfo'
+    cpuset_path = "/proc/self/cpuset"
+    mountinfo_path = "/proc/self/mountinfo"
 
-    container_id = ''
-    container_type = ''
+    container_id = ""
+    container_type = ""
 
     contents = None
     if os.path.exists(cpuset_path):
@@ -98,49 +98,51 @@ def main():
         # While this was true and worked well for a long time, this seems to be no longer accurate
         # with newer Docker / Podman versions and/or with cgroupv2. That's why the /proc/self/mountinfo
         # detection further down is done when this test is inconclusive.
-        with open(cpuset_path, 'rb') as f:
-            contents = f.read().decode('utf-8')
+        with open(cpuset_path, "rb") as f:
+            contents = f.read().decode("utf-8")
 
         cgroup_path, cgroup_name = os.path.split(contents.strip())
 
-        if cgroup_path == '/docker':
+        if cgroup_path == "/docker":
             container_id = cgroup_name
-            container_type = 'docker'
+            container_type = "docker"
 
-        if cgroup_path == '/azpl_job':
+        if cgroup_path == "/azpl_job":
             container_id = cgroup_name
-            container_type = 'azure_pipelines'
+            container_type = "azure_pipelines"
 
-        if cgroup_path == '/actions_job':
+        if cgroup_path == "/actions_job":
             container_id = cgroup_name
-            container_type = 'github_actions'
+            container_type = "github_actions"
 
     if not container_id and os.path.exists(mountinfo_path):
-        with open(mountinfo_path, 'rb') as f:
-            contents = f.read().decode('utf-8')
+        with open(mountinfo_path, "rb") as f:
+            contents = f.read().decode("utf-8")
 
         # As to why this works, see the explanations by Matt Clay in
         # https://github.com/ansible/ansible/blob/80d2f8da02052f64396da6b8caaf820eedbf18e2/test/lib/ansible_test/_internal/docker_util.py#L571-L610
 
         for line in contents.splitlines():
             parts = line.split()
-            if len(parts) >= 5 and parts[4] == '/etc/hostname':
-                m = re.match('.*/([a-f0-9]{64})/hostname$', parts[3])
+            if len(parts) >= 5 and parts[4] == "/etc/hostname":
+                m = re.match(".*/([a-f0-9]{64})/hostname$", parts[3])
                 if m:
                     container_id = m.group(1)
-                    container_type = 'docker'
+                    container_type = "docker"
 
-                m = re.match('.*/([a-f0-9]{64})/userdata/hostname$', parts[3])
+                m = re.match(".*/([a-f0-9]{64})/userdata/hostname$", parts[3])
                 if m:
                     container_id = m.group(1)
-                    container_type = 'podman'
+                    container_type = "podman"
 
-    module.exit_json(ansible_facts=dict(
-        ansible_module_running_in_container=container_id != '',
-        ansible_module_container_id=container_id,
-        ansible_module_container_type=container_type,
-    ))
+    module.exit_json(
+        ansible_facts=dict(
+            ansible_module_running_in_container=container_id != "",
+            ansible_module_container_id=container_id,
+            ansible_module_container_type=container_type,
+        )
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

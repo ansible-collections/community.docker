@@ -5,16 +5,17 @@
 from __future__ import annotations
 
 import re
-
 from collections.abc import Mapping, Set
+
 from ansible.module_utils.common.collections import is_sequence
 from ansible.utils.unsafe_proxy import (
     AnsibleUnsafe,
-    wrap_var as _make_unsafe,
 )
+from ansible.utils.unsafe_proxy import wrap_var as _make_unsafe
 
-_RE_TEMPLATE_CHARS = re.compile('[{}]')
-_RE_TEMPLATE_CHARS_BYTES = re.compile(b'[{}]')
+
+_RE_TEMPLATE_CHARS = re.compile("[{}]")
+_RE_TEMPLATE_CHARS_BYTES = re.compile(b"[{}]")
 
 
 def make_unsafe(value):

@@ -29,44 +29,44 @@ class _Mode(object):
 
 _ESCAPE_DICT = {
     '"': '"',
-    '\\': '\\',
+    "\\": "\\",
     "'": "'",
-    '/': '/',
-    'b': '\b',
-    'f': '\f',
-    'n': '\n',
-    'r': '\r',
-    't': '\t',
+    "/": "/",
+    "b": "\b",
+    "f": "\f",
+    "n": "\n",
+    "r": "\r",
+    "t": "\t",
 }
 
 _HEX_DICT = {
-    '0': 0,
-    '1': 1,
-    '2': 2,
-    '3': 3,
-    '4': 4,
-    '5': 5,
-    '6': 6,
-    '7': 7,
-    '8': 8,
-    '9': 9,
-    'a': 0xA,
-    'b': 0xB,
-    'c': 0xC,
-    'd': 0xD,
-    'e': 0xE,
-    'f': 0xF,
-    'A': 0xA,
-    'B': 0xB,
-    'C': 0xC,
-    'D': 0xD,
-    'E': 0xE,
-    'F': 0xF,
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+    "a": 0xA,
+    "b": 0xB,
+    "c": 0xC,
+    "d": 0xD,
+    "e": 0xE,
+    "f": 0xF,
+    "A": 0xA,
+    "B": 0xB,
+    "C": 0xC,
+    "D": 0xD,
+    "E": 0xE,
+    "F": 0xF,
 }
 
 
 def _is_ident(cur):
-    return cur > ' ' and cur not in ('"', '=')
+    return cur > " " and cur not in ('"', "=")
 
 
 class _Parser(object):
@@ -89,16 +89,18 @@ class _Parser(object):
 
     def parse_unicode_sequence(self):
         if self.index + 6 > self.length:
-            raise InvalidLogFmt('Not enough space for unicode escape')
-        if self.line[self.index:self.index + 2] != '\\u':
-            raise InvalidLogFmt('Invalid unicode escape start')
+            raise InvalidLogFmt("Not enough space for unicode escape")
+        if self.line[self.index : self.index + 2] != "\\u":
+            raise InvalidLogFmt("Invalid unicode escape start")
         v = 0
         for i in range(self.index + 2, self.index + 6):
             v <<= 4
             try:
                 v += _HEX_DICT[self.line[self.index]]
             except KeyError:
-                raise InvalidLogFmt(f'Invalid unicode escape digit {self.line[self.index]!r}')
+                raise InvalidLogFmt(
+                    f"Invalid unicode escape digit {self.line[self.index]!r}"
+                )
         self.index += 6
         return chr(v)
 
@@ -111,8 +113,8 @@ def parse_line(line, logrus_mode=False):
     mode = _Mode.GARBAGE
 
     def handle_kv(has_no_value=False):
-        k = ''.join(key)
-        v = None if has_no_value else ''.join(value)
+        k = "".join(key)
+        v = None if has_no_value else "".join(value)
         result[k] = v
         del key[:]
         del value[:]
@@ -128,7 +130,7 @@ def parse_line(line, logrus_mode=False):
             key.append(cur)
             parser.next()
             return _Mode.KEY
-        elif cur == '=':
+        elif cur == "=":
             parser.next()
             return _Mode.EQUAL
         else:
@@ -162,16 +164,16 @@ def parse_line(line, logrus_mode=False):
             return _Mode.GARBAGE
 
     def parse_quoted_value(cur):
-        if cur == '\\':
+        if cur == "\\":
             parser.next()
             if parser.done():
-                raise InvalidLogFmt('Unterminated escape sequence in quoted string')
+                raise InvalidLogFmt("Unterminated escape sequence in quoted string")
             cur = parser.cur()
             if cur in _ESCAPE_DICT:
                 value.append(_ESCAPE_DICT[cur])
-            elif cur != 'u':
+            elif cur != "u":
                 es = f"\\{cur}"
-                raise InvalidLogFmt(f'Unknown escape sequence {es!r}')
+                raise InvalidLogFmt(f"Unknown escape sequence {es!r}")
             else:
                 parser.prev()
                 value.append(parser.parse_unicode_sequence())
@@ -181,8 +183,8 @@ def parse_line(line, logrus_mode=False):
             handle_kv()
             parser.next()
             return _Mode.GARBAGE
-        elif cur < ' ':
-            raise InvalidLogFmt('Control characters in quoted string are not allowed')
+        elif cur < " ":
+            raise InvalidLogFmt("Control characters in quoted string are not allowed")
         else:
             value.append(cur)
             parser.next()
@@ -204,5 +206,5 @@ def parse_line(line, logrus_mode=False):
     elif mode == _Mode.IDENT_VALUE:
         handle_kv()
     elif mode == _Mode.QUOTED_VALUE:
-        raise InvalidLogFmt('Unterminated quoted string')
+        raise InvalidLogFmt("Unterminated quoted string")
     return result

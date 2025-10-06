@@ -48,22 +48,24 @@ def read(socket, n=4096):
             poll.poll()
 
     try:
-        if hasattr(socket, 'recv'):
+        if hasattr(socket, "recv"):
             return socket.recv(n)
-        if isinstance(socket, getattr(pysocket, 'SocketIO')):
+        if isinstance(socket, getattr(pysocket, "SocketIO")):
             return socket.read(n)
         return os.read(socket.fileno(), n)
     except EnvironmentError as e:
         if e.errno not in recoverable_errors:
             raise
     except Exception as e:
-        is_pipe_ended = (isinstance(socket, NpipeSocket) and
-                         len(e.args) > 0 and
-                         e.args[0] == NPIPE_ENDED)
+        is_pipe_ended = (
+            isinstance(socket, NpipeSocket)
+            and len(e.args) > 0
+            and e.args[0] == NPIPE_ENDED
+        )
         if is_pipe_ended:
             # npipes do not support duplex sockets, so we interpret
             # a PIPE_ENDED error as a close operation (0-length read).
-            return ''
+            return ""
         raise
 
 
@@ -72,7 +74,7 @@ def read_exactly(socket, n):
     Reads exactly n bytes from socket
     Raises SocketError if there is not enough data
     """
-    data = b''
+    data = b""
     while len(data) < n:
         next_data = read(socket, n - len(data))
         if not next_data:
@@ -93,7 +95,7 @@ def next_frame_header(socket):
     except SocketError:
         return (-1, -1)
 
-    stream, actual = struct.unpack('>BxxxL', data)
+    stream, actual = struct.unpack(">BxxxL", data)
     return (stream, actual)
 
 
@@ -160,7 +162,7 @@ def consume_socket_output(frames, demux=False):
     if demux is False:
         # If the streams are multiplexed, the generator returns strings, that
         # we just need to concatenate.
-        return b''.join(frames)
+        return b"".join(frames)
 
     # If the streams are demultiplexed, the generator yields tuples
     # (stdout, stderr)
@@ -169,7 +171,7 @@ def consume_socket_output(frames, demux=False):
         # It is guaranteed that for each frame, one and only one stream
         # is not None.
         if frame == (None, None):
-            raise AssertionError(f'frame must be (None, None), but got {frame}')
+            raise AssertionError(f"frame must be (None, None), but got {frame}")
         if frame[0] is not None:
             if out[0] is None:
                 out[0] = frame[0]
@@ -193,4 +195,4 @@ def demux_adaptor(stream_id, data):
     elif stream_id == STDERR:
         return (None, data)
     else:
-        raise ValueError(f'{stream_id} is not a valid stream')
+        raise ValueError(f"{stream_id} is not a valid stream")

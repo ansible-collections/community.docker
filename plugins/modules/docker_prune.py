@@ -231,117 +231,138 @@ builder_cache_caches_deleted:
 import traceback
 
 from ansible.module_utils.common.text.formatters import human_to_bytes
-
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    DockerException,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
+    convert_filters,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-
-from ansible_collections.community.docker.plugins.module_utils.util import clean_dict_booleans_for_docker_api
-
-from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
-from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import convert_filters
+from ansible_collections.community.docker.plugins.module_utils.util import (
+    clean_dict_booleans_for_docker_api,
+)
 
 
 def main():
     argument_spec = dict(
-        containers=dict(type='bool', default=False),
-        containers_filters=dict(type='dict'),
-        images=dict(type='bool', default=False),
-        images_filters=dict(type='dict'),
-        networks=dict(type='bool', default=False),
-        networks_filters=dict(type='dict'),
-        volumes=dict(type='bool', default=False),
-        volumes_filters=dict(type='dict'),
-        builder_cache=dict(type='bool', default=False),
-        builder_cache_all=dict(type='bool', default=False),
-        builder_cache_filters=dict(type='dict'),
-        builder_cache_keep_storage=dict(type='str'),  # convert to bytes
+        containers=dict(type="bool", default=False),
+        containers_filters=dict(type="dict"),
+        images=dict(type="bool", default=False),
+        images_filters=dict(type="dict"),
+        networks=dict(type="bool", default=False),
+        networks_filters=dict(type="dict"),
+        volumes=dict(type="bool", default=False),
+        volumes_filters=dict(type="dict"),
+        builder_cache=dict(type="bool", default=False),
+        builder_cache_all=dict(type="bool", default=False),
+        builder_cache_filters=dict(type="dict"),
+        builder_cache_keep_storage=dict(type="str"),  # convert to bytes
     )
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         option_minimal_versions=dict(
-            builder_cache=dict(docker_py_version='1.31'),
-            builder_cache_all=dict(docker_py_version='1.39'),
-            builder_cache_filters=dict(docker_py_version='1.31'),
-            builder_cache_keep_storage=dict(docker_py_version='1.39'),
+            builder_cache=dict(docker_py_version="1.31"),
+            builder_cache_all=dict(docker_py_version="1.39"),
+            builder_cache_filters=dict(docker_py_version="1.31"),
+            builder_cache_keep_storage=dict(docker_py_version="1.39"),
         ),
         # supports_check_mode=True,
     )
 
     builder_cache_keep_storage = None
-    if client.module.params.get('builder_cache_keep_storage') is not None:
+    if client.module.params.get("builder_cache_keep_storage") is not None:
         try:
-            builder_cache_keep_storage = human_to_bytes(client.module.params.get('builder_cache_keep_storage'))
+            builder_cache_keep_storage = human_to_bytes(
+                client.module.params.get("builder_cache_keep_storage")
+            )
         except ValueError as exc:
-            client.module.fail_json(msg=f'Error while parsing value of builder_cache_keep_storage: {exc}')
+            client.module.fail_json(
+                msg=f"Error while parsing value of builder_cache_keep_storage: {exc}"
+            )
 
     try:
         result = dict()
         changed = False
 
-        if client.module.params['containers']:
-            filters = clean_dict_booleans_for_docker_api(client.module.params.get('containers_filters'), allow_sequences=True)
-            params = {'filters': convert_filters(filters)}
-            res = client.post_to_json('/containers/prune', params=params)
-            result['containers'] = res.get('ContainersDeleted') or []
-            result['containers_space_reclaimed'] = res['SpaceReclaimed']
-            if result['containers'] or result['containers_space_reclaimed']:
+        if client.module.params["containers"]:
+            filters = clean_dict_booleans_for_docker_api(
+                client.module.params.get("containers_filters"), allow_sequences=True
+            )
+            params = {"filters": convert_filters(filters)}
+            res = client.post_to_json("/containers/prune", params=params)
+            result["containers"] = res.get("ContainersDeleted") or []
+            result["containers_space_reclaimed"] = res["SpaceReclaimed"]
+            if result["containers"] or result["containers_space_reclaimed"]:
                 changed = True
 
-        if client.module.params['images']:
-            filters = clean_dict_booleans_for_docker_api(client.module.params.get('images_filters'), allow_sequences=True)
-            params = {'filters': convert_filters(filters)}
-            res = client.post_to_json('/images/prune', params=params)
-            result['images'] = res.get('ImagesDeleted') or []
-            result['images_space_reclaimed'] = res['SpaceReclaimed']
-            if result['images'] or result['images_space_reclaimed']:
+        if client.module.params["images"]:
+            filters = clean_dict_booleans_for_docker_api(
+                client.module.params.get("images_filters"), allow_sequences=True
+            )
+            params = {"filters": convert_filters(filters)}
+            res = client.post_to_json("/images/prune", params=params)
+            result["images"] = res.get("ImagesDeleted") or []
+            result["images_space_reclaimed"] = res["SpaceReclaimed"]
+            if result["images"] or result["images_space_reclaimed"]:
                 changed = True
 
-        if client.module.params['networks']:
-            filters = clean_dict_booleans_for_docker_api(client.module.params.get('networks_filters'), allow_sequences=True)
-            params = {'filters': convert_filters(filters)}
-            res = client.post_to_json('/networks/prune', params=params)
-            result['networks'] = res.get('NetworksDeleted') or []
-            if result['networks']:
+        if client.module.params["networks"]:
+            filters = clean_dict_booleans_for_docker_api(
+                client.module.params.get("networks_filters"), allow_sequences=True
+            )
+            params = {"filters": convert_filters(filters)}
+            res = client.post_to_json("/networks/prune", params=params)
+            result["networks"] = res.get("NetworksDeleted") or []
+            if result["networks"]:
                 changed = True
 
-        if client.module.params['volumes']:
-            filters = clean_dict_booleans_for_docker_api(client.module.params.get('volumes_filters'), allow_sequences=True)
-            params = {'filters': convert_filters(filters)}
-            res = client.post_to_json('/volumes/prune', params=params)
-            result['volumes'] = res.get('VolumesDeleted') or []
-            result['volumes_space_reclaimed'] = res['SpaceReclaimed']
-            if result['volumes'] or result['volumes_space_reclaimed']:
+        if client.module.params["volumes"]:
+            filters = clean_dict_booleans_for_docker_api(
+                client.module.params.get("volumes_filters"), allow_sequences=True
+            )
+            params = {"filters": convert_filters(filters)}
+            res = client.post_to_json("/volumes/prune", params=params)
+            result["volumes"] = res.get("VolumesDeleted") or []
+            result["volumes_space_reclaimed"] = res["SpaceReclaimed"]
+            if result["volumes"] or result["volumes_space_reclaimed"]:
                 changed = True
 
-        if client.module.params['builder_cache']:
-            filters = clean_dict_booleans_for_docker_api(client.module.params.get('builder_cache_filters'), allow_sequences=True)
-            params = {'filters': convert_filters(filters)}
-            if client.module.params.get('builder_cache_all'):
-                params['all'] = 'true'
+        if client.module.params["builder_cache"]:
+            filters = clean_dict_booleans_for_docker_api(
+                client.module.params.get("builder_cache_filters"), allow_sequences=True
+            )
+            params = {"filters": convert_filters(filters)}
+            if client.module.params.get("builder_cache_all"):
+                params["all"] = "true"
             if builder_cache_keep_storage is not None:
-                params['keep-storage'] = builder_cache_keep_storage
-            res = client.post_to_json('/build/prune', params=params)
-            result['builder_cache_space_reclaimed'] = res['SpaceReclaimed']
-            if result['builder_cache_space_reclaimed']:
+                params["keep-storage"] = builder_cache_keep_storage
+            res = client.post_to_json("/build/prune", params=params)
+            result["builder_cache_space_reclaimed"] = res["SpaceReclaimed"]
+            if result["builder_cache_space_reclaimed"]:
                 changed = True
-            if 'CachesDeleted' in res:
+            if "CachesDeleted" in res:
                 # API version 1.39+: return value CachesDeleted (list of str)
-                result['builder_cache_caches_deleted'] = res['CachesDeleted']
-                if result['builder_cache_caches_deleted']:
+                result["builder_cache_caches_deleted"] = res["CachesDeleted"]
+                if result["builder_cache_caches_deleted"]:
                     changed = True
 
-        result['changed'] = changed
+        result["changed"] = changed
         client.module.exit_json(**result)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -95,28 +95,28 @@ images:
 
 import traceback
 
+from ansible_collections.community.docker.plugins.module_utils._api.constants import (
+    DEFAULT_DATA_CHUNK_SIZE,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    DockerException,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
+    parse_repository_tag,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-
 from ansible_collections.community.docker.plugins.module_utils.image_archive import (
-    load_archived_image_manifest,
-    api_image_id,
     ImageArchiveInvalidException,
+    api_image_id,
+    load_archived_image_manifest,
 )
-
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     is_image_name_id,
     is_valid_tag,
-)
-from ansible_collections.community.docker.plugins.module_utils._api.constants import (
-    DEFAULT_DATA_CHUNK_SIZE,
-)
-from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
-from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
-    parse_repository_tag,
 )
 
 
@@ -128,47 +128,52 @@ class ImageExportManager(DockerBaseClass):
         parameters = self.client.module.params
         self.check_mode = self.client.check_mode
 
-        self.path = parameters['path']
-        self.force = parameters['force']
-        self.tag = parameters['tag']
+        self.path = parameters["path"]
+        self.force = parameters["force"]
+        self.tag = parameters["tag"]
 
         if not is_valid_tag(self.tag, allow_empty=True):
             self.fail(f'"{self.tag}" is not a valid docker tag')
 
         # If name contains a tag, it takes precedence over tag parameter.
         self.names = []
-        for name in parameters['names']:
+        for name in parameters["names"]:
             if is_image_name_id(name):
-                self.names.append({'id': name, 'joined': name})
+                self.names.append({"id": name, "joined": name})
             else:
                 repo, repo_tag = parse_repository_tag(name)
                 if not repo_tag:
                     repo_tag = self.tag
-                self.names.append({'name': repo, 'tag': repo_tag, 'joined': f'{repo}:{repo_tag}'})
+                self.names.append(
+                    {"name": repo, "tag": repo_tag, "joined": f"{repo}:{repo_tag}"}
+                )
 
         if not self.names:
-            self.fail('At least one image name must be specified')
+            self.fail("At least one image name must be specified")
 
     def fail(self, msg):
         self.client.fail(msg)
 
     def get_export_reason(self):
         if self.force:
-            return 'Exporting since force=true'
+            return "Exporting since force=true"
 
         try:
             archived_images = load_archived_image_manifest(self.path)
             if archived_images is None:
-                return 'Overwriting since no image is present in archive'
+                return "Overwriting since no image is present in archive"
         except ImageArchiveInvalidException as exc:
-            self.log(f'Unable to extract manifest summary from archive: {exc}')
-            return 'Overwriting an unreadable archive file'
+            self.log(f"Unable to extract manifest summary from archive: {exc}")
+            return "Overwriting an unreadable archive file"
 
         left_names = list(self.names)
         for archived_image in archived_images:
             found = False
             for i, name in enumerate(left_names):
-                if name['id'] == api_image_id(archived_image.image_id) and [name['joined']] == archived_image.repo_tags:
+                if (
+                    name["id"] == api_image_id(archived_image.image_id)
+                    and [name["joined"]] == archived_image.repo_tags
+                ):
                     del left_names[i]
                     found = True
                     break
@@ -181,20 +186,22 @@ class ImageExportManager(DockerBaseClass):
 
     def write_chunks(self, chunks):
         try:
-            with open(self.path, 'wb') as fd:
+            with open(self.path, "wb") as fd:
                 for chunk in chunks:
                     fd.write(chunk)
         except Exception as exc:
             self.fail(f"Error writing image archive {self.path} - {exc}")
 
     def export_images(self):
-        image_names = [name['joined'] for name in self.names]
-        image_names_str = ', '.join(image_names)
+        image_names = [name["joined"] for name in self.names]
+        image_names_str = ", ".join(image_names)
         if len(image_names) == 1:
             self.log(f"Getting archive of image {image_names[0]}")
             try:
                 chunks = self.client._stream_raw_result(
-                    self.client._get(self.client._url('/images/{0}/get', image_names[0]), stream=True),
+                    self.client._get(
+                        self.client._url("/images/{0}/get", image_names[0]), stream=True
+                    ),
                     DEFAULT_DATA_CHUNK_SIZE,
                     False,
                 )
@@ -205,9 +212,9 @@ class ImageExportManager(DockerBaseClass):
             try:
                 chunks = self.client._stream_raw_result(
                     self.client._get(
-                        self.client._url('/images/get'),
+                        self.client._url("/images/get"),
                         stream=True,
-                        params={'names': image_names},
+                        params={"names": image_names},
                     ),
                     DEFAULT_DATA_CHUNK_SIZE,
                     False,
@@ -224,26 +231,28 @@ class ImageExportManager(DockerBaseClass):
 
         images = []
         for name in self.names:
-            if 'id' in name:
-                image = self.client.find_image_by_id(name['id'], accept_missing_image=True)
+            if "id" in name:
+                image = self.client.find_image_by_id(
+                    name["id"], accept_missing_image=True
+                )
             else:
-                image = self.client.find_image(name=name['name'], tag=name['tag'])
+                image = self.client.find_image(name=name["name"], tag=name["tag"])
             if not image:
                 self.fail(f"Image {name['joined']} not found")
             images.append(image)
 
             # Will have a 'sha256:' prefix
-            name['id'] = image['Id']
+            name["id"] = image["Id"]
 
         results = {
-            'changed': False,
-            'images': images,
+            "changed": False,
+            "images": images,
         }
 
         reason = self.get_export_reason()
         if reason is not None:
-            results['msg'] = reason
-            results['changed'] = True
+            results["msg"] = reason
+            results["changed"] = True
 
             if not self.check_mode:
                 self.export_images()
@@ -253,10 +262,10 @@ class ImageExportManager(DockerBaseClass):
 
 def main():
     argument_spec = dict(
-        path=dict(type='path'),
-        force=dict(type='bool', default=False),
-        names=dict(type='list', elements='str', required=True, aliases=['name']),
-        tag=dict(type='str', default='latest'),
+        path=dict(type="path"),
+        force=dict(type="bool", default=False),
+        names=dict(type="list", elements="str", required=True, aliases=["name"]),
+        tag=dict(type="str", default="latest"),
     )
 
     client = AnsibleDockerClient(
@@ -268,12 +277,16 @@ def main():
         results = ImageExportManager(client).run()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

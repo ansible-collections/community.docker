@@ -159,34 +159,37 @@ import json
 import os
 import tempfile
 import traceback
-
 from time import sleep
 
 from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common_cli import (
     AnsibleModuleDockerClient,
     DockerException,
 )
 
+
 try:
     from jsondiff import diff as json_diff
+
     HAS_JSONDIFF = True
 except ImportError:
     HAS_JSONDIFF = False
 
 try:
     from yaml import dump as yaml_dump
+
     HAS_YAML = True
 except ImportError:
     HAS_YAML = False
 
 
 def docker_stack_services(client, stack_name):
-    rc, out, err = client.call_cli("stack", "services", stack_name, "--format", "{{.Name}}")
+    rc, out, err = client.call_cli(
+        "stack", "services", stack_name, "--format", "{{.Name}}"
+    )
     if to_native(err) == f"Nothing found in stack: {stack_name}\n":
         return []
-    return to_native(out).strip().split('\n')
+    return to_native(out).strip().split("\n")
 
 
 def docker_service_inspect(client, service_name):
@@ -194,7 +197,7 @@ def docker_service_inspect(client, service_name):
     if rc != 0:
         return None
     else:
-        ret = json.loads(out)[0]['Spec']
+        ret = json.loads(out)[0]["Spec"]
         return ret
 
 
@@ -207,11 +210,9 @@ def docker_stack_deploy(client, stack_name, compose_files):
     if client.module.params["with_registry_auth"]:
         command += ["--with-registry-auth"]
     if client.module.params["resolve_image"]:
-        command += ["--resolve-image",
-                    client.module.params["resolve_image"]]
+        command += ["--resolve-image", client.module.params["resolve_image"]]
     for compose_file in compose_files:
-        command += ["--compose-file",
-                    compose_file]
+        command += ["--compose-file", compose_file]
     command += [stack_name]
     rc, out, err = client.call_cli(*command)
     return rc, to_native(out), to_native(err)
@@ -240,15 +241,15 @@ def docker_stack_rm(client, stack_name, retries, interval):
 def main():
     client = AnsibleModuleDockerClient(
         argument_spec={
-            'name': dict(type='str', required=True),
-            'compose': dict(type='list', elements='raw', default=[]),
-            'prune': dict(type='bool', default=False),
-            'detach': dict(type='bool', default=True),
-            'with_registry_auth': dict(type='bool', default=False),
-            'resolve_image': dict(type='str', choices=['always', 'changed', 'never']),
-            'state': dict(type='str', default='present', choices=['present', 'absent']),
-            'absent_retries': dict(type='int', default=0),
-            'absent_retries_interval': dict(type='int', default=1)
+            "name": dict(type="str", required=True),
+            "compose": dict(type="list", elements="raw", default=[]),
+            "prune": dict(type="bool", default=False),
+            "detach": dict(type="bool", default=True),
+            "with_registry_auth": dict(type="bool", default=False),
+            "resolve_image": dict(type="str", choices=["always", "changed", "never"]),
+            "state": dict(type="str", default="present", choices=["present", "absent"]),
+            "absent_retries": dict(type="int", default=0),
+            "absent_retries_interval": dict(type="int", default=1),
         },
         supports_check_mode=False,
     )
@@ -260,28 +261,32 @@ def main():
         return client.fail("yaml is not installed, try 'pip install pyyaml'")
 
     try:
-        state = client.module.params['state']
-        compose = client.module.params['compose']
-        name = client.module.params['name']
-        absent_retries = client.module.params['absent_retries']
-        absent_retries_interval = client.module.params['absent_retries_interval']
+        state = client.module.params["state"]
+        compose = client.module.params["compose"]
+        name = client.module.params["name"]
+        absent_retries = client.module.params["absent_retries"]
+        absent_retries_interval = client.module.params["absent_retries_interval"]
 
-        if state == 'present':
+        if state == "present":
             if not compose:
-                client.fail("compose parameter must be a list containing at least one element")
+                client.fail(
+                    "compose parameter must be a list containing at least one element"
+                )
 
             compose_files = []
             for i, compose_def in enumerate(compose):
                 if isinstance(compose_def, dict):
                     compose_file_fd, compose_file = tempfile.mkstemp()
                     client.module.add_cleanup_file(compose_file)
-                    with os.fdopen(compose_file_fd, 'w') as stack_file:
+                    with os.fdopen(compose_file_fd, "w") as stack_file:
                         compose_files.append(compose_file)
                         stack_file.write(yaml_dump(compose_def))
                 elif isinstance(compose_def, str):
                     compose_files.append(compose_def)
                 else:
-                    client.fail(f"compose element '{compose_def}' must be a string or a dictionary")
+                    client.fail(
+                        f"compose element '{compose_def}' must be a string or a dictionary"
+                    )
 
             before_stack_services = docker_stack_inspect(client, name)
 
@@ -290,13 +295,20 @@ def main():
             after_stack_services = docker_stack_inspect(client, name)
 
             if rc != 0:
-                client.fail("docker stack up deploy command failed", rc=rc, stdout=out, stderr=err)
+                client.fail(
+                    "docker stack up deploy command failed",
+                    rc=rc,
+                    stdout=out,
+                    stderr=err,
+                )
 
-            before_after_differences = json_diff(before_stack_services, after_stack_services)
+            before_after_differences = json_diff(
+                before_stack_services, after_stack_services
+            )
             for k in before_after_differences.keys():
                 if isinstance(before_after_differences[k], dict):
-                    before_after_differences[k].pop('UpdatedAt', None)
-                    before_after_differences[k].pop('Version', None)
+                    before_after_differences[k].pop("UpdatedAt", None)
+                    before_after_differences[k].pop("Version", None)
                     if not list(before_after_differences[k].keys()):
                         before_after_differences.pop(k)
 
@@ -322,7 +334,9 @@ def main():
 
         else:
             if docker_stack_services(client, name):
-                rc, out, err = docker_stack_rm(client, name, absent_retries, absent_retries_interval)
+                rc, out, err = docker_stack_rm(
+                    client, name, absent_retries, absent_retries_interval
+                )
                 if rc != 0:
                     client.module.fail_json(
                         msg="'docker stack down' command failed",
@@ -340,7 +354,10 @@ def main():
                     )
             client.module.exit_json(changed=False)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
 if __name__ == "__main__":

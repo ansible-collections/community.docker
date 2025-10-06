@@ -8,5 +8,7 @@
 
 from __future__ import annotations
 
-
-from ansible.module_utils.compat.version import LooseVersion, StrictVersion  # noqa: F401, pylint: disable=unused-import
+from ansible.module_utils.compat.version import (  # noqa: F401, pylint: disable=unused-import
+    LooseVersion,
+    StrictVersion,
+)

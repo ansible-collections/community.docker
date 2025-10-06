@@ -15,7 +15,7 @@ from .._import_helper import HTTPAdapter as _HTTPAdapter
 class BaseHTTPAdapter(_HTTPAdapter):
     def close(self):
         super(BaseHTTPAdapter, self).close()
-        if hasattr(self, 'pools'):
+        if hasattr(self, "pools"):
             self.pools.clear()
 
     # Hotfix for requests 2.32.0 and 2.32.1: its commit
@@ -23,7 +23,7 @@ class BaseHTTPAdapter(_HTTPAdapter):
     # changes requests.adapters.HTTPAdapter to no longer call get_connection() from
     # send(), but instead call _get_connection().
     def _get_connection(self, request, *args, **kwargs):
-        return self.get_connection(request.url, kwargs.get('proxies'))
+        return self.get_connection(request.url, kwargs.get("proxies"))
 
     # Fix for requests 2.32.2+:
     # https://github.com/psf/requests/commit/c98e4d133ef29c46a9b68cd783087218a8075e05

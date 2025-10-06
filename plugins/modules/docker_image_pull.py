@@ -92,35 +92,34 @@ image:
 
 import traceback
 
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    DockerException,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
+    parse_repository_tag,
+)
+from ansible_collections.community.docker.plugins.module_utils._platform import (
+    compare_platform_strings,
+    compose_platform_string,
+    normalize_platform_string,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     is_image_name_id,
     is_valid_tag,
 )
 
-from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
-from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
-    parse_repository_tag,
-)
-
-from ansible_collections.community.docker.plugins.module_utils._platform import (
-    normalize_platform_string,
-    compare_platform_strings,
-    compose_platform_string,
-)
-
 
 def image_info(image):
     result = {}
     if image:
-        result['id'] = image['Id']
+        result["id"] = image["Id"]
     else:
-        result['exists'] = False
+        result["exists"] = False
     return result
 
 
@@ -132,10 +131,10 @@ class ImagePuller(DockerBaseClass):
         self.check_mode = self.client.check_mode
 
         parameters = self.client.module.params
-        self.name = parameters['name']
-        self.tag = parameters['tag']
-        self.platform = parameters['platform']
-        self.pull_mode = parameters['pull']
+        self.name = parameters["name"]
+        self.tag = parameters["tag"]
+        self.platform = parameters["platform"]
+        self.pull_mode = parameters["pull"]
 
         if is_image_name_id(self.name):
             self.client.fail("Cannot pull an image by ID")
@@ -157,47 +156,49 @@ class ImagePuller(DockerBaseClass):
             diff=dict(before=image_info(image), after=image_info(image)),
         )
 
-        if image and self.pull_mode == 'not_present':
+        if image and self.pull_mode == "not_present":
             if self.platform is None:
                 return results
             host_info = self.client.info()
             wanted_platform = normalize_platform_string(
                 self.platform,
-                daemon_os=host_info.get('OSType'),
-                daemon_arch=host_info.get('Architecture'),
+                daemon_os=host_info.get("OSType"),
+                daemon_arch=host_info.get("Architecture"),
             )
             image_platform = compose_platform_string(
-                os=image.get('Os'),
-                arch=image.get('Architecture'),
-                variant=image.get('Variant'),
-                daemon_os=host_info.get('OSType'),
-                daemon_arch=host_info.get('Architecture'),
+                os=image.get("Os"),
+                arch=image.get("Architecture"),
+                variant=image.get("Variant"),
+                daemon_os=host_info.get("OSType"),
+                daemon_arch=host_info.get("Architecture"),
             )
             if compare_platform_strings(wanted_platform, image_platform):
                 return results
 
-        results['actions'].append(f'Pulled image {self.name}:{self.tag}')
+        results["actions"].append(f"Pulled image {self.name}:{self.tag}")
         if self.check_mode:
-            results['changed'] = True
-            results['diff']['after'] = image_info(dict(Id='unknown'))
+            results["changed"] = True
+            results["diff"]["after"] = image_info(dict(Id="unknown"))
         else:
-            results['image'], not_changed = self.client.pull_image(self.name, tag=self.tag, platform=self.platform)
-            results['changed'] = not not_changed
-            results['diff']['after'] = image_info(results['image'])
+            results["image"], not_changed = self.client.pull_image(
+                self.name, tag=self.tag, platform=self.platform
+            )
+            results["changed"] = not not_changed
+            results["diff"]["after"] = image_info(results["image"])
 
         return results
 
 
 def main():
     argument_spec = dict(
-        name=dict(type='str', required=True),
-        tag=dict(type='str', default='latest'),
-        platform=dict(type='str'),
-        pull=dict(type='str', choices=['always', 'not_present'], default='always'),
+        name=dict(type="str", required=True),
+        tag=dict(type="str", default="latest"),
+        platform=dict(type="str"),
+        pull=dict(type="str", choices=["always", "not_present"], default="always"),
     )
 
     option_minimal_versions = dict(
-        platform=dict(docker_api_version='1.32'),
+        platform=dict(docker_api_version="1.32"),
     )
 
     client = AnsibleDockerClient(
@@ -210,12 +211,16 @@ def main():
         results = ImagePuller(client).pull()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

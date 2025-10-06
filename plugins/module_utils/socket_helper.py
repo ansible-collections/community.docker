@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-
 import fcntl
 import os
 import os.path
@@ -12,17 +11,25 @@ import socket as pysocket
 
 
 def make_file_unblocking(file):
-    fcntl.fcntl(file.fileno(), fcntl.F_SETFL, fcntl.fcntl(file.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK)
+    fcntl.fcntl(
+        file.fileno(),
+        fcntl.F_SETFL,
+        fcntl.fcntl(file.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK,
+    )
 
 
 def make_file_blocking(file):
-    fcntl.fcntl(file.fileno(), fcntl.F_SETFL, fcntl.fcntl(file.fileno(), fcntl.F_GETFL) & ~os.O_NONBLOCK)
+    fcntl.fcntl(
+        file.fileno(),
+        fcntl.F_SETFL,
+        fcntl.fcntl(file.fileno(), fcntl.F_GETFL) & ~os.O_NONBLOCK,
+    )
 
 
 def make_unblocking(sock):
-    if hasattr(sock, '_sock'):
+    if hasattr(sock, "_sock"):
         sock._sock.setblocking(0)
-    elif hasattr(sock, 'setblocking'):
+    elif hasattr(sock, "setblocking"):
         sock.setblocking(0)
     else:
         make_file_unblocking(sock)
@@ -37,27 +44,27 @@ def shutdown_writing(sock, log=_empty_writer):
     #        a close_notify TLS alert without completely shutting down the connection.
     #        Calling sock.shutdown(pysocket.SHUT_WR) simply turns of TLS encryption and from that
     #        point on the raw encrypted data is returned when sock.recv() is called. :-(
-    if hasattr(sock, 'shutdown_write'):
+    if hasattr(sock, "shutdown_write"):
         sock.shutdown_write()
-    elif hasattr(sock, 'shutdown'):
+    elif hasattr(sock, "shutdown"):
         try:
             sock.shutdown(pysocket.SHUT_WR)
         except TypeError as e:
             # probably: "TypeError: shutdown() takes 1 positional argument but 2 were given"
-            log(f'Shutting down for writing not possible; trying shutdown instead: {e}')
+            log(f"Shutting down for writing not possible; trying shutdown instead: {e}")
             sock.shutdown()
-    elif isinstance(sock, getattr(pysocket, 'SocketIO')):
+    elif isinstance(sock, getattr(pysocket, "SocketIO")):
         sock._sock.shutdown(pysocket.SHUT_WR)
     else:
-        log('No idea how to signal end of writing')
+        log("No idea how to signal end of writing")
 
 
 def write_to_socket(sock, data):
-    if hasattr(sock, '_send_until_done'):
+    if hasattr(sock, "_send_until_done"):
         # WrappedSocket (urllib3/contrib/pyopenssl) does not have `send`, but
         # only `sendall`, which uses `_send_until_done` under the hood.
         return sock._send_until_done(data)
-    elif hasattr(sock, 'send'):
+    elif hasattr(sock, "send"):
         return sock.send(data)
     else:
         return os.write(sock.fileno(), data)

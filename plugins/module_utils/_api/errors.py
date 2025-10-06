@@ -9,9 +9,9 @@
 
 from __future__ import annotations
 
-from ._import_helper import HTTPError as _HTTPError
-
 from ansible.module_utils.common.text.converters import to_native
+
+from ._import_helper import HTTPError as _HTTPError
 
 
 class DockerException(Exception):
@@ -29,15 +29,16 @@ def create_api_error_from_http_exception(e):
     """
     response = e.response
     try:
-        explanation = response.json()['message']
+        explanation = response.json()["message"]
     except ValueError:
-        explanation = to_native((response.content or '').strip())
+        explanation = to_native((response.content or "").strip())
     cls = APIError
     if response.status_code == 404:
-        if explanation and ('No such image' in str(explanation) or
-                            'not found: does not exist or no pull access'
-                            in str(explanation) or
-                            'repository does not exist' in str(explanation)):
+        if explanation and (
+            "No such image" in str(explanation)
+            or "not found: does not exist or no pull access" in str(explanation)
+            or "repository does not exist" in str(explanation)
+        ):
             cls = ImageNotFound
         else:
             cls = NotFound
@@ -48,6 +49,7 @@ class APIError(_HTTPError, DockerException):
     """
     An HTTP error from the API.
     """
+
     def __init__(self, message, response=None, explanation=None):
         # requests 1.2 supports response as a keyword argument, but
         # requests 1.1 does not
@@ -59,10 +61,10 @@ class APIError(_HTTPError, DockerException):
         message = super(APIError, self).__str__()
 
         if self.is_client_error():
-            message = f'{self.response.status_code} Client Error for {self.response.url}: {self.response.reason}'
+            message = f"{self.response.status_code} Client Error for {self.response.url}: {self.response.reason}"
 
         elif self.is_server_error():
-            message = f'{self.response.status_code} Server Error for {self.response.url}: {self.response.reason}'
+            message = f"{self.response.status_code} Server Error for {self.response.url}: {self.response.reason}"
 
         if self.explanation:
             message = f'{message} ("{self.explanation}")'
@@ -121,10 +123,12 @@ class TLSParameterError(DockerException):
         self.msg = msg
 
     def __str__(self):
-        return self.msg + (". TLS configurations should map the Docker CLI "
-                           "client configurations. See "
-                           "https://docs.docker.com/engine/articles/https/ "
-                           "for API details.")
+        return self.msg + (
+            ". TLS configurations should map the Docker CLI "
+            "client configurations. See "
+            "https://docs.docker.com/engine/articles/https/ "
+            "for API details."
+        )
 
 
 class NullResource(DockerException, ValueError):
@@ -135,6 +139,7 @@ class ContainerError(DockerException):
     """
     Represents a container that has exited with a non-zero exit code.
     """
+
     def __init__(self, container, exit_status, command, image, stderr):
         self.container = container
         self.exit_status = exit_status
@@ -171,8 +176,8 @@ def create_unexpected_kwargs_error(name, kwargs):
         text.append("got an unexpected keyword argument ")
     else:
         text.append("got unexpected keyword arguments ")
-    text.append(', '.join(quoted_kwargs))
-    return TypeError(''.join(text))
+    text.append(", ".join(quoted_kwargs))
+    return TypeError("".join(text))
 
 
 class MissingContextParameter(DockerException):
@@ -196,7 +201,7 @@ class ContextException(DockerException):
         self.msg = msg
 
     def __str__(self):
-        return (self.msg)
+        return self.msg
 
 
 class ContextNotFound(DockerException):
@@ -214,4 +219,4 @@ class MissingRequirementException(DockerException):
         self.import_exception = import_exception
 
     def __str__(self):
-        return (self.msg)
+        return self.msg

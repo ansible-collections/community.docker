@@ -120,19 +120,18 @@ volume:
 import traceback
 
 from ansible.module_utils.common.text.converters import to_native
-
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    APIError,
+    DockerException,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
 from ansible_collections.community.docker.plugins.module_utils.util import (
-    DockerBaseClass,
     DifferenceTracker,
+    DockerBaseClass,
     sanitize_labels,
-)
-from ansible_collections.community.docker.plugins.module_utils._api.errors import (
-    APIError,
-    DockerException,
 )
 
 
@@ -158,10 +157,7 @@ class DockerVolumeManager(object):
         self.client = client
         self.parameters = TaskParameters(client)
         self.check_mode = self.client.check_mode
-        self.results = {
-            'changed': False,
-            'actions': []
-        }
+        self.results = {"changed": False, "actions": []}
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()
         self.diff_result = dict()
@@ -169,27 +165,29 @@ class DockerVolumeManager(object):
         self.existing_volume = self.get_existing_volume()
 
         state = self.parameters.state
-        if state == 'present':
+        if state == "present":
             self.present()
-        elif state == 'absent':
+        elif state == "absent":
             self.absent()
 
         if self.diff or self.check_mode or self.parameters.debug:
             if self.diff:
-                self.diff_result['before'], self.diff_result['after'] = self.diff_tracker.get_before_after()
-            self.results['diff'] = self.diff_result
+                self.diff_result["before"], self.diff_result["after"] = (
+                    self.diff_tracker.get_before_after()
+                )
+            self.results["diff"] = self.diff_result
 
     def get_existing_volume(self):
         try:
-            volumes = self.client.get_json('/volumes')
+            volumes = self.client.get_json("/volumes")
         except APIError as e:
             self.client.fail(to_native(e))
 
-        if volumes['Volumes'] is None:
+        if volumes["Volumes"] is None:
             return None
 
-        for volume in volumes['Volumes']:
-            if volume['Name'] == self.parameters.volume_name:
+        for volume in volumes["Volumes"]:
+            if volume["Name"] == self.parameters.volume_name:
                 return volume
 
         return None
@@ -201,27 +199,42 @@ class DockerVolumeManager(object):
         :return: list of options that differ
         """
         differences = DifferenceTracker()
-        if self.parameters.driver and self.parameters.driver != self.existing_volume['Driver']:
-            differences.add('driver', parameter=self.parameters.driver, active=self.existing_volume['Driver'])
+        if (
+            self.parameters.driver
+            and self.parameters.driver != self.existing_volume["Driver"]
+        ):
+            differences.add(
+                "driver",
+                parameter=self.parameters.driver,
+                active=self.existing_volume["Driver"],
+            )
         if self.parameters.driver_options:
-            if not self.existing_volume.get('Options'):
-                differences.add('driver_options',
-                                parameter=self.parameters.driver_options,
-                                active=self.existing_volume.get('Options'))
+            if not self.existing_volume.get("Options"):
+                differences.add(
+                    "driver_options",
+                    parameter=self.parameters.driver_options,
+                    active=self.existing_volume.get("Options"),
+                )
             else:
                 for key, value in self.parameters.driver_options.items():
-                    if (not self.existing_volume['Options'].get(key) or
-                            value != self.existing_volume['Options'][key]):
-                        differences.add(f'driver_options.{key}',
-                                        parameter=value,
-                                        active=self.existing_volume['Options'].get(key))
+                    if (
+                        not self.existing_volume["Options"].get(key)
+                        or value != self.existing_volume["Options"][key]
+                    ):
+                        differences.add(
+                            f"driver_options.{key}",
+                            parameter=value,
+                            active=self.existing_volume["Options"].get(key),
+                        )
         if self.parameters.labels:
-            existing_labels = self.existing_volume.get('Labels') or {}
+            existing_labels = self.existing_volume.get("Labels") or {}
             for label in self.parameters.labels:
                 if existing_labels.get(label) != self.parameters.labels.get(label):
-                    differences.add(f'labels.{label}',
-                                    parameter=self.parameters.labels.get(label),
-                                    active=existing_labels.get(label))
+                    differences.add(
+                        f"labels.{label}",
+                        parameter=self.parameters.labels.get(label),
+                        active=existing_labels.get(label),
+                    )
 
         return differences
 
@@ -230,67 +243,81 @@ class DockerVolumeManager(object):
             if not self.check_mode:
                 try:
                     data = {
-                        'Name': self.parameters.volume_name,
-                        'Driver': self.parameters.driver,
-                        'DriverOpts': self.parameters.driver_options,
+                        "Name": self.parameters.volume_name,
+                        "Driver": self.parameters.driver,
+                        "DriverOpts": self.parameters.driver_options,
                     }
                     if self.parameters.labels is not None:
-                        data['Labels'] = self.parameters.labels
-                    resp = self.client.post_json_to_json('/volumes/create', data=data)
-                    self.existing_volume = self.client.get_json('/volumes/{0}', resp['Name'])
+                        data["Labels"] = self.parameters.labels
+                    resp = self.client.post_json_to_json("/volumes/create", data=data)
+                    self.existing_volume = self.client.get_json(
+                        "/volumes/{0}", resp["Name"]
+                    )
                 except APIError as e:
                     self.client.fail(to_native(e))
 
-            self.results['actions'].append(f"Created volume {self.parameters.volume_name} with driver {self.parameters.driver}")
-            self.results['changed'] = True
+            self.results["actions"].append(
+                f"Created volume {self.parameters.volume_name} with driver {self.parameters.driver}"
+            )
+            self.results["changed"] = True
 
     def remove_volume(self):
         if self.existing_volume:
             if not self.check_mode:
                 try:
-                    self.client.delete_call('/volumes/{0}', self.parameters.volume_name)
+                    self.client.delete_call("/volumes/{0}", self.parameters.volume_name)
                 except APIError as e:
                     self.client.fail(to_native(e))
 
-            self.results['actions'].append(f"Removed volume {self.parameters.volume_name}")
-            self.results['changed'] = True
+            self.results["actions"].append(
+                f"Removed volume {self.parameters.volume_name}"
+            )
+            self.results["changed"] = True
 
     def present(self):
         differences = DifferenceTracker()
         if self.existing_volume:
             differences = self.has_different_config()
 
-        self.diff_tracker.add('exists', parameter=True, active=self.existing_volume is not None)
-        if (not differences.empty and self.parameters.recreate == 'options-changed') or self.parameters.recreate == 'always':
+        self.diff_tracker.add(
+            "exists", parameter=True, active=self.existing_volume is not None
+        )
+        if (
+            not differences.empty and self.parameters.recreate == "options-changed"
+        ) or self.parameters.recreate == "always":
             self.remove_volume()
             self.existing_volume = None
 
         self.create_volume()
 
         if self.diff or self.check_mode or self.parameters.debug:
-            self.diff_result['differences'] = differences.get_legacy_docker_diffs()
+            self.diff_result["differences"] = differences.get_legacy_docker_diffs()
             self.diff_tracker.merge(differences)
 
         if not self.check_mode and not self.parameters.debug:
-            self.results.pop('actions')
+            self.results.pop("actions")
 
         volume_facts = self.get_existing_volume()
-        self.results['volume'] = volume_facts
+        self.results["volume"] = volume_facts
 
     def absent(self):
-        self.diff_tracker.add('exists', parameter=False, active=self.existing_volume is not None)
+        self.diff_tracker.add(
+            "exists", parameter=False, active=self.existing_volume is not None
+        )
         self.remove_volume()
 
 
 def main():
     argument_spec = dict(
-        volume_name=dict(type='str', required=True, aliases=['name']),
-        state=dict(type='str', default='present', choices=['present', 'absent']),
-        driver=dict(type='str', default='local'),
-        driver_options=dict(type='dict', default={}),
-        labels=dict(type='dict'),
-        recreate=dict(type='str', default='never', choices=['always', 'never', 'options-changed']),
-        debug=dict(type='bool', default=False)
+        volume_name=dict(type="str", required=True, aliases=["name"]),
+        state=dict(type="str", default="present", choices=["present", "absent"]),
+        driver=dict(type="str", default="local"),
+        driver_options=dict(type="dict", default={}),
+        labels=dict(type="dict"),
+        recreate=dict(
+            type="str", default="never", choices=["always", "never", "options-changed"]
+        ),
+        debug=dict(type="bool", default=False),
     )
 
     client = AnsibleDockerClient(
@@ -298,18 +325,22 @@ def main():
         supports_check_mode=True,
         # "The docker server >= 1.9.0"
     )
-    sanitize_labels(client.module.params['labels'], 'labels', client)
+    sanitize_labels(client.module.params["labels"], "labels", client)
 
     try:
         cm = DockerVolumeManager(client)
         client.module.exit_json(**cm.results)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

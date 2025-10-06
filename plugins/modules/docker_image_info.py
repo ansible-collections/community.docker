@@ -137,6 +137,13 @@ images:
 
 import traceback
 
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    DockerException,
+    NotFound,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
+    parse_repository_tag,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
@@ -145,8 +152,6 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     is_image_name_id,
 )
-from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException, NotFound
-from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import parse_repository_tag
 
 
 class ImageManager(DockerBaseClass):
@@ -157,23 +162,23 @@ class ImageManager(DockerBaseClass):
 
         self.client = client
         self.results = results
-        self.name = self.client.module.params.get('name')
+        self.name = self.client.module.params.get("name")
         self.log(f"Gathering facts for images: {self.name}")
 
         if self.name:
-            self.results['images'] = self.get_facts()
+            self.results["images"] = self.get_facts()
         else:
-            self.results['images'] = self.get_all_images()
+            self.results["images"] = self.get_all_images()
 
     def fail(self, msg):
         self.client.fail(msg)
 
     def get_facts(self):
-        '''
+        """
         Lookup and inspect each image name found in the names parameter.
 
         :returns array of image dictionaries
-        '''
+        """
 
         results = []
 
@@ -183,13 +188,13 @@ class ImageManager(DockerBaseClass):
 
         for name in names:
             if is_image_name_id(name):
-                self.log(f'Fetching image {name} (ID)')
+                self.log(f"Fetching image {name} (ID)")
                 image = self.client.find_image_by_id(name, accept_missing_image=True)
             else:
                 repository, tag = parse_repository_tag(name)
                 if not tag:
-                    tag = 'latest'
-                self.log(f'Fetching image {repository}:{tag}')
+                    tag = "latest"
+                self.log(f"Fetching image {repository}:{tag}")
                 image = self.client.find_image(name=repository, tag=tag)
             if image:
                 results.append(image)
@@ -198,13 +203,13 @@ class ImageManager(DockerBaseClass):
     def get_all_images(self):
         results = []
         params = {
-            'only_ids': 0,
-            'all': 0,
+            "only_ids": 0,
+            "all": 0,
         }
         images = self.client.get_json("/images/json", params=params)
         for image in images:
             try:
-                inspection = self.client.get_json('/images/{0}/json', image['Id'])
+                inspection = self.client.get_json("/images/{0}/json", image["Id"])
             except NotFound:
                 inspection = None
             except Exception as exc:
@@ -215,7 +220,7 @@ class ImageManager(DockerBaseClass):
 
 def main():
     argument_spec = dict(
-        name=dict(type='list', elements='str'),
+        name=dict(type="list", elements="str"),
     )
 
     client = AnsibleDockerClient(
@@ -224,20 +229,21 @@ def main():
     )
 
     try:
-        results = dict(
-            changed=False,
-            images=[]
-        )
+        results = dict(changed=False, images=[])
 
         ImageManager(client, results)
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -31,13 +31,20 @@ class TLSConfig(object):
     .. _`SSL version`:
         https://docs.python.org/3.5/library/ssl.html#ssl.PROTOCOL_TLSv1
     """
+
     cert = None
     ca_cert = None
     verify = None
     ssl_version = None
 
-    def __init__(self, client_cert=None, ca_cert=None, verify=None,
-                 ssl_version=None, assert_hostname=None):
+    def __init__(
+        self,
+        client_cert=None,
+        ca_cert=None,
+        verify=None,
+        ssl_version=None,
+        assert_hostname=None,
+    ):
         # Argument compatibility/mapping with
         # https://docs.docker.com/engine/articles/https/
         # This diverges from the Docker CLI in that users can specify 'tls'
@@ -61,15 +68,15 @@ class TLSConfig(object):
                 tls_cert, tls_key = client_cert
             except ValueError:
                 raise errors.TLSParameterError(
-                    'client_cert must be a tuple of'
-                    ' (client certificate, key file)'
+                    "client_cert must be a tuple of" " (client certificate, key file)"
                 )
 
-            if not (tls_cert and tls_key) or (not os.path.isfile(tls_cert) or
-                                              not os.path.isfile(tls_key)):
+            if not (tls_cert and tls_key) or (
+                not os.path.isfile(tls_cert) or not os.path.isfile(tls_key)
+            ):
                 raise errors.TLSParameterError(
-                    'Path to a certificate and key files must be provided'
-                    ' through the client_cert param'
+                    "Path to a certificate and key files must be provided"
+                    " through the client_cert param"
                 )
             self.cert = (tls_cert, tls_key)
 
@@ -78,7 +85,7 @@ class TLSConfig(object):
         self.ca_cert = ca_cert
         if self.verify and self.ca_cert and not os.path.isfile(self.ca_cert):
             raise errors.TLSParameterError(
-                'Invalid CA certificate provided for `ca_cert`.'
+                "Invalid CA certificate provided for `ca_cert`."
             )
 
     def configure_client(self, client):
@@ -95,7 +102,10 @@ class TLSConfig(object):
         if self.cert:
             client.cert = self.cert
 
-        client.mount('https://', SSLHTTPAdapter(
-            ssl_version=self.ssl_version,
-            assert_hostname=self.assert_hostname,
-        ))
+        client.mount(
+            "https://",
+            SSLHTTPAdapter(
+                ssl_version=self.ssl_version,
+                assert_hostname=self.assert_hostname,
+            ),
+        )

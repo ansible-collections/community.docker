@@ -72,16 +72,19 @@ volume:
 
 import traceback
 
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    DockerException,
+    NotFound,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException, NotFound
 
 
 def get_existing_volume(client, volume_name):
     try:
-        return client.get_json('/volumes/{0}', volume_name)
+        return client.get_json("/volumes/{0}", volume_name)
     except NotFound as dummy:
         return None
     except Exception as exc:
@@ -90,7 +93,7 @@ def get_existing_volume(client, volume_name):
 
 def main():
     argument_spec = dict(
-        name=dict(type='str', required=True, aliases=['volume_name']),
+        name=dict(type="str", required=True, aliases=["volume_name"]),
     )
 
     client = AnsibleDockerClient(
@@ -99,7 +102,7 @@ def main():
     )
 
     try:
-        volume = get_existing_volume(client, client.module.params['name'])
+        volume = get_existing_volume(client, client.module.params["name"])
 
         client.module.exit_json(
             changed=False,
@@ -107,12 +110,16 @@ def main():
             volume=volume,
         )
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

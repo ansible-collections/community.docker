@@ -64,6 +64,7 @@ service:
 
 import traceback
 
+
 try:
     from docker.errors import DockerException
 except ImportError:
@@ -73,27 +74,25 @@ except ImportError:
 from ansible_collections.community.docker.plugins.module_utils.common import (
     RequestException,
 )
-
-from ansible_collections.community.docker.plugins.module_utils.swarm import AnsibleDockerSwarmClient
+from ansible_collections.community.docker.plugins.module_utils.swarm import (
+    AnsibleDockerSwarmClient,
+)
 
 
 def get_service_info(client):
-    service = client.module.params['name']
-    return client.get_service_inspect(
-        service_id=service,
-        skip_missing=True
-    )
+    service = client.module.params["name"]
+    return client.get_service_inspect(service_id=service, skip_missing=True)
 
 
 def main():
     argument_spec = dict(
-        name=dict(type='str', required=True),
+        name=dict(type="str", required=True),
     )
 
     client = AnsibleDockerSwarmClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        min_docker_version='2.0.0',
+        min_docker_version="2.0.0",
     )
 
     client.fail_task_if_not_swarm_manager()
@@ -101,18 +100,18 @@ def main():
     try:
         service = get_service_info(client)
 
-        client.module.exit_json(
-            changed=False,
-            service=service,
-            exists=bool(service)
-        )
+        client.module.exit_json(changed=False, service=service, exists=bool(service))
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

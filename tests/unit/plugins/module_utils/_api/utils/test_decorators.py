@@ -7,20 +7,28 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
+
 __metaclass__ = type
 
 import unittest
 
-from ansible_collections.community.docker.plugins.module_utils._api.api.client import APIClient
-from ansible_collections.community.docker.plugins.module_utils._api.utils.decorators import update_headers
-from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.constants import DEFAULT_DOCKER_API_VERSION
+from ansible_collections.community.docker.plugins.module_utils._api.api.client import (
+    APIClient,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.utils.decorators import (
+    update_headers,
+)
+from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.constants import (
+    DEFAULT_DOCKER_API_VERSION,
+)
 
 
 class DecoratorsTest(unittest.TestCase):
     def test_update_headers(self):
         sample_headers = {
-            'X-Docker-Locale': 'en-US',
+            "X-Docker-Locale": "en-US",
         }
 
         def f(self, headers=None):
@@ -32,17 +40,15 @@ class DecoratorsTest(unittest.TestCase):
         g = update_headers(f)
         assert g(client, headers=None) is None
         assert g(client, headers={}) == {}
-        assert g(client, headers={'Content-type': 'application/json'}) == {
-            'Content-type': 'application/json',
+        assert g(client, headers={"Content-type": "application/json"}) == {
+            "Content-type": "application/json",
         }
 
-        client._general_configs = {
-            'HttpHeaders': sample_headers
-        }
+        client._general_configs = {"HttpHeaders": sample_headers}
 
         assert g(client, headers=None) == sample_headers
         assert g(client, headers={}) == sample_headers
-        assert g(client, headers={'Content-type': 'application/json'}) == {
-            'Content-type': 'application/json',
-            'X-Docker-Locale': 'en-US',
+        assert g(client, headers={"Content-type": "application/json"}) == {
+            "Content-type": "application/json",
+            "X-Docker-Locale": "en-US",
         }

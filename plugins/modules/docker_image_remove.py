@@ -99,20 +99,21 @@ untagged:
 
 import traceback
 
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    DockerException,
+    NotFound,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
+    parse_repository_tag,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     is_image_name_id,
     is_valid_tag,
-)
-
-from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException, NotFound
-from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
-    parse_repository_tag,
 )
 
 
@@ -126,10 +127,10 @@ class ImageRemover(DockerBaseClass):
         self.diff = self.client.module._diff
 
         parameters = self.client.module.params
-        self.name = parameters['name']
-        self.tag = parameters['tag']
-        self.force = parameters['force']
-        self.prune = parameters['prune']
+        self.name = parameters["name"]
+        self.tag = parameters["tag"]
+        self.force = parameters["force"]
+        self.prune = parameters["prune"]
 
         if not is_valid_tag(self.tag, allow_empty=True):
             self.fail(f'"{self.tag}" is not a valid docker tag')
@@ -149,9 +150,9 @@ class ImageRemover(DockerBaseClass):
             return dict(exists=False)
         return dict(
             exists=True,
-            id=image['Id'],
-            tags=sorted(image.get('RepoTags') or []),
-            digests=sorted(image.get('RepoDigests') or []),
+            id=image["Id"],
+            tags=sorted(image.get("RepoTags") or []),
+            digests=sorted(image.get("RepoDigests") or []),
         )
 
     def absent(self):
@@ -172,20 +173,24 @@ class ImageRemover(DockerBaseClass):
                 name = f"{self.name}:{self.tag}"
 
         if self.diff:
-            results['diff'] = dict(before=self.get_diff_state(image))
+            results["diff"] = dict(before=self.get_diff_state(image))
 
         if not image:
             if self.diff:
-                results['diff']['after'] = self.get_diff_state(image)
+                results["diff"]["after"] = self.get_diff_state(image)
             return results
 
-        results['changed'] = True
-        results['actions'].append(f"Removed image {name}")
-        results['image'] = image
+        results["changed"] = True
+        results["actions"].append(f"Removed image {name}")
+        results["image"] = image
 
         if not self.check_mode:
             try:
-                res = self.client.delete_json('/images/{0}', name, params={'force': self.force, 'noprune': not self.prune})
+                res = self.client.delete_json(
+                    "/images/{0}",
+                    name,
+                    params={"force": self.force, "noprune": not self.prune},
+                )
             except NotFound:
                 # If the image vanished while we were trying to remove it, do not fail
                 res = []
@@ -193,45 +198,57 @@ class ImageRemover(DockerBaseClass):
                 self.fail(f"Error removing image {name} - {exc}")
 
             for entry in res:
-                if entry.get('Untagged'):
-                    results['untagged'].append(entry['Untagged'])
-                if entry.get('Deleted'):
-                    results['deleted'].append(entry['Deleted'])
+                if entry.get("Untagged"):
+                    results["untagged"].append(entry["Untagged"])
+                if entry.get("Deleted"):
+                    results["deleted"].append(entry["Deleted"])
 
-            results['untagged'] = sorted(results['untagged'])
-            results['deleted'] = sorted(results['deleted'])
+            results["untagged"] = sorted(results["untagged"])
+            results["deleted"] = sorted(results["deleted"])
 
             if self.diff:
-                image_after = self.client.find_image_by_id(image['Id'], accept_missing_image=True)
-                results['diff']['after'] = self.get_diff_state(image_after)
+                image_after = self.client.find_image_by_id(
+                    image["Id"], accept_missing_image=True
+                )
+                results["diff"]["after"] = self.get_diff_state(image_after)
 
         elif is_image_name_id(name):
-            results['deleted'].append(image['Id'])
-            results['untagged'] = sorted((image.get('RepoTags') or []) + (image.get('RepoDigests') or []))
-            if not self.force and results['untagged']:
-                self.fail('Cannot delete image by ID that is still in use - use force=true')
+            results["deleted"].append(image["Id"])
+            results["untagged"] = sorted(
+                (image.get("RepoTags") or []) + (image.get("RepoDigests") or [])
+            )
+            if not self.force and results["untagged"]:
+                self.fail(
+                    "Cannot delete image by ID that is still in use - use force=true"
+                )
             if self.diff:
-                results['diff']['after'] = self.get_diff_state({})
+                results["diff"]["after"] = self.get_diff_state({})
 
         elif is_image_name_id(self.tag):
-            results['untagged'].append(name)
-            if len(image.get('RepoTags') or []) < 1 and len(image.get('RepoDigests') or []) < 2:
-                results['deleted'].append(image['Id'])
+            results["untagged"].append(name)
+            if (
+                len(image.get("RepoTags") or []) < 1
+                and len(image.get("RepoDigests") or []) < 2
+            ):
+                results["deleted"].append(image["Id"])
             if self.diff:
-                results['diff']['after'] = self.get_diff_state(image)
+                results["diff"]["after"] = self.get_diff_state(image)
                 try:
-                    results['diff']['after']['digests'].remove(name)
+                    results["diff"]["after"]["digests"].remove(name)
                 except ValueError:
                     pass
 
         else:
-            results['untagged'].append(name)
-            if len(image.get('RepoTags') or []) < 2 and len(image.get('RepoDigests') or []) < 1:
-                results['deleted'].append(image['Id'])
+            results["untagged"].append(name)
+            if (
+                len(image.get("RepoTags") or []) < 2
+                and len(image.get("RepoDigests") or []) < 1
+            ):
+                results["deleted"].append(image["Id"])
             if self.diff:
-                results['diff']['after'] = self.get_diff_state(image)
+                results["diff"]["after"] = self.get_diff_state(image)
                 try:
-                    results['diff']['after']['tags'].remove(name)
+                    results["diff"]["after"]["tags"].remove(name)
                 except ValueError:
                     pass
 
@@ -240,10 +257,10 @@ class ImageRemover(DockerBaseClass):
 
 def main():
     argument_spec = dict(
-        name=dict(type='str', required=True),
-        tag=dict(type='str', default='latest'),
-        force=dict(type='bool', default=False),
-        prune=dict(type='bool', default=True),
+        name=dict(type="str", required=True),
+        tag=dict(type="str", default="latest"),
+        force=dict(type="bool", default=False),
+        prune=dict(type="bool", default=True),
     )
 
     client = AnsibleDockerClient(
@@ -255,12 +272,16 @@ def main():
         results = ImageRemover(client).absent()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

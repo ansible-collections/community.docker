@@ -439,19 +439,18 @@ actions:
 import traceback
 
 from ansible.module_utils.common.validation import check_type_int
-
 from ansible_collections.community.docker.plugins.module_utils.common_cli import (
     AnsibleModuleDockerClient,
     DockerException,
 )
-
 from ansible_collections.community.docker.plugins.module_utils.compose_v2 import (
     BaseComposeManager,
     common_compose_argspec_ex,
     is_failed,
 )
-
-from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
+from ansible_collections.community.docker.plugins.module_utils.version import (
+    LooseVersion,
+)
 
 
 class ServicesManager(BaseComposeManager):
@@ -459,86 +458,90 @@ class ServicesManager(BaseComposeManager):
         super(ServicesManager, self).__init__(client)
         parameters = self.client.module.params
 
-        self.state = parameters['state']
-        self.dependencies = parameters['dependencies']
-        self.pull = parameters['pull']
-        self.build = parameters['build']
-        self.ignore_build_events = parameters['ignore_build_events']
-        self.recreate = parameters['recreate']
-        self.remove_images = parameters['remove_images']
-        self.remove_volumes = parameters['remove_volumes']
-        self.remove_orphans = parameters['remove_orphans']
-        self.renew_anon_volumes = parameters['renew_anon_volumes']
-        self.timeout = parameters['timeout']
-        self.services = parameters['services'] or []
-        self.scale = parameters['scale'] or {}
-        self.wait = parameters['wait']
-        self.wait_timeout = parameters['wait_timeout']
-        self.yes = parameters['assume_yes']
-        if self.compose_version < LooseVersion('2.32.0') and self.yes:
-            self.fail(f'assume_yes=true needs Docker Compose 2.32.0 or newer, not version {self.compose_version}')
+        self.state = parameters["state"]
+        self.dependencies = parameters["dependencies"]
+        self.pull = parameters["pull"]
+        self.build = parameters["build"]
+        self.ignore_build_events = parameters["ignore_build_events"]
+        self.recreate = parameters["recreate"]
+        self.remove_images = parameters["remove_images"]
+        self.remove_volumes = parameters["remove_volumes"]
+        self.remove_orphans = parameters["remove_orphans"]
+        self.renew_anon_volumes = parameters["renew_anon_volumes"]
+        self.timeout = parameters["timeout"]
+        self.services = parameters["services"] or []
+        self.scale = parameters["scale"] or {}
+        self.wait = parameters["wait"]
+        self.wait_timeout = parameters["wait_timeout"]
+        self.yes = parameters["assume_yes"]
+        if self.compose_version < LooseVersion("2.32.0") and self.yes:
+            self.fail(
+                f"assume_yes=true needs Docker Compose 2.32.0 or newer, not version {self.compose_version}"
+            )
 
         for key, value in self.scale.items():
             if not isinstance(key, str):
-                self.fail(f'The key {key!r} for `scale` is not a string')
+                self.fail(f"The key {key!r} for `scale` is not a string")
             try:
                 value = check_type_int(value)
             except TypeError as exc:
-                self.fail(f'The value {value!r} for `scale[{key!r}]` is not an integer')
+                self.fail(f"The value {value!r} for `scale[{key!r}]` is not an integer")
             if value < 0:
-                self.fail(f'The value {value!r} for `scale[{key!r}]` is negative')
+                self.fail(f"The value {value!r} for `scale[{key!r}]` is negative")
             self.scale[key] = value
 
     def run(self):
-        if self.state == 'present':
+        if self.state == "present":
             result = self.cmd_up()
-        elif self.state == 'stopped':
+        elif self.state == "stopped":
             result = self.cmd_stop()
-        elif self.state == 'restarted':
+        elif self.state == "restarted":
             result = self.cmd_restart()
-        elif self.state == 'absent':
+        elif self.state == "absent":
             result = self.cmd_down()
 
-        result['containers'] = self.list_containers()
-        result['images'] = self.list_images()
+        result["containers"] = self.list_containers()
+        result["images"] = self.list_images()
         self.cleanup_result(result)
         return result
 
     def get_up_cmd(self, dry_run, no_start=False):
-        args = self.get_base_args() + ['up', '--detach', '--no-color', '--quiet-pull']
-        if self.pull != 'policy':
-            args.extend(['--pull', self.pull])
+        args = self.get_base_args() + ["up", "--detach", "--no-color", "--quiet-pull"]
+        if self.pull != "policy":
+            args.extend(["--pull", self.pull])
         if self.remove_orphans:
-            args.append('--remove-orphans')
-        if self.recreate == 'always':
-            args.append('--force-recreate')
-        if self.recreate == 'never':
-            args.append('--no-recreate')
+            args.append("--remove-orphans")
+        if self.recreate == "always":
+            args.append("--force-recreate")
+        if self.recreate == "never":
+            args.append("--no-recreate")
         if self.renew_anon_volumes:
-            args.append('--renew-anon-volumes')
+            args.append("--renew-anon-volumes")
         if not self.dependencies:
-            args.append('--no-deps')
+            args.append("--no-deps")
         if self.timeout is not None:
-            args.extend(['--timeout', f'{self.timeout}'])
-        if self.build == 'always':
-            args.append('--build')
-        elif self.build == 'never':
-            args.append('--no-build')
+            args.extend(["--timeout", f"{self.timeout}"])
+        if self.build == "always":
+            args.append("--build")
+        elif self.build == "never":
+            args.append("--no-build")
         for key, value in sorted(self.scale.items()):
-            args.extend(['--scale', f'{key}={value}'])
+            args.extend(["--scale", f"{key}={value}"])
         if self.wait:
-            args.append('--wait')
+            args.append("--wait")
             if self.wait_timeout is not None:
-                args.extend(['--wait-timeout', str(self.wait_timeout)])
+                args.extend(["--wait-timeout", str(self.wait_timeout)])
         if no_start:
-            args.append('--no-start')
+            args.append("--no-start")
         if dry_run:
-            args.append('--dry-run')
+            args.append("--dry-run")
         if self.yes:
             # Note that for Docker Compose 2.32.x and 2.33.x, the long form is '--y' and not '--yes'.
             # This was fixed in Docker Compose 2.34.0 (https://github.com/docker/compose/releases/tag/v2.34.0).
-            args.append('-y' if self.compose_version < LooseVersion('2.34.0') else '--yes')
-        args.append('--')
+            args.append(
+                "-y" if self.compose_version < LooseVersion("2.34.0") else "--yes"
+            )
+        args.append("--")
         for service in self.services:
             args.append(service)
         return args
@@ -549,24 +552,31 @@ class ServicesManager(BaseComposeManager):
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode, nonzero_rc=rc != 0)
         self.emit_warnings(events)
-        self.update_result(result, events, stdout, stderr, ignore_service_pull_events=True, ignore_build_events=self.ignore_build_events)
+        self.update_result(
+            result,
+            events,
+            stdout,
+            stderr,
+            ignore_service_pull_events=True,
+            ignore_build_events=self.ignore_build_events,
+        )
         self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
     def get_stop_cmd(self, dry_run):
-        args = self.get_base_args() + ['stop']
+        args = self.get_base_args() + ["stop"]
         if self.timeout is not None:
-            args.extend(['--timeout', f'{self.timeout}'])
+            args.extend(["--timeout", f"{self.timeout}"])
         if dry_run:
-            args.append('--dry-run')
-        args.append('--')
+            args.append("--dry-run")
+        args.append("--")
         for service in self.services:
             args.append(service)
         return args
 
     def _are_containers_stopped(self):
         for container in self.list_containers_raw():
-            if container['State'] not in ('created', 'exited', 'stopped', 'killed'):
+            if container["State"] not in ("created", "exited", "stopped", "killed"):
                 return False
         return True
 
@@ -578,20 +588,33 @@ class ServicesManager(BaseComposeManager):
         # Make sure all containers are created
         args_1 = self.get_up_cmd(self.check_mode, no_start=True)
         rc_1, stdout_1, stderr_1 = self.client.call_cli(*args_1, cwd=self.project_src)
-        events_1 = self.parse_events(stderr_1, dry_run=self.check_mode, nonzero_rc=rc_1 != 0)
+        events_1 = self.parse_events(
+            stderr_1, dry_run=self.check_mode, nonzero_rc=rc_1 != 0
+        )
         self.emit_warnings(events_1)
-        self.update_result(result, events_1, stdout_1, stderr_1, ignore_service_pull_events=True, ignore_build_events=self.ignore_build_events)
+        self.update_result(
+            result,
+            events_1,
+            stdout_1,
+            stderr_1,
+            ignore_service_pull_events=True,
+            ignore_build_events=self.ignore_build_events,
+        )
         is_failed_1 = is_failed(events_1, rc_1)
         if not is_failed_1 and not self._are_containers_stopped():
             # Make sure all containers are stopped
             args_2 = self.get_stop_cmd(self.check_mode)
-            rc_2, stdout_2, stderr_2 = self.client.call_cli(*args_2, cwd=self.project_src)
-            events_2 = self.parse_events(stderr_2, dry_run=self.check_mode, nonzero_rc=rc_2 != 0)
+            rc_2, stdout_2, stderr_2 = self.client.call_cli(
+                *args_2, cwd=self.project_src
+            )
+            events_2 = self.parse_events(
+                stderr_2, dry_run=self.check_mode, nonzero_rc=rc_2 != 0
+            )
             self.emit_warnings(events_2)
             self.update_result(result, events_2, stdout_2, stderr_2)
         else:
             args_2 = []
-            rc_2, stdout_2, stderr_2 = 0, b'', b''
+            rc_2, stdout_2, stderr_2 = 0, b"", b""
             events_2 = []
         # Compose result
         self.update_failed(
@@ -605,14 +628,14 @@ class ServicesManager(BaseComposeManager):
         return result
 
     def get_restart_cmd(self, dry_run):
-        args = self.get_base_args() + ['restart']
+        args = self.get_base_args() + ["restart"]
         if not self.dependencies:
-            args.append('--no-deps')
+            args.append("--no-deps")
         if self.timeout is not None:
-            args.extend(['--timeout', f'{self.timeout}'])
+            args.extend(["--timeout", f"{self.timeout}"])
         if dry_run:
-            args.append('--dry-run')
-        args.append('--')
+            args.append("--dry-run")
+        args.append("--")
         for service in self.services:
             args.append(service)
         return args
@@ -628,18 +651,18 @@ class ServicesManager(BaseComposeManager):
         return result
 
     def get_down_cmd(self, dry_run):
-        args = self.get_base_args() + ['down']
+        args = self.get_base_args() + ["down"]
         if self.remove_orphans:
-            args.append('--remove-orphans')
+            args.append("--remove-orphans")
         if self.remove_images:
-            args.extend(['--rmi', self.remove_images])
+            args.extend(["--rmi", self.remove_images])
         if self.remove_volumes:
-            args.append('--volumes')
+            args.append("--volumes")
         if self.timeout is not None:
-            args.extend(['--timeout', f'{self.timeout}'])
+            args.extend(["--timeout", f"{self.timeout}"])
         if dry_run:
-            args.append('--dry-run')
-        args.append('--')
+            args.append("--dry-run")
+        args.append("--")
         for service in self.services:
             args.append(service)
         return args
@@ -657,31 +680,39 @@ class ServicesManager(BaseComposeManager):
 
 def main():
     argument_spec = dict(
-        state=dict(type='str', default='present', choices=['absent', 'present', 'stopped', 'restarted']),
-        dependencies=dict(type='bool', default=True),
-        pull=dict(type='str', choices=['always', 'missing', 'never', 'policy'], default='policy'),
-        build=dict(type='str', choices=['always', 'never', 'policy'], default='policy'),
-        recreate=dict(type='str', default='auto', choices=['always', 'never', 'auto']),
-        renew_anon_volumes=dict(type='bool', default=False),
-        remove_images=dict(type='str', choices=['all', 'local']),
-        remove_volumes=dict(type='bool', default=False),
-        remove_orphans=dict(type='bool', default=False),
-        timeout=dict(type='int'),
-        services=dict(type='list', elements='str'),
-        scale=dict(type='dict'),
-        wait=dict(type='bool', default=False),
-        wait_timeout=dict(type='int'),
-        ignore_build_events=dict(type='bool', default=True),
-        assume_yes=dict(type='bool', default=False),
+        state=dict(
+            type="str",
+            default="present",
+            choices=["absent", "present", "stopped", "restarted"],
+        ),
+        dependencies=dict(type="bool", default=True),
+        pull=dict(
+            type="str",
+            choices=["always", "missing", "never", "policy"],
+            default="policy",
+        ),
+        build=dict(type="str", choices=["always", "never", "policy"], default="policy"),
+        recreate=dict(type="str", default="auto", choices=["always", "never", "auto"]),
+        renew_anon_volumes=dict(type="bool", default=False),
+        remove_images=dict(type="str", choices=["all", "local"]),
+        remove_volumes=dict(type="bool", default=False),
+        remove_orphans=dict(type="bool", default=False),
+        timeout=dict(type="int"),
+        services=dict(type="list", elements="str"),
+        scale=dict(type="dict"),
+        wait=dict(type="bool", default=False),
+        wait_timeout=dict(type="int"),
+        ignore_build_events=dict(type="bool", default=True),
+        assume_yes=dict(type="bool", default=False),
     )
     argspec_ex = common_compose_argspec_ex()
-    argument_spec.update(argspec_ex.pop('argspec'))
+    argument_spec.update(argspec_ex.pop("argspec"))
 
     client = AnsibleModuleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
         needs_api_version=False,
-        **argspec_ex
+        **argspec_ex,
     )
 
     try:
@@ -690,8 +721,11 @@ def main():
         manager.cleanup()
         client.module.exit_json(**result)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

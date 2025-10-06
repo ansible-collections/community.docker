@@ -4,14 +4,14 @@
 
 from __future__ import annotations
 
-
 import os
 import os.path
 import socket as pysocket
 import struct
 
-from ansible_collections.community.docker.plugins.module_utils._api.utils import socket as docker_socket
-
+from ansible_collections.community.docker.plugins.module_utils._api.utils import (
+    socket as docker_socket,
+)
 from ansible_collections.community.docker.plugins.module_utils.socket_helper import (
     make_unblocking,
     shutdown_writing,
@@ -31,19 +31,21 @@ class DockerSocketHandlerBase(object):
             self._log = log
         else:
             self._log = lambda msg: True
-        self._paramiko_read_workaround = hasattr(sock, 'send_ready') and 'paramiko' in str(type(sock))
+        self._paramiko_read_workaround = hasattr(
+            sock, "send_ready"
+        ) and "paramiko" in str(type(sock))
 
         self._sock = sock
         self._block_done_callback = None
         self._block_buffer = []
         self._eof = False
-        self._read_buffer = b''
-        self._write_buffer = b''
+        self._read_buffer = b""
+        self._write_buffer = b""
         self._end_of_writing = False
 
         self._current_stream = None
         self._current_missing = 0
-        self._current_buffer = b''
+        self._current_buffer = b""
 
         self._selector = self._selectors.DefaultSelector()
         self._selector.register(self._sock, self._selectors.EVENT_READ)
@@ -70,26 +72,26 @@ class DockerSocketHandlerBase(object):
     def _read(self):
         if self._eof:
             return
-        if hasattr(self._sock, 'recv'):
+        if hasattr(self._sock, "recv"):
             try:
                 data = self._sock.recv(262144)
             except Exception as e:
                 # After calling self._sock.shutdown(), OpenSSL's/urllib3's
                 # WrappedSocket seems to eventually raise ZeroReturnError in
                 # case of EOF
-                if 'OpenSSL.SSL.ZeroReturnError' in str(type(e)):
+                if "OpenSSL.SSL.ZeroReturnError" in str(type(e)):
                     self._eof = True
                     return
                 else:
                     raise
-        elif isinstance(self._sock, getattr(pysocket, 'SocketIO')):
+        elif isinstance(self._sock, getattr(pysocket, "SocketIO")):
             data = self._sock.read()
         else:
             data = os.read(self._sock.fileno())
         if data is None:
             # no data available
             return
-        self._log(f'read {len(data)} bytes')
+        self._log(f"read {len(data)} bytes")
         if len(data) == 0:
             # Stream EOF
             self._eof = True
@@ -103,10 +105,12 @@ class DockerSocketHandlerBase(object):
                 self._current_missing -= n
                 if self._current_missing == 0:
                     self._add_block(self._current_stream, self._current_buffer)
-                    self._current_buffer = b''
+                    self._current_buffer = b""
             if len(self._read_buffer) < 8:
                 break
-            self._current_stream, self._current_missing = struct.unpack('>BxxxL', self._read_buffer[:8])
+            self._current_stream, self._current_missing = struct.unpack(
+                ">BxxxL", self._read_buffer[:8]
+            )
             self._read_buffer = self._read_buffer[8:]
             if self._current_missing < 0:
                 # Stream EOF (as reported by docker daemon)
@@ -116,22 +120,28 @@ class DockerSocketHandlerBase(object):
     def _handle_end_of_writing(self):
         if self._end_of_writing and len(self._write_buffer) == 0:
             self._end_of_writing = False
-            self._log('Shutting socket down for writing')
+            self._log("Shutting socket down for writing")
             shutdown_writing(self._sock, self._log)
 
     def _write(self):
         if len(self._write_buffer) > 0:
             written = write_to_socket(self._sock, self._write_buffer)
             self._write_buffer = self._write_buffer[written:]
-            self._log(f'wrote {written} bytes, {len(self._write_buffer)} are left')
+            self._log(f"wrote {written} bytes, {len(self._write_buffer)} are left")
             if len(self._write_buffer) > 0:
-                self._selector.modify(self._sock, self._selectors.EVENT_READ | self._selectors.EVENT_WRITE)
+                self._selector.modify(
+                    self._sock, self._selectors.EVENT_READ | self._selectors.EVENT_WRITE
+                )
             else:
                 self._selector.modify(self._sock, self._selectors.EVENT_READ)
             self._handle_end_of_writing()
 
     def select(self, timeout=None, _internal_recursion=False):
-        if not _internal_recursion and self._paramiko_read_workaround and len(self._write_buffer) > 0:
+        if (
+            not _internal_recursion
+            and self._paramiko_read_workaround
+            and len(self._write_buffer) > 0
+        ):
             # When the SSH transport is used, Docker SDK for Python internally uses Paramiko, whose
             # Channel object supports select(), but only for reading
             # (https://github.com/paramiko/paramiko/issues/695).
@@ -147,13 +157,13 @@ class DockerSocketHandlerBase(object):
                     return True
                 if timeout is not None:
                     timeout -= PARAMIKO_POLL_TIMEOUT
-        self._log(f'select... ({timeout})')
+        self._log(f"select... ({timeout})")
         events = self._selector.select(timeout)
         for key, event in events:
             if key.fileobj == self._sock:
                 ev_read = event & self._selectors.EVENT_READ != 0
                 ev_write = event & self._selectors.EVENT_WRITE != 0
-                self._log(f'select event read:{ev_read} write:{ev_write}')
+                self._log(f"select event read:{ev_read} write:{ev_write}")
                 if event & self._selectors.EVENT_READ != 0:
                     self._read()
                 if event & self._selectors.EVENT_WRITE != 0:
@@ -182,14 +192,14 @@ class DockerSocketHandlerBase(object):
             elif stream_id == docker_socket.STDERR:
                 stderr.append(data)
             else:
-                raise ValueError(f'{stream_id} is not a valid stream ID')
+                raise ValueError(f"{stream_id} is not a valid stream ID")
 
         self.end_of_writing()
 
         self.set_block_done_callback(append_block)
         while not self._eof:
             self.select()
-        return b''.join(stdout), b''.join(stderr)
+        return b"".join(stdout), b"".join(stderr)
 
     def write(self, str):
         self._write_buffer += str

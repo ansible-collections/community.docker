@@ -13,36 +13,74 @@ from __future__ import annotations
 import re
 
 
-_VALID_STR = re.compile('^[A-Za-z0-9_-]+$')
+_VALID_STR = re.compile("^[A-Za-z0-9_-]+$")
 
 
 def _validate_part(string, part, part_name):
     if not part:
         raise ValueError(f'Invalid platform string "{string}": {part_name} is empty')
     if not _VALID_STR.match(part):
-        raise ValueError(f'Invalid platform string "{string}": {part_name} has invalid characters')
+        raise ValueError(
+            f'Invalid platform string "{string}": {part_name} has invalid characters'
+        )
     return part
 
 
 # See https://github.com/containerd/containerd/blob/main/platforms/database.go#L32-L38
 _KNOWN_OS = (
-    "aix", "android", "darwin", "dragonfly", "freebsd", "hurd", "illumos", "ios", "js",
-    "linux", "nacl", "netbsd", "openbsd", "plan9", "solaris", "windows", "zos",
+    "aix",
+    "android",
+    "darwin",
+    "dragonfly",
+    "freebsd",
+    "hurd",
+    "illumos",
+    "ios",
+    "js",
+    "linux",
+    "nacl",
+    "netbsd",
+    "openbsd",
+    "plan9",
+    "solaris",
+    "windows",
+    "zos",
 )
 
 # See https://github.com/containerd/containerd/blob/main/platforms/database.go#L54-L60
 _KNOWN_ARCH = (
-    "386", "amd64", "amd64p32", "arm", "armbe", "arm64", "arm64be", "ppc64", "ppc64le",
-    "loong64", "mips", "mipsle", "mips64", "mips64le", "mips64p32", "mips64p32le",
-    "ppc", "riscv", "riscv64", "s390", "s390x", "sparc", "sparc64", "wasm",
+    "386",
+    "amd64",
+    "amd64p32",
+    "arm",
+    "armbe",
+    "arm64",
+    "arm64be",
+    "ppc64",
+    "ppc64le",
+    "loong64",
+    "mips",
+    "mipsle",
+    "mips64",
+    "mips64le",
+    "mips64p32",
+    "mips64p32le",
+    "ppc",
+    "riscv",
+    "riscv64",
+    "s390",
+    "s390x",
+    "sparc",
+    "sparc64",
+    "wasm",
 )
 
 
 def _normalize_os(os_str):
     # See normalizeOS() in https://github.com/containerd/containerd/blob/main/platforms/database.go
     os_str = os_str.lower()
-    if os_str == 'macos':
-        os_str = 'darwin'
+    if os_str == "macos":
+        os_str = "darwin"
     return os_str
 
 
@@ -94,9 +132,9 @@ class _Platform(object):
         self.variant = variant
         if variant is not None:
             if arch is None:
-                raise ValueError('If variant is given, architecture must be given too')
+                raise ValueError("If variant is given, architecture must be given too")
             if os is None:
-                raise ValueError('If variant is given, os must be given too')
+                raise ValueError("If variant is given, os must be given too")
 
     @classmethod
     def parse_platform_string(cls, string, daemon_os=None, daemon_arch=None):
@@ -104,40 +142,48 @@ class _Platform(object):
         if string is None:
             return cls()
         if not string:
-            raise ValueError('Platform string must be non-empty')
-        parts = string.split('/', 2)
+            raise ValueError("Platform string must be non-empty")
+        parts = string.split("/", 2)
         arch = None
         variant = None
         if len(parts) == 1:
-            _validate_part(string, string, 'OS/architecture')
+            _validate_part(string, string, "OS/architecture")
             # The part is either OS or architecture
             os = _normalize_os(string)
             if os in _KNOWN_OS:
                 if daemon_arch is not None:
-                    arch, variant = _normalize_arch(daemon_arch, '')
+                    arch, variant = _normalize_arch(daemon_arch, "")
                 return cls(os=os, arch=arch, variant=variant)
-            arch, variant = _normalize_arch(os, '')
+            arch, variant = _normalize_arch(os, "")
             if arch in _KNOWN_ARCH:
                 return cls(
                     os=_normalize_os(daemon_os) if daemon_os else None,
                     arch=arch or None,
                     variant=variant or None,
                 )
-            raise ValueError(f'Invalid platform string "{string}": unknown OS or architecture')
-        os = _validate_part(string, parts[0], 'OS')
+            raise ValueError(
+                f'Invalid platform string "{string}": unknown OS or architecture'
+            )
+        os = _validate_part(string, parts[0], "OS")
         if not os:
             raise ValueError(f'Invalid platform string "{string}": OS is empty')
-        arch = _validate_part(string, parts[1], 'architecture') if len(parts) > 1 else None
+        arch = (
+            _validate_part(string, parts[1], "architecture") if len(parts) > 1 else None
+        )
         if arch is not None and not arch:
-            raise ValueError(f'Invalid platform string "{string}": architecture is empty')
-        variant = _validate_part(string, parts[2], 'variant') if len(parts) > 2 else None
+            raise ValueError(
+                f'Invalid platform string "{string}": architecture is empty'
+            )
+        variant = (
+            _validate_part(string, parts[2], "variant") if len(parts) > 2 else None
+        )
         if variant is not None and not variant:
             raise ValueError(f'Invalid platform string "{string}": variant is empty')
-        arch, variant = _normalize_arch(arch, variant or '')
-        if len(parts) == 2 and arch == 'arm' and variant == 'v7':
+        arch, variant = _normalize_arch(arch, variant or "")
+        if len(parts) == 2 and arch == "arm" and variant == "v7":
             variant = None
-        if len(parts) == 3 and arch == 'arm64' and variant == '':
-            variant = 'v8'
+        if len(parts) == 3 and arch == "arm64" and variant == "":
+            variant = "v8"
         return cls(os=_normalize_os(os), arch=arch, variant=variant or None)
 
     def __str__(self):
@@ -152,27 +198,41 @@ class _Platform(object):
             parts = [self.arch]
         else:
             parts = []
-        return '/'.join(parts)
+        return "/".join(parts)
 
     def __repr__(self):
-        return f'_Platform(os={self.os!r}, arch={self.arch!r}, variant={self.variant!r})'
+        return (
+            f"_Platform(os={self.os!r}, arch={self.arch!r}, variant={self.variant!r})"
+        )
 
     def __eq__(self, other):
-        return self.os == other.os and self.arch == other.arch and self.variant == other.variant
+        return (
+            self.os == other.os
+            and self.arch == other.arch
+            and self.variant == other.variant
+        )
 
 
 def normalize_platform_string(string, daemon_os=None, daemon_arch=None):
-    return str(_Platform.parse_platform_string(string, daemon_os=daemon_os, daemon_arch=daemon_arch))
+    return str(
+        _Platform.parse_platform_string(
+            string, daemon_os=daemon_os, daemon_arch=daemon_arch
+        )
+    )
 
 
-def compose_platform_string(os=None, arch=None, variant=None, daemon_os=None, daemon_arch=None):
+def compose_platform_string(
+    os=None, arch=None, variant=None, daemon_os=None, daemon_arch=None
+):
     if os is None and daemon_os is not None:
         os = _normalize_os(daemon_os)
     if arch is None and daemon_arch is not None:
-        arch, variant = _normalize_arch(daemon_arch, variant or '')
+        arch, variant = _normalize_arch(daemon_arch, variant or "")
         variant = variant or None
     return str(_Platform(os=os, arch=arch, variant=variant or None))
 
 
 def compare_platform_strings(string1, string2):
-    return _Platform.parse_platform_string(string1) == _Platform.parse_platform_string(string2)
+    return _Platform.parse_platform_string(string1) == _Platform.parse_platform_string(
+        string2
+    )

@@ -16,11 +16,11 @@ import re
 import tarfile
 import tempfile
 
-from . import fnmatch
 from ..constants import IS_WINDOWS_PLATFORM, WINDOWS_LONGPATH_PREFIX
+from . import fnmatch
 
 
-_SEP = re.compile('/|\\\\') if IS_WINDOWS_PLATFORM else re.compile('/')
+_SEP = re.compile("/|\\\\") if IS_WINDOWS_PLATFORM else re.compile("/")
 
 
 def tar(path, exclude=None, dockerfile=None, fileobj=None, gzip=False):
@@ -29,16 +29,19 @@ def tar(path, exclude=None, dockerfile=None, fileobj=None, gzip=False):
     dockerfile = dockerfile or (None, None)
     extra_files = []
     if dockerfile[1] is not None:
-        dockerignore_contents = '\n'.join(
-            (exclude or ['.dockerignore']) + [dockerfile[0]]
+        dockerignore_contents = "\n".join(
+            (exclude or [".dockerignore"]) + [dockerfile[0]]
         )
         extra_files = [
-            ('.dockerignore', dockerignore_contents),
+            (".dockerignore", dockerignore_contents),
             dockerfile,
         ]
     return create_archive(
         files=sorted(exclude_paths(root, exclude, dockerfile=dockerfile[0])),
-        root=root, fileobj=fileobj, gzip=gzip, extra_files=extra_files
+        root=root,
+        fileobj=fileobj,
+        gzip=gzip,
+        extra_files=extra_files,
     )
 
 
@@ -52,9 +55,9 @@ def exclude_paths(root, patterns, dockerfile=None):
     """
 
     if dockerfile is None:
-        dockerfile = 'Dockerfile'
+        dockerfile = "Dockerfile"
 
-    patterns.append('!' + dockerfile)
+    patterns.append("!" + dockerfile)
     pm = PatternMatcher(patterns)
     return set(pm.walk(root))
 
@@ -64,19 +67,16 @@ def build_file_list(root):
     for dirname, dirnames, fnames in os.walk(root):
         for filename in fnames + dirnames:
             longpath = os.path.join(dirname, filename)
-            files.append(
-                longpath.replace(root, '', 1).lstrip('/')
-            )
+            files.append(longpath.replace(root, "", 1).lstrip("/"))
 
     return files
 
 
-def create_archive(root, files=None, fileobj=None, gzip=False,
-                   extra_files=None):
+def create_archive(root, files=None, fileobj=None, gzip=False, extra_files=None):
     extra_files = extra_files or []
     if not fileobj:
         fileobj = tempfile.NamedTemporaryFile()
-    t = tarfile.open(mode='w:gz' if gzip else 'w', fileobj=fileobj)
+    t = tarfile.open(mode="w:gz" if gzip else "w", fileobj=fileobj)
     if files is None:
         files = build_file_list(root)
     extra_names = set(e[0] for e in extra_files)
@@ -103,19 +103,17 @@ def create_archive(root, files=None, fileobj=None, gzip=False,
 
         if i.isfile():
             try:
-                with open(full_path, 'rb') as f:
+                with open(full_path, "rb") as f:
                     t.addfile(i, f)
             except IOError:
-                raise IOError(
-                    f'Can not read file in context: {full_path}'
-                )
+                raise IOError(f"Can not read file in context: {full_path}")
         else:
             # Directories, FIFOs, symlinks... do not need to be read.
             t.addfile(i, None)
 
     for name, contents in extra_files:
         info = tarfile.TarInfo(name)
-        contents_encoded = contents.encode('utf-8')
+        contents_encoded = contents.encode("utf-8")
         info.size = len(contents_encoded)
         t.addfile(info, io.BytesIO(contents_encoded))
 
@@ -126,15 +124,15 @@ def create_archive(root, files=None, fileobj=None, gzip=False,
 
 def mkbuildcontext(dockerfile):
     f = tempfile.NamedTemporaryFile()
-    t = tarfile.open(mode='w', fileobj=f)
+    t = tarfile.open(mode="w", fileobj=f)
     if isinstance(dockerfile, io.StringIO):
-        raise TypeError('Please use io.BytesIO to create in-memory Dockerfiles')
+        raise TypeError("Please use io.BytesIO to create in-memory Dockerfiles")
     elif isinstance(dockerfile, io.BytesIO):
-        dfinfo = tarfile.TarInfo('Dockerfile')
+        dfinfo = tarfile.TarInfo("Dockerfile")
         dfinfo.size = len(dockerfile.getvalue())
         dockerfile.seek(0)
     else:
-        dfinfo = t.gettarinfo(fileobj=dockerfile, arcname='Dockerfile')
+        dfinfo = t.gettarinfo(fileobj=dockerfile, arcname="Dockerfile")
     t.addfile(dfinfo, dockerfile)
     t.close()
     f.seek(0)
@@ -142,12 +140,12 @@ def mkbuildcontext(dockerfile):
 
 
 def split_path(p):
-    return [pt for pt in re.split(_SEP, p) if pt and pt != '.']
+    return [pt for pt in re.split(_SEP, p) if pt and pt != "."]
 
 
 def normalize_slashes(p):
     if IS_WINDOWS_PLATFORM:
-        return '/'.join(split_path(p))
+        return "/".join(split_path(p))
     return p
 
 
@@ -160,10 +158,8 @@ def walk(root, patterns, default=True):
 # https://github.com/moby/moby/blob/master/pkg/fileutils/fileutils.go
 class PatternMatcher(object):
     def __init__(self, patterns):
-        self.patterns = list(filter(
-            lambda p: p.dirs, [Pattern(p) for p in patterns]
-        ))
-        self.patterns.append(Pattern('!.dockerignore'))
+        self.patterns = list(filter(lambda p: p.dirs, [Pattern(p) for p in patterns]))
+        self.patterns.append(Pattern("!.dockerignore"))
 
     def matches(self, filepath):
         matched = False
@@ -173,10 +169,10 @@ class PatternMatcher(object):
         for pattern in self.patterns:
             negative = pattern.exclusion
             match = pattern.match(filepath)
-            if not match and parent_path != '':
+            if not match and parent_path != "":
                 if len(pattern.dirs) <= len(parent_path_dirs):
                     match = pattern.match(
-                        os.path.sep.join(parent_path_dirs[:len(pattern.dirs)])
+                        os.path.sep.join(parent_path_dirs[: len(pattern.dirs)])
                     )
 
             if match:
@@ -187,10 +183,8 @@ class PatternMatcher(object):
     def walk(self, root):
         def rec_walk(current_dir):
             for f in os.listdir(current_dir):
-                fpath = os.path.join(
-                    os.path.relpath(current_dir, root), f
-                )
-                if fpath.startswith('.' + os.path.sep):
+                fpath = os.path.join(os.path.relpath(current_dir, root), f)
+                if fpath.startswith("." + os.path.sep):
                     fpath = fpath[2:]
                 match = self.matches(fpath)
                 if not match:
@@ -210,8 +204,7 @@ class PatternMatcher(object):
                     for pat in self.patterns:
                         if not pat.exclusion:
                             continue
-                        if pat.cleaned_pattern.startswith(
-                                normalize_slashes(fpath)):
+                        if pat.cleaned_pattern.startswith(normalize_slashes(fpath)):
                             skip = False
                             break
                     if skip:
@@ -224,12 +217,12 @@ class PatternMatcher(object):
 class Pattern(object):
     def __init__(self, pattern_str):
         self.exclusion = False
-        if pattern_str.startswith('!'):
+        if pattern_str.startswith("!"):
             self.exclusion = True
             pattern_str = pattern_str[1:]
 
         self.dirs = self.normalize(pattern_str)
-        self.cleaned_pattern = '/'.join(self.dirs)
+        self.cleaned_pattern = "/".join(self.dirs)
 
     @classmethod
     def normalize(cls, p):
@@ -249,7 +242,7 @@ class Pattern(object):
         i = 0
         split = split_path(p)
         while i < len(split):
-            if split[i] == '..':
+            if split[i] == "..":
                 del split[i]
                 if i > 0:
                     del split[i - 1]
@@ -269,17 +262,14 @@ def process_dockerfile(dockerfile, path):
     abs_dockerfile = dockerfile
     if not os.path.isabs(dockerfile):
         abs_dockerfile = os.path.join(path, dockerfile)
-        if IS_WINDOWS_PLATFORM and path.startswith(
-                WINDOWS_LONGPATH_PREFIX):
-            abs_dockerfile = f'{WINDOWS_LONGPATH_PREFIX}{os.path.normpath(abs_dockerfile[len(WINDOWS_LONGPATH_PREFIX):])}'
-    if (os.path.splitdrive(path)[0] != os.path.splitdrive(abs_dockerfile)[0] or
-            os.path.relpath(abs_dockerfile, path).startswith('..')):
+        if IS_WINDOWS_PLATFORM and path.startswith(WINDOWS_LONGPATH_PREFIX):
+            abs_dockerfile = f"{WINDOWS_LONGPATH_PREFIX}{os.path.normpath(abs_dockerfile[len(WINDOWS_LONGPATH_PREFIX):])}"
+    if os.path.splitdrive(path)[0] != os.path.splitdrive(abs_dockerfile)[
+        0
+    ] or os.path.relpath(abs_dockerfile, path).startswith(".."):
         # Dockerfile not in context - read data to insert into tar later
         with open(abs_dockerfile) as df:
-            return (
-                f'.dockerfile.{random.getrandbits(160):x}',
-                df.read()
-            )
+            return (f".dockerfile.{random.getrandbits(160):x}", df.read())
 
     # Dockerfile is inside the context - return path relative to context root
     if dockerfile == abs_dockerfile:

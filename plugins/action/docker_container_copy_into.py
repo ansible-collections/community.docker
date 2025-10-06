@@ -9,8 +9,9 @@ import base64
 from ansible import constants as C
 from ansible.plugins.action import ActionBase
 from ansible.utils.vars import merge_hash
-
-from ansible_collections.community.docker.plugins.module_utils._scramble import unscramble
+from ansible_collections.community.docker.plugins.module_utils._scramble import (
+    unscramble,
+)
 
 
 class ActionModule(ActionBase):
@@ -24,15 +25,18 @@ class ActionModule(ActionBase):
         result = super(ActionModule, self).run(tmp, task_vars)
         del tmp  # tmp no longer has any effect
 
-        self._task.args['_max_file_size_for_diff'] = C.MAX_FILE_SIZE_FOR_DIFF
+        self._task.args["_max_file_size_for_diff"] = C.MAX_FILE_SIZE_FOR_DIFF
 
-        result = merge_hash(result, self._execute_module(task_vars=task_vars, wrap_async=self._task.async_val))
+        result = merge_hash(
+            result,
+            self._execute_module(task_vars=task_vars, wrap_async=self._task.async_val),
+        )
 
-        if 'diff' in result and result['diff'].get('scrambled_diff'):
+        if "diff" in result and result["diff"].get("scrambled_diff"):
             # Scrambling is not done for security, but to avoid no_log screwing up the diff
-            diff = result['diff']
-            key = base64.b64decode(diff.pop('scrambled_diff'))
-            for k in ('before', 'after'):
+            diff = result["diff"]
+            key = base64.b64decode(diff.pop("scrambled_diff"))
+            for k in ("before", "after"):
                 if k in diff:
                     diff[k] = unscramble(diff[k], key)
 

@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+
 DOCUMENTATION = r"""
 name: nsenter
 short_description: execute on host running controller container
@@ -39,11 +40,11 @@ notes:
     PID namespace (C(--pid host))."
 """
 
+import fcntl
 import os
 import pty
 import selectors
 import subprocess
-import fcntl
 
 import ansible.constants as C
 from ansible.errors import AnsibleError
@@ -57,10 +58,9 @@ display = Display()
 
 
 class Connection(ConnectionBase):
-    '''Connections to a container host using nsenter
-    '''
+    """Connections to a container host using nsenter"""
 
-    transport = 'community.docker.nsenter'
+    transport = "community.docker.nsenter"
     has_pipelining = False
 
     def __init__(self, *args, **kwargs):
@@ -89,9 +89,11 @@ class Connection(ConnectionBase):
 
         executable = C.DEFAULT_EXECUTABLE.split()[0] if C.DEFAULT_EXECUTABLE else None
 
-        if not os.path.exists(to_bytes(executable, errors='surrogate_or_strict')):
-            raise AnsibleError(f"failed to find the executable specified {executable}."
-                               " Please verify if the executable exists and re-try.")
+        if not os.path.exists(to_bytes(executable, errors="surrogate_or_strict")):
+            raise AnsibleError(
+                f"failed to find the executable specified {executable}."
+                " Please verify if the executable exists and re-try."
+            )
 
         # Rewrite the provided command to prefix it with nsenter
         nsenter_cmd_parts = [
@@ -148,19 +150,32 @@ class Connection(ConnectionBase):
         display.debug("done running command with Popen()")
 
         if self.become and self.become.expect_prompt() and sudoable:
-            fcntl.fcntl(p.stdout, fcntl.F_SETFL, fcntl.fcntl(p.stdout, fcntl.F_GETFL) | os.O_NONBLOCK)
-            fcntl.fcntl(p.stderr, fcntl.F_SETFL, fcntl.fcntl(p.stderr, fcntl.F_GETFL) | os.O_NONBLOCK)
+            fcntl.fcntl(
+                p.stdout,
+                fcntl.F_SETFL,
+                fcntl.fcntl(p.stdout, fcntl.F_GETFL) | os.O_NONBLOCK,
+            )
+            fcntl.fcntl(
+                p.stderr,
+                fcntl.F_SETFL,
+                fcntl.fcntl(p.stderr, fcntl.F_GETFL) | os.O_NONBLOCK,
+            )
             selector = selectors.DefaultSelector()
             selector.register(p.stdout, selectors.EVENT_READ)
             selector.register(p.stderr, selectors.EVENT_READ)
 
-            become_output = b''
+            become_output = b""
             try:
-                while not self.become.check_success(become_output) and not self.become.check_password_prompt(become_output):
+                while not self.become.check_success(
+                    become_output
+                ) and not self.become.check_password_prompt(become_output):
                     events = selector.select(self._play_context.timeout)
                     if not events:
                         stdout, stderr = p.communicate()
-                        raise AnsibleError('timeout waiting for privilege escalation password prompt:\n' + to_native(become_output))
+                        raise AnsibleError(
+                            "timeout waiting for privilege escalation password prompt:\n"
+                            + to_native(become_output)
+                        )
 
                     for key, event in events:
                         if key.fileobj == p.stdout:
@@ -170,20 +185,38 @@ class Connection(ConnectionBase):
 
                     if not chunk:
                         stdout, stderr = p.communicate()
-                        raise AnsibleError('privilege output closed while waiting for password prompt:\n' + to_native(become_output))
+                        raise AnsibleError(
+                            "privilege output closed while waiting for password prompt:\n"
+                            + to_native(become_output)
+                        )
                     become_output += chunk
             finally:
                 selector.close()
 
             if not self.become.check_success(become_output):
-                become_pass = self.become.get_option('become_pass', playcontext=self._play_context)
+                become_pass = self.become.get_option(
+                    "become_pass", playcontext=self._play_context
+                )
                 if master is None:
-                    p.stdin.write(to_bytes(become_pass, errors='surrogate_or_strict') + b'\n')
+                    p.stdin.write(
+                        to_bytes(become_pass, errors="surrogate_or_strict") + b"\n"
+                    )
                 else:
-                    os.write(master, to_bytes(become_pass, errors='surrogate_or_strict') + b'\n')
+                    os.write(
+                        master,
+                        to_bytes(become_pass, errors="surrogate_or_strict") + b"\n",
+                    )
 
-            fcntl.fcntl(p.stdout, fcntl.F_SETFL, fcntl.fcntl(p.stdout, fcntl.F_GETFL) & ~os.O_NONBLOCK)
-            fcntl.fcntl(p.stderr, fcntl.F_SETFL, fcntl.fcntl(p.stderr, fcntl.F_GETFL) & ~os.O_NONBLOCK)
+            fcntl.fcntl(
+                p.stdout,
+                fcntl.F_SETFL,
+                fcntl.fcntl(p.stdout, fcntl.F_GETFL) & ~os.O_NONBLOCK,
+            )
+            fcntl.fcntl(
+                p.stderr,
+                fcntl.F_SETFL,
+                fcntl.fcntl(p.stderr, fcntl.F_GETFL) & ~os.O_NONBLOCK,
+            )
 
         display.debug("getting output with communicate()")
         stdout, stderr = p.communicate(in_data)
@@ -220,14 +253,18 @@ class Connection(ConnectionBase):
 
         try:
             rc, out, err = self.exec_command(cmd=["cat", in_path])
-            display.vvv(f"FETCH {in_path} TO {out_path}", host=self._play_context.remote_addr)
+            display.vvv(
+                f"FETCH {in_path} TO {out_path}", host=self._play_context.remote_addr
+            )
             if rc != 0:
                 raise AnsibleError(f"failed to transfer file to {in_path}: {err}")
-            with open(to_bytes(out_path, errors='surrogate_or_strict'), 'wb') as out_file:
+            with open(
+                to_bytes(out_path, errors="surrogate_or_strict"), "wb"
+            ) as out_file:
                 out_file.write(out)
         except IOError as e:
             raise AnsibleError(f"failed to transfer file to {to_native(out_path)}: {e}")
 
     def close(self):
-        ''' terminate the connection; nothing to do here '''
+        """terminate the connection; nothing to do here"""
         self._connected = False

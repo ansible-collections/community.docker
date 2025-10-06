@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+
 DOCUMENTATION = r"""
 module: docker_stack_task_info
 author: "Jose Angel Munoz (@imjoseangel)"
@@ -86,7 +87,6 @@ import json
 import traceback
 
 from ansible.module_utils.common.text.converters import to_native
-
 from ansible_collections.community.docker.plugins.module_utils.common_cli import (
     AnsibleModuleDockerClient,
     DockerException,
@@ -94,33 +94,37 @@ from ansible_collections.community.docker.plugins.module_utils.common_cli import
 
 
 def docker_stack_task(module, stack_name):
-    docker_bin = module.get_bin_path('docker', required=True)
+    docker_bin = module.get_bin_path("docker", required=True)
     rc, out, err = module.run_command(
-        [docker_bin, "stack", "ps", stack_name, "--format={{json .}}"])
+        [docker_bin, "stack", "ps", stack_name, "--format={{json .}}"]
+    )
 
     return rc, out.strip(), err.strip()
 
 
 def main():
     client = AnsibleModuleDockerClient(
-        argument_spec={
-            'name': dict(type='str', required=True)
-        },
+        argument_spec={"name": dict(type="str", required=True)},
         supports_check_mode=True,
     )
 
     try:
-        name = client.module.params['name']
-        rc, ret, stderr = client.call_cli_json_stream('stack', 'ps', name, '--format={{json .}}', check_rc=True)
+        name = client.module.params["name"]
+        rc, ret, stderr = client.call_cli_json_stream(
+            "stack", "ps", name, "--format={{json .}}", check_rc=True
+        )
         client.module.exit_json(
             changed=False,
             rc=rc,
-            stdout='\n'.join([json.dumps(entry) for entry in ret]),
+            stdout="\n".join([json.dumps(entry) for entry in ret]),
             stderr=to_native(stderr).strip(),
             results=ret,
         )
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
 if __name__ == "__main__":

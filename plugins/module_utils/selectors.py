@@ -8,5 +8,4 @@
 
 from __future__ import annotations
 
-
 import selectors  # noqa: F401, pylint: disable=unused-import

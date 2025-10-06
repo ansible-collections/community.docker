@@ -191,12 +191,14 @@ import base64
 import hashlib
 import traceback
 
+
 try:
-    from docker.errors import DockerException, APIError
+    from docker.errors import APIError, DockerException
 except ImportError:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
     pass
 
+from ansible.module_utils.common.text.converters import to_bytes
 from ansible_collections.community.docker.plugins.module_utils.common import (
     AnsibleDockerClient,
     RequestException,
@@ -206,7 +208,6 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     compare_generic,
     sanitize_labels,
 )
-from ansible.module_utils.common.text.converters import to_bytes
 
 
 class SecretManager(DockerBaseClass):
@@ -220,25 +221,25 @@ class SecretManager(DockerBaseClass):
         self.check_mode = self.client.check_mode
 
         parameters = self.client.module.params
-        self.name = parameters.get('name')
-        self.state = parameters.get('state')
-        self.data = parameters.get('data')
+        self.name = parameters.get("name")
+        self.state = parameters.get("state")
+        self.data = parameters.get("data")
         if self.data is not None:
-            if parameters.get('data_is_b64'):
+            if parameters.get("data_is_b64"):
                 self.data = base64.b64decode(self.data)
             else:
                 self.data = to_bytes(self.data)
-        data_src = parameters.get('data_src')
+        data_src = parameters.get("data_src")
         if data_src is not None:
             try:
-                with open(data_src, 'rb') as f:
+                with open(data_src, "rb") as f:
                     self.data = f.read()
             except Exception as exc:
-                self.client.fail(f'Error while reading {data_src}: {exc}')
-        self.labels = parameters.get('labels')
-        self.force = parameters.get('force')
-        self.rolling_versions = parameters.get('rolling_versions')
-        self.versions_to_keep = parameters.get('versions_to_keep')
+                self.client.fail(f"Error while reading {data_src}: {exc}")
+        self.labels = parameters.get("labels")
+        self.force = parameters.get("force")
+        self.rolling_versions = parameters.get("rolling_versions")
+        self.versions_to_keep = parameters.get("versions_to_keep")
 
         if self.rolling_versions:
             self.version = 0
@@ -247,16 +248,18 @@ class SecretManager(DockerBaseClass):
 
     def __call__(self):
         self.get_secret()
-        if self.state == 'present':
+        if self.state == "present":
             self.data_key = hashlib.sha224(self.data).hexdigest()
             self.present()
             self.remove_old_versions()
-        elif self.state == 'absent':
+        elif self.state == "absent":
             self.absent()
 
     def get_version(self, secret):
         try:
-            return int(secret.get('Spec', {}).get('Labels', {}).get('ansible_version', 0))
+            return int(
+                secret.get("Spec", {}).get("Labels", {}).get("ansible_version", 0)
+            )
         except ValueError:
             return 0
 
@@ -268,9 +271,9 @@ class SecretManager(DockerBaseClass):
                 self.remove_secret(self.secrets.pop(0))
 
     def get_secret(self):
-        ''' Find an existing secret. '''
+        """Find an existing secret."""
         try:
-            secrets = self.client.secrets(filters={'name': self.name})
+            secrets = self.client.secrets(filters={"name": self.name})
         except APIError as exc:
             self.client.fail(f"Error accessing secret {self.name}: {exc}")
 
@@ -278,62 +281,66 @@ class SecretManager(DockerBaseClass):
             self.secrets = [
                 secret
                 for secret in secrets
-                if secret['Spec']['Name'].startswith(f'{self.name}_v')
+                if secret["Spec"]["Name"].startswith(f"{self.name}_v")
             ]
             self.secrets.sort(key=self.get_version)
         else:
             self.secrets = [
-                secret for secret in secrets if secret['Spec']['Name'] == self.name
+                secret for secret in secrets if secret["Spec"]["Name"] == self.name
             ]
 
     def create_secret(self):
-        ''' Create a new secret '''
+        """Create a new secret"""
         secret_id = None
         # We cannot see the data after creation, so adding a label we can use for idempotency check
-        labels = {
-            'ansible_key': self.data_key
-        }
+        labels = {"ansible_key": self.data_key}
         if self.rolling_versions:
             self.version += 1
-            labels['ansible_version'] = str(self.version)
-            self.name = f'{self.name}_v{self.version}'
+            labels["ansible_version"] = str(self.version)
+            self.name = f"{self.name}_v{self.version}"
         if self.labels:
             labels.update(self.labels)
 
         try:
             if not self.check_mode:
-                secret_id = self.client.create_secret(self.name, self.data, labels=labels)
-                self.secrets += self.client.secrets(filters={'id': secret_id})
+                secret_id = self.client.create_secret(
+                    self.name, self.data, labels=labels
+                )
+                self.secrets += self.client.secrets(filters={"id": secret_id})
         except APIError as exc:
             self.client.fail(f"Error creating secret: {exc}")
 
         if isinstance(secret_id, dict):
-            secret_id = secret_id['ID']
+            secret_id = secret_id["ID"]
 
         return secret_id
 
     def remove_secret(self, secret):
         try:
             if not self.check_mode:
-                self.client.remove_secret(secret['ID'])
+                self.client.remove_secret(secret["ID"])
         except APIError as exc:
             self.client.fail(f"Error removing secret {secret['Spec']['Name']}: {exc}")
 
     def present(self):
-        ''' Handles state == 'present', creating or updating the secret '''
+        """Handles state == 'present', creating or updating the secret"""
         if self.secrets:
             secret = self.secrets[-1]
-            self.results['secret_id'] = secret['ID']
-            self.results['secret_name'] = secret['Spec']['Name']
+            self.results["secret_id"] = secret["ID"]
+            self.results["secret_name"] = secret["Spec"]["Name"]
             data_changed = False
-            attrs = secret.get('Spec', {})
-            if attrs.get('Labels', {}).get('ansible_key'):
-                if attrs['Labels']['ansible_key'] != self.data_key:
+            attrs = secret.get("Spec", {})
+            if attrs.get("Labels", {}).get("ansible_key"):
+                if attrs["Labels"]["ansible_key"] != self.data_key:
                     data_changed = True
             else:
                 if not self.force:
-                    self.client.module.warn("'ansible_key' label not found. Secret will not be changed unless the force parameter is set to 'true'")
-            labels_changed = not compare_generic(self.labels, attrs.get('Labels'), 'allow_more_present', 'dict')
+                    self.client.module.warn(
+                        "'ansible_key' label not found. Secret will not be changed unless the force parameter is set to 'true'"
+                    )
+            labels_changed = not compare_generic(
+                self.labels, attrs.get("Labels"), "allow_more_present", "dict"
+            )
             if self.rolling_versions:
                 self.version = self.get_version(secret)
             if data_changed or labels_changed or self.force:
@@ -341,41 +348,41 @@ class SecretManager(DockerBaseClass):
                 if not self.rolling_versions:
                     self.absent()
                 secret_id = self.create_secret()
-                self.results['changed'] = True
-                self.results['secret_id'] = secret_id
-                self.results['secret_name'] = self.name
+                self.results["changed"] = True
+                self.results["secret_id"] = secret_id
+                self.results["secret_name"] = self.name
         else:
-            self.results['changed'] = True
-            self.results['secret_id'] = self.create_secret()
-            self.results['secret_name'] = self.name
+            self.results["changed"] = True
+            self.results["secret_id"] = self.create_secret()
+            self.results["secret_name"] = self.name
 
     def absent(self):
-        ''' Handles state == 'absent', removing the secret '''
+        """Handles state == 'absent', removing the secret"""
         if self.secrets:
             for secret in self.secrets:
                 self.remove_secret(secret)
-            self.results['changed'] = True
+            self.results["changed"] = True
 
 
 def main():
     argument_spec = dict(
-        name=dict(type='str', required=True),
-        state=dict(type='str', default='present', choices=['absent', 'present']),
-        data=dict(type='str', no_log=True),
-        data_is_b64=dict(type='bool', default=False),
-        data_src=dict(type='path'),
-        labels=dict(type='dict'),
-        force=dict(type='bool', default=False),
-        rolling_versions=dict(type='bool', default=False),
-        versions_to_keep=dict(type='int', default=5),
+        name=dict(type="str", required=True),
+        state=dict(type="str", default="present", choices=["absent", "present"]),
+        data=dict(type="str", no_log=True),
+        data_is_b64=dict(type="bool", default=False),
+        data_src=dict(type="path"),
+        labels=dict(type="dict"),
+        force=dict(type="bool", default=False),
+        rolling_versions=dict(type="bool", default=False),
+        versions_to_keep=dict(type="int", default=5),
     )
 
     required_if = [
-        ('state', 'present', ['data', 'data_src'], True),
+        ("state", "present", ["data", "data_src"], True),
     ]
 
     mutually_exclusive = [
-        ('data', 'data_src'),
+        ("data", "data_src"),
     ]
 
     client = AnsibleDockerClient(
@@ -383,26 +390,26 @@ def main():
         supports_check_mode=True,
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,
-        min_docker_version='2.1.0',
+        min_docker_version="2.1.0",
     )
-    sanitize_labels(client.module.params['labels'], 'labels', client)
+    sanitize_labels(client.module.params["labels"], "labels", client)
 
     try:
-        results = dict(
-            changed=False,
-            secret_id='',
-            secret_name=''
-        )
+        results = dict(changed=False, secret_id="", secret_name="")
 
         SecretManager(client, results)()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when Docker SDK for Python tried to talk to the docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

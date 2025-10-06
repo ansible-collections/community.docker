@@ -14,18 +14,19 @@ import io
 import time
 import traceback
 
+
 PYWIN32_IMPORT_ERROR = None
 try:
+    import pywintypes
+    import win32api
+    import win32event
     import win32file
     import win32pipe
-    import pywintypes
-    import win32event
-    import win32api
 except ImportError:
     PYWIN32_IMPORT_ERROR = traceback.format_exc()
 
 
-cERROR_PIPE_BUSY = 0xe7
+cERROR_PIPE_BUSY = 0xE7
 cSECURITY_SQOS_PRESENT = 0x100000
 cSECURITY_ANONYMOUS = 0
 
@@ -36,18 +37,17 @@ def check_closed(f):
     @functools.wraps(f)
     def wrapped(self, *args, **kwargs):
         if self._closed:
-            raise RuntimeError(
-                'Can not reuse socket after connection was closed.'
-            )
+            raise RuntimeError("Can not reuse socket after connection was closed.")
         return f(self, *args, **kwargs)
+
     return wrapped
 
 
 class NpipeSocket(object):
-    """ Partial implementation of the socket API over windows named pipes.
-        This implementation is only designed to be used as a client socket,
-        and server-specific methods (bind, listen, accept...) are not
-        implemented.
+    """Partial implementation of the socket API over windows named pipes.
+    This implementation is only designed to be used as a client socket,
+    and server-specific methods (bind, listen, accept...) are not
+    implemented.
     """
 
     def __init__(self, handle=None):
@@ -74,10 +74,12 @@ class NpipeSocket(object):
                 0,
                 None,
                 win32file.OPEN_EXISTING,
-                (cSECURITY_ANONYMOUS
+                (
+                    cSECURITY_ANONYMOUS
                     | cSECURITY_SQOS_PRESENT
-                    | win32file.FILE_FLAG_OVERLAPPED),
-                0
+                    | win32file.FILE_FLAG_OVERLAPPED
+                ),
+                0,
             )
         except win32pipe.error as e:
             # See Remarks:
@@ -87,7 +89,7 @@ class NpipeSocket(object):
                 # before we got to it. Wait for availability and attempt to
                 # connect again.
                 retry_count = retry_count + 1
-                if (retry_count < MAXIMUM_RETRY_COUNT):
+                if retry_count < MAXIMUM_RETRY_COUNT:
                     time.sleep(1)
                     return self.connect(address, retry_count)
             raise e
@@ -126,7 +128,7 @@ class NpipeSocket(object):
         raise NotImplementedError()
 
     def makefile(self, mode=None, bufsize=None):
-        if mode.strip('b') != 'r':
+        if mode.strip("b") != "r":
             raise NotImplementedError()
         rawio = NpipeFileIOBase(self)
         if bufsize is None or bufsize <= 0:
@@ -158,9 +160,7 @@ class NpipeSocket(object):
             overlapped = pywintypes.OVERLAPPED()
             overlapped.hEvent = event
             err, data = win32file.ReadFile(
-                self._handle,
-                readbuf[:nbytes] if nbytes else readbuf,
-                overlapped
+                self._handle, readbuf[:nbytes] if nbytes else readbuf, overlapped
             )
             wait_result = win32event.WaitForSingleObject(event, self._timeout)
             if wait_result == win32event.WAIT_TIMEOUT:
@@ -204,7 +204,7 @@ class NpipeSocket(object):
             # Blocking mode
             self._timeout = win32event.INFINITE
         elif not isinstance(value, (float, int)) or value < 0:
-            raise ValueError('Timeout value out of range')
+            raise ValueError("Timeout value out of range")
         else:
             # Timeout mode - Value converted to milliseconds
             self._timeout = int(value * 1000)

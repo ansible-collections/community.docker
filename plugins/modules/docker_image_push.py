@@ -74,25 +74,24 @@ image:
 import base64
 import traceback
 
+from ansible_collections.community.docker.plugins.module_utils._api.auth import (
+    get_config_header,
+    resolve_repository_name,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    DockerException,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
+    parse_repository_tag,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-
 from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     is_image_name_id,
     is_valid_tag,
-)
-
-from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
-from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
-    parse_repository_tag,
-)
-
-from ansible_collections.community.docker.plugins.module_utils._api.auth import (
-    get_config_header,
-    resolve_repository_name,
 )
 
 
@@ -104,8 +103,8 @@ class ImagePusher(DockerBaseClass):
         self.check_mode = self.client.check_mode
 
         parameters = self.client.module.params
-        self.name = parameters['name']
-        self.tag = parameters['tag']
+        self.name = parameters["name"]
+        self.tag = parameters["tag"]
 
         if is_image_name_id(self.name):
             self.client.fail("Cannot push an image by ID")
@@ -126,7 +125,7 @@ class ImagePusher(DockerBaseClass):
     def push(self):
         image = self.client.find_image(name=self.name, tag=self.tag)
         if not image:
-            self.client.fail(f'Cannot find image {self.name}:{self.tag}')
+            self.client.fail(f"Cannot find image {self.name}:{self.tag}")
 
         results = dict(
             changed=False,
@@ -136,7 +135,7 @@ class ImagePusher(DockerBaseClass):
 
         push_registry, push_repo = resolve_repository_name(self.name)
         try:
-            results['actions'].append(f'Pushed image {self.name}:{self.tag}')
+            results["actions"].append(f"Pushed image {self.name}:{self.tag}")
 
             headers = {}
             header = get_config_header(self.client, push_registry)
@@ -144,28 +143,32 @@ class ImagePusher(DockerBaseClass):
                 # For some reason, from Docker 28.3.3 on not specifying X-Registry-Auth seems to be invalid.
                 # See https://github.com/moby/moby/issues/50614.
                 header = base64.urlsafe_b64encode(b"{}")
-            headers['X-Registry-Auth'] = header
+            headers["X-Registry-Auth"] = header
             response = self.client._post_json(
                 self.client._url("/images/{0}/push", self.name),
                 data=None,
                 headers=headers,
                 stream=True,
-                params={'tag': self.tag},
+                params={"tag": self.tag},
             )
             self.client._raise_for_status(response)
             for line in self.client._stream_helper(response, decode=True):
                 self.log(line, pretty_print=True)
-                if line.get('errorDetail'):
-                    raise Exception(line['errorDetail']['message'])
-                status = line.get('status')
-                if status == 'Pushing':
-                    results['changed'] = True
+                if line.get("errorDetail"):
+                    raise Exception(line["errorDetail"]["message"])
+                status = line.get("status")
+                if status == "Pushing":
+                    results["changed"] = True
         except Exception as exc:
-            if 'unauthorized' in str(exc):
-                if 'authentication required' in str(exc):
-                    self.client.fail(f"Error pushing image {push_registry}/{push_repo}:{self.tag} - {exc}. Try logging into {push_registry} first.")
+            if "unauthorized" in str(exc):
+                if "authentication required" in str(exc):
+                    self.client.fail(
+                        f"Error pushing image {push_registry}/{push_repo}:{self.tag} - {exc}. Try logging into {push_registry} first."
+                    )
                 else:
-                    self.client.fail(f"Error pushing image {push_registry}/{push_repo}:{self.tag} - {exc}. Does the repository exist?")
+                    self.client.fail(
+                        f"Error pushing image {push_registry}/{push_repo}:{self.tag} - {exc}. Does the repository exist?"
+                    )
             self.client.fail(f"Error pushing image {self.name}:{self.tag}: {exc}")
 
         return results
@@ -173,8 +176,8 @@ class ImagePusher(DockerBaseClass):
 
 def main():
     argument_spec = dict(
-        name=dict(type='str', required=True),
-        tag=dict(type='str', default='latest'),
+        name=dict(type="str", required=True),
+        tag=dict(type="str", default="latest"),
     )
 
     client = AnsibleDockerClient(
@@ -186,12 +189,16 @@ def main():
         results = ImagePusher(client).push()
         client.module.exit_json(**results)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

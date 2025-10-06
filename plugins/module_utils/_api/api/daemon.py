@@ -16,7 +16,7 @@ from ..utils.decorators import minimum_version
 
 
 class DaemonApiMixin(object):
-    @minimum_version('1.25')
+    @minimum_version("1.25")
     def df(self):
         """
         Get data usage information.
@@ -29,7 +29,7 @@ class DaemonApiMixin(object):
             :py:class:`docker.errors.APIError`
                 If the server returns an error.
         """
-        url = self._url('/system/df')
+        url = self._url("/system/df")
         return self._result(self._get(url), True)
 
     def info(self):
@@ -46,8 +46,15 @@ class DaemonApiMixin(object):
         """
         return self._result(self._get(self._url("/info")), True)
 
-    def login(self, username, password=None, email=None, registry=None,
-              reauth=False, dockercfg_path=None):
+    def login(
+        self,
+        username,
+        password=None,
+        email=None,
+        registry=None,
+        reauth=False,
+        dockercfg_path=None,
+    ):
         """
         Authenticate with a registry. Similar to the ``docker login`` command.
 
@@ -80,25 +87,22 @@ class DaemonApiMixin(object):
                 dockercfg_path, credstore_env=self.credstore_env
             )
         elif not self._auth_configs or self._auth_configs.is_empty:
-            self._auth_configs = auth.load_config(
-                credstore_env=self.credstore_env
-            )
+            self._auth_configs = auth.load_config(credstore_env=self.credstore_env)
 
         authcfg = self._auth_configs.resolve_authconfig(registry)
         # If we found an existing auth config for this registry and username
         # combination, we can return it immediately unless reauth is requested.
-        if authcfg and authcfg.get('username', None) == username \
-                and not reauth:
+        if authcfg and authcfg.get("username", None) == username and not reauth:
             return authcfg
 
         req_data = {
-            'username': username,
-            'password': password,
-            'email': email,
-            'serveraddress': registry,
+            "username": username,
+            "password": password,
+            "email": email,
+            "serveraddress": registry,
         }
 
-        response = self._post_json(self._url('/auth'), data=req_data)
+        response = self._post_json(self._url("/auth"), data=req_data)
         if response.status_code == 200:
             self._auth_configs.add_auth(registry or auth.INDEX_NAME, req_data)
         return self._result(response, json=True)
@@ -115,7 +119,7 @@ class DaemonApiMixin(object):
             :py:class:`docker.errors.APIError`
                 If the server returns an error.
         """
-        return self._result(self._get(self._url('/_ping'))) == 'OK'
+        return self._result(self._get(self._url("/_ping"))) == "OK"
 
     def version(self, api_version=True):
         """

@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-
 import abc
 import json
 import shlex
@@ -12,11 +11,9 @@ import shlex
 from ansible.module_utils.basic import AnsibleModule, env_fallback
 from ansible.module_utils.common.process import get_bin_path
 from ansible.module_utils.common.text.converters import to_native
-
-from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
-
-from ansible_collections.community.docker.plugins.module_utils._api.auth import resolve_repository_name
-
+from ansible_collections.community.docker.plugins.module_utils._api.auth import (
+    resolve_repository_name,
+)
 from ansible_collections.community.docker.plugins.module_utils.util import (  # noqa: F401, pylint: disable=unused-import
     DEFAULT_DOCKER_HOST,
     DEFAULT_TLS,
@@ -25,20 +22,35 @@ from ansible_collections.community.docker.plugins.module_utils.util import (  # 
     DOCKER_REQUIRED_TOGETHER,
     sanitize_result,
 )
+from ansible_collections.community.docker.plugins.module_utils.version import (
+    LooseVersion,
+)
 
 
 DOCKER_COMMON_ARGS = dict(
-    docker_cli=dict(type='path'),
-    docker_host=dict(type='str', fallback=(env_fallback, ['DOCKER_HOST']), aliases=['docker_url']),
-    tls_hostname=dict(type='str', fallback=(env_fallback, ['DOCKER_TLS_HOSTNAME'])),
-    api_version=dict(type='str', default='auto', fallback=(env_fallback, ['DOCKER_API_VERSION']), aliases=['docker_api_version']),
-    ca_path=dict(type='path', aliases=['ca_cert', 'tls_ca_cert', 'cacert_path']),
-    client_cert=dict(type='path', aliases=['tls_client_cert', 'cert_path']),
-    client_key=dict(type='path', aliases=['tls_client_key', 'key_path']),
-    tls=dict(type='bool', default=DEFAULT_TLS, fallback=(env_fallback, ['DOCKER_TLS'])),
-    validate_certs=dict(type='bool', default=DEFAULT_TLS_VERIFY, fallback=(env_fallback, ['DOCKER_TLS_VERIFY']), aliases=['tls_verify']),
+    docker_cli=dict(type="path"),
+    docker_host=dict(
+        type="str", fallback=(env_fallback, ["DOCKER_HOST"]), aliases=["docker_url"]
+    ),
+    tls_hostname=dict(type="str", fallback=(env_fallback, ["DOCKER_TLS_HOSTNAME"])),
+    api_version=dict(
+        type="str",
+        default="auto",
+        fallback=(env_fallback, ["DOCKER_API_VERSION"]),
+        aliases=["docker_api_version"],
+    ),
+    ca_path=dict(type="path", aliases=["ca_cert", "tls_ca_cert", "cacert_path"]),
+    client_cert=dict(type="path", aliases=["tls_client_cert", "cert_path"]),
+    client_key=dict(type="path", aliases=["tls_client_key", "key_path"]),
+    tls=dict(type="bool", default=DEFAULT_TLS, fallback=(env_fallback, ["DOCKER_TLS"])),
+    validate_certs=dict(
+        type="bool",
+        default=DEFAULT_TLS_VERIFY,
+        fallback=(env_fallback, ["DOCKER_TLS_VERIFY"]),
+        aliases=["tls_verify"],
+    ),
     # debug=dict(type='bool', default=False),
-    cli_context=dict(type='str'),
+    cli_context=dict(type="str"),
 )
 
 
@@ -47,55 +59,71 @@ class DockerException(Exception):
 
 
 class AnsibleDockerClientBase(object):
-    def __init__(self, common_args, min_docker_api_version=None, needs_api_version=True):
+    def __init__(
+        self, common_args, min_docker_api_version=None, needs_api_version=True
+    ):
         self._environment = {}
-        if common_args['tls_hostname']:
-            self._environment['DOCKER_TLS_HOSTNAME'] = common_args['tls_hostname']
-        if common_args['api_version'] and common_args['api_version'] != 'auto':
-            self._environment['DOCKER_API_VERSION'] = common_args['api_version']
-        self._cli = common_args.get('docker_cli')
+        if common_args["tls_hostname"]:
+            self._environment["DOCKER_TLS_HOSTNAME"] = common_args["tls_hostname"]
+        if common_args["api_version"] and common_args["api_version"] != "auto":
+            self._environment["DOCKER_API_VERSION"] = common_args["api_version"]
+        self._cli = common_args.get("docker_cli")
         if self._cli is None:
             try:
-                self._cli = get_bin_path('docker')
+                self._cli = get_bin_path("docker")
             except ValueError:
-                self.fail('Cannot find docker CLI in path. Please provide it explicitly with the docker_cli parameter')
+                self.fail(
+                    "Cannot find docker CLI in path. Please provide it explicitly with the docker_cli parameter"
+                )
 
         self._cli_base = [self._cli]
-        docker_host = common_args['docker_host']
-        if not docker_host and not common_args['cli_context']:
+        docker_host = common_args["docker_host"]
+        if not docker_host and not common_args["cli_context"]:
             docker_host = DEFAULT_DOCKER_HOST
         if docker_host:
-            self._cli_base.extend(['--host', docker_host])
-        if common_args['validate_certs']:
-            self._cli_base.append('--tlsverify')
-        elif common_args['tls']:
-            self._cli_base.append('--tls')
-        if common_args['ca_path']:
-            self._cli_base.extend(['--tlscacert', common_args['ca_path']])
-        if common_args['client_cert']:
-            self._cli_base.extend(['--tlscert', common_args['client_cert']])
-        if common_args['client_key']:
-            self._cli_base.extend(['--tlskey', common_args['client_key']])
-        if common_args['cli_context']:
-            self._cli_base.extend(['--context', common_args['cli_context']])
+            self._cli_base.extend(["--host", docker_host])
+        if common_args["validate_certs"]:
+            self._cli_base.append("--tlsverify")
+        elif common_args["tls"]:
+            self._cli_base.append("--tls")
+        if common_args["ca_path"]:
+            self._cli_base.extend(["--tlscacert", common_args["ca_path"]])
+        if common_args["client_cert"]:
+            self._cli_base.extend(["--tlscert", common_args["client_cert"]])
+        if common_args["client_key"]:
+            self._cli_base.extend(["--tlskey", common_args["client_key"]])
+        if common_args["cli_context"]:
+            self._cli_base.extend(["--context", common_args["cli_context"]])
 
         # `--format json` was only added as a shorthand for `--format {{ json . }}` in Docker 23.0
-        dummy, self._version, dummy = self.call_cli_json('version', '--format', '{{ json . }}', check_rc=True)
+        dummy, self._version, dummy = self.call_cli_json(
+            "version", "--format", "{{ json . }}", check_rc=True
+        )
         self._info = None
 
         if needs_api_version:
-            if not isinstance(self._version.get('Server'), dict) or not isinstance(self._version['Server'].get('ApiVersion'), str):
-                self.fail('Cannot determine Docker Daemon information. Are you maybe using podman instead of docker?')
-            self.docker_api_version_str = to_native(self._version['Server']['ApiVersion'])
+            if not isinstance(self._version.get("Server"), dict) or not isinstance(
+                self._version["Server"].get("ApiVersion"), str
+            ):
+                self.fail(
+                    "Cannot determine Docker Daemon information. Are you maybe using podman instead of docker?"
+                )
+            self.docker_api_version_str = to_native(
+                self._version["Server"]["ApiVersion"]
+            )
             self.docker_api_version = LooseVersion(self.docker_api_version_str)
-            min_docker_api_version = min_docker_api_version or '1.25'
+            min_docker_api_version = min_docker_api_version or "1.25"
             if self.docker_api_version < LooseVersion(min_docker_api_version):
-                self.fail(f'Docker API version is {self.docker_api_version_str}. Minimum version required is {min_docker_api_version}.')
+                self.fail(
+                    f"Docker API version is {self.docker_api_version_str}. Minimum version required is {min_docker_api_version}."
+                )
         else:
             self.docker_api_version_str = None
             self.docker_api_version = None
             if min_docker_api_version is not None:
-                self.fail('Internal error: cannot have needs_api_version=False with min_docker_api_version not None')
+                self.fail(
+                    "Internal error: cannot have needs_api_version=False with min_docker_api_version not None"
+                )
 
     def log(self, msg, pretty_print=False):
         pass
@@ -113,7 +141,7 @@ class AnsibleDockerClientBase(object):
         return self._cli_base + list(args)
 
     def _compose_cmd_str(self, args):
-        return ' '.join(shlex.quote(a) for a in self._compose_cmd(args))
+        return " ".join(shlex.quote(a) for a in self._compose_cmd(args))
 
     @abc.abstractmethod
     def call_cli(self, *args, check_rc=False, data=None, cwd=None, environ_update=None):
@@ -121,19 +149,21 @@ class AnsibleDockerClientBase(object):
 
     # def call_cli_json(self, *args, check_rc=False, data=None, cwd=None, environ_update=None, warn_on_stderr=False):
     def call_cli_json(self, *args, **kwargs):
-        warn_on_stderr = kwargs.pop('warn_on_stderr', False)
+        warn_on_stderr = kwargs.pop("warn_on_stderr", False)
         rc, stdout, stderr = self.call_cli(*args, **kwargs)
         if warn_on_stderr and stderr:
             self.warn(to_native(stderr))
         try:
             data = json.loads(stdout)
         except Exception as exc:
-            self.fail(f'Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_native(stdout)}')
+            self.fail(
+                f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_native(stdout)}"
+            )
         return rc, data, stderr
 
     # def call_cli_json_stream(self, *args, check_rc=False, data=None, cwd=None, environ_update=None, warn_on_stderr=False):
     def call_cli_json_stream(self, *args, **kwargs):
-        warn_on_stderr = kwargs.pop('warn_on_stderr', False)
+        warn_on_stderr = kwargs.pop("warn_on_stderr", False)
         rc, stdout, stderr = self.call_cli(*args, **kwargs)
         if warn_on_stderr and stderr:
             self.warn(to_native(stderr))
@@ -141,10 +171,12 @@ class AnsibleDockerClientBase(object):
         try:
             for line in stdout.splitlines():
                 line = line.strip()
-                if line.startswith(b'{'):
+                if line.startswith(b"{"):
                     result.append(json.loads(line))
         except Exception as exc:
-            self.fail(f'Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_native(stdout)}')
+            self.fail(
+                f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_native(stdout)}"
+            )
         return rc, result, stderr
 
     @abc.abstractmethod
@@ -161,26 +193,36 @@ class AnsibleDockerClientBase(object):
 
     def get_cli_info(self):
         if self._info is None:
-            dummy, self._info, dummy = self.call_cli_json('info', '--format', '{{ json . }}', check_rc=True)
+            dummy, self._info, dummy = self.call_cli_json(
+                "info", "--format", "{{ json . }}", check_rc=True
+            )
         return self._info
 
     def get_client_plugin_info(self, component):
         cli_info = self.get_cli_info()
-        if not isinstance(cli_info.get('ClientInfo'), dict):
-            self.fail('Cannot determine Docker client information. Are you maybe using podman instead of docker?')
-        for plugin in cli_info['ClientInfo'].get('Plugins') or []:
-            if plugin.get('Name') == component:
+        if not isinstance(cli_info.get("ClientInfo"), dict):
+            self.fail(
+                "Cannot determine Docker client information. Are you maybe using podman instead of docker?"
+            )
+        for plugin in cli_info["ClientInfo"].get("Plugins") or []:
+            if plugin.get("Name") == component:
                 return plugin
         return None
 
     def _image_lookup(self, name, tag):
-        '''
+        """
         Including a tag in the name parameter sent to the Docker SDK for Python images method
         does not work consistently. Instead, get the result set for name and manually check
         if the tag exists.
-        '''
+        """
         dummy, images, dummy = self.call_cli_json_stream(
-            'image', 'ls', '--format', '{{ json . }}', '--no-trunc', '--filter', f'reference={name}',
+            "image",
+            "ls",
+            "--format",
+            "{{ json . }}",
+            "--no-trunc",
+            "--filter",
+            f"reference={name}",
             check_rc=True,
         )
         if tag:
@@ -189,15 +231,15 @@ class AnsibleDockerClientBase(object):
             response = images
             images = []
             for image in response:
-                if image.get('Tag') == tag or image.get('Digest') == tag:
+                if image.get("Tag") == tag or image.get("Digest") == tag:
                     images = [image]
                     break
         return images
 
     def find_image(self, name, tag):
-        '''
+        """
         Lookup an image (by name and tag) and return the inspection results.
-        '''
+        """
         if not name:
             return None
 
@@ -206,14 +248,14 @@ class AnsibleDockerClientBase(object):
         if not images:
             # In API <= 1.20 seeing 'docker.io/<name>' as the name of images pulled from docker hub
             registry, repo_name = resolve_repository_name(name)
-            if registry == 'docker.io':
+            if registry == "docker.io":
                 # If docker.io is explicitly there in name, the image
                 # is not found in some cases (#41509)
                 self.log(f"Check for docker.io image: {repo_name}")
                 images = self._image_lookup(repo_name, tag)
-                if not images and repo_name.startswith('library/'):
+                if not images and repo_name.startswith("library/"):
                     # Sometimes library/xxx images are not found
-                    lookup = repo_name[len('library/'):]
+                    lookup = repo_name[len("library/") :]
                     self.log(f"Check for docker.io image: {lookup}")
                     images = self._image_lookup(lookup, tag)
                 if not images:
@@ -223,7 +265,7 @@ class AnsibleDockerClientBase(object):
                     lookup = f"{registry}/{repo_name}"
                     self.log(f"Check for docker.io image: {lookup}")
                     images = self._image_lookup(lookup, tag)
-                if not images and '/' not in repo_name:
+                if not images and "/" not in repo_name:
                     # This seems to be happening with podman-docker
                     # (https://github.com/ansible-collections/community.docker/issues/291)
                     lookup = f"{registry}/library/{repo_name}"
@@ -234,7 +276,7 @@ class AnsibleDockerClientBase(object):
             self.fail(f"Daemon returned more than one result for {name}:{tag}")
 
         if len(images) == 1:
-            rc, image, stderr = self.call_cli_json('image', 'inspect', images[0]['ID'])
+            rc, image, stderr = self.call_cli_json("image", "inspect", images[0]["ID"])
             if not image:
                 self.log(f"Image {name}:{tag} not found.")
                 return None
@@ -246,14 +288,14 @@ class AnsibleDockerClientBase(object):
         return None
 
     def find_image_by_id(self, image_id, accept_missing_image=False):
-        '''
+        """
         Lookup an image (by ID) and return the inspection results.
-        '''
+        """
         if not image_id:
             return None
 
         self.log(f"Find image {image_id} (by ID)")
-        rc, image, stderr = self.call_cli_json('image', 'inspect', image_id)
+        rc, image, stderr = self.call_cli_json("image", "inspect", image_id)
         if not image:
             if not accept_missing_image:
                 self.fail(f"Error inspecting image ID {image_id} - {to_native(stderr)}")
@@ -265,9 +307,19 @@ class AnsibleDockerClientBase(object):
 
 
 class AnsibleModuleDockerClient(AnsibleDockerClientBase):
-    def __init__(self, argument_spec=None, supports_check_mode=False, mutually_exclusive=None,
-                 required_together=None, required_if=None, required_one_of=None, required_by=None,
-                 min_docker_api_version=None, fail_results=None, needs_api_version=True):
+    def __init__(
+        self,
+        argument_spec=None,
+        supports_check_mode=False,
+        mutually_exclusive=None,
+        required_together=None,
+        required_if=None,
+        required_one_of=None,
+        required_by=None,
+        min_docker_api_version=None,
+        fail_results=None,
+        needs_api_version=True,
+    ):
 
         # Modules can put information in here which will always be returned
         # in case client.fail() is called.
@@ -279,7 +331,7 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
             merged_arg_spec.update(argument_spec)
             self.arg_spec = merged_arg_spec
 
-        mutually_exclusive_params = [('docker_host', 'cli_context')]
+        mutually_exclusive_params = [("docker_host", "cli_context")]
         mutually_exclusive_params += DOCKER_MUTUALLY_EXCLUSIVE
         if mutually_exclusive:
             mutually_exclusive_params += mutually_exclusive
@@ -305,7 +357,9 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
 
         common_args = dict((k, self.module.params[k]) for k in DOCKER_COMMON_ARGS)
         super(AnsibleModuleDockerClient, self).__init__(
-            common_args, min_docker_api_version=min_docker_api_version, needs_api_version=needs_api_version,
+            common_args,
+            min_docker_api_version=min_docker_api_version,
+            needs_api_version=needs_api_version,
         )
 
     def call_cli(self, *args, check_rc=False, data=None, cwd=None, environ_update=None):
@@ -333,4 +387,6 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
         self.module.warn(msg)
 
     def deprecate(self, msg, version=None, date=None, collection_name=None):
-        self.module.deprecate(msg, version=version, date=date, collection_name=collection_name)
+        self.module.deprecate(
+            msg, version=version, date=date, collection_name=collection_name
+        )

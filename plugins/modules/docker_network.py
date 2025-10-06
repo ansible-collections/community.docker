@@ -282,22 +282,23 @@ network:
 """
 
 import re
-import traceback
 import time
+import traceback
 
 from ansible.module_utils.common.text.converters import to_native
-
+from ansible_collections.community.docker.plugins.module_utils._api.errors import (
+    DockerException,
+)
 from ansible_collections.community.docker.plugins.module_utils.common_api import (
     AnsibleDockerClient,
     RequestException,
 )
 from ansible_collections.community.docker.plugins.module_utils.util import (
-    DockerBaseClass,
     DifferenceTracker,
+    DockerBaseClass,
     clean_dict_booleans_for_docker_api,
     sanitize_labels,
 )
-from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
 
 
 class TaskParameters(DockerBaseClass):
@@ -331,15 +332,19 @@ class TaskParameters(DockerBaseClass):
         # config_only sets driver to 'null' (and scope to 'local') so force that here. Otherwise we get
         # diffs of 'null' --> 'bridge' given that the driver option defaults to 'bridge'.
         if self.config_only:
-            self.driver = 'null'
+            self.driver = "null"
 
 
 def container_names_in_network(network):
-    return [c['Name'] for c in network['Containers'].values()] if network['Containers'] else []
+    return (
+        [c["Name"] for c in network["Containers"].values()]
+        if network["Containers"]
+        else []
+    )
 
 
-CIDR_IPV4 = re.compile(r'^([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])$')
-CIDR_IPV6 = re.compile(r'^[0-9a-fA-F:]+/([0-9]|[1-9][0-9]|1[0-2][0-9])$')
+CIDR_IPV4 = re.compile(r"^([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])$")
+CIDR_IPV6 = re.compile(r"^[0-9a-fA-F:]+/([0-9]|[1-9][0-9]|1[0-2][0-9])$")
 
 
 def validate_cidr(cidr):
@@ -352,9 +357,9 @@ def validate_cidr(cidr):
     :raises ValueError: If ``cidr`` is not a valid CIDR
     """
     if CIDR_IPV4.match(cidr):
-        return 'ipv4'
+        return "ipv4"
     elif CIDR_IPV6.match(cidr):
-        return 'ipv6'
+        return "ipv6"
     raise ValueError(f'"{cidr}" is not a valid CIDR')
 
 
@@ -366,9 +371,7 @@ def normalize_ipam_config_key(key):
     :return Ansible module key
     :rtype str
     """
-    special_cases = {
-        'AuxiliaryAddresses': 'aux_addresses'
-    }
+    special_cases = {"AuxiliaryAddresses": "aux_addresses"}
     return special_cases.get(key, key.lower())
 
 
@@ -388,10 +391,7 @@ class DockerNetworkManager(object):
         self.client = client
         self.parameters = TaskParameters(client)
         self.check_mode = self.client.check_mode
-        self.results = {
-            'changed': False,
-            'actions': []
-        }
+        self.results = {"changed": False, "actions": []}
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()
         self.diff_result = dict()
@@ -399,87 +399,117 @@ class DockerNetworkManager(object):
         self.existing_network = self.get_existing_network()
 
         if not self.parameters.connected and self.existing_network:
-            self.parameters.connected = container_names_in_network(self.existing_network)
+            self.parameters.connected = container_names_in_network(
+                self.existing_network
+            )
 
         if self.parameters.ipam_config:
             try:
                 for ipam_config in self.parameters.ipam_config:
-                    validate_cidr(ipam_config['subnet'])
+                    validate_cidr(ipam_config["subnet"])
             except ValueError as e:
                 self.client.fail(to_native(e))
 
         if self.parameters.driver_options:
-            self.parameters.driver_options = clean_dict_booleans_for_docker_api(self.parameters.driver_options)
+            self.parameters.driver_options = clean_dict_booleans_for_docker_api(
+                self.parameters.driver_options
+            )
 
         state = self.parameters.state
-        if state == 'present':
+        if state == "present":
             self.present()
-        elif state == 'absent':
+        elif state == "absent":
             self.absent()
 
         if self.diff or self.check_mode or self.parameters.debug:
             if self.diff:
-                self.diff_result['before'], self.diff_result['after'] = self.diff_tracker.get_before_after()
-            self.results['diff'] = self.diff_result
+                self.diff_result["before"], self.diff_result["after"] = (
+                    self.diff_tracker.get_before_after()
+                )
+            self.results["diff"] = self.diff_result
 
     def get_existing_network(self):
         return self.client.get_network(name=self.parameters.name)
 
     def has_different_config(self, net):
-        '''
+        """
         Evaluates an existing network and returns a tuple containing a boolean
         indicating if the configuration is different and a list of differences.
 
         :param net: the inspection output for an existing network
         :return: (bool, list)
-        '''
+        """
         differences = DifferenceTracker()
-        if self.parameters.config_only is not None and self.parameters.config_only != net.get('ConfigOnly', False):
-            differences.add('config_only',
-                            parameter=self.parameters.config_only,
-                            active=net.get('ConfigOnly', False))
-        if self.parameters.config_from is not None and self.parameters.config_from != net.get('ConfigFrom', {}).get('Network', ''):
-            differences.add('config_from',
-                            parameter=self.parameters.config_from,
-                            active=net.get('ConfigFrom', {}).get('Network', ''))
-        if self.parameters.driver and self.parameters.driver != net['Driver']:
-            differences.add('driver',
-                            parameter=self.parameters.driver,
-                            active=net['Driver'])
+        if (
+            self.parameters.config_only is not None
+            and self.parameters.config_only != net.get("ConfigOnly", False)
+        ):
+            differences.add(
+                "config_only",
+                parameter=self.parameters.config_only,
+                active=net.get("ConfigOnly", False),
+            )
+        if (
+            self.parameters.config_from is not None
+            and self.parameters.config_from
+            != net.get("ConfigFrom", {}).get("Network", "")
+        ):
+            differences.add(
+                "config_from",
+                parameter=self.parameters.config_from,
+                active=net.get("ConfigFrom", {}).get("Network", ""),
+            )
+        if self.parameters.driver and self.parameters.driver != net["Driver"]:
+            differences.add(
+                "driver", parameter=self.parameters.driver, active=net["Driver"]
+            )
         if self.parameters.driver_options:
-            if not net.get('Options'):
-                differences.add('driver_options',
-                                parameter=self.parameters.driver_options,
-                                active=net.get('Options'))
+            if not net.get("Options"):
+                differences.add(
+                    "driver_options",
+                    parameter=self.parameters.driver_options,
+                    active=net.get("Options"),
+                )
             else:
                 for key, value in self.parameters.driver_options.items():
-                    if not (key in net['Options']) or value != net['Options'][key]:
-                        differences.add(f'driver_options.{key}',
-                                        parameter=value,
-                                        active=net['Options'].get(key))
+                    if not (key in net["Options"]) or value != net["Options"][key]:
+                        differences.add(
+                            f"driver_options.{key}",
+                            parameter=value,
+                            active=net["Options"].get(key),
+                        )
 
         if self.parameters.ipam_driver:
-            if not net.get('IPAM') or net['IPAM']['Driver'] != self.parameters.ipam_driver:
-                differences.add('ipam_driver',
-                                parameter=self.parameters.ipam_driver,
-                                active=net.get('IPAM'))
+            if (
+                not net.get("IPAM")
+                or net["IPAM"]["Driver"] != self.parameters.ipam_driver
+            ):
+                differences.add(
+                    "ipam_driver",
+                    parameter=self.parameters.ipam_driver,
+                    active=net.get("IPAM"),
+                )
 
         if self.parameters.ipam_driver_options is not None:
-            ipam_driver_options = net['IPAM'].get('Options') or {}
+            ipam_driver_options = net["IPAM"].get("Options") or {}
             if ipam_driver_options != self.parameters.ipam_driver_options:
-                differences.add('ipam_driver_options',
-                                parameter=self.parameters.ipam_driver_options,
-                                active=ipam_driver_options)
+                differences.add(
+                    "ipam_driver_options",
+                    parameter=self.parameters.ipam_driver_options,
+                    active=ipam_driver_options,
+                )
 
         if self.parameters.ipam_config is not None and self.parameters.ipam_config:
-            if not net.get('IPAM') or not net['IPAM']['Config']:
-                differences.add('ipam_config',
-                                parameter=self.parameters.ipam_config,
-                                active=net.get('IPAM', {}).get('Config'))
+            if not net.get("IPAM") or not net["IPAM"]["Config"]:
+                differences.add(
+                    "ipam_config",
+                    parameter=self.parameters.ipam_config,
+                    active=net.get("IPAM", {}).get("Config"),
+                )
             else:
                 # Put network's IPAM config into the same format as module's IPAM config
                 net_ipam_configs = []
-                for net_ipam_config in net['IPAM']['Config']:
+                for net_ipam_config in net["IPAM"]["Config"]:
                     config = dict()
                     for k, v in net_ipam_config.items():
                         config[normalize_ipam_config_key(k)] = v
@@ -497,118 +527,154 @@ class DockerNetworkManager(object):
                             # (but have default value None if not specified)
                             continue
                         if value != net_config.get(key):
-                            differences.add(f'ipam_config[{idx}].{key}',
-                                            parameter=value,
-                                            active=net_config.get(key))
+                            differences.add(
+                                f"ipam_config[{idx}].{key}",
+                                parameter=value,
+                                active=net_config.get(key),
+                            )
 
-        if self.parameters.enable_ipv4 is not None and self.parameters.enable_ipv4 != net.get('EnableIPv4', False):
-            differences.add('enable_ipv4',
-                            parameter=self.parameters.enable_ipv4,
-                            active=net.get('EnableIPv4', False))
-        if self.parameters.enable_ipv6 is not None and self.parameters.enable_ipv6 != net.get('EnableIPv6', False):
-            differences.add('enable_ipv6',
-                            parameter=self.parameters.enable_ipv6,
-                            active=net.get('EnableIPv6', False))
+        if (
+            self.parameters.enable_ipv4 is not None
+            and self.parameters.enable_ipv4 != net.get("EnableIPv4", False)
+        ):
+            differences.add(
+                "enable_ipv4",
+                parameter=self.parameters.enable_ipv4,
+                active=net.get("EnableIPv4", False),
+            )
+        if (
+            self.parameters.enable_ipv6 is not None
+            and self.parameters.enable_ipv6 != net.get("EnableIPv6", False)
+        ):
+            differences.add(
+                "enable_ipv6",
+                parameter=self.parameters.enable_ipv6,
+                active=net.get("EnableIPv6", False),
+            )
 
-        if self.parameters.internal is not None and self.parameters.internal != net.get('Internal', False):
-            differences.add('internal',
-                            parameter=self.parameters.internal,
-                            active=net.get('Internal'))
+        if (
+            self.parameters.internal is not None
+            and self.parameters.internal != net.get("Internal", False)
+        ):
+            differences.add(
+                "internal",
+                parameter=self.parameters.internal,
+                active=net.get("Internal"),
+            )
 
-        if self.parameters.scope is not None and self.parameters.scope != net.get('Scope'):
-            differences.add('scope',
-                            parameter=self.parameters.scope,
-                            active=net.get('Scope'))
+        if self.parameters.scope is not None and self.parameters.scope != net.get(
+            "Scope"
+        ):
+            differences.add(
+                "scope", parameter=self.parameters.scope, active=net.get("Scope")
+            )
 
-        if self.parameters.attachable is not None and self.parameters.attachable != net.get('Attachable', False):
-            differences.add('attachable',
-                            parameter=self.parameters.attachable,
-                            active=net.get('Attachable'))
-        if self.parameters.ingress is not None and self.parameters.ingress != net.get('Ingress', False):
-            differences.add('ingress',
-                            parameter=self.parameters.ingress,
-                            active=net.get('Ingress'))
+        if (
+            self.parameters.attachable is not None
+            and self.parameters.attachable != net.get("Attachable", False)
+        ):
+            differences.add(
+                "attachable",
+                parameter=self.parameters.attachable,
+                active=net.get("Attachable"),
+            )
+        if self.parameters.ingress is not None and self.parameters.ingress != net.get(
+            "Ingress", False
+        ):
+            differences.add(
+                "ingress", parameter=self.parameters.ingress, active=net.get("Ingress")
+            )
         if self.parameters.labels:
-            if not net.get('Labels'):
-                differences.add('labels',
-                                parameter=self.parameters.labels,
-                                active=net.get('Labels'))
+            if not net.get("Labels"):
+                differences.add(
+                    "labels", parameter=self.parameters.labels, active=net.get("Labels")
+                )
             else:
                 for key, value in self.parameters.labels.items():
-                    if not (key in net['Labels']) or value != net['Labels'][key]:
-                        differences.add(f'labels.{key}',
-                                        parameter=value,
-                                        active=net['Labels'].get(key))
+                    if not (key in net["Labels"]) or value != net["Labels"][key]:
+                        differences.add(
+                            f"labels.{key}",
+                            parameter=value,
+                            active=net["Labels"].get(key),
+                        )
 
         return not differences.empty, differences
 
     def create_network(self):
         if not self.existing_network:
             data = {
-                'Name': self.parameters.name,
-                'Driver': self.parameters.driver,
-                'Options': self.parameters.driver_options,
-                'IPAM': None,
-                'CheckDuplicate': None,
+                "Name": self.parameters.name,
+                "Driver": self.parameters.driver,
+                "Options": self.parameters.driver_options,
+                "IPAM": None,
+                "CheckDuplicate": None,
             }
 
             if self.parameters.config_only is not None:
-                data['ConfigOnly'] = self.parameters.config_only
+                data["ConfigOnly"] = self.parameters.config_only
             if self.parameters.config_from:
-                data['ConfigFrom'] = {'Network': self.parameters.config_from}
+                data["ConfigFrom"] = {"Network": self.parameters.config_from}
             if self.parameters.enable_ipv6 is not None:
-                data['EnableIPv6'] = self.parameters.enable_ipv6
+                data["EnableIPv6"] = self.parameters.enable_ipv6
             if self.parameters.enable_ipv4 is not None:
-                data['EnableIPv4'] = self.parameters.enable_ipv4
+                data["EnableIPv4"] = self.parameters.enable_ipv4
             if self.parameters.internal:
-                data['Internal'] = True
+                data["Internal"] = True
             if self.parameters.scope is not None:
-                data['Scope'] = self.parameters.scope
+                data["Scope"] = self.parameters.scope
             if self.parameters.attachable is not None:
-                data['Attachable'] = self.parameters.attachable
+                data["Attachable"] = self.parameters.attachable
             if self.parameters.ingress is not None:
-                data['Ingress'] = self.parameters.ingress
+                data["Ingress"] = self.parameters.ingress
             if self.parameters.labels is not None:
                 data["Labels"] = self.parameters.labels
 
             ipam_pools = []
             if self.parameters.ipam_config:
                 for ipam_pool in self.parameters.ipam_config:
-                    ipam_pools.append({
-                        'Subnet': ipam_pool['subnet'],
-                        'IPRange': ipam_pool['iprange'],
-                        'Gateway': ipam_pool['gateway'],
-                        'AuxiliaryAddresses': ipam_pool['aux_addresses'],
-                    })
+                    ipam_pools.append(
+                        {
+                            "Subnet": ipam_pool["subnet"],
+                            "IPRange": ipam_pool["iprange"],
+                            "Gateway": ipam_pool["gateway"],
+                            "AuxiliaryAddresses": ipam_pool["aux_addresses"],
+                        }
+                    )
 
-            if self.parameters.ipam_driver or self.parameters.ipam_driver_options or ipam_pools:
+            if (
+                self.parameters.ipam_driver
+                or self.parameters.ipam_driver_options
+                or ipam_pools
+            ):
                 # Only add IPAM if a driver was specified or if IPAM parameters were
                 # specified. Leaving this parameter out can significantly speed up
                 # creation; on my machine creation with this option needs ~15 seconds,
                 # and without just a few seconds.
-                data['IPAM'] = {
-                    'Driver': self.parameters.ipam_driver,
-                    'Config': ipam_pools or [],
-                    'Options': self.parameters.ipam_driver_options,
+                data["IPAM"] = {
+                    "Driver": self.parameters.ipam_driver,
+                    "Config": ipam_pools or [],
+                    "Options": self.parameters.ipam_driver_options,
                 }
 
             if not self.check_mode:
-                resp = self.client.post_json_to_json('/networks/create', data=data)
-                self.client.report_warnings(resp, ['Warning'])
-                self.existing_network = self.client.get_network(network_id=resp['Id'])
-            self.results['actions'].append(f"Created network {self.parameters.name} with driver {self.parameters.driver}")
-            self.results['changed'] = True
+                resp = self.client.post_json_to_json("/networks/create", data=data)
+                self.client.report_warnings(resp, ["Warning"])
+                self.existing_network = self.client.get_network(network_id=resp["Id"])
+            self.results["actions"].append(
+                f"Created network {self.parameters.name} with driver {self.parameters.driver}"
+            )
+            self.results["changed"] = True
 
     def remove_network(self):
         if self.existing_network:
             self.disconnect_all_containers()
             if not self.check_mode:
-                self.client.delete_call('/networks/{0}', self.parameters.name)
-                if self.existing_network.get('Scope', 'local') == 'swarm':
+                self.client.delete_call("/networks/{0}", self.parameters.name)
+                if self.existing_network.get("Scope", "local") == "swarm":
                     while self.get_existing_network():
                         time.sleep(0.1)
-            self.results['actions'].append(f"Removed network {self.parameters.name}")
-            self.results['changed'] = True
+            self.results["actions"].append(f"Removed network {self.parameters.name}")
+            self.results["changed"] = True
 
     def is_container_connected(self, container_name):
         if not self.existing_network:
@@ -621,11 +687,15 @@ class DockerNetworkManager(object):
             return bool(container)
 
         except DockerException as e:
-            self.client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+            self.client.fail(
+                f"An unexpected Docker error occurred: {e}",
+                exception=traceback.format_exc(),
+            )
         except RequestException as e:
             self.client.fail(
-                f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-                exception=traceback.format_exc())
+                f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+                exception=traceback.format_exc(),
+            )
 
     def connect_containers(self):
         for name in self.parameters.connected:
@@ -635,38 +705,42 @@ class DockerNetworkManager(object):
                         "Container": name,
                         "EndpointConfig": None,
                     }
-                    self.client.post_json('/networks/{0}/connect', self.parameters.name, data=data)
-                self.results['actions'].append(f"Connected container {name}")
-                self.results['changed'] = True
-                self.diff_tracker.add(f'connected.{name}', parameter=True, active=False)
+                    self.client.post_json(
+                        "/networks/{0}/connect", self.parameters.name, data=data
+                    )
+                self.results["actions"].append(f"Connected container {name}")
+                self.results["changed"] = True
+                self.diff_tracker.add(f"connected.{name}", parameter=True, active=False)
 
     def disconnect_missing(self):
         if not self.existing_network:
             return
-        containers = self.existing_network['Containers']
+        containers = self.existing_network["Containers"]
         if not containers:
             return
         for c in containers.values():
-            name = c['Name']
+            name = c["Name"]
             if name not in self.parameters.connected:
                 self.disconnect_container(name)
 
     def disconnect_all_containers(self):
-        containers = self.client.get_network(name=self.parameters.name)['Containers']
+        containers = self.client.get_network(name=self.parameters.name)["Containers"]
         if not containers:
             return
         for cont in containers.values():
-            self.disconnect_container(cont['Name'])
+            self.disconnect_container(cont["Name"])
 
     def disconnect_container(self, container_name):
         if not self.check_mode:
             data = {"Container": container_name, "Force": True}
-            self.client.post_json('/networks/{0}/disconnect', self.parameters.name, data=data)
-        self.results['actions'].append(f"Disconnected container {container_name}")
-        self.results['changed'] = True
-        self.diff_tracker.add(f'connected.{container_name}',
-                              parameter=False,
-                              active=True)
+            self.client.post_json(
+                "/networks/{0}/disconnect", self.parameters.name, data=data
+            )
+        self.results["actions"].append(f"Disconnected container {container_name}")
+        self.results["changed"] = True
+        self.diff_tracker.add(
+            f"connected.{container_name}", parameter=False, active=True
+        )
 
     def present(self):
         different = False
@@ -674,7 +748,9 @@ class DockerNetworkManager(object):
         if self.existing_network:
             different, differences = self.has_different_config(self.existing_network)
 
-        self.diff_tracker.add('exists', parameter=True, active=self.existing_network is not None)
+        self.diff_tracker.add(
+            "exists", parameter=True, active=self.existing_network is not None
+        )
         if self.parameters.force or different:
             self.remove_network()
             self.existing_network = None
@@ -685,55 +761,61 @@ class DockerNetworkManager(object):
             self.disconnect_missing()
 
         if self.diff or self.check_mode or self.parameters.debug:
-            self.diff_result['differences'] = differences.get_legacy_docker_diffs()
+            self.diff_result["differences"] = differences.get_legacy_docker_diffs()
             self.diff_tracker.merge(differences)
 
         if not self.check_mode and not self.parameters.debug:
-            self.results.pop('actions')
+            self.results.pop("actions")
 
         network_facts = self.get_existing_network()
-        self.results['network'] = network_facts
+        self.results["network"] = network_facts
 
     def absent(self):
-        self.diff_tracker.add('exists', parameter=False, active=self.existing_network is not None)
+        self.diff_tracker.add(
+            "exists", parameter=False, active=self.existing_network is not None
+        )
         self.remove_network()
 
 
 def main():
     argument_spec = dict(
-        name=dict(type='str', required=True, aliases=['network_name']),
-        config_from=dict(type='str'),
-        config_only=dict(type='bool'),
-        connected=dict(type='list', default=[], elements='str', aliases=['containers']),
-        state=dict(type='str', default='present', choices=['present', 'absent']),
-        driver=dict(type='str', default='bridge'),
-        driver_options=dict(type='dict', default={}),
-        force=dict(type='bool', default=False),
-        appends=dict(type='bool', default=False, aliases=['incremental']),
-        ipam_driver=dict(type='str'),
-        ipam_driver_options=dict(type='dict'),
-        ipam_config=dict(type='list', elements='dict', options=dict(
-            subnet=dict(type='str'),
-            iprange=dict(type='str'),
-            gateway=dict(type='str'),
-            aux_addresses=dict(type='dict'),
-        )),
-        enable_ipv4=dict(type='bool'),
-        enable_ipv6=dict(type='bool'),
-        internal=dict(type='bool'),
-        labels=dict(type='dict', default={}),
-        debug=dict(type='bool', default=False),
-        scope=dict(type='str', choices=['local', 'global', 'swarm']),
-        attachable=dict(type='bool'),
-        ingress=dict(type='bool'),
+        name=dict(type="str", required=True, aliases=["network_name"]),
+        config_from=dict(type="str"),
+        config_only=dict(type="bool"),
+        connected=dict(type="list", default=[], elements="str", aliases=["containers"]),
+        state=dict(type="str", default="present", choices=["present", "absent"]),
+        driver=dict(type="str", default="bridge"),
+        driver_options=dict(type="dict", default={}),
+        force=dict(type="bool", default=False),
+        appends=dict(type="bool", default=False, aliases=["incremental"]),
+        ipam_driver=dict(type="str"),
+        ipam_driver_options=dict(type="dict"),
+        ipam_config=dict(
+            type="list",
+            elements="dict",
+            options=dict(
+                subnet=dict(type="str"),
+                iprange=dict(type="str"),
+                gateway=dict(type="str"),
+                aux_addresses=dict(type="dict"),
+            ),
+        ),
+        enable_ipv4=dict(type="bool"),
+        enable_ipv6=dict(type="bool"),
+        internal=dict(type="bool"),
+        labels=dict(type="dict", default={}),
+        debug=dict(type="bool", default=False),
+        scope=dict(type="str", choices=["local", "global", "swarm"]),
+        attachable=dict(type="bool"),
+        ingress=dict(type="bool"),
     )
 
     option_minimal_versions = dict(
-        config_from=dict(docker_api_version='1.30'),
-        config_only=dict(docker_api_version='1.30'),
-        scope=dict(docker_api_version='1.30'),
-        attachable=dict(docker_api_version='1.26'),
-        enable_ipv4=dict(docker_api_version='1.47'),
+        config_from=dict(docker_api_version="1.30"),
+        config_only=dict(docker_api_version="1.30"),
+        scope=dict(docker_api_version="1.30"),
+        attachable=dict(docker_api_version="1.26"),
+        enable_ipv4=dict(docker_api_version="1.47"),
     )
 
     client = AnsibleDockerClient(
@@ -742,17 +824,21 @@ def main():
         # "The docker server >= 1.10.0"
         option_minimal_versions=option_minimal_versions,
     )
-    sanitize_labels(client.module.params['labels'], 'labels', client)
+    sanitize_labels(client.module.params["labels"], "labels", client)
     try:
         cm = DockerNetworkManager(client)
         client.module.exit_json(**cm.results)
     except DockerException as e:
-        client.fail(f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
     except RequestException as e:
         client.fail(
-            f'An unexpected requests error occurred when trying to talk to the Docker daemon: {e}',
-            exception=traceback.format_exc())
+            f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

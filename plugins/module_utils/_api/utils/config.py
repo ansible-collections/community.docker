@@ -15,8 +15,9 @@ import os
 
 from ..constants import IS_WINDOWS_PLATFORM
 
-DOCKER_CONFIG_FILENAME = os.path.join('.docker', 'config.json')
-LEGACY_DOCKER_CONFIG_FILENAME = '.dockercfg'
+
+DOCKER_CONFIG_FILENAME = os.path.join(".docker", "config.json")
+LEGACY_DOCKER_CONFIG_FILENAME = ".dockercfg"
 
 log = logging.getLogger(__name__)
 
@@ -27,12 +28,17 @@ def get_default_config_file():
 
 def find_config_file(config_path=None):
     homedir = home_dir()
-    paths = list(filter(None, [
-        config_path,  # 1
-        config_path_from_environment(),  # 2
-        os.path.join(homedir, DOCKER_CONFIG_FILENAME),  # 3
-        os.path.join(homedir, LEGACY_DOCKER_CONFIG_FILENAME),  # 4
-    ]))
+    paths = list(
+        filter(
+            None,
+            [
+                config_path,  # 1
+                config_path_from_environment(),  # 2
+                os.path.join(homedir, DOCKER_CONFIG_FILENAME),  # 3
+                os.path.join(homedir, LEGACY_DOCKER_CONFIG_FILENAME),  # 4
+            ],
+        )
+    )
 
     log.debug("Trying paths: %s", repr(paths))
 
@@ -47,7 +53,7 @@ def find_config_file(config_path=None):
 
 
 def config_path_from_environment():
-    config_dir = os.environ.get('DOCKER_CONFIG')
+    config_dir = os.environ.get("DOCKER_CONFIG")
     if not config_dir:
         return None
     return os.path.join(config_dir, os.path.basename(DOCKER_CONFIG_FILENAME))
@@ -59,9 +65,9 @@ def home_dir():
     client - use %USERPROFILE% on Windows, $HOME/getuid on POSIX.
     """
     if IS_WINDOWS_PLATFORM:
-        return os.environ.get('USERPROFILE', '')
+        return os.environ.get("USERPROFILE", "")
     else:
-        return os.path.expanduser('~')
+        return os.path.expanduser("~")
 
 
 def load_general_config(config_path=None):

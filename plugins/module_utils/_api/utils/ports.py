@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 
+
 PORT_SPEC = re.compile(
     "^"  # Match full string
     "("  # External part
@@ -49,23 +50,25 @@ def build_port_bindings(ports):
 
 
 def _raise_invalid_port(port):
-    raise ValueError(f'Invalid port "{port}", should be '
-                     '[[remote_ip:]remote_port[-remote_port]:]'
-                     'port[/protocol]')
+    raise ValueError(
+        f'Invalid port "{port}", should be '
+        "[[remote_ip:]remote_port[-remote_port]:]"
+        "port[/protocol]"
+    )
 
 
 def port_range(start, end, proto, randomly_available_port=False):
     if not start:
         return start
     if not end:
-        return [f'{start}{proto}']
+        return [f"{start}{proto}"]
     if randomly_available_port:
-        return [f'{start}-{end}{proto}']
-    return [f'{port}{proto}' for port in range(int(start), int(end) + 1)]
+        return [f"{start}-{end}{proto}"]
+    return [f"{port}{proto}" for port in range(int(start), int(end) + 1)]
 
 
 def split_port(port):
-    if hasattr(port, 'legacy_repr'):
+    if hasattr(port, "legacy_repr"):
         # This is the worst hack, but it prevents a bug in Compose 1.14.0
         # https://github.com/docker/docker-py/issues/1668
         # TODO: remove once fixed in Compose stable
@@ -76,19 +79,18 @@ def split_port(port):
         _raise_invalid_port(port)
     parts = match.groupdict()
 
-    host = parts['host']
-    proto = parts['proto'] or ''
-    internal = port_range(parts['int'], parts['int_end'], proto)
-    external = port_range(
-        parts['ext'], parts['ext_end'], '', len(internal) == 1)
+    host = parts["host"]
+    proto = parts["proto"] or ""
+    internal = port_range(parts["int"], parts["int_end"], proto)
+    external = port_range(parts["ext"], parts["ext_end"], "", len(internal) == 1)
 
     if host is None:
         if external is not None and len(internal) != len(external):
-            raise ValueError('Port ranges don\'t match in length')
+            raise ValueError("Port ranges don't match in length")
         return internal, external
     else:
         if not external:
             external = [None] * len(internal)
         elif len(internal) != len(external):
-            raise ValueError('Port ranges don\'t match in length')
+            raise ValueError("Port ranges don't match in length")
         return internal, [(host, ext_port) for ext_port in external]

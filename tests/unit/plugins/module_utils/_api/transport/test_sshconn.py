@@ -7,19 +7,23 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
+
 __metaclass__ = type
 
 import unittest
 
-from ansible_collections.community.docker.plugins.module_utils._api.transport.sshconn import SSHSocket, SSHHTTPAdapter
+from ansible_collections.community.docker.plugins.module_utils._api.transport.sshconn import (
+    SSHHTTPAdapter,
+    SSHSocket,
+)
 
 
 class SSHAdapterTest(unittest.TestCase):
     @staticmethod
     def test_ssh_hostname_prefix_trim():
-        conn = SSHHTTPAdapter(
-            base_url="ssh://user@hostname:1234", shell_out=True)
+        conn = SSHHTTPAdapter(base_url="ssh://user@hostname:1234", shell_out=True)
         assert conn.ssh_host == "user@hostname:1234"
 
     @staticmethod

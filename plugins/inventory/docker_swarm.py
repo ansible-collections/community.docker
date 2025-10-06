@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+
 DOCUMENTATION = r"""
 name: docker_swarm
 author:
@@ -103,7 +104,7 @@ options:
     version_added: 3.5.0
 """
 
-EXAMPLES = '''
+EXAMPLES = """
 ---
 # Minimal example using local docker
 plugin: community.docker.docker_swarm
@@ -146,126 +147,176 @@ keyed_groups:
   # hint: labels containing special characters will be converted to safe names
   - key: 'Spec.Labels'
     prefix: label
-'''
+"""
 
 from ansible.errors import AnsibleError
-from ansible_collections.community.docker.plugins.module_utils.common import get_connect_params
-from ansible_collections.community.docker.plugins.module_utils.util import update_tls_hostname
-from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
 from ansible.parsing.utils.addresses import parse_address
-
+from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
+from ansible_collections.community.docker.plugins.module_utils.common import (
+    get_connect_params,
+)
+from ansible_collections.community.docker.plugins.module_utils.util import (
+    update_tls_hostname,
+)
 from ansible_collections.community.docker.plugins.plugin_utils.unsafe import make_unsafe
-from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import parse_filters, filter_host
+from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import (
+    filter_host,
+    parse_filters,
+)
+
 
 try:
     import docker
+
     HAS_DOCKER = True
 except ImportError:
     HAS_DOCKER = False
 
 
 class InventoryModule(BaseInventoryPlugin, Constructable):
-    ''' Host inventory parser for ansible using Docker swarm as source. '''
+    """Host inventory parser for ansible using Docker swarm as source."""
 
-    NAME = 'community.docker.docker_swarm'
+    NAME = "community.docker.docker_swarm"
 
     def _fail(self, msg):
         raise AnsibleError(msg)
 
     def _populate(self):
         raw_params = dict(
-            docker_host=self.get_option('docker_host'),
-            tls=self.get_option('tls'),
-            tls_verify=self.get_option('validate_certs'),
-            key_path=self.get_option('client_key'),
-            cacert_path=self.get_option('ca_path'),
-            cert_path=self.get_option('client_cert'),
-            tls_hostname=self.get_option('tls_hostname'),
-            api_version=self.get_option('api_version'),
-            timeout=self.get_option('timeout'),
-            use_ssh_client=self.get_option('use_ssh_client'),
+            docker_host=self.get_option("docker_host"),
+            tls=self.get_option("tls"),
+            tls_verify=self.get_option("validate_certs"),
+            key_path=self.get_option("client_key"),
+            cacert_path=self.get_option("ca_path"),
+            cert_path=self.get_option("client_cert"),
+            tls_hostname=self.get_option("tls_hostname"),
+            api_version=self.get_option("api_version"),
+            timeout=self.get_option("timeout"),
+            use_ssh_client=self.get_option("use_ssh_client"),
             debug=None,
         )
         update_tls_hostname(raw_params)
         connect_params = get_connect_params(raw_params, fail_function=self._fail)
         self.client = docker.DockerClient(**connect_params)
-        self.inventory.add_group('all')
-        self.inventory.add_group('manager')
-        self.inventory.add_group('worker')
-        self.inventory.add_group('leader')
-        self.inventory.add_group('nonleaders')
+        self.inventory.add_group("all")
+        self.inventory.add_group("manager")
+        self.inventory.add_group("worker")
+        self.inventory.add_group("leader")
+        self.inventory.add_group("nonleaders")
 
-        filters = parse_filters(self.get_option('filters'))
+        filters = parse_filters(self.get_option("filters"))
 
-        if self.get_option('include_host_uri'):
-            if self.get_option('include_host_uri_port'):
-                host_uri_port = str(self.get_option('include_host_uri_port'))
-            elif self.get_option('tls') or self.get_option('validate_certs'):
-                host_uri_port = '2376'
+        if self.get_option("include_host_uri"):
+            if self.get_option("include_host_uri_port"):
+                host_uri_port = str(self.get_option("include_host_uri_port"))
+            elif self.get_option("tls") or self.get_option("validate_certs"):
+                host_uri_port = "2376"
             else:
-                host_uri_port = '2375'
+                host_uri_port = "2375"
 
         try:
             self.nodes = self.client.nodes.list()
             for node in self.nodes:
                 node_attrs = self.client.nodes.get(node.id).attrs
                 unsafe_node_attrs = make_unsafe(node_attrs)
-                if not filter_host(self, unsafe_node_attrs['ID'], unsafe_node_attrs, filters):
+                if not filter_host(
+                    self, unsafe_node_attrs["ID"], unsafe_node_attrs, filters
+                ):
                     continue
-                self.inventory.add_host(unsafe_node_attrs['ID'])
-                self.inventory.add_host(unsafe_node_attrs['ID'], group=unsafe_node_attrs['Spec']['Role'])
-                self.inventory.set_variable(unsafe_node_attrs['ID'], 'ansible_host',
-                                            unsafe_node_attrs['Status']['Addr'])
-                if self.get_option('include_host_uri'):
-                    self.inventory.set_variable(unsafe_node_attrs['ID'], 'ansible_host_uri',
-                                                make_unsafe('tcp://' + unsafe_node_attrs['Status']['Addr'] + ':' + host_uri_port))
-                if self.get_option('verbose_output'):
-                    self.inventory.set_variable(unsafe_node_attrs['ID'], 'docker_swarm_node_attributes', unsafe_node_attrs)
-                if 'ManagerStatus' in unsafe_node_attrs:
-                    if unsafe_node_attrs['ManagerStatus'].get('Leader'):
+                self.inventory.add_host(unsafe_node_attrs["ID"])
+                self.inventory.add_host(
+                    unsafe_node_attrs["ID"], group=unsafe_node_attrs["Spec"]["Role"]
+                )
+                self.inventory.set_variable(
+                    unsafe_node_attrs["ID"],
+                    "ansible_host",
+                    unsafe_node_attrs["Status"]["Addr"],
+                )
+                if self.get_option("include_host_uri"):
+                    self.inventory.set_variable(
+                        unsafe_node_attrs["ID"],
+                        "ansible_host_uri",
+                        make_unsafe(
+                            "tcp://"
+                            + unsafe_node_attrs["Status"]["Addr"]
+                            + ":"
+                            + host_uri_port
+                        ),
+                    )
+                if self.get_option("verbose_output"):
+                    self.inventory.set_variable(
+                        unsafe_node_attrs["ID"],
+                        "docker_swarm_node_attributes",
+                        unsafe_node_attrs,
+                    )
+                if "ManagerStatus" in unsafe_node_attrs:
+                    if unsafe_node_attrs["ManagerStatus"].get("Leader"):
                         # This is workaround of bug in Docker when in some cases the Leader IP is 0.0.0.0
                         # Check moby/moby#35437 for details
-                        swarm_leader_ip = parse_address(node_attrs['ManagerStatus']['Addr'])[0] or \
-                            unsafe_node_attrs['Status']['Addr']
-                        if self.get_option('include_host_uri'):
-                            self.inventory.set_variable(unsafe_node_attrs['ID'], 'ansible_host_uri',
-                                                        make_unsafe('tcp://' + swarm_leader_ip + ':' + host_uri_port))
-                        self.inventory.set_variable(unsafe_node_attrs['ID'], 'ansible_host', make_unsafe(swarm_leader_ip))
-                        self.inventory.add_host(unsafe_node_attrs['ID'], group='leader')
+                        swarm_leader_ip = (
+                            parse_address(node_attrs["ManagerStatus"]["Addr"])[0]
+                            or unsafe_node_attrs["Status"]["Addr"]
+                        )
+                        if self.get_option("include_host_uri"):
+                            self.inventory.set_variable(
+                                unsafe_node_attrs["ID"],
+                                "ansible_host_uri",
+                                make_unsafe(
+                                    "tcp://" + swarm_leader_ip + ":" + host_uri_port
+                                ),
+                            )
+                        self.inventory.set_variable(
+                            unsafe_node_attrs["ID"],
+                            "ansible_host",
+                            make_unsafe(swarm_leader_ip),
+                        )
+                        self.inventory.add_host(unsafe_node_attrs["ID"], group="leader")
                     else:
-                        self.inventory.add_host(unsafe_node_attrs['ID'], group='nonleaders')
+                        self.inventory.add_host(
+                            unsafe_node_attrs["ID"], group="nonleaders"
+                        )
                 else:
-                    self.inventory.add_host(unsafe_node_attrs['ID'], group='nonleaders')
+                    self.inventory.add_host(unsafe_node_attrs["ID"], group="nonleaders")
                 # Use constructed if applicable
-                strict = self.get_option('strict')
+                strict = self.get_option("strict")
                 # Composed variables
-                self._set_composite_vars(self.get_option('compose'),
-                                         unsafe_node_attrs,
-                                         unsafe_node_attrs['ID'],
-                                         strict=strict)
+                self._set_composite_vars(
+                    self.get_option("compose"),
+                    unsafe_node_attrs,
+                    unsafe_node_attrs["ID"],
+                    strict=strict,
+                )
                 # Complex groups based on jinja2 conditionals, hosts that meet the conditional are added to group
-                self._add_host_to_composed_groups(self.get_option('groups'),
-                                                  unsafe_node_attrs,
-                                                  unsafe_node_attrs['ID'],
-                                                  strict=strict)
+                self._add_host_to_composed_groups(
+                    self.get_option("groups"),
+                    unsafe_node_attrs,
+                    unsafe_node_attrs["ID"],
+                    strict=strict,
+                )
                 # Create groups based on variable values and add the corresponding hosts to it
-                self._add_host_to_keyed_groups(self.get_option('keyed_groups'),
-                                               unsafe_node_attrs,
-                                               unsafe_node_attrs['ID'],
-                                               strict=strict)
+                self._add_host_to_keyed_groups(
+                    self.get_option("keyed_groups"),
+                    unsafe_node_attrs,
+                    unsafe_node_attrs["ID"],
+                    strict=strict,
+                )
         except Exception as e:
-            raise AnsibleError(f'Unable to fetch hosts from Docker swarm API, this was the original exception: {e}')
+            raise AnsibleError(
+                f"Unable to fetch hosts from Docker swarm API, this was the original exception: {e}"
+            )
 
     def verify_file(self, path):
         """Return the possibly of a file being consumable by this plugin."""
-        return (
-            super(InventoryModule, self).verify_file(path) and
-            path.endswith(('docker_swarm.yaml', 'docker_swarm.yml')))
+        return super(InventoryModule, self).verify_file(path) and path.endswith(
+            ("docker_swarm.yaml", "docker_swarm.yml")
+        )
 
     def parse(self, inventory, loader, path, cache=True):
         if not HAS_DOCKER:
-            raise AnsibleError('The Docker swarm dynamic inventory plugin requires the Docker SDK for Python: '
-                               'https://github.com/docker/docker-py.')
+            raise AnsibleError(
+                "The Docker swarm dynamic inventory plugin requires the Docker SDK for Python: "
+                "https://github.com/docker/docker-py."
+            )
         super(InventoryModule, self).parse(inventory, loader, path, cache)
         self._read_config_data(path)
         self._populate()

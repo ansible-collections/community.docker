@@ -1334,7 +1334,6 @@ status:
 from ansible_collections.community.docker.plugins.module_utils.module_container.docker_api import (
     DockerAPIEngineDriver,
 )
-
 from ansible_collections.community.docker.plugins.module_utils.module_container.module import (
     run_module,
 )
@@ -1345,5 +1344,5 @@ def main():
     run_module(engine_driver)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

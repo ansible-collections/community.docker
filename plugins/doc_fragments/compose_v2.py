@@ -74,8 +74,8 @@ notes:
 """
 
     # The following needs to be kept in sync with the compose_v2 module utils
-    MINIMUM_VERSION = r'''
+    MINIMUM_VERSION = r"""
 options: {}
 requirements:
   - "Docker CLI with Docker compose plugin 2.18.0 or later"
-'''
+"""

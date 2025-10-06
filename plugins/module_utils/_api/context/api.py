@@ -13,7 +13,6 @@ import json
 import os
 
 from .. import errors
-
 from .config import (
     METAFILE,
     get_current_context_name,
@@ -25,9 +24,11 @@ from .context import Context
 
 def create_default_context():
     host = None
-    if os.environ.get('DOCKER_HOST'):
-        host = os.environ.get('DOCKER_HOST')
-    return Context("default", "swarm", host, description="Current DOCKER_HOST based configuration")
+    if os.environ.get("DOCKER_HOST"):
+        host = os.environ.get("DOCKER_HOST")
+    return Context(
+        "default", "swarm", host, description="Current DOCKER_HOST based configuration"
+    )
 
 
 class ContextAPI(object):
@@ -35,6 +36,7 @@ class ContextAPI(object):
     Contains methods for context management:
     create, list, remove, get, inspect.
     """
+
     DEFAULT_CONTEXT = None
 
     @classmethod
@@ -47,8 +49,14 @@ class ContextAPI(object):
 
     @classmethod
     def create_context(
-            cls, name, orchestrator=None, host=None, tls_cfg=None,
-            default_namespace=None, skip_tls_verify=False):
+        cls,
+        name,
+        orchestrator=None,
+        host=None,
+        tls_cfg=None,
+        default_namespace=None,
+        skip_tls_verify=False,
+    ):
         """Creates a new context.
         Returns:
             (Context): a Context object.
@@ -79,8 +87,7 @@ class ContextAPI(object):
         if not name:
             raise errors.MissingContextParameter("name")
         if name == "default":
-            raise errors.ContextException(
-                '"default" is a reserved context name')
+            raise errors.ContextException('"default" is a reserved context name')
         ctx = Context.load_context(name)
         if ctx:
             raise errors.ContextAlreadyExists(name)
@@ -89,9 +96,12 @@ class ContextAPI(object):
             endpoint = orchestrator
         ctx = Context(name, orchestrator)
         ctx.set_endpoint(
-            endpoint, host, tls_cfg,
+            endpoint,
+            host,
+            tls_cfg,
             skip_tls_verify=skip_tls_verify,
-            def_namespace=default_namespace)
+            def_namespace=default_namespace,
+        )
         ctx.save()
         return ctx
 
@@ -173,8 +183,7 @@ class ContextAPI(object):
 
         err = write_context_name_to_docker_config(name)
         if err:
-            raise errors.ContextException(
-                f'Failed to set current context: {err}')
+            raise errors.ContextException(f"Failed to set current context: {err}")
 
     @classmethod
     def remove_context(cls, name):
@@ -200,8 +209,7 @@ class ContextAPI(object):
         if not name:
             raise errors.MissingContextParameter("name")
         if name == "default":
-            raise errors.ContextException(
-                'context "default" cannot be removed')
+            raise errors.ContextException('context "default" cannot be removed')
         ctx = Context.load_context(name)
         if not ctx:
             raise errors.ContextNotFound(name)

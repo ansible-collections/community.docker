@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-
 import json
 import re
 from datetime import timedelta
@@ -15,45 +14,64 @@ from ansible.module_utils.common.collections import is_sequence
 from ansible.module_utils.common.text.converters import to_text
 
 
-DEFAULT_DOCKER_HOST = 'unix:///var/run/docker.sock'
+DEFAULT_DOCKER_HOST = "unix:///var/run/docker.sock"
 DEFAULT_TLS = False
 DEFAULT_TLS_VERIFY = False
-DEFAULT_TLS_HOSTNAME = 'localhost'  # deprecated
+DEFAULT_TLS_HOSTNAME = "localhost"  # deprecated
 DEFAULT_TIMEOUT_SECONDS = 60
 
 DOCKER_COMMON_ARGS = dict(
-    docker_host=dict(type='str', default=DEFAULT_DOCKER_HOST, fallback=(env_fallback, ['DOCKER_HOST']), aliases=['docker_url']),
-    tls_hostname=dict(type='str', fallback=(env_fallback, ['DOCKER_TLS_HOSTNAME'])),
-    api_version=dict(type='str', default='auto', fallback=(env_fallback, ['DOCKER_API_VERSION']), aliases=['docker_api_version']),
-    timeout=dict(type='int', default=DEFAULT_TIMEOUT_SECONDS, fallback=(env_fallback, ['DOCKER_TIMEOUT'])),
-    ca_path=dict(type='path', aliases=['ca_cert', 'tls_ca_cert', 'cacert_path']),
-    client_cert=dict(type='path', aliases=['tls_client_cert', 'cert_path']),
-    client_key=dict(type='path', aliases=['tls_client_key', 'key_path']),
-    tls=dict(type='bool', default=DEFAULT_TLS, fallback=(env_fallback, ['DOCKER_TLS'])),
-    use_ssh_client=dict(type='bool', default=False),
-    validate_certs=dict(type='bool', default=DEFAULT_TLS_VERIFY, fallback=(env_fallback, ['DOCKER_TLS_VERIFY']), aliases=['tls_verify']),
-    debug=dict(type='bool', default=False)
+    docker_host=dict(
+        type="str",
+        default=DEFAULT_DOCKER_HOST,
+        fallback=(env_fallback, ["DOCKER_HOST"]),
+        aliases=["docker_url"],
+    ),
+    tls_hostname=dict(type="str", fallback=(env_fallback, ["DOCKER_TLS_HOSTNAME"])),
+    api_version=dict(
+        type="str",
+        default="auto",
+        fallback=(env_fallback, ["DOCKER_API_VERSION"]),
+        aliases=["docker_api_version"],
+    ),
+    timeout=dict(
+        type="int",
+        default=DEFAULT_TIMEOUT_SECONDS,
+        fallback=(env_fallback, ["DOCKER_TIMEOUT"]),
+    ),
+    ca_path=dict(type="path", aliases=["ca_cert", "tls_ca_cert", "cacert_path"]),
+    client_cert=dict(type="path", aliases=["tls_client_cert", "cert_path"]),
+    client_key=dict(type="path", aliases=["tls_client_key", "key_path"]),
+    tls=dict(type="bool", default=DEFAULT_TLS, fallback=(env_fallback, ["DOCKER_TLS"])),
+    use_ssh_client=dict(type="bool", default=False),
+    validate_certs=dict(
+        type="bool",
+        default=DEFAULT_TLS_VERIFY,
+        fallback=(env_fallback, ["DOCKER_TLS_VERIFY"]),
+        aliases=["tls_verify"],
+    ),
+    debug=dict(type="bool", default=False),
 )
 
-DOCKER_COMMON_ARGS_VARS = dict([
-    [option_name, f'ansible_docker_{option_name}']
-    for option_name in DOCKER_COMMON_ARGS
-    if option_name != 'debug'
-])
+DOCKER_COMMON_ARGS_VARS = dict(
+    [
+        [option_name, f"ansible_docker_{option_name}"]
+        for option_name in DOCKER_COMMON_ARGS
+        if option_name != "debug"
+    ]
+)
 
 DOCKER_MUTUALLY_EXCLUSIVE = []
 
-DOCKER_REQUIRED_TOGETHER = [
-    ['client_cert', 'client_key']
-]
+DOCKER_REQUIRED_TOGETHER = [["client_cert", "client_key"]]
 
-DEFAULT_DOCKER_REGISTRY = 'https://index.docker.io/v1/'
-BYTE_SUFFIXES = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+DEFAULT_DOCKER_REGISTRY = "https://index.docker.io/v1/"
+BYTE_SUFFIXES = ["B", "KB", "MB", "GB", "TB", "PB"]
 
 
 def is_image_name_id(name):
     """Check whether the given image name is in fact an image ID (hash)."""
-    if re.match('^sha256:[0-9a-fA-F]{64}$', name):
+    if re.match("^sha256:[0-9a-fA-F]{64}$", name):
         return True
     return False
 
@@ -64,7 +82,7 @@ def is_valid_tag(tag, allow_empty=False):
         return allow_empty
     # See here ("Extended description") for a definition what tags can be:
     # https://docs.docker.com/engine/reference/commandline/tag/
-    return bool(re.match('^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$', tag))
+    return bool(re.match("^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$", tag))
 
 
 def sanitize_result(data):
@@ -90,10 +108,12 @@ def log_debug(msg, pretty_print=False):
 
     If ``pretty_print=True``, the message will be pretty-printed as JSON.
     """
-    with open('docker.log', 'a') as log_file:
+    with open("docker.log", "a") as log_file:
         if pretty_print:
-            log_file.write(json.dumps(msg, sort_keys=True, indent=4, separators=(',', ': ')))
-            log_file.write('\n')
+            log_file.write(
+                json.dumps(msg, sort_keys=True, indent=4, separators=(",", ": "))
+            )
+            log_file.write("\n")
         else:
             log_file.write(f"{msg}\n")
 
@@ -108,17 +128,19 @@ class DockerBaseClass(object):
         #     log_debug(msg, pretty_print=pretty_print)
 
 
-def update_tls_hostname(result, old_behavior=False, deprecate_function=None, uses_tls=True):
-    if result['tls_hostname'] is None:
+def update_tls_hostname(
+    result, old_behavior=False, deprecate_function=None, uses_tls=True
+):
+    if result["tls_hostname"] is None:
         # get default machine name from the url
-        parsed_url = urlparse(result['docker_host'])
-        result['tls_hostname'] = parsed_url.netloc.rsplit(':', 1)[0]
+        parsed_url = urlparse(result["docker_host"])
+        result["tls_hostname"] = parsed_url.netloc.rsplit(":", 1)[0]
 
 
 def compare_dict_allow_more_present(av, bv):
-    '''
+    """
     Compare two dictionaries for whether every entry of the first is in the second.
-    '''
+    """
     for key, value in av.items():
         if key not in bv:
             return False
@@ -128,7 +150,7 @@ def compare_dict_allow_more_present(av, bv):
 
 
 def compare_generic(a, b, method, datatype):
-    '''
+    """
     Compare values a and b as described by method and datatype.
 
     Returns ``True`` if the values compare equal, and ``False`` if not.
@@ -151,8 +173,8 @@ def compare_generic(a, b, method, datatype):
       not matter and which contain ``dict``s; ``allow_more_present`` is used
       for the ``dict``s, and these are assumed to be dictionaries of values;
     - ``dict``: for dictionaries of values.
-    '''
-    if method == 'ignore':
+    """
+    if method == "ignore":
         return True
     # If a or b is None:
     if a is None or b is None:
@@ -161,18 +183,18 @@ def compare_generic(a, b, method, datatype):
             return True
         # Otherwise, not equal for values, and equal
         # if the other is empty for set/list/dict
-        if datatype == 'value':
+        if datatype == "value":
             return False
         # For allow_more_present, allow a to be None
-        if method == 'allow_more_present' and a is None:
+        if method == "allow_more_present" and a is None:
             return True
         # Otherwise, the iterable object which is not None must have length 0
         return len(b if a is None else a) == 0
     # Do proper comparison (both objects not None)
-    if datatype == 'value':
+    if datatype == "value":
         return a == b
-    elif datatype == 'list':
-        if method == 'strict':
+    elif datatype == "list":
+        if method == "strict":
             return a == b
         else:
             i = 0
@@ -183,19 +205,19 @@ def compare_generic(a, b, method, datatype):
                     return False
                 i += 1
             return True
-    elif datatype == 'dict':
-        if method == 'strict':
+    elif datatype == "dict":
+        if method == "strict":
             return a == b
         else:
             return compare_dict_allow_more_present(a, b)
-    elif datatype == 'set':
+    elif datatype == "set":
         set_a = set(a)
         set_b = set(b)
-        if method == 'strict':
+        if method == "strict":
             return set_a == set_b
         else:
             return set_b >= set_a
-    elif datatype == 'set(dict)':
+    elif datatype == "set(dict)":
         for av in a:
             found = False
             for bv in b:
@@ -204,7 +226,7 @@ def compare_generic(a, b, method, datatype):
                     break
             if not found:
                 return False
-        if method == 'strict':
+        if method == "strict":
             # If we would know that both a and b do not contain duplicates,
             # we could simply compare len(a) to len(b) to finish this test.
             # We can assume that b has no duplicates (as it is returned by
@@ -225,11 +247,13 @@ class DifferenceTracker(object):
         self._diff = []
 
     def add(self, name, parameter=None, active=None):
-        self._diff.append(dict(
-            name=name,
-            parameter=parameter,
-            active=active,
-        ))
+        self._diff.append(
+            dict(
+                name=name,
+                parameter=parameter,
+                active=active,
+            )
+        )
 
     def merge(self, other_tracker):
         self._diff.extend(other_tracker._diff)
@@ -239,41 +263,41 @@ class DifferenceTracker(object):
         return len(self._diff) == 0
 
     def get_before_after(self):
-        '''
+        """
         Return texts ``before`` and ``after``.
-        '''
+        """
         before = dict()
         after = dict()
         for item in self._diff:
-            before[item['name']] = item['active']
-            after[item['name']] = item['parameter']
+            before[item["name"]] = item["active"]
+            after[item["name"]] = item["parameter"]
         return before, after
 
     def has_difference_for(self, name):
-        '''
+        """
         Returns a boolean if a difference exists for name
-        '''
-        return any(diff for diff in self._diff if diff['name'] == name)
+        """
+        return any(diff for diff in self._diff if diff["name"] == name)
 
     def get_legacy_docker_container_diffs(self):
-        '''
+        """
         Return differences in the docker_container legacy format.
-        '''
+        """
         result = []
         for entry in self._diff:
             item = dict()
-            item[entry['name']] = dict(
-                parameter=entry['parameter'],
-                container=entry['active'],
+            item[entry["name"]] = dict(
+                parameter=entry["parameter"],
+                container=entry["active"],
             )
             result.append(item)
         return result
 
     def get_legacy_docker_diffs(self):
-        '''
+        """
         Return differences in the docker_container legacy format.
-        '''
-        result = [entry['name'] for entry in self._diff]
+        """
+        result = [entry["name"] for entry in self._diff]
         return result
 
 
@@ -291,31 +315,38 @@ def sanitize_labels(labels, labels_field, client=None, module=None):
         if not isinstance(k, str):
             fail(f"The key {k!r} of {labels_field} is not a string!")
         if isinstance(v, (bool, float)):
-            fail(f"The value {v!r} for {k!r} of {labels_field} is not a string or something than can be safely converted to a string!")
+            fail(
+                f"The value {v!r} for {k!r} of {labels_field} is not a string or something than can be safely converted to a string!"
+            )
         labels[k] = to_text(v)
 
 
 def clean_dict_booleans_for_docker_api(data, allow_sequences=False):
-    '''
+    """
     Go does not like Python booleans 'True' or 'False', while Ansible is just
     fine with them in YAML. As such, they need to be converted in cases where
     we pass dictionaries to the Docker API (e.g. docker_network's
     driver_options and docker_prune's filters). When `allow_sequences=True`
     YAML sequences (lists, tuples) are converted to [str] instead of str([...])
     which is the expected format of filters which accept lists such as labels.
-    '''
+    """
+
     def sanitize(value):
         if value is True:
-            return 'true'
+            return "true"
         elif value is False:
-            return 'false'
+            return "false"
         else:
             return str(value)
 
     result = dict()
     if data is not None:
         for k, v in data.items():
-            result[str(k)] = [sanitize(e) for e in v] if allow_sequences and is_sequence(v) else sanitize(v)
+            result[str(k)] = (
+                [sanitize(e) for e in v]
+                if allow_sequences and is_sequence(v)
+                else sanitize(v)
+            )
     return result
 
 
@@ -324,30 +355,30 @@ def convert_duration_to_nanosecond(time_str):
     Return time duration in nanosecond.
     """
     if not isinstance(time_str, str):
-        raise ValueError(f'Missing unit in duration - {time_str}')
+        raise ValueError(f"Missing unit in duration - {time_str}")
 
     regex = re.compile(
-        r'^(((?P<hours>\d+)h)?'
-        r'((?P<minutes>\d+)m(?!s))?'
-        r'((?P<seconds>\d+)s)?'
-        r'((?P<milliseconds>\d+)ms)?'
-        r'((?P<microseconds>\d+)us)?)$'
+        r"^(((?P<hours>\d+)h)?"
+        r"((?P<minutes>\d+)m(?!s))?"
+        r"((?P<seconds>\d+)s)?"
+        r"((?P<milliseconds>\d+)ms)?"
+        r"((?P<microseconds>\d+)us)?)$"
     )
     parts = regex.match(time_str)
 
     if not parts:
-        raise ValueError(f'Invalid time duration - {time_str}')
+        raise ValueError(f"Invalid time duration - {time_str}")
 
     parts = parts.groupdict()
     time_params = {}
-    for (name, value) in parts.items():
+    for name, value in parts.items():
         if value:
             time_params[name] = int(value)
 
     delta = timedelta(**time_params)
     time_in_nanoseconds = (
-        delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10 ** 6
-    ) * 10 ** 3
+        delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10**6
+    ) * 10**3
 
     return time_in_nanoseconds
 
@@ -355,7 +386,7 @@ def convert_duration_to_nanosecond(time_str):
 def normalize_healthcheck_test(test):
     if isinstance(test, (tuple, list)):
         return [str(e) for e in test]
-    return ['CMD-SHELL', str(test)]
+    return ["CMD-SHELL", str(test)]
 
 
 def normalize_healthcheck(healthcheck, normalize_test=False):
@@ -365,9 +396,17 @@ def normalize_healthcheck(healthcheck, normalize_test=False):
     result = dict()
 
     # All supported healthcheck parameters
-    options = ('test', 'test_cli_compatible', 'interval', 'timeout', 'start_period', 'start_interval', 'retries')
+    options = (
+        "test",
+        "test_cli_compatible",
+        "interval",
+        "timeout",
+        "start_period",
+        "start_interval",
+        "retries",
+    )
 
-    duration_options = ('interval', 'timeout', 'start_period', 'start_interval')
+    duration_options = ("interval", "timeout", "start_period", "start_interval")
 
     for key in options:
         if key in healthcheck:
@@ -378,16 +417,18 @@ def normalize_healthcheck(healthcheck, normalize_test=False):
                 continue
             if key in duration_options:
                 value = convert_duration_to_nanosecond(value)
-            if not value and not (healthcheck.get('test_cli_compatible') and key == 'test'):
+            if not value and not (
+                healthcheck.get("test_cli_compatible") and key == "test"
+            ):
                 continue
-            if key == 'retries':
+            if key == "retries":
                 try:
                     value = int(value)
                 except ValueError:
                     raise ValueError(
                         f'Cannot parse number of retries for healthcheck. Expected an integer, got "{value}".'
                     )
-            if key == 'test' and value and normalize_test:
+            if key == "test" and value and normalize_test:
                 value = normalize_healthcheck_test(value)
             result[key] = value
 
@@ -399,12 +440,12 @@ def parse_healthcheck(healthcheck):
     Return dictionary of healthcheck parameters and boolean if
     healthcheck defined in image was requested to be disabled.
     """
-    if (not healthcheck) or (not healthcheck.get('test')):
+    if (not healthcheck) or (not healthcheck.get("test")):
         return None, None
 
     result = normalize_healthcheck(healthcheck, normalize_test=True)
 
-    if result['test'] == ['NONE']:
+    if result["test"] == ["NONE"]:
         # If the user explicitly disables the healthcheck, return None
         # as the healthcheck object, and set disable_healthcheck to True
         return None, True

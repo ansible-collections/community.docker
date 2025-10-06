@@ -116,13 +116,13 @@ from ansible_collections.community.docker.plugins.module_utils.common_cli import
     AnsibleModuleDockerClient,
     DockerException,
 )
-
 from ansible_collections.community.docker.plugins.module_utils.compose_v2 import (
     BaseComposeManager,
     common_compose_argspec_ex,
 )
-
-from ansible_collections.community.docker.plugins.module_utils.version import LooseVersion
+from ansible_collections.community.docker.plugins.module_utils.version import (
+    LooseVersion,
+)
 
 
 class PullManager(BaseComposeManager):
@@ -130,31 +130,33 @@ class PullManager(BaseComposeManager):
         super(PullManager, self).__init__(client)
         parameters = self.client.module.params
 
-        self.policy = parameters['policy']
-        self.ignore_buildable = parameters['ignore_buildable']
-        self.include_deps = parameters['include_deps']
-        self.services = parameters['services'] or []
+        self.policy = parameters["policy"]
+        self.ignore_buildable = parameters["ignore_buildable"]
+        self.include_deps = parameters["include_deps"]
+        self.services = parameters["services"] or []
 
-        if self.policy != 'always' and self.compose_version < LooseVersion('2.22.0'):
+        if self.policy != "always" and self.compose_version < LooseVersion("2.22.0"):
             # https://github.com/docker/compose/pull/10981 - 2.22.0
             self.fail(
-                f'A pull policy other than always is only supported since Docker Compose 2.22.0. {self.client.get_cli()} has version {self.compose_version}')
-        if self.ignore_buildable and self.compose_version < LooseVersion('2.15.0'):
+                f"A pull policy other than always is only supported since Docker Compose 2.22.0. {self.client.get_cli()} has version {self.compose_version}"
+            )
+        if self.ignore_buildable and self.compose_version < LooseVersion("2.15.0"):
             # https://github.com/docker/compose/pull/10134 - 2.15.0
             self.fail(
-                f'--ignore-buildable is only supported since Docker Compose 2.15.0. {self.client.get_cli()} has version {self.compose_version}')
+                f"--ignore-buildable is only supported since Docker Compose 2.15.0. {self.client.get_cli()} has version {self.compose_version}"
+            )
 
     def get_pull_cmd(self, dry_run, no_start=False):
-        args = self.get_base_args() + ['pull']
-        if self.policy != 'always':
-            args.extend(['--policy', self.policy])
+        args = self.get_base_args() + ["pull"]
+        if self.policy != "always":
+            args.extend(["--policy", self.policy])
         if self.ignore_buildable:
-            args.append('--ignore-buildable')
+            args.append("--ignore-buildable")
         if self.include_deps:
-            args.append('--include-deps')
+            args.append("--include-deps")
         if dry_run:
-            args.append('--dry-run')
-        args.append('--')
+            args.append("--dry-run")
+        args.append("--")
         for service in self.services:
             args.append(service)
         return args
@@ -165,7 +167,13 @@ class PullManager(BaseComposeManager):
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode, nonzero_rc=rc != 0)
         self.emit_warnings(events)
-        self.update_result(result, events, stdout, stderr, ignore_service_pull_events=self.policy != 'missing' and not self.check_mode)
+        self.update_result(
+            result,
+            events,
+            stdout,
+            stderr,
+            ignore_service_pull_events=self.policy != "missing" and not self.check_mode,
+        )
         self.update_failed(result, events, args, stdout, stderr, rc)
         self.cleanup_result(result)
         return result
@@ -173,19 +181,19 @@ class PullManager(BaseComposeManager):
 
 def main():
     argument_spec = dict(
-        policy=dict(type='str', choices=['always', 'missing'], default='always'),
-        ignore_buildable=dict(type='bool', default=False),
-        include_deps=dict(type='bool', default=False),
-        services=dict(type='list', elements='str'),
+        policy=dict(type="str", choices=["always", "missing"], default="always"),
+        ignore_buildable=dict(type="bool", default=False),
+        include_deps=dict(type="bool", default=False),
+        services=dict(type="list", elements="str"),
     )
     argspec_ex = common_compose_argspec_ex()
-    argument_spec.update(argspec_ex.pop('argspec'))
+    argument_spec.update(argspec_ex.pop("argspec"))
 
     client = AnsibleModuleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
         needs_api_version=False,
-        **argspec_ex
+        **argspec_ex,
     )
 
     try:
@@ -194,8 +202,11 @@ def main():
         manager.cleanup()
         client.module.exit_json(**result)
     except DockerException as e:
-        client.fail(f'An unexpected docker error occurred: {e}', exception=traceback.format_exc())
+        client.fail(
+            f"An unexpected docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

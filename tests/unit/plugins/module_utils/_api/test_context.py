@@ -7,34 +7,35 @@
 # It is licensed under the Apache 2.0 license (see LICENSES/Apache-2.0.txt in this collection)
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
+
 __metaclass__ = type
 
 import unittest
 
 import pytest
-
 from ansible_collections.community.docker.plugins.module_utils._api import errors
 from ansible_collections.community.docker.plugins.module_utils._api.constants import (
     DEFAULT_NPIPE,
     DEFAULT_UNIX_SOCKET,
     IS_WINDOWS_PLATFORM,
 )
-from ansible_collections.community.docker.plugins.module_utils._api.context.api import ContextAPI
-from ansible_collections.community.docker.plugins.module_utils._api.context.context import Context
+from ansible_collections.community.docker.plugins.module_utils._api.context.api import (
+    ContextAPI,
+)
+from ansible_collections.community.docker.plugins.module_utils._api.context.context import (
+    Context,
+)
 
 
 class BaseContextTest(unittest.TestCase):
-    @pytest.mark.skipif(
-        IS_WINDOWS_PLATFORM, reason='Linux specific path check'
-    )
+    @pytest.mark.skipif(IS_WINDOWS_PLATFORM, reason="Linux specific path check")
     def test_url_compatibility_on_linux(self):
         c = Context("test")
         assert c.Host == DEFAULT_UNIX_SOCKET[5:]
 
-    @pytest.mark.skipif(
-        not IS_WINDOWS_PLATFORM, reason='Windows specific path check'
-    )
+    @pytest.mark.skipif(not IS_WINDOWS_PLATFORM, reason="Windows specific path check")
     def test_url_compatibility_on_windows(self):
         c = Context("test")
         assert c.Host == DEFAULT_NPIPE

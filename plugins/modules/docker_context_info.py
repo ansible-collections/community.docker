@@ -176,7 +176,6 @@ import traceback
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.common.text.converters import to_text
-
 from ansible_collections.community.docker.plugins.module_utils._api.context.api import (
     ContextAPI,
 )
@@ -196,10 +195,10 @@ def tls_context_to_json(context):
     if context is None:
         return None
     return {
-        'client_cert': context.cert[0] if context.cert else None,
-        'client_key': context.cert[1] if context.cert else None,
-        'ca_cert': context.ca_cert,
-        'verify': context.verify,
+        "client_cert": context.cert[0] if context.cert else None,
+        "client_key": context.cert[1] if context.cert else None,
+        "ca_cert": context.ca_cert,
+        "verify": context.verify,
         # 'ssl_version': context.ssl_version,  -- this isn't used anymore
     }
 
@@ -210,52 +209,52 @@ def to_bool(value):
 
 def context_to_json(context, current):
     module_config = {}
-    if 'docker' in context.endpoints:
-        endpoint = context.endpoints['docker']
-        if isinstance(endpoint.get('Host'), str):
-            host_str = to_text(endpoint['Host'])
+    if "docker" in context.endpoints:
+        endpoint = context.endpoints["docker"]
+        if isinstance(endpoint.get("Host"), str):
+            host_str = to_text(endpoint["Host"])
 
             # Adjust protocol name so that it works with the Docker CLI tool as well
             proto = None
-            idx = host_str.find('://')
+            idx = host_str.find("://")
             if idx >= 0:
                 proto = host_str[:idx]
-                host_str = host_str[idx + 3:]
-            if proto in ('http', 'https'):
-                proto = 'tcp'
-            if proto == 'http+unix':
-                proto = 'unix'
+                host_str = host_str[idx + 3 :]
+            if proto in ("http", "https"):
+                proto = "tcp"
+            if proto == "http+unix":
+                proto = "unix"
             if proto:
                 host_str = f"{proto}://{host_str}"
 
             # Create config for the modules
-            module_config['docker_host'] = host_str
-            if context.tls_cfg.get('docker'):
-                tls_cfg = context.tls_cfg['docker']
+            module_config["docker_host"] = host_str
+            if context.tls_cfg.get("docker"):
+                tls_cfg = context.tls_cfg["docker"]
                 if tls_cfg.ca_cert:
-                    module_config['ca_path'] = tls_cfg.ca_cert
+                    module_config["ca_path"] = tls_cfg.ca_cert
                 if tls_cfg.cert:
-                    module_config['client_cert'] = tls_cfg.cert[0]
-                    module_config['client_key'] = tls_cfg.cert[1]
-                module_config['validate_certs'] = tls_cfg.verify
-                module_config['tls'] = True
+                    module_config["client_cert"] = tls_cfg.cert[0]
+                    module_config["client_key"] = tls_cfg.cert[1]
+                module_config["validate_certs"] = tls_cfg.verify
+                module_config["tls"] = True
             else:
-                module_config['tls'] = to_bool(endpoint.get('SkipTLSVerify'))
+                module_config["tls"] = to_bool(endpoint.get("SkipTLSVerify"))
     return {
-        'current': current,
-        'name': context.name,
-        'description': context.description,
-        'meta_path': None if context.meta_path is IN_MEMORY else context.meta_path,
-        'tls_path': None if context.tls_path is IN_MEMORY else context.tls_path,
-        'config': module_config,
+        "current": current,
+        "name": context.name,
+        "description": context.description,
+        "meta_path": None if context.meta_path is IN_MEMORY else context.meta_path,
+        "tls_path": None if context.tls_path is IN_MEMORY else context.tls_path,
+        "config": module_config,
     }
 
 
 def main():
     argument_spec = dict(
-        only_current=dict(type='bool', default=False),
-        name=dict(type='str'),
-        cli_context=dict(type='str'),
+        only_current=dict(type="bool", default=False),
+        name=dict(type="str"),
+        cli_context=dict(type="str"),
     )
 
     module = AnsibleModule(
@@ -267,15 +266,22 @@ def main():
     )
 
     try:
-        if module.params['cli_context']:
-            current_context_name, current_context_source = module.params['cli_context'], "cli_context module option"
+        if module.params["cli_context"]:
+            current_context_name, current_context_source = (
+                module.params["cli_context"],
+                "cli_context module option",
+            )
         else:
-            current_context_name, current_context_source = get_current_context_name_with_source()
-        if module.params['name']:
-            contexts = [ContextAPI.get_context(module.params['name'])]
+            current_context_name, current_context_source = (
+                get_current_context_name_with_source()
+            )
+        if module.params["name"]:
+            contexts = [ContextAPI.get_context(module.params["name"])]
             if not contexts[0]:
-                module.fail_json(msg=f"There is no context of name {module.params['name']!r}")
-        elif module.params['only_current']:
+                module.fail_json(
+                    msg=f"There is no context of name {module.params['name']!r}"
+                )
+        elif module.params["only_current"]:
             contexts = [ContextAPI.get_context(current_context_name)]
             if not contexts[0]:
                 module.fail_json(
@@ -284,10 +290,13 @@ def main():
         else:
             contexts = ContextAPI.contexts()
 
-        json_contexts = sorted([
-            context_to_json(context, context.name == current_context_name)
-            for context in contexts
-        ], key=lambda entry: entry['name'])
+        json_contexts = sorted(
+            [
+                context_to_json(context, context.name == current_context_name)
+                for context in contexts
+            ],
+            key=lambda entry: entry["name"],
+        )
 
         module.exit_json(
             changed=False,
@@ -295,10 +304,16 @@ def main():
             current_context_name=current_context_name,
         )
     except ContextException as e:
-        module.fail_json(msg=f'Error when handling Docker contexts: {e}', exception=traceback.format_exc())
+        module.fail_json(
+            msg=f"Error when handling Docker contexts: {e}",
+            exception=traceback.format_exc(),
+        )
     except DockerException as e:
-        module.fail_json(msg=f'An unexpected Docker error occurred: {e}', exception=traceback.format_exc())
+        module.fail_json(
+            msg=f"An unexpected Docker error occurred: {e}",
+            exception=traceback.format_exc(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
