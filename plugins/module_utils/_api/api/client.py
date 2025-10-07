@@ -581,6 +581,7 @@ class APIClient(
 
     def post_json_to_text(self, pathfmt, *args, **kwargs):
         data = kwargs.pop('data', None)
+        return self._result(self._post_json(self._url(pathfmt, *args, versioned_api=True), data, **kwargs))
 
     def post_json_to_stream_socket(self, pathfmt, *args, **kwargs):
         data = kwargs.pop('data', None)
