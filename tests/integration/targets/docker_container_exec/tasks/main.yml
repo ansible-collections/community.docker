@@ -180,7 +180,7 @@
         argv:
           - /bin/sh
           - '-c'
-          - sleep 1m
+          - echo "Detach worked." > /result.txt
         detach: true
       register: result
 
@@ -214,6 +214,24 @@
           - result.stdout_lines == ['bar', 'baz']
           - result.stderr == 'bar baz'
           - result.stderr_lines == ['bar baz']
+
+    - name: Check result of detach test
+      docker_container_exec:
+        container: "{{ cname }}"
+        argv:
+          - /bin/sh
+          - '-c'
+          - cat /result.txt
+        strip_empty_ends: false
+      register: result
+
+    - assert:
+        that:
+          - result.rc == 0
+          - result.stdout == 'Detach worked.\n'
+          - result.stdout_lines == ['Detach worked.']
+          - result.stderr == ''
+          - result.stderr_lines == []
 
   always:
     - name: Cleanup
