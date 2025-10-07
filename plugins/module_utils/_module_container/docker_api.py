@@ -232,8 +232,8 @@ class DockerAPIEngineDriver(EngineDriver):
     def inspect_image_by_name(self, client, repository, tag):
         return client.find_image(repository, tag)
 
-    def pull_image(self, client, repository, tag, platform=None):
-        return client.pull_image(repository, tag, platform=platform)
+    def pull_image(self, client, repository, tag, image_platform=None):
+        return client.pull_image(repository, tag, image_platform=image_platform)
 
     def pause_container(self, client, container_id):
         client.post_call("/containers/{0}/pause", container_id)

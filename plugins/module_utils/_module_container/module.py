@@ -569,7 +569,7 @@ class ContainerManager(DockerBaseClass):
                         self.client,
                         repository,
                         tag,
-                        platform=self.module.params["platform"],
+                        image_platform=self.module.params["platform"],
                     )
                     if alreadyToLatest:
                         self.results["changed"] = False

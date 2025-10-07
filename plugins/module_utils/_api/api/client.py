@@ -289,14 +289,14 @@ class APIClient(_Session, DaemonApiMixin):
         except _HTTPError as e:
             create_api_error_from_http_exception(e)
 
-    def _result(self, response, json=False, binary=False):
-        if json and binary:
+    def _result(self, response, get_json=False, get_binary=False):
+        if get_json and get_binary:
             raise AssertionError("json and binary must not be both True")
         self._raise_for_status(response)
 
-        if json:
+        if get_json:
             return response.json()
-        if binary:
+        if get_binary:
             return response.content
         return response.text
 
@@ -360,12 +360,12 @@ class APIClient(_Session, DaemonApiMixin):
         else:
             # Response is not chunked, meaning we probably
             # encountered an error immediately
-            yield self._result(response, json=decode)
+            yield self._result(response, get_json=decode)
 
     def _multiplexed_buffer_helper(self, response):
         """A generator of multiplexed data blocks read from a buffered
         response."""
-        buf = self._result(response, binary=True)
+        buf = self._result(response, get_binary=True)
         buf_length = len(buf)
         walker = 0
         while True:
@@ -478,7 +478,7 @@ class APIClient(_Session, DaemonApiMixin):
             return (
                 self._stream_raw_result(res)
                 if stream
-                else self._result(res, binary=True)
+                else self._result(res, get_binary=True)
             )
 
         self._raise_for_status(res)
@@ -551,13 +551,13 @@ class APIClient(_Session, DaemonApiMixin):
     def get_binary(self, pathfmt, *args, **kwargs):
         return self._result(
             self._get(self._url(pathfmt, *args, versioned_api=True), **kwargs),
-            binary=True,
+            get_binary=True,
         )
 
     def get_json(self, pathfmt, *args, **kwargs):
         return self._result(
             self._get(self._url(pathfmt, *args, versioned_api=True), **kwargs),
-            json=True,
+            get_json=True,
         )
 
     def get_text(self, pathfmt, *args, **kwargs):
@@ -581,7 +581,7 @@ class APIClient(_Session, DaemonApiMixin):
     def delete_json(self, pathfmt, *args, **kwargs):
         return self._result(
             self._delete(self._url(pathfmt, *args, versioned_api=True), **kwargs),
-            json=True,
+            get_json=True,
         )
 
     def post_call(self, pathfmt, *args, **kwargs):
@@ -603,7 +603,7 @@ class APIClient(_Session, DaemonApiMixin):
             self._post_json(
                 self._url(pathfmt, *args, versioned_api=True), data, **kwargs
             ),
-            binary=True,
+            get_binary=True,
         )
 
     def post_json_to_json(self, pathfmt, *args, **kwargs):
@@ -612,7 +612,7 @@ class APIClient(_Session, DaemonApiMixin):
             self._post_json(
                 self._url(pathfmt, *args, versioned_api=True), data, **kwargs
             ),
-            json=True,
+            get_json=True,
         )
 
     def post_json_to_text(self, pathfmt, *args, **kwargs):
@@ -670,5 +670,5 @@ class APIClient(_Session, DaemonApiMixin):
     def post_to_json(self, pathfmt, *args, **kwargs):
         return self._result(
             self._post(self._url(pathfmt, *args, versioned_api=True), **kwargs),
-            json=True,
+            get_json=True,
         )

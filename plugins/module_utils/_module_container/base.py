@@ -330,7 +330,7 @@ class EngineDriver(object):
         pass
 
     @abc.abstractmethod
-    def pull_image(self, client, repository, tag, platform=None):
+    def pull_image(self, client, repository, tag, image_platform=None):
         pass
 
     @abc.abstractmethod

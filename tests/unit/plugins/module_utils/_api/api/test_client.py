@@ -619,29 +619,29 @@ class DisableSocketTest(unittest.TestCase):
 
     def test_disable_socket_timeout(self):
         """Test that the timeout is disabled on a generic socket object."""
-        socket = self.DummySocket()
+        the_socket = self.DummySocket()
 
-        self.client._disable_socket_timeout(socket)
+        self.client._disable_socket_timeout(the_socket)
 
-        assert socket.timeout is None
+        assert the_socket.timeout is None
 
     def test_disable_socket_timeout2(self):
         """Test that the timeouts are disabled on a generic socket object
         and it's _sock object if present."""
-        socket = self.DummySocket()
-        socket._sock = self.DummySocket()
+        the_socket = self.DummySocket()
+        the_socket._sock = self.DummySocket()
 
-        self.client._disable_socket_timeout(socket)
+        self.client._disable_socket_timeout(the_socket)
 
-        assert socket.timeout is None
-        assert socket._sock.timeout is None
+        assert the_socket.timeout is None
+        assert the_socket._sock.timeout is None
 
     def test_disable_socket_timout_non_blocking(self):
         """Test that a non-blocking socket does not get set to blocking."""
-        socket = self.DummySocket()
-        socket._sock = self.DummySocket(0.0)
+        the_socket = self.DummySocket()
+        the_socket._sock = self.DummySocket(0.0)
 
-        self.client._disable_socket_timeout(socket)
+        self.client._disable_socket_timeout(the_socket)
 
-        assert socket.timeout is None
-        assert socket._sock.timeout == 0.0
+        assert the_socket.timeout is None
+        assert the_socket._sock.timeout == 0.0

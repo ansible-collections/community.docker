@@ -214,13 +214,13 @@ class DockerFileStore(object):
         """
 
         b64auth = base64.b64encode(to_bytes(username) + b":" + to_bytes(password))
-        auth = to_text(b64auth)
+        tauth = to_text(b64auth)
 
         # build up the auth structure
         if "auths" not in self._config:
             self._config["auths"] = dict()
 
-        self._config["auths"][server] = dict(auth=auth)
+        self._config["auths"][server] = dict(auth=tauth)
 
         self._write()
 
@@ -294,7 +294,7 @@ class LoginManager(DockerBaseClass):
             self.client._auth_configs.add_auth(
                 self.registry_url or auth.INDEX_NAME, req_data
             )
-        return self.client._result(response, json=True)
+        return self.client._result(response, get_json=True)
 
     def login(self):
         """

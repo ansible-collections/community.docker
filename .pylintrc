@@ -407,7 +407,7 @@ disable=raw-checker-failed,
         possibly-used-before-assignment,
         protected-access,
         raise-missing-from,
-        redefined-outer-name,
+        redefined-outer-name,  # needed for test fixtures
         simplifiable-if-expression,
         subprocess-popen-preexec-fn,
         super-init-not-called,

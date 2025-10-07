@@ -133,43 +133,45 @@ def _get_tls_config(fail_function, **kwargs):
         fail_function(f"TLS config error: {exc}")
 
 
-def is_using_tls(auth):
-    return auth["tls_verify"] or auth["tls"]
+def is_using_tls(auth_data):
+    return auth_data["tls_verify"] or auth_data["tls"]
 
 
-def get_connect_params(auth, fail_function):
-    if is_using_tls(auth):
-        auth["docker_host"] = auth["docker_host"].replace("tcp://", "https://")
+def get_connect_params(auth_data, fail_function):
+    if is_using_tls(auth_data):
+        auth_data["docker_host"] = auth_data["docker_host"].replace(
+            "tcp://", "https://"
+        )
 
     result = dict(
-        base_url=auth["docker_host"],
-        version=auth["api_version"],
-        timeout=auth["timeout"],
+        base_url=auth_data["docker_host"],
+        version=auth_data["api_version"],
+        timeout=auth_data["timeout"],
     )
 
-    if auth["tls_verify"]:
+    if auth_data["tls_verify"]:
         # TLS with verification
         tls_config = dict(
             verify=True,
-            assert_hostname=auth["tls_hostname"],
+            assert_hostname=auth_data["tls_hostname"],
             fail_function=fail_function,
         )
-        if auth["cert_path"] and auth["key_path"]:
-            tls_config["client_cert"] = (auth["cert_path"], auth["key_path"])
-        if auth["cacert_path"]:
-            tls_config["ca_cert"] = auth["cacert_path"]
+        if auth_data["cert_path"] and auth_data["key_path"]:
+            tls_config["client_cert"] = (auth_data["cert_path"], auth_data["key_path"])
+        if auth_data["cacert_path"]:
+            tls_config["ca_cert"] = auth_data["cacert_path"]
         result["tls"] = _get_tls_config(**tls_config)
-    elif auth["tls"]:
+    elif auth_data["tls"]:
         # TLS without verification
         tls_config = dict(
             verify=False,
             fail_function=fail_function,
         )
-        if auth["cert_path"] and auth["key_path"]:
-            tls_config["client_cert"] = (auth["cert_path"], auth["key_path"])
+        if auth_data["cert_path"] and auth_data["key_path"]:
+            tls_config["client_cert"] = (auth_data["cert_path"], auth_data["key_path"])
         result["tls"] = _get_tls_config(**tls_config)
 
-    if auth.get("use_ssh_client"):
+    if auth_data.get("use_ssh_client"):
         if LooseVersion(docker_version) < LooseVersion("4.4.0"):
             fail_function(
                 "use_ssh_client=True requires Docker SDK for Python 4.4.0 or newer"
@@ -579,7 +581,7 @@ class AnsibleDockerClientBase(Client):
                     break
         return images
 
-    def pull_image(self, name, tag="latest", platform=None):
+    def pull_image(self, name, tag="latest", image_platform=None):
         """
         Pull an image
         """
@@ -588,8 +590,8 @@ class AnsibleDockerClientBase(Client):
             stream=True,
             decode=True,
         )
-        if platform is not None:
-            kwargs["platform"] = platform
+        if image_platform is not None:
+            kwargs["platform"] = image_platform
         self.log(f"Pulling image {name}:{tag}")
         old_tag = self.find_image(name, tag)
         try:
@@ -624,7 +626,7 @@ class AnsibleDockerClientBase(Client):
                         self._url("/distribution/{0}/json", image),
                         headers={"X-Registry-Auth": header},
                     ),
-                    json=True,
+                    get_json=True,
                 )
         return super(AnsibleDockerClientBase, self).inspect_distribution(
             image, **kwargs

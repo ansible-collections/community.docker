@@ -495,7 +495,7 @@ class AnsibleDockerClientBase(Client):
         except Exception as exc:
             self.fail(f"Error inspecting image ID {image_id} - {exc}")
 
-    def pull_image(self, name, tag="latest", platform=None):
+    def pull_image(self, name, tag="latest", image_platform=None):
         """
         Pull an image
         """
@@ -508,8 +508,8 @@ class AnsibleDockerClientBase(Client):
                 "tag": tag or image_tag or "latest",
                 "fromImage": repository,
             }
-            if platform is not None:
-                params["platform"] = platform
+            if image_platform is not None:
+                params["platform"] = image_platform
 
             headers = {}
             header = auth.get_config_header(self, registry)
