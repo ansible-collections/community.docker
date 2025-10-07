@@ -402,7 +402,6 @@ disable=raw-checker-failed,
         no-member,
         no-name-in-module,
         not-an-iterable,
-        possibly-used-before-assignment,
         protected-access,
         raise-missing-from,
         redefined-outer-name,  # needed for test fixtures

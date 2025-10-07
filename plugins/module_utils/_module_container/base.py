@@ -859,7 +859,7 @@ def _preprocess_ports(module, values):
                 else:
                     port_binds = len(container_ports) * [(ipaddr,)]
             else:
-                module.fail_json(
+                return module.fail_json(
                     msg=f'Invalid port description "{port}" - expected 1 to 3 colon-separated parts, but got {p_len}. '
                     "Maybe you forgot to use square brackets ([...]) around an IPv6 address?"
                 )

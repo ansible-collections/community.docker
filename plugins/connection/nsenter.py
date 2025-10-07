@@ -177,11 +177,13 @@ class Connection(ConnectionBase):
                             + to_native(become_output)
                         )
 
+                    chunk = None
                     for key, event in events:
                         if key.fileobj == p.stdout:
                             chunk = p.stdout.read()
                         elif key.fileobj == p.stderr:
                             chunk = p.stderr.read()
+                    # TODO: avoid chunk being set multiple times!
 
                     if not chunk:
                         stdout, stderr = p.communicate()
