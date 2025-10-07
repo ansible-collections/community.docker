@@ -63,7 +63,7 @@ class DockerSocketHandlerBase(object):
         self._block_done_callback = block_done_callback
         if self._block_done_callback is not None:
             while self._block_buffer:
-                elt = self._block_buffer.remove(0)
+                elt = self._block_buffer.pop(0)
                 self._block_done_callback(*elt)
 
     def _add_block(self, stream_id, data):
