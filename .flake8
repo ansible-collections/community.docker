@@ -1,0 +1,13 @@
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Felix Fontein <felix@fontein.de>
+
+[flake8]
+extend-ignore = E203, E402, F401
+count = true
+# TODO: decrease this to ~10
+max-complexity = 60
+# black's max-line-length is 89, but it doesn't touch long string literals.
+# Since ansible-test's limit is 160, let's use that here.
+max-line-length = 160
+statistics = true

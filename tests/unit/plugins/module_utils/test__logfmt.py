@@ -93,7 +93,7 @@ def test_parse_line_success(line, kwargs, result):
 
 
 @pytest.mark.parametrize("line, kwargs, message", FAILURE_TEST_CASES)
-def test_parse_line_success(line, kwargs, message):
+def test_parse_line_failure(line, kwargs, message):
     with pytest.raises(InvalidLogFmt) as exc:
         parse_line(line, **kwargs)
 
