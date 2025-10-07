@@ -32,7 +32,7 @@ def get_current_context_name_with_source():
     docker_cfg_path = find_config_file()
     if docker_cfg_path:
         try:
-            with open(docker_cfg_path) as f:
+            with open(docker_cfg_path, "rt", encoding="utf-8") as f:
                 return (
                     json.load(f).get("currentContext", "default"),
                     f"configuration file {docker_cfg_path}",
@@ -53,7 +53,7 @@ def write_context_name_to_docker_config(name=None):
     config = {}
     if docker_cfg_path:
         try:
-            with open(docker_cfg_path) as f:
+            with open(docker_cfg_path, "rt", encoding="utf-8") as f:
                 config = json.load(f)
         except Exception as e:
             return e
@@ -67,7 +67,7 @@ def write_context_name_to_docker_config(name=None):
     if not docker_cfg_path:
         docker_cfg_path = get_default_config_file()
     try:
-        with open(docker_cfg_path, "w") as f:
+        with open(docker_cfg_path, "wt", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
     except Exception as e:
         return e

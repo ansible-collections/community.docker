@@ -133,7 +133,7 @@ class Context(object):
 
         metadata = {}
         try:
-            with open(meta_file) as f:
+            with open(meta_file, "rt", encoding="utf-8") as f:
                 metadata = json.load(f)
         except (OSError, KeyError, ValueError) as e:
             # unknown format
@@ -189,7 +189,7 @@ class Context(object):
         meta_dir = get_meta_dir(self.name)
         if not os.path.isdir(meta_dir):
             os.makedirs(meta_dir)
-        with open(get_meta_file(self.name), "w") as f:
+        with open(get_meta_file(self.name), "wt", encoding="utf-8") as f:
             f.write(json.dumps(self.Metadata))
 
         tls_dir = get_tls_dir(self.name)

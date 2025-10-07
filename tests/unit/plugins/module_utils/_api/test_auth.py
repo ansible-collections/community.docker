@@ -300,7 +300,7 @@ class LoadConfigTest(unittest.TestCase):
         self.addCleanup(shutil.rmtree, folder)
         cfg_path = os.path.join(folder, ".dockercfg")
         auth_ = base64.b64encode(b"sakuya:izayoi").decode("ascii")
-        with open(cfg_path, "w") as f:
+        with open(cfg_path, "wt", encoding="utf-8") as f:
             f.write(f"auth = {auth_}\n")
             f.write("email = sakuya@scarlet.net")
 
@@ -319,7 +319,7 @@ class LoadConfigTest(unittest.TestCase):
         cfg_path = os.path.join(folder, ".dockercfg")
         auth_ = base64.b64encode(b"sakuya:izayoi").decode("ascii")
         email = "sakuya@scarlet.net"
-        with open(cfg_path, "w") as f:
+        with open(cfg_path, "wt", encoding="utf-8") as f:
             json.dump({auth.INDEX_URL: {"auth": auth_, "email": email}}, f)
         cfg = auth.load_config(cfg_path)
         assert auth.resolve_authconfig(cfg) is not None
@@ -336,7 +336,7 @@ class LoadConfigTest(unittest.TestCase):
         cfg_path = os.path.join(folder, "config.json")
         auth_ = base64.b64encode(b"sakuya:izayoi").decode("ascii")
         email = "sakuya@scarlet.net"
-        with open(cfg_path, "w") as f:
+        with open(cfg_path, "wt", encoding="utf-8") as f:
             json.dump({"auths": {auth.INDEX_URL: {"auth": auth_, "email": email}}}, f)
         cfg = auth.load_config(cfg_path)
         assert auth.resolve_authconfig(cfg) is not None
@@ -355,7 +355,7 @@ class LoadConfigTest(unittest.TestCase):
         auth_ = base64.b64encode(b"sakuya:izayoi").decode("ascii")
         config = {registry: {"auth": f"{auth_}", "email": "sakuya@scarlet.net"}}
 
-        with open(dockercfg_path, "w") as f:
+        with open(dockercfg_path, "wt", encoding="utf-8") as f:
             json.dump(config, f)
 
         cfg = auth.load_config(dockercfg_path).auths
@@ -376,7 +376,7 @@ class LoadConfigTest(unittest.TestCase):
         auth_ = base64.b64encode(b"sakuya:izayoi").decode("ascii")
         config = {registry: {"auth": f"{auth_}", "email": "sakuya@scarlet.net"}}
 
-        with open(dockercfg_path, "w") as f:
+        with open(dockercfg_path, "wt", encoding="utf-8") as f:
             json.dump(config, f)
 
         with mock.patch.dict(os.environ, {"DOCKER_CONFIG": folder}):
@@ -400,7 +400,7 @@ class LoadConfigTest(unittest.TestCase):
             "auths": {registry: {"auth": f"{auth_}", "email": "sakuya@scarlet.net"}}
         }
 
-        with open(dockercfg_path, "w") as f:
+        with open(dockercfg_path, "wt", encoding="utf-8") as f:
             json.dump(config, f)
 
         with mock.patch.dict(os.environ, {"DOCKER_CONFIG": folder}):
@@ -423,7 +423,7 @@ class LoadConfigTest(unittest.TestCase):
             "auths": {registry: {"auth": f"{auth_}", "email": "sakuya@scarlet.net"}}
         }
 
-        with open(dockercfg_path, "w") as f:
+        with open(dockercfg_path, "wt", encoding="utf-8") as f:
             json.dump(config, f)
 
         with mock.patch.dict(os.environ, {"DOCKER_CONFIG": folder}):
@@ -440,7 +440,7 @@ class LoadConfigTest(unittest.TestCase):
         self.addCleanup(shutil.rmtree, folder)
         dockercfg_path = os.path.join(folder, "config.json")
         config = {"detachKeys": "ctrl-q, ctrl-u, ctrl-i"}
-        with open(dockercfg_path, "w") as f:
+        with open(dockercfg_path, "wt", encoding="utf-8") as f:
             json.dump(config, f)
 
         cfg = auth.load_config(dockercfg_path)
@@ -451,7 +451,7 @@ class LoadConfigTest(unittest.TestCase):
         self.addCleanup(shutil.rmtree, folder)
         dockercfg_path = os.path.join(folder, "config.json")
         config = {"auths": {"scarlet.net": {"sakuya": "izayoi"}}}
-        with open(dockercfg_path, "w") as f:
+        with open(dockercfg_path, "wt", encoding="utf-8") as f:
             json.dump(config, f)
 
         cfg = auth.load_config(dockercfg_path)
@@ -465,7 +465,7 @@ class LoadConfigTest(unittest.TestCase):
         dockercfg_path = os.path.join(folder, "config.json")
         auth_entry = encode_auth({"username": "sakuya"}).decode("ascii")
         config = {"auths": {registry: {"auth": auth_entry, "identitytoken": token}}}
-        with open(dockercfg_path, "w") as f:
+        with open(dockercfg_path, "wt", encoding="utf-8") as f:
             json.dump(config, f)
 
         cfg = auth.load_config(dockercfg_path)

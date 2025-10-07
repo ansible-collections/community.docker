@@ -891,7 +891,7 @@ class ImageManager(DockerBaseClass):
             dockerignore = os.path.join(self.build_path, ".dockerignore")
             exclude = None
             if os.path.exists(dockerignore):
-                with open(dockerignore) as f:
+                with open(dockerignore, "rt", encoding="utf-8") as f:
                     exclude = list(
                         filter(
                             lambda x: x != "" and x[0] != "#",

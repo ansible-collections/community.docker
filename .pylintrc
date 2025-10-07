@@ -410,7 +410,6 @@ disable=raw-checker-failed,
         unexpected-keyword-arg,
         unnecessary-dunder-call,
         unnecessary-pass,
-        unspecified-encoding,
         unsupported-assignment-operation,  # TODO: needs better typing info
         unused-argument,
         unused-variable,

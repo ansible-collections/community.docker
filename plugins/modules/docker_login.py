@@ -161,7 +161,7 @@ class DockerFileStore(object):
 
         try:
             # Attempt to read the existing config.
-            with open(self._config_path, "r") as f:
+            with open(self._config_path, "rt", encoding="utf-8") as f:
                 config = json.load(f)
         except (ValueError, IOError):
             # No config found or an invalid config found so we'll ignore it.

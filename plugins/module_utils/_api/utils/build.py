@@ -271,7 +271,7 @@ def process_dockerfile(dockerfile, path):
         0
     ] or os.path.relpath(abs_dockerfile, path).startswith(".."):
         # Dockerfile not in context - read data to insert into tar later
-        with open(abs_dockerfile) as df:
+        with open(abs_dockerfile, "rt", encoding="utf-8") as df:
             return (f".dockerfile.{random.getrandbits(160):x}", df.read())
 
     # Dockerfile is inside the context - return path relative to context root
