@@ -30,11 +30,13 @@ yamllint_config_plugins_examples = ".yamllint-examples"
 run_mypy = true
 mypy_ansible_core_package = "ansible-core>=2.19.0"
 mypy_config = ".mypy.ini"
-# mypy_extra_deps = [
-#     "cryptography",
-#     "types-mock",
-#     "types-PyYAML",
-# ]
+mypy_extra_deps = [
+    "docker",
+    "paramiko",
+    "urllib3",
+    "requests",
+    "types-PyYAML",
+]
 
 [sessions.docs_check]
 validate_collection_refs="all"
