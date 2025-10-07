@@ -391,7 +391,6 @@ disable=raw-checker-failed,
         consider-using-max-builtin,
         consider-using-with,
         fixme,
-        function-redefined,
         import-error,  # TODO figure out why pylint cannot find the module
         invalid-name,
         keyword-arg-before-vararg,

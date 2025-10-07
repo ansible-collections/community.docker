@@ -101,14 +101,14 @@ if not HAS_DOCKER_PY:
 
     # No Docker SDK for Python. Create a place holder client to allow
     # instantiation of AnsibleModule and proper error handing
-    class Client(object):  # noqa: F811
+    class Client(object):  # noqa: F811, pylint: disable=function-redefined
         def __init__(self, **kwargs):
             pass
 
-    class APIError(Exception):  # noqa: F811
+    class APIError(Exception):  # noqa: F811, pylint: disable=function-redefined
         pass
 
-    class NotFound(Exception):  # noqa: F811
+    class NotFound(Exception):  # noqa: F811, pylint: disable=function-redefined
         pass
 
 
