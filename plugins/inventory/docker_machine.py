@@ -170,15 +170,15 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         # capture any of the DOCKER_xxx variables that were output and create Ansible host vars
         # with the same name and value but with a dm_ name prefix.
-        vars = []
+        env_vars = []
         for line in env_lines:
             match = re.search('(DOCKER_[^=]+)="([^"]+)"', line)
             if match:
                 env_var_name = match.group(1)
                 env_var_value = match.group(2)
-                vars.append((env_var_name, env_var_value))
+                env_vars.append((env_var_name, env_var_value))
 
-        return vars
+        return env_vars
 
     def _get_machine_names(self):
         # Filter out machines that are not in the Running state as we probably cannot do anything useful actions

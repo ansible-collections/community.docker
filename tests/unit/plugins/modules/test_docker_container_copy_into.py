@@ -15,7 +15,7 @@ from ansible_collections.community.docker.plugins.modules.docker_container_copy_
 
 
 @pytest.mark.parametrize(
-    "input, expected",
+    "value, expected",
     [
         ("0777", 0o777),
         ("777", 0o777),
@@ -32,13 +32,13 @@ from ansible_collections.community.docker.plugins.modules.docker_container_copy_
         ("-1", -1),
     ],
 )
-def test_parse_string(input, expected):
-    assert parse_modern(input) == expected
-    assert parse_octal_string_only(input) == expected
+def test_parse_string(value, expected):
+    assert parse_modern(value) == expected
+    assert parse_octal_string_only(value) == expected
 
 
 @pytest.mark.parametrize(
-    "input",
+    "value",
     [
         0o777,
         0o755,
@@ -47,14 +47,14 @@ def test_parse_string(input, expected):
         123456789012345678901234567890123456789012345678901234567890,
     ],
 )
-def test_parse_int(input):
-    assert parse_modern(input) == input
-    with pytest.raises(TypeError, match=f"^must be an octal string, got {input}L?$"):
-        parse_octal_string_only(input)
+def test_parse_int(value):
+    assert parse_modern(value) == value
+    with pytest.raises(TypeError, match=f"^must be an octal string, got {value}L?$"):
+        parse_octal_string_only(value)
 
 
 @pytest.mark.parametrize(
-    "input",
+    "value",
     [
         1.0,
         755.5,
@@ -62,23 +62,23 @@ def test_parse_int(input):
         {},
     ],
 )
-def test_parse_bad_type(input):
+def test_parse_bad_type(value):
     with pytest.raises(TypeError, match="^must be an octal string or an integer, got "):
-        parse_modern(input)
+        parse_modern(value)
     with pytest.raises(TypeError, match="^must be an octal string, got "):
-        parse_octal_string_only(input)
+        parse_octal_string_only(value)
 
 
 @pytest.mark.parametrize(
-    "input",
+    "value",
     [
         "foo",
         "8",
         "9",
     ],
 )
-def test_parse_bad_value(input):
+def test_parse_bad_value(value):
     with pytest.raises(ValueError):
-        parse_modern(input)
+        parse_modern(value)
     with pytest.raises(ValueError):
-        parse_octal_string_only(input)
+        parse_octal_string_only(value)

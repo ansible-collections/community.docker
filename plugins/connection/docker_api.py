@@ -149,10 +149,10 @@ class Connection(ConnectionBase):
     transport = "community.docker.docker_api"
     has_pipelining = True
 
-    def _call_client(self, callable, not_found_can_be_resource=False):
+    def _call_client(self, f, not_found_can_be_resource=False):
         remote_addr = self.get_option("remote_addr")
         try:
-            return callable()
+            return f()
         except NotFound as e:
             if not_found_can_be_resource:
                 raise AnsibleConnectionFailure(

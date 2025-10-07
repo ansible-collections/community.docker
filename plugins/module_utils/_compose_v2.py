@@ -942,9 +942,9 @@ class BaseComposeManager(DockerBaseClass):
                     result.pop(res)
 
     def cleanup(self):
-        for dir in self.cleanup_dirs:
+        for directory in self.cleanup_dirs:
             try:
-                shutil.rmtree(dir, True)
+                shutil.rmtree(directory, True)
             except Exception:
                 # should not happen, but simply ignore to be on the safe side
                 pass

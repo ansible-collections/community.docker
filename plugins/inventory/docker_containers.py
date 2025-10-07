@@ -243,24 +243,24 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
         filters = parse_filters(self.get_option("filters"))
         for container in containers:
-            id = container.get("Id")
-            short_id = id[:13]
+            container_id = container.get("Id")
+            short_container_id = container_id[:13]
 
             try:
                 name = container.get("Names", list())[0].lstrip("/")
                 full_name = name
             except IndexError:
-                name = short_id
-                full_name = id
+                name = short_container_id
+                full_name = container_id
 
             facts = dict(
                 docker_name=make_unsafe(name),
-                docker_short_id=make_unsafe(short_id),
+                docker_short_id=make_unsafe(short_container_id),
             )
             full_facts = dict()
 
             try:
-                inspect = client.get_json("/containers/{0}/json", id)
+                inspect = client.get_json("/containers/{0}/json", container_id)
             except APIError as exc:
                 raise AnsibleError(f"Error inspecting container {name} - {exc}")
 
@@ -371,12 +371,12 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             # When we do this before a set_variable() call, the variables are assigned
             # to the group, and not to the host.
             if add_legacy_groups:
-                self.inventory.add_group(id)
-                self.inventory.add_host(name, group=id)
+                self.inventory.add_group(container_id)
+                self.inventory.add_host(name, group=container_id)
                 self.inventory.add_group(name)
                 self.inventory.add_host(name, group=name)
-                self.inventory.add_group(short_id)
-                self.inventory.add_host(name, group=short_id)
+                self.inventory.add_group(short_container_id)
+                self.inventory.add_host(name, group=short_container_id)
                 self.inventory.add_group(hostname)
                 self.inventory.add_host(name, group=hostname)
 
