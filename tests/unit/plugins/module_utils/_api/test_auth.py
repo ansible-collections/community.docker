@@ -803,7 +803,7 @@ class CredstoreTest(unittest.TestCase):
 
 
 class InMemoryStore(Store):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):  # pylint: disable=super-init-not-called
         self.__store = {}
 
     def get(self, server):
