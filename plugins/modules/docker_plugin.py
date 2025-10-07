@@ -228,7 +228,7 @@ class DockerPluginManager(object):
             if not settings:
                 differences.add(
                     "plugin_options",
-                    parameters=self.parameters.plugin_options,
+                    parameter=self.parameters.plugin_options,
                     active=settings,
                 )
             else:

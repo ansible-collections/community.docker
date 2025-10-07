@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_plugin - fix diff mode for plugin options (https://github.com/ansible-collections/community.docker/pull/1146)."
