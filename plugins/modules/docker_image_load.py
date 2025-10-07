@@ -18,9 +18,9 @@ version_added: 1.3.0
 description:
   - Load one or multiple Docker images from a C(.tar) archive, and return information on the loaded image(s).
 extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker.api_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -85,11 +85,11 @@ import traceback
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     DockerException,
 )
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
+from ansible_collections.community.docker.plugins.module_utils._common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DockerBaseClass,
     is_image_name_id,
 )

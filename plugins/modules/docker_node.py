@@ -14,10 +14,10 @@ description:
   - Manages the Docker nodes through a Swarm Manager.
   - This module allows to change the node's role, its availability, and to modify, add or remove node labels.
 extends_documentation_fragment:
-  - community.docker.docker
-  - community.docker.docker.docker_py_1_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker
+  - community.docker._docker.docker_py_1_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -143,14 +143,14 @@ except ImportError:
     pass
 
 from ansible.module_utils.common.text.converters import to_native
-from ansible_collections.community.docker.plugins.module_utils.common import (
-    DockerBaseClass,
+from ansible_collections.community.docker.plugins.module_utils._common import (
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.swarm import (
+from ansible_collections.community.docker.plugins.module_utils._swarm import (
     AnsibleDockerSwarmClient,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
+    DockerBaseClass,
     sanitize_labels,
 )
 

@@ -21,9 +21,9 @@ description:
     needing to provide credentials.
   - Running in check mode will perform the authentication without updating the config file.
 extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker.api_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -135,11 +135,11 @@ from ansible_collections.community.docker.plugins.module_utils._api.credentials.
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     DockerException,
 )
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
+from ansible_collections.community.docker.plugins.module_utils._common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DEFAULT_DOCKER_REGISTRY,
     DockerBaseClass,
 )

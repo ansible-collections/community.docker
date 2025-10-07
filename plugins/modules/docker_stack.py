@@ -15,9 +15,9 @@ short_description: docker stack module
 description:
   - Manage docker stacks using the C(docker stack) command on the target node (see examples).
 extends_documentation_fragment:
-  - community.docker.docker.cli_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker.cli_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 attributes:
   check_mode:
     support: none
@@ -162,7 +162,7 @@ import traceback
 from time import sleep
 
 from ansible.module_utils.common.text.converters import to_native
-from ansible_collections.community.docker.plugins.module_utils.common_cli import (
+from ansible_collections.community.docker.plugins.module_utils._common_cli import (
     AnsibleModuleDockerClient,
     DockerException,
 )

@@ -19,9 +19,9 @@ description:
 notes:
   - The C(--grant-all-permissions) CLI flag is true by default in this module.
 extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker.api_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -137,11 +137,11 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
     DockerException,
     NotFound,
 )
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
+from ansible_collections.community.docker.plugins.module_utils._common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DifferenceTracker,
     DockerBaseClass,
 )

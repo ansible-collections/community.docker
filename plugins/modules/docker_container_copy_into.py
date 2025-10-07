@@ -125,9 +125,9 @@ options:
     type: bool
 
 extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker.api_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 author:
   - "Felix Fontein (@felixfontein)"
@@ -177,15 +177,11 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
     DockerException,
     NotFound,
 )
-from ansible_collections.community.docker.plugins.module_utils._scramble import (
-    generate_insecure_key,
-    scramble,
-)
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
+from ansible_collections.community.docker.plugins.module_utils._common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.copy import (
+from ansible_collections.community.docker.plugins.module_utils._copy import (
     DockerFileCopyError,
     DockerFileNotFound,
     DockerUnexpectedError,
@@ -194,6 +190,10 @@ from ansible_collections.community.docker.plugins.module_utils.copy import (
     put_file,
     put_file_content,
     stat_file,
+)
+from ansible_collections.community.docker.plugins.module_utils._scramble import (
+    generate_insecure_key,
+    scramble,
 )
 
 

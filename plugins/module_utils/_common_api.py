@@ -3,6 +3,9 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# Note that this module util is **PRIVATE** to the collection. It can have breaking changes at any time.
+# Do not use this from other collections or standalone plugins/modules!
+
 from __future__ import annotations
 
 import abc
@@ -12,7 +15,7 @@ from collections.abc import Mapping, Sequence
 
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE, BOOLEANS_TRUE
-from ansible_collections.community.docker.plugins.module_utils.version import (
+from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
 
@@ -43,21 +46,7 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.utils 
     convert_filters,
     parse_repository_tag,
 )
-
-# pylint: disable=unused-import
-from ansible_collections.community.docker.plugins.module_utils.util import (
-    DEFAULT_DOCKER_REGISTRY,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils.util import (
-    DEFAULT_TLS_HOSTNAME,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils.util import (
-    is_image_name_id,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils.util import (
-    is_valid_tag,  # TODO: remove
-)
-from ansible_collections.community.docker.plugins.module_utils.util import (  # noqa: F401
+from ansible_collections.community.docker.plugins.module_utils._util import (  # noqa: F401, pylint: disable=unused-import
     DEFAULT_DOCKER_HOST,
     DEFAULT_TIMEOUT_SECONDS,
     DEFAULT_TLS,
@@ -68,9 +57,6 @@ from ansible_collections.community.docker.plugins.module_utils.util import (  # 
     sanitize_result,
     update_tls_hostname,
 )
-
-
-# pylint: enable=unused-import
 
 
 def _get_tls_config(fail_function, **kwargs):

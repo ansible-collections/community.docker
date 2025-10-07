@@ -22,9 +22,9 @@ notes:
   - Building images is done using Docker daemon's API. It is not possible to use BuildKit / buildx this way. Use M(community.docker.docker_image_build)
     to build images with BuildKit.
 extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker.api_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -390,22 +390,22 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.utils 
     format_extra_hosts,
     parse_repository_tag,
 )
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
+from ansible_collections.community.docker.plugins.module_utils._common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.image_archive import (
+from ansible_collections.community.docker.plugins.module_utils._image_archive import (
     ImageArchiveInvalidException,
     api_image_id,
     archived_image_manifest,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DockerBaseClass,
     clean_dict_booleans_for_docker_api,
     is_image_name_id,
     is_valid_tag,
 )
-from ansible_collections.community.docker.plugins.module_utils.version import (
+from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
 

@@ -16,9 +16,9 @@ description:
   - Allows to run C(docker container prune), C(docker image prune), C(docker network prune) and C(docker volume prune) through
     the Docker API.
 extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker.api_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -237,11 +237,11 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
     convert_filters,
 )
-from ansible_collections.community.docker.plugins.module_utils.common_api import (
+from ansible_collections.community.docker.plugins.module_utils._common_api import (
     AnsibleDockerClient,
     RequestException,
 )
-from ansible_collections.community.docker.plugins.module_utils.util import (
+from ansible_collections.community.docker.plugins.module_utils._util import (
     clean_dict_booleans_for_docker_api,
 )
 

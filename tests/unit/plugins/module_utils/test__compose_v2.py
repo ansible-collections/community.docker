@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import pytest
-from ansible_collections.community.docker.plugins.module_utils.compose_v2 import (
+from ansible_collections.community.docker.plugins.module_utils._compose_v2 import (
     Event,
     parse_events,
 )
@@ -228,7 +228,11 @@ EXTRA_TEST_CASES = [
         "2.28.1",
         False,
         False,
-        " bash_1 Skipped \n" " bash_2 Pulling \n" " bash_2 Pulled \n",
+        # fmt: off
+        " bash_1 Skipped \n"
+        " bash_2 Pulling \n"
+        " bash_2 Pulled \n",
+        # fmt: on
         [
             Event(
                 "unknown",

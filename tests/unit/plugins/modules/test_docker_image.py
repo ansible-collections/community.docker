@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import pytest
-from ansible_collections.community.docker.plugins.module_utils.image_archive import (
+from ansible_collections.community.docker.plugins.module_utils._image_archive import (
     api_image_id,
 )
 from ansible_collections.community.docker.plugins.modules.docker_image import (

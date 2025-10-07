@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import pytest
-from ansible_collections.community.docker.plugins.plugin_utils.unsafe import (
+from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
     make_unsafe,
 )
 from ansible_collections.community.internal_test_tools.tests.unit.utils.trust import (

@@ -23,9 +23,9 @@ notes:
     (except O(image)). Therefore, always specify B(all) options relevant to the container.
   - When O(restart) is set to V(true), the module will only restart the container if no config changes are detected.
 extends_documentation_fragment:
-  - community.docker.docker.api_documentation
-  - community.docker.attributes
-  - community.docker.attributes.actiongroup_docker
+  - community.docker._docker.api_documentation
+  - community.docker._attributes
+  - community.docker._attributes.actiongroup_docker
 
 attributes:
   check_mode:
@@ -1331,10 +1331,10 @@ status:
   sample: 0
 """
 
-from ansible_collections.community.docker.plugins.module_utils.module_container.docker_api import (
+from ansible_collections.community.docker.plugins.module_utils._module_container.docker_api import (
     DockerAPIEngineDriver,
 )
-from ansible_collections.community.docker.plugins.module_utils.module_container.module import (
+from ansible_collections.community.docker.plugins.module_utils._module_container.module import (
     run_module,
 )
 

@@ -10,7 +10,7 @@ __metaclass__ = type
 import tarfile
 
 import pytest
-from ansible_collections.community.docker.plugins.module_utils.image_archive import (
+from ansible_collections.community.docker.plugins.module_utils._image_archive import (
     ImageArchiveInvalidException,
     api_image_id,
     archived_image_manifest,
