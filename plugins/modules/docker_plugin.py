@@ -218,7 +218,7 @@ class DockerPluginManager(object):
         if self.parameters.plugin_options:
             settings = self.existing_plugin.get('Settings')
             if not settings:
-                differences.add('plugin_options', parameters=self.parameters.plugin_options, active=settings)
+                differences.add('plugin_options', parameter=self.parameters.plugin_options, active=settings)
             else:
                 existing_options = parse_options(settings.get('Env'))
 
