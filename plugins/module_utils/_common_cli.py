@@ -229,8 +229,6 @@ class AnsibleDockerClientBase(object):
             check_rc=True,
         )
         if tag:
-            lookup = f"{name}:{tag}"
-            lookup_digest = f"{name}@{tag}"
             response = images
             images = []
             for image in response:

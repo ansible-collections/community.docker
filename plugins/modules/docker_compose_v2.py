@@ -484,7 +484,7 @@ class ServicesManager(BaseComposeManager):
                 self.fail(f"The key {key!r} for `scale` is not a string")
             try:
                 value = check_type_int(value)
-            except TypeError as exc:
+            except TypeError:
                 self.fail(f"The value {value!r} for `scale[{key!r}]` is not an integer")
             if value < 0:
                 self.fail(f"The value {value!r} for `scale[{key!r}]` is negative")

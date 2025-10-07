@@ -85,7 +85,7 @@ from ansible_collections.community.docker.plugins.module_utils._common_api impor
 def get_existing_volume(client, volume_name):
     try:
         return client.get_json("/volumes/{0}", volume_name)
-    except NotFound as dummy:
+    except NotFound:
         return None
     except Exception as exc:
         client.fail(f"Error inspecting volume: {exc}")

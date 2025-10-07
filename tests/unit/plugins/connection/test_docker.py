@@ -68,7 +68,6 @@ class TestDockerConnectionClass(unittest.TestCase):
         self, mock_new_docker_version, mock_old_docker_version
     ):
         self.dc._version = None
-        version = self.dc.docker_version
 
     # old version and new version fail
     @mock.patch(

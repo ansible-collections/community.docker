@@ -706,7 +706,7 @@ def _preprocess_mounts(module, values):
             if mount_dict["tmpfs_mode"] is not None:
                 try:
                     mount_dict["tmpfs_mode"] = int(mount_dict["tmpfs_mode"], 8)
-                except Exception as dummy:
+                except Exception:
                     module.fail_json(
                         msg=f'tmp_fs mode of mount "{target}" is not an octal string!'
                     )

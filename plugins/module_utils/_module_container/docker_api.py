@@ -419,7 +419,7 @@ class DockerAPIEngineDriver(EngineDriver):
         while True:
             try:
                 client.delete_call("/containers/{0}", container_id, params=params)
-            except NotFound as dummy:
+            except NotFound:
                 pass
             except APIError as exc:
                 if (
@@ -548,7 +548,6 @@ class DockerAPIEngine(Engine):
                 return {}
             return {options[0].name: value}
 
-        get_expected_values_ = None
         if get_expected_value:
 
             def get_expected_values_(
@@ -566,6 +565,9 @@ class DockerAPIEngine(Engine):
                     return values
                 return {options[0].name: value}
 
+        else:
+            get_expected_values_ = None
+
         def set_value(module, data, api_version, options, values):
             if len(options) != 1:
                 raise AssertionError(
@@ -578,7 +580,6 @@ class DockerAPIEngine(Engine):
                 value = preprocess_for_set(module, api_version, value)
             data[config_name] = value
 
-        update_value = None
         if update_parameter:
 
             def update_value(module, data, api_version, options, values):
@@ -592,6 +593,9 @@ class DockerAPIEngine(Engine):
                 if preprocess_for_set:
                     value = preprocess_for_set(module, api_version, value)
                 data[update_parameter] = value
+
+        else:
+            update_value = None
 
         return cls(
             get_value=get_value,
@@ -644,7 +648,6 @@ class DockerAPIEngine(Engine):
                 return {}
             return {options[0].name: value}
 
-        get_expected_values_ = None
         if get_expected_value:
 
             def get_expected_values_(
@@ -662,6 +665,9 @@ class DockerAPIEngine(Engine):
                     return values
                 return {options[0].name: value}
 
+        else:
+            get_expected_values_ = None
+
         def set_value(module, data, api_version, options, values):
             if len(options) != 1:
                 raise AssertionError(
@@ -676,7 +682,6 @@ class DockerAPIEngine(Engine):
                 value = preprocess_for_set(module, api_version, value)
             data["HostConfig"][host_config_name] = value
 
-        update_value = None
         if update_parameter:
 
             def update_value(module, data, api_version, options, values):
@@ -690,6 +695,9 @@ class DockerAPIEngine(Engine):
                 if preprocess_for_set:
                     value = preprocess_for_set(module, api_version, value)
                 data[update_parameter] = value
+
+        else:
+            update_value = None
 
         return cls(
             get_value=get_value,

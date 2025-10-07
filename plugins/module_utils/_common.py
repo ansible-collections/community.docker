@@ -387,7 +387,7 @@ class AnsibleDockerClientBase(Client):
             result = self.inspect_container(container=container_id)
             self.log("Completed container inspection")
             return result
-        except NotFound as dummy:
+        except NotFound:
             return None
         except Exception as exc:
             self.fail(f"Error inspecting container: {exc}")
@@ -461,7 +461,7 @@ class AnsibleDockerClientBase(Client):
                 self.log(f"Inspecting network Id {network_id}")
                 result = self.inspect_network(network_id)
                 self.log("Completed network inspection")
-            except NotFound as dummy:
+            except NotFound:
                 return None
             except Exception as exc:
                 self.fail(f"Error inspecting network: {exc}")
