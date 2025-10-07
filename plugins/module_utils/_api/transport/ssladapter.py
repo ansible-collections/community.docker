@@ -12,18 +12,17 @@
 
 from __future__ import annotations
 
-
-""" Resolves OpenSSL issues in some servers:
-      https://lukasa.co.uk/2013/01/Choosing_SSL_Version_In_Requests/
-      https://github.com/kennethreitz/requests/pull/799
-"""
-
 from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
 
 from .._import_helper import HTTPAdapter, urllib3
 from .basehttpadapter import BaseHTTPAdapter
+
+
+# Resolves OpenSSL issues in some servers:
+#   https://lukasa.co.uk/2013/01/Choosing_SSL_Version_In_Requests/
+#   https://github.com/kennethreitz/requests/pull/799
 
 
 PoolManager = urllib3.poolmanager.PoolManager
