@@ -46,7 +46,7 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.utils 
     convert_filters,
     parse_repository_tag,
 )
-from ansible_collections.community.docker.plugins.module_utils._util import (  # noqa: F401, pylint: disable=unused-import
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DEFAULT_DOCKER_HOST,
     DEFAULT_TIMEOUT_SECONDS,
     DEFAULT_TLS,

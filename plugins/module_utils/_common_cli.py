@@ -17,7 +17,7 @@ from ansible.module_utils.common.text.converters import to_native
 from ansible_collections.community.docker.plugins.module_utils._api.auth import (
     resolve_repository_name,
 )
-from ansible_collections.community.docker.plugins.module_utils._util import (  # noqa: F401, pylint: disable=unused-import
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DEFAULT_DOCKER_HOST,
     DEFAULT_TLS,
     DEFAULT_TLS_VERIFY,
