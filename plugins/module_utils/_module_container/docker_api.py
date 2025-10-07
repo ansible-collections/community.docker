@@ -892,8 +892,8 @@ def _preprocess_etc_hosts(module, client, api_version, value):
     if value is None:
         return value
     results = []
-    for key, value in value.items():
-        results.append(f"{key}:{value}")
+    for key, val in value.items():
+        results.append(f"{key}:{val}")
     return results
 
 
