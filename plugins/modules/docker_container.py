@@ -751,6 +751,21 @@ options:
             Daemon at least in some cases. When passed on creation, this seems to work better.
         type: str
         version_added: 3.6.0
+      driver_opts:
+        description:
+          - Dictionary of driver options for this network endpoint.
+          - Allows setting endpoint-specific driver options like C(com.docker.network.endpoint.ifname) to set a custom network interface name.
+          - Requires Docker API version 1.32 or newer.
+        type: dict
+        version_added: 5.0.0
+      gw_priority:
+        description:
+          - Gateway priority for this network endpoint.
+          - When a container is connected to multiple networks, this controls which network's gateway is used as the default gateway.
+          - Higher values indicate higher priority.
+          - Requires Docker API version 1.48 or newer.
+        type: int
+        version_added: 5.0.0
   networks_cli_compatible:
     description:
       - If O(networks_cli_compatible=true) (default), this module will behave as C(docker run --network) and will B(not) add

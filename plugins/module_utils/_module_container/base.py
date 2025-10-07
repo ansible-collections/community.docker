@@ -1144,6 +1144,8 @@ OPTION_NETWORK = (
             aliases=dict(type="list", elements="str"),
             links=dict(type="list", elements="str"),
             mac_address=dict(type="str"),
+            driver_opts=dict(type="dict"),
+            gw_priority=dict(type="int"),
         ),
     )
 )

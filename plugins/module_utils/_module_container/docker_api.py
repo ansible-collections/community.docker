@@ -255,11 +255,25 @@ class DockerAPIEngineDriver(EngineDriver):
             "links": "Links",
             "aliases": "Aliases",
             "mac_address": "MacAddress",
+            "driver_opts": "DriverOpts",
         }.items():
             value = parameters.pop(para, None)
             if value:
                 if para == "links":
                     value = normalize_links(value)
+                elif para == "driver_opts":
+                    # Ensure driver_opts values are strings
+                    for key, val in value.items():
+                        if not isinstance(val, str):
+                            raise Exception(
+                                f"driver_opts values must be strings, got {type(val).__name__} for key '{key}'"
+                            )
+                params[dest_para] = value
+        for para, dest_para in {
+            "gw_priority": "GwPriority",
+        }.items():
+            value = parameters.pop(para, None)
+            if value is not None:
                 params[dest_para] = value
         if parameters:
             ups = ", ".join([f'"{p}"' for p in sorted(parameters)])
@@ -1782,6 +1796,20 @@ OPTION_NETWORK.add_engine(
                 "docker_api_version": "1.44",
                 "detect_usage": lambda c: any(
                     net_info.get("mac_address") is not None
+                    for net_info in (c.module.params["networks"] or [])
+                ),
+            },
+            "networks.driver_opts": {
+                "docker_api_version": "1.32",
+                "detect_usage": lambda c: any(
+                    net_info.get("driver_opts") is not None
+                    for net_info in (c.module.params["networks"] or [])
+                ),
+            },
+            "networks.gw_priority": {
+                "docker_api_version": "1.48",
+                "detect_usage": lambda c: any(
+                    net_info.get("gw_priority") is not None
                     for net_info in (c.module.params["networks"] or [])
                 ),
             },
