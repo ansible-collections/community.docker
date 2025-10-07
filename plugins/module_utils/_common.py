@@ -40,12 +40,11 @@ HAS_DOCKER_ERROR = None
 HAS_DOCKER_TRACEBACK = None
 
 try:
-    from requests.exceptions import SSLError
-
     from docker import __version__ as docker_version
     from docker import auth
     from docker.errors import APIError, NotFound, TLSParameterError
     from docker.tls import TLSConfig
+    from requests.exceptions import SSLError
 
     if LooseVersion(docker_version) >= LooseVersion("3.0.0"):
         HAS_DOCKER_PY_3 = True
