@@ -7,10 +7,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
-
 from ansible.errors import AnsibleConnectionFailure
 from ansible.utils.display import Display
 from ansible_collections.community.docker.plugins.module_utils._common import (

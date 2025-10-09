@@ -8,9 +8,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
 import json
 import os
 import shutil

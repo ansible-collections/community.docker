@@ -8,9 +8,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
 import unittest
 
 from ansible_collections.community.docker.plugins.module_utils._api.api.client import (

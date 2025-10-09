@@ -4,9 +4,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
 from io import StringIO
 
 from ansible.errors import AnsibleError

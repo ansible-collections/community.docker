@@ -4,10 +4,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
-
 import pytest
 from ansible.inventory.data import InventoryData
 from ansible.parsing.dataloader import DataLoader

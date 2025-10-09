@@ -9,8 +9,6 @@
 from __future__ import annotations
 
 
-__metaclass__ = type
-
 OBJ = {
     "read": "2015-02-11T19:20:46.667237763+02:00",
     "network": {

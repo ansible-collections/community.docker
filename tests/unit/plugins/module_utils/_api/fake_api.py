@@ -8,9 +8,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
 from ansible_collections.community.docker.plugins.module_utils._api import constants
 from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.constants import (
     DEFAULT_DOCKER_API_VERSION,

@@ -7,10 +7,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
-
 import selectors
 
 from ansible_collections.community.docker.plugins.module_utils._socket_handler import (
