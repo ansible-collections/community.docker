@@ -5,7 +5,7 @@
 # Note that this module util is **PRIVATE** to the collection. It can have breaking changes at any time.
 # Do not use this from other collections or standalone plugins/modules!
 
-from __future__ import absolute_import, division, print_function
+from __future__ import annotations
 
 
 __metaclass__ = type

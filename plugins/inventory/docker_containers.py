@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (c) 2020, Felix Fontein <felix@fontein.de>
 # For the parts taken from the docker inventory script:
 # Copyright (c) 2016, Paul Durivage <paul.durivage@gmail.com>
