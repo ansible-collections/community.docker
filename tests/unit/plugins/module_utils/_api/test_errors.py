@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # This code is part of the Ansible collection community.docker, but is an independent component.
 # This particular file, and this file only, is based on the Docker SDK for Python (https://github.com/docker/docker-py/)
 #
