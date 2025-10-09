@@ -318,11 +318,11 @@ def dict_to_list(dictionary, concat="="):
     return [f"{k}{concat}{v}" for k, v in sorted(dictionary.items())]
 
 
-def _quote_csv(input):
-    if input.strip() == input and all(i not in input for i in '",\r\n'):
-        return input
-    input = input.replace('"', '""')
-    return f'"{input}"'
+def _quote_csv(text):
+    if text.strip() == text and all(i not in text for i in '",\r\n'):
+        return text
+    text = text.replace('"', '""')
+    return f'"{text}"'
 
 
 class ImageBuilder(DockerBaseClass):

@@ -53,19 +53,19 @@ _MOUNT_OPTION_TYPES = dict(
 )
 
 
-def _get_ansible_type(type):
-    if type == "set":
+def _get_ansible_type(value_type):
+    if value_type == "set":
         return "list"
-    if type not in ("list", "dict", "bool", "int", "float", "str"):
-        raise Exception(f'Invalid type "{type}"')
-    return type
+    if value_type not in ("list", "dict", "bool", "int", "float", "str"):
+        raise Exception(f'Invalid type "{value_type}"')
+    return value_type
 
 
 class Option(object):
     def __init__(
         self,
         name,
-        type,
+        value_type,
         owner,
         ansible_type=None,
         elements=None,
@@ -81,9 +81,9 @@ class Option(object):
         compare=None,
     ):
         self.name = name
-        self.type = type
-        self.ansible_type = ansible_type or _get_ansible_type(type)
-        needs_elements = self.type in ("list", "set")
+        self.value_type = value_type
+        self.ansible_type = ansible_type or _get_ansible_type(value_type)
+        needs_elements = self.value_type in ("list", "set")
         needs_ansible_elements = self.ansible_type in ("list",)
         if elements is not None and not needs_elements:
             raise Exception("elements only allowed for lists/sets")
@@ -118,7 +118,7 @@ class Option(object):
         self.ansible_suboptions = ansible_suboptions if needs_suboptions else None
         self.ansible_aliases = ansible_aliases or []
         self.ansible_choices = ansible_choices
-        comparison_type = self.type
+        comparison_type = self.value_type
         if comparison_type == "set" and self.elements == "dict":
             comparison_type = "set(dict)"
         elif comparison_type not in ("set", "list", "dict"):
@@ -330,7 +330,7 @@ class EngineDriver(object):
         pass
 
     @abc.abstractmethod
-    def pull_image(self, client, repository, tag, platform=None):
+    def pull_image(self, client, repository, tag, image_platform=None):
         pass
 
     @abc.abstractmethod
@@ -859,7 +859,7 @@ def _preprocess_ports(module, values):
                 else:
                     port_binds = len(container_ports) * [(ipaddr,)]
             else:
-                module.fail_json(
+                return module.fail_json(
                     msg=f'Invalid port description "{port}" - expected 1 to 3 colon-separated parts, but got {p_len}. '
                     "Maybe you forgot to use square brackets ([...]) around an IPv6 address?"
                 )
@@ -920,55 +920,55 @@ def _compare_platform(option, param_value, container_value):
         return param_value == container_value
 
 
-OPTION_AUTO_REMOVE = OptionGroup().add_option("auto_remove", type="bool")
+OPTION_AUTO_REMOVE = OptionGroup().add_option("auto_remove", value_type="bool")
 
-OPTION_BLKIO_WEIGHT = OptionGroup().add_option("blkio_weight", type="int")
+OPTION_BLKIO_WEIGHT = OptionGroup().add_option("blkio_weight", value_type="int")
 
 OPTION_CAPABILITIES = OptionGroup().add_option(
-    "capabilities", type="set", elements="str"
+    "capabilities", value_type="set", elements="str"
 )
 
-OPTION_CAP_DROP = OptionGroup().add_option("cap_drop", type="set", elements="str")
+OPTION_CAP_DROP = OptionGroup().add_option("cap_drop", value_type="set", elements="str")
 
 OPTION_CGROUP_NS_MODE = OptionGroup().add_option(
-    "cgroupns_mode", type="str", ansible_choices=["private", "host"]
+    "cgroupns_mode", value_type="str", ansible_choices=["private", "host"]
 )
 
-OPTION_CGROUP_PARENT = OptionGroup().add_option("cgroup_parent", type="str")
+OPTION_CGROUP_PARENT = OptionGroup().add_option("cgroup_parent", value_type="str")
 
 OPTION_COMMAND = OptionGroup(preprocess=_preprocess_command).add_option(
-    "command", type="list", elements="str", ansible_type="raw"
+    "command", value_type="list", elements="str", ansible_type="raw"
 )
 
-OPTION_CPU_PERIOD = OptionGroup().add_option("cpu_period", type="int")
+OPTION_CPU_PERIOD = OptionGroup().add_option("cpu_period", value_type="int")
 
-OPTION_CPU_QUOTA = OptionGroup().add_option("cpu_quota", type="int")
+OPTION_CPU_QUOTA = OptionGroup().add_option("cpu_quota", value_type="int")
 
-OPTION_CPUSET_CPUS = OptionGroup().add_option("cpuset_cpus", type="str")
+OPTION_CPUSET_CPUS = OptionGroup().add_option("cpuset_cpus", value_type="str")
 
-OPTION_CPUSET_MEMS = OptionGroup().add_option("cpuset_mems", type="str")
+OPTION_CPUSET_MEMS = OptionGroup().add_option("cpuset_mems", value_type="str")
 
-OPTION_CPU_SHARES = OptionGroup().add_option("cpu_shares", type="int")
+OPTION_CPU_SHARES = OptionGroup().add_option("cpu_shares", value_type="int")
 
 OPTION_ENTRYPOINT = OptionGroup(preprocess=_preprocess_entrypoint).add_option(
-    "entrypoint", type="list", elements="str"
+    "entrypoint", value_type="list", elements="str"
 )
 
-OPTION_CPUS = OptionGroup().add_option("cpus", type="int", ansible_type="float")
+OPTION_CPUS = OptionGroup().add_option("cpus", value_type="int", ansible_type="float")
 
 OPTION_DETACH_INTERACTIVE = (
     OptionGroup()
-    .add_option("detach", type="bool")
-    .add_option("interactive", type="bool")
+    .add_option("detach", value_type="bool")
+    .add_option("interactive", value_type="bool")
 )
 
 OPTION_DEVICES = OptionGroup().add_option(
-    "devices", type="set", elements="dict", ansible_elements="str"
+    "devices", value_type="set", elements="dict", ansible_elements="str"
 )
 
 OPTION_DEVICE_READ_BPS = OptionGroup().add_option(
     "device_read_bps",
-    type="set",
+    value_type="set",
     elements="dict",
     ansible_suboptions=dict(
         path=dict(required=True, type="str"),
@@ -978,7 +978,7 @@ OPTION_DEVICE_READ_BPS = OptionGroup().add_option(
 
 OPTION_DEVICE_WRITE_BPS = OptionGroup().add_option(
     "device_write_bps",
-    type="set",
+    value_type="set",
     elements="dict",
     ansible_suboptions=dict(
         path=dict(required=True, type="str"),
@@ -988,7 +988,7 @@ OPTION_DEVICE_WRITE_BPS = OptionGroup().add_option(
 
 OPTION_DEVICE_READ_IOPS = OptionGroup().add_option(
     "device_read_iops",
-    type="set",
+    value_type="set",
     elements="dict",
     ansible_suboptions=dict(
         path=dict(required=True, type="str"),
@@ -998,7 +998,7 @@ OPTION_DEVICE_READ_IOPS = OptionGroup().add_option(
 
 OPTION_DEVICE_WRITE_IOPS = OptionGroup().add_option(
     "device_write_iops",
-    type="set",
+    value_type="set",
     elements="dict",
     ansible_suboptions=dict(
         path=dict(required=True, type="str"),
@@ -1008,7 +1008,7 @@ OPTION_DEVICE_WRITE_IOPS = OptionGroup().add_option(
 
 OPTION_DEVICE_REQUESTS = OptionGroup().add_option(
     "device_requests",
-    type="set",
+    value_type="set",
     elements="dict",
     ansible_suboptions=dict(
         capabilities=dict(type="list", elements="list"),
@@ -1020,29 +1020,33 @@ OPTION_DEVICE_REQUESTS = OptionGroup().add_option(
 )
 
 OPTION_DEVICE_CGROUP_RULES = OptionGroup().add_option(
-    "device_cgroup_rules", type="list", elements="str"
+    "device_cgroup_rules", value_type="list", elements="str"
 )
 
 OPTION_DNS_SERVERS = OptionGroup().add_option(
-    "dns_servers", type="list", elements="str"
+    "dns_servers", value_type="list", elements="str"
 )
 
-OPTION_DNS_OPTS = OptionGroup().add_option("dns_opts", type="set", elements="str")
+OPTION_DNS_OPTS = OptionGroup().add_option("dns_opts", value_type="set", elements="str")
 
 OPTION_DNS_SEARCH_DOMAINS = OptionGroup().add_option(
-    "dns_search_domains", type="list", elements="str"
+    "dns_search_domains", value_type="list", elements="str"
 )
 
-OPTION_DOMAINNAME = OptionGroup().add_option("domainname", type="str")
+OPTION_DOMAINNAME = OptionGroup().add_option("domainname", value_type="str")
 
 OPTION_ENVIRONMENT = (
     OptionGroup(preprocess=_preprocess_env)
     .add_option(
-        "env", type="set", ansible_type="dict", elements="str", needs_no_suboptions=True
+        "env",
+        value_type="set",
+        ansible_type="dict",
+        elements="str",
+        needs_no_suboptions=True,
     )
     .add_option(
         "env_file",
-        type="set",
+        value_type="set",
         ansible_type="path",
         elements="str",
         not_a_container_option=True,
@@ -1051,17 +1055,17 @@ OPTION_ENVIRONMENT = (
 
 OPTION_ETC_HOSTS = OptionGroup().add_option(
     "etc_hosts",
-    type="set",
+    value_type="set",
     ansible_type="dict",
     elements="str",
     needs_no_suboptions=True,
 )
 
-OPTION_GROUPS = OptionGroup().add_option("groups", type="set", elements="str")
+OPTION_GROUPS = OptionGroup().add_option("groups", value_type="set", elements="str")
 
 OPTION_HEALTHCHECK = OptionGroup(preprocess=_preprocess_healthcheck).add_option(
     "healthcheck",
-    type="dict",
+    value_type="dict",
     ansible_suboptions=dict(
         test=dict(type="raw"),
         test_cli_compatible=dict(type="bool", default=False),
@@ -1073,69 +1077,71 @@ OPTION_HEALTHCHECK = OptionGroup(preprocess=_preprocess_healthcheck).add_option(
     ),
 )
 
-OPTION_HOSTNAME = OptionGroup().add_option("hostname", type="str")
+OPTION_HOSTNAME = OptionGroup().add_option("hostname", value_type="str")
 
-OPTION_IMAGE = OptionGroup().add_option("image", type="str")
+OPTION_IMAGE = OptionGroup().add_option("image", value_type="str")
 
-OPTION_INIT = OptionGroup().add_option("init", type="bool")
+OPTION_INIT = OptionGroup().add_option("init", value_type="bool")
 
-OPTION_IPC_MODE = OptionGroup().add_option("ipc_mode", type="str")
+OPTION_IPC_MODE = OptionGroup().add_option("ipc_mode", value_type="str")
 
 OPTION_KERNEL_MEMORY = OptionGroup(
     preprocess=partial(_preprocess_convert_to_bytes, name="kernel_memory")
-).add_option("kernel_memory", type="int", ansible_type="str")
+).add_option("kernel_memory", value_type="int", ansible_type="str")
 
 OPTION_LABELS = OptionGroup(preprocess=_preprocess_labels).add_option(
-    "labels", type="dict", needs_no_suboptions=True
+    "labels", value_type="dict", needs_no_suboptions=True
 )
 
 OPTION_LINKS = OptionGroup().add_option(
-    "links", type="set", elements="list", ansible_elements="str"
+    "links", value_type="set", elements="list", ansible_elements="str"
 )
 
 OPTION_LOG_DRIVER_OPTIONS = (
     OptionGroup(
         preprocess=_preprocess_log, ansible_required_by={"log_options": ["log_driver"]}
     )
-    .add_option("log_driver", type="str")
+    .add_option("log_driver", value_type="str")
     .add_option(
         "log_options",
-        type="dict",
+        value_type="dict",
         ansible_aliases=["log_opt"],
         needs_no_suboptions=True,
     )
 )
 
 OPTION_MAC_ADDRESS = OptionGroup(preprocess=_preprocess_mac_address).add_option(
-    "mac_address", type="str"
+    "mac_address", value_type="str"
 )
 
 OPTION_MEMORY = OptionGroup(
     preprocess=partial(_preprocess_convert_to_bytes, name="memory")
-).add_option("memory", type="int", ansible_type="str")
+).add_option("memory", value_type="int", ansible_type="str")
 
 OPTION_MEMORY_RESERVATION = OptionGroup(
     preprocess=partial(_preprocess_convert_to_bytes, name="memory_reservation")
-).add_option("memory_reservation", type="int", ansible_type="str")
+).add_option("memory_reservation", value_type="int", ansible_type="str")
 
 OPTION_MEMORY_SWAP = OptionGroup(
     preprocess=partial(
         _preprocess_convert_to_bytes, name="memory_swap", unlimited_value=-1
     )
-).add_option("memory_swap", type="int", ansible_type="str")
+).add_option("memory_swap", value_type="int", ansible_type="str")
 
-OPTION_MEMORY_SWAPPINESS = OptionGroup().add_option("memory_swappiness", type="int")
+OPTION_MEMORY_SWAPPINESS = OptionGroup().add_option(
+    "memory_swappiness", value_type="int"
+)
 
 OPTION_STOP_TIMEOUT = OptionGroup().add_option(
-    "stop_timeout", type="int", default_comparison="ignore"
+    "stop_timeout", value_type="int", default_comparison="ignore"
 )
 
 OPTION_NETWORK = (
     OptionGroup(preprocess=_preprocess_networks)
-    .add_option("network_mode", type="str")
+    .add_option("network_mode", value_type="str")
     .add_option(
         "networks",
-        type="set",
+        value_type="set",
         elements="dict",
         ansible_suboptions=dict(
             name=dict(type="str", required=True),
@@ -1150,81 +1156,81 @@ OPTION_NETWORK = (
     )
 )
 
-OPTION_OOM_KILLER = OptionGroup().add_option("oom_killer", type="bool")
+OPTION_OOM_KILLER = OptionGroup().add_option("oom_killer", value_type="bool")
 
-OPTION_OOM_SCORE_ADJ = OptionGroup().add_option("oom_score_adj", type="int")
+OPTION_OOM_SCORE_ADJ = OptionGroup().add_option("oom_score_adj", value_type="int")
 
-OPTION_PID_MODE = OptionGroup().add_option("pid_mode", type="str")
+OPTION_PID_MODE = OptionGroup().add_option("pid_mode", value_type="str")
 
-OPTION_PIDS_LIMIT = OptionGroup().add_option("pids_limit", type="int")
+OPTION_PIDS_LIMIT = OptionGroup().add_option("pids_limit", value_type="int")
 
 OPTION_PLATFORM = OptionGroup().add_option(
-    "platform", type="str", compare=_compare_platform
+    "platform", value_type="str", compare=_compare_platform
 )
 
-OPTION_PRIVILEGED = OptionGroup().add_option("privileged", type="bool")
+OPTION_PRIVILEGED = OptionGroup().add_option("privileged", value_type="bool")
 
-OPTION_READ_ONLY = OptionGroup().add_option("read_only", type="bool")
+OPTION_READ_ONLY = OptionGroup().add_option("read_only", value_type="bool")
 
 OPTION_RESTART_POLICY = (
     OptionGroup(ansible_required_by={"restart_retries": ["restart_policy"]})
     .add_option(
         "restart_policy",
-        type="str",
+        value_type="str",
         ansible_choices=["no", "on-failure", "always", "unless-stopped"],
     )
-    .add_option("restart_retries", type="int")
+    .add_option("restart_retries", value_type="int")
 )
 
-OPTION_RUNTIME = OptionGroup().add_option("runtime", type="str")
+OPTION_RUNTIME = OptionGroup().add_option("runtime", value_type="str")
 
 OPTION_SECURITY_OPTS = OptionGroup().add_option(
-    "security_opts", type="set", elements="str"
+    "security_opts", value_type="set", elements="str"
 )
 
 OPTION_SHM_SIZE = OptionGroup(
     preprocess=partial(_preprocess_convert_to_bytes, name="shm_size")
-).add_option("shm_size", type="int", ansible_type="str")
+).add_option("shm_size", value_type="int", ansible_type="str")
 
-OPTION_STOP_SIGNAL = OptionGroup().add_option("stop_signal", type="str")
+OPTION_STOP_SIGNAL = OptionGroup().add_option("stop_signal", value_type="str")
 
 OPTION_STORAGE_OPTS = OptionGroup().add_option(
-    "storage_opts", type="dict", needs_no_suboptions=True
+    "storage_opts", value_type="dict", needs_no_suboptions=True
 )
 
 OPTION_SYSCTLS = OptionGroup(preprocess=_preprocess_sysctls).add_option(
-    "sysctls", type="dict", needs_no_suboptions=True
+    "sysctls", value_type="dict", needs_no_suboptions=True
 )
 
 OPTION_TMPFS = OptionGroup(preprocess=_preprocess_tmpfs).add_option(
-    "tmpfs", type="dict", ansible_type="list", ansible_elements="str"
+    "tmpfs", value_type="dict", ansible_type="list", ansible_elements="str"
 )
 
-OPTION_TTY = OptionGroup().add_option("tty", type="bool")
+OPTION_TTY = OptionGroup().add_option("tty", value_type="bool")
 
 OPTION_ULIMITS = OptionGroup(preprocess=_preprocess_ulimits).add_option(
-    "ulimits", type="set", elements="dict", ansible_elements="str"
+    "ulimits", value_type="set", elements="dict", ansible_elements="str"
 )
 
-OPTION_USER = OptionGroup().add_option("user", type="str")
+OPTION_USER = OptionGroup().add_option("user", value_type="str")
 
-OPTION_USERNS_MODE = OptionGroup().add_option("userns_mode", type="str")
+OPTION_USERNS_MODE = OptionGroup().add_option("userns_mode", value_type="str")
 
-OPTION_UTS = OptionGroup().add_option("uts", type="str")
+OPTION_UTS = OptionGroup().add_option("uts", value_type="str")
 
-OPTION_VOLUME_DRIVER = OptionGroup().add_option("volume_driver", type="str")
+OPTION_VOLUME_DRIVER = OptionGroup().add_option("volume_driver", value_type="str")
 
 OPTION_VOLUMES_FROM = OptionGroup().add_option(
-    "volumes_from", type="set", elements="str"
+    "volumes_from", value_type="set", elements="str"
 )
 
-OPTION_WORKING_DIR = OptionGroup().add_option("working_dir", type="str")
+OPTION_WORKING_DIR = OptionGroup().add_option("working_dir", value_type="str")
 
 OPTION_MOUNTS_VOLUMES = (
     OptionGroup(preprocess=_preprocess_mounts)
     .add_option(
         "mounts",
-        type="set",
+        value_type="set",
         elements="dict",
         ansible_suboptions=dict(
             target=dict(type="str", required=True),
@@ -1256,10 +1262,10 @@ OPTION_MOUNTS_VOLUMES = (
             tmpfs_options=dict(type="list", elements="dict"),
         ),
     )
-    .add_option("volumes", type="set", elements="str")
+    .add_option("volumes", value_type="set", elements="str")
     .add_option(
         "volume_binds",
-        type="set",
+        value_type="set",
         elements="str",
         not_an_ansible_option=True,
         copy_comparison_from="volumes",
@@ -1270,21 +1276,21 @@ OPTION_PORTS = (
     OptionGroup(preprocess=_preprocess_ports)
     .add_option(
         "exposed_ports",
-        type="set",
+        value_type="set",
         elements="str",
         ansible_aliases=["exposed", "expose"],
     )
-    .add_option("publish_all_ports", type="bool")
+    .add_option("publish_all_ports", value_type="bool")
     .add_option(
         "published_ports",
-        type="dict",
+        value_type="dict",
         ansible_type="list",
         ansible_elements="str",
         ansible_aliases=["ports"],
     )
     .add_option(
         "ports",
-        type="set",
+        value_type="set",
         elements="str",
         not_an_ansible_option=True,
         default_comparison="ignore",

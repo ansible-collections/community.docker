@@ -80,7 +80,7 @@ def load_general_config(config_path=None):
         return {}
 
     try:
-        with open(config_file) as f:
+        with open(config_file, "rt", encoding="utf-8") as f:
             return json.load(f)
     except (IOError, ValueError) as e:
         # In the case of a legacy `.dockercfg` file, we will not

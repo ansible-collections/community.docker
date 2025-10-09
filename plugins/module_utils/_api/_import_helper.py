@@ -86,13 +86,13 @@ except ImportError:
 
 def fail_on_missing_imports():
     if REQUESTS_IMPORT_ERROR is not None:
-        from .errors import MissingRequirementException
+        from .errors import MissingRequirementException  # pylint: disable=cyclic-import
 
         raise MissingRequirementException(
             "You have to install requests", "requests", REQUESTS_IMPORT_ERROR
         )
     if URLLIB3_IMPORT_ERROR is not None:
-        from .errors import MissingRequirementException
+        from .errors import MissingRequirementException  # pylint: disable=cyclic-import
 
         raise MissingRequirementException(
             "You have to install urllib3", "urllib3", URLLIB3_IMPORT_ERROR

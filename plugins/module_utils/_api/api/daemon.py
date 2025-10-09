@@ -33,7 +33,7 @@ class DaemonApiMixin(object):
                 If the server returns an error.
         """
         url = self._url("/system/df")
-        return self._result(self._get(url), True)
+        return self._result(self._get(url), get_json=True)
 
     def info(self):
         """
@@ -47,7 +47,7 @@ class DaemonApiMixin(object):
             :py:class:`docker.errors.APIError`
                 If the server returns an error.
         """
-        return self._result(self._get(self._url("/info")), True)
+        return self._result(self._get(self._url("/info")), get_json=True)
 
     def login(
         self,
@@ -108,7 +108,7 @@ class DaemonApiMixin(object):
         response = self._post_json(self._url("/auth"), data=req_data)
         if response.status_code == 200:
             self._auth_configs.add_auth(registry or auth.INDEX_NAME, req_data)
-        return self._result(response, json=True)
+        return self._result(response, get_json=True)
 
     def ping(self):
         """
@@ -137,4 +137,4 @@ class DaemonApiMixin(object):
                 If the server returns an error.
         """
         url = self._url("/version", versioned_api=api_version)
-        return self._result(self._get(url), json=True)
+        return self._result(self._get(url), get_json=True)

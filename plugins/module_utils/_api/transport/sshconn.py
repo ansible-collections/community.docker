@@ -222,7 +222,7 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
         ssh_config_file = os.path.expanduser("~/.ssh/config")
         if os.path.exists(ssh_config_file):
             conf = paramiko.SSHConfig()
-            with open(ssh_config_file) as f:
+            with open(ssh_config_file, "rt", encoding="utf-8") as f:
                 conf.parse(f)
             host_config = conf.lookup(base_url.hostname)
             if "proxycommand" in host_config:

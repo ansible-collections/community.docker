@@ -119,12 +119,12 @@ _DEFAULT_IP_REPLACEMENT_STRING = (
 )
 
 
-def _get_ansible_type(type):
-    if type == "set":
+def _get_ansible_type(our_type):
+    if our_type == "set":
         return "list"
-    if type not in ("list", "dict", "bool", "int", "float", "str"):
-        raise Exception(f'Invalid type "{type}"')
-    return type
+    if our_type not in ("list", "dict", "bool", "int", "float", "str"):
+        raise Exception(f'Invalid type "{our_type}"')
+    return our_type
 
 
 _SENTRY = object()
@@ -232,8 +232,8 @@ class DockerAPIEngineDriver(EngineDriver):
     def inspect_image_by_name(self, client, repository, tag):
         return client.find_image(repository, tag)
 
-    def pull_image(self, client, repository, tag, platform=None):
-        return client.pull_image(repository, tag, platform=platform)
+    def pull_image(self, client, repository, tag, image_platform=None):
+        return client.pull_image(repository, tag, image_platform=image_platform)
 
     def pause_container(self, client, container_id):
         client.post_call("/containers/{0}/pause", container_id)
@@ -892,8 +892,8 @@ def _preprocess_etc_hosts(module, client, api_version, value):
     if value is None:
         return value
     results = []
-    for key, value in value.items():
-        results.append(f"{key}:{value}")
+    for key, val in value.items():
+        results.append(f"{key}:{val}")
     return results
 
 

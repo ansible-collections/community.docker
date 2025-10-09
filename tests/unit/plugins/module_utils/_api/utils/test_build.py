@@ -37,7 +37,7 @@ def make_tree(dirs, files):
         os.makedirs(os.path.join(base, path))
 
     for path in files:
-        with open(os.path.join(base, path), "w") as f:
+        with open(os.path.join(base, path), "wt", encoding="utf-8") as f:
             f.write("content")
 
     return base
@@ -440,7 +440,7 @@ class TarTest(unittest.TestCase):
         base = tempfile.mkdtemp()
         full_path = os.path.join(base, "foo")
         self.addCleanup(shutil.rmtree, base)
-        with open(full_path, "w") as f:
+        with open(full_path, "wt", encoding="utf-8") as f:
             f.write("content")
         os.chmod(full_path, 0o222)
         with pytest.raises(IOError) as ei:
@@ -452,7 +452,7 @@ class TarTest(unittest.TestCase):
     def test_tar_with_file_symlinks(self):
         base = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, base)
-        with open(os.path.join(base, "foo"), "w") as f:
+        with open(os.path.join(base, "foo"), "wt", encoding="utf-8") as f:
             f.write("content")
         os.makedirs(os.path.join(base, "bar"))
         os.symlink("../foo", os.path.join(base, "bar/foo"))
@@ -500,7 +500,7 @@ class TarTest(unittest.TestCase):
         base = tempfile.mkdtemp()
         filename = os.path.join(base, "th.txt")
         self.addCleanup(shutil.rmtree, base)
-        with open(filename, "w") as f:
+        with open(filename, "wt", encoding="utf-8") as f:
             f.write("Invisible Full Moon")
         os.utime(filename, (12345, -3600.0))
         with tar(base) as archive:

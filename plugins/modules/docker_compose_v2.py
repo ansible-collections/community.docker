@@ -499,6 +499,8 @@ class ServicesManager(BaseComposeManager):
             result = self.cmd_restart()
         elif self.state == "absent":
             result = self.cmd_down()
+        else:
+            raise AssertionError("Unexpected state")
 
         result["containers"] = self.list_containers()
         result["images"] = self.list_images()

@@ -56,7 +56,7 @@ class DockerSocketHandlerBase(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, tb):
+    def __exit__(self, type_, value, tb):
         self._selector.close()
 
     def set_block_done_callback(self, block_done_callback):
@@ -204,9 +204,9 @@ class DockerSocketHandlerBase(object):
             self.select()
         return b"".join(stdout), b"".join(stderr)
 
-    def write(self, str):
-        self._write_buffer += str
-        if len(self._write_buffer) == len(str):
+    def write(self, str_to_write):
+        self._write_buffer += str_to_write
+        if len(self._write_buffer) == len(str_to_write):
             self._write()
 
 

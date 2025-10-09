@@ -570,7 +570,7 @@ class ImageManager(DockerBaseClass):
                 self.results["changed"] = True
                 if not self.check_mode:
                     self.results["image"], dummy = self.client.pull_image(
-                        self.name, tag=self.tag, platform=self.pull_platform
+                        self.name, tag=self.tag, image_platform=self.pull_platform
                     )
             elif self.source == "local":
                 if image is None:
@@ -891,7 +891,7 @@ class ImageManager(DockerBaseClass):
             dockerignore = os.path.join(self.build_path, ".dockerignore")
             exclude = None
             if os.path.exists(dockerignore):
-                with open(dockerignore) as f:
+                with open(dockerignore, "rt", encoding="utf-8") as f:
                     exclude = list(
                         filter(
                             lambda x: x != "" and x[0] != "#",

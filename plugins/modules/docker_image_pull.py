@@ -181,7 +181,7 @@ class ImagePuller(DockerBaseClass):
             results["diff"]["after"] = image_info(dict(Id="unknown"))
         else:
             results["image"], not_changed = self.client.pull_image(
-                self.name, tag=self.tag, platform=self.platform
+                self.name, tag=self.tag, image_platform=self.platform
             )
             results["changed"] = not not_changed
             results["diff"]["after"] = image_info(results["image"])

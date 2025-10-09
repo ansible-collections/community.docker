@@ -17,7 +17,7 @@ from collections.abc import Mapping, Sequence
 
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE, BOOLEANS_TRUE
-from ansible_collections.community.docker.plugins.module_utils._util import (  # noqa: F401, pylint: disable=unused-import
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DEFAULT_DOCKER_HOST,
     DEFAULT_TIMEOUT_SECONDS,
     DEFAULT_TLS,
@@ -101,14 +101,14 @@ if not HAS_DOCKER_PY:
 
     # No Docker SDK for Python. Create a place holder client to allow
     # instantiation of AnsibleModule and proper error handing
-    class Client(object):  # noqa: F811
+    class Client(object):  # noqa: F811, pylint: disable=function-redefined
         def __init__(self, **kwargs):
             pass
 
-    class APIError(Exception):  # noqa: F811
+    class APIError(Exception):  # noqa: F811, pylint: disable=function-redefined
         pass
 
-    class NotFound(Exception):  # noqa: F811
+    class NotFound(Exception):  # noqa: F811, pylint: disable=function-redefined
         pass
 
 
@@ -133,43 +133,45 @@ def _get_tls_config(fail_function, **kwargs):
         fail_function(f"TLS config error: {exc}")
 
 
-def is_using_tls(auth):
-    return auth["tls_verify"] or auth["tls"]
+def is_using_tls(auth_data):
+    return auth_data["tls_verify"] or auth_data["tls"]
 
 
-def get_connect_params(auth, fail_function):
-    if is_using_tls(auth):
-        auth["docker_host"] = auth["docker_host"].replace("tcp://", "https://")
+def get_connect_params(auth_data, fail_function):
+    if is_using_tls(auth_data):
+        auth_data["docker_host"] = auth_data["docker_host"].replace(
+            "tcp://", "https://"
+        )
 
     result = dict(
-        base_url=auth["docker_host"],
-        version=auth["api_version"],
-        timeout=auth["timeout"],
+        base_url=auth_data["docker_host"],
+        version=auth_data["api_version"],
+        timeout=auth_data["timeout"],
     )
 
-    if auth["tls_verify"]:
+    if auth_data["tls_verify"]:
         # TLS with verification
         tls_config = dict(
             verify=True,
-            assert_hostname=auth["tls_hostname"],
+            assert_hostname=auth_data["tls_hostname"],
             fail_function=fail_function,
         )
-        if auth["cert_path"] and auth["key_path"]:
-            tls_config["client_cert"] = (auth["cert_path"], auth["key_path"])
-        if auth["cacert_path"]:
-            tls_config["ca_cert"] = auth["cacert_path"]
+        if auth_data["cert_path"] and auth_data["key_path"]:
+            tls_config["client_cert"] = (auth_data["cert_path"], auth_data["key_path"])
+        if auth_data["cacert_path"]:
+            tls_config["ca_cert"] = auth_data["cacert_path"]
         result["tls"] = _get_tls_config(**tls_config)
-    elif auth["tls"]:
+    elif auth_data["tls"]:
         # TLS without verification
         tls_config = dict(
             verify=False,
             fail_function=fail_function,
         )
-        if auth["cert_path"] and auth["key_path"]:
-            tls_config["client_cert"] = (auth["cert_path"], auth["key_path"])
+        if auth_data["cert_path"] and auth_data["key_path"]:
+            tls_config["client_cert"] = (auth_data["cert_path"], auth_data["key_path"])
         result["tls"] = _get_tls_config(**tls_config)
 
-    if auth.get("use_ssh_client"):
+    if auth_data.get("use_ssh_client"):
         if LooseVersion(docker_version) < LooseVersion("4.4.0"):
             fail_function(
                 "use_ssh_client=True requires Docker SDK for Python 4.4.0 or newer"
@@ -258,16 +260,18 @@ class AnsibleDockerClientBase(Client):
         pass
 
     @staticmethod
-    def _get_value(param_name, param_value, env_variable, default_value, type="str"):
+    def _get_value(
+        param_name, param_value, env_variable, default_value, value_type="str"
+    ):
         if param_value is not None:
             # take module parameter value
-            if type == "bool":
+            if value_type == "bool":
                 if param_value in BOOLEANS_TRUE:
                     return True
                 if param_value in BOOLEANS_FALSE:
                     return False
                 return bool(param_value)
-            if type == "int":
+            if value_type == "int":
                 return int(param_value)
             return param_value
 
@@ -281,13 +285,13 @@ class AnsibleDockerClientBase(Client):
                     return os.path.join(env_value, "ca.pem")
                 if param_name == "key_path":
                     return os.path.join(env_value, "key.pem")
-                if type == "bool":
+                if value_type == "bool":
                     if env_value in BOOLEANS_TRUE:
                         return True
                     if env_value in BOOLEANS_FALSE:
                         return False
                     return bool(env_value)
-                if type == "int":
+                if value_type == "int":
                     return int(env_value)
                 return env_value
 
@@ -317,50 +321,66 @@ class AnsibleDockerClientBase(Client):
                 params["docker_host"],
                 "DOCKER_HOST",
                 DEFAULT_DOCKER_HOST,
-                type="str",
+                value_type="str",
             ),
             tls_hostname=self._get_value(
                 "tls_hostname",
                 params["tls_hostname"],
                 "DOCKER_TLS_HOSTNAME",
                 None,
-                type="str",
+                value_type="str",
             ),
             api_version=self._get_value(
                 "api_version",
                 params["api_version"],
                 "DOCKER_API_VERSION",
                 "auto",
-                type="str",
+                value_type="str",
             ),
             cacert_path=self._get_value(
-                "cacert_path", params["ca_path"], "DOCKER_CERT_PATH", None, type="str"
+                "cacert_path",
+                params["ca_path"],
+                "DOCKER_CERT_PATH",
+                None,
+                value_type="str",
             ),
             cert_path=self._get_value(
-                "cert_path", params["client_cert"], "DOCKER_CERT_PATH", None, type="str"
+                "cert_path",
+                params["client_cert"],
+                "DOCKER_CERT_PATH",
+                None,
+                value_type="str",
             ),
             key_path=self._get_value(
-                "key_path", params["client_key"], "DOCKER_CERT_PATH", None, type="str"
+                "key_path",
+                params["client_key"],
+                "DOCKER_CERT_PATH",
+                None,
+                value_type="str",
             ),
             tls=self._get_value(
-                "tls", params["tls"], "DOCKER_TLS", DEFAULT_TLS, type="bool"
+                "tls", params["tls"], "DOCKER_TLS", DEFAULT_TLS, value_type="bool"
             ),
             tls_verify=self._get_value(
                 "validate_certs",
                 params["validate_certs"],
                 "DOCKER_TLS_VERIFY",
                 DEFAULT_TLS_VERIFY,
-                type="bool",
+                value_type="bool",
             ),
             timeout=self._get_value(
                 "timeout",
                 params["timeout"],
                 "DOCKER_TIMEOUT",
                 DEFAULT_TIMEOUT_SECONDS,
-                type="int",
+                value_type="int",
             ),
             use_ssh_client=self._get_value(
-                "use_ssh_client", params["use_ssh_client"], None, False, type="bool"
+                "use_ssh_client",
+                params["use_ssh_client"],
+                None,
+                False,
+                value_type="bool",
             ),
         )
 
@@ -561,7 +581,7 @@ class AnsibleDockerClientBase(Client):
                     break
         return images
 
-    def pull_image(self, name, tag="latest", platform=None):
+    def pull_image(self, name, tag="latest", image_platform=None):
         """
         Pull an image
         """
@@ -570,8 +590,8 @@ class AnsibleDockerClientBase(Client):
             stream=True,
             decode=True,
         )
-        if platform is not None:
-            kwargs["platform"] = platform
+        if image_platform is not None:
+            kwargs["platform"] = image_platform
         self.log(f"Pulling image {name}:{tag}")
         old_tag = self.find_image(name, tag)
         try:
@@ -606,7 +626,7 @@ class AnsibleDockerClientBase(Client):
                         self._url("/distribution/{0}/json", image),
                         headers={"X-Registry-Auth": header},
                     ),
-                    json=True,
+                    get_json=True,
                 )
         return super(AnsibleDockerClientBase, self).inspect_distribution(
             image, **kwargs

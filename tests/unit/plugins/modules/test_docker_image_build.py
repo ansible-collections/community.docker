@@ -14,7 +14,7 @@ from ansible_collections.community.docker.plugins.modules.docker_image_build imp
 
 
 @pytest.mark.parametrize(
-    "input, expected",
+    "value, expected",
     [
         ("", ""),
         (" ", '" "'),
@@ -23,5 +23,5 @@ from ansible_collections.community.docker.plugins.modules.docker_image_build imp
         ('\rhello, "hi" !\n', '"\rhello, ""hi"" !\n"'),
     ],
 )
-def test__quote_csv(input, expected):
-    assert _quote_csv(input) == expected
+def test__quote_csv(value, expected):
+    assert _quote_csv(value) == expected

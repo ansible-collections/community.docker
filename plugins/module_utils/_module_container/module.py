@@ -70,6 +70,7 @@ class Container(DockerBaseClass):
 
 class ContainerManager(DockerBaseClass):
     def __init__(self, module, engine_driver, client, active_options):
+        super().__init__()
         self.module = module
         self.engine_driver = engine_driver
         self.client = client
@@ -569,7 +570,7 @@ class ContainerManager(DockerBaseClass):
                         self.client,
                         repository,
                         tag,
-                        platform=self.module.params["platform"],
+                        image_platform=self.module.params["platform"],
                     )
                     if alreadyToLatest:
                         self.results["changed"] = False

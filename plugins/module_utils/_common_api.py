@@ -46,7 +46,7 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.utils 
     convert_filters,
     parse_repository_tag,
 )
-from ansible_collections.community.docker.plugins.module_utils._util import (  # noqa: F401, pylint: disable=unused-import
+from ansible_collections.community.docker.plugins.module_utils._util import (
     DEFAULT_DOCKER_HOST,
     DEFAULT_TIMEOUT_SECONDS,
     DEFAULT_TLS,
@@ -151,16 +151,18 @@ class AnsibleDockerClientBase(Client):
         pass
 
     @staticmethod
-    def _get_value(param_name, param_value, env_variable, default_value, type="str"):
+    def _get_value(
+        param_name, param_value, env_variable, default_value, value_type="str"
+    ):
         if param_value is not None:
             # take module parameter value
-            if type == "bool":
+            if value_type == "bool":
                 if param_value in BOOLEANS_TRUE:
                     return True
                 if param_value in BOOLEANS_FALSE:
                     return False
                 return bool(param_value)
-            if type == "int":
+            if value_type == "int":
                 return int(param_value)
             return param_value
 
@@ -174,13 +176,13 @@ class AnsibleDockerClientBase(Client):
                     return os.path.join(env_value, "ca.pem")
                 if param_name == "key_path":
                     return os.path.join(env_value, "key.pem")
-                if type == "bool":
+                if value_type == "bool":
                     if env_value in BOOLEANS_TRUE:
                         return True
                     if env_value in BOOLEANS_FALSE:
                         return False
                     return bool(env_value)
-                if type == "int":
+                if value_type == "int":
                     return int(env_value)
                 return env_value
 
@@ -210,50 +212,66 @@ class AnsibleDockerClientBase(Client):
                 params["docker_host"],
                 "DOCKER_HOST",
                 DEFAULT_DOCKER_HOST,
-                type="str",
+                value_type="str",
             ),
             tls_hostname=self._get_value(
                 "tls_hostname",
                 params["tls_hostname"],
                 "DOCKER_TLS_HOSTNAME",
                 None,
-                type="str",
+                value_type="str",
             ),
             api_version=self._get_value(
                 "api_version",
                 params["api_version"],
                 "DOCKER_API_VERSION",
                 "auto",
-                type="str",
+                value_type="str",
             ),
             cacert_path=self._get_value(
-                "cacert_path", params["ca_path"], "DOCKER_CERT_PATH", None, type="str"
+                "cacert_path",
+                params["ca_path"],
+                "DOCKER_CERT_PATH",
+                None,
+                value_type="str",
             ),
             cert_path=self._get_value(
-                "cert_path", params["client_cert"], "DOCKER_CERT_PATH", None, type="str"
+                "cert_path",
+                params["client_cert"],
+                "DOCKER_CERT_PATH",
+                None,
+                value_type="str",
             ),
             key_path=self._get_value(
-                "key_path", params["client_key"], "DOCKER_CERT_PATH", None, type="str"
+                "key_path",
+                params["client_key"],
+                "DOCKER_CERT_PATH",
+                None,
+                value_type="str",
             ),
             tls=self._get_value(
-                "tls", params["tls"], "DOCKER_TLS", DEFAULT_TLS, type="bool"
+                "tls", params["tls"], "DOCKER_TLS", DEFAULT_TLS, value_type="bool"
             ),
             tls_verify=self._get_value(
                 "validate_certs",
                 params["validate_certs"],
                 "DOCKER_TLS_VERIFY",
                 DEFAULT_TLS_VERIFY,
-                type="bool",
+                value_type="bool",
             ),
             timeout=self._get_value(
                 "timeout",
                 params["timeout"],
                 "DOCKER_TIMEOUT",
                 DEFAULT_TIMEOUT_SECONDS,
-                type="int",
+                value_type="int",
             ),
             use_ssh_client=self._get_value(
-                "use_ssh_client", params["use_ssh_client"], None, False, type="bool"
+                "use_ssh_client",
+                params["use_ssh_client"],
+                None,
+                False,
+                value_type="bool",
             ),
         )
 
@@ -477,7 +495,7 @@ class AnsibleDockerClientBase(Client):
         except Exception as exc:
             self.fail(f"Error inspecting image ID {image_id} - {exc}")
 
-    def pull_image(self, name, tag="latest", platform=None):
+    def pull_image(self, name, tag="latest", image_platform=None):
         """
         Pull an image
         """
@@ -490,8 +508,8 @@ class AnsibleDockerClientBase(Client):
                 "tag": tag or image_tag or "latest",
                 "fromImage": repository,
             }
-            if platform is not None:
-                params["platform"] = platform
+            if image_platform is not None:
+                params["platform"] = image_platform
 
             headers = {}
             header = auth.get_config_header(self, registry)

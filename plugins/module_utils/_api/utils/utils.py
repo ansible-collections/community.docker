@@ -452,7 +452,7 @@ def parse_env_file(env_file):
     """
     environment = {}
 
-    with open(env_file, "r") as f:
+    with open(env_file, "rt", encoding="utf-8") as f:
         for line in f:
 
             if line[0] == "#":

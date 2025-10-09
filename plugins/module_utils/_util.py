@@ -111,7 +111,7 @@ def log_debug(msg, pretty_print=False):
 
     If ``pretty_print=True``, the message will be pretty-printed as JSON.
     """
-    with open("docker.log", "a") as log_file:
+    with open("docker.log", "at", encoding="utf-8") as log_file:
         if pretty_print:
             log_file.write(
                 json.dumps(msg, sort_keys=True, indent=4, separators=(",", ": "))

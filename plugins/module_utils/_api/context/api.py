@@ -151,7 +151,7 @@ class ContextAPI(object):
                 if filename == METAFILE:
                     filepath = os.path.join(dirname, filename)
                     try:
-                        with open(filepath, "r") as f:
+                        with open(filepath, "rt", encoding="utf-8") as f:
                             data = json.load(f)
                         name = data["Name"]
                         if name == "default":

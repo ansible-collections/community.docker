@@ -504,7 +504,7 @@ class SwarmManager(DockerBaseClass):
             unlock_key = self.get_unlock_key()
             self.swarm_info.update(unlock_key)
         except APIError:
-            return
+            pass
 
     def get_unlock_key(self):
         default = {"UnlockKey": None}

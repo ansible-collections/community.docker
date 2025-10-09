@@ -166,7 +166,7 @@ class AuthConfig(dict):
             if not config_file:
                 return cls({}, credstore_env)
             try:
-                with open(config_file) as f:
+                with open(config_file, "rt", encoding="utf-8") as f:
                     config_dict = json.load(f)
             except (IOError, KeyError, ValueError) as e:
                 # Likely missing new Docker config file or it is in an
@@ -351,7 +351,7 @@ def _load_legacy_config(config_file):
     log.debug("Attempting to parse legacy auth file format")
     try:
         data = []
-        with open(config_file) as f:
+        with open(config_file, "rt", encoding="utf-8") as f:
             for line in f.readlines():
                 data.append(line.strip().split(" = ")[1])
             if len(data) < 2:

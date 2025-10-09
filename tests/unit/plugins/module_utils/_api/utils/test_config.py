@@ -96,7 +96,7 @@ class LoadConfigTest(unittest.TestCase):
             "HttpHeaders": {"Name": "Spike", "Surname": "Spiegel"},
         }
 
-        with open(dockercfg_path, "w") as f:
+        with open(dockercfg_path, "wt", encoding="utf-8") as f:
             json.dump(config_data, f)
 
         cfg = config.load_general_config(dockercfg_path)
@@ -108,7 +108,7 @@ class LoadConfigTest(unittest.TestCase):
         self.addCleanup(shutil.rmtree, folder)
         dockercfg_path = os.path.join(folder, "config.json")
         config_data = {"detachKeys": "ctrl-q, ctrl-u, ctrl-i"}
-        with open(dockercfg_path, "w") as f:
+        with open(dockercfg_path, "wt", encoding="utf-8") as f:
             json.dump(config_data, f)
 
         cfg = config.load_general_config(dockercfg_path)
@@ -119,7 +119,7 @@ class LoadConfigTest(unittest.TestCase):
         self.addCleanup(shutil.rmtree, folder)
         dockercfg_path = os.path.join(folder, "config.json")
         config_data = {"detachKeys": "ctrl-q, ctrl-u, ctrl-i"}
-        with open(dockercfg_path, "w") as f:
+        with open(dockercfg_path, "wt", encoding="utf-8") as f:
             json.dump(config_data, f)
 
         with mock.patch.dict(os.environ, {"DOCKER_CONFIG": folder}):

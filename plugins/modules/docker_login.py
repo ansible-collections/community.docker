@@ -161,7 +161,7 @@ class DockerFileStore(object):
 
         try:
             # Attempt to read the existing config.
-            with open(self._config_path, "r") as f:
+            with open(self._config_path, "rt", encoding="utf-8") as f:
                 config = json.load(f)
         except (ValueError, IOError):
             # No config found or an invalid config found so we'll ignore it.
@@ -197,9 +197,9 @@ class DockerFileStore(object):
         Write config back out to disk.
         """
         # Make sure directory exists
-        dir = os.path.dirname(self._config_path)
-        if not os.path.exists(dir):
-            os.makedirs(dir)
+        directory = os.path.dirname(self._config_path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         # Write config; make sure it has permissions 0x600
         content = json.dumps(self._config, indent=4, sort_keys=True).encode("utf-8")
         f = os.open(self._config_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
@@ -214,13 +214,13 @@ class DockerFileStore(object):
         """
 
         b64auth = base64.b64encode(to_bytes(username) + b":" + to_bytes(password))
-        auth = to_text(b64auth)
+        tauth = to_text(b64auth)
 
         # build up the auth structure
         if "auths" not in self._config:
             self._config["auths"] = dict()
 
-        self._config["auths"][server] = dict(auth=auth)
+        self._config["auths"][server] = dict(auth=tauth)
 
         self._write()
 
@@ -294,7 +294,7 @@ class LoginManager(DockerBaseClass):
             self.client._auth_configs.add_auth(
                 self.registry_url or auth.INDEX_NAME, req_data
             )
-        return self.client._result(response, json=True)
+        return self.client._result(response, get_json=True)
 
     def login(self):
         """
