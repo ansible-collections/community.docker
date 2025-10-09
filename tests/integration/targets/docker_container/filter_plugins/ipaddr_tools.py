@@ -11,7 +11,7 @@ def _normalize_ipaddr(ipaddr):
     return ipaddress.ip_address(ipaddr).compressed
 
 
-class FilterModule(object):
+class FilterModule:
     """ IP address and network manipulation filters """
 
     def filters(self):

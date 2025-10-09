@@ -64,7 +64,7 @@ class Connection(ConnectionBase):
     has_pipelining = False
 
     def __init__(self, *args, **kwargs):
-        super(Connection, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.cwd = None
 
     def _connect(self):
@@ -83,7 +83,7 @@ class Connection(ConnectionBase):
         return self
 
     def exec_command(self, cmd, in_data=None, sudoable=True):
-        super(Connection, self).exec_command(cmd, in_data=in_data, sudoable=sudoable)
+        super().exec_command(cmd, in_data=in_data, sudoable=sudoable)
 
         display.debug("in nsenter.exec_command()")
 
@@ -232,7 +232,7 @@ class Connection(ConnectionBase):
         return (p.returncode, stdout, stderr)
 
     def put_file(self, in_path, out_path):
-        super(Connection, self).put_file(in_path, out_path)
+        super().put_file(in_path, out_path)
 
         in_path = unfrackpath(in_path, basedir=self.cwd)
         out_path = unfrackpath(out_path, basedir=self.cwd)
@@ -248,7 +248,7 @@ class Connection(ConnectionBase):
             raise AnsibleError(f"failed to transfer file to {out_path}: {e}")
 
     def fetch_file(self, in_path, out_path):
-        super(Connection, self).fetch_file(in_path, out_path)
+        super().fetch_file(in_path, out_path)
 
         in_path = unfrackpath(in_path, basedir=self.cwd)
         out_path = unfrackpath(out_path, basedir=self.cwd)

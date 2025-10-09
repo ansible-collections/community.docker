@@ -327,7 +327,7 @@ def _quote_csv(text):
 
 class ImageBuilder(DockerBaseClass):
     def __init__(self, client):
-        super(ImageBuilder, self).__init__()
+        super().__init__()
         self.client = client
         self.check_mode = self.client.check_mode
         parameters = self.client.module.params

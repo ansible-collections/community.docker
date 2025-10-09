@@ -25,7 +25,7 @@ from ansible_collections.community.docker.plugins.module_utils._socket_helper im
 PARAMIKO_POLL_TIMEOUT = 0.01  # 10 milliseconds
 
 
-class DockerSocketHandlerBase(object):
+class DockerSocketHandlerBase:
     def __init__(self, sock, selectors, log=None):
         make_unblocking(sock)
 
@@ -212,4 +212,4 @@ class DockerSocketHandlerBase(object):
 
 class DockerSocketHandlerModule(DockerSocketHandlerBase):
     def __init__(self, sock, module, selectors):
-        super(DockerSocketHandlerModule, self).__init__(sock, selectors, module.debug)
+        super().__init__(sock, selectors, module.debug)

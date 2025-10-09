@@ -97,7 +97,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 class ImagePusher(DockerBaseClass):
     def __init__(self, client):
-        super(ImagePusher, self).__init__()
+        super().__init__()
 
         self.client = client
         self.check_mode = self.client.check_mode

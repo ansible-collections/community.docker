@@ -1127,7 +1127,7 @@ def have_networks_changed(new_networks, old_networks):
 
 class DockerService(DockerBaseClass):
     def __init__(self, docker_api_version, docker_py_version):
-        super(DockerService, self).__init__()
+        super().__init__()
         self.image = ""
         self.command = None
         self.args = None
@@ -2174,7 +2174,7 @@ class DockerService(DockerBaseClass):
         return service
 
 
-class DockerServiceManager(object):
+class DockerServiceManager:
 
     def __init__(self, client):
         self.client = client

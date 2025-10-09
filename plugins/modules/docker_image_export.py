@@ -122,7 +122,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 class ImageExportManager(DockerBaseClass):
     def __init__(self, client):
-        super(ImageExportManager, self).__init__()
+        super().__init__()
 
         self.client = client
         parameters = self.client.module.params

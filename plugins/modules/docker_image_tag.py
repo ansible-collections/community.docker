@@ -142,7 +142,7 @@ def image_info(name, tag, image):
 
 class ImageTagger(DockerBaseClass):
     def __init__(self, client):
-        super(ImageTagger, self).__init__()
+        super().__init__()
 
         self.client = client
         parameters = self.client.module.params

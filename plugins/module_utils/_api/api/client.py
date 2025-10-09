@@ -115,7 +115,7 @@ class APIClient(_Session, DaemonApiMixin):
         use_ssh_client=False,
         max_pool_size=DEFAULT_MAX_POOL_SIZE,
     ):
-        super(APIClient, self).__init__()
+        super().__init__()
 
         fail_on_missing_imports()
 
@@ -493,7 +493,7 @@ class APIClient(_Session, DaemonApiMixin):
 
     def get_adapter(self, url):
         try:
-            return super(APIClient, self).get_adapter(url)
+            return super().get_adapter(url)
         except _InvalidSchema as e:
             if self._custom_adapter:
                 return self._custom_adapter

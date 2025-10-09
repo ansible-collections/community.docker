@@ -137,7 +137,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 class TaskParameters(DockerBaseClass):
     def __init__(self, client):
-        super(TaskParameters, self).__init__()
+        super().__init__()
         self.client = client
 
         self.volume_name = None
@@ -151,7 +151,7 @@ class TaskParameters(DockerBaseClass):
             setattr(self, key, value)
 
 
-class DockerVolumeManager(object):
+class DockerVolumeManager:
 
     def __init__(self, client):
         self.client = client

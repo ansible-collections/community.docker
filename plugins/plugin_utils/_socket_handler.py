@@ -16,6 +16,6 @@ from ansible_collections.community.docker.plugins.module_utils._socket_handler i
 
 class DockerSocketHandler(DockerSocketHandlerBase):
     def __init__(self, display, sock, log=None, container=None):
-        super(DockerSocketHandler, self).__init__(
+        super().__init__(
             sock, selectors, log=lambda msg: display.vvvv(msg, host=container)
         )

@@ -92,7 +92,7 @@ def create_get_option(options, default=False):
     return get_option
 
 
-class FakeClient(object):
+class FakeClient:
     def __init__(self, *hosts):
         self.get_results = {}
         list_reply = []

@@ -22,9 +22,9 @@ from .npipesocket import NpipeSocket
 RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
 
 
-class NpipeHTTPConnection(urllib3_connection.HTTPConnection, object):
+class NpipeHTTPConnection(urllib3_connection.HTTPConnection):
     def __init__(self, npipe_path, timeout=60):
-        super(NpipeHTTPConnection, self).__init__("localhost", timeout=timeout)
+        super().__init__("localhost", timeout=timeout)
         self.npipe_path = npipe_path
         self.timeout = timeout
 
@@ -37,9 +37,7 @@ class NpipeHTTPConnection(urllib3_connection.HTTPConnection, object):
 
 class NpipeHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
     def __init__(self, npipe_path, timeout=60, maxsize=10):
-        super(NpipeHTTPConnectionPool, self).__init__(
-            "localhost", timeout=timeout, maxsize=maxsize
-        )
+        super().__init__("localhost", timeout=timeout, maxsize=maxsize)
         self.npipe_path = npipe_path
         self.timeout = timeout
 
@@ -90,7 +88,7 @@ class NpipeHTTPAdapter(BaseHTTPAdapter):
         self.pools = RecentlyUsedContainer(
             pool_connections, dispose_func=lambda p: p.close()
         )
-        super(NpipeHTTPAdapter, self).__init__()
+        super().__init__()
 
     def get_connection(self, url, proxies=None):
         with self.pools.lock:

@@ -61,7 +61,7 @@ class DockerException(Exception):
     pass
 
 
-class AnsibleDockerClientBase(object):
+class AnsibleDockerClientBase:
     def __init__(
         self, common_args, min_docker_api_version=None, needs_api_version=True
     ):
@@ -357,7 +357,7 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
         self.diff = self.module._diff
 
         common_args = dict((k, self.module.params[k]) for k in DOCKER_COMMON_ARGS)
-        super(AnsibleModuleDockerClient, self).__init__(
+        super().__init__(
             common_args,
             min_docker_api_version=min_docker_api_version,
             needs_api_version=needs_api_version,

@@ -26,7 +26,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 class Container(DockerBaseClass):
     def __init__(self, container, engine_driver):
-        super(Container, self).__init__()
+        super().__init__()
         self.raw = container
         self.id = None
         self.image = None

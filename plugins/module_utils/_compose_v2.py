@@ -132,7 +132,7 @@ DOCKER_PULL_PROGRESS_WORKING = frozenset(
 )
 
 
-class ResourceType(object):
+class ResourceType:
     UNKNOWN = "unknown"
     NETWORK = "network"
     IMAGE = "image"
@@ -724,7 +724,7 @@ def combine_text_output(*outputs):
 
 class BaseComposeManager(DockerBaseClass):
     def __init__(self, client, min_version=MINIMUM_COMPOSE_VERSION):
-        super(BaseComposeManager, self).__init__()
+        super().__init__()
         self.client = client
         self.check_mode = self.client.check_mode
         self.cleanup_dirs = set()

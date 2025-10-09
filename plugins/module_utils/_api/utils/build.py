@@ -158,7 +158,7 @@ def walk(root, patterns, default=True):
 
 # Heavily based on
 # https://github.com/moby/moby/blob/master/pkg/fileutils/fileutils.go
-class PatternMatcher(object):
+class PatternMatcher:
     def __init__(self, patterns):
         self.patterns = list(filter(lambda p: p.dirs, [Pattern(p) for p in patterns]))
         self.patterns.append(Pattern("!.dockerignore"))
@@ -216,7 +216,7 @@ class PatternMatcher(object):
         return rec_walk(root)
 
 
-class Pattern(object):
+class Pattern:
     def __init__(self, pattern_str):
         self.exclusion = False
         if pattern_str.startswith("!"):

@@ -128,7 +128,7 @@ def _normalize_arch(arch_str, variant_str):
         return arch_str, variant_str
 
 
-class _Platform(object):
+class _Platform:
     def __init__(self, os=None, arch=None, variant=None):
         self.os = os
         self.arch = arch

@@ -37,7 +37,7 @@ RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
 
 class SSHSocket(socket.socket):
     def __init__(self, host):
-        super(SSHSocket, self).__init__(socket.AF_INET, socket.SOCK_STREAM)
+        super().__init__(socket.AF_INET, socket.SOCK_STREAM)
         self.host = host
         self.port = None
         self.user = None
@@ -117,9 +117,9 @@ class SSHSocket(socket.socket):
         self.proc.terminate()
 
 
-class SSHConnection(urllib3_connection.HTTPConnection, object):
+class SSHConnection(urllib3_connection.HTTPConnection):
     def __init__(self, ssh_transport=None, timeout=60, host=None):
-        super(SSHConnection, self).__init__("localhost", timeout=timeout)
+        super().__init__("localhost", timeout=timeout)
         self.ssh_transport = ssh_transport
         self.timeout = timeout
         self.ssh_host = host
@@ -141,9 +141,7 @@ class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
     scheme = "ssh"
 
     def __init__(self, ssh_client=None, timeout=60, maxsize=10, host=None):
-        super(SSHConnectionPool, self).__init__(
-            "localhost", timeout=timeout, maxsize=maxsize
-        )
+        super().__init__("localhost", timeout=timeout, maxsize=maxsize)
         self.ssh_transport = None
         self.timeout = timeout
         if ssh_client:
@@ -207,7 +205,7 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
         self.pools = RecentlyUsedContainer(
             pool_connections, dispose_func=lambda p: p.close()
         )
-        super(SSHHTTPAdapter, self).__init__()
+        super().__init__()
 
     def _create_paramiko_client(self, base_url):
         logging.getLogger("paramiko").setLevel(logging.WARNING)
@@ -272,6 +270,6 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
         return pool
 
     def close(self):
-        super(SSHHTTPAdapter, self).close()
+        super().close()
         if self.ssh_client:
             self.ssh_client.close()

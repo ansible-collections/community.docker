@@ -21,10 +21,10 @@ from .basehttpadapter import BaseHTTPAdapter
 RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
 
 
-class UnixHTTPConnection(urllib3_connection.HTTPConnection, object):
+class UnixHTTPConnection(urllib3_connection.HTTPConnection):
 
     def __init__(self, base_url, unix_socket, timeout=60):
-        super(UnixHTTPConnection, self).__init__("localhost", timeout=timeout)
+        super().__init__("localhost", timeout=timeout)
         self.base_url = base_url
         self.unix_socket = unix_socket
         self.timeout = timeout
@@ -37,7 +37,7 @@ class UnixHTTPConnection(urllib3_connection.HTTPConnection, object):
         self.sock = sock
 
     def putheader(self, header, *values):
-        super(UnixHTTPConnection, self).putheader(header, *values)
+        super().putheader(header, *values)
         if header == "Connection" and "Upgrade" in values:
             self.disable_buffering = True
 
@@ -45,14 +45,12 @@ class UnixHTTPConnection(urllib3_connection.HTTPConnection, object):
         # FIXME: We may need to disable buffering on Py3,
         # but there's no clear way to do it at the moment. See:
         # https://github.com/docker/docker-py/issues/1799
-        return super(UnixHTTPConnection, self).response_class(sock, *args, **kwargs)
+        return super().response_class(sock, *args, **kwargs)
 
 
 class UnixHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
     def __init__(self, base_url, socket_path, timeout=60, maxsize=10):
-        super(UnixHTTPConnectionPool, self).__init__(
-            "localhost", timeout=timeout, maxsize=maxsize
-        )
+        super().__init__("localhost", timeout=timeout, maxsize=maxsize)
         self.base_url = base_url
         self.socket_path = socket_path
         self.timeout = timeout
@@ -86,7 +84,7 @@ class UnixHTTPAdapter(BaseHTTPAdapter):
         self.pools = RecentlyUsedContainer(
             pool_connections, dispose_func=lambda p: p.close()
         )
-        super(UnixHTTPAdapter, self).__init__()
+        super().__init__()
 
     def get_connection(self, url, proxies=None):
         with self.pools.lock:

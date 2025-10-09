@@ -21,9 +21,7 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
     def __init__(self, plugin, min_docker_api_version=None):
         self.plugin = plugin
         self.display = Display()
-        super(AnsibleDockerClient, self).__init__(
-            min_docker_api_version=min_docker_api_version
-        )
+        super().__init__(min_docker_api_version=min_docker_api_version)
 
     def fail(self, msg, **kwargs):
         if kwargs:

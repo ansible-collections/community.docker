@@ -12,7 +12,7 @@ import os
 import tarfile
 
 
-class ImageArchiveManifestSummary(object):
+class ImageArchiveManifestSummary:
     """
     Represents data extracted from a manifest.json found in the tar archive output of the
     "docker image save some:tag > some.tar" command.
