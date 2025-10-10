@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import pytest
+
 from ansible_collections.community.docker.plugins.modules.docker_network import (
     validate_cidr,
 )

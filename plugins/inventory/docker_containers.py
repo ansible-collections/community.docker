@@ -172,6 +172,11 @@ import re
 
 from ansible.errors import AnsibleError
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
+from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import (
+    filter_host,
+    parse_filters,
+)
+
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     APIError,
     DockerException,
@@ -187,10 +192,6 @@ from ansible_collections.community.docker.plugins.plugin_utils._common_api impor
 )
 from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
     make_unsafe,
-)
-from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import (
-    filter_host,
-    parse_filters,
 )
 
 

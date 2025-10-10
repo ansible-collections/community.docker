@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from ansible.errors import AnsibleConnectionFailure
 from ansible.utils.display import Display
+
 from ansible_collections.community.docker.plugins.module_utils._common_api import (
     AnsibleDockerClientBase,
 )

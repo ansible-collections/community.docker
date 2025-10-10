@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import pytest
+
 from ansible_collections.community.docker.plugins.modules.docker_container_copy_into import (
     parse_modern,
     parse_octal_string_only,

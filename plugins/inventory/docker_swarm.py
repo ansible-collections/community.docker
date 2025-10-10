@@ -151,6 +151,11 @@ keyed_groups:
 from ansible.errors import AnsibleError
 from ansible.parsing.utils.addresses import parse_address
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
+from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import (
+    filter_host,
+    parse_filters,
+)
+
 from ansible_collections.community.docker.plugins.module_utils._common import (
     get_connect_params,
 )
@@ -159,10 +164,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 )
 from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
     make_unsafe,
-)
-from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import (
-    filter_host,
-    parse_filters,
 )
 
 

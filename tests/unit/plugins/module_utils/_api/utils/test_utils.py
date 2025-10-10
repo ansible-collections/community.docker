@@ -17,6 +17,7 @@ import tempfile
 import unittest
 
 import pytest
+
 from ansible_collections.community.docker.plugins.module_utils._api.api.client import (
     APIClient,
 )

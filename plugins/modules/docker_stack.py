@@ -161,6 +161,7 @@ import traceback
 from time import sleep
 
 from ansible.module_utils.common.text.converters import to_native
+
 from ansible_collections.community.docker.plugins.module_utils._common_cli import (
     AnsibleModuleDockerClient,
     DockerException,

@@ -7,6 +7,7 @@ from __future__ import annotations
 import tarfile
 
 import pytest
+
 from ansible_collections.community.docker.plugins.module_utils._image_archive import (
     ImageArchiveInvalidException,
     api_image_id,

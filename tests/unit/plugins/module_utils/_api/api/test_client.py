@@ -25,6 +25,8 @@ from socketserver import ThreadingTCPServer
 
 import pytest
 import requests
+from requests.packages import urllib3
+
 from ansible_collections.community.docker.plugins.module_utils._api import (
     constants,
     errors,
@@ -35,7 +37,6 @@ from ansible_collections.community.docker.plugins.module_utils._api.api.client i
 from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.constants import (
     DEFAULT_DOCKER_API_VERSION,
 )
-from requests.packages import urllib3
 
 from .. import fake_api
 

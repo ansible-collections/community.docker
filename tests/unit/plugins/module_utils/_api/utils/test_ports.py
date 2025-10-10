@@ -11,6 +11,7 @@ from __future__ import annotations
 import unittest
 
 import pytest
+
 from ansible_collections.community.docker.plugins.module_utils._api.utils.ports import (
     build_port_bindings,
     split_port,

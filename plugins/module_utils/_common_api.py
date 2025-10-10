@@ -15,6 +15,7 @@ from collections.abc import Mapping, Sequence
 
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE, BOOLEANS_TRUE
+
 from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )

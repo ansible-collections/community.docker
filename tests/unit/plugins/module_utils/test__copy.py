@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import pytest
+
 from ansible_collections.community.docker.plugins.module_utils._copy import (
     _stream_generator_to_fileobj,
 )

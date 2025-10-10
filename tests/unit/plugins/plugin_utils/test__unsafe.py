@@ -5,9 +5,6 @@
 from __future__ import annotations
 
 import pytest
-from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
-    make_unsafe,
-)
 from ansible_collections.community.internal_test_tools.tests.unit.utils.trust import (
     SUPPORTS_DATA_TAGGING,
 )
@@ -19,6 +16,10 @@ from ansible_collections.community.internal_test_tools.tests.unit.utils.trust im
 )
 from ansible_collections.community.internal_test_tools.tests.unit.utils.trust import (
     make_untrusted as _make_untrusted,
+)
+
+from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
+    make_unsafe,
 )
 
 

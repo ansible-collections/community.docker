@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import pytest
+
 from ansible_collections.community.docker.plugins.modules.docker_image_build import (
     _quote_csv,
 )

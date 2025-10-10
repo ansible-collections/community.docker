@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import pytest
+
 from ansible_collections.community.docker.plugins.module_utils._util import (
     compare_dict_allow_more_present,
     compare_generic,

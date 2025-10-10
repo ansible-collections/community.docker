@@ -11,6 +11,7 @@ from __future__ import annotations
 import unittest
 
 import pytest
+
 from ansible_collections.community.docker.plugins.module_utils._api import errors
 from ansible_collections.community.docker.plugins.module_utils._api.constants import (
     DEFAULT_NPIPE,

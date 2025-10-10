@@ -9,6 +9,7 @@ import base64
 from ansible import constants as C
 from ansible.plugins.action import ActionBase
 from ansible.utils.vars import merge_hash
+
 from ansible_collections.community.docker.plugins.module_utils._scramble import (
     unscramble,
 )

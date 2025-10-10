@@ -14,8 +14,9 @@ import shutil
 import tempfile
 import unittest
 
-from ansible_collections.community.docker.plugins.module_utils._api.utils import config
 from pytest import fixture, mark
+
+from ansible_collections.community.docker.plugins.module_utils._api.utils import config
 
 
 try:
