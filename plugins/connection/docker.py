@@ -425,21 +425,24 @@ class Connection(ConnectionBase):
                             + to_native(become_output)
                         )
 
-                    chunk = None
+                    chunks = b""
                     for key, event in events:
                         if key.fileobj == p.stdout:
                             chunk = p.stdout.read()
+                            if chunk:
+                                chunks += chunk
                         elif key.fileobj == p.stderr:
                             chunk = p.stderr.read()
-                    # TODO: avoid chunk being set multiple times!
+                            if chunk:
+                                chunks += chunk
 
-                    if not chunk:
+                    if not chunks:
                         stdout, stderr = p.communicate()
                         raise AnsibleError(
                             "privilege output closed while waiting for password prompt:\n"
                             + to_native(become_output)
                         )
-                    become_output += chunk
+                    become_output += chunks
             finally:
                 selector.close()
 
