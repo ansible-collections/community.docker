@@ -388,16 +388,21 @@ class Connection(ConnectionBase):
                         stdout, stderr = p.communicate()
                         raise AnsibleError('timeout waiting for privilege escalation password prompt:\n' + to_native(become_output))
 
+                    chunks = b""
                     for key, event in events:
                         if key.fileobj == p.stdout:
                             chunk = p.stdout.read()
+                            if chunk:
+                                chunks += chunk
                         elif key.fileobj == p.stderr:
                             chunk = p.stderr.read()
+                            if chunk:
+                                chunks += chunk
 
-                    if not chunk:
+                    if not chunks:
                         stdout, stderr = p.communicate()
                         raise AnsibleError('privilege output closed while waiting for password prompt:\n' + to_native(become_output))
-                    become_output += chunk
+                    become_output += chunks
             finally:
                 selector.close()
 
