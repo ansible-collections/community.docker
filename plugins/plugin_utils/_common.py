@@ -7,10 +7,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
-
 from ansible.errors import AnsibleConnectionFailure
 from ansible.utils.display import Display
 from ansible_collections.community.docker.plugins.module_utils._common import (
@@ -25,7 +21,7 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
     def __init__(self, plugin, min_docker_version=None, min_docker_api_version=None):
         self.plugin = plugin
         self.display = Display()
-        super(AnsibleDockerClient, self).__init__(
+        super().__init__(
             min_docker_version=min_docker_version,
             min_docker_api_version=min_docker_api_version,
         )

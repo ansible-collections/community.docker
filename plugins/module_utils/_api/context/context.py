@@ -28,7 +28,7 @@ from .config import (
 IN_MEMORY = "IN MEMORY"
 
 
-class Context(object):
+class Context:
     """A context."""
 
     def __init__(

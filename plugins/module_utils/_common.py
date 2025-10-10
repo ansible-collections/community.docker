@@ -101,7 +101,7 @@ if not HAS_DOCKER_PY:
 
     # No Docker SDK for Python. Create a place holder client to allow
     # instantiation of AnsibleModule and proper error handing
-    class Client(object):  # noqa: F811, pylint: disable=function-redefined
+    class Client:  # noqa: F811, pylint: disable=function-redefined
         def __init__(self, **kwargs):
             pass
 
@@ -232,7 +232,7 @@ class AnsibleDockerClientBase(Client):
         )
 
         try:
-            super(AnsibleDockerClientBase, self).__init__(**self._connect_params)
+            super().__init__(**self._connect_params)
             self.docker_api_version_str = self.api_version
         except APIError as exc:
             self.fail(f"Docker API error: {exc}")
@@ -628,9 +628,7 @@ class AnsibleDockerClientBase(Client):
                     ),
                     get_json=True,
                 )
-        return super(AnsibleDockerClientBase, self).inspect_distribution(
-            image, **kwargs
-        )
+        return super().inspect_distribution(image, **kwargs)
 
 
 class AnsibleDockerClient(AnsibleDockerClientBase):
@@ -684,7 +682,7 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
         self.debug = self.module.params.get("debug")
         self.check_mode = self.module.check_mode
 
-        super(AnsibleDockerClient, self).__init__(
+        super().__init__(
             min_docker_version=min_docker_version,
             min_docker_api_version=min_docker_api_version,
         )

@@ -35,7 +35,7 @@ class SSLHTTPAdapter(BaseHTTPAdapter):
     def __init__(self, ssl_version=None, assert_hostname=None, **kwargs):
         self.ssl_version = ssl_version
         self.assert_hostname = assert_hostname
-        super(SSLHTTPAdapter, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def init_poolmanager(self, connections, maxsize, block=False):
         kwargs = {
@@ -58,7 +58,7 @@ class SSLHTTPAdapter(BaseHTTPAdapter):
 
         But we still need to take care of when there is a proxy poolmanager
         """
-        conn = super(SSLHTTPAdapter, self).get_connection(*args, **kwargs)
+        conn = super().get_connection(*args, **kwargs)
         if (
             self.assert_hostname is not None
             and conn.assert_hostname != self.assert_hostname

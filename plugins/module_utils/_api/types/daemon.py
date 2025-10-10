@@ -17,7 +17,7 @@ from .._import_helper import urllib3
 from ..errors import DockerException
 
 
-class CancellableStream(object):
+class CancellableStream:
     """
     Stream wrapper for real-time events, logs, etc. from the server.
 

@@ -17,7 +17,7 @@ from .. import auth
 from ..utils.decorators import minimum_version
 
 
-class DaemonApiMixin(object):
+class DaemonApiMixin:
     @minimum_version("1.25")
     def df(self):
         """

@@ -8,9 +8,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
 from ansible_collections.community.docker.plugins.module_utils._api.utils.json_stream import (
     json_splitter,
     json_stream,

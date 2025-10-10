@@ -406,7 +406,6 @@ disable=raw-checker-failed,
         redefined-outer-name,  # needed for test fixtures
         simplifiable-if-expression,
         subprocess-popen-preexec-fn,
-        super-with-arguments,
         unexpected-keyword-arg,
         unnecessary-dunder-call,
         unnecessary-pass,
@@ -415,7 +414,6 @@ disable=raw-checker-failed,
         unused-variable,
         use-dict-literal,
         use-list-literal,
-        useless-object-inheritance,
         # Cannot remove yet due to inadequacy of rules
         inconsistent-return-statements,  # doesn't notice that fail_json() does not return
 

@@ -9,6 +9,4 @@
 from __future__ import annotations
 
 
-__metaclass__ = type
-
 DEFAULT_DOCKER_API_VERSION = "1.45"

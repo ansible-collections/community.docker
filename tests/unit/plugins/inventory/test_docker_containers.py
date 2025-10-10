@@ -4,10 +4,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
-
 import pytest
 from ansible.inventory.data import InventoryData
 from ansible.parsing.dataloader import DataLoader
@@ -96,7 +92,7 @@ def create_get_option(options, default=False):
     return get_option
 
 
-class FakeClient(object):
+class FakeClient:
     def __init__(self, *hosts):
         self.get_results = {}
         list_reply = []

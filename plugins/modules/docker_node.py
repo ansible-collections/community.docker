@@ -157,7 +157,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 class TaskParameters(DockerBaseClass):
     def __init__(self, client):
-        super(TaskParameters, self).__init__()
+        super().__init__()
 
         # Spec
         self.name = None
@@ -179,7 +179,7 @@ class SwarmNodeManager(DockerBaseClass):
 
     def __init__(self, client, results):
 
-        super(SwarmNodeManager, self).__init__()
+        super().__init__()
 
         self.client = client
         self.results = results

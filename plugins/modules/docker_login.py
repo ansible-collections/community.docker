@@ -145,7 +145,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 )
 
 
-class DockerFileStore(object):
+class DockerFileStore:
     """
     A custom credential store class that implements only the functionality we need to
     update the docker config file when no credential helpers is provided.
@@ -238,7 +238,7 @@ class LoginManager(DockerBaseClass):
 
     def __init__(self, client, results):
 
-        super(LoginManager, self).__init__()
+        super().__init__()
 
         self.client = client
         self.results = results

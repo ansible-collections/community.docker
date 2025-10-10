@@ -120,7 +120,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 class ImageRemover(DockerBaseClass):
 
     def __init__(self, client):
-        super(ImageRemover, self).__init__()
+        super().__init__()
 
         self.client = client
         self.check_mode = self.client.check_mode

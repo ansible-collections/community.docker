@@ -19,7 +19,7 @@ from . import constants, errors
 from .utils import create_environment_dict, find_executable
 
 
-class Store(object):
+class Store:
     def __init__(self, program, environment=None):
         """Create a store object that acts as an interface to
         perform the basic operations for storing, retrieving

@@ -433,7 +433,7 @@ class ImageManager(DockerBaseClass):
         :type results: dict
         """
 
-        super(ImageManager, self).__init__()
+        super().__init__()
 
         self.client = client
         self.results = results

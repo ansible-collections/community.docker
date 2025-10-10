@@ -4,9 +4,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
 import pytest
 from ansible_collections.community.docker.plugins.module_utils._logfmt import (
     InvalidLogFmt,

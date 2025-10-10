@@ -29,7 +29,7 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 class AnsibleDockerSwarmClient(AnsibleDockerClient):
 
     def __init__(self, **kwargs):
-        super(AnsibleDockerSwarmClient, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_swarm_node_id(self):
         """
@@ -271,7 +271,7 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
     def get_unlock_key(self):
         if self.docker_py_version < LooseVersion("2.7.0"):
             return None
-        return super(AnsibleDockerSwarmClient, self).get_unlock_key()
+        return super().get_unlock_key()
 
     def get_service_inspect(self, service_id, skip_missing=False):
         """

@@ -55,12 +55,12 @@ class APIError(_HTTPError, DockerException):
     def __init__(self, message, response=None, explanation=None):
         # requests 1.2 supports response as a keyword argument, but
         # requests 1.1 does not
-        super(APIError, self).__init__(message)
+        super().__init__(message)
         self.response = response
         self.explanation = explanation
 
     def __str__(self):
-        message = super(APIError, self).__str__()
+        message = super().__str__()
 
         if self.is_client_error():
             message = f"{self.response.status_code} Client Error for {self.response.url}: {self.response.reason}"
@@ -152,7 +152,7 @@ class ContainerError(DockerException):
         err = f": {stderr}" if stderr is not None else ""
         msg = f"Command '{command}' in image '{image}' returned non-zero exit status {exit_status}{err}"
 
-        super(ContainerError, self).__init__(msg)
+        super().__init__(msg)
 
 
 class StreamParseError(RuntimeError):
@@ -162,7 +162,7 @@ class StreamParseError(RuntimeError):
 
 class BuildError(DockerException):
     def __init__(self, reason, build_log):
-        super(BuildError, self).__init__(reason)
+        super().__init__(reason)
         self.msg = reason
         self.build_log = build_log
 

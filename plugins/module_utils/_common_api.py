@@ -119,7 +119,7 @@ class AnsibleDockerClientBase(Client):
         )
 
         try:
-            super(AnsibleDockerClientBase, self).__init__(**self._connect_params)
+            super().__init__(**self._connect_params)
             self.docker_api_version_str = self.api_version
         except MissingRequirementException as exc:
             self.fail(
@@ -592,9 +592,7 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
         self.debug = self.module.params.get("debug")
         self.check_mode = self.module.check_mode
 
-        super(AnsibleDockerClient, self).__init__(
-            min_docker_api_version=min_docker_api_version
-        )
+        super().__init__(min_docker_api_version=min_docker_api_version)
 
         if option_minimal_versions is not None:
             self._get_minimal_versions(

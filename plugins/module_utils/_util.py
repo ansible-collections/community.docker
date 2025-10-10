@@ -121,7 +121,7 @@ def log_debug(msg, pretty_print=False):
             log_file.write(f"{msg}\n")
 
 
-class DockerBaseClass(object):
+class DockerBaseClass:
     def __init__(self):
         self.debug = False
 
@@ -245,7 +245,7 @@ def compare_generic(a, b, method, datatype):
         return True
 
 
-class DifferenceTracker(object):
+class DifferenceTracker:
     def __init__(self):
         self._diff = []
 

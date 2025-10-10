@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
-__metaclass__ = type
 
 
 def _normalize_ipaddr(ipaddr):
@@ -12,7 +11,7 @@ def _normalize_ipaddr(ipaddr):
     return ipaddress.ip_address(ipaddr).compressed
 
 
-class FilterModule(object):
+class FilterModule:
     """ IP address and network manipulation filters """
 
     def filters(self):

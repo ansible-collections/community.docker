@@ -45,7 +45,7 @@ def check_closed(f):
     return wrapped
 
 
-class NpipeSocket(object):
+class NpipeSocket:
     """Partial implementation of the socket API over windows named pipes.
     This implementation is only designed to be used as a client socket,
     and server-specific methods (bind, listen, accept...) are not
@@ -227,7 +227,7 @@ class NpipeFileIOBase(io.RawIOBase):
         self.sock = npipe_socket
 
     def close(self):
-        super(NpipeFileIOBase, self).close()
+        super().close()
         self.sock = None
 
     def fileno(self):

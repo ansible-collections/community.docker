@@ -214,7 +214,7 @@ class SecretManager(DockerBaseClass):
 
     def __init__(self, client, results):
 
-        super(SecretManager, self).__init__()
+        super().__init__()
 
         self.client = client
         self.results = results

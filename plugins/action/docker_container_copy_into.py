@@ -22,7 +22,7 @@ class ActionModule(ActionBase):
         self._supports_check_mode = True
         self._supports_async = True
 
-        result = super(ActionModule, self).run(tmp, task_vars)
+        result = super().run(tmp, task_vars)
         del tmp  # tmp no longer has any effect
 
         self._task.args["_max_file_size_for_diff"] = C.MAX_FILE_SIZE_FOR_DIFF

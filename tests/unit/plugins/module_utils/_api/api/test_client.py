@@ -8,9 +8,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
 import datetime
 import io
 import json
@@ -483,7 +480,7 @@ class TCPSocketStreamTest(unittest.TestCase):
         stdout_data = cls.stdout_data
         stderr_data = cls.stderr_data
 
-        class Handler(BaseHTTPRequestHandler, object):
+        class Handler(BaseHTTPRequestHandler):
             def do_POST(self):
                 resp_data = self.get_resp_data()
                 self.send_response(101)

@@ -22,7 +22,7 @@ class InvalidLogFmt(Exception):
     pass
 
 
-class _Mode(object):
+class _Mode:
     GARBAGE = 0
     KEY = 1
     EQUAL = 2
@@ -72,7 +72,7 @@ def _is_ident(cur):
     return cur > " " and cur not in ('"', "=")
 
 
-class _Parser(object):
+class _Parser:
     def __init__(self, line):
         self.line = line
         self.index = 0

@@ -315,7 +315,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 class TaskParameters(DockerBaseClass):
     def __init__(self):
-        super(TaskParameters, self).__init__()
+        super().__init__()
 
         self.advertise_addr = None
         self.listen_addr = None
@@ -461,7 +461,7 @@ class SwarmManager(DockerBaseClass):
 
     def __init__(self, client, results):
 
-        super(SwarmManager, self).__init__()
+        super().__init__()
 
         self.client = client
         self.results = results

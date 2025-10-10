@@ -326,11 +326,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     def verify_file(self, path):
         """Return the possibility of a file being consumable by this plugin."""
-        return super(InventoryModule, self).verify_file(path) and path.endswith(
+        return super().verify_file(path) and path.endswith(
             ("docker_machine.yaml", "docker_machine.yml")
         )
 
     def parse(self, inventory, loader, path, cache=True):
-        super(InventoryModule, self).parse(inventory, loader, path, cache)
+        super().parse(inventory, loader, path, cache)
         self._read_config_data(path)
         self._populate()

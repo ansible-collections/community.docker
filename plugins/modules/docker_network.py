@@ -303,7 +303,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 class TaskParameters(DockerBaseClass):
     def __init__(self, client):
-        super(TaskParameters, self).__init__()
+        super().__init__()
         self.client = client
 
         self.name = None
@@ -385,7 +385,7 @@ def dicts_are_essentially_equal(a, b):
     return True
 
 
-class DockerNetworkManager(object):
+class DockerNetworkManager:
 
     def __init__(self, client):
         self.client = client

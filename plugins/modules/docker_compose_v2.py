@@ -455,7 +455,7 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 
 class ServicesManager(BaseComposeManager):
     def __init__(self, client):
-        super(ServicesManager, self).__init__(client)
+        super().__init__(client)
         parameters = self.client.module.params
 
         self.state = parameters["state"]

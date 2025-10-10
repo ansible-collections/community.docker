@@ -308,7 +308,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
     def verify_file(self, path):
         """Return the possibly of a file being consumable by this plugin."""
-        return super(InventoryModule, self).verify_file(path) and path.endswith(
+        return super().verify_file(path) and path.endswith(
             ("docker_swarm.yaml", "docker_swarm.yml")
         )
 
@@ -318,6 +318,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 "The Docker swarm dynamic inventory plugin requires the Docker SDK for Python: "
                 "https://github.com/docker/docker-py."
             )
-        super(InventoryModule, self).parse(inventory, loader, path, cache)
+        super().parse(inventory, loader, path, cache)
         self._read_config_data(path)
         self._populate()

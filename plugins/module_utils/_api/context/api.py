@@ -33,7 +33,7 @@ def create_default_context():
     )
 
 
-class ContextAPI(object):
+class ContextAPI:
     """Context API.
     Contains methods for context management:
     create, list, remove, get, inspect.

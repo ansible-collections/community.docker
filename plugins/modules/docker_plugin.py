@@ -149,7 +149,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 class TaskParameters(DockerBaseClass):
     def __init__(self, client):
-        super(TaskParameters, self).__init__()
+        super().__init__()
         self.client = client
         self.plugin_name = None
         self.alias = None
@@ -174,7 +174,7 @@ def parse_options(options_list):
     return dict(x.split("=", 1) for x in options_list) if options_list else {}
 
 
-class DockerPluginManager(object):
+class DockerPluginManager:
 
     def __init__(self, client):
         self.client = client

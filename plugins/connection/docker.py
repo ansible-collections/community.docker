@@ -140,7 +140,7 @@ class Connection(ConnectionBase):
     has_pipelining = True
 
     def __init__(self, play_context, new_stdin, *args, **kwargs):
-        super(Connection, self).__init__(play_context, new_stdin, *args, **kwargs)
+        super().__init__(play_context, new_stdin, *args, **kwargs)
 
         # Note: docker supports running as non-root in some configurations.
         # (For instance, setting the UNIX socket file to be readable and
@@ -365,7 +365,7 @@ class Connection(ConnectionBase):
 
     def _connect(self, port=None):
         """Connect to the container. Nothing to do"""
-        super(Connection, self)._connect()
+        super()._connect()
         if not self._connected:
             self._set_conn_data()
             actual_user = self._get_actual_user()
@@ -380,7 +380,7 @@ class Connection(ConnectionBase):
 
         self._set_conn_data()
 
-        super(Connection, self).exec_command(cmd, in_data=in_data, sudoable=sudoable)
+        super().exec_command(cmd, in_data=in_data, sudoable=sudoable)
 
         local_cmd = self._build_exec_cmd([self._play_context.executable, "-c", cmd])
 
@@ -490,7 +490,7 @@ class Connection(ConnectionBase):
     def put_file(self, in_path, out_path):
         """Transfer a file from local to docker container"""
         self._set_conn_data()
-        super(Connection, self).put_file(in_path, out_path)
+        super().put_file(in_path, out_path)
         display.vvv(f"PUT {in_path} TO {out_path}", host=self.get_option("remote_addr"))
 
         out_path = self._prefix_login_path(out_path)
@@ -535,7 +535,7 @@ class Connection(ConnectionBase):
     def fetch_file(self, in_path, out_path):
         """Fetch a file from container to local."""
         self._set_conn_data()
-        super(Connection, self).fetch_file(in_path, out_path)
+        super().fetch_file(in_path, out_path)
         display.vvv(
             f"FETCH {in_path} TO {out_path}", host=self.get_option("remote_addr")
         )
@@ -602,7 +602,7 @@ class Connection(ConnectionBase):
 
     def close(self):
         """Terminate the connection. Nothing to do for Docker"""
-        super(Connection, self).close()
+        super().close()
         self._connected = False
 
     def reset(self):

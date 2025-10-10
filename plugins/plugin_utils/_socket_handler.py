@@ -7,10 +7,6 @@
 
 from __future__ import annotations
 
-
-__metaclass__ = type
-
-
 import selectors
 
 from ansible_collections.community.docker.plugins.module_utils._socket_handler import (
@@ -20,6 +16,6 @@ from ansible_collections.community.docker.plugins.module_utils._socket_handler i
 
 class DockerSocketHandler(DockerSocketHandlerBase):
     def __init__(self, display, sock, log=None, container=None):
-        super(DockerSocketHandler, self).__init__(
+        super().__init__(
             sock, selectors, log=lambda msg: display.vvvv(msg, host=container)
         )

@@ -30,10 +30,10 @@ try:
 except ImportError:
     REQUESTS_IMPORT_ERROR = traceback.format_exc()
 
-    class Session(object):
+    class Session:
         __attrs__ = []
 
-    class HTTPAdapter(object):
+    class HTTPAdapter:
         __attrs__ = []
 
     class HTTPError(Exception):
@@ -57,13 +57,13 @@ except ImportError:
     except ImportError:
         URLLIB3_IMPORT_ERROR = traceback.format_exc()
 
-        class _HTTPConnectionPool(object):
+        class _HTTPConnectionPool:
             pass
 
-        class _HTTPConnection(object):
+        class _HTTPConnection:
             pass
 
-        class FakeURLLIB3(object):
+        class FakeURLLIB3:
             def __init__(self):
                 self._collections = self
                 self.poolmanager = self
@@ -75,7 +75,7 @@ except ImportError:
                 self.match_hostname = object()
                 self.HTTPConnectionPool = _HTTPConnectionPool
 
-        class FakeURLLIB3Connection(object):
+        class FakeURLLIB3Connection:
             def __init__(self):
                 self.HTTPConnection = _HTTPConnection
 

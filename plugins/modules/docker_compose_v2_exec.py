@@ -180,7 +180,7 @@ from ansible_collections.community.docker.plugins.module_utils._compose_v2 impor
 
 class ExecManager(BaseComposeManager):
     def __init__(self, client):
-        super(ExecManager, self).__init__(client)
+        super().__init__(client)
         parameters = self.client.module.params
 
         self.service = parameters["service"]

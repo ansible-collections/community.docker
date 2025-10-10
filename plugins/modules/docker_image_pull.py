@@ -125,7 +125,7 @@ def image_info(image):
 
 class ImagePuller(DockerBaseClass):
     def __init__(self, client):
-        super(ImagePuller, self).__init__()
+        super().__init__()
 
         self.client = client
         self.check_mode = self.client.check_mode

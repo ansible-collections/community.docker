@@ -61,7 +61,7 @@ def _get_ansible_type(value_type):
     return value_type
 
 
-class Option(object):
+class Option:
     def __init__(
         self,
         name,
@@ -148,7 +148,7 @@ class Option(object):
         )
 
 
-class OptionGroup(object):
+class OptionGroup:
     def __init__(
         self,
         preprocess=None,
@@ -205,7 +205,7 @@ class OptionGroup(object):
         return self
 
 
-class Engine(object):
+class Engine:
     min_api_version = None  # string or None
     min_api_version_obj = None  # LooseVersion object or None
     extra_option_minimal_versions = None  # dict[str, dict[str, Any]] or None
@@ -265,7 +265,7 @@ class Engine(object):
         pass
 
 
-class EngineDriver(object):
+class EngineDriver:
     name = None  # string
 
     @abc.abstractmethod
