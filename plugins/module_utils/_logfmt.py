@@ -204,7 +204,7 @@ def parse_line(line, logrus_mode=False):
         mode = parsers[mode](parser.cur())
     if mode == _Mode.KEY and logrus_mode:
         raise InvalidLogFmt('Key must always be followed by "=" in logrus mode')
-    if mode == _Mode.KEY or mode == _Mode.EQUAL:
+    if mode in (_Mode.KEY, _Mode.EQUAL):
         handle_kv(has_no_value=True)
     elif mode == _Mode.IDENT_VALUE:
         handle_kv()

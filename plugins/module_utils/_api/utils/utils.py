@@ -250,7 +250,7 @@ def parse_host(addr, is_win32=False, tls=False):
 
     # These protos are valid aliases for our library but not for the
     # official spec
-    if proto == "http" or proto == "https":
+    if proto in ("http", "https"):
         tls = proto == "https"
         proto = "tcp"
     elif proto == "http+unix":
