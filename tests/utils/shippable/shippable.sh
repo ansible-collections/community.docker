@@ -94,7 +94,7 @@ if [ "${script}" != "sanity/1" ] && [ "${script}" != "units/1" ]; then
     # To prevent Python dependencies on other collections only install other collections for integration tests
     retry git clone --depth=1 --single-branch https://github.com/ansible-collections/ansible.posix.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/ansible/posix"
     retry git clone --depth=1 --single-branch --branch "${COMMUNITY_CRYPTO_BRANCH}" https://github.com/ansible-collections/community.crypto.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/crypto"
-    retry git clone --depth=1 --single-branch https://github.com/ansible-collections/community.general.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/general"
+    retry git clone --depth=1 --single-branch --branch stable-11 https://github.com/ansible-collections/community.general.git "${ANSIBLE_COLLECTIONS_PATHS}/ansible_collections/community/general"
     # NOTE: we're installing with git to work around Galaxy being a huge PITA (https://github.com/ansible/galaxy/issues/2429)
     # retry ansible-galaxy -vvv collection install ansible.posix
     # retry ansible-galaxy -vvv collection install community.crypto
