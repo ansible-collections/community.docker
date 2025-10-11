@@ -155,6 +155,8 @@ class Connection(ConnectionBase):
         self._docker_args = []
         self._container_user_cache = {}
         self._version = None
+        self.remote_user = None
+        self.timeout = None
 
         # Windows uses Powershell modules
         if getattr(self._shell, "_IS_WINDOWS", False):

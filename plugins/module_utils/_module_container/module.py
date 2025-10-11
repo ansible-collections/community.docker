@@ -134,6 +134,7 @@ class ContainerManager(DockerBaseClass):
                     "The value of default_host_ip must be an empty string, an IPv4 address, "
                     f'or an IPv6 address. Got "{self.param_default_host_ip}" instead.'
                 )
+        self.parameters = None
 
     def _collect_all_options(self, active_options):
         all_options = {}

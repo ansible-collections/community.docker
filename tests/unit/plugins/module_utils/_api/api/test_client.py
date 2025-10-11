@@ -604,6 +604,7 @@ class DisableSocketTest(unittest.TestCase):
     class DummySocket:
         def __init__(self, timeout=60):
             self.timeout = timeout
+            self._sock = None
 
         def settimeout(self, timeout):
             self.timeout = timeout

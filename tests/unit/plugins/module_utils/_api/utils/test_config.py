@@ -12,6 +12,7 @@ import json
 import os
 import shutil
 import tempfile
+import typing as t
 import unittest
 
 from pytest import fixture, mark
@@ -26,6 +27,7 @@ except ImportError:
 
 
 class FindConfigFileTest(unittest.TestCase):
+    mkdir: t.Callable[[str], os.PathLike[str]]
 
     @fixture(autouse=True)
     def tmpdir(self, tmpdir):

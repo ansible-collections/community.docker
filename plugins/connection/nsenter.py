@@ -66,6 +66,7 @@ class Connection(ConnectionBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.cwd = None
+        self._nsenter_pid = None
 
     def _connect(self):
         self._nsenter_pid = self.get_option("nsenter_pid")

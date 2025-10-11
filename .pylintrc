@@ -381,7 +381,6 @@ disable=raw-checker-failed,
         # To clean up:
         abstract-method,
         arguments-differ,
-        attribute-defined-outside-init,
         broad-exception-caught,
         broad-exception-raised,
         consider-iterating-dictionary,

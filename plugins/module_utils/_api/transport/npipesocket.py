@@ -55,7 +55,9 @@ class NpipeSocket:
     def __init__(self, handle=None):
         self._timeout = win32pipe.NMPWAIT_USE_DEFAULT_WAIT
         self._handle = handle
+        self._address = None
         self._closed = False
+        self.flags = None
 
     def accept(self):
         raise NotImplementedError()
