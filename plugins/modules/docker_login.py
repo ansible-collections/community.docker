@@ -309,7 +309,7 @@ class LoginManager(DockerBaseClass):
         self.log(f"Log into {self.registry_url} with username {self.username}")
         try:
             response = self._login(self.reauthorize)
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(
                 f"Logging into {self.registry_url} for user {self.username} failed - {exc}"
             )
@@ -322,7 +322,7 @@ class LoginManager(DockerBaseClass):
             if not self.reauthorize and response["password"] != self.password:
                 try:
                     response = self._login(True)
-                except Exception as exc:
+                except Exception as exc:  # pylint: disable=broad-exception-caught
                     self.fail(
                         f"Logging into {self.registry_url} for user {self.username} failed - {exc}"
                     )

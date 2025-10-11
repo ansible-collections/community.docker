@@ -481,7 +481,7 @@ class ContainerManager(DockerBaseClass):
                             self.engine_driver.unpause_container(
                                 self.client, container.id
                             )
-                    except Exception as exc:
+                    except Exception as exc:  # pylint: disable=broad-exception-caught
                         self.fail(
                             f"Error {'pausing' if self.param_paused else 'unpausing'} container {container.id}: {exc}"
                         )
@@ -951,7 +951,7 @@ class ContainerManager(DockerBaseClass):
                         self.engine_driver.disconnect_container_from_network(
                             self.client, container.id, diff["parameter"]["id"]
                         )
-                    except Exception as exc:
+                    except Exception as exc:  # pylint: disable=broad-exception-caught
                         self.fail(
                             f"Error disconnecting container from network {diff['parameter']['name']} - {exc}"
                         )
@@ -976,7 +976,7 @@ class ContainerManager(DockerBaseClass):
                     self.engine_driver.connect_container_to_network(
                         self.client, container.id, diff["parameter"]["id"], params
                     )
-                except Exception as exc:
+                except Exception as exc:  # pylint: disable=broad-exception-caught
                     self.fail(
                         f"Error connecting container to network {diff['parameter']['name']} - {exc}"
                     )
@@ -990,7 +990,7 @@ class ContainerManager(DockerBaseClass):
                     self.engine_driver.disconnect_container_from_network(
                         self.client, container.id, network["name"]
                     )
-                except Exception as exc:
+                except Exception as exc:  # pylint: disable=broad-exception-caught
                     self.fail(
                         f"Error disconnecting container from network {network['name']} - {exc}"
                     )
@@ -1028,7 +1028,7 @@ class ContainerManager(DockerBaseClass):
                 container_id = self.engine_driver.create_container(
                     self.client, self.param_name, create_parameters, networks=networks
                 )
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error creating container: {exc}")
             return self._get_container(container_id)
         return new_container
@@ -1040,7 +1040,7 @@ class ContainerManager(DockerBaseClass):
         if not self.check_mode:
             try:
                 self.engine_driver.start_container(self.client, container_id)
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error starting container {container_id}: {exc}")
 
             if self.module.params["detach"] is False:
@@ -1097,7 +1097,7 @@ class ContainerManager(DockerBaseClass):
                     link=link,
                     force=force,
                 )
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.client.fail(f"Error removing container {container_id}: {exc}")
 
     def container_update(self, container_id, update_parameters):
@@ -1113,7 +1113,7 @@ class ContainerManager(DockerBaseClass):
                     self.engine_driver.update_container(
                         self.client, container_id, update_parameters
                     )
-                except Exception as exc:
+                except Exception as exc:  # pylint: disable=broad-exception-caught
                     self.fail(f"Error updating container {container_id}: {exc}")
         return self._get_container(container_id)
 
@@ -1127,7 +1127,7 @@ class ContainerManager(DockerBaseClass):
                 self.engine_driver.kill_container(
                     self.client, container_id, kill_signal=self.param_kill_signal
                 )
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error killing container {container_id}: {exc}")
 
     def container_restart(self, container_id):
@@ -1140,7 +1140,7 @@ class ContainerManager(DockerBaseClass):
                 self.engine_driver.restart_container(
                     self.client, container_id, self.module.params["stop_timeout"] or 10
                 )
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error restarting container {container_id}: {exc}")
         return self._get_container(container_id)
 
@@ -1157,7 +1157,7 @@ class ContainerManager(DockerBaseClass):
                 self.engine_driver.stop_container(
                     self.client, container_id, self.module.params["stop_timeout"]
                 )
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error stopping container {container_id}: {exc}")
 
 

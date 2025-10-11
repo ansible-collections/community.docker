@@ -159,7 +159,7 @@ class ImagePusher(DockerBaseClass):
                 status = line.get("status")
                 if status == "Pushing":
                     results["changed"] = True
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             if "unauthorized" in str(exc):
                 if "authentication required" in str(exc):
                     self.client.fail(

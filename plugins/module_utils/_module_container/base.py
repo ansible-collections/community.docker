@@ -431,7 +431,7 @@ def _parse_port_range(range_or_port, module):
     if "-" in range_or_port:
         try:
             start, end = [int(port) for port in range_or_port.split("-")]
-        except Exception:
+        except ValueError:
             module.fail_json(msg=f'Invalid port range: "{range_or_port}"')
         if end < start:
             module.fail_json(msg=f'Invalid port range: "{range_or_port}"')
@@ -439,7 +439,7 @@ def _parse_port_range(range_or_port, module):
     else:
         try:
             return [int(range_or_port)]
-        except Exception:
+        except ValueError:
             module.fail_json(msg=f'Invalid port: "{range_or_port}"')
 
 
@@ -707,7 +707,7 @@ def _preprocess_mounts(module, values):
             if mount_dict["tmpfs_mode"] is not None:
                 try:
                     mount_dict["tmpfs_mode"] = int(mount_dict["tmpfs_mode"], 8)
-                except Exception:
+                except ValueError:
                     module.fail_json(
                         msg=f'tmp_fs mode of mount "{target}" is not an octal string!'
                     )

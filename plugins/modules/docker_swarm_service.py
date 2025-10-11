@@ -2510,7 +2510,7 @@ class DockerServiceManager:
 
         try:
             current_service = self.get_service(module.params["name"])
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             self.client.fail(
                 f"Error looking for service named {module.params['name']}: {e}"
             )
@@ -2527,7 +2527,7 @@ class DockerServiceManager:
                 network_ids,
                 self.client,
             )
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             return self.client.fail(f"Error parsing module parameters: {e}")
 
         changed = False

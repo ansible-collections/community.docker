@@ -405,7 +405,7 @@ def parse_json_events(stderr, warn_function=None):
             continue
         try:
             line_data = json.loads(line)
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             if warn_function:
                 warn_function(
                     f"Cannot parse event from line: {line!r}: {exc}. Please report this at "
@@ -748,7 +748,7 @@ class BaseComposeManager(DockerBaseClass):
                         encoding="utf-8",
                         Dumper=_SafeDumper,
                     )
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error writing to {compose_file} - {exc}")
         else:
             self.project_src = os.path.abspath(parameters["project_src"])
@@ -804,7 +804,7 @@ class BaseComposeManager(DockerBaseClass):
             if version == "dev":
                 return None
             return version.lstrip("v")
-        except Exception:
+        except Exception:  # pylint: disable=broad-exception-caught
             return None
 
     def get_compose_version_from_api(self):
@@ -946,6 +946,6 @@ class BaseComposeManager(DockerBaseClass):
         for directory in self.cleanup_dirs:
             try:
                 shutil.rmtree(directory, True)
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 # should not happen, but simply ignore to be on the safe side
                 pass

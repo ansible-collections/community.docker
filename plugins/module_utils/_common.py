@@ -237,7 +237,7 @@ class AnsibleDockerClientBase(Client):
             self.docker_api_version_str = self.api_version
         except APIError as exc:
             self.fail(f"Docker API error: {exc}")
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error connecting: {exc}")
 
         self.docker_api_version = LooseVersion(self.docker_api_version_str)
@@ -409,7 +409,7 @@ class AnsibleDockerClientBase(Client):
             return result
         except NotFound:
             return None
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error inspecting container: {exc}")
 
     def get_container(self, name=None):
@@ -441,7 +441,7 @@ class AnsibleDockerClientBase(Client):
                     break
         except SSLError as exc:
             self._handle_ssl_error(exc)
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error retrieving container list: {exc}")
 
         if result is None:
@@ -470,7 +470,7 @@ class AnsibleDockerClientBase(Client):
                         break
             except SSLError as exc:
                 self._handle_ssl_error(exc)
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error retrieving network list: {exc}")
 
         if result is not None:
@@ -483,7 +483,7 @@ class AnsibleDockerClientBase(Client):
                 self.log("Completed network inspection")
             except NotFound:
                 return None
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error inspecting network: {exc}")
 
         return result
@@ -533,7 +533,7 @@ class AnsibleDockerClientBase(Client):
             except NotFound:
                 self.log(f"Image {name}:{tag} not found.")
                 return None
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error inspecting image {name}:{tag} - {exc}")
             return inspection
 
@@ -555,7 +555,7 @@ class AnsibleDockerClientBase(Client):
                 self.fail(f"Error inspecting image ID {image_id} - {exc}")
             self.log(f"Image {image_id} not found.")
             return None
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error inspecting image ID {image_id} - {exc}")
         return inspection
 
@@ -567,7 +567,7 @@ class AnsibleDockerClientBase(Client):
         """
         try:
             response = self.images(name=name)
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error searching for image {name} - {exc}")
         images = response
         if tag:
@@ -606,7 +606,7 @@ class AnsibleDockerClientBase(Client):
                         )
                     else:
                         self.fail(f"Error pulling {name} - {line.get('error')}")
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error pulling image {name}:{tag} - {exc}")
 
         new_tag = self.find_image(name, tag)

@@ -78,7 +78,7 @@ class DockerSocketHandlerBase:
         if hasattr(self._sock, "recv"):
             try:
                 data = self._sock.recv(262144)
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 # After calling self._sock.shutdown(), OpenSSL's/urllib3's
                 # WrappedSocket seems to eventually raise ZeroReturnError in
                 # case of EOF

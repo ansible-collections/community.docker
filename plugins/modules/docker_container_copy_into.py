@@ -1084,9 +1084,7 @@ def main():
         if client.module.params["content_is_b64"]:
             try:
                 content = base64.b64decode(content)
-            except (
-                Exception
-            ) as e:  # depending on Python version and error, multiple different exceptions can be raised
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 client.fail(f"Cannot Base64 decode the content option: {e}")
         else:
             content = to_bytes(content)

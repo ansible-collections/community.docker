@@ -1060,7 +1060,7 @@ def _get_network_id(module, client, network_name):
                 network_id = network["Id"]
                 break
         return network_id
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=broad-exception-caught
         client.fail(f"Error getting network id for {network_name} - {exc}")
 
 

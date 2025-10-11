@@ -141,7 +141,7 @@ class ImageManager(DockerBaseClass):
                 f"Error loading archive {self.path} - {exc}",
                 stdout="\n".join(load_output),
             )
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.client.fail(
                 f"Error loading archive {self.path} - {exc}",
                 stdout="\n".join(load_output),
