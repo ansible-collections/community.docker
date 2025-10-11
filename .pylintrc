@@ -381,7 +381,6 @@ disable=raw-checker-failed,
         # To clean up:
         abstract-method,
         arguments-differ,
-        consider-using-max-builtin,
         consider-using-with,
         fixme,
         import-error,  # TODO figure out why pylint cannot find the module

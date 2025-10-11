@@ -138,8 +138,7 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
             True if node is part of swarm but its state is down, False otherwise
         """
 
-        if repeat_check < 1:
-            repeat_check = 1
+        repeat_check = max(1, repeat_check)
 
         if node_id is None:
             node_id = self.get_swarm_node_id()
