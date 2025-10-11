@@ -47,7 +47,7 @@ from ..transport.sshconn import PARAMIKO_IMPORT_ERROR, SSHHTTPAdapter
 from ..transport.ssladapter import SSLHTTPAdapter
 from ..transport.unixconn import UnixHTTPAdapter
 from ..utils import config, json_stream, utils
-from ..utils.decorators import check_resource, update_headers
+from ..utils.decorators import update_headers
 from ..utils.proxy import ProxyConfig
 from ..utils.socket import consume_socket_output, demux_adaptor, frames_iter
 from .daemon import DaemonApiMixin
@@ -459,14 +459,6 @@ class APIClient(_Session, DaemonApiMixin):
                 continue
 
             s.settimeout(None)
-
-    @check_resource("container")
-    def _check_is_tty(self, container):
-        cont = self.inspect_container(container)
-        return cont["Config"]["Tty"]
-
-    def _get_result(self, container, stream, res):
-        return self._get_result_tty(stream, res, self._check_is_tty(container))
 
     def _get_result_tty(self, stream, res, is_tty):
         # We should also use raw streaming (without keep-alive)
