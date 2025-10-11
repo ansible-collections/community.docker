@@ -42,7 +42,7 @@ class Context:
         description=None,
     ):
         if not name:
-            raise Exception("Name not provided")
+            raise ValueError("Name not provided")
         self.name = name
         self.context_type = None
         self.orchestrator = orchestrator
@@ -136,7 +136,7 @@ class Context:
                 metadata = json.load(f)
         except (OSError, KeyError, ValueError) as e:
             # unknown format
-            raise Exception(
+            raise RuntimeError(
                 f"Detected corrupted meta file for context {name} : {e}"
             ) from e
 

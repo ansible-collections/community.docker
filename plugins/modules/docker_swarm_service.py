@@ -1046,7 +1046,7 @@ def has_list_changed(new_list, old_list, sort_lists=True, sort_key=None):
 
         if unsorted_list and isinstance(unsorted_list[0], dict):
             if not sort_key:
-                raise Exception("A sort key was not specified when sorting list")
+                raise ValueError("A sort key was not specified when sorting list")
             else:
                 return sorted(unsorted_list, key=lambda k: k[sort_key])
 
@@ -1374,7 +1374,7 @@ class DockerService(DockerBaseClass):
             try:
                 memory = human_to_bytes(memory)
             except ValueError as exc:
-                raise Exception(f"Failed to convert limit_memory to bytes: {exc}")
+                raise ValueError(f"Failed to convert limit_memory to bytes: {exc}")
         return {
             "limit_cpu": cpus,
             "limit_memory": memory,
@@ -1396,7 +1396,7 @@ class DockerService(DockerBaseClass):
             try:
                 memory = human_to_bytes(memory)
             except ValueError as exc:
-                raise Exception(f"Failed to convert reserve_memory to bytes: {exc}")
+                raise ValueError(f"Failed to convert reserve_memory to bytes: {exc}")
         return {
             "reserve_cpu": cpus,
             "reserve_memory": memory,
@@ -1470,7 +1470,7 @@ class DockerService(DockerBaseClass):
                         for index, item in invalid_items
                     ]
                 )
-                raise Exception(
+                raise ValueError(
                     "All items in a command list need to be strings. "
                     f"Check quoting. Invalid items: {errors}."
                 )
@@ -2339,7 +2339,7 @@ class DockerServiceManager:
             ds.mode = to_text("replicated-job", encoding="utf-8")
             ds.replicas = mode["ReplicatedJob"]["TotalCompletions"]
         else:
-            raise Exception(f"Unknown service mode: {mode}")
+            raise ValueError(f"Unknown service mode: {mode}")
 
         raw_data_mounts = task_template_data["ContainerSpec"].get("Mounts")
         if raw_data_mounts:

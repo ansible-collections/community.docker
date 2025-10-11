@@ -779,7 +779,7 @@ class ImageManager(DockerBaseClass):
                     for line in self.client._stream_helper(response, decode=True):
                         self.log(line, pretty_print=True)
                         if line.get("errorDetail"):
-                            raise Exception(line["errorDetail"]["message"])
+                            raise RuntimeError(line["errorDetail"]["message"])
                         status = line.get("status")
                         if status == "Pushing":
                             changed = True
@@ -842,7 +842,7 @@ class ImageManager(DockerBaseClass):
                     )
                     self.client._raise_for_status(res)
                     if res.status_code != 201:
-                        raise Exception("Tag operation failed.")
+                        raise RuntimeError("Tag operation failed.")
                 except Exception as exc:
                     self.fail(f"Error: failed to tag image - {exc}")
                 self.results["image"] = self.client.find_image(name=repo, tag=repo_tag)

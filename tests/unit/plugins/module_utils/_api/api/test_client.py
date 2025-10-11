@@ -87,7 +87,7 @@ def fake_resp(method, url, *args, **kwargs):
     elif (url, method) in fake_api.fake_responses:
         key = (url, method)
     if not key:
-        raise Exception(f"{method} {url}")
+        raise NotImplementedError(f"{method} {url}")
     status_code, content = fake_api.fake_responses[key]()
     return response(status_code=status_code, content=content)
 
@@ -506,7 +506,7 @@ class TCPSocketStreamTest(unittest.TestCase):
                     data += stderr_data
                     return data
                 else:
-                    raise Exception(f"Unknown path {path}")
+                    raise NotImplementedError(f"Unknown path {path}")
 
             @staticmethod
             def frame_header(stream, data):

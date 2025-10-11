@@ -58,7 +58,7 @@ def _get_ansible_type(value_type):
     if value_type == "set":
         return "list"
     if value_type not in ("list", "dict", "bool", "int", "float", "str"):
-        raise Exception(f'Invalid type "{value_type}"')
+        raise ValueError(f'Invalid type "{value_type}"')
     return value_type
 
 
@@ -87,13 +87,13 @@ class Option:
         needs_elements = self.value_type in ("list", "set")
         needs_ansible_elements = self.ansible_type in ("list",)
         if elements is not None and not needs_elements:
-            raise Exception("elements only allowed for lists/sets")
+            raise ValueError("elements only allowed for lists/sets")
         if elements is None and needs_elements:
-            raise Exception("elements required for lists/sets")
+            raise ValueError("elements required for lists/sets")
         if ansible_elements is not None and not needs_ansible_elements:
-            raise Exception("Ansible elements only allowed for Ansible lists")
+            raise ValueError("Ansible elements only allowed for Ansible lists")
         if (elements is None and ansible_elements is None) and needs_ansible_elements:
-            raise Exception("Ansible elements required for Ansible lists")
+            raise ValueError("Ansible elements required for Ansible lists")
         self.elements = elements if needs_elements else None
         self.ansible_elements = (
             (ansible_elements or _get_ansible_type(elements))
@@ -104,7 +104,7 @@ class Option:
             self.ansible_type == "list" and self.ansible_elements == "dict"
         ) or (self.ansible_type == "dict")
         if ansible_suboptions is not None and not needs_suboptions:
-            raise Exception(
+            raise ValueError(
                 "suboptions only allowed for Ansible lists with dicts, or Ansible dicts"
             )
         if (
@@ -113,7 +113,7 @@ class Option:
             and not needs_no_suboptions
             and not not_an_ansible_option
         ):
-            raise Exception(
+            raise ValueError(
                 "suboptions required for Ansible lists with dicts, or Ansible dicts"
             )
         self.ansible_suboptions = ansible_suboptions if needs_suboptions else None

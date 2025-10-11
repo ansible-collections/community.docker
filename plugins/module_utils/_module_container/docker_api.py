@@ -124,7 +124,7 @@ def _get_ansible_type(our_type):
     if our_type == "set":
         return "list"
     if our_type not in ("list", "dict", "bool", "int", "float", "str"):
-        raise Exception(f'Invalid type "{our_type}"')
+        raise ValueError(f'Invalid type "{our_type}"')
     return our_type
 
 
@@ -266,7 +266,7 @@ class DockerAPIEngineDriver(EngineDriver):
                     # Ensure driver_opts values are strings
                     for key, val in value.items():
                         if not isinstance(val, str):
-                            raise Exception(
+                            raise ValueError(
                                 f"driver_opts values must be strings, got {type(val).__name__} for key '{key}'"
                             )
                 params[dest_para] = value
@@ -278,7 +278,7 @@ class DockerAPIEngineDriver(EngineDriver):
                 params[dest_para] = value
         if parameters:
             ups = ", ".join([f'"{p}"' for p in sorted(parameters)])
-            raise Exception(
+            raise ValueError(
                 f"Unknown parameter(s) for connect_container_to_network for Docker API driver: {ups}"
             )
         ipam_config = {}
@@ -399,13 +399,13 @@ class DockerAPIEngineDriver(EngineDriver):
                     # New docker daemon versions do not allow containers to be removed
                     # if they are paused. Make sure we do not end up in an infinite loop.
                     if count == 3:
-                        raise Exception(f"{exc} [tried to unpause three times]")
+                        raise RuntimeError(f"{exc} [tried to unpause three times]")
                     count += 1
                     # Unpause
                     try:
                         self.unpause_container(client, container_id)
                     except Exception as exc2:
-                        raise Exception(f"{exc2} [while unpausing]")
+                        raise RuntimeError(f"{exc2} [while unpausing]")
                     # Now try again
                     continue
                 raise
@@ -430,13 +430,13 @@ class DockerAPIEngineDriver(EngineDriver):
                     # New docker daemon versions do not allow containers to be removed
                     # if they are paused. Make sure we do not end up in an infinite loop.
                     if count == 3:
-                        raise Exception(f"{exc} [tried to unpause three times]")
+                        raise RuntimeError(f"{exc} [tried to unpause three times]")
                     count += 1
                     # Unpause
                     try:
                         self.unpause_container(client, container_id)
                     except Exception as exc2:
-                        raise Exception(f"{exc2} [while unpausing]")
+                        raise RuntimeError(f"{exc2} [while unpausing]")
                     # Now try again
                     continue
                 if (

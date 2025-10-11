@@ -155,7 +155,7 @@ class ImagePusher(DockerBaseClass):
             for line in self.client._stream_helper(response, decode=True):
                 self.log(line, pretty_print=True)
                 if line.get("errorDetail"):
-                    raise Exception(line["errorDetail"]["message"])
+                    raise RuntimeError(line["errorDetail"]["message"])
                 status = line.get("status")
                 if status == "Pushing":
                     results["changed"] = True
