@@ -159,7 +159,7 @@ class AnsibleDockerClientBase:
             self.warn(to_native(stderr))
         try:
             data = json.loads(stdout)
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(
                 f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_native(stdout)}"
             )
@@ -177,7 +177,7 @@ class AnsibleDockerClientBase:
                 line = line.strip()
                 if line.startswith(b"{"):
                     result.append(json.loads(line))
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(
                 f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_native(stdout)}"
             )

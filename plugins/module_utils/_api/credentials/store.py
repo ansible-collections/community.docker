@@ -91,8 +91,7 @@ class Store:
                 raise errors.StoreError(
                     f"{self.program} not installed or not available in PATH"
                 )
-            else:
-                raise errors.StoreError(
-                    f'Unexpected OS error "{e.strerror}", errno={e.errno}'
-                )
+            raise errors.StoreError(
+                f'Unexpected OS error "{e.strerror}", errno={e.errno}'
+            )
         return output

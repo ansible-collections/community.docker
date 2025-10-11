@@ -194,7 +194,7 @@ class ImageRemover(DockerBaseClass):
             except NotFound:
                 # If the image vanished while we were trying to remove it, do not fail
                 res = []
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error removing image {name} - {exc}")
 
             for entry in res:

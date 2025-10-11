@@ -28,9 +28,9 @@ except ImportError:
     PYWIN32_IMPORT_ERROR = traceback.format_exc()
 
 
-cERROR_PIPE_BUSY = 0xE7
-cSECURITY_SQOS_PRESENT = 0x100000
-cSECURITY_ANONYMOUS = 0
+ERROR_PIPE_BUSY = 0xE7
+SECURITY_SQOS_PRESENT = 0x100000
+SECURITY_ANONYMOUS = 0
 
 MAXIMUM_RETRY_COUNT = 10
 
@@ -55,7 +55,9 @@ class NpipeSocket:
     def __init__(self, handle=None):
         self._timeout = win32pipe.NMPWAIT_USE_DEFAULT_WAIT
         self._handle = handle
+        self._address = None
         self._closed = False
+        self.flags = None
 
     def accept(self):
         raise NotImplementedError()
@@ -77,8 +79,8 @@ class NpipeSocket:
                 None,
                 win32file.OPEN_EXISTING,
                 (
-                    cSECURITY_ANONYMOUS
-                    | cSECURITY_SQOS_PRESENT
+                    SECURITY_ANONYMOUS
+                    | SECURITY_SQOS_PRESENT
                     | win32file.FILE_FLAG_OVERLAPPED
                 ),
                 0,
@@ -86,7 +88,7 @@ class NpipeSocket:
         except win32pipe.error as e:
             # See Remarks:
             # https://msdn.microsoft.com/en-us/library/aa365800.aspx
-            if e.winerror == cERROR_PIPE_BUSY:
+            if e.winerror == ERROR_PIPE_BUSY:
                 # Another program or thread has grabbed our pipe instance
                 # before we got to it. Wait for availability and attempt to
                 # connect again.

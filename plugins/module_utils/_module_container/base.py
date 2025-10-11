@@ -58,7 +58,7 @@ def _get_ansible_type(value_type):
     if value_type == "set":
         return "list"
     if value_type not in ("list", "dict", "bool", "int", "float", "str"):
-        raise Exception(f'Invalid type "{value_type}"')
+        raise ValueError(f'Invalid type "{value_type}"')
     return value_type
 
 
@@ -87,13 +87,13 @@ class Option:
         needs_elements = self.value_type in ("list", "set")
         needs_ansible_elements = self.ansible_type in ("list",)
         if elements is not None and not needs_elements:
-            raise Exception("elements only allowed for lists/sets")
+            raise ValueError("elements only allowed for lists/sets")
         if elements is None and needs_elements:
-            raise Exception("elements required for lists/sets")
+            raise ValueError("elements required for lists/sets")
         if ansible_elements is not None and not needs_ansible_elements:
-            raise Exception("Ansible elements only allowed for Ansible lists")
+            raise ValueError("Ansible elements only allowed for Ansible lists")
         if (elements is None and ansible_elements is None) and needs_ansible_elements:
-            raise Exception("Ansible elements required for Ansible lists")
+            raise ValueError("Ansible elements required for Ansible lists")
         self.elements = elements if needs_elements else None
         self.ansible_elements = (
             (ansible_elements or _get_ansible_type(elements))
@@ -104,7 +104,7 @@ class Option:
             self.ansible_type == "list" and self.ansible_elements == "dict"
         ) or (self.ansible_type == "dict")
         if ansible_suboptions is not None and not needs_suboptions:
-            raise Exception(
+            raise ValueError(
                 "suboptions only allowed for Ansible lists with dicts, or Ansible dicts"
             )
         if (
@@ -113,7 +113,7 @@ class Option:
             and not needs_no_suboptions
             and not not_an_ansible_option
         ):
-            raise Exception(
+            raise ValueError(
                 "suboptions required for Ansible lists with dicts, or Ansible dicts"
             )
         self.ansible_suboptions = ansible_suboptions if needs_suboptions else None
@@ -431,16 +431,15 @@ def _parse_port_range(range_or_port, module):
     if "-" in range_or_port:
         try:
             start, end = [int(port) for port in range_or_port.split("-")]
-        except Exception:
+        except ValueError:
             module.fail_json(msg=f'Invalid port range: "{range_or_port}"')
         if end < start:
             module.fail_json(msg=f'Invalid port range: "{range_or_port}"')
         return list(range(start, end + 1))
-    else:
-        try:
-            return [int(range_or_port)]
-        except Exception:
-            module.fail_json(msg=f'Invalid port: "{range_or_port}"')
+    try:
+        return [int(range_or_port)]
+    except ValueError:
+        module.fail_json(msg=f'Invalid port: "{range_or_port}"')
 
 
 def _split_colon_ipv6(text, module):
@@ -707,7 +706,7 @@ def _preprocess_mounts(module, values):
             if mount_dict["tmpfs_mode"] is not None:
                 try:
                     mount_dict["tmpfs_mode"] = int(mount_dict["tmpfs_mode"], 8)
-                except Exception:
+                except ValueError:
                     module.fail_json(
                         msg=f'tmp_fs mode of mount "{target}" is not an octal string!'
                     )
@@ -747,7 +746,7 @@ def _preprocess_mounts(module, values):
                     check_collision(container, "volumes")
                     new_vols.append(f"{host}:{container}:{mode}")
                     continue
-                elif len(parts) == 2:
+                if len(parts) == 2:
                     if not _is_volume_permissions(parts[1]) and re.match(
                         r"[.~]", parts[0]
                     ):

@@ -50,8 +50,7 @@ def write_irrelevant_tar(file_name):
     :type file_name: str
     """
 
-    tf = tarfile.open(file_name, "w")
-    try:
+    with tarfile.open(file_name, "w") as tf:
         with TemporaryFile() as f:
             f.write("Hello, world.".encode("utf-8"))
 
@@ -60,6 +59,3 @@ def write_irrelevant_tar(file_name):
 
             f.seek(0)
             tf.addfile(ti, f)
-
-    finally:
-        tf.close()

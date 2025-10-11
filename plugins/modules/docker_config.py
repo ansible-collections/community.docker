@@ -243,7 +243,7 @@ class ConfigManager(DockerBaseClass):
             try:
                 with open(data_src, "rb") as f:
                     self.data = f.read()
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.client.fail(f"Error while reading {data_src}: {exc}")
         self.labels = parameters.get("labels")
         self.force = parameters.get("force")

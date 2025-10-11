@@ -72,7 +72,9 @@ def response(
     return res
 
 
-def fake_resolve_authconfig(authconfig, registry=None, *args, **kwargs):
+def fake_resolve_authconfig(
+    authconfig, registry=None, *args, **kwargs
+):  # pylint: disable=keyword-arg-before-vararg
     return None
 
 
@@ -87,7 +89,7 @@ def fake_resp(method, url, *args, **kwargs):
     elif (url, method) in fake_api.fake_responses:
         key = (url, method)
     if not key:
-        raise Exception(f"{method} {url}")
+        raise NotImplementedError(f"{method} {url}")
     status_code, content = fake_api.fake_responses[key]()
     return response(status_code=status_code, content=content)
 
@@ -115,8 +117,8 @@ def fake_read_from_socket(self, response, stream, tty=False, demux=False):
     return b""
 
 
-url_base = f"{fake_api.prefix}/"
-url_prefix = f"{url_base}v{DEFAULT_DOCKER_API_VERSION}/"
+url_base = f"{fake_api.prefix}/"  # pylint: disable=invalid-name
+url_prefix = f"{url_base}v{DEFAULT_DOCKER_API_VERSION}/"  # pylint: disable=invalid-name
 
 
 class BaseAPIClientTest(unittest.TestCase):
@@ -482,7 +484,7 @@ class TCPSocketStreamTest(unittest.TestCase):
         stderr_data = cls.stderr_data
 
         class Handler(BaseHTTPRequestHandler):
-            def do_POST(self):
+            def do_POST(self):  # pylint: disable=invalid-name
                 resp_data = self.get_resp_data()
                 self.send_response(101)
                 self.send_header("Content-Type", "application/vnd.docker.raw-stream")
@@ -498,15 +500,14 @@ class TCPSocketStreamTest(unittest.TestCase):
                 path = self.path.split("/")[-1]
                 if path == "tty":
                     return stdout_data + stderr_data
-                elif path == "no-tty":
+                if path == "no-tty":
                     data = b""
                     data += self.frame_header(1, stdout_data)
                     data += stdout_data
                     data += self.frame_header(2, stderr_data)
                     data += stderr_data
                     return data
-                else:
-                    raise Exception(f"Unknown path {path}")
+                raise NotImplementedError(f"Unknown path {path}")
 
             @staticmethod
             def frame_header(stream, data):
@@ -604,6 +605,7 @@ class DisableSocketTest(unittest.TestCase):
     class DummySocket:
         def __init__(self, timeout=60):
             self.timeout = timeout
+            self._sock = None
 
         def settimeout(self, timeout):
             self.timeout = timeout

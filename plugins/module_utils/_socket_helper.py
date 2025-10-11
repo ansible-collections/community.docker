@@ -67,7 +67,6 @@ def write_to_socket(sock, data):
         # WrappedSocket (urllib3/contrib/pyopenssl) does not have `send`, but
         # only `sendall`, which uses `_send_until_done` under the hood.
         return sock._send_until_done(data)
-    elif hasattr(sock, "send"):
+    if hasattr(sock, "send"):
         return sock.send(data)
-    else:
-        return os.write(sock.fileno(), data)
+    return os.write(sock.fileno(), data)

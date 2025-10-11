@@ -343,31 +343,31 @@ def retrieve_diff(
             diff["before_header"] = container_path
             diff["before"] = "(directory)"
             return
-        elif regular_stat["mode"] & (1 << (32 - 4)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 4)) != 0:
             diff["before_header"] = container_path
             diff["before"] = "(temporary file)"
             return
-        elif regular_stat["mode"] & (1 << (32 - 5)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 5)) != 0:
             diff["before_header"] = container_path
             diff["before"] = link_target
             return
-        elif regular_stat["mode"] & (1 << (32 - 6)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 6)) != 0:
             diff["before_header"] = container_path
             diff["before"] = "(device)"
             return
-        elif regular_stat["mode"] & (1 << (32 - 7)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 7)) != 0:
             diff["before_header"] = container_path
             diff["before"] = "(named pipe)"
             return
-        elif regular_stat["mode"] & (1 << (32 - 8)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 8)) != 0:
             diff["before_header"] = container_path
             diff["before"] = "(socket)"
             return
-        elif regular_stat["mode"] & (1 << (32 - 11)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 11)) != 0:
             diff["before_header"] = container_path
             diff["before"] = "(character device)"
             return
-        elif regular_stat["mode"] & (1 << (32 - 13)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 13)) != 0:
             diff["before_header"] = container_path
             diff["before"] = "(unknown filesystem object)"
             return
@@ -1084,9 +1084,7 @@ def main():
         if client.module.params["content_is_b64"]:
             try:
                 content = base64.b64decode(content)
-            except (
-                Exception
-            ) as e:  # depending on Python version and error, multiple different exceptions can be raised
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 client.fail(f"Cannot Base64 decode the content option: {e}")
         else:
             content = to_bytes(content)

@@ -36,7 +36,7 @@ def get_current_context_name_with_source():
                     json.load(f).get("currentContext", "default"),
                     f"configuration file {docker_cfg_path}",
                 )
-        except Exception:
+        except Exception:  # pylint: disable=broad-exception-caught
             pass
     return "default", "fallback value"
 
@@ -54,7 +54,7 @@ def write_context_name_to_docker_config(name=None):
         try:
             with open(docker_cfg_path, "rt", encoding="utf-8") as f:
                 config = json.load(f)
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             return e
     current_context = config.get("currentContext", None)
     if current_context and not name:
@@ -68,7 +68,7 @@ def write_context_name_to_docker_config(name=None):
     try:
         with open(docker_cfg_path, "wt", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         return e
 
 

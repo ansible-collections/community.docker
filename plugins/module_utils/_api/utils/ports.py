@@ -90,9 +90,8 @@ def split_port(port):
         if external is not None and len(internal) != len(external):
             raise ValueError("Port ranges don't match in length")
         return internal, external
-    else:
-        if not external:
-            external = [None] * len(internal)
-        elif len(internal) != len(external):
-            raise ValueError("Port ranges don't match in length")
-        return internal, [(host, ext_port) for ext_port in external]
+    if not external:
+        external = [None] * len(internal)
+    elif len(internal) != len(external):
+        raise ValueError("Port ranges don't match in length")
+    return internal, [(host, ext_port) for ext_port in external]

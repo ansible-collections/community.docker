@@ -70,14 +70,16 @@ except ImportError:
                 self.connection = self
                 self.connectionpool = self
 
-                self.RecentlyUsedContainer = object()
-                self.PoolManager = object()
+                self.RecentlyUsedContainer = object()  # pylint: disable=invalid-name
+                self.PoolManager = object()  # pylint: disable=invalid-name
                 self.match_hostname = object()
-                self.HTTPConnectionPool = _HTTPConnectionPool
+                self.HTTPConnectionPool = (  # pylint: disable=invalid-name
+                    _HTTPConnectionPool
+                )
 
         class FakeURLLIB3Connection:
             def __init__(self):
-                self.HTTPConnection = _HTTPConnection
+                self.HTTPConnection = _HTTPConnection  # pylint: disable=invalid-name
 
         urllib3 = FakeURLLIB3()
         urllib3_connection = FakeURLLIB3Connection()

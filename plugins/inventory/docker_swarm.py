@@ -199,7 +199,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         )
         update_tls_hostname(raw_params)
         connect_params = get_connect_params(raw_params, fail_function=self._fail)
-        self.client = docker.DockerClient(**connect_params)
+        client = docker.DockerClient(**connect_params)
         self.inventory.add_group("all")
         self.inventory.add_group("manager")
         self.inventory.add_group("worker")
@@ -217,9 +217,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 host_uri_port = "2375"
 
         try:
-            self.nodes = self.client.nodes.list()
-            for node in self.nodes:
-                node_attrs = self.client.nodes.get(node.id).attrs
+            nodes = client.nodes.list()
+            for node in nodes:
+                node_attrs = client.nodes.get(node.id).attrs
                 unsafe_node_attrs = make_unsafe(node_attrs)
                 if not filter_host(
                     self, unsafe_node_attrs["ID"], unsafe_node_attrs, filters

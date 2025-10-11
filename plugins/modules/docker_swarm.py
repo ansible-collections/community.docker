@@ -323,6 +323,7 @@ class TaskParameters(DockerBaseClass):
         self.join_token = None
         self.data_path_addr = None
         self.data_path_port = None
+        self.spec = None
 
         # Spec
         self.snapshot_interval = None

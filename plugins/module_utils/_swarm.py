@@ -74,22 +74,18 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
                 swarm_info = json.loads(json_str)
                 if swarm_info["Swarm"]["NodeID"]:
                     return True
-                if swarm_info["Swarm"]["LocalNodeState"] in (
+                return swarm_info["Swarm"]["LocalNodeState"] in (
                     "active",
                     "pending",
                     "locked",
-                ):
-                    return True
+                )
             return False
-        else:
-            try:
-                node_info = self.get_node_inspect(node_id=node_id)
-            except APIError:
-                return
+        try:
+            node_info = self.get_node_inspect(node_id=node_id)
+        except APIError:
+            return
 
-            if node_info["ID"] is not None:
-                return True
-            return False
+        return node_info["ID"] is not None
 
     def check_if_swarm_manager(self):
         """
@@ -138,8 +134,7 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
             True if node is part of swarm but its state is down, False otherwise
         """
 
-        if repeat_check < 1:
-            repeat_check = 1
+        repeat_check = max(1, repeat_check)
 
         if node_id is None:
             node_id = self.get_swarm_node_id()
@@ -179,7 +174,7 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
                 if skip_missing:
                     return None
             self.fail(f"Error while reading from Swarm manager: {exc}")
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error inspecting swarm node: {exc}")
 
         json_str = json.dumps(node_info, ensure_ascii=False)
@@ -215,7 +210,7 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
                     "Cannot inspect node: To inspect node execute module on Swarm Manager"
                 )
             self.fail(f"Error while reading from Swarm manager: {exc}")
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error inspecting swarm node: {exc}")
 
         json_str = json.dumps(node_info, ensure_ascii=False)
@@ -295,7 +290,7 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
                     "Cannot inspect service: To inspect service execute module on Swarm Manager"
                 )
             self.fail(f"Error inspecting swarm service: {exc}")
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error inspecting swarm service: {exc}")
 
         json_str = json.dumps(service_info, ensure_ascii=False)

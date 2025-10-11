@@ -68,8 +68,7 @@ def home_dir():
     """
     if IS_WINDOWS_PLATFORM:
         return os.environ.get("USERPROFILE", "")
-    else:
-        return os.path.expanduser("~")
+    return os.path.expanduser("~")
 
 
 def load_general_config(config_path=None):
