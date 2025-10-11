@@ -56,13 +56,11 @@ DOCKER_COMMON_ARGS = dict(
     debug=dict(type="bool", default=False),
 )
 
-DOCKER_COMMON_ARGS_VARS = dict(
-    [
-        [option_name, f"ansible_docker_{option_name}"]
-        for option_name in DOCKER_COMMON_ARGS
-        if option_name != "debug"
-    ]
-)
+DOCKER_COMMON_ARGS_VARS = {
+    option_name: f"ansible_docker_{option_name}"
+    for option_name in DOCKER_COMMON_ARGS
+    if option_name != "debug"
+}
 
 DOCKER_MUTUALLY_EXCLUSIVE = []
 

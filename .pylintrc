@@ -381,7 +381,6 @@ disable=raw-checker-failed,
         # To clean up:
         abstract-method,
         arguments-differ,
-        consider-using-dict-comprehension,
         consider-using-f-string,
         consider-using-in,
         consider-using-max-builtin,
