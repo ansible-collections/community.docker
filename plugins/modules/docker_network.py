@@ -359,7 +359,7 @@ def validate_cidr(cidr):
     """
     if CIDR_IPV4.match(cidr):
         return "ipv4"
-    elif CIDR_IPV6.match(cidr):
+    if CIDR_IPV6.match(cidr):
         return "ipv6"
     raise ValueError(f'"{cidr}" is not a valid CIDR')
 

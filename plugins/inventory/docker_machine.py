@@ -217,11 +217,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 if daemon_env == "require":
                     display.warning(f"{warning_prefix}: host will be skipped")
                 return True
-            else:  # 'optional', 'optional-silently'
-                if daemon_env == "optional":
-                    display.warning(
-                        f"{warning_prefix}: host will lack dm_DOCKER_xxx variables"
-                    )
+            if daemon_env == "optional":
+                display.warning(
+                    f"{warning_prefix}: host will lack dm_DOCKER_xxx variables"
+                )
+            # daemon_env is 'optional-silently'
         return False
 
     def _populate(self):

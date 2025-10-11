@@ -278,8 +278,7 @@ class APIClient(_Session, DaemonApiMixin):
 
         if kwargs.get("versioned_api", True):
             return f"{self.base_url}/v{self._version}{pathfmt.format(*args)}"
-        else:
-            return f"{self.base_url}{pathfmt.format(*args)}"
+        return f"{self.base_url}{pathfmt.format(*args)}"
 
     def _raise_for_status(self, response):
         """Raises stored :class:`APIError`, if one occurred."""
@@ -427,12 +426,11 @@ class APIClient(_Session, DaemonApiMixin):
 
         if stream:
             return gen
-        else:
-            try:
-                # Wait for all the frames, concatenate them, and return the result
-                return consume_socket_output(gen, demux=demux)
-            finally:
-                response.close()
+        try:
+            # Wait for all the frames, concatenate them, and return the result
+            return consume_socket_output(gen, demux=demux)
+        finally:
+            response.close()
 
     def _disable_socket_timeout(self, socket):
         """Depending on the combination of python version and whether we are
@@ -484,8 +482,7 @@ class APIClient(_Session, DaemonApiMixin):
         sep = b""
         if stream:
             return self._multiplexed_response_stream_helper(res)
-        else:
-            return sep.join(list(self._multiplexed_buffer_helper(res)))
+        return sep.join(list(self._multiplexed_buffer_helper(res)))
 
     def _unmount(self, *args):
         for proto in args:
@@ -497,8 +494,7 @@ class APIClient(_Session, DaemonApiMixin):
         except _InvalidSchema as e:
             if self._custom_adapter:
                 return self._custom_adapter
-            else:
-                raise e
+            raise e
 
     @property
     def api_version(self):

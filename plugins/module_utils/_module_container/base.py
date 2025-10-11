@@ -436,11 +436,10 @@ def _parse_port_range(range_or_port, module):
         if end < start:
             module.fail_json(msg=f'Invalid port range: "{range_or_port}"')
         return list(range(start, end + 1))
-    else:
-        try:
-            return [int(range_or_port)]
-        except ValueError:
-            module.fail_json(msg=f'Invalid port: "{range_or_port}"')
+    try:
+        return [int(range_or_port)]
+    except ValueError:
+        module.fail_json(msg=f'Invalid port: "{range_or_port}"')
 
 
 def _split_colon_ipv6(text, module):

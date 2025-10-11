@@ -932,8 +932,7 @@ def get_docker_environment(env, env_files):
     if not env_list:
         if env is not None or env_files is not None:
             return []
-        else:
-            return None
+        return None
     return sorted(env_list)
 
 
@@ -992,17 +991,16 @@ def get_docker_networks(networks, network_ids):
 def get_nanoseconds_from_raw_option(name, value):
     if value is None:
         return None
-    elif isinstance(value, int):
+    if isinstance(value, int):
         return value
-    elif isinstance(value, str):
+    if isinstance(value, str):
         try:
             return int(value)
         except ValueError:
             return convert_duration_to_nanosecond(value)
-    else:
-        raise ValueError(
-            f"Invalid type for {name} {value} ({type(value)}). Only string or int allowed."
-        )
+    raise ValueError(
+        f"Invalid type for {name} {value} ({type(value)}). Only string or int allowed."
+    )
 
 
 def get_value(key, values, default=None):
@@ -1080,8 +1078,7 @@ def has_list_changed(new_list, old_list, sort_lists=True, sort_key=None):
                     old_item_casted = new_item_type(old_item)
                     if new_item != old_item_casted:
                         return True
-                    else:
-                        continue
+                    continue
                 except UnicodeEncodeError:
                     # Fallback to assuming the strings are different
                     return True

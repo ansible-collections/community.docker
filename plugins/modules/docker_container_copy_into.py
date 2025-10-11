@@ -343,31 +343,31 @@ def retrieve_diff(
             diff["before_header"] = container_path
             diff["before"] = "(directory)"
             return
-        elif regular_stat["mode"] & (1 << (32 - 4)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 4)) != 0:
             diff["before_header"] = container_path
             diff["before"] = "(temporary file)"
             return
-        elif regular_stat["mode"] & (1 << (32 - 5)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 5)) != 0:
             diff["before_header"] = container_path
             diff["before"] = link_target
             return
-        elif regular_stat["mode"] & (1 << (32 - 6)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 6)) != 0:
             diff["before_header"] = container_path
             diff["before"] = "(device)"
             return
-        elif regular_stat["mode"] & (1 << (32 - 7)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 7)) != 0:
             diff["before_header"] = container_path
             diff["before"] = "(named pipe)"
             return
-        elif regular_stat["mode"] & (1 << (32 - 8)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 8)) != 0:
             diff["before_header"] = container_path
             diff["before"] = "(socket)"
             return
-        elif regular_stat["mode"] & (1 << (32 - 11)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 11)) != 0:
             diff["before_header"] = container_path
             diff["before"] = "(character device)"
             return
-        elif regular_stat["mode"] & (1 << (32 - 13)) != 0:
+        if regular_stat["mode"] & (1 << (32 - 13)) != 0:
             diff["before_header"] = container_path
             diff["before"] = "(unknown filesystem object)"
             return

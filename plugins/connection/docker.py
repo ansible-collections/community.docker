@@ -349,21 +349,19 @@ class Connection(ConnectionBase):
             ) >= LooseVersion("1.7"):
                 # Support for specifying the exec user was added in docker 1.7
                 return self.remote_user
-            else:
-                self.remote_user = None
-                actual_user = self._get_docker_remote_user()
-                if actual_user != self.get_option("remote_user"):
-                    display.warning(
-                        f'docker {self.docker_version} does not support remote_user, using container default: {actual_user or "?"}'
-                    )
-                return actual_user
-        elif self._display.verbosity > 2:
+            self.remote_user = None
+            actual_user = self._get_docker_remote_user()
+            if actual_user != self.get_option("remote_user"):
+                display.warning(
+                    f'docker {self.docker_version} does not support remote_user, using container default: {actual_user or "?"}'
+                )
+            return actual_user
+        if self._display.verbosity > 2:
             # Since we are not setting the actual_user, look it up so we have it for logging later
             # Only do this if display verbosity is high enough that we'll need the value
             # This saves overhead from calling into docker when we do not need to.
             return self._get_docker_remote_user()
-        else:
-            return None
+        return None
 
     def _connect(self, port=None):
         """Connect to the container. Nothing to do"""
@@ -487,10 +485,9 @@ class Connection(ConnectionBase):
             import ntpath
 
             return ntpath.normpath(remote_path)
-        else:
-            if not remote_path.startswith(os.path.sep):
-                remote_path = os.path.join(os.path.sep, remote_path)
-            return os.path.normpath(remote_path)
+        if not remote_path.startswith(os.path.sep):
+            remote_path = os.path.join(os.path.sep, remote_path)
+        return os.path.normpath(remote_path)
 
     def put_file(self, in_path, out_path):
         """Transfer a file from local to docker container"""

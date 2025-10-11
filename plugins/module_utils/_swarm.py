@@ -74,22 +74,18 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
                 swarm_info = json.loads(json_str)
                 if swarm_info["Swarm"]["NodeID"]:
                     return True
-                if swarm_info["Swarm"]["LocalNodeState"] in (
+                return swarm_info["Swarm"]["LocalNodeState"] in (
                     "active",
                     "pending",
                     "locked",
-                ):
-                    return True
+                )
             return False
-        else:
-            try:
-                node_info = self.get_node_inspect(node_id=node_id)
-            except APIError:
-                return
+        try:
+            node_info = self.get_node_inspect(node_id=node_id)
+        except APIError:
+            return
 
-            if node_info["ID"] is not None:
-                return True
-            return False
+        return node_info["ID"] is not None
 
     def check_if_swarm_manager(self):
         """

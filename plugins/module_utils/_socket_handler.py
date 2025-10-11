@@ -85,8 +85,7 @@ class DockerSocketHandlerBase:
                 if "OpenSSL.SSL.ZeroReturnError" in str(type(e)):
                     self._eof = True
                     return
-                else:
-                    raise
+                raise
         elif isinstance(self._sock, getattr(pysocket, "SocketIO")):
             data = self._sock.read()
         else:

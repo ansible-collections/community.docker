@@ -347,8 +347,7 @@ class DockerAPIEngineDriver(EngineDriver):
             )
             output = client._get_result_tty(False, res, config["Config"]["Tty"])
             return output, True
-        else:
-            return f"Result logged using `{logging_driver}` driver", False
+        return f"Result logged using `{logging_driver}` driver", False
 
     def update_container(self, client, container_id, update_parameters):
         result = client.post_json_to_json(

@@ -656,17 +656,16 @@ class ImageManager(DockerBaseClass):
 
         if archived is None:
             return build_msg("since none present")
-        elif (
+        if (
             current_image_id == api_image_id(archived.image_id)
             and [current_image_name] == archived.repo_tags
         ):
             return None
-        else:
-            name = ", ".join(archived.repo_tags)
+        name = ", ".join(archived.repo_tags)
 
-            return build_msg(
-                f"overwriting archive with image {archived.image_id} named {name}"
-            )
+        return build_msg(
+            f"overwriting archive with image {archived.image_id} named {name}"
+        )
 
     def archive_image(self, name, tag):
         """
@@ -1076,8 +1075,7 @@ class ImageManager(DockerBaseClass):
 
         if is_image_name_id(self.name):
             return self.client.find_image_by_id(self.name, accept_missing_image=True)
-        else:
-            return self.client.find_image(self.name, self.tag)
+        return self.client.find_image(self.name, self.tag)
 
 
 def main():

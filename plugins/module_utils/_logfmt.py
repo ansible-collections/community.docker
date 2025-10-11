@@ -133,38 +133,35 @@ def parse_line(line, logrus_mode=False):
             key.append(cur)
             parser.next()
             return _Mode.KEY
-        elif cur == "=":
+        if cur == "=":
             parser.next()
             return _Mode.EQUAL
-        else:
-            if logrus_mode:
-                raise InvalidLogFmt('Key must always be followed by "=" in logrus mode')
-            handle_kv(has_no_value=True)
-            parser.next()
-            return _Mode.GARBAGE
+        if logrus_mode:
+            raise InvalidLogFmt('Key must always be followed by "=" in logrus mode')
+        handle_kv(has_no_value=True)
+        parser.next()
+        return _Mode.GARBAGE
 
     def parse_equal(cur):
         if _is_ident(cur):
             value.append(cur)
             parser.next()
             return _Mode.IDENT_VALUE
-        elif cur == '"':
+        if cur == '"':
             parser.next()
             return _Mode.QUOTED_VALUE
-        else:
-            handle_kv()
-            parser.next()
-            return _Mode.GARBAGE
+        handle_kv()
+        parser.next()
+        return _Mode.GARBAGE
 
     def parse_ident_value(cur):
         if _is_ident(cur):
             value.append(cur)
             parser.next()
             return _Mode.IDENT_VALUE
-        else:
-            handle_kv()
-            parser.next()
-            return _Mode.GARBAGE
+        handle_kv()
+        parser.next()
+        return _Mode.GARBAGE
 
     def parse_quoted_value(cur):
         if cur == "\\":
@@ -182,16 +179,15 @@ def parse_line(line, logrus_mode=False):
                 value.append(parser.parse_unicode_sequence())
             parser.next()
             return _Mode.QUOTED_VALUE
-        elif cur == '"':
+        if cur == '"':
             handle_kv()
             parser.next()
             return _Mode.GARBAGE
-        elif cur < " ":
+        if cur < " ":
             raise InvalidLogFmt("Control characters in quoted string are not allowed")
-        else:
-            value.append(cur)
-            parser.next()
-            return _Mode.QUOTED_VALUE
+        value.append(cur)
+        parser.next()
+        return _Mode.QUOTED_VALUE
 
     parsers = {
         _Mode.GARBAGE: parse_garbage,

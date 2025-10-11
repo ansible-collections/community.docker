@@ -75,10 +75,9 @@ def compare_version(v1, v2):
     s2 = StrictVersion(v2)
     if s1 == s2:
         return 0
-    elif s1 > s2:
+    if s1 > s2:
         return -1
-    else:
-        return 1
+    return 1
 
 
 def version_lt(v1, v2):

@@ -500,15 +500,14 @@ class TCPSocketStreamTest(unittest.TestCase):
                 path = self.path.split("/")[-1]
                 if path == "tty":
                     return stdout_data + stderr_data
-                elif path == "no-tty":
+                if path == "no-tty":
                     data = b""
                     data += self.frame_header(1, stdout_data)
                     data += stdout_data
                     data += self.frame_header(2, stderr_data)
                     data += stderr_data
                     return data
-                else:
-                    raise NotImplementedError(f"Unknown path {path}")
+                raise NotImplementedError(f"Unknown path {path}")
 
             @staticmethod
             def frame_header(stream, data):
