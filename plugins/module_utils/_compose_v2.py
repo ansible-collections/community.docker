@@ -176,7 +176,7 @@ _RE_PULL_EVENT = re.compile(
     r"\s*"
     r"(?P<service>\S+)"
     r"\s+"
-    rf"(?P<status>{'|'.join(re.escape(status) for status in DOCKER_STATUS_PULL)})"
+    f"(?P<status>{'|'.join(re.escape(status) for status in DOCKER_STATUS_PULL)})"
     r"\s*"
     r"$"
 )
@@ -186,7 +186,7 @@ _RE_PULL_PROGRESS = re.compile(
     r"\s*"
     r"(?P<layer>\S+)"
     r"\s+"
-    rf"(?P<status>{'|'.join(
+    f"(?P<status>{'|'.join(
         re.escape(status)
         for status in sorted(DOCKER_PULL_PROGRESS_DONE | DOCKER_PULL_PROGRESS_WORKING)
     )})"
@@ -200,7 +200,7 @@ _RE_ERROR_EVENT = re.compile(
     r"\s*"
     r"(?P<resource_id>\S+)"
     r"\s+"
-    rf"(?P<status>{'|'.join(re.escape(status) for status in DOCKER_STATUS_ERROR)})"
+    f"(?P<status>{'|'.join(re.escape(status) for status in DOCKER_STATUS_ERROR)})"
     r"\s*"
     r"(?P<msg>\S.*\S)?"
     r"$"
@@ -211,7 +211,7 @@ _RE_WARNING_EVENT = re.compile(
     r"\s*"
     r"(?P<resource_id>\S+)"
     r"\s+"
-    rf"(?P<status>{'|'.join(re.escape(status) for status in DOCKER_STATUS_WARNING)})"
+    f"(?P<status>{'|'.join(re.escape(status) for status in DOCKER_STATUS_WARNING)})"
     r"\s*"
     r"(?P<msg>\S.*\S)?"
     r"$"
