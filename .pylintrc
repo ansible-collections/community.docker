@@ -384,7 +384,6 @@ disable=raw-checker-failed,
         consider-using-with,
         fixme,
         import-error,  # TODO figure out why pylint cannot find the module
-        no-else-raise,
         no-else-return,
         no-member,
         no-name-in-module,  # TODO figure out why pylint cannot find the module

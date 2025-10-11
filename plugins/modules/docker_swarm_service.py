@@ -1047,8 +1047,7 @@ def has_list_changed(new_list, old_list, sort_lists=True, sort_key=None):
         if unsorted_list and isinstance(unsorted_list[0], dict):
             if not sort_key:
                 raise ValueError("A sort key was not specified when sorting list")
-            else:
-                return sorted(unsorted_list, key=lambda k: k[sort_key])
+            return sorted(unsorted_list, key=lambda k: k[sort_key])
 
         # Either the list is empty or does not contain dictionaries
         try:

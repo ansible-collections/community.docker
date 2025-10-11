@@ -273,12 +273,11 @@ def parse_host(addr, is_win32=False, tls=False):
         raise errors.DockerException(
             f"Invalid bind address format: no path allowed for this protocol: {addr}"
         )
-    else:
-        path = parsed_url.path
-        if proto == "unix" and parsed_url.hostname is not None:
-            # For legacy reasons, we consider unix://path
-            # to be valid and equivalent to unix:///path
-            path = "/".join((parsed_url.hostname, path))
+    path = parsed_url.path
+    if proto == "unix" and parsed_url.hostname is not None:
+        # For legacy reasons, we consider unix://path
+        # to be valid and equivalent to unix:///path
+        path = "/".join((parsed_url.hostname, path))
 
     netloc = parsed_url.netloc
     if proto in ("tcp", "ssh"):

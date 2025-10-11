@@ -159,10 +159,9 @@ class Connection(ConnectionBase):
                 raise AnsibleConnectionFailure(
                     f'Could not find container "{remote_addr}" or resource in it ({e})'
                 )
-            else:
-                raise AnsibleConnectionFailure(
-                    f'Could not find container "{remote_addr}" ({e})'
-                )
+            raise AnsibleConnectionFailure(
+                f'Could not find container "{remote_addr}" ({e})'
+            )
         except APIError as e:
             if e.response is not None and e.response.status_code == 409:
                 raise AnsibleConnectionFailure(
