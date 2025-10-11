@@ -537,9 +537,9 @@ def post_fake_secret():
 
 
 # Maps real api url to fake response callback
-prefix = "http+docker://localhost"
+prefix = "http+docker://localhost"  # pylint: disable=invalid-name
 if constants.IS_WINDOWS_PLATFORM:
-    prefix = "http+docker://localnpipe"
+    prefix = "http+docker://localnpipe"  # pylint: disable=invalid-name
 
 fake_responses = {
     f"{prefix}/version": get_fake_version,

@@ -969,9 +969,9 @@ class ImageManager(DockerBaseClass):
 
             if line.get("error"):
                 if line.get("errorDetail"):
-                    errorDetail = line.get("errorDetail")
+                    error_detail = line.get("errorDetail")
                     self.fail(
-                        f"Error building {self.name} - code: {errorDetail.get('code')}, message: {errorDetail.get('message')}, logs: {build_output}"
+                        f"Error building {self.name} - code: {error_detail.get('code')}, message: {error_detail.get('message')}, logs: {build_output}"
                     )
                 else:
                     self.fail(

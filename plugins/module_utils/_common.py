@@ -98,7 +98,7 @@ MIN_DOCKER_VERSION = "1.8.0"
 
 
 if not HAS_DOCKER_PY:
-    docker_version = None
+    docker_version = None  # pylint: disable=invalid-name
 
     # No Docker SDK for Python. Create a place holder client to allow
     # instantiation of AnsibleModule and proper error handing
@@ -194,7 +194,7 @@ class AnsibleDockerClientBase(Client):
     def __init__(self, min_docker_version=None, min_docker_api_version=None):
         if min_docker_version is None:
             min_docker_version = MIN_DOCKER_VERSION
-        NEEDS_DOCKER_PY2 = LooseVersion(min_docker_version) >= LooseVersion("2.0.0")
+        needs_docker_py2 = LooseVersion(min_docker_version) >= LooseVersion("2.0.0")
 
         self.docker_py_version = LooseVersion(docker_version)
 
@@ -218,7 +218,7 @@ class AnsibleDockerClientBase(Client):
                 f"Error: Docker SDK for Python version is {docker_version} ({platform.node()}'s Python {sys.executable})."
                 f" Minimum version required is {min_docker_version}."
             )
-            if not NEEDS_DOCKER_PY2:
+            if not needs_docker_py2:
                 # The minimal required version is < 2.0 (and the current version as well).
                 # Advertise docker (instead of docker-py).
                 msg += DOCKERPYUPGRADE_RECOMMEND_DOCKER

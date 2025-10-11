@@ -125,16 +125,16 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     NAME = "community.docker.docker_machine"
 
-    DOCKER_MACHINE_PATH = None
+    docker_machine_path = None
 
     def _run_command(self, args):
-        if not self.DOCKER_MACHINE_PATH:
+        if not self.docker_machine_path:
             try:
-                self.DOCKER_MACHINE_PATH = get_bin_path("docker-machine")
+                self.docker_machine_path = get_bin_path("docker-machine")
             except ValueError as e:
                 raise AnsibleError(to_native(e))
 
-        command = [self.DOCKER_MACHINE_PATH]
+        command = [self.docker_machine_path]
         command.extend(args)
         display.debug(f"Executing command {command}")
         try:

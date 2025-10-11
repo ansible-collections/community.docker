@@ -574,7 +574,11 @@ class Connection(ConnectionBase):
                 # Older docker does not have native support for fetching files command `cp`
                 # If `cp` fails, try to use `dd` instead
                 args = self._build_exec_cmd(
-                    [self._play_context.executable, "-c", f"dd if={in_path} bs={BUFSIZE}"]
+                    [
+                        self._play_context.executable,
+                        "-c",
+                        f"dd if={in_path} bs={BUFSIZE}",
+                    ]
                 )
                 args = [to_bytes(i, errors="surrogate_or_strict") for i in args]
                 with open(

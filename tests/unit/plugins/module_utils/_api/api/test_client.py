@@ -115,8 +115,8 @@ def fake_read_from_socket(self, response, stream, tty=False, demux=False):
     return b""
 
 
-url_base = f"{fake_api.prefix}/"
-url_prefix = f"{url_base}v{DEFAULT_DOCKER_API_VERSION}/"
+url_base = f"{fake_api.prefix}/"  # pylint: disable=invalid-name
+url_prefix = f"{url_base}v{DEFAULT_DOCKER_API_VERSION}/"  # pylint: disable=invalid-name
 
 
 class BaseAPIClientTest(unittest.TestCase):
@@ -482,7 +482,7 @@ class TCPSocketStreamTest(unittest.TestCase):
         stderr_data = cls.stderr_data
 
         class Handler(BaseHTTPRequestHandler):
-            def do_POST(self):
+            def do_POST(self):  # pylint: disable=invalid-name
                 resp_data = self.get_resp_data()
                 self.send_response(101)
                 self.send_header("Content-Type", "application/vnd.docker.raw-stream")

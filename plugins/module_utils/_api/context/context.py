@@ -238,11 +238,11 @@ class Context:
         return self.context_type is None
 
     @property
-    def Name(self):
+    def Name(self):  # pylint: disable=invalid-name
         return self.name
 
     @property
-    def Host(self):
+    def Host(self):  # pylint: disable=invalid-name
         if not self.orchestrator or self.orchestrator == "swarm":
             endpoint = self.endpoints.get("docker", None)
             if endpoint:
@@ -252,18 +252,18 @@ class Context:
         return self.endpoints[self.orchestrator].get("Host", None)
 
     @property
-    def Orchestrator(self):
+    def Orchestrator(self):  # pylint: disable=invalid-name
         return self.orchestrator
 
     @property
-    def Metadata(self):
+    def Metadata(self):  # pylint: disable=invalid-name
         meta = {}
         if self.orchestrator:
             meta = {"StackOrchestrator": self.orchestrator}
         return {"Name": self.name, "Metadata": meta, "Endpoints": self.endpoints}
 
     @property
-    def TLSConfig(self):
+    def TLSConfig(self):  # pylint: disable=invalid-name
         key = self.orchestrator
         if not key or key == "swarm":
             key = "docker"
@@ -272,7 +272,7 @@ class Context:
         return None
 
     @property
-    def TLSMaterial(self):
+    def TLSMaterial(self):  # pylint: disable=invalid-name
         certs = {}
         for endpoint, tls in self.tls_cfg.items():
             cert, key = tls.cert
@@ -280,5 +280,5 @@ class Context:
         return {"TLSMaterial": certs}
 
     @property
-    def Storage(self):
+    def Storage(self):  # pylint: disable=invalid-name
         return {"Storage": {"MetadataPath": self.meta_path, "TLSPath": self.tls_path}}
