@@ -181,15 +181,16 @@ _RE_PULL_EVENT = re.compile(
     r"$"
 )
 
+_DOCKER_PULL_PROGRESS_WD = sorted(
+    DOCKER_PULL_PROGRESS_DONE | DOCKER_PULL_PROGRESS_WORKING
+)
+
 _RE_PULL_PROGRESS = re.compile(
     r"^"
     r"\s*"
     r"(?P<layer>\S+)"
     r"\s+"
-    f"(?P<status>{'|'.join(
-        re.escape(status)
-        for status in sorted(DOCKER_PULL_PROGRESS_DONE | DOCKER_PULL_PROGRESS_WORKING)
-    )})"
+    f"(?P<status>{'|'.join(re.escape(status) for status in _DOCKER_PULL_PROGRESS_WD)})"
     r"\s*"
     r"(?:|\s\[[^]]+\]\s+\S+\s*|\s+[0-9.kKmMgGbB]+/[0-9.kKmMgGbB]+\s*)"
     r"$"
