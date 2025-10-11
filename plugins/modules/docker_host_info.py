@@ -271,8 +271,7 @@ class DockerHostManager(DockerBaseClass):
         try:
             if self.verbose_output:
                 return self.client.df()
-            else:
-                return dict(LayersSize=self.client.df()["LayersSize"])
+            return dict(LayersSize=self.client.df()["LayersSize"])
         except APIError as exc:
             self.client.fail(f"Error inspecting docker host: {exc}")
 

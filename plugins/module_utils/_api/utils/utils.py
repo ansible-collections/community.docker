@@ -75,10 +75,9 @@ def compare_version(v1, v2):
     s2 = StrictVersion(v2)
     if s1 == s2:
         return 0
-    elif s1 > s2:
+    if s1 > s2:
         return -1
-    else:
-        return 1
+    return 1
 
 
 def version_lt(v1, v2):
@@ -250,7 +249,7 @@ def parse_host(addr, is_win32=False, tls=False):
 
     # These protos are valid aliases for our library but not for the
     # official spec
-    if proto == "http" or proto == "https":
+    if proto in ("http", "https"):
         tls = proto == "https"
         proto = "tcp"
     elif proto == "http+unix":
@@ -273,12 +272,11 @@ def parse_host(addr, is_win32=False, tls=False):
         raise errors.DockerException(
             f"Invalid bind address format: no path allowed for this protocol: {addr}"
         )
-    else:
-        path = parsed_url.path
-        if proto == "unix" and parsed_url.hostname is not None:
-            # For legacy reasons, we consider unix://path
-            # to be valid and equivalent to unix:///path
-            path = "/".join((parsed_url.hostname, path))
+    path = parsed_url.path
+    if proto == "unix" and parsed_url.hostname is not None:
+        # For legacy reasons, we consider unix://path
+        # to be valid and equivalent to unix:///path
+        path = "/".join((parsed_url.hostname, path))
 
     netloc = parsed_url.netloc
     if proto in ("tcp", "ssh"):
@@ -419,7 +417,7 @@ def parse_bytes(s):
     else:
         digits_part = s[:-1]
 
-    if suffix in units.keys() or suffix.isdigit():
+    if suffix in units or suffix.isdigit():
         try:
             digits = float(digits_part)
         except ValueError:

@@ -189,7 +189,7 @@ class ImageExportManager(DockerBaseClass):
             with open(self.path, "wb") as fd:
                 for chunk in chunks:
                     fd.write(chunk)
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error writing image archive {self.path} - {exc}")
 
     def export_images(self):
@@ -205,7 +205,7 @@ class ImageExportManager(DockerBaseClass):
                     DEFAULT_DATA_CHUNK_SIZE,
                     False,
                 )
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error getting image {image_names[0]} - {exc}")
         else:
             self.log(f"Getting archive of images {image_names_str}")
@@ -219,7 +219,7 @@ class ImageExportManager(DockerBaseClass):
                     DEFAULT_DATA_CHUNK_SIZE,
                     False,
                 )
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error getting images {image_names_str} - {exc}")
 
         self.write_chunks(chunks)

@@ -196,9 +196,8 @@ def docker_service_inspect(client, service_name):
     rc, out, err = client.call_cli("service", "inspect", service_name)
     if rc != 0:
         return None
-    else:
-        ret = json.loads(out)[0]["Spec"]
-        return ret
+    ret = json.loads(out)[0]["Spec"]
+    return ret
 
 
 def docker_stack_deploy(client, stack_name, compose_files):

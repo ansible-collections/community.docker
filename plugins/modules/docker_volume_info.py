@@ -87,7 +87,7 @@ def get_existing_volume(client, volume_name):
         return client.get_json("/volumes/{0}", volume_name)
     except NotFound:
         return None
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=broad-exception-caught
         client.fail(f"Error inspecting volume: {exc}")
 
 

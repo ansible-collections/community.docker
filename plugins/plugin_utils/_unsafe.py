@@ -27,15 +27,15 @@ def make_unsafe(value):
 
     if isinstance(value, Mapping):
         return dict((make_unsafe(key), make_unsafe(val)) for key, val in value.items())
-    elif isinstance(value, Set):
+    if isinstance(value, Set):
         return set(make_unsafe(elt) for elt in value)
-    elif is_sequence(value):
+    if is_sequence(value):
         return type(value)(make_unsafe(elt) for elt in value)
-    elif isinstance(value, bytes):
+    if isinstance(value, bytes):
         if _RE_TEMPLATE_CHARS_BYTES.search(value):
             value = _make_unsafe(value)
         return value
-    elif isinstance(value, str):
+    if isinstance(value, str):
         if _RE_TEMPLATE_CHARS.search(value):
             value = _make_unsafe(value)
         return value

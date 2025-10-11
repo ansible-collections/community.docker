@@ -214,8 +214,8 @@ class ImageTagger(DockerBaseClass):
                 )
                 self.client._raise_for_status(res)
                 if res.status_code != 201:
-                    raise Exception("Tag operation failed.")
-            except Exception as exc:
+                    raise RuntimeError("Tag operation failed.")
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error: failed to tag image as {name}:{tag} - {exc}")
 
         return True, msg, tagged_image

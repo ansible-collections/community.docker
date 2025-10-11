@@ -111,8 +111,7 @@ def frames_iter(socket, tty):
     """
     if tty:
         return ((STDOUT, frame) for frame in frames_iter_tty(socket))
-    else:
-        return frames_iter_no_tty(socket)
+    return frames_iter_no_tty(socket)
 
 
 def frames_iter_no_tty(socket):
@@ -194,7 +193,6 @@ def demux_adaptor(stream_id, data):
     """
     if stream_id == STDOUT:
         return (data, None)
-    elif stream_id == STDERR:
+    if stream_id == STDERR:
         return (None, data)
-    else:
-        raise ValueError(f"{stream_id} is not a valid stream")
+    raise ValueError(f"{stream_id} is not a valid stream")

@@ -932,8 +932,7 @@ def get_docker_environment(env, env_files):
     if not env_list:
         if env is not None or env_files is not None:
             return []
-        else:
-            return None
+        return None
     return sorted(env_list)
 
 
@@ -992,17 +991,16 @@ def get_docker_networks(networks, network_ids):
 def get_nanoseconds_from_raw_option(name, value):
     if value is None:
         return None
-    elif isinstance(value, int):
+    if isinstance(value, int):
         return value
-    elif isinstance(value, str):
+    if isinstance(value, str):
         try:
             return int(value)
         except ValueError:
             return convert_duration_to_nanosecond(value)
-    else:
-        raise ValueError(
-            f"Invalid type for {name} {value} ({type(value)}). Only string or int allowed."
-        )
+    raise ValueError(
+        f"Invalid type for {name} {value} ({type(value)}). Only string or int allowed."
+    )
 
 
 def get_value(key, values, default=None):
@@ -1046,9 +1044,8 @@ def has_list_changed(new_list, old_list, sort_lists=True, sort_key=None):
 
         if unsorted_list and isinstance(unsorted_list[0], dict):
             if not sort_key:
-                raise Exception("A sort key was not specified when sorting list")
-            else:
-                return sorted(unsorted_list, key=lambda k: k[sort_key])
+                raise ValueError("A sort key was not specified when sorting list")
+            return sorted(unsorted_list, key=lambda k: k[sort_key])
 
         # Either the list is empty or does not contain dictionaries
         try:
@@ -1081,8 +1078,7 @@ def has_list_changed(new_list, old_list, sort_lists=True, sort_key=None):
                     old_item_casted = new_item_type(old_item)
                     if new_item != old_item_casted:
                         return True
-                    else:
-                        continue
+                    continue
                 except UnicodeEncodeError:
                     # Fallback to assuming the strings are different
                     return True
@@ -1374,7 +1370,7 @@ class DockerService(DockerBaseClass):
             try:
                 memory = human_to_bytes(memory)
             except ValueError as exc:
-                raise Exception(f"Failed to convert limit_memory to bytes: {exc}")
+                raise ValueError(f"Failed to convert limit_memory to bytes: {exc}")
         return {
             "limit_cpu": cpus,
             "limit_memory": memory,
@@ -1396,7 +1392,7 @@ class DockerService(DockerBaseClass):
             try:
                 memory = human_to_bytes(memory)
             except ValueError as exc:
-                raise Exception(f"Failed to convert reserve_memory to bytes: {exc}")
+                raise ValueError(f"Failed to convert reserve_memory to bytes: {exc}")
         return {
             "reserve_cpu": cpus,
             "reserve_memory": memory,
@@ -1470,7 +1466,7 @@ class DockerService(DockerBaseClass):
                         for index, item in invalid_items
                     ]
                 )
-                raise Exception(
+                raise ValueError(
                     "All items in a command list need to be strings. "
                     f"Check quoting. Invalid items: {errors}."
                 )
@@ -2339,7 +2335,7 @@ class DockerServiceManager:
             ds.mode = to_text("replicated-job", encoding="utf-8")
             ds.replicas = mode["ReplicatedJob"]["TotalCompletions"]
         else:
-            raise Exception(f"Unknown service mode: {mode}")
+            raise ValueError(f"Unknown service mode: {mode}")
 
         raw_data_mounts = task_template_data["ContainerSpec"].get("Mounts")
         if raw_data_mounts:
@@ -2510,7 +2506,7 @@ class DockerServiceManager:
 
         try:
             current_service = self.get_service(module.params["name"])
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             self.client.fail(
                 f"Error looking for service named {module.params['name']}: {e}"
             )
@@ -2527,7 +2523,7 @@ class DockerServiceManager:
                 network_ids,
                 self.client,
             )
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             return self.client.fail(f"Error parsing module parameters: {e}")
 
         changed = False

@@ -381,23 +381,9 @@ disable=raw-checker-failed,
         # To clean up:
         abstract-method,
         arguments-differ,
-        attribute-defined-outside-init,
-        broad-exception-caught,
-        broad-exception-raised,
-        consider-iterating-dictionary,
-        consider-using-dict-comprehension,
-        consider-using-f-string,
-        consider-using-in,
-        consider-using-max-builtin,
         consider-using-with,
         fixme,
         import-error,  # TODO figure out why pylint cannot find the module
-        invalid-name,
-        keyword-arg-before-vararg,
-        line-too-long,
-        no-else-continue,
-        no-else-raise,
-        no-else-return,
         no-member,
         no-name-in-module,  # TODO figure out why pylint cannot find the module
         not-an-iterable,  # TODO: needs better typing info

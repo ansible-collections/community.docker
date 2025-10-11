@@ -72,7 +72,7 @@ class SSHSocket(socket.socket):
         env.pop("LD_LIBRARY_PATH", None)
         env.pop("SSL_CERT_FILE", None)
 
-        self.proc = subprocess.Popen(
+        self.proc = subprocess.Popen(  # pylint: disable=consider-using-with
             args,
             env=env,
             stdout=subprocess.PIPE,
@@ -82,7 +82,7 @@ class SSHSocket(socket.socket):
 
     def _write(self, data):
         if not self.proc or self.proc.stdin.closed:
-            raise Exception(
+            raise RuntimeError(
                 "SSH subprocess not initiated. connect() must be called first."
             )
         written = self.proc.stdin.write(data)
@@ -97,7 +97,7 @@ class SSHSocket(socket.socket):
 
     def recv(self, n):
         if not self.proc:
-            raise Exception(
+            raise RuntimeError(
                 "SSH subprocess not initiated. connect() must be called first."
             )
         return self.proc.stdout.read(n)

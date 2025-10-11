@@ -618,7 +618,7 @@ class ImageManager(DockerBaseClass):
                 except NotFound:
                     # If the image vanished while we were trying to remove it, do not fail
                     pass
-                except Exception as exc:
+                except Exception as exc:  # pylint: disable=broad-exception-caught
                     self.fail(f"Error removing image {name} - {exc}")
 
             self.results["changed"] = True
@@ -656,17 +656,16 @@ class ImageManager(DockerBaseClass):
 
         if archived is None:
             return build_msg("since none present")
-        elif (
+        if (
             current_image_id == api_image_id(archived.image_id)
             and [current_image_name] == archived.repo_tags
         ):
             return None
-        else:
-            name = ", ".join(archived.repo_tags)
+        name = ", ".join(archived.repo_tags)
 
-            return build_msg(
-                f"overwriting archive with image {archived.image_id} named {name}"
-            )
+        return build_msg(
+            f"overwriting archive with image {archived.image_id} named {name}"
+        )
 
     def archive_image(self, name, tag):
         """
@@ -714,14 +713,14 @@ class ImageManager(DockerBaseClass):
                     DEFAULT_DATA_CHUNK_SIZE,
                     False,
                 )
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error getting image {image_name} - {exc}")
 
             try:
                 with open(self.archive_path, "wb") as fd:
                     for chunk in saved_image:
                         fd.write(chunk)
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error writing image archive {self.archive_path} - {exc}")
 
         self.results["image"] = image
@@ -779,12 +778,12 @@ class ImageManager(DockerBaseClass):
                     for line in self.client._stream_helper(response, decode=True):
                         self.log(line, pretty_print=True)
                         if line.get("errorDetail"):
-                            raise Exception(line["errorDetail"]["message"])
+                            raise RuntimeError(line["errorDetail"]["message"])
                         status = line.get("status")
                         if status == "Pushing":
                             changed = True
                     self.results["changed"] = changed
-                except Exception as exc:
+                except Exception as exc:  # pylint: disable=broad-exception-caught
                     if "unauthorized" in str(exc):
                         if "authentication required" in str(exc):
                             self.fail(
@@ -842,8 +841,8 @@ class ImageManager(DockerBaseClass):
                     )
                     self.client._raise_for_status(res)
                     if res.status_code != 201:
-                        raise Exception("Tag operation failed.")
-                except Exception as exc:
+                        raise RuntimeError("Tag operation failed.")
+                except Exception as exc:  # pylint: disable=broad-exception-caught
                     self.fail(f"Error: failed to tag image - {exc}")
                 self.results["image"] = self.client.find_image(name=repo, tag=repo_tag)
                 if image and image["Id"] == self.results["image"]["Id"]:
@@ -969,9 +968,9 @@ class ImageManager(DockerBaseClass):
 
             if line.get("error"):
                 if line.get("errorDetail"):
-                    errorDetail = line.get("errorDetail")
+                    error_detail = line.get("errorDetail")
                     self.fail(
-                        f"Error building {self.name} - code: {errorDetail.get('code')}, message: {errorDetail.get('message')}, logs: {build_output}"
+                        f"Error building {self.name} - code: {error_detail.get('code')}, message: {error_detail.get('message')}, logs: {build_output}"
                     )
                 else:
                     self.fail(
@@ -1019,7 +1018,7 @@ class ImageManager(DockerBaseClass):
                 f"Error loading image {self.name} - {exc}",
                 stdout="\n".join(load_output),
             )
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self.client.fail(
                 f"Error loading image {self.name} - {exc}",
                 stdout="\n".join(load_output),
@@ -1076,8 +1075,7 @@ class ImageManager(DockerBaseClass):
 
         if is_image_name_id(self.name):
             return self.client.find_image_by_id(self.name, accept_missing_image=True)
-        else:
-            return self.client.find_image(self.name, self.tag)
+        return self.client.find_image(self.name, self.tag)
 
 
 def main():

@@ -176,9 +176,13 @@ _RE_PULL_EVENT = re.compile(
     r"\s*"
     r"(?P<service>\S+)"
     r"\s+"
-    r"(?P<status>%s)"
+    f"(?P<status>{'|'.join(re.escape(status) for status in DOCKER_STATUS_PULL)})"
     r"\s*"
-    r"$" % "|".join(re.escape(status) for status in DOCKER_STATUS_PULL)
+    r"$"
+)
+
+_DOCKER_PULL_PROGRESS_WD = sorted(
+    DOCKER_PULL_PROGRESS_DONE | DOCKER_PULL_PROGRESS_WORKING
 )
 
 _RE_PULL_PROGRESS = re.compile(
@@ -186,14 +190,10 @@ _RE_PULL_PROGRESS = re.compile(
     r"\s*"
     r"(?P<layer>\S+)"
     r"\s+"
-    r"(?P<status>%s)"
+    f"(?P<status>{'|'.join(re.escape(status) for status in _DOCKER_PULL_PROGRESS_WD)})"
     r"\s*"
     r"(?:|\s\[[^]]+\]\s+\S+\s*|\s+[0-9.kKmMgGbB]+/[0-9.kKmMgGbB]+\s*)"
     r"$"
-    % "|".join(
-        re.escape(status)
-        for status in sorted(DOCKER_PULL_PROGRESS_DONE | DOCKER_PULL_PROGRESS_WORKING)
-    )
 )
 
 _RE_ERROR_EVENT = re.compile(
@@ -201,10 +201,10 @@ _RE_ERROR_EVENT = re.compile(
     r"\s*"
     r"(?P<resource_id>\S+)"
     r"\s+"
-    r"(?P<status>%s)"
+    f"(?P<status>{'|'.join(re.escape(status) for status in DOCKER_STATUS_ERROR)})"
     r"\s*"
     r"(?P<msg>\S.*\S)?"
-    r"$" % "|".join(re.escape(status) for status in DOCKER_STATUS_ERROR)
+    r"$"
 )
 
 _RE_WARNING_EVENT = re.compile(
@@ -212,10 +212,10 @@ _RE_WARNING_EVENT = re.compile(
     r"\s*"
     r"(?P<resource_id>\S+)"
     r"\s+"
-    r"(?P<status>%s)"
+    f"(?P<status>{'|'.join(re.escape(status) for status in DOCKER_STATUS_WARNING)})"
     r"\s*"
     r"(?P<msg>\S.*\S)?"
-    r"$" % "|".join(re.escape(status) for status in DOCKER_STATUS_WARNING)
+    r"$"
 )
 
 _RE_CONTINUE_EVENT = re.compile(r"^\s*(?P<resource_id>\S+)\s+-\s*(?P<msg>\S(?:|.*\S))$")
@@ -405,7 +405,7 @@ def parse_json_events(stderr, warn_function=None):
             continue
         try:
             line_data = json.loads(line)
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             if warn_function:
                 warn_function(
                     f"Cannot parse event from line: {line!r}: {exc}. Please report this at "
@@ -544,7 +544,7 @@ def parse_events(stderr, dry_run=False, warn_function=None, nonzero_rc=False):
                 line, warn_missing_dry_run_prefix, warn_function
             )
             continue
-        elif parsed:
+        if parsed:
             continue
         match = _RE_BUILD_PROGRESS_EVENT.match(line)
         if match:
@@ -748,7 +748,7 @@ class BaseComposeManager(DockerBaseClass):
                         encoding="utf-8",
                         Dumper=_SafeDumper,
                     )
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error writing to {compose_file} - {exc}")
         else:
             self.project_src = os.path.abspath(parameters["project_src"])
@@ -804,7 +804,7 @@ class BaseComposeManager(DockerBaseClass):
             if version == "dev":
                 return None
             return version.lstrip("v")
-        except Exception:
+        except Exception:  # pylint: disable=broad-exception-caught
             return None
 
     def get_compose_version_from_api(self):
@@ -946,6 +946,6 @@ class BaseComposeManager(DockerBaseClass):
         for directory in self.cleanup_dirs:
             try:
                 shutil.rmtree(directory, True)
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 # should not happen, but simply ignore to be on the safe side
                 pass

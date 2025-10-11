@@ -37,6 +37,4 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
         )
 
     def _get_params(self):
-        return dict(
-            [(option, self.plugin.get_option(option)) for option in DOCKER_COMMON_ARGS]
-        )
+        return {option: self.plugin.get_option(option) for option in DOCKER_COMMON_ARGS}

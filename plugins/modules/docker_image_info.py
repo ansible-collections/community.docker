@@ -212,7 +212,7 @@ class ImageManager(DockerBaseClass):
                 inspection = self.client.get_json("/images/{0}/json", image["Id"])
             except NotFound:
                 inspection = None
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error inspecting image {image['Id']} - {exc}")
             results.append(inspection)
         return results

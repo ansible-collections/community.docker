@@ -2,6 +2,8 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# pylint: disable=line-too-long
+
 from __future__ import annotations
 
 from ansible_collections.community.docker.plugins.module_utils._compose_v2 import (

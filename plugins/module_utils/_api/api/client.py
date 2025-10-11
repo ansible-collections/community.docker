@@ -47,7 +47,7 @@ from ..transport.sshconn import PARAMIKO_IMPORT_ERROR, SSHHTTPAdapter
 from ..transport.ssladapter import SSLHTTPAdapter
 from ..transport.unixconn import UnixHTTPAdapter
 from ..utils import config, json_stream, utils
-from ..utils.decorators import check_resource, update_headers
+from ..utils.decorators import update_headers
 from ..utils.proxy import ProxyConfig
 from ..utils.socket import consume_socket_output, demux_adaptor, frames_iter
 from .daemon import DaemonApiMixin
@@ -278,8 +278,7 @@ class APIClient(_Session, DaemonApiMixin):
 
         if kwargs.get("versioned_api", True):
             return f"{self.base_url}/v{self._version}{pathfmt.format(*args)}"
-        else:
-            return f"{self.base_url}{pathfmt.format(*args)}"
+        return f"{self.base_url}{pathfmt.format(*args)}"
 
     def _raise_for_status(self, response):
         """Raises stored :class:`APIError`, if one occurred."""
@@ -427,12 +426,11 @@ class APIClient(_Session, DaemonApiMixin):
 
         if stream:
             return gen
-        else:
-            try:
-                # Wait for all the frames, concatenate them, and return the result
-                return consume_socket_output(gen, demux=demux)
-            finally:
-                response.close()
+        try:
+            # Wait for all the frames, concatenate them, and return the result
+            return consume_socket_output(gen, demux=demux)
+        finally:
+            response.close()
 
     def _disable_socket_timeout(self, socket):
         """Depending on the combination of python version and whether we are
@@ -462,14 +460,6 @@ class APIClient(_Session, DaemonApiMixin):
 
             s.settimeout(None)
 
-    @check_resource("container")
-    def _check_is_tty(self, container):
-        cont = self.inspect_container(container)
-        return cont["Config"]["Tty"]
-
-    def _get_result(self, container, stream, res):
-        return self._get_result_tty(stream, res, self._check_is_tty(container))
-
     def _get_result_tty(self, stream, res, is_tty):
         # We should also use raw streaming (without keep-alive)
         # if we are dealing with a tty-enabled container.
@@ -484,8 +474,7 @@ class APIClient(_Session, DaemonApiMixin):
         sep = b""
         if stream:
             return self._multiplexed_response_stream_helper(res)
-        else:
-            return sep.join(list(self._multiplexed_buffer_helper(res)))
+        return sep.join(list(self._multiplexed_buffer_helper(res)))
 
     def _unmount(self, *args):
         for proto in args:
@@ -497,8 +486,7 @@ class APIClient(_Session, DaemonApiMixin):
         except _InvalidSchema as e:
             if self._custom_adapter:
                 return self._custom_adapter
-            else:
-                raise e
+            raise e
 
     @property
     def api_version(self):

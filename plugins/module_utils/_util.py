@@ -56,13 +56,11 @@ DOCKER_COMMON_ARGS = dict(
     debug=dict(type="bool", default=False),
 )
 
-DOCKER_COMMON_ARGS_VARS = dict(
-    [
-        [option_name, f"ansible_docker_{option_name}"]
-        for option_name in DOCKER_COMMON_ARGS
-        if option_name != "debug"
-    ]
-)
+DOCKER_COMMON_ARGS_VARS = {
+    option_name: f"ansible_docker_{option_name}"
+    for option_name in DOCKER_COMMON_ARGS
+    if option_name != "debug"
+}
 
 DOCKER_MUTUALLY_EXCLUSIVE = []
 
@@ -100,10 +98,9 @@ def sanitize_result(data):
     """
     if isinstance(data, dict):
         return dict((k, sanitize_result(v)) for k, v in data.items())
-    elif isinstance(data, (list, tuple)):
+    if isinstance(data, (list, tuple)):
         return [sanitize_result(v) for v in data]
-    else:
-        return data
+    return data
 
 
 def log_debug(msg, pretty_print=False):
@@ -196,31 +193,28 @@ def compare_generic(a, b, method, datatype):
     # Do proper comparison (both objects not None)
     if datatype == "value":
         return a == b
-    elif datatype == "list":
+    if datatype == "list":
         if method == "strict":
             return a == b
-        else:
-            i = 0
-            for v in a:
-                while i < len(b) and b[i] != v:
-                    i += 1
-                if i == len(b):
-                    return False
+        i = 0
+        for v in a:
+            while i < len(b) and b[i] != v:
                 i += 1
-            return True
-    elif datatype == "dict":
+            if i == len(b):
+                return False
+            i += 1
+        return True
+    if datatype == "dict":
         if method == "strict":
             return a == b
-        else:
-            return compare_dict_allow_more_present(a, b)
-    elif datatype == "set":
+        return compare_dict_allow_more_present(a, b)
+    if datatype == "set":
         set_a = set(a)
         set_b = set(b)
         if method == "strict":
             return set_a == set_b
-        else:
-            return set_b >= set_a
-    elif datatype == "set(dict)":
+        return set_b >= set_a
+    if datatype == "set(dict)":
         for av in a:
             found = False
             for bv in b:
@@ -337,10 +331,9 @@ def clean_dict_booleans_for_docker_api(data, allow_sequences=False):
     def sanitize(value):
         if value is True:
             return "true"
-        elif value is False:
+        if value is False:
             return "false"
-        else:
-            return str(value)
+        return str(value)
 
     result = dict()
     if data is not None:
