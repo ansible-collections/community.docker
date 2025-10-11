@@ -1,0 +1,4 @@
+bugfixes:
+  - "docker connection plugin - fix crash instead of warning if Docker version does not support ``remote_user`` (https://github.com/ansible-collections/community.docker/pull/1161)."
+  - "docker_compose_v2_exec - fix crash instead of reporting error if ``detach=true`` and ``stdin`` is provided (https://github.com/ansible-collections/community.docker/pull/1161)."
+  - "docker_compose_v2_run - fix crash instead of reporting error if ``detach=true`` and ``stdin`` is provided (https://github.com/ansible-collections/community.docker/pull/1161)."
