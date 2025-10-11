@@ -353,7 +353,7 @@ class Connection(ConnectionBase):
                 actual_user = self._get_docker_remote_user()
                 if actual_user != self.get_option("remote_user"):
                     display.warning(
-                        f'docker {self.docker_version} does not support remote_user, using container default: {self.actual_user or "?"}'
+                        f'docker {self.docker_version} does not support remote_user, using container default: {actual_user or "?"}'
                     )
                 return actual_user
         elif self._display.verbosity > 2:
