@@ -125,19 +125,22 @@ def create_archive(root, files=None, fileobj=None, gzip=False, extra_files=None)
 
 
 def mkbuildcontext(dockerfile):
-    f = tempfile.NamedTemporaryFile()
-    t = tarfile.open(mode="w", fileobj=f)
-    if isinstance(dockerfile, io.StringIO):
-        raise TypeError("Please use io.BytesIO to create in-memory Dockerfiles")
-    elif isinstance(dockerfile, io.BytesIO):
-        dfinfo = tarfile.TarInfo("Dockerfile")
-        dfinfo.size = len(dockerfile.getvalue())
-        dockerfile.seek(0)
-    else:
-        dfinfo = t.gettarinfo(fileobj=dockerfile, arcname="Dockerfile")
-    t.addfile(dfinfo, dockerfile)
-    t.close()
-    f.seek(0)
+    f = tempfile.NamedTemporaryFile()  # pylint: disable=consider-using-with
+    try:
+        with tarfile.open(mode="w", fileobj=f) as t:
+            if isinstance(dockerfile, io.StringIO):
+                raise TypeError("Please use io.BytesIO to create in-memory Dockerfiles")
+            elif isinstance(dockerfile, io.BytesIO):
+                dfinfo = tarfile.TarInfo("Dockerfile")
+                dfinfo.size = len(dockerfile.getvalue())
+                dockerfile.seek(0)
+            else:
+                dfinfo = t.gettarinfo(fileobj=dockerfile, arcname="Dockerfile")
+            t.addfile(dfinfo, dockerfile)
+        f.seek(0)
+    except Exception:  # noqa: E722
+        f.close()
+        raise
     return f
 
 

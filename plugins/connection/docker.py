@@ -182,10 +182,10 @@ class Connection(ConnectionBase):
         old_version_subcommand = ["version"]
 
         old_docker_cmd = [self.docker_cmd] + cmd_args + old_version_subcommand
-        p = subprocess.Popen(
+        with subprocess.Popen(
             old_docker_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-        cmd_output, err = p.communicate()
+        ) as p:
+            cmd_output, err = p.communicate()
 
         return old_docker_cmd, to_native(cmd_output), err, p.returncode
 
@@ -196,11 +196,11 @@ class Connection(ConnectionBase):
         new_version_subcommand = ["version", "--format", "'{{.Server.Version}}'"]
 
         new_docker_cmd = [self.docker_cmd] + cmd_args + new_version_subcommand
-        p = subprocess.Popen(
+        with subprocess.Popen(
             new_docker_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-        cmd_output, err = p.communicate()
-        return new_docker_cmd, to_native(cmd_output), err, p.returncode
+        ) as p:
+            cmd_output, err = p.communicate()
+            return new_docker_cmd, to_native(cmd_output), err, p.returncode
 
     def _get_docker_version(self):
 
@@ -223,21 +223,20 @@ class Connection(ConnectionBase):
         container = self.get_option("remote_addr")
         if container in self._container_user_cache:
             return self._container_user_cache[container]
-        p = subprocess.Popen(
+        with subprocess.Popen(
             [self.docker_cmd, "inspect", "--format", "{{.Config.User}}", container],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-        )
+        ) as p:
+            out, err = p.communicate()
+            out = to_text(out, errors="surrogate_or_strict")
 
-        out, err = p.communicate()
-        out = to_text(out, errors="surrogate_or_strict")
-
-        if p.returncode != 0:
-            display.warning(
-                f"unable to retrieve default user from docker container: {out} {to_text(err)}"
-            )
-            self._container_user_cache[container] = None
-            return None
+            if p.returncode != 0:
+                display.warning(
+                    f"unable to retrieve default user from docker container: {out} {to_text(err)}"
+                )
+                self._container_user_cache[container] = None
+                return None
 
         # The default exec user is root, unless it was changed in the Dockerfile with USER
         user = out.strip() or "root"
@@ -392,87 +391,87 @@ class Connection(ConnectionBase):
 
         local_cmd = [to_bytes(i, errors="surrogate_or_strict") for i in local_cmd]
 
-        p = subprocess.Popen(
+        with subprocess.Popen(
             local_cmd,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-        )
-        display.debug("done running command with Popen()")
+        ) as p:
+            display.debug("done running command with Popen()")
 
-        if self.become and self.become.expect_prompt() and sudoable:
-            fcntl.fcntl(
-                p.stdout,
-                fcntl.F_SETFL,
-                fcntl.fcntl(p.stdout, fcntl.F_GETFL) | os.O_NONBLOCK,
-            )
-            fcntl.fcntl(
-                p.stderr,
-                fcntl.F_SETFL,
-                fcntl.fcntl(p.stderr, fcntl.F_GETFL) | os.O_NONBLOCK,
-            )
-            selector = selectors.DefaultSelector()
-            selector.register(p.stdout, selectors.EVENT_READ)
-            selector.register(p.stderr, selectors.EVENT_READ)
-
-            become_output = b""
-            try:
-                while not self.become.check_success(
-                    become_output
-                ) and not self.become.check_password_prompt(become_output):
-                    events = selector.select(self.timeout)
-                    if not events:
-                        stdout, stderr = p.communicate()
-                        raise AnsibleError(
-                            "timeout waiting for privilege escalation password prompt:\n"
-                            + to_native(become_output)
-                        )
-
-                    chunks = b""
-                    for key, event in events:
-                        if key.fileobj == p.stdout:
-                            chunk = p.stdout.read()
-                            if chunk:
-                                chunks += chunk
-                        elif key.fileobj == p.stderr:
-                            chunk = p.stderr.read()
-                            if chunk:
-                                chunks += chunk
-
-                    if not chunks:
-                        stdout, stderr = p.communicate()
-                        raise AnsibleError(
-                            "privilege output closed while waiting for password prompt:\n"
-                            + to_native(become_output)
-                        )
-                    become_output += chunks
-            finally:
-                selector.close()
-
-            if not self.become.check_success(become_output):
-                become_pass = self.become.get_option(
-                    "become_pass", playcontext=self._play_context
+            if self.become and self.become.expect_prompt() and sudoable:
+                fcntl.fcntl(
+                    p.stdout,
+                    fcntl.F_SETFL,
+                    fcntl.fcntl(p.stdout, fcntl.F_GETFL) | os.O_NONBLOCK,
                 )
-                p.stdin.write(
-                    to_bytes(become_pass, errors="surrogate_or_strict") + b"\n"
+                fcntl.fcntl(
+                    p.stderr,
+                    fcntl.F_SETFL,
+                    fcntl.fcntl(p.stderr, fcntl.F_GETFL) | os.O_NONBLOCK,
                 )
-            fcntl.fcntl(
-                p.stdout,
-                fcntl.F_SETFL,
-                fcntl.fcntl(p.stdout, fcntl.F_GETFL) & ~os.O_NONBLOCK,
-            )
-            fcntl.fcntl(
-                p.stderr,
-                fcntl.F_SETFL,
-                fcntl.fcntl(p.stderr, fcntl.F_GETFL) & ~os.O_NONBLOCK,
-            )
+                selector = selectors.DefaultSelector()
+                selector.register(p.stdout, selectors.EVENT_READ)
+                selector.register(p.stderr, selectors.EVENT_READ)
 
-        display.debug("getting output with communicate()")
-        stdout, stderr = p.communicate(in_data)
-        display.debug("done communicating")
+                become_output = b""
+                try:
+                    while not self.become.check_success(
+                        become_output
+                    ) and not self.become.check_password_prompt(become_output):
+                        events = selector.select(self.timeout)
+                        if not events:
+                            stdout, stderr = p.communicate()
+                            raise AnsibleError(
+                                "timeout waiting for privilege escalation password prompt:\n"
+                                + to_native(become_output)
+                            )
 
-        display.debug("done with docker.exec_command()")
-        return (p.returncode, stdout, stderr)
+                        chunks = b""
+                        for key, event in events:
+                            if key.fileobj == p.stdout:
+                                chunk = p.stdout.read()
+                                if chunk:
+                                    chunks += chunk
+                            elif key.fileobj == p.stderr:
+                                chunk = p.stderr.read()
+                                if chunk:
+                                    chunks += chunk
+
+                        if not chunks:
+                            stdout, stderr = p.communicate()
+                            raise AnsibleError(
+                                "privilege output closed while waiting for password prompt:\n"
+                                + to_native(become_output)
+                            )
+                        become_output += chunks
+                finally:
+                    selector.close()
+
+                if not self.become.check_success(become_output):
+                    become_pass = self.become.get_option(
+                        "become_pass", playcontext=self._play_context
+                    )
+                    p.stdin.write(
+                        to_bytes(become_pass, errors="surrogate_or_strict") + b"\n"
+                    )
+                fcntl.fcntl(
+                    p.stdout,
+                    fcntl.F_SETFL,
+                    fcntl.fcntl(p.stdout, fcntl.F_GETFL) & ~os.O_NONBLOCK,
+                )
+                fcntl.fcntl(
+                    p.stderr,
+                    fcntl.F_SETFL,
+                    fcntl.fcntl(p.stderr, fcntl.F_GETFL) & ~os.O_NONBLOCK,
+                )
+
+            display.debug("getting output with communicate()")
+            stdout, stderr = p.communicate(in_data)
+            display.debug("done communicating")
+
+            display.debug("done with docker.exec_command()")
+            return (p.returncode, stdout, stderr)
 
     def _prefix_login_path(self, remote_path):
         """Make sure that we put files into a standard path
@@ -559,45 +558,45 @@ class Connection(ConnectionBase):
         ]
         args = [to_bytes(i, errors="surrogate_or_strict") for i in args]
 
-        p = subprocess.Popen(
+        with subprocess.Popen(
             args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-        p.communicate()
+        ) as p:
+            p.communicate()
 
-        if getattr(self._shell, "_IS_WINDOWS", False):
-            import ntpath
+            if getattr(self._shell, "_IS_WINDOWS", False):
+                import ntpath
 
-            actual_out_path = ntpath.join(out_dir, ntpath.basename(in_path))
-        else:
-            actual_out_path = os.path.join(out_dir, os.path.basename(in_path))
+                actual_out_path = ntpath.join(out_dir, ntpath.basename(in_path))
+            else:
+                actual_out_path = os.path.join(out_dir, os.path.basename(in_path))
 
-        if p.returncode != 0:
-            # Older docker does not have native support for fetching files command `cp`
-            # If `cp` fails, try to use `dd` instead
-            args = self._build_exec_cmd(
-                [self._play_context.executable, "-c", f"dd if={in_path} bs={BUFSIZE}"]
-            )
-            args = [to_bytes(i, errors="surrogate_or_strict") for i in args]
-            with open(
-                to_bytes(actual_out_path, errors="surrogate_or_strict"), "wb"
-            ) as out_file:
-                try:
-                    p = subprocess.Popen(
-                        args,
-                        stdin=subprocess.PIPE,
-                        stdout=out_file,
-                        stderr=subprocess.PIPE,
-                    )
-                except OSError:
-                    raise AnsibleError(
-                        "docker connection requires dd command in the container to put files"
-                    )
-                stdout, stderr = p.communicate()
+            if p.returncode != 0:
+                # Older docker does not have native support for fetching files command `cp`
+                # If `cp` fails, try to use `dd` instead
+                args = self._build_exec_cmd(
+                    [self._play_context.executable, "-c", f"dd if={in_path} bs={BUFSIZE}"]
+                )
+                args = [to_bytes(i, errors="surrogate_or_strict") for i in args]
+                with open(
+                    to_bytes(actual_out_path, errors="surrogate_or_strict"), "wb"
+                ) as out_file:
+                    try:
+                        pp = subprocess.Popen(
+                            args,
+                            stdin=subprocess.PIPE,
+                            stdout=out_file,
+                            stderr=subprocess.PIPE,
+                        )
+                    except OSError:
+                        raise AnsibleError(
+                            "docker connection requires dd command in the container to put files"
+                        )
+                    stdout, stderr = pp.communicate()
 
-                if p.returncode != 0:
-                    raise AnsibleError(
-                        f"failed to fetch file {in_path} to {out_path}:\n{stdout}\n{stderr}"
-                    )
+                    if pp.returncode != 0:
+                        raise AnsibleError(
+                            f"failed to fetch file {in_path} to {out_path}:\n{stdout}\n{stderr}"
+                        )
 
         # Rename if needed
         if actual_out_path != out_path:

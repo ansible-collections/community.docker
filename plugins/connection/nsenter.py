@@ -134,7 +134,7 @@ class Connection(ConnectionBase):
             except (IOError, OSError) as e:
                 display.debug(f"Unable to open pty: {e}")
 
-        p = subprocess.Popen(
+        with subprocess.Popen(
             cmd,
             shell=isinstance(cmd, (str, bytes)),
             executable=executable if isinstance(cmd, (str, bytes)) else None,
@@ -142,98 +142,97 @@ class Connection(ConnectionBase):
             stdin=stdin,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-        )
+        ) as p:
+            # if we created a master, we can close the other half of the pty now, otherwise master is stdin
+            if master is not None:
+                os.close(stdin)
 
-        # if we created a master, we can close the other half of the pty now, otherwise master is stdin
-        if master is not None:
-            os.close(stdin)
+            display.debug("done running command with Popen()")
 
-        display.debug("done running command with Popen()")
-
-        if self.become and self.become.expect_prompt() and sudoable:
-            fcntl.fcntl(
-                p.stdout,
-                fcntl.F_SETFL,
-                fcntl.fcntl(p.stdout, fcntl.F_GETFL) | os.O_NONBLOCK,
-            )
-            fcntl.fcntl(
-                p.stderr,
-                fcntl.F_SETFL,
-                fcntl.fcntl(p.stderr, fcntl.F_GETFL) | os.O_NONBLOCK,
-            )
-            selector = selectors.DefaultSelector()
-            selector.register(p.stdout, selectors.EVENT_READ)
-            selector.register(p.stderr, selectors.EVENT_READ)
-
-            become_output = b""
-            try:
-                while not self.become.check_success(
-                    become_output
-                ) and not self.become.check_password_prompt(become_output):
-                    events = selector.select(self._play_context.timeout)
-                    if not events:
-                        stdout, stderr = p.communicate()
-                        raise AnsibleError(
-                            "timeout waiting for privilege escalation password prompt:\n"
-                            + to_native(become_output)
-                        )
-
-                    chunks = b""
-                    for key, event in events:
-                        if key.fileobj == p.stdout:
-                            chunk = p.stdout.read()
-                            if chunk:
-                                chunks += chunk
-                        elif key.fileobj == p.stderr:
-                            chunk = p.stderr.read()
-                            if chunk:
-                                chunks += chunk
-
-                    if not chunks:
-                        stdout, stderr = p.communicate()
-                        raise AnsibleError(
-                            "privilege output closed while waiting for password prompt:\n"
-                            + to_native(become_output)
-                        )
-                    become_output += chunks
-            finally:
-                selector.close()
-
-            if not self.become.check_success(become_output):
-                become_pass = self.become.get_option(
-                    "become_pass", playcontext=self._play_context
+            if self.become and self.become.expect_prompt() and sudoable:
+                fcntl.fcntl(
+                    p.stdout,
+                    fcntl.F_SETFL,
+                    fcntl.fcntl(p.stdout, fcntl.F_GETFL) | os.O_NONBLOCK,
                 )
-                if master is None:
-                    p.stdin.write(
-                        to_bytes(become_pass, errors="surrogate_or_strict") + b"\n"
+                fcntl.fcntl(
+                    p.stderr,
+                    fcntl.F_SETFL,
+                    fcntl.fcntl(p.stderr, fcntl.F_GETFL) | os.O_NONBLOCK,
+                )
+                selector = selectors.DefaultSelector()
+                selector.register(p.stdout, selectors.EVENT_READ)
+                selector.register(p.stderr, selectors.EVENT_READ)
+
+                become_output = b""
+                try:
+                    while not self.become.check_success(
+                        become_output
+                    ) and not self.become.check_password_prompt(become_output):
+                        events = selector.select(self._play_context.timeout)
+                        if not events:
+                            stdout, stderr = p.communicate()
+                            raise AnsibleError(
+                                "timeout waiting for privilege escalation password prompt:\n"
+                                + to_native(become_output)
+                            )
+
+                        chunks = b""
+                        for key, event in events:
+                            if key.fileobj == p.stdout:
+                                chunk = p.stdout.read()
+                                if chunk:
+                                    chunks += chunk
+                            elif key.fileobj == p.stderr:
+                                chunk = p.stderr.read()
+                                if chunk:
+                                    chunks += chunk
+
+                        if not chunks:
+                            stdout, stderr = p.communicate()
+                            raise AnsibleError(
+                                "privilege output closed while waiting for password prompt:\n"
+                                + to_native(become_output)
+                            )
+                        become_output += chunks
+                finally:
+                    selector.close()
+
+                if not self.become.check_success(become_output):
+                    become_pass = self.become.get_option(
+                        "become_pass", playcontext=self._play_context
                     )
-                else:
-                    os.write(
-                        master,
-                        to_bytes(become_pass, errors="surrogate_or_strict") + b"\n",
-                    )
+                    if master is None:
+                        p.stdin.write(
+                            to_bytes(become_pass, errors="surrogate_or_strict") + b"\n"
+                        )
+                    else:
+                        os.write(
+                            master,
+                            to_bytes(become_pass, errors="surrogate_or_strict") + b"\n",
+                        )
 
-            fcntl.fcntl(
-                p.stdout,
-                fcntl.F_SETFL,
-                fcntl.fcntl(p.stdout, fcntl.F_GETFL) & ~os.O_NONBLOCK,
-            )
-            fcntl.fcntl(
-                p.stderr,
-                fcntl.F_SETFL,
-                fcntl.fcntl(p.stderr, fcntl.F_GETFL) & ~os.O_NONBLOCK,
-            )
+                fcntl.fcntl(
+                    p.stdout,
+                    fcntl.F_SETFL,
+                    fcntl.fcntl(p.stdout, fcntl.F_GETFL) & ~os.O_NONBLOCK,
+                )
+                fcntl.fcntl(
+                    p.stderr,
+                    fcntl.F_SETFL,
+                    fcntl.fcntl(p.stderr, fcntl.F_GETFL) & ~os.O_NONBLOCK,
+                )
 
-        display.debug("getting output with communicate()")
-        stdout, stderr = p.communicate(in_data)
-        display.debug("done communicating")
+            display.debug("getting output with communicate()")
+            stdout, stderr = p.communicate(in_data)
+            display.debug("done communicating")
 
-        # finally, close the other half of the pty, if it was created
-        if master:
-            os.close(master)
+            # finally, close the other half of the pty, if it was created
+            if master:
+                os.close(master)
 
-        display.debug("done with nsenter.exec_command()")
-        return (p.returncode, stdout, stderr)
+            display.debug("done with nsenter.exec_command()")
+            return (p.returncode, stdout, stderr)
 
     def put_file(self, in_path, out_path):
         super().put_file(in_path, out_path)

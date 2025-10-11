@@ -417,8 +417,8 @@ class TarTest(unittest.TestCase):
         self.addCleanup(shutil.rmtree, base)
 
         with tar(base, exclude=exclude) as archive:
-            tar_data = tarfile.open(fileobj=archive)
-            assert sorted(tar_data.getnames()) == sorted(expected_names)
+            with tarfile.open(fileobj=archive) as tar_data:
+                assert sorted(tar_data.getnames()) == sorted(expected_names)
 
     def test_tar_with_empty_directory(self):
         base = tempfile.mkdtemp()
@@ -426,8 +426,8 @@ class TarTest(unittest.TestCase):
         for d in ["foo", "bar"]:
             os.makedirs(os.path.join(base, d))
         with tar(base) as archive:
-            tar_data = tarfile.open(fileobj=archive)
-            assert sorted(tar_data.getnames()) == ["bar", "foo"]
+            with tarfile.open(fileobj=archive) as tar_data:
+                assert sorted(tar_data.getnames()) == ["bar", "foo"]
 
     @pytest.mark.skipif(
         IS_WINDOWS_PLATFORM or os.geteuid() == 0,
@@ -454,8 +454,8 @@ class TarTest(unittest.TestCase):
         os.makedirs(os.path.join(base, "bar"))
         os.symlink("../foo", os.path.join(base, "bar/foo"))
         with tar(base) as archive:
-            tar_data = tarfile.open(fileobj=archive)
-            assert sorted(tar_data.getnames()) == ["bar", "bar/foo", "foo"]
+            with tarfile.open(fileobj=archive) as tar_data:
+                assert sorted(tar_data.getnames()) == ["bar", "bar/foo", "foo"]
 
     @pytest.mark.skipif(IS_WINDOWS_PLATFORM, reason="No symlinks on Windows")
     def test_tar_with_directory_symlinks(self):
@@ -465,8 +465,8 @@ class TarTest(unittest.TestCase):
             os.makedirs(os.path.join(base, d))
         os.symlink("../foo", os.path.join(base, "bar/foo"))
         with tar(base) as archive:
-            tar_data = tarfile.open(fileobj=archive)
-            assert sorted(tar_data.getnames()) == ["bar", "bar/foo", "foo"]
+            with tarfile.open(fileobj=archive) as tar_data:
+                assert sorted(tar_data.getnames()) == ["bar", "bar/foo", "foo"]
 
     @pytest.mark.skipif(IS_WINDOWS_PLATFORM, reason="No symlinks on Windows")
     def test_tar_with_broken_symlinks(self):
@@ -477,8 +477,8 @@ class TarTest(unittest.TestCase):
 
         os.symlink("../baz", os.path.join(base, "bar/foo"))
         with tar(base) as archive:
-            tar_data = tarfile.open(fileobj=archive)
-            assert sorted(tar_data.getnames()) == ["bar", "bar/foo", "foo"]
+            with tarfile.open(fileobj=archive) as tar_data:
+                assert sorted(tar_data.getnames()) == ["bar", "bar/foo", "foo"]
 
     @pytest.mark.skipif(IS_WINDOWS_PLATFORM, reason="No UNIX sockets on Win32")
     def test_tar_socket_file(self):
@@ -490,8 +490,8 @@ class TarTest(unittest.TestCase):
         self.addCleanup(sock.close)
         sock.bind(os.path.join(base, "test.sock"))
         with tar(base) as archive:
-            tar_data = tarfile.open(fileobj=archive)
-            assert sorted(tar_data.getnames()) == ["bar", "foo"]
+            with tarfile.open(fileobj=archive) as tar_data:
+                assert sorted(tar_data.getnames()) == ["bar", "foo"]
 
     def tar_test_negative_mtime_bug(self):
         base = tempfile.mkdtemp()
@@ -501,9 +501,9 @@ class TarTest(unittest.TestCase):
             f.write("Invisible Full Moon")
         os.utime(filename, (12345, -3600.0))
         with tar(base) as archive:
-            tar_data = tarfile.open(fileobj=archive)
-            assert tar_data.getnames() == ["th.txt"]
-            assert tar_data.getmember("th.txt").mtime == -3600
+            with tarfile.open(fileobj=archive) as tar_data:
+                assert tar_data.getnames() == ["th.txt"]
+                assert tar_data.getmember("th.txt").mtime == -3600
 
     @pytest.mark.skipif(IS_WINDOWS_PLATFORM, reason="No symlinks on Windows")
     def test_tar_directory_link(self):
@@ -513,8 +513,8 @@ class TarTest(unittest.TestCase):
         self.addCleanup(shutil.rmtree, base)
         os.symlink(os.path.join(base, "b"), os.path.join(base, "a/c/b"))
         with tar(base) as archive:
-            tar_data = tarfile.open(fileobj=archive)
-            names = tar_data.getnames()
+            with tarfile.open(fileobj=archive) as tar_data:
+                names = tar_data.getnames()
             for member in dirs + files:
                 assert member in names
             assert "a/c/b" in names

@@ -205,9 +205,8 @@ class ParseEnvFileTest(unittest.TestCase):
         of 'file_content' and returns the filename.
         Don't forget to unlink the file with os.unlink() after.
         """
-        local_tempfile = tempfile.NamedTemporaryFile(delete=False)
-        local_tempfile.write(file_content.encode("UTF-8"))
-        local_tempfile.close()
+        with tempfile.NamedTemporaryFile(delete=False) as local_tempfile:
+            local_tempfile.write(file_content.encode("UTF-8"))
         return local_tempfile.name
 
     def test_parse_env_file_proper(self):

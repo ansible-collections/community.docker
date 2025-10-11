@@ -72,7 +72,7 @@ class SSHSocket(socket.socket):
         env.pop("LD_LIBRARY_PATH", None)
         env.pop("SSL_CERT_FILE", None)
 
-        self.proc = subprocess.Popen(
+        self.proc = subprocess.Popen(  # pylint: disable=consider-using-with
             args,
             env=env,
             stdout=subprocess.PIPE,
