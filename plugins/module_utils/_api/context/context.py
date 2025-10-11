@@ -157,7 +157,7 @@ class Context:
     def _load_certs(self):
         certs = {}
         tls_dir = get_tls_dir(self.name)
-        for endpoint in self.endpoints.keys():
+        for endpoint in self.endpoints:
             if not os.path.isdir(os.path.join(tls_dir, endpoint)):
                 continue
             ca_cert = None
@@ -267,7 +267,7 @@ class Context:
         key = self.orchestrator
         if not key or key == "swarm":
             key = "docker"
-        if key in self.tls_cfg.keys():
+        if key in self.tls_cfg:
             return self.tls_cfg[key]
         return None
 

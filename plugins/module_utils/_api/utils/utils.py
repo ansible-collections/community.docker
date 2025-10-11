@@ -419,7 +419,7 @@ def parse_bytes(s):
     else:
         digits_part = s[:-1]
 
-    if suffix in units.keys() or suffix.isdigit():
+    if suffix in units or suffix.isdigit():
         try:
             digits = float(digits_part)
         except ValueError:
