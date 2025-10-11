@@ -20,7 +20,9 @@ from . import utils
 def check_resource(resource_name):
     def decorator(f):
         @functools.wraps(f)
-        def wrapped(self, resource_id=None, *args, **kwargs):
+        def wrapped(
+            self, resource_id=None, *args, **kwargs
+        ):  # pylint: disable=keyword-arg-before-vararg
             if resource_id is None and kwargs.get(resource_name):
                 resource_id = kwargs.pop(resource_name)
             if isinstance(resource_id, dict):

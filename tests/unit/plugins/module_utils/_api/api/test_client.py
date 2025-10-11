@@ -72,7 +72,9 @@ def response(
     return res
 
 
-def fake_resolve_authconfig(authconfig, registry=None, *args, **kwargs):
+def fake_resolve_authconfig(
+    authconfig, registry=None, *args, **kwargs
+):  # pylint: disable=keyword-arg-before-vararg
     return None
 
 
