@@ -289,7 +289,7 @@ class ExecManager(BaseComposeManager):
             self.argv = shlex.split(parameters['command'])
 
         if self.detach and self.stdin is not None:
-            self.mail('If detach=true, stdin cannot be provided.')
+            self.fail('If detach=true, stdin cannot be provided.')
 
         if self.stdin is not None and parameters['stdin_add_newline']:
             self.stdin += '\n'
