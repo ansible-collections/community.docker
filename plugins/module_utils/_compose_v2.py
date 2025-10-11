@@ -543,7 +543,7 @@ def parse_events(stderr, dry_run=False, warn_function=None, nonzero_rc=False):
                 line, warn_missing_dry_run_prefix, warn_function
             )
             continue
-        elif parsed:
+        if parsed:
             continue
         match = _RE_BUILD_PROGRESS_EVENT.match(line)
         if match:

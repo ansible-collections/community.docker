@@ -747,7 +747,7 @@ def _preprocess_mounts(module, values):
                     check_collision(container, "volumes")
                     new_vols.append(f"{host}:{container}:{mode}")
                     continue
-                elif len(parts) == 2:
+                if len(parts) == 2:
                     if not _is_volume_permissions(parts[1]) and re.match(
                         r"[.~]", parts[0]
                     ):
