@@ -7,8 +7,6 @@
 
 from __future__ import annotations
 
-import selectors
-
 from ansible_collections.community.docker.plugins.module_utils._socket_handler import (
     DockerSocketHandlerBase,
 )
@@ -16,6 +14,4 @@ from ansible_collections.community.docker.plugins.module_utils._socket_handler i
 
 class DockerSocketHandler(DockerSocketHandlerBase):
     def __init__(self, display, sock, log=None, container=None):
-        super().__init__(
-            sock, selectors, log=lambda msg: display.vvvv(msg, host=container)
-        )
+        super().__init__(sock, log=lambda msg: display.vvvv(msg, host=container))
