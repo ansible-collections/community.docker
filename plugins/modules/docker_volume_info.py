@@ -106,7 +106,7 @@ def main():
 
         client.module.exit_json(
             changed=False,
-            exists=(True if volume else False),
+            exists=bool(volume),
             volume=volume,
         )
     except DockerException as e:

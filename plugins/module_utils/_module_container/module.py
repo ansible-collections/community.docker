@@ -42,7 +42,7 @@ class Container(DockerBaseClass):
 
     @property
     def exists(self):
-        return True if self.container else False
+        return bool(self.container)
 
     @property
     def removing(self):

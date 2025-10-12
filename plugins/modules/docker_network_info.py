@@ -122,7 +122,7 @@ def main():
 
         client.module.exit_json(
             changed=False,
-            exists=(True if network else False),
+            exists=bool(network),
             network=network,
         )
     except DockerException as e:

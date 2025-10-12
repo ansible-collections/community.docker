@@ -239,7 +239,7 @@ class Connection(ConnectionBase):
             host=self.get_option("remote_addr"),
         )
 
-        need_stdin = True if (in_data is not None) or do_become else False
+        need_stdin = bool((in_data is not None) or do_become)
 
         data = {
             "Container": self.get_option("remote_addr"),

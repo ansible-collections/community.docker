@@ -389,7 +389,6 @@ disable=raw-checker-failed,
         not-an-iterable,  # TODO: needs better typing info
         protected-access,
         redefined-outer-name,  # needed for test fixtures
-        simplifiable-if-expression,
         subprocess-popen-preexec-fn,
         unexpected-keyword-arg,
         unnecessary-dunder-call,
