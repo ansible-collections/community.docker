@@ -247,7 +247,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             short_container_id = container_id[:13]
 
             try:
-                name = container.get("Names", list())[0].lstrip("/")
+                name = container.get("Names", [])[0].lstrip("/")
                 full_name = name
             except IndexError:
                 name = short_container_id

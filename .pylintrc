@@ -395,7 +395,6 @@ disable=raw-checker-failed,
         unused-argument,
         unused-variable,
         use-dict-literal,
-        use-list-literal,
         # Cannot remove yet due to inadequacy of rules
         inconsistent-return-statements,  # doesn't notice that fail_json() does not return
 
