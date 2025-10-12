@@ -426,7 +426,7 @@ class Connection(ConnectionBase):
                             )
 
                         chunks = b""
-                        for key, event in events:
+                        for key, dummy_event in events:
                             if key.fileobj == p.stdout:
                                 chunk = p.stdout.read()
                                 if chunk:

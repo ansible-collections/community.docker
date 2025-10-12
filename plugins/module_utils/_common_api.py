@@ -504,7 +504,7 @@ class AnsibleDockerClientBase(Client):
         old_tag = self.find_image(name, tag)
         try:
             repository, image_tag = parse_repository_tag(name)
-            registry, repo_name = auth.resolve_repository_name(repository)
+            registry, dummy_repo_name = auth.resolve_repository_name(repository)
             params = {
                 "tag": tag or image_tag or "latest",
                 "fromImage": repository,

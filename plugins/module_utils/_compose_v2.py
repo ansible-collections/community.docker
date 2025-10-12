@@ -794,7 +794,7 @@ class BaseComposeManager(DockerBaseClass):
         )
 
     def get_compose_version_from_cli(self):
-        rc, version_info, stderr = self.client.call_cli(
+        rc, version_info, dummy_stderr = self.client.call_cli(
             "compose", "version", "--format", "json"
         )
         if rc:

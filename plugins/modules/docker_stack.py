@@ -184,7 +184,7 @@ except ImportError:
 
 
 def docker_stack_services(client, stack_name):
-    rc, out, err = client.call_cli(
+    dummy_rc, out, err = client.call_cli(
         "stack", "services", stack_name, "--format", "{{.Name}}"
     )
     if to_native(err) == f"Nothing found in stack: {stack_name}\n":
@@ -193,7 +193,7 @@ def docker_stack_services(client, stack_name):
 
 
 def docker_service_inspect(client, service_name):
-    rc, out, err = client.call_cli("service", "inspect", service_name)
+    rc, out, dummy_err = client.call_cli("service", "inspect", service_name)
     if rc != 0:
         return None
     ret = json.loads(out)[0]["Spec"]
@@ -273,7 +273,7 @@ def main():
                 )
 
             compose_files = []
-            for i, compose_def in enumerate(compose):
+            for compose_def in compose:
                 if isinstance(compose_def, dict):
                     compose_file_fd, compose_file = tempfile.mkstemp()
                     client.module.add_cleanup_file(compose_file)

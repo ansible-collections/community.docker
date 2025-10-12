@@ -255,7 +255,7 @@ class DockerPluginManager:
                 try:
                     # Get privileges
                     headers = {}
-                    registry, repo_name = auth.resolve_repository_name(
+                    registry, dummy_repo_name = auth.resolve_repository_name(
                         self.parameters.plugin_name
                     )
                     header = auth.get_config_header(self.client, registry)

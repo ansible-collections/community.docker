@@ -141,7 +141,7 @@ class NpipeSocket:
 
     @check_closed
     def recv(self, bufsize, flags=0):
-        err, data = win32file.ReadFile(self._handle, bufsize)
+        dummy_err, data = win32file.ReadFile(self._handle, bufsize)
         return data
 
     @check_closed
@@ -163,7 +163,7 @@ class NpipeSocket:
         try:
             overlapped = pywintypes.OVERLAPPED()
             overlapped.hEvent = event
-            err, data = win32file.ReadFile(
+            dummy_err, dummy_data = win32file.ReadFile(
                 self._handle, readbuf[:nbytes] if nbytes else readbuf, overlapped
             )
             wait_result = win32event.WaitForSingleObject(event, self._timeout)

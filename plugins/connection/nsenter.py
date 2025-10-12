@@ -178,7 +178,7 @@ class Connection(ConnectionBase):
                             )
 
                         chunks = b""
-                        for key, event in events:
+                        for key, dummy_event in events:
                             if key.fileobj == p.stdout:
                                 chunk = p.stdout.read()
                                 if chunk:
@@ -244,7 +244,9 @@ class Connection(ConnectionBase):
         try:
             with open(to_bytes(in_path, errors="surrogate_or_strict"), "rb") as in_file:
                 in_data = in_file.read()
-            rc, out, err = self.exec_command(cmd=["tee", out_path], in_data=in_data)
+            rc, dummy_out, err = self.exec_command(
+                cmd=["tee", out_path], in_data=in_data
+            )
             if rc != 0:
                 raise AnsibleError(f"failed to transfer file to {out_path}: {err}")
         except IOError as e:

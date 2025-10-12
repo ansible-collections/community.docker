@@ -500,7 +500,7 @@ def _execute_command(client, container, command, log=None, check_rc=False):
 
 
 def determine_user_group(client, container, log=None):
-    dummy, stdout, stderr = _execute_command(
+    dummy_rc, stdout, dummy_stderr = _execute_command(
         client, container, ["/bin/sh", "-c", "id -u && id -g"], check_rc=True, log=log
     )
 
