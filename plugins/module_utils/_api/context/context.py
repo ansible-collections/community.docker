@@ -106,7 +106,7 @@ class Context:
             self.tls_cfg[name] = tls_cfg
 
     def inspect(self):
-        return self.__call__()
+        return self()
 
     @classmethod
     def load_context(cls, name):

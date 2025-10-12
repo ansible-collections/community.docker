@@ -391,7 +391,6 @@ disable=raw-checker-failed,
         redefined-outer-name,  # needed for test fixtures
         subprocess-popen-preexec-fn,
         unexpected-keyword-arg,
-        unnecessary-dunder-call,
         unnecessary-pass,
         unsupported-assignment-operation,  # TODO: needs better typing info
         unused-argument,
