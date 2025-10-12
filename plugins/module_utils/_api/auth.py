@@ -370,7 +370,6 @@ def _load_legacy_config(config_file):
         }
     except Exception as e:  # pylint: disable=broad-exception-caught
         log.debug(e)
-        pass
 
     log.debug("All parsing attempts failed - returning empty config")
     return {}
