@@ -163,7 +163,6 @@ exec_id:
   version_added: 2.1.0
 """
 
-import selectors
 import shlex
 import traceback
 
@@ -276,7 +275,7 @@ def main():
                 )
                 try:
                     with DockerSocketHandlerModule(
-                        exec_socket, client.module, selectors
+                        exec_socket, client.module
                     ) as exec_socket_handler:
                         if stdin:
                             exec_socket_handler.write(to_bytes(stdin))

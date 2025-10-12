@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 import os.path
+import selectors
 import socket as pysocket
 import struct
 
@@ -26,10 +27,9 @@ PARAMIKO_POLL_TIMEOUT = 0.01  # 10 milliseconds
 
 
 class DockerSocketHandlerBase:
-    def __init__(self, sock, selectors, log=None):
+    def __init__(self, sock, log=None):
         make_unblocking(sock)
 
-        self._selectors = selectors
         if log is not None:
             self._log = log
         else:
@@ -50,8 +50,8 @@ class DockerSocketHandlerBase:
         self._current_missing = 0
         self._current_buffer = b""
 
-        self._selector = self._selectors.DefaultSelector()
-        self._selector.register(self._sock, self._selectors.EVENT_READ)
+        self._selector = selectors.DefaultSelector()
+        self._selector.register(self._sock, selectors.EVENT_READ)
 
     def __enter__(self):
         return self
@@ -132,10 +132,10 @@ class DockerSocketHandlerBase:
             self._log(f"wrote {written} bytes, {len(self._write_buffer)} are left")
             if len(self._write_buffer) > 0:
                 self._selector.modify(
-                    self._sock, self._selectors.EVENT_READ | self._selectors.EVENT_WRITE
+                    self._sock, selectors.EVENT_READ | selectors.EVENT_WRITE
                 )
             else:
-                self._selector.modify(self._sock, self._selectors.EVENT_READ)
+                self._selector.modify(self._sock, selectors.EVENT_READ)
             self._handle_end_of_writing()
 
     def select(self, timeout=None, _internal_recursion=False):
@@ -163,12 +163,12 @@ class DockerSocketHandlerBase:
         events = self._selector.select(timeout)
         for key, event in events:
             if key.fileobj == self._sock:
-                ev_read = event & self._selectors.EVENT_READ != 0
-                ev_write = event & self._selectors.EVENT_WRITE != 0
+                ev_read = event & selectors.EVENT_READ != 0
+                ev_write = event & selectors.EVENT_WRITE != 0
                 self._log(f"select event read:{ev_read} write:{ev_write}")
-                if event & self._selectors.EVENT_READ != 0:
+                if event & selectors.EVENT_READ != 0:
                     self._read()
-                if event & self._selectors.EVENT_WRITE != 0:
+                if event & selectors.EVENT_WRITE != 0:
                     self._write()
         result = len(events)
         if self._paramiko_read_workaround and len(self._write_buffer) > 0:
@@ -210,5 +210,5 @@ class DockerSocketHandlerBase:
 
 
 class DockerSocketHandlerModule(DockerSocketHandlerBase):
-    def __init__(self, sock, module, selectors):
-        super().__init__(sock, selectors, module.debug)
+    def __init__(self, sock, module):
+        super().__init__(sock, module.debug)

@@ -11,9 +11,10 @@ import fcntl
 import os
 import os.path
 import socket as pysocket
+import typing as t
 
 
-def make_file_unblocking(file):
+def make_file_unblocking(file) -> None:
     fcntl.fcntl(
         file.fileno(),
         fcntl.F_SETFL,
@@ -21,7 +22,7 @@ def make_file_unblocking(file):
     )
 
 
-def make_file_blocking(file):
+def make_file_blocking(file) -> None:
     fcntl.fcntl(
         file.fileno(),
         fcntl.F_SETFL,
@@ -29,7 +30,7 @@ def make_file_blocking(file):
     )
 
 
-def make_unblocking(sock):
+def make_unblocking(sock) -> None:
     if hasattr(sock, "_sock"):
         sock._sock.setblocking(0)
     elif hasattr(sock, "setblocking"):
@@ -38,11 +39,11 @@ def make_unblocking(sock):
         make_file_unblocking(sock)
 
 
-def _empty_writer(msg):
+def _empty_writer(msg: str) -> None:
     pass
 
 
-def shutdown_writing(sock, log=_empty_writer):
+def shutdown_writing(sock, log: t.Callable[[str], None] = _empty_writer) -> None:
     # FIXME: This does **not work with SSLSocket**! Apparently SSLSocket does not allow to send
     #        a close_notify TLS alert without completely shutting down the connection.
     #        Calling sock.shutdown(pysocket.SHUT_WR) simply turns of TLS encryption and from that
@@ -62,7 +63,7 @@ def shutdown_writing(sock, log=_empty_writer):
         log("No idea how to signal end of writing")
 
 
-def write_to_socket(sock, data):
+def write_to_socket(sock, data: bytes) -> None:
     if hasattr(sock, "_send_until_done"):
         # WrappedSocket (urllib3/contrib/pyopenssl) does not have `send`, but
         # only `sendall`, which uses `_send_until_done` under the hood.
