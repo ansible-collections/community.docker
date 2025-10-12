@@ -550,7 +550,7 @@ class ServicesManager(BaseComposeManager):
         return args
 
     def cmd_up(self):
-        result = dict()
+        result = {}
         args = self.get_up_cmd(self.check_mode)
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode, nonzero_rc=rc != 0)
@@ -587,7 +587,7 @@ class ServicesManager(BaseComposeManager):
         # Since 'docker compose stop' **always** claims it is stopping containers, even if they are already
         # stopped, we have to do this a bit more complicated.
 
-        result = dict()
+        result = {}
         # Make sure all containers are created
         args_1 = self.get_up_cmd(self.check_mode, no_start=True)
         rc_1, stdout_1, stderr_1 = self.client.call_cli(*args_1, cwd=self.project_src)
@@ -644,7 +644,7 @@ class ServicesManager(BaseComposeManager):
         return args
 
     def cmd_restart(self):
-        result = dict()
+        result = {}
         args = self.get_restart_cmd(self.check_mode)
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode, nonzero_rc=rc != 0)
@@ -671,7 +671,7 @@ class ServicesManager(BaseComposeManager):
         return args
 
     def cmd_down(self):
-        result = dict()
+        result = {}
         args = self.get_down_cmd(self.check_mode)
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode, nonzero_rc=rc != 0)
@@ -682,32 +682,40 @@ class ServicesManager(BaseComposeManager):
 
 
 def main():
-    argument_spec = dict(
-        state=dict(
-            type="str",
-            default="present",
-            choices=["absent", "present", "stopped", "restarted"],
-        ),
-        dependencies=dict(type="bool", default=True),
-        pull=dict(
-            type="str",
-            choices=["always", "missing", "never", "policy"],
-            default="policy",
-        ),
-        build=dict(type="str", choices=["always", "never", "policy"], default="policy"),
-        recreate=dict(type="str", default="auto", choices=["always", "never", "auto"]),
-        renew_anon_volumes=dict(type="bool", default=False),
-        remove_images=dict(type="str", choices=["all", "local"]),
-        remove_volumes=dict(type="bool", default=False),
-        remove_orphans=dict(type="bool", default=False),
-        timeout=dict(type="int"),
-        services=dict(type="list", elements="str"),
-        scale=dict(type="dict"),
-        wait=dict(type="bool", default=False),
-        wait_timeout=dict(type="int"),
-        ignore_build_events=dict(type="bool", default=True),
-        assume_yes=dict(type="bool", default=False),
-    )
+    argument_spec = {
+        "state": {
+            "type": "str",
+            "default": "present",
+            "choices": ["absent", "present", "stopped", "restarted"],
+        },
+        "dependencies": {"type": "bool", "default": True},
+        "pull": {
+            "type": "str",
+            "choices": ["always", "missing", "never", "policy"],
+            "default": "policy",
+        },
+        "build": {
+            "type": "str",
+            "choices": ["always", "never", "policy"],
+            "default": "policy",
+        },
+        "recreate": {
+            "type": "str",
+            "default": "auto",
+            "choices": ["always", "never", "auto"],
+        },
+        "renew_anon_volumes": {"type": "bool", "default": False},
+        "remove_images": {"type": "str", "choices": ["all", "local"]},
+        "remove_volumes": {"type": "bool", "default": False},
+        "remove_orphans": {"type": "bool", "default": False},
+        "timeout": {"type": "int"},
+        "services": {"type": "list", "elements": "str"},
+        "scale": {"type": "dict"},
+        "wait": {"type": "bool", "default": False},
+        "wait_timeout": {"type": "int"},
+        "ignore_build_events": {"type": "bool", "default": True},
+        "assume_yes": {"type": "bool", "default": False},
+    }
     argspec_ex = common_compose_argspec_ex()
     argument_spec.update(argspec_ex.pop("argspec"))
 

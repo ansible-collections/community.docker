@@ -359,17 +359,17 @@ class TaskParameters(DockerBaseClass):
     def update_from_swarm_info(self, swarm_info):
         spec = swarm_info["Spec"]
 
-        ca_config = spec.get("CAConfig") or dict()
+        ca_config = spec.get("CAConfig") or {}
         if self.node_cert_expiry is None:
             self.node_cert_expiry = ca_config.get("NodeCertExpiry")
         if self.ca_force_rotate is None:
             self.ca_force_rotate = ca_config.get("ForceRotate")
 
-        dispatcher = spec.get("Dispatcher") or dict()
+        dispatcher = spec.get("Dispatcher") or {}
         if self.dispatcher_heartbeat_period is None:
             self.dispatcher_heartbeat_period = dispatcher.get("HeartbeatPeriod")
 
-        raft = spec.get("Raft") or dict()
+        raft = spec.get("Raft") or {}
         if self.snapshot_interval is None:
             self.snapshot_interval = raft.get("SnapshotInterval")
         if self.keep_old_snapshots is None:
@@ -381,13 +381,13 @@ class TaskParameters(DockerBaseClass):
         if self.election_tick is None:
             self.election_tick = raft.get("ElectionTick")
 
-        orchestration = spec.get("Orchestration") or dict()
+        orchestration = spec.get("Orchestration") or {}
         if self.task_history_retention_limit is None:
             self.task_history_retention_limit = orchestration.get(
                 "TaskHistoryRetentionLimit"
             )
 
-        encryption_config = spec.get("EncryptionConfig") or dict()
+        encryption_config = spec.get("EncryptionConfig") or {}
         if self.autolock_managers is None:
             self.autolock_managers = encryption_config.get("AutoLockManagers")
 
@@ -401,24 +401,24 @@ class TaskParameters(DockerBaseClass):
             self.log_driver = spec["TaskDefaults"]["LogDriver"]
 
     def update_parameters(self, client):
-        assign = dict(
-            snapshot_interval="snapshot_interval",
-            task_history_retention_limit="task_history_retention_limit",
-            keep_old_snapshots="keep_old_snapshots",
-            log_entries_for_slow_followers="log_entries_for_slow_followers",
-            heartbeat_tick="heartbeat_tick",
-            election_tick="election_tick",
-            dispatcher_heartbeat_period="dispatcher_heartbeat_period",
-            node_cert_expiry="node_cert_expiry",
-            name="name",
-            labels="labels",
-            signing_ca_cert="signing_ca_cert",
-            signing_ca_key="signing_ca_key",
-            ca_force_rotate="ca_force_rotate",
-            autolock_managers="autolock_managers",
-            log_driver="log_driver",
-        )
-        params = dict()
+        assign = {
+            "snapshot_interval": "snapshot_interval",
+            "task_history_retention_limit": "task_history_retention_limit",
+            "keep_old_snapshots": "keep_old_snapshots",
+            "log_entries_for_slow_followers": "log_entries_for_slow_followers",
+            "heartbeat_tick": "heartbeat_tick",
+            "election_tick": "election_tick",
+            "dispatcher_heartbeat_period": "dispatcher_heartbeat_period",
+            "node_cert_expiry": "node_cert_expiry",
+            "name": "name",
+            "labels": "labels",
+            "signing_ca_cert": "signing_ca_cert",
+            "signing_ca_key": "signing_ca_key",
+            "ca_force_rotate": "ca_force_rotate",
+            "autolock_managers": "autolock_managers",
+            "log_driver": "log_driver",
+        }
+        params = {}
         for dest, source in assign.items():
             if not client.option_minimal_versions[source]["supported"]:
                 continue
@@ -489,7 +489,7 @@ class SwarmManager(DockerBaseClass):
         choice_map.get(self.state)()
 
         if self.client.module._diff or self.parameters.debug:
-            diff = dict()
+            diff = {}
             diff["before"], diff["after"] = self.differences.get_before_after()
             self.results["diff"] = diff
 
@@ -660,62 +660,65 @@ def _detect_remove_operation(client):
 
 
 def main():
-    argument_spec = dict(
-        advertise_addr=dict(type="str"),
-        data_path_addr=dict(type="str"),
-        data_path_port=dict(type="int"),
-        state=dict(
-            type="str",
-            default="present",
-            choices=["present", "join", "absent", "remove"],
-        ),
-        force=dict(type="bool", default=False),
-        listen_addr=dict(type="str", default="0.0.0.0:2377"),
-        remote_addrs=dict(type="list", elements="str"),
-        join_token=dict(type="str", no_log=True),
-        snapshot_interval=dict(type="int"),
-        task_history_retention_limit=dict(type="int"),
-        keep_old_snapshots=dict(type="int"),
-        log_entries_for_slow_followers=dict(type="int"),
-        heartbeat_tick=dict(type="int"),
-        election_tick=dict(type="int"),
-        dispatcher_heartbeat_period=dict(type="int"),
-        node_cert_expiry=dict(type="int"),
-        name=dict(type="str"),
-        labels=dict(type="dict"),
-        signing_ca_cert=dict(type="str"),
-        signing_ca_key=dict(type="str", no_log=True),
-        ca_force_rotate=dict(type="int"),
-        autolock_managers=dict(type="bool"),
-        node_id=dict(type="str"),
-        rotate_worker_token=dict(type="bool", default=False),
-        rotate_manager_token=dict(type="bool", default=False),
-        default_addr_pool=dict(type="list", elements="str"),
-        subnet_size=dict(type="int"),
-    )
+    argument_spec = {
+        "advertise_addr": {"type": "str"},
+        "data_path_addr": {"type": "str"},
+        "data_path_port": {"type": "int"},
+        "state": {
+            "type": "str",
+            "default": "present",
+            "choices": ["present", "join", "absent", "remove"],
+        },
+        "force": {"type": "bool", "default": False},
+        "listen_addr": {"type": "str", "default": "0.0.0.0:2377"},
+        "remote_addrs": {"type": "list", "elements": "str"},
+        "join_token": {"type": "str", "no_log": True},
+        "snapshot_interval": {"type": "int"},
+        "task_history_retention_limit": {"type": "int"},
+        "keep_old_snapshots": {"type": "int"},
+        "log_entries_for_slow_followers": {"type": "int"},
+        "heartbeat_tick": {"type": "int"},
+        "election_tick": {"type": "int"},
+        "dispatcher_heartbeat_period": {"type": "int"},
+        "node_cert_expiry": {"type": "int"},
+        "name": {"type": "str"},
+        "labels": {"type": "dict"},
+        "signing_ca_cert": {"type": "str"},
+        "signing_ca_key": {"type": "str", "no_log": True},
+        "ca_force_rotate": {"type": "int"},
+        "autolock_managers": {"type": "bool"},
+        "node_id": {"type": "str"},
+        "rotate_worker_token": {"type": "bool", "default": False},
+        "rotate_manager_token": {"type": "bool", "default": False},
+        "default_addr_pool": {"type": "list", "elements": "str"},
+        "subnet_size": {"type": "int"},
+    }
 
     required_if = [
         ("state", "join", ["remote_addrs", "join_token"]),
         ("state", "remove", ["node_id"]),
     ]
 
-    option_minimal_versions = dict(
-        labels=dict(docker_py_version="2.6.0", docker_api_version="1.32"),
-        signing_ca_cert=dict(docker_py_version="2.6.0", docker_api_version="1.30"),
-        signing_ca_key=dict(docker_py_version="2.6.0", docker_api_version="1.30"),
-        ca_force_rotate=dict(docker_py_version="2.6.0", docker_api_version="1.30"),
-        autolock_managers=dict(docker_py_version="2.6.0"),
-        log_driver=dict(docker_py_version="2.6.0"),
-        remove_operation=dict(
-            docker_py_version="2.4.0",
-            detect_usage=_detect_remove_operation,
-            usage_msg="remove swarm nodes",
-        ),
-        default_addr_pool=dict(docker_py_version="4.0.0", docker_api_version="1.39"),
-        subnet_size=dict(docker_py_version="4.0.0", docker_api_version="1.39"),
-        data_path_addr=dict(docker_py_version="4.0.0", docker_api_version="1.30"),
-        data_path_port=dict(docker_py_version="6.0.0", docker_api_version="1.40"),
-    )
+    option_minimal_versions = {
+        "labels": {"docker_py_version": "2.6.0", "docker_api_version": "1.32"},
+        "signing_ca_cert": {"docker_py_version": "2.6.0", "docker_api_version": "1.30"},
+        "signing_ca_key": {"docker_py_version": "2.6.0", "docker_api_version": "1.30"},
+        "ca_force_rotate": {"docker_py_version": "2.6.0", "docker_api_version": "1.30"},
+        "autolock_managers": {"docker_py_version": "2.6.0"},
+        "log_driver": {"docker_py_version": "2.6.0"},
+        "remove_operation": {
+            "docker_py_version": "2.4.0",
+            "detect_usage": _detect_remove_operation,
+            "usage_msg": "remove swarm nodes",
+        },
+        "default_addr_pool": {
+            "docker_py_version": "4.0.0",
+            "docker_api_version": "1.39",
+        },
+        "subnet_size": {"docker_py_version": "4.0.0", "docker_api_version": "1.39"},
+        "data_path_addr": {"docker_py_version": "4.0.0", "docker_api_version": "1.30"},
+        "data_path_port": {"docker_py_version": "6.0.0", "docker_api_version": "1.40"},
+    }
 
     client = AnsibleDockerSwarmClient(
         argument_spec=argument_spec,
@@ -727,7 +730,7 @@ def main():
     sanitize_labels(client.module.params["labels"], "labels", client)
 
     try:
-        results = dict(changed=False, result="", actions=[])
+        results = {"changed": False, "result": "", "actions": []}
 
         SwarmManager(client, results)()
         client.module.exit_json(**results)

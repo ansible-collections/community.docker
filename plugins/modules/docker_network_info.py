@@ -108,9 +108,9 @@ from ansible_collections.community.docker.plugins.module_utils._common_api impor
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="str", required=True),
-    )
+    argument_spec = {
+        "name": {"type": "str", "required": True},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,

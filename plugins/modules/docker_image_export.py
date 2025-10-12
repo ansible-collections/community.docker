@@ -261,12 +261,17 @@ class ImageExportManager(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        path=dict(type="path"),
-        force=dict(type="bool", default=False),
-        names=dict(type="list", elements="str", required=True, aliases=["name"]),
-        tag=dict(type="str", default="latest"),
-    )
+    argument_spec = {
+        "path": {"type": "path"},
+        "force": {"type": "bool", "default": False},
+        "names": {
+            "type": "list",
+            "elements": "str",
+            "required": True,
+            "aliases": ["name"],
+        },
+        "tag": {"type": "str", "default": "latest"},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,

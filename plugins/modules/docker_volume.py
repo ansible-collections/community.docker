@@ -161,7 +161,7 @@ class DockerVolumeManager:
         self.results = {"changed": False, "actions": []}
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()
-        self.diff_result = dict()
+        self.diff_result = {}
 
         self.existing_volume = self.get_existing_volume()
 
@@ -309,17 +309,23 @@ class DockerVolumeManager:
 
 
 def main():
-    argument_spec = dict(
-        volume_name=dict(type="str", required=True, aliases=["name"]),
-        state=dict(type="str", default="present", choices=["present", "absent"]),
-        driver=dict(type="str", default="local"),
-        driver_options=dict(type="dict", default={}),
-        labels=dict(type="dict"),
-        recreate=dict(
-            type="str", default="never", choices=["always", "never", "options-changed"]
-        ),
-        debug=dict(type="bool", default=False),
-    )
+    argument_spec = {
+        "volume_name": {"type": "str", "required": True, "aliases": ["name"]},
+        "state": {
+            "type": "str",
+            "default": "present",
+            "choices": ["present", "absent"],
+        },
+        "driver": {"type": "str", "default": "local"},
+        "driver_options": {"type": "dict", "default": {}},
+        "labels": {"type": "dict"},
+        "recreate": {
+            "type": "str",
+            "default": "never",
+            "choices": ["always", "never", "options-changed"],
+        },
+        "debug": {"type": "bool", "default": False},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,

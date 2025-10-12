@@ -261,7 +261,7 @@ class DockerSwarmManager(DockerBaseClass):
             return items
 
         for item in items:
-            item_record = dict()
+            item_record = {}
 
             if docker_object == "nodes":
                 item_record = self.get_essential_facts_nodes(item)
@@ -277,7 +277,7 @@ class DockerSwarmManager(DockerBaseClass):
 
     @staticmethod
     def get_essential_facts_nodes(item):
-        object_essentials = dict()
+        object_essentials = {}
 
         object_essentials["ID"] = item.get("ID")
         object_essentials["Hostname"] = item["Description"]["Hostname"]
@@ -299,7 +299,7 @@ class DockerSwarmManager(DockerBaseClass):
         return object_essentials
 
     def get_essential_facts_tasks(self, item):
-        object_essentials = dict()
+        object_essentials = {}
 
         object_essentials["ID"] = item["ID"]
         # Returning container ID to not trigger another connection to host
@@ -320,7 +320,7 @@ class DockerSwarmManager(DockerBaseClass):
 
     @staticmethod
     def get_essential_facts_services(item):
-        object_essentials = dict()
+        object_essentials = {}
 
         object_essentials["ID"] = item["ID"]
         object_essentials["Name"] = item["Spec"]["Name"]
@@ -349,39 +349,39 @@ class DockerSwarmManager(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        nodes=dict(type="bool", default=False),
-        nodes_filters=dict(type="dict"),
-        tasks=dict(type="bool", default=False),
-        tasks_filters=dict(type="dict"),
-        services=dict(type="bool", default=False),
-        services_filters=dict(type="dict"),
-        unlock_key=dict(type="bool", default=False),
-        verbose_output=dict(type="bool", default=False),
-    )
-    option_minimal_versions = dict(
-        unlock_key=dict(docker_py_version="2.7.0"),
-    )
+    argument_spec = {
+        "nodes": {"type": "bool", "default": False},
+        "nodes_filters": {"type": "dict"},
+        "tasks": {"type": "bool", "default": False},
+        "tasks_filters": {"type": "dict"},
+        "services": {"type": "bool", "default": False},
+        "services_filters": {"type": "dict"},
+        "unlock_key": {"type": "bool", "default": False},
+        "verbose_output": {"type": "bool", "default": False},
+    }
+    option_minimal_versions = {
+        "unlock_key": {"docker_py_version": "2.7.0"},
+    }
 
     client = AnsibleDockerSwarmClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
         min_docker_version="1.10.0",
         option_minimal_versions=option_minimal_versions,
-        fail_results=dict(
-            can_talk_to_docker=False,
-            docker_swarm_active=False,
-            docker_swarm_manager=False,
-        ),
+        fail_results={
+            "can_talk_to_docker": False,
+            "docker_swarm_active": False,
+            "docker_swarm_manager": False,
+        },
     )
     client.fail_results["can_talk_to_docker"] = True
     client.fail_results["docker_swarm_active"] = client.check_if_swarm_node()
     client.fail_results["docker_swarm_manager"] = client.check_if_swarm_manager()
 
     try:
-        results = dict(
-            changed=False,
-        )
+        results = {
+            "changed": False,
+        }
 
         DockerSwarmManager(client, results)
         results.update(client.fail_results)

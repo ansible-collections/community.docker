@@ -187,23 +187,23 @@ from ansible_collections.community.docker.plugins.module_utils._socket_handler i
 
 
 def main():
-    argument_spec = dict(
-        container=dict(type="str", required=True),
-        argv=dict(type="list", elements="str"),
-        command=dict(type="str"),
-        chdir=dict(type="str"),
-        detach=dict(type="bool", default=False),
-        user=dict(type="str"),
-        stdin=dict(type="str"),
-        stdin_add_newline=dict(type="bool", default=True),
-        strip_empty_ends=dict(type="bool", default=True),
-        tty=dict(type="bool", default=False),
-        env=dict(type="dict"),
-    )
+    argument_spec = {
+        "container": {"type": "str", "required": True},
+        "argv": {"type": "list", "elements": "str"},
+        "command": {"type": "str"},
+        "chdir": {"type": "str"},
+        "detach": {"type": "bool", "default": False},
+        "user": {"type": "str"},
+        "stdin": {"type": "str"},
+        "stdin_add_newline": {"type": "bool", "default": True},
+        "strip_empty_ends": {"type": "bool", "default": True},
+        "tty": {"type": "bool", "default": False},
+        "env": {"type": "dict"},
+    }
 
-    option_minimal_versions = dict(
-        chdir=dict(docker_api_version="1.35"),
-    )
+    option_minimal_versions = {
+        "chdir": {"docker_api_version": "1.35"},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,

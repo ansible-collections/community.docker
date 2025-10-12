@@ -78,19 +78,19 @@ def get_connect_params(auth_data, fail_function):
             "tcp://", "https://"
         )
 
-    result = dict(
-        base_url=auth_data["docker_host"],
-        version=auth_data["api_version"],
-        timeout=auth_data["timeout"],
-    )
+    result = {
+        "base_url": auth_data["docker_host"],
+        "version": auth_data["api_version"],
+        "timeout": auth_data["timeout"],
+    }
 
     if auth_data["tls_verify"]:
         # TLS with verification
-        tls_config = dict(
-            verify=True,
-            assert_hostname=auth_data["tls_hostname"],
-            fail_function=fail_function,
-        )
+        tls_config = {
+            "verify": True,
+            "assert_hostname": auth_data["tls_hostname"],
+            "fail_function": fail_function,
+        }
         if auth_data["cert_path"] and auth_data["key_path"]:
             tls_config["client_cert"] = (auth_data["cert_path"], auth_data["key_path"])
         if auth_data["cacert_path"]:
@@ -98,10 +98,10 @@ def get_connect_params(auth_data, fail_function):
         result["tls"] = _get_tls_config(**tls_config)
     elif auth_data["tls"]:
         # TLS without verification
-        tls_config = dict(
-            verify=False,
-            fail_function=fail_function,
-        )
+        tls_config = {
+            "verify": False,
+            "fail_function": fail_function,
+        }
         if auth_data["cert_path"] and auth_data["key_path"]:
             tls_config["client_cert"] = (auth_data["cert_path"], auth_data["key_path"])
         result["tls"] = _get_tls_config(**tls_config)
@@ -203,78 +203,78 @@ class AnsibleDockerClientBase(Client):
 
         client_params = self._get_params()
 
-        params = dict()
+        params = {}
         for key in DOCKER_COMMON_ARGS:
             params[key] = client_params.get(key)
 
-        result = dict(
-            docker_host=self._get_value(
+        result = {
+            "docker_host": self._get_value(
                 "docker_host",
                 params["docker_host"],
                 "DOCKER_HOST",
                 DEFAULT_DOCKER_HOST,
                 value_type="str",
             ),
-            tls_hostname=self._get_value(
+            "tls_hostname": self._get_value(
                 "tls_hostname",
                 params["tls_hostname"],
                 "DOCKER_TLS_HOSTNAME",
                 None,
                 value_type="str",
             ),
-            api_version=self._get_value(
+            "api_version": self._get_value(
                 "api_version",
                 params["api_version"],
                 "DOCKER_API_VERSION",
                 "auto",
                 value_type="str",
             ),
-            cacert_path=self._get_value(
+            "cacert_path": self._get_value(
                 "cacert_path",
                 params["ca_path"],
                 "DOCKER_CERT_PATH",
                 None,
                 value_type="str",
             ),
-            cert_path=self._get_value(
+            "cert_path": self._get_value(
                 "cert_path",
                 params["client_cert"],
                 "DOCKER_CERT_PATH",
                 None,
                 value_type="str",
             ),
-            key_path=self._get_value(
+            "key_path": self._get_value(
                 "key_path",
                 params["client_key"],
                 "DOCKER_CERT_PATH",
                 None,
                 value_type="str",
             ),
-            tls=self._get_value(
+            "tls": self._get_value(
                 "tls", params["tls"], "DOCKER_TLS", DEFAULT_TLS, value_type="bool"
             ),
-            tls_verify=self._get_value(
+            "tls_verify": self._get_value(
                 "validate_certs",
                 params["validate_certs"],
                 "DOCKER_TLS_VERIFY",
                 DEFAULT_TLS_VERIFY,
                 value_type="bool",
             ),
-            timeout=self._get_value(
+            "timeout": self._get_value(
                 "timeout",
                 params["timeout"],
                 "DOCKER_TIMEOUT",
                 DEFAULT_TIMEOUT_SECONDS,
                 value_type="int",
             ),
-            use_ssh_client=self._get_value(
+            "use_ssh_client": self._get_value(
                 "use_ssh_client",
                 params["use_ssh_client"],
                 None,
                 False,
                 value_type="bool",
             ),
-        )
+        }
 
         def depr(*args, **kwargs):
             self.deprecate(*args, **kwargs)
@@ -564,7 +564,7 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
         # in case client.fail() is called.
         self.fail_results = fail_results or {}
 
-        merged_arg_spec = dict()
+        merged_arg_spec = {}
         merged_arg_spec.update(DOCKER_COMMON_ARGS)
         if argument_spec:
             merged_arg_spec.update(argument_spec)
@@ -613,12 +613,12 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
         return self.module.params
 
     def _get_minimal_versions(self, option_minimal_versions, ignore_params=None):
-        self.option_minimal_versions = dict()
+        self.option_minimal_versions = {}
         for option in self.module.argument_spec:
             if ignore_params is not None:
                 if option in ignore_params:
                     continue
-            self.option_minimal_versions[option] = dict()
+            self.option_minimal_versions[option] = {}
         self.option_minimal_versions.update(option_minimal_versions)
 
         for option, data in self.option_minimal_versions.items():

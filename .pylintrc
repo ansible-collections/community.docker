@@ -393,7 +393,6 @@ disable=raw-checker-failed,
         unexpected-keyword-arg,
         unsupported-assignment-operation,  # TODO: needs better typing info
         unused-argument,
-        use-dict-literal,
         # Cannot remove yet due to inadequacy of rules
         inconsistent-return-statements,  # doesn't notice that fail_json() does not return
 

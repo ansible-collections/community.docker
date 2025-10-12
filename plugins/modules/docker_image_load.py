@@ -181,17 +181,17 @@ class ImageManager(DockerBaseClass):
 
 def main():
     client = AnsibleDockerClient(
-        argument_spec=dict(
-            path=dict(type="path", required=True),
-        ),
+        argument_spec={
+            "path": {"type": "path", "required": True},
+        },
         supports_check_mode=False,
     )
 
     try:
-        results = dict(
-            image_names=[],
-            images=[],
-        )
+        results = {
+            "image_names": [],
+            "images": [],
+        }
 
         ImageManager(client, results)
         client.module.exit_json(**results)

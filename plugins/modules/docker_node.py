@@ -206,11 +206,11 @@ class SwarmNodeManager(DockerBaseClass):
             self.client.fail(f"Failed to get node information for {exc}")
 
         changed = False
-        node_spec = dict(
-            Availability=self.parameters.availability,
-            Role=self.parameters.role,
-            Labels=self.parameters.labels,
-        )
+        node_spec = {
+            "Availability": self.parameters.availability,
+            "Role": self.parameters.role,
+            "Labels": self.parameters.labels,
+        }
 
         if self.parameters.role is None:
             node_spec["Role"] = node_info["Spec"]["Role"]
@@ -278,14 +278,18 @@ class SwarmNodeManager(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        hostname=dict(type="str", required=True),
-        labels=dict(type="dict"),
-        labels_state=dict(type="str", default="merge", choices=["merge", "replace"]),
-        labels_to_remove=dict(type="list", elements="str"),
-        availability=dict(type="str", choices=["active", "pause", "drain"]),
-        role=dict(type="str", choices=["worker", "manager"]),
-    )
+    argument_spec = {
+        "hostname": {"type": "str", "required": True},
+        "labels": {"type": "dict"},
+        "labels_state": {
+            "type": "str",
+            "default": "merge",
+            "choices": ["merge", "replace"],
+        },
+        "labels_to_remove": {"type": "list", "elements": "str"},
+        "availability": {"type": "str", "choices": ["active", "pause", "drain"]},
+        "role": {"type": "str", "choices": ["worker", "manager"]},
+    }
 
     client = AnsibleDockerSwarmClient(
         argument_spec=argument_spec,
@@ -294,9 +298,9 @@ def main():
     )
 
     try:
-        results = dict(
-            changed=False,
-        )
+        results = {
+            "changed": False,
+        }
 
         SwarmNodeManager(client, results)
         client.module.exit_json(**results)

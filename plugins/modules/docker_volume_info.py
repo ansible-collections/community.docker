@@ -92,9 +92,9 @@ def get_existing_volume(client, volume_name):
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="str", required=True, aliases=["volume_name"]),
-    )
+    argument_spec = {
+        "name": {"type": "str", "required": True, "aliases": ["volume_name"]},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,

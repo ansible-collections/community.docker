@@ -183,7 +183,7 @@ class Connection(ConnectionBase):
         super().__init__(play_context, new_stdin, *args, **kwargs)
 
         self.client = None
-        self.ids = dict()
+        self.ids = {}
 
         # Windows uses Powershell modules
         if getattr(self._shell, "_IS_WINDOWS", False):

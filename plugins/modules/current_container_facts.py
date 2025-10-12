@@ -80,7 +80,7 @@ from ansible.module_utils.basic import AnsibleModule
 
 
 def main():
-    module = AnsibleModule(dict(), supports_check_mode=True)
+    module = AnsibleModule({}, supports_check_mode=True)
 
     cpuset_path = "/proc/self/cpuset"
     mountinfo_path = "/proc/self/mountinfo"
@@ -136,11 +136,11 @@ def main():
                     container_type = "podman"
 
     module.exit_json(
-        ansible_facts=dict(
-            ansible_module_running_in_container=container_id != "",
-            ansible_module_container_id=container_id,
-            ansible_module_container_type=container_type,
-        )
+        ansible_facts={
+            "ansible_module_running_in_container": container_id != "",
+            "ansible_module_container_id": container_id,
+            "ansible_module_container_type": container_type,
+        }
     )
 
 

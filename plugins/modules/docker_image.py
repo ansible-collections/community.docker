@@ -442,8 +442,8 @@ class ImageManager(DockerBaseClass):
         self.check_mode = self.client.check_mode
 
         self.source = parameters["source"]
-        build = parameters["build"] or dict()
-        pull = parameters["pull"] or dict()
+        build = parameters["build"] or {}
+        pull = parameters["pull"] or {}
         self.archive_path = parameters["archive_path"]
         self.cache_from = build.get("cache_from")
         self.container_limits = build.get("container_limits")
@@ -796,7 +796,7 @@ class ImageManager(DockerBaseClass):
                     self.fail(f"Error pushing image {repository}: {exc}")
                 self.results["image"] = self.client.find_image(name=repository, tag=tag)
                 if not self.results["image"]:
-                    self.results["image"] = dict()
+                    self.results["image"] = {}
                 self.results["image"]["push_status"] = status
 
     def tag_image(self, name, tag, repository, push=False):
@@ -1079,54 +1079,58 @@ class ImageManager(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        source=dict(type="str", choices=["build", "load", "pull", "local"]),
-        build=dict(
-            type="dict",
-            options=dict(
-                cache_from=dict(type="list", elements="str"),
-                container_limits=dict(
-                    type="dict",
-                    options=dict(
-                        memory=dict(type="str"),
-                        memswap=dict(type="str"),
-                        cpushares=dict(type="int"),
-                        cpusetcpus=dict(type="str"),
-                    ),
-                ),
-                dockerfile=dict(type="str"),
-                http_timeout=dict(type="int"),
-                network=dict(type="str"),
-                nocache=dict(type="bool", default=False),
-                path=dict(type="path", required=True),
-                pull=dict(type="bool", default=False),
-                rm=dict(type="bool", default=True),
-                args=dict(type="dict"),
-                use_config_proxy=dict(type="bool"),
-                target=dict(type="str"),
-                etc_hosts=dict(type="dict"),
-                platform=dict(type="str"),
-                shm_size=dict(type="str"),
-                labels=dict(type="dict"),
-            ),
-        ),
-        archive_path=dict(type="path"),
-        force_source=dict(type="bool", default=False),
-        force_absent=dict(type="bool", default=False),
-        force_tag=dict(type="bool", default=False),
-        load_path=dict(type="path"),
-        name=dict(type="str", required=True),
-        pull=dict(
-            type="dict",
-            options=dict(
-                platform=dict(type="str"),
-            ),
-        ),
-        push=dict(type="bool", default=False),
-        repository=dict(type="str"),
-        state=dict(type="str", default="present", choices=["absent", "present"]),
-        tag=dict(type="str", default="latest"),
-    )
+    argument_spec = {
+        "source": {"type": "str", "choices": ["build", "load", "pull", "local"]},
+        "build": {
+            "type": "dict",
+            "options": {
+                "cache_from": {"type": "list", "elements": "str"},
+                "container_limits": {
+                    "type": "dict",
+                    "options": {
+                        "memory": {"type": "str"},
+                        "memswap": {"type": "str"},
+                        "cpushares": {"type": "int"},
+                        "cpusetcpus": {"type": "str"},
+                    },
+                },
+                "dockerfile": {"type": "str"},
+                "http_timeout": {"type": "int"},
+                "network": {"type": "str"},
+                "nocache": {"type": "bool", "default": False},
+                "path": {"type": "path", "required": True},
+                "pull": {"type": "bool", "default": False},
+                "rm": {"type": "bool", "default": True},
+                "args": {"type": "dict"},
+                "use_config_proxy": {"type": "bool"},
+                "target": {"type": "str"},
+                "etc_hosts": {"type": "dict"},
+                "platform": {"type": "str"},
+                "shm_size": {"type": "str"},
+                "labels": {"type": "dict"},
+            },
+        },
+        "archive_path": {"type": "path"},
+        "force_source": {"type": "bool", "default": False},
+        "force_absent": {"type": "bool", "default": False},
+        "force_tag": {"type": "bool", "default": False},
+        "load_path": {"type": "path"},
+        "name": {"type": "str", "required": True},
+        "pull": {
+            "type": "dict",
+            "options": {
+                "platform": {"type": "str"},
+            },
+        },
+        "push": {"type": "bool", "default": False},
+        "repository": {"type": "str"},
+        "state": {
+            "type": "str",
+            "default": "present",
+            "choices": ["absent", "present"],
+        },
+        "tag": {"type": "str", "default": "latest"},
+    }
 
     required_if = [
         ("state", "present", ["source"]),
@@ -1151,16 +1155,20 @@ def main():
             and client.module.params["pull"].get("platform") is not None
         )
 
-    option_minimal_versions = dict()
-    option_minimal_versions["build.etc_hosts"] = dict(
-        docker_api_version="1.27", detect_usage=detect_etc_hosts
-    )
-    option_minimal_versions["build.platform"] = dict(
-        docker_api_version="1.32", detect_usage=detect_build_platform
-    )
-    option_minimal_versions["pull.platform"] = dict(
-        docker_api_version="1.32", detect_usage=detect_pull_platform
-    )
+    option_minimal_versions = {
+        "build.etc_hosts": {
+            "docker_api_version": "1.27",
+            "detect_usage": detect_etc_hosts,
+        },
+        "build.platform": {
+            "docker_api_version": "1.32",
+            "detect_usage": detect_build_platform,
+        },
+        "pull.platform": {
+            "docker_api_version": "1.32",
+            "detect_usage": detect_pull_platform,
+        },
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
@@ -1181,7 +1189,7 @@ def main():
             )
 
     try:
-        results = dict(changed=False, actions=[], image={})
+        results = {"changed": False, "actions": [], "image": {}}
 
         ImageManager(client, results)
         client.module.exit_json(**results)

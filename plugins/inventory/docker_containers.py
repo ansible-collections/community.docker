@@ -253,11 +253,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 name = short_container_id
                 full_name = container_id
 
-            facts = dict(
-                docker_name=make_unsafe(name),
-                docker_short_id=make_unsafe(short_container_id),
-            )
-            full_facts = dict()
+            facts = {
+                "docker_name": make_unsafe(name),
+                "docker_short_id": make_unsafe(short_container_id),
+            }
+            full_facts = {}
 
             try:
                 inspect = client.get_json("/containers/{0}/json", container_id)
@@ -266,9 +266,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                     f"Error inspecting container {name} - {exc}"
                 ) from exc
 
-            state = inspect.get("State") or dict()
-            config = inspect.get("Config") or dict()
-            labels = config.get("Labels") or dict()
+            state = inspect.get("State") or {}
+            config = inspect.get("Config") or {}
+            labels = config.get("Labels") or {}
 
             running = state.get("Running")
 
@@ -300,7 +300,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                     port_settings = network_settings.get("Ports") or {}
                     port = port_settings.get(f"{ssh_port}/tcp")[0]
                 except (IndexError, AttributeError, TypeError):
-                    port = dict()
+                    port = {}
 
                 try:
                     ip = default_ip if port["HostIp"] == "0.0.0.0" else port["HostIp"]
@@ -308,23 +308,23 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                     ip = ""
 
                 facts.update(
-                    dict(
-                        ansible_ssh_host=ip,
-                        ansible_ssh_port=port.get("HostPort", 0),
-                    )
+                    {
+                        "ansible_ssh_host": ip,
+                        "ansible_ssh_port": port.get("HostPort", 0),
+                    }
                 )
             elif connection_type == "docker-cli":
                 facts.update(
-                    dict(
-                        ansible_host=full_name,
-                    )
+                    {
+                        "ansible_host": full_name,
+                    }
                 )
                 ansible_connection = "community.docker.docker"
             elif connection_type == "docker-api":
                 facts.update(
-                    dict(
-                        ansible_host=full_name,
-                    )
+                    {
+                        "ansible_host": full_name,
+                    }
                 )
                 facts.update(extra_facts)
                 ansible_connection = "community.docker.docker_api"

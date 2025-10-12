@@ -184,19 +184,19 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         raise AnsibleError(msg)
 
     def _populate(self):
-        raw_params = dict(
-            docker_host=self.get_option("docker_host"),
-            tls=self.get_option("tls"),
-            tls_verify=self.get_option("validate_certs"),
-            key_path=self.get_option("client_key"),
-            cacert_path=self.get_option("ca_path"),
-            cert_path=self.get_option("client_cert"),
-            tls_hostname=self.get_option("tls_hostname"),
-            api_version=self.get_option("api_version"),
-            timeout=self.get_option("timeout"),
-            use_ssh_client=self.get_option("use_ssh_client"),
-            debug=None,
-        )
+        raw_params = {
+            "docker_host": self.get_option("docker_host"),
+            "tls": self.get_option("tls"),
+            "tls_verify": self.get_option("validate_certs"),
+            "key_path": self.get_option("client_key"),
+            "cacert_path": self.get_option("ca_path"),
+            "cert_path": self.get_option("client_cert"),
+            "tls_hostname": self.get_option("tls_hostname"),
+            "api_version": self.get_option("api_version"),
+            "timeout": self.get_option("timeout"),
+            "use_ssh_client": self.get_option("use_ssh_client"),
+            "debug": None,
+        }
         update_tls_hostname(raw_params)
         connect_params = get_connect_params(raw_params, fail_function=self._fail)
         client = docker.DockerClient(**connect_params)

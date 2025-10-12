@@ -514,11 +514,11 @@ class ImageBuilder(DockerBaseClass):
 
     def build_image(self):
         image = self.client.find_image(self.name, self.tag)
-        results = dict(
-            changed=False,
-            actions=[],
-            image=image or {},
-        )
+        results = {
+            "changed": False,
+            "actions": [],
+            "image": image or {},
+        }
 
         if image:
             if self.rebuild == "never":
@@ -548,69 +548,73 @@ class ImageBuilder(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="str", required=True),
-        tag=dict(type="str", default="latest"),
-        path=dict(type="path", required=True),
-        dockerfile=dict(type="str"),
-        cache_from=dict(type="list", elements="str"),
-        pull=dict(type="bool", default=False),
-        network=dict(type="str"),
-        nocache=dict(type="bool", default=False),
-        etc_hosts=dict(type="dict"),
-        args=dict(type="dict"),
-        target=dict(type="str"),
-        platform=dict(type="list", elements="str"),
-        shm_size=dict(type="str"),
-        labels=dict(type="dict"),
-        rebuild=dict(type="str", choices=["never", "always"], default="never"),
-        secrets=dict(
-            type="list",
-            elements="dict",
-            options=dict(
-                id=dict(type="str", required=True),
-                type=dict(type="str", choices=["file", "env", "value"], required=True),
-                src=dict(type="path"),
-                env=dict(type="str"),
-                value=dict(type="str", no_log=True),
-            ),
-            required_if=[
+    argument_spec = {
+        "name": {"type": "str", "required": True},
+        "tag": {"type": "str", "default": "latest"},
+        "path": {"type": "path", "required": True},
+        "dockerfile": {"type": "str"},
+        "cache_from": {"type": "list", "elements": "str"},
+        "pull": {"type": "bool", "default": False},
+        "network": {"type": "str"},
+        "nocache": {"type": "bool", "default": False},
+        "etc_hosts": {"type": "dict"},
+        "args": {"type": "dict"},
+        "target": {"type": "str"},
+        "platform": {"type": "list", "elements": "str"},
+        "shm_size": {"type": "str"},
+        "labels": {"type": "dict"},
+        "rebuild": {"type": "str", "choices": ["never", "always"], "default": "never"},
+        "secrets": {
+            "type": "list",
+            "elements": "dict",
+            "options": {
+                "id": {"type": "str", "required": True},
+                "type": {
+                    "type": "str",
+                    "choices": ["file", "env", "value"],
+                    "required": True,
+                },
+                "src": {"type": "path"},
+                "env": {"type": "str"},
+                "value": {"type": "str", "no_log": True},
+            },
+            "required_if": [
                 ("type", "file", ["src"]),
                 ("type", "env", ["env"]),
                 ("type", "value", ["value"]),
             ],
-            mutually_exclusive=[
+            "mutually_exclusive": [
                 ("src", "env", "value"),
             ],
-            no_log=False,
-        ),
-        outputs=dict(
-            type="list",
-            elements="dict",
-            options=dict(
-                type=dict(
-                    type="str",
-                    choices=["local", "tar", "oci", "docker", "image"],
-                    required=True,
-                ),
-                dest=dict(type="path"),
-                context=dict(type="str"),
-                name=dict(type="list", elements="str"),
-                push=dict(type="bool", default=False),
-            ),
-            required_if=[
+            "no_log": False,
+        },
+        "outputs": {
+            "type": "list",
+            "elements": "dict",
+            "options": {
+                "type": {
+                    "type": "str",
+                    "choices": ["local", "tar", "oci", "docker", "image"],
+                    "required": True,
+                },
+                "dest": {"type": "path"},
+                "context": {"type": "str"},
+                "name": {"type": "list", "elements": "str"},
+                "push": {"type": "bool", "default": False},
+            },
+            "required_if": [
                 ("type", "local", ["dest"]),
                 ("type", "tar", ["dest"]),
                 ("type", "oci", ["dest"]),
             ],
-            mutually_exclusive=[
+            "mutually_exclusive": [
                 ("dest", "name"),
                 ("dest", "push"),
                 ("context", "name"),
                 ("context", "push"),
             ],
-        ),
-    )
+        },
+    }
 
     client = AnsibleModuleDockerClient(
         argument_spec=argument_spec,

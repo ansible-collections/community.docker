@@ -158,7 +158,7 @@ class DockerFileStore:
         self._config_path = config_path
 
         # Make sure we have a minimal config if none is available.
-        self._config = dict(auths=dict())
+        self._config = {"auths": {}}
 
         try:
             # Attempt to read the existing config.
@@ -166,7 +166,7 @@ class DockerFileStore:
                 config = json.load(f)
         except (ValueError, IOError):
             # No config found or an invalid config found so we'll ignore it.
-            config = dict()
+            config = {}
 
         # Update our internal config with what ever was loaded.
         self._config.update(config)
@@ -191,7 +191,7 @@ class DockerFileStore:
 
         (username, password) = decode_auth(server_creds["auth"])
 
-        return dict(Username=username, Secret=password)
+        return {"Username": username, "Secret": password}
 
     def _write(self):
         """
@@ -219,9 +219,9 @@ class DockerFileStore:
 
         # build up the auth structure
         if "auths" not in self._config:
-            self._config["auths"] = dict()
+            self._config["auths"] = {}
 
-        self._config["auths"][server] = dict(auth=tauth)
+        self._config["auths"][server] = {"auth": tauth}
 
         self._write()
 
@@ -368,7 +368,7 @@ class LoginManager(DockerBaseClass):
             current = store.get(self.registry_url)
         except CredentialsNotFound:
             # get raises an exception on not found.
-            current = dict(Username="", Secret="")
+            current = {"Username": "", "Secret": ""}
 
         if (
             current["Username"] != self.username
@@ -410,18 +410,26 @@ class LoginManager(DockerBaseClass):
 
 def main():
 
-    argument_spec = dict(
-        registry_url=dict(
-            type="str", default=DEFAULT_DOCKER_REGISTRY, aliases=["registry", "url"]
-        ),
-        username=dict(type="str"),
-        password=dict(type="str", no_log=True),
-        reauthorize=dict(type="bool", default=False, aliases=["reauth"]),
-        state=dict(type="str", default="present", choices=["present", "absent"]),
-        config_path=dict(
-            type="path", default="~/.docker/config.json", aliases=["dockercfg_path"]
-        ),
-    )
+    argument_spec = {
+        "registry_url": {
+            "type": "str",
+            "default": DEFAULT_DOCKER_REGISTRY,
+            "aliases": ["registry", "url"],
+        },
+        "username": {"type": "str"},
+        "password": {"type": "str", "no_log": True},
+        "reauthorize": {"type": "bool", "default": False, "aliases": ["reauth"]},
+        "state": {
+            "type": "str",
+            "default": "present",
+            "choices": ["present", "absent"],
+        },
+        "config_path": {
+            "type": "path",
+            "default": "~/.docker/config.json",
+            "aliases": ["dockercfg_path"],
+        },
+    }
 
     required_if = [
         ("state", "present", ["username", "password"]),
@@ -434,7 +442,7 @@ def main():
     )
 
     try:
-        results = dict(changed=False, actions=[], login_result={})
+        results = {"changed": False, "actions": [], "login_result": {}}
 
         manager = LoginManager(client, results)
         manager.run()

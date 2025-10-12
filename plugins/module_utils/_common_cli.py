@@ -31,31 +31,40 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 )
 
 
-DOCKER_COMMON_ARGS = dict(
-    docker_cli=dict(type="path"),
-    docker_host=dict(
-        type="str", fallback=(env_fallback, ["DOCKER_HOST"]), aliases=["docker_url"]
-    ),
-    tls_hostname=dict(type="str", fallback=(env_fallback, ["DOCKER_TLS_HOSTNAME"])),
-    api_version=dict(
-        type="str",
-        default="auto",
-        fallback=(env_fallback, ["DOCKER_API_VERSION"]),
-        aliases=["docker_api_version"],
-    ),
-    ca_path=dict(type="path", aliases=["ca_cert", "tls_ca_cert", "cacert_path"]),
-    client_cert=dict(type="path", aliases=["tls_client_cert", "cert_path"]),
-    client_key=dict(type="path", aliases=["tls_client_key", "key_path"]),
-    tls=dict(type="bool", default=DEFAULT_TLS, fallback=(env_fallback, ["DOCKER_TLS"])),
-    validate_certs=dict(
-        type="bool",
-        default=DEFAULT_TLS_VERIFY,
-        fallback=(env_fallback, ["DOCKER_TLS_VERIFY"]),
-        aliases=["tls_verify"],
-    ),
-    # debug=dict(type='bool', default=False),
-    cli_context=dict(type="str"),
-)
+DOCKER_COMMON_ARGS = {
+    "docker_cli": {"type": "path"},
+    "docker_host": {
+        "type": "str",
+        "fallback": (env_fallback, ["DOCKER_HOST"]),
+        "aliases": ["docker_url"],
+    },
+    "tls_hostname": {
+        "type": "str",
+        "fallback": (env_fallback, ["DOCKER_TLS_HOSTNAME"]),
+    },
+    "api_version": {
+        "type": "str",
+        "default": "auto",
+        "fallback": (env_fallback, ["DOCKER_API_VERSION"]),
+        "aliases": ["docker_api_version"],
+    },
+    "ca_path": {"type": "path", "aliases": ["ca_cert", "tls_ca_cert", "cacert_path"]},
+    "client_cert": {"type": "path", "aliases": ["tls_client_cert", "cert_path"]},
+    "client_key": {"type": "path", "aliases": ["tls_client_key", "key_path"]},
+    "tls": {
+        "type": "bool",
+        "default": DEFAULT_TLS,
+        "fallback": (env_fallback, ["DOCKER_TLS"]),
+    },
+    "validate_certs": {
+        "type": "bool",
+        "default": DEFAULT_TLS_VERIFY,
+        "fallback": (env_fallback, ["DOCKER_TLS_VERIFY"]),
+        "aliases": ["tls_verify"],
+    },
+    # "debug": {"type": "bool", "default: False},
+    "cli_context": {"type": "str"},
+}
 
 
 class DockerException(Exception):
@@ -327,7 +336,7 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
         # in case client.fail() is called.
         self.fail_results = fail_results or {}
 
-        merged_arg_spec = dict()
+        merged_arg_spec = {}
         merged_arg_spec.update(DOCKER_COMMON_ARGS)
         if argument_spec:
             merged_arg_spec.update(argument_spec)

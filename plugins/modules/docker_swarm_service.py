@@ -1019,9 +1019,9 @@ def has_dict_changed(new_dict, old_dict):
         return True
     if not old_dict and new_dict:
         return True
-    defined_options = dict(
-        (option, value) for option, value in new_dict.items() if value is not None
-    )
+    defined_options = {
+        option: value for option, value in new_dict.items() if value is not None
+    }
     for option, value in defined_options.items():
         old_value = old_dict.get(option)
         if not value and not old_value:
@@ -1859,12 +1859,12 @@ class DockerService(DockerBaseClass):
             if not publish_item.get("mode"):
                 ignored_keys.add("mode")
             # Create copies of publish_item dicts where keys specified in ignored_keys are left out
-            filtered_old_publish_item = dict(
-                (k, v) for k, v in old_publish_item.items() if k not in ignored_keys
-            )
-            filtered_publish_item = dict(
-                (k, v) for k, v in publish_item.items() if k not in ignored_keys
-            )
+            filtered_old_publish_item = {
+                k: v for k, v in old_publish_item.items() if k not in ignored_keys
+            }
+            filtered_publish_item = {
+                k: v for k, v in publish_item.items() if k not in ignored_keys
+            }
             if filtered_publish_item != filtered_old_publish_item:
                 return True
         return False
@@ -2217,11 +2217,11 @@ class DockerServiceManager:
                 "StartPeriod": "start_period",
                 "Retries": "retries",
             }
-            healthcheck = dict(
-                (options[key], value)
+            healthcheck = {
+                options[key]: value
                 for key, value in healthcheck_data.items()
                 if value is not None and key in options
-            )
+            }
             ds.healthcheck = healthcheck
 
         update_config_data = raw_data["Spec"].get("UpdateConfig")
@@ -2262,7 +2262,7 @@ class DockerServiceManager:
                 )
                 for host in hosts
             ]
-            ds.hosts = dict((hostname, ip) for ip, hostname in hosts)
+            ds.hosts = {hostname: ip for ip, hostname in hosts}
         ds.tty = task_template_data["ContainerSpec"].get("TTY")
 
         placement = task_template_data.get("Placement")
@@ -2272,10 +2272,10 @@ class DockerServiceManager:
             placement_preferences = []
             for preference in placement.get("Preferences", []):
                 placement_preferences.append(
-                    dict(
-                        (key.lower(), value["SpreadDescriptor"])
+                    {
+                        key.lower(): value["SpreadDescriptor"]
                         for key, value in preference.items()
-                    )
+                    }
                 )
             ds.placement_preferences = placement_preferences or None
 
@@ -2349,10 +2349,9 @@ class DockerServiceManager:
                 volume_options = mount_data.get("VolumeOptions", {})
                 tmpfs_options = mount_data.get("TmpfsOptions", {})
                 driver_config = volume_options.get("DriverConfig", {})
-                driver_config = (
-                    dict((key.lower(), value) for key, value in driver_config.items())
-                    or None
-                )
+                driver_config = {
+                    key.lower(): value for key, value in driver_config.items()
+                } or None
                 ds.mounts.append(
                     {
                         "source": mount_data.get("Source", ""),
@@ -2448,9 +2447,7 @@ class DockerServiceManager:
         return f"{name}@{digest}"
 
     def get_networks_names_ids(self):
-        return dict(
-            (network["Name"], network["Id"]) for network in self.client.networks()
-        )
+        return {network["Name"]: network["Id"] for network in self.client.networks()}
 
     def get_missing_secret_ids(self):
         """
@@ -2464,11 +2461,11 @@ class DockerServiceManager:
         if not secret_names:
             return {}
         secrets = self.client.secrets(filters={"name": secret_names})
-        secrets = dict(
-            (secret["Spec"]["Name"], secret["ID"])
+        secrets = {
+            secret["Spec"]["Name"]: secret["ID"]
             for secret in secrets
             if secret["Spec"]["Name"] in secret_names
-        )
+        }
         for secret_name in secret_names:
             if secret_name not in secrets:
                 self.client.fail(f'Could not find a secret named "{secret_name}"')
@@ -2486,11 +2483,11 @@ class DockerServiceManager:
         if not config_names:
             return {}
         configs = self.client.configs(filters={"name": config_names})
-        configs = dict(
-            (config["Spec"]["Name"], config["ID"])
+        configs = {
+            config["Spec"]["Name"]: config["ID"]
             for config in configs
             if config["Spec"]["Name"] in config_names
-        )
+        }
         for config_name in config_names:
             if config_name not in configs:
                 self.client.fail(f'Could not find a config named "{config_name}"')
@@ -2631,26 +2628,30 @@ def _detect_update_config_failure_action_rollback(client):
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="str", required=True),
-        image=dict(type="str"),
-        state=dict(type="str", default="present", choices=["present", "absent"]),
-        mounts=dict(
-            type="list",
-            elements="dict",
-            options=dict(
-                source=dict(type="str"),
-                target=dict(type="str", required=True),
-                type=dict(
-                    type="str",
-                    default="bind",
-                    choices=["bind", "volume", "tmpfs", "npipe"],
-                ),
-                readonly=dict(type="bool"),
-                labels=dict(type="dict"),
-                propagation=dict(
-                    type="str",
-                    choices=[
+    argument_spec = {
+        "name": {"type": "str", "required": True},
+        "image": {"type": "str"},
+        "state": {
+            "type": "str",
+            "default": "present",
+            "choices": ["present", "absent"],
+        },
+        "mounts": {
+            "type": "list",
+            "elements": "dict",
+            "options": {
+                "source": {"type": "str"},
+                "target": {"type": "str", "required": True},
+                "type": {
+                    "type": "str",
+                    "default": "bind",
+                    "choices": ["bind", "volume", "tmpfs", "npipe"],
+                },
+                "readonly": {"type": "bool"},
+                "labels": {"type": "dict"},
+                "propagation": {
+                    "type": "str",
+                    "choices": [
                         "shared",
                         "slave",
                         "private",
@@ -2658,266 +2659,273 @@ def main():
                         "rslave",
                         "rprivate",
                     ],
-                ),
-                no_copy=dict(type="bool"),
-                driver_config=dict(
-                    type="dict",
-                    options=dict(name=dict(type="str"), options=dict(type="dict")),
-                ),
-                tmpfs_size=dict(type="str"),
-                tmpfs_mode=dict(type="int"),
-            ),
-        ),
-        configs=dict(
-            type="list",
-            elements="dict",
-            options=dict(
-                config_id=dict(type="str"),
-                config_name=dict(type="str", required=True),
-                filename=dict(type="str"),
-                uid=dict(type="str"),
-                gid=dict(type="str"),
-                mode=dict(type="int"),
-            ),
-        ),
-        secrets=dict(
-            type="list",
-            elements="dict",
-            no_log=False,
-            options=dict(
-                secret_id=dict(type="str", no_log=False),
-                secret_name=dict(type="str", required=True, no_log=False),
-                filename=dict(type="str"),
-                uid=dict(type="str"),
-                gid=dict(type="str"),
-                mode=dict(type="int"),
-            ),
-        ),
-        networks=dict(type="list", elements="raw"),
-        command=dict(type="raw"),
-        args=dict(type="list", elements="str"),
-        env=dict(type="raw"),
-        env_files=dict(type="list", elements="path"),
-        force_update=dict(type="bool", default=False),
-        groups=dict(type="list", elements="str"),
-        logging=dict(
-            type="dict",
-            options=dict(
-                driver=dict(type="str"),
-                options=dict(type="dict"),
-            ),
-        ),
-        publish=dict(
-            type="list",
-            elements="dict",
-            options=dict(
-                published_port=dict(type="int", required=False),
-                target_port=dict(type="int", required=True),
-                protocol=dict(type="str", default="tcp", choices=["tcp", "udp"]),
-                mode=dict(type="str", choices=["ingress", "host"]),
-            ),
-        ),
-        placement=dict(
-            type="dict",
-            options=dict(
-                constraints=dict(type="list", elements="str"),
-                preferences=dict(type="list", elements="dict"),
-                replicas_max_per_node=dict(type="int"),
-            ),
-        ),
-        tty=dict(type="bool"),
-        dns=dict(type="list", elements="str"),
-        dns_search=dict(type="list", elements="str"),
-        dns_options=dict(type="list", elements="str"),
-        healthcheck=dict(
-            type="dict",
-            options=dict(
-                test=dict(type="raw"),
-                interval=dict(type="str"),
-                timeout=dict(type="str"),
-                start_period=dict(type="str"),
-                retries=dict(type="int"),
-            ),
-        ),
-        hostname=dict(type="str"),
-        hosts=dict(type="dict"),
-        labels=dict(type="dict"),
-        container_labels=dict(type="dict"),
-        sysctls=dict(type="dict"),
-        mode=dict(
-            type="str",
-            default="replicated",
-            choices=["replicated", "global", "replicated-job"],
-        ),
-        replicas=dict(type="int", default=-1),
-        endpoint_mode=dict(type="str", choices=["vip", "dnsrr"]),
-        stop_grace_period=dict(type="str"),
-        stop_signal=dict(type="str"),
-        limits=dict(
-            type="dict",
-            options=dict(
-                cpus=dict(type="float"),
-                memory=dict(type="str"),
-            ),
-        ),
-        read_only=dict(type="bool"),
-        reservations=dict(
-            type="dict",
-            options=dict(
-                cpus=dict(type="float"),
-                memory=dict(type="str"),
-            ),
-        ),
-        resolve_image=dict(type="bool", default=False),
-        restart_config=dict(
-            type="dict",
-            options=dict(
-                condition=dict(type="str", choices=["none", "on-failure", "any"]),
-                delay=dict(type="str"),
-                max_attempts=dict(type="int"),
-                window=dict(type="str"),
-            ),
-        ),
-        rollback_config=dict(
-            type="dict",
-            options=dict(
-                parallelism=dict(type="int"),
-                delay=dict(type="str"),
-                failure_action=dict(type="str", choices=["continue", "pause"]),
-                monitor=dict(type="str"),
-                max_failure_ratio=dict(type="float"),
-                order=dict(type="str"),
-            ),
-        ),
-        update_config=dict(
-            type="dict",
-            options=dict(
-                parallelism=dict(type="int"),
-                delay=dict(type="str"),
-                failure_action=dict(
-                    type="str", choices=["continue", "pause", "rollback"]
-                ),
-                monitor=dict(type="str"),
-                max_failure_ratio=dict(type="float"),
-                order=dict(type="str"),
-            ),
-        ),
-        user=dict(type="str"),
-        working_dir=dict(type="str"),
-        init=dict(type="bool"),
-        cap_add=dict(type="list", elements="str"),
-        cap_drop=dict(type="list", elements="str"),
-    )
+                },
+                "no_copy": {"type": "bool"},
+                "driver_config": {
+                    "type": "dict",
+                    "options": {"name": {"type": "str"}, "options": {"type": "dict"}},
+                },
+                "tmpfs_size": {"type": "str"},
+                "tmpfs_mode": {"type": "int"},
+            },
+        },
+        "configs": {
+            "type": "list",
+            "elements": "dict",
+            "options": {
+                "config_id": {"type": "str"},
+                "config_name": {"type": "str", "required": True},
+                "filename": {"type": "str"},
+                "uid": {"type": "str"},
+                "gid": {"type": "str"},
+                "mode": {"type": "int"},
+            },
+        },
+        "secrets": {
+            "type": "list",
+            "elements": "dict",
+            "no_log": False,
+            "options": {
+                "secret_id": {"type": "str", "no_log": False},
+                "secret_name": {"type": "str", "required": True, "no_log": False},
+                "filename": {"type": "str"},
+                "uid": {"type": "str"},
+                "gid": {"type": "str"},
+                "mode": {"type": "int"},
+            },
+        },
+        "networks": {"type": "list", "elements": "raw"},
+        "command": {"type": "raw"},
+        "args": {"type": "list", "elements": "str"},
+        "env": {"type": "raw"},
+        "env_files": {"type": "list", "elements": "path"},
+        "force_update": {"type": "bool", "default": False},
+        "groups": {"type": "list", "elements": "str"},
+        "logging": {
+            "type": "dict",
+            "options": {
+                "driver": {"type": "str"},
+                "options": {"type": "dict"},
+            },
+        },
+        "publish": {
+            "type": "list",
+            "elements": "dict",
+            "options": {
+                "published_port": {"type": "int", "required": False},
+                "target_port": {"type": "int", "required": True},
+                "protocol": {
+                    "type": "str",
+                    "default": "tcp",
+                    "choices": ["tcp", "udp"],
+                },
+                "mode": {"type": "str", "choices": ["ingress", "host"]},
+            },
+        },
+        "placement": {
+            "type": "dict",
+            "options": {
+                "constraints": {"type": "list", "elements": "str"},
+                "preferences": {"type": "list", "elements": "dict"},
+                "replicas_max_per_node": {"type": "int"},
+            },
+        },
+        "tty": {"type": "bool"},
+        "dns": {"type": "list", "elements": "str"},
+        "dns_search": {"type": "list", "elements": "str"},
+        "dns_options": {"type": "list", "elements": "str"},
+        "healthcheck": {
+            "type": "dict",
+            "options": {
+                "test": {"type": "raw"},
+                "interval": {"type": "str"},
+                "timeout": {"type": "str"},
+                "start_period": {"type": "str"},
+                "retries": {"type": "int"},
+            },
+        },
+        "hostname": {"type": "str"},
+        "hosts": {"type": "dict"},
+        "labels": {"type": "dict"},
+        "container_labels": {"type": "dict"},
+        "sysctls": {"type": "dict"},
+        "mode": {
+            "type": "str",
+            "default": "replicated",
+            "choices": ["replicated", "global", "replicated-job"],
+        },
+        "replicas": {"type": "int", "default": -1},
+        "endpoint_mode": {"type": "str", "choices": ["vip", "dnsrr"]},
+        "stop_grace_period": {"type": "str"},
+        "stop_signal": {"type": "str"},
+        "limits": {
+            "type": "dict",
+            "options": {
+                "cpus": {"type": "float"},
+                "memory": {"type": "str"},
+            },
+        },
+        "read_only": {"type": "bool"},
+        "reservations": {
+            "type": "dict",
+            "options": {
+                "cpus": {"type": "float"},
+                "memory": {"type": "str"},
+            },
+        },
+        "resolve_image": {"type": "bool", "default": False},
+        "restart_config": {
+            "type": "dict",
+            "options": {
+                "condition": {"type": "str", "choices": ["none", "on-failure", "any"]},
+                "delay": {"type": "str"},
+                "max_attempts": {"type": "int"},
+                "window": {"type": "str"},
+            },
+        },
+        "rollback_config": {
+            "type": "dict",
+            "options": {
+                "parallelism": {"type": "int"},
+                "delay": {"type": "str"},
+                "failure_action": {"type": "str", "choices": ["continue", "pause"]},
+                "monitor": {"type": "str"},
+                "max_failure_ratio": {"type": "float"},
+                "order": {"type": "str"},
+            },
+        },
+        "update_config": {
+            "type": "dict",
+            "options": {
+                "parallelism": {"type": "int"},
+                "delay": {"type": "str"},
+                "failure_action": {
+                    "type": "str",
+                    "choices": ["continue", "pause", "rollback"],
+                },
+                "monitor": {"type": "str"},
+                "max_failure_ratio": {"type": "float"},
+                "order": {"type": "str"},
+            },
+        },
+        "user": {"type": "str"},
+        "working_dir": {"type": "str"},
+        "init": {"type": "bool"},
+        "cap_add": {"type": "list", "elements": "str"},
+        "cap_drop": {"type": "list", "elements": "str"},
+    }
 
-    option_minimal_versions = dict(
-        dns=dict(docker_py_version="2.6.0"),
-        dns_options=dict(docker_py_version="2.6.0"),
-        dns_search=dict(docker_py_version="2.6.0"),
-        endpoint_mode=dict(docker_py_version="3.0.0"),
-        force_update=dict(docker_py_version="2.1.0"),
-        healthcheck=dict(docker_py_version="2.6.0"),
-        hostname=dict(docker_py_version="2.2.0"),
-        hosts=dict(docker_py_version="2.6.0"),
-        groups=dict(docker_py_version="2.6.0"),
-        tty=dict(docker_py_version="2.4.0"),
-        secrets=dict(docker_py_version="2.4.0"),
-        configs=dict(docker_py_version="2.6.0", docker_api_version="1.30"),
-        stop_signal=dict(docker_py_version="2.6.0", docker_api_version="1.28"),
-        publish=dict(docker_py_version="3.0.0"),
-        read_only=dict(docker_py_version="2.6.0", docker_api_version="1.28"),
-        resolve_image=dict(docker_api_version="1.30", docker_py_version="3.2.0"),
-        rollback_config=dict(docker_py_version="3.5.0", docker_api_version="1.28"),
-        init=dict(docker_py_version="4.0.0", docker_api_version="1.37"),
-        cap_add=dict(docker_py_version="5.0.3", docker_api_version="1.41"),
-        cap_drop=dict(docker_py_version="5.0.3", docker_api_version="1.41"),
-        sysctls=dict(docker_py_version="6.0.0", docker_api_version="1.40"),
+    option_minimal_versions = {
+        "dns": {"docker_py_version": "2.6.0"},
+        "dns_options": {"docker_py_version": "2.6.0"},
+        "dns_search": {"docker_py_version": "2.6.0"},
+        "endpoint_mode": {"docker_py_version": "3.0.0"},
+        "force_update": {"docker_py_version": "2.1.0"},
+        "healthcheck": {"docker_py_version": "2.6.0"},
+        "hostname": {"docker_py_version": "2.2.0"},
+        "hosts": {"docker_py_version": "2.6.0"},
+        "groups": {"docker_py_version": "2.6.0"},
+        "tty": {"docker_py_version": "2.4.0"},
+        "secrets": {"docker_py_version": "2.4.0"},
+        "configs": {"docker_py_version": "2.6.0", "docker_api_version": "1.30"},
+        "stop_signal": {"docker_py_version": "2.6.0", "docker_api_version": "1.28"},
+        "publish": {"docker_py_version": "3.0.0"},
+        "read_only": {"docker_py_version": "2.6.0", "docker_api_version": "1.28"},
+        "resolve_image": {"docker_api_version": "1.30", "docker_py_version": "3.2.0"},
+        "rollback_config": {"docker_py_version": "3.5.0", "docker_api_version": "1.28"},
+        "init": {"docker_py_version": "4.0.0", "docker_api_version": "1.37"},
+        "cap_add": {"docker_py_version": "5.0.3", "docker_api_version": "1.41"},
+        "cap_drop": {"docker_py_version": "5.0.3", "docker_api_version": "1.41"},
+        "sysctls": {"docker_py_version": "6.0.0", "docker_api_version": "1.40"},
         # specials
-        publish_mode=dict(
-            docker_py_version="3.0.0",
-            detect_usage=_detect_publish_mode_usage,
-            usage_msg="set publish.mode",
-        ),
-        healthcheck_start_period=dict(
-            docker_py_version="2.6.0",
-            docker_api_version="1.29",
-            detect_usage=_detect_healthcheck_start_period,
-            usage_msg="set healthcheck.start_period",
-        ),
-        update_config_max_failure_ratio=dict(
-            docker_py_version="2.1.0",
-            detect_usage=lambda c: (c.module.params["update_config"] or {}).get(
+        "publish_mode": {
+            "docker_py_version": "3.0.0",
+            "detect_usage": _detect_publish_mode_usage,
+            "usage_msg": "set publish.mode",
+        },
+        "healthcheck_start_period": {
+            "docker_py_version": "2.6.0",
+            "docker_api_version": "1.29",
+            "detect_usage": _detect_healthcheck_start_period,
+            "usage_msg": "set healthcheck.start_period",
+        },
+        "update_config_max_failure_ratio": {
+            "docker_py_version": "2.1.0",
+            "detect_usage": lambda c: (c.module.params["update_config"] or {}).get(
                 "max_failure_ratio"
             )
             is not None,
-            usage_msg="set update_config.max_failure_ratio",
-        ),
-        update_config_failure_action=dict(
-            docker_py_version="3.5.0",
-            docker_api_version="1.28",
-            detect_usage=_detect_update_config_failure_action_rollback,
-            usage_msg="set update_config.failure_action.rollback",
-        ),
-        update_config_monitor=dict(
-            docker_py_version="2.1.0",
-            detect_usage=lambda c: (c.module.params["update_config"] or {}).get(
+            "usage_msg": "set update_config.max_failure_ratio",
+        },
+        "update_config_failure_action": {
+            "docker_py_version": "3.5.0",
+            "docker_api_version": "1.28",
+            "detect_usage": _detect_update_config_failure_action_rollback,
+            "usage_msg": "set update_config.failure_action.rollback",
+        },
+        "update_config_monitor": {
+            "docker_py_version": "2.1.0",
+            "detect_usage": lambda c: (c.module.params["update_config"] or {}).get(
                 "monitor"
             )
             is not None,
-            usage_msg="set update_config.monitor",
-        ),
-        update_config_order=dict(
-            docker_py_version="2.7.0",
-            docker_api_version="1.29",
-            detect_usage=lambda c: (c.module.params["update_config"] or {}).get("order")
-            is not None,
-            usage_msg="set update_config.order",
-        ),
-        placement_config_preferences=dict(
-            docker_py_version="2.4.0",
-            docker_api_version="1.27",
-            detect_usage=lambda c: (c.module.params["placement"] or {}).get(
-                "preferences"
-            )
-            is not None,
-            usage_msg="set placement.preferences",
-        ),
-        placement_config_constraints=dict(
-            docker_py_version="2.4.0",
-            detect_usage=lambda c: (c.module.params["placement"] or {}).get(
-                "constraints"
-            )
-            is not None,
-            usage_msg="set placement.constraints",
-        ),
-        placement_config_replicas_max_per_node=dict(
-            docker_py_version="4.4.3",
-            docker_api_version="1.40",
-            detect_usage=lambda c: (c.module.params["placement"] or {}).get(
-                "replicas_max_per_node"
-            )
-            is not None,
-            usage_msg="set placement.replicas_max_per_node",
-        ),
-        mounts_tmpfs=dict(
-            docker_py_version="2.6.0",
-            detect_usage=_detect_mount_tmpfs_usage,
-            usage_msg="set mounts.tmpfs",
-        ),
-        rollback_config_order=dict(
-            docker_api_version="1.29",
-            detect_usage=lambda c: (c.module.params["rollback_config"] or {}).get(
+            "usage_msg": "set update_config.monitor",
+        },
+        "update_config_order": {
+            "docker_py_version": "2.7.0",
+            "docker_api_version": "1.29",
+            "detect_usage": lambda c: (c.module.params["update_config"] or {}).get(
                 "order"
             )
             is not None,
-            usage_msg="set rollback_config.order",
-        ),
-        mode_replicated_job=dict(
-            docker_py_version="6.0.0",
-            docker_api_version="1.41",
-            detect_usage=lambda c: c.module.params.get("mode") == "replicated-job",
-            usage_msg="set mode",
-        ),
-    )
+            "usage_msg": "set update_config.order",
+        },
+        "placement_config_preferences": {
+            "docker_py_version": "2.4.0",
+            "docker_api_version": "1.27",
+            "detect_usage": lambda c: (c.module.params["placement"] or {}).get(
+                "preferences"
+            )
+            is not None,
+            "usage_msg": "set placement.preferences",
+        },
+        "placement_config_constraints": {
+            "docker_py_version": "2.4.0",
+            "detect_usage": lambda c: (c.module.params["placement"] or {}).get(
+                "constraints"
+            )
+            is not None,
+            "usage_msg": "set placement.constraints",
+        },
+        "placement_config_replicas_max_per_node": {
+            "docker_py_version": "4.4.3",
+            "docker_api_version": "1.40",
+            "detect_usage": lambda c: (c.module.params["placement"] or {}).get(
+                "replicas_max_per_node"
+            )
+            is not None,
+            "usage_msg": "set placement.replicas_max_per_node",
+        },
+        "mounts_tmpfs": {
+            "docker_py_version": "2.6.0",
+            "detect_usage": _detect_mount_tmpfs_usage,
+            "usage_msg": "set mounts.tmpfs",
+        },
+        "rollback_config_order": {
+            "docker_api_version": "1.29",
+            "detect_usage": lambda c: (c.module.params["rollback_config"] or {}).get(
+                "order"
+            )
+            is not None,
+            "usage_msg": "set rollback_config.order",
+        },
+        "mode_replicated_job": {
+            "docker_py_version": "6.0.0",
+            "docker_api_version": "1.41",
+            "detect_usage": lambda c: c.module.params.get("mode") == "replicated-job",
+            "usage_msg": "set mode",
+        },
+    }
     required_if = [("state", "present", ["image"])]
 
     client = AnsibleDockerClient(
@@ -2932,16 +2940,16 @@ def main():
         dsm = DockerServiceManager(client)
         msg, changed, rebuilt, changes, facts = dsm.run_safe()
 
-        results = dict(
-            msg=msg,
-            changed=changed,
-            rebuilt=rebuilt,
-            changes=changes,
-            swarm_service=facts,
-        )
+        results = {
+            "msg": msg,
+            "changed": changed,
+            "rebuilt": rebuilt,
+            "changes": changes,
+            "swarm_service": facts,
+        }
         if client.module._diff:
             before, after = dsm.diff_tracker.get_before_after()
-            results["diff"] = dict(before=before, after=after)
+            results["diff"] = {"before": before, "after": after}
 
         client.module.exit_json(**results)
     except DockerException as e:

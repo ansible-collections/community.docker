@@ -248,29 +248,29 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 def main():
-    argument_spec = dict(
-        containers=dict(type="bool", default=False),
-        containers_filters=dict(type="dict"),
-        images=dict(type="bool", default=False),
-        images_filters=dict(type="dict"),
-        networks=dict(type="bool", default=False),
-        networks_filters=dict(type="dict"),
-        volumes=dict(type="bool", default=False),
-        volumes_filters=dict(type="dict"),
-        builder_cache=dict(type="bool", default=False),
-        builder_cache_all=dict(type="bool", default=False),
-        builder_cache_filters=dict(type="dict"),
-        builder_cache_keep_storage=dict(type="str"),  # convert to bytes
-    )
+    argument_spec = {
+        "containers": {"type": "bool", "default": False},
+        "containers_filters": {"type": "dict"},
+        "images": {"type": "bool", "default": False},
+        "images_filters": {"type": "dict"},
+        "networks": {"type": "bool", "default": False},
+        "networks_filters": {"type": "dict"},
+        "volumes": {"type": "bool", "default": False},
+        "volumes_filters": {"type": "dict"},
+        "builder_cache": {"type": "bool", "default": False},
+        "builder_cache_all": {"type": "bool", "default": False},
+        "builder_cache_filters": {"type": "dict"},
+        "builder_cache_keep_storage": {"type": "str"},  # convert to bytes
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
-        option_minimal_versions=dict(
-            builder_cache=dict(docker_py_version="1.31"),
-            builder_cache_all=dict(docker_py_version="1.39"),
-            builder_cache_filters=dict(docker_py_version="1.31"),
-            builder_cache_keep_storage=dict(docker_py_version="1.39"),
-        ),
+        option_minimal_versions={
+            "builder_cache": {"docker_py_version": "1.31"},
+            "builder_cache_all": {"docker_py_version": "1.39"},
+            "builder_cache_filters": {"docker_py_version": "1.31"},
+            "builder_cache_keep_storage": {"docker_py_version": "1.39"},
+        },
         # supports_check_mode=True,
     )
 
@@ -286,7 +286,7 @@ def main():
             )
 
     try:
-        result = dict()
+        result = {}
         changed = False
 
         if client.module.params["containers"]:

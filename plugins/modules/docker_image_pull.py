@@ -149,12 +149,12 @@ class ImagePuller(DockerBaseClass):
 
     def pull(self):
         image = self.client.find_image(name=self.name, tag=self.tag)
-        results = dict(
-            changed=False,
-            actions=[],
-            image=image or {},
-            diff=dict(before=image_info(image), after=image_info(image)),
-        )
+        results = {
+            "changed": False,
+            "actions": [],
+            "image": image or {},
+            "diff": {"before": image_info(image), "after": image_info(image)},
+        }
 
         if image and self.pull_mode == "not_present":
             if self.platform is None:
@@ -178,7 +178,7 @@ class ImagePuller(DockerBaseClass):
         results["actions"].append(f"Pulled image {self.name}:{self.tag}")
         if self.check_mode:
             results["changed"] = True
-            results["diff"]["after"] = image_info(dict(Id="unknown"))
+            results["diff"]["after"] = image_info({"Id": "unknown"})
         else:
             results["image"], not_changed = self.client.pull_image(
                 self.name, tag=self.tag, image_platform=self.platform
@@ -190,16 +190,20 @@ class ImagePuller(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="str", required=True),
-        tag=dict(type="str", default="latest"),
-        platform=dict(type="str"),
-        pull=dict(type="str", choices=["always", "not_present"], default="always"),
-    )
+    argument_spec = {
+        "name": {"type": "str", "required": True},
+        "tag": {"type": "str", "default": "latest"},
+        "platform": {"type": "str"},
+        "pull": {
+            "type": "str",
+            "choices": ["always", "not_present"],
+            "default": "always",
+        },
+    }
 
-    option_minimal_versions = dict(
-        platform=dict(docker_api_version="1.32"),
-    )
+    option_minimal_versions = {
+        "platform": {"docker_api_version": "1.32"},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,

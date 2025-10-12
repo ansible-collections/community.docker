@@ -162,7 +162,7 @@ class PullManager(BaseComposeManager):
         return args
 
     def run(self):
-        result = dict()
+        result = {}
         args = self.get_pull_cmd(self.check_mode)
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode, nonzero_rc=rc != 0)
@@ -180,12 +180,16 @@ class PullManager(BaseComposeManager):
 
 
 def main():
-    argument_spec = dict(
-        policy=dict(type="str", choices=["always", "missing"], default="always"),
-        ignore_buildable=dict(type="bool", default=False),
-        include_deps=dict(type="bool", default=False),
-        services=dict(type="list", elements="str"),
-    )
+    argument_spec = {
+        "policy": {
+            "type": "str",
+            "choices": ["always", "missing"],
+            "default": "always",
+        },
+        "ignore_buildable": {"type": "bool", "default": False},
+        "include_deps": {"type": "bool", "default": False},
+        "services": {"type": "list", "elements": "str"},
+    }
     argspec_ex = common_compose_argspec_ex()
     argument_spec.update(argspec_ex.pop("argspec"))
 

@@ -219,9 +219,9 @@ class ImageManager(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="list", elements="str"),
-    )
+    argument_spec = {
+        "name": {"type": "list", "elements": "str"},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
@@ -229,7 +229,7 @@ def main():
     )
 
     try:
-        results = dict(changed=False, images=[])
+        results = {"changed": False, "images": []}
 
         ImageManager(client, results)
         client.module.exit_json(**results)

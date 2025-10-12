@@ -232,17 +232,17 @@ class ContainerManager(DockerBaseClass):
                 "name"
             ]
         if self.param_container_default_behavior == "compatibility":
-            old_default_values = dict(
-                auto_remove=False,
-                detach=True,
-                init=False,
-                interactive=False,
-                memory="0",
-                paused=False,
-                privileged=False,
-                read_only=False,
-                tty=False,
-            )
+            old_default_values = {
+                "auto_remove": False,
+                "detach": True,
+                "init": False,
+                "interactive": False,
+                "memory": "0",
+                "paused": False,
+                "privileged": False,
+                "read_only": False,
+                "tty": False,
+            }
             for param, value in old_default_values.items():
                 if self.module.params[param] is None:
                     self.module.params[param] = value
@@ -487,7 +487,7 @@ class ContainerManager(DockerBaseClass):
                         )
                     container = self._get_container(container.id)
                 self.results["changed"] = True
-                self.results["actions"].append(dict(set_paused=self.param_paused))
+                self.results["actions"].append({"set_paused": self.param_paused})
 
         self.facts = container.raw
 
@@ -577,19 +577,19 @@ class ContainerManager(DockerBaseClass):
                     if already_to_latest:
                         self.results["changed"] = False
                         self.results["actions"].append(
-                            dict(pulled_image=f"{repository}:{tag}", changed=False)
+                            {"pulled_image": f"{repository}:{tag}", "changed": False}
                         )
                     else:
                         self.results["changed"] = True
                         self.results["actions"].append(
-                            dict(pulled_image=f"{repository}:{tag}", changed=True)
+                            {"pulled_image": f"{repository}:{tag}", "changed": True}
                         )
                 elif not image or self.param_pull_check_mode_behavior == "always":
                     # If the image is not there, or pull_check_mode_behavior == 'always', claim we'll
                     # pull. (Implicitly: if the image is there, claim it already was latest unless
                     # pull_check_mode_behavior == 'always'.)
                     self.results["changed"] = True
-                    action = dict(pulled_image=f"{repository}:{tag}")
+                    action = {"pulled_image": f"{repository}:{tag}"}
                     if not image:
                         action["changed"] = True
                     self.results["actions"].append(action)
@@ -817,7 +817,7 @@ class ContainerManager(DockerBaseClass):
             network_info = connected_networks.get(network["name"])
             if network_info is None:
                 different = True
-                differences.append(dict(parameter=network, container=None))
+                differences.append({"parameter": network, "container": None})
             else:
                 diff = False
                 network_info_ipam = network_info.get("IPAMConfig") or {}
@@ -855,17 +855,17 @@ class ContainerManager(DockerBaseClass):
                 if diff:
                     different = True
                     differences.append(
-                        dict(
-                            parameter=network,
-                            container=dict(
-                                name=network["name"],
-                                ipv4_address=network_info_ipam.get("IPv4Address"),
-                                ipv6_address=network_info_ipam.get("IPv6Address"),
-                                aliases=network_info.get("Aliases"),
-                                links=network_info.get("Links"),
-                                mac_address=network_info.get("MacAddress"),
-                            ),
-                        )
+                        {
+                            "parameter": network,
+                            "container": {
+                                "name": network["name"],
+                                "ipv4_address": network_info_ipam.get("IPv4Address"),
+                                "ipv6_address": network_info_ipam.get("IPv6Address"),
+                                "aliases": network_info.get("Aliases"),
+                                "links": network_info.get("Links"),
+                                "mac_address": network_info.get("MacAddress"),
+                            },
+                        }
                     )
         return different, differences
 
@@ -892,7 +892,7 @@ class ContainerManager(DockerBaseClass):
                 if not keep:
                     extra = True
                     extra_networks.append(
-                        dict(name=network, id=network_config["NetworkID"])
+                        {"name": network, "id": network_config["NetworkID"]}
                     )
         return extra, extra_networks
 
@@ -905,11 +905,11 @@ class ContainerManager(DockerBaseClass):
             if has_network_differences:
                 if self.diff.get("differences"):
                     self.diff["differences"].append(
-                        dict(network_differences=network_differences)
+                        {"network_differences": network_differences}
                     )
                 else:
                     self.diff["differences"] = [
-                        dict(network_differences=network_differences)
+                        {"network_differences": network_differences}
                     ]
                 for netdiff in network_differences:
                     self.diff_tracker.add(
@@ -928,9 +928,9 @@ class ContainerManager(DockerBaseClass):
             has_extra_networks, extra_networks = self.has_extra_networks(container)
             if has_extra_networks:
                 if self.diff.get("differences"):
-                    self.diff["differences"].append(dict(purge_networks=extra_networks))
+                    self.diff["differences"].append({"purge_networks": extra_networks})
                 else:
-                    self.diff["differences"] = [dict(purge_networks=extra_networks)]
+                    self.diff["differences"] = [{"purge_networks": extra_networks}]
                 for extra_network in extra_networks:
                     self.diff_tracker.add(
                         f"network.{extra_network['name']}", active=extra_network
@@ -944,7 +944,7 @@ class ContainerManager(DockerBaseClass):
             # remove the container from the network, if connected
             if diff.get("container"):
                 self.results["actions"].append(
-                    dict(removed_from_network=diff["parameter"]["name"])
+                    {"removed_from_network": diff["parameter"]["name"]}
                 )
                 if not self.check_mode:
                     try:
@@ -957,10 +957,10 @@ class ContainerManager(DockerBaseClass):
                         )
             # connect to the network
             self.results["actions"].append(
-                dict(
-                    added_to_network=diff["parameter"]["name"],
-                    network_parameters=diff["parameter"],
-                )
+                {
+                    "added_to_network": diff["parameter"]["name"],
+                    "network_parameters": diff["parameter"],
+                }
             )
             if not self.check_mode:
                 params = {
@@ -984,7 +984,7 @@ class ContainerManager(DockerBaseClass):
 
     def _purge_networks(self, container, networks):
         for network in networks:
-            self.results["actions"].append(dict(removed_from_network=network["name"]))
+            self.results["actions"].append({"removed_from_network": network["name"]})
             if not self.check_mode:
                 try:
                     self.engine_driver.disconnect_container_from_network(
@@ -1015,11 +1015,11 @@ class ContainerManager(DockerBaseClass):
                     if key not in ("name", "id")
                 }
         self.results["actions"].append(
-            dict(
-                created="Created container",
-                create_parameters=create_parameters,
-                networks=networks,
-            )
+            {
+                "created": "Created container",
+                "create_parameters": create_parameters,
+                "networks": networks,
+            }
         )
         self.results["changed"] = True
         new_container = None
@@ -1035,7 +1035,7 @@ class ContainerManager(DockerBaseClass):
 
     def container_start(self, container_id):
         self.log(f"start container {container_id}")
-        self.results["actions"].append(dict(started=container_id))
+        self.results["actions"].append({"started": container_id})
         self.results["changed"] = True
         if not self.check_mode:
             try:
@@ -1069,7 +1069,7 @@ class ContainerManager(DockerBaseClass):
                 if insp.raw:
                     insp.raw["Output"] = output
                 else:
-                    insp.raw = dict(Output=output)
+                    insp.raw = {"Output": output}
                 if status != 0:
                     # Set `failed` to True and return output as msg
                     self.results["failed"] = True
@@ -1083,9 +1083,12 @@ class ContainerManager(DockerBaseClass):
             f"remove container container:{container_id} v:{volume_state} link:{link} force{force}"
         )
         self.results["actions"].append(
-            dict(
-                removed=container_id, volume_state=volume_state, link=link, force=force
-            )
+            {
+                "removed": container_id,
+                "volume_state": volume_state,
+                "link": link,
+                "force": force,
+            }
         )
         self.results["changed"] = True
         if not self.check_mode:
@@ -1105,7 +1108,7 @@ class ContainerManager(DockerBaseClass):
             self.log(f"update container {container_id}")
             self.log(update_parameters, pretty_print=True)
             self.results["actions"].append(
-                dict(updated=container_id, update_parameters=update_parameters)
+                {"updated": container_id, "update_parameters": update_parameters}
             )
             self.results["changed"] = True
             if not self.check_mode:
@@ -1119,7 +1122,7 @@ class ContainerManager(DockerBaseClass):
 
     def container_kill(self, container_id):
         self.results["actions"].append(
-            dict(killed=container_id, signal=self.param_kill_signal)
+            {"killed": container_id, "signal": self.param_kill_signal}
         )
         self.results["changed"] = True
         if not self.check_mode:
@@ -1132,7 +1135,7 @@ class ContainerManager(DockerBaseClass):
 
     def container_restart(self, container_id):
         self.results["actions"].append(
-            dict(restarted=container_id, timeout=self.module.params["stop_timeout"])
+            {"restarted": container_id, "timeout": self.module.params["stop_timeout"]}
         )
         self.results["changed"] = True
         if not self.check_mode:
@@ -1149,7 +1152,7 @@ class ContainerManager(DockerBaseClass):
             self.container_kill(container_id)
             return
         self.results["actions"].append(
-            dict(stopped=container_id, timeout=self.module.params["stop_timeout"])
+            {"stopped": container_id, "timeout": self.module.params["stop_timeout"]}
         )
         self.results["changed"] = True
         if not self.check_mode:
@@ -1163,57 +1166,63 @@ class ContainerManager(DockerBaseClass):
 
 def run_module(engine_driver):
     module, active_options, client = engine_driver.setup(
-        argument_spec=dict(
-            cleanup=dict(type="bool", default=False),
-            comparisons=dict(type="dict"),
-            container_default_behavior=dict(
-                type="str",
-                default="no_defaults",
-                choices=["compatibility", "no_defaults"],
-            ),
-            command_handling=dict(
-                type="str", choices=["compatibility", "correct"], default="correct"
-            ),
-            default_host_ip=dict(type="str"),
-            force_kill=dict(type="bool", default=False, aliases=["forcekill"]),
-            image=dict(type="str"),
-            image_comparison=dict(
-                type="str",
-                choices=["desired-image", "current-image"],
-                default="desired-image",
-            ),
-            image_label_mismatch=dict(
-                type="str", choices=["ignore", "fail"], default="ignore"
-            ),
-            image_name_mismatch=dict(
-                type="str", choices=["ignore", "recreate"], default="recreate"
-            ),
-            keep_volumes=dict(type="bool", default=True),
-            kill_signal=dict(type="str"),
-            name=dict(type="str", required=True),
-            networks_cli_compatible=dict(type="bool", default=True),
-            output_logs=dict(type="bool", default=False),
-            paused=dict(type="bool"),
-            pull=dict(
-                type="raw",
-                choices=["never", "missing", "always", True, False],
-                default="missing",
-            ),
-            pull_check_mode_behavior=dict(
-                type="str",
-                choices=["image_not_present", "always"],
-                default="image_not_present",
-            ),
-            recreate=dict(type="bool", default=False),
-            removal_wait_timeout=dict(type="float"),
-            restart=dict(type="bool", default=False),
-            state=dict(
-                type="str",
-                default="started",
-                choices=["absent", "present", "healthy", "started", "stopped"],
-            ),
-            healthy_wait_timeout=dict(type="float", default=300),
-        ),
+        argument_spec={
+            "cleanup": {"type": "bool", "default": False},
+            "comparisons": {"type": "dict"},
+            "container_default_behavior": {
+                "type": "str",
+                "default": "no_defaults",
+                "choices": ["compatibility", "no_defaults"],
+            },
+            "command_handling": {
+                "type": "str",
+                "choices": ["compatibility", "correct"],
+                "default": "correct",
+            },
+            "default_host_ip": {"type": "str"},
+            "force_kill": {"type": "bool", "default": False, "aliases": ["forcekill"]},
+            "image": {"type": "str"},
+            "image_comparison": {
+                "type": "str",
+                "choices": ["desired-image", "current-image"],
+                "default": "desired-image",
+            },
+            "image_label_mismatch": {
+                "type": "str",
+                "choices": ["ignore", "fail"],
+                "default": "ignore",
+            },
+            "image_name_mismatch": {
+                "type": "str",
+                "choices": ["ignore", "recreate"],
+                "default": "recreate",
+            },
+            "keep_volumes": {"type": "bool", "default": True},
+            "kill_signal": {"type": "str"},
+            "name": {"type": "str", "required": True},
+            "networks_cli_compatible": {"type": "bool", "default": True},
+            "output_logs": {"type": "bool", "default": False},
+            "paused": {"type": "bool"},
+            "pull": {
+                "type": "raw",
+                "choices": ["never", "missing", "always", True, False],
+                "default": "missing",
+            },
+            "pull_check_mode_behavior": {
+                "type": "str",
+                "choices": ["image_not_present", "always"],
+                "default": "image_not_present",
+            },
+            "recreate": {"type": "bool", "default": False},
+            "removal_wait_timeout": {"type": "float"},
+            "restart": {"type": "bool", "default": False},
+            "state": {
+                "type": "str",
+                "default": "started",
+                "choices": ["absent", "present", "healthy", "started", "stopped"],
+            },
+            "healthy_wait_timeout": {"type": "float", "default": 300},
+        },
         required_if=[
             ("state", "present", ["image"]),
         ],

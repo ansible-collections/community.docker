@@ -104,7 +104,7 @@ def docker_stack_task(module, stack_name):
 
 def main():
     client = AnsibleModuleDockerClient(
-        argument_spec={"name": dict(type="str", required=True)},
+        argument_spec={"name": {"type": "str", "required": True}},
         supports_check_mode=True,
     )
 

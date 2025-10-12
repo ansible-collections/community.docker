@@ -752,10 +752,10 @@ def copy_file_into_container(
             follow_links=local_follow_links,
         )
 
-    result = dict(
-        container_path=container_path,
-        changed=changed,
-    )
+    result = {
+        "container_path": container_path,
+        "changed": changed,
+    }
     if diff:
         result["diff"] = diff
     client.module.exit_json(**result)
@@ -992,10 +992,10 @@ def copy_content_into_container(
             mode=mode,
         )
 
-    result = dict(
-        container_path=container_path,
-        changed=changed,
-    )
+    result = {
+        "container_path": container_path,
+        "changed": changed,
+    }
     if diff:
         # Since the content is no_log, make sure that the before/after strings look sufficiently different
         key = generate_insecure_key()
@@ -1022,26 +1022,26 @@ def parse_octal_string_only(mode):
 
 
 def main():
-    argument_spec = dict(
-        container=dict(type="str", required=True),
-        path=dict(type="path"),
-        container_path=dict(type="str", required=True),
-        follow=dict(type="bool", default=False),
-        local_follow=dict(type="bool", default=True),
-        owner_id=dict(type="int"),
-        group_id=dict(type="int"),
-        mode=dict(type="raw"),
-        mode_parse=dict(
-            type="str",
-            choices=["legacy", "modern", "octal_string_only"],
-            default="legacy",
-        ),
-        force=dict(type="bool"),
-        content=dict(type="str", no_log=True),
-        content_is_b64=dict(type="bool", default=False),
+    argument_spec = {
+        "container": {"type": "str", "required": True},
+        "path": {"type": "path"},
+        "container_path": {"type": "str", "required": True},
+        "follow": {"type": "bool", "default": False},
+        "local_follow": {"type": "bool", "default": True},
+        "owner_id": {"type": "int"},
+        "group_id": {"type": "int"},
+        "mode": {"type": "raw"},
+        "mode_parse": {
+            "type": "str",
+            "choices": ["legacy", "modern", "octal_string_only"],
+            "default": "legacy",
+        },
+        "force": {"type": "bool"},
+        "content": {"type": "str", "no_log": True},
+        "content_is_b64": {"type": "bool", "default": False},
         # Undocumented parameters for use by the action plugin
-        _max_file_size_for_diff=dict(type="int"),
-    )
+        "_max_file_size_for_diff": {"type": "int"},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,

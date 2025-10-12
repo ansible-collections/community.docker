@@ -248,11 +248,11 @@ def context_to_json(context, current):
 
 
 def main():
-    argument_spec = dict(
-        only_current=dict(type="bool", default=False),
-        name=dict(type="str"),
-        cli_context=dict(type="str"),
-    )
+    argument_spec = {
+        "only_current": {"type": "bool", "default": False},
+        "name": {"type": "str"},
+        "cli_context": {"type": "str"},
+    }
 
     module = AnsibleModule(
         argument_spec=argument_spec,
