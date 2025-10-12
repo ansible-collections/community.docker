@@ -263,21 +263,21 @@ class ExecManager(BaseComposeManager):
 
 
 def main():
-    argument_spec = dict(
-        service=dict(type="str", required=True),
-        index=dict(type="int"),
-        argv=dict(type="list", elements="str"),
-        command=dict(type="str"),
-        chdir=dict(type="str"),
-        detach=dict(type="bool", default=False),
-        user=dict(type="str"),
-        stdin=dict(type="str"),
-        stdin_add_newline=dict(type="bool", default=True),
-        strip_empty_ends=dict(type="bool", default=True),
-        privileged=dict(type="bool", default=False),
-        tty=dict(type="bool", default=True),
-        env=dict(type="dict"),
-    )
+    argument_spec = {
+        "service": {"type": "str", "required": True},
+        "index": {"type": "int"},
+        "argv": {"type": "list", "elements": "str"},
+        "command": {"type": "str"},
+        "chdir": {"type": "str"},
+        "detach": {"type": "bool", "default": False},
+        "user": {"type": "str"},
+        "stdin": {"type": "str"},
+        "stdin_add_newline": {"type": "bool", "default": True},
+        "strip_empty_ends": {"type": "bool", "default": True},
+        "privileged": {"type": "bool", "default": False},
+        "tty": {"type": "bool", "default": True},
+        "env": {"type": "dict"},
+    }
     argspec_ex = common_compose_argspec_ex()
     argument_spec.update(argspec_ex.pop("argspec"))
 

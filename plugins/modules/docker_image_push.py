@@ -127,11 +127,11 @@ class ImagePusher(DockerBaseClass):
         if not image:
             self.client.fail(f"Cannot find image {self.name}:{self.tag}")
 
-        results = dict(
-            changed=False,
-            actions=[],
-            image=image,
-        )
+        results = {
+            "changed": False,
+            "actions": [],
+            "image": image,
+        }
 
         push_registry, push_repo = resolve_repository_name(self.name)
         try:
@@ -175,10 +175,10 @@ class ImagePusher(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="str", required=True),
-        tag=dict(type="str", default="latest"),
-    )
+    argument_spec = {
+        "name": {"type": "str", "required": True},
+        "tag": {"type": "str", "default": "latest"},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,

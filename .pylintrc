@@ -388,18 +388,11 @@ disable=raw-checker-failed,
         no-name-in-module,  # TODO figure out why pylint cannot find the module
         not-an-iterable,  # TODO: needs better typing info
         protected-access,
-        raise-missing-from,
         redefined-outer-name,  # needed for test fixtures
-        simplifiable-if-expression,
         subprocess-popen-preexec-fn,
         unexpected-keyword-arg,
-        unnecessary-dunder-call,
-        unnecessary-pass,
         unsupported-assignment-operation,  # TODO: needs better typing info
         unused-argument,
-        unused-variable,
-        use-dict-literal,
-        use-list-literal,
         # Cannot remove yet due to inadequacy of rules
         inconsistent-return-statements,  # doesn't notice that fail_json() does not return
 

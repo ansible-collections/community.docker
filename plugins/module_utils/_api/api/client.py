@@ -227,18 +227,20 @@ class APIClient(_Session, DaemonApiMixin):
         try:
             version_result = self.version(api_version=False)
         except Exception as e:
-            raise DockerException(f"Error while fetching server API version: {e}")
+            raise DockerException(
+                f"Error while fetching server API version: {e}"
+            ) from e
 
         try:
             return version_result["ApiVersion"]
         except KeyError:
             raise DockerException(
                 'Invalid response from docker daemon: key "ApiVersion" is missing.'
-            )
+            ) from None
         except Exception as e:
             raise DockerException(
                 f"Error while fetching server API version: {e}. Response seems to be broken."
-            )
+            ) from e
 
     def _set_request_timeout(self, kwargs):
         """Prepare the kwargs for an HTTP request by inserting the timeout

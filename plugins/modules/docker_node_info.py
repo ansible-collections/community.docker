@@ -131,10 +131,10 @@ def get_node_facts(client):
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="list", elements="str"),
-        self=dict(type="bool", default=False),
-    )
+    argument_spec = {
+        "name": {"type": "list", "elements": "str"},
+        "self": {"type": "bool", "default": False},
+    }
 
     client = AnsibleDockerSwarmClient(
         argument_spec=argument_spec,

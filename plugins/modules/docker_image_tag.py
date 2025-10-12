@@ -133,7 +133,7 @@ def convert_to_bytes(value, module, name, unlimited_value=None):
 
 
 def image_info(name, tag, image):
-    result = dict(name=name, tag=tag)
+    result = {"name": name, "tag": tag}
     if image:
         result["id"] = image["Id"]
     else:
@@ -231,13 +231,13 @@ class ImageTagger(DockerBaseClass):
         before = []
         after = []
         tagged_images = []
-        results = dict(
-            changed=False,
-            actions=[],
-            image=image,
-            tagged_images=tagged_images,
-            diff=dict(before=dict(images=before), after=dict(images=after)),
-        )
+        results = {
+            "changed": False,
+            "actions": [],
+            "image": image,
+            "tagged_images": tagged_images,
+            "diff": {"before": {"images": before}, "after": {"images": after}},
+        }
         for repository, tag in self.repositories:
             tagged, msg, old_image = self.tag_image(image, repository, tag)
             before.append(image_info(repository, tag, old_image))
@@ -257,14 +257,16 @@ class ImageTagger(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="str", required=True),
-        tag=dict(type="str", default="latest"),
-        repository=dict(type="list", elements="str", required=True),
-        existing_images=dict(
-            type="str", choices=["keep", "overwrite"], default="overwrite"
-        ),
-    )
+    argument_spec = {
+        "name": {"type": "str", "required": True},
+        "tag": {"type": "str", "default": "latest"},
+        "repository": {"type": "list", "elements": "str", "required": True},
+        "existing_images": {
+            "type": "str",
+            "choices": ["keep", "overwrite"],
+            "default": "overwrite",
+        },
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,

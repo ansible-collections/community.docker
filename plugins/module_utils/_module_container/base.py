@@ -37,21 +37,21 @@ _DEFAULT_IP_REPLACEMENT_STRING = (
 )
 
 
-_MOUNT_OPTION_TYPES = dict(
-    create_mountpoint=("bind",),
-    labels=("volume",),
-    no_copy=("volume",),
-    non_recursive=("bind",),
-    propagation=("bind",),
-    read_only_force_recursive=("bind",),
-    read_only_non_recursive=("bind",),
-    subpath=("volume", "image"),
-    tmpfs_size=("tmpfs",),
-    tmpfs_mode=("tmpfs",),
-    tmpfs_options=("tmpfs",),
-    volume_driver=("volume",),
-    volume_options=("volume",),
-)
+_MOUNT_OPTION_TYPES = {
+    "create_mountpoint": ("bind",),
+    "labels": ("volume",),
+    "no_copy": ("volume",),
+    "non_recursive": ("bind",),
+    "propagation": ("bind",),
+    "read_only_force_recursive": ("bind",),
+    "read_only_non_recursive": ("bind",),
+    "subpath": ("volume", "image"),
+    "tmpfs_size": ("tmpfs",),
+    "tmpfs_mode": ("tmpfs",),
+    "tmpfs_options": ("tmpfs",),
+    "volume_driver": ("volume",),
+    "volume_options": ("volume",),
+}
 
 
 def _get_ansible_type(value_type):
@@ -629,7 +629,7 @@ def _preprocess_ulimits(module, values):
         return values
     result = []
     for limit in values["ulimits"]:
-        limits = dict()
+        limits = {}
         pieces = limit.split(":")
         if len(pieces) >= 2:
             limits["Name"] = pieces[0]
@@ -644,7 +644,7 @@ def _preprocess_ulimits(module, values):
 
 
 def _preprocess_mounts(module, values):
-    last = dict()
+    last = {}
 
     def check_collision(t, name):
         if t in last:
@@ -970,53 +970,53 @@ OPTION_DEVICE_READ_BPS = OptionGroup().add_option(
     "device_read_bps",
     value_type="set",
     elements="dict",
-    ansible_suboptions=dict(
-        path=dict(required=True, type="str"),
-        rate=dict(required=True, type="str"),
-    ),
+    ansible_suboptions={
+        "path": {"type": "str", "required": True},
+        "rate": {"type": "str", "required": True},
+    },
 )
 
 OPTION_DEVICE_WRITE_BPS = OptionGroup().add_option(
     "device_write_bps",
     value_type="set",
     elements="dict",
-    ansible_suboptions=dict(
-        path=dict(required=True, type="str"),
-        rate=dict(required=True, type="str"),
-    ),
+    ansible_suboptions={
+        "path": {"type": "str", "required": True},
+        "rate": {"type": "str", "required": True},
+    },
 )
 
 OPTION_DEVICE_READ_IOPS = OptionGroup().add_option(
     "device_read_iops",
     value_type="set",
     elements="dict",
-    ansible_suboptions=dict(
-        path=dict(required=True, type="str"),
-        rate=dict(required=True, type="int"),
-    ),
+    ansible_suboptions={
+        "path": {"type": "str", "required": True},
+        "rate": {"type": "int", "required": True},
+    },
 )
 
 OPTION_DEVICE_WRITE_IOPS = OptionGroup().add_option(
     "device_write_iops",
     value_type="set",
     elements="dict",
-    ansible_suboptions=dict(
-        path=dict(required=True, type="str"),
-        rate=dict(required=True, type="int"),
-    ),
+    ansible_suboptions={
+        "path": {"type": "str", "required": True},
+        "rate": {"type": "int", "required": True},
+    },
 )
 
 OPTION_DEVICE_REQUESTS = OptionGroup().add_option(
     "device_requests",
     value_type="set",
     elements="dict",
-    ansible_suboptions=dict(
-        capabilities=dict(type="list", elements="list"),
-        count=dict(type="int"),
-        device_ids=dict(type="list", elements="str"),
-        driver=dict(type="str"),
-        options=dict(type="dict"),
-    ),
+    ansible_suboptions={
+        "capabilities": {"type": "list", "elements": "list"},
+        "count": {"type": "int"},
+        "device_ids": {"type": "list", "elements": "str"},
+        "driver": {"type": "str"},
+        "options": {"type": "dict"},
+    },
 )
 
 OPTION_DEVICE_CGROUP_RULES = OptionGroup().add_option(
@@ -1066,15 +1066,15 @@ OPTION_GROUPS = OptionGroup().add_option("groups", value_type="set", elements="s
 OPTION_HEALTHCHECK = OptionGroup(preprocess=_preprocess_healthcheck).add_option(
     "healthcheck",
     value_type="dict",
-    ansible_suboptions=dict(
-        test=dict(type="raw"),
-        test_cli_compatible=dict(type="bool", default=False),
-        interval=dict(type="str"),
-        timeout=dict(type="str"),
-        start_period=dict(type="str"),
-        start_interval=dict(type="str"),
-        retries=dict(type="int"),
-    ),
+    ansible_suboptions={
+        "test": {"type": "raw"},
+        "test_cli_compatible": {"type": "bool", "default": False},
+        "interval": {"type": "str"},
+        "timeout": {"type": "str"},
+        "start_period": {"type": "str"},
+        "start_interval": {"type": "str"},
+        "retries": {"type": "int"},
+    },
 )
 
 OPTION_HOSTNAME = OptionGroup().add_option("hostname", value_type="str")
@@ -1143,16 +1143,16 @@ OPTION_NETWORK = (
         "networks",
         value_type="set",
         elements="dict",
-        ansible_suboptions=dict(
-            name=dict(type="str", required=True),
-            ipv4_address=dict(type="str"),
-            ipv6_address=dict(type="str"),
-            aliases=dict(type="list", elements="str"),
-            links=dict(type="list", elements="str"),
-            mac_address=dict(type="str"),
-            driver_opts=dict(type="dict"),
-            gw_priority=dict(type="int"),
-        ),
+        ansible_suboptions={
+            "name": {"type": "str", "required": True},
+            "ipv4_address": {"type": "str"},
+            "ipv6_address": {"type": "str"},
+            "aliases": {"type": "list", "elements": "str"},
+            "links": {"type": "list", "elements": "str"},
+            "mac_address": {"type": "str"},
+            "driver_opts": {"type": "dict"},
+            "gw_priority": {"type": "int"},
+        },
     )
 )
 
@@ -1232,35 +1232,43 @@ OPTION_MOUNTS_VOLUMES = (
         "mounts",
         value_type="set",
         elements="dict",
-        ansible_suboptions=dict(
-            target=dict(type="str", required=True),
-            source=dict(type="str"),
-            type=dict(
-                type="str",
-                choices=["bind", "volume", "tmpfs", "npipe", "cluster", "image"],
-                default="volume",
-            ),
-            read_only=dict(type="bool"),
-            consistency=dict(
-                type="str", choices=["default", "consistent", "cached", "delegated"]
-            ),
-            propagation=dict(
-                type="str",
-                choices=["private", "rprivate", "shared", "rshared", "slave", "rslave"],
-            ),
-            no_copy=dict(type="bool"),
-            labels=dict(type="dict"),
-            volume_driver=dict(type="str"),
-            volume_options=dict(type="dict"),
-            tmpfs_size=dict(type="str"),
-            tmpfs_mode=dict(type="str"),
-            non_recursive=dict(type="bool"),
-            create_mountpoint=dict(type="bool"),
-            read_only_non_recursive=dict(type="bool"),
-            read_only_force_recursive=dict(type="bool"),
-            subpath=dict(type="str"),
-            tmpfs_options=dict(type="list", elements="dict"),
-        ),
+        ansible_suboptions={
+            "target": {"type": "str", "required": True},
+            "source": {"type": "str"},
+            "type": {
+                "type": "str",
+                "choices": ["bind", "volume", "tmpfs", "npipe", "cluster", "image"],
+                "default": "volume",
+            },
+            "read_only": {"type": "bool"},
+            "consistency": {
+                "type": "str",
+                "choices": ["default", "consistent", "cached", "delegated"],
+            },
+            "propagation": {
+                "type": "str",
+                "choices": [
+                    "private",
+                    "rprivate",
+                    "shared",
+                    "rshared",
+                    "slave",
+                    "rslave",
+                ],
+            },
+            "no_copy": {"type": "bool"},
+            "labels": {"type": "dict"},
+            "volume_driver": {"type": "str"},
+            "volume_options": {"type": "dict"},
+            "tmpfs_size": {"type": "str"},
+            "tmpfs_mode": {"type": "str"},
+            "non_recursive": {"type": "bool"},
+            "create_mountpoint": {"type": "bool"},
+            "read_only_non_recursive": {"type": "bool"},
+            "read_only_force_recursive": {"type": "bool"},
+            "subpath": {"type": "str"},
+            "tmpfs_options": {"type": "list", "elements": "dict"},
+        },
     )
     .add_option("volumes", value_type="set", elements="str")
     .add_option(

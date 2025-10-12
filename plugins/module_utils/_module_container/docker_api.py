@@ -398,13 +398,15 @@ class DockerAPIEngineDriver(EngineDriver):
                     # New docker daemon versions do not allow containers to be removed
                     # if they are paused. Make sure we do not end up in an infinite loop.
                     if count == 3:
-                        raise RuntimeError(f"{exc} [tried to unpause three times]")
+                        raise RuntimeError(
+                            f"{exc} [tried to unpause three times]"
+                        ) from exc
                     count += 1
                     # Unpause
                     try:
                         self.unpause_container(client, container_id)
                     except Exception as exc2:
-                        raise RuntimeError(f"{exc2} [while unpausing]")
+                        raise RuntimeError(f"{exc2} [while unpausing]") from exc2
                     # Now try again
                     continue
                 raise
@@ -429,13 +431,15 @@ class DockerAPIEngineDriver(EngineDriver):
                     # New docker daemon versions do not allow containers to be removed
                     # if they are paused. Make sure we do not end up in an infinite loop.
                     if count == 3:
-                        raise RuntimeError(f"{exc} [tried to unpause three times]")
+                        raise RuntimeError(
+                            f"{exc} [tried to unpause three times]"
+                        ) from exc
                     count += 1
                     # Unpause
                     try:
                         self.unpause_container(client, container_id)
                     except Exception as exc2:
-                        raise RuntimeError(f"{exc2} [while unpausing]")
+                        raise RuntimeError(f"{exc2} [while unpausing]") from exc2
                     # Now try again
                     continue
                 if (
@@ -817,28 +821,28 @@ def _preprocess_devices(module, client, api_version, value):
         parts = device.split(":")
         if len(parts) == 1:
             expected_devices.append(
-                dict(
-                    CgroupPermissions="rwm",
-                    PathInContainer=parts[0],
-                    PathOnHost=parts[0],
-                )
+                {
+                    "CgroupPermissions": "rwm",
+                    "PathInContainer": parts[0],
+                    "PathOnHost": parts[0],
+                }
             )
         elif len(parts) == 2:
             parts = device.split(":")
             expected_devices.append(
-                dict(
-                    CgroupPermissions="rwm",
-                    PathInContainer=parts[1],
-                    PathOnHost=parts[0],
-                )
+                {
+                    "CgroupPermissions": "rwm",
+                    "PathInContainer": parts[1],
+                    "PathOnHost": parts[0],
+                }
             )
         else:
             expected_devices.append(
-                dict(
-                    CgroupPermissions=parts[2],
-                    PathInContainer=parts[1],
-                    PathOnHost=parts[0],
-                )
+                {
+                    "CgroupPermissions": parts[2],
+                    "PathInContainer": parts[1],
+                    "PathOnHost": parts[0],
+                }
             )
     return expected_devices
 
@@ -1186,7 +1190,7 @@ def _get_expected_values_mounts(
         expected_values["mounts"] = values["mounts"]
 
     # volumes
-    expected_vols = dict()
+    expected_vols = {}
     if image and image["Config"].get("Volumes"):
         expected_vols.update(image["Config"].get("Volumes"))
     if "volumes" in values:
@@ -1400,9 +1404,7 @@ def _get_values_ports(module, container, api_version, options, image, host_info)
 
     # "ExposedPorts": null returns None type & causes AttributeError - PR #5517
     if config.get("ExposedPorts") is not None:
-        expected_exposed = [
-            _normalize_port(p) for p in config.get("ExposedPorts", dict()).keys()
-        ]
+        expected_exposed = [_normalize_port(p) for p in config.get("ExposedPorts", {})]
     else:
         expected_exposed = []
 

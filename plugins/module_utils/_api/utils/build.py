@@ -107,8 +107,8 @@ def create_archive(root, files=None, fileobj=None, gzip=False, extra_files=None)
             try:
                 with open(full_path, "rb") as f:
                     t.addfile(i, f)
-            except IOError:
-                raise IOError(f"Can not read file in context: {full_path}")
+            except IOError as exc:
+                raise IOError(f"Can not read file in context: {full_path}") from exc
         else:
             # Directories, FIFOs, symlinks... do not need to be read.
             t.addfile(i, None)

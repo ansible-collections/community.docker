@@ -184,7 +184,7 @@ except ImportError:
 
 
 def docker_stack_services(client, stack_name):
-    rc, out, err = client.call_cli(
+    dummy_rc, out, err = client.call_cli(
         "stack", "services", stack_name, "--format", "{{.Name}}"
     )
     if to_native(err) == f"Nothing found in stack: {stack_name}\n":
@@ -193,7 +193,7 @@ def docker_stack_services(client, stack_name):
 
 
 def docker_service_inspect(client, service_name):
-    rc, out, err = client.call_cli("service", "inspect", service_name)
+    rc, out, dummy_err = client.call_cli("service", "inspect", service_name)
     if rc != 0:
         return None
     ret = json.loads(out)[0]["Spec"]
@@ -240,15 +240,19 @@ def docker_stack_rm(client, stack_name, retries, interval):
 def main():
     client = AnsibleModuleDockerClient(
         argument_spec={
-            "name": dict(type="str", required=True),
-            "compose": dict(type="list", elements="raw", default=[]),
-            "prune": dict(type="bool", default=False),
-            "detach": dict(type="bool", default=True),
-            "with_registry_auth": dict(type="bool", default=False),
-            "resolve_image": dict(type="str", choices=["always", "changed", "never"]),
-            "state": dict(type="str", default="present", choices=["present", "absent"]),
-            "absent_retries": dict(type="int", default=0),
-            "absent_retries_interval": dict(type="int", default=1),
+            "name": {"type": "str", "required": True},
+            "compose": {"type": "list", "elements": "raw", "default": []},
+            "prune": {"type": "bool", "default": False},
+            "detach": {"type": "bool", "default": True},
+            "with_registry_auth": {"type": "bool", "default": False},
+            "resolve_image": {"type": "str", "choices": ["always", "changed", "never"]},
+            "state": {
+                "type": "str",
+                "default": "present",
+                "choices": ["present", "absent"],
+            },
+            "absent_retries": {"type": "int", "default": 0},
+            "absent_retries_interval": {"type": "int", "default": 1},
         },
         supports_check_mode=False,
     )
@@ -273,7 +277,7 @@ def main():
                 )
 
             compose_files = []
-            for i, compose_def in enumerate(compose):
+            for compose_def in compose:
                 if isinstance(compose_def, dict):
                     compose_file_fd, compose_file = tempfile.mkstemp()
                     client.module.add_cleanup_file(compose_file)

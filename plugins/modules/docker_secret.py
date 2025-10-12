@@ -366,17 +366,21 @@ class SecretManager(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="str", required=True),
-        state=dict(type="str", default="present", choices=["absent", "present"]),
-        data=dict(type="str", no_log=True),
-        data_is_b64=dict(type="bool", default=False),
-        data_src=dict(type="path"),
-        labels=dict(type="dict"),
-        force=dict(type="bool", default=False),
-        rolling_versions=dict(type="bool", default=False),
-        versions_to_keep=dict(type="int", default=5),
-    )
+    argument_spec = {
+        "name": {"type": "str", "required": True},
+        "state": {
+            "type": "str",
+            "default": "present",
+            "choices": ["absent", "present"],
+        },
+        "data": {"type": "str", "no_log": True},
+        "data_is_b64": {"type": "bool", "default": False},
+        "data_src": {"type": "path"},
+        "labels": {"type": "dict"},
+        "force": {"type": "bool", "default": False},
+        "rolling_versions": {"type": "bool", "default": False},
+        "versions_to_keep": {"type": "int", "default": 5},
+    }
 
     required_if = [
         ("state", "present", ["data", "data_src"], True),
@@ -396,7 +400,7 @@ def main():
     sanitize_labels(client.module.params["labels"], "labels", client)
 
     try:
-        results = dict(changed=False, secret_id="", secret_name="")
+        results = {"changed": False, "secret_id": "", "secret_name": ""}
 
         SecretManager(client, results)()
         client.module.exit_json(**results)

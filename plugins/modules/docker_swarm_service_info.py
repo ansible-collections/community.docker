@@ -85,9 +85,9 @@ def get_service_info(client):
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="str", required=True),
-    )
+    argument_spec = {
+        "name": {"type": "str", "required": True},
+    }
 
     client = AnsibleDockerSwarmClient(
         argument_spec=argument_spec,

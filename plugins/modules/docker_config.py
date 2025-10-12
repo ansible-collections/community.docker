@@ -387,18 +387,22 @@ class ConfigManager(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="str", required=True),
-        state=dict(type="str", default="present", choices=["absent", "present"]),
-        data=dict(type="str"),
-        data_is_b64=dict(type="bool", default=False),
-        data_src=dict(type="path"),
-        labels=dict(type="dict"),
-        force=dict(type="bool", default=False),
-        rolling_versions=dict(type="bool", default=False),
-        versions_to_keep=dict(type="int", default=5),
-        template_driver=dict(type="str", choices=["golang"]),
-    )
+    argument_spec = {
+        "name": {"type": "str", "required": True},
+        "state": {
+            "type": "str",
+            "default": "present",
+            "choices": ["absent", "present"],
+        },
+        "data": {"type": "str"},
+        "data_is_b64": {"type": "bool", "default": False},
+        "data_src": {"type": "path"},
+        "labels": {"type": "dict"},
+        "force": {"type": "bool", "default": False},
+        "rolling_versions": {"type": "bool", "default": False},
+        "versions_to_keep": {"type": "int", "default": 5},
+        "template_driver": {"type": "str", "choices": ["golang"]},
+    }
 
     required_if = [
         ("state", "present", ["data", "data_src"], True),
@@ -408,9 +412,9 @@ def main():
         ("data", "data_src"),
     ]
 
-    option_minimal_versions = dict(
-        template_driver=dict(docker_py_version="5.0.3", docker_api_version="1.37"),
-    )
+    option_minimal_versions = {
+        "template_driver": {"docker_py_version": "5.0.3", "docker_api_version": "1.37"},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
@@ -424,9 +428,9 @@ def main():
     sanitize_labels(client.module.params["labels"], "labels", client)
 
     try:
-        results = dict(
-            changed=False,
-        )
+        results = {
+            "changed": False,
+        }
 
         ConfigManager(client, results)()
         client.module.exit_json(**results)

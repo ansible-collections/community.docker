@@ -691,28 +691,28 @@ def update_failed(result, events, args, stdout, stderr, rc, cli):
 
 
 def common_compose_argspec():
-    return dict(
-        project_src=dict(type="path"),
-        project_name=dict(type="str"),
-        files=dict(type="list", elements="path"),
-        definition=dict(type="dict"),
-        env_files=dict(type="list", elements="path"),
-        profiles=dict(type="list", elements="str"),
-        check_files_existing=dict(type="bool", default=True),
-    )
+    return {
+        "project_src": {"type": "path"},
+        "project_name": {"type": "str"},
+        "files": {"type": "list", "elements": "path"},
+        "definition": {"type": "dict"},
+        "env_files": {"type": "list", "elements": "path"},
+        "profiles": {"type": "list", "elements": "str"},
+        "check_files_existing": {"type": "bool", "default": True},
+    }
 
 
 def common_compose_argspec_ex():
-    return dict(
-        argspec=common_compose_argspec(),
-        mutually_exclusive=[("definition", "project_src"), ("definition", "files")],
-        required_one_of=[
+    return {
+        "argspec": common_compose_argspec(),
+        "mutually_exclusive": [("definition", "project_src"), ("definition", "files")],
+        "required_one_of": [
             ("definition", "project_src"),
         ],
-        required_by={
+        "required_by": {
             "definition": ("project_name",),
         },
-    )
+    }
 
 
 def combine_binary_output(*outputs):
@@ -794,7 +794,7 @@ class BaseComposeManager(DockerBaseClass):
         )
 
     def get_compose_version_from_cli(self):
-        rc, version_info, stderr = self.client.call_cli(
+        rc, version_info, dummy_stderr = self.client.call_cli(
             "compose", "version", "--format", "json"
         )
         if rc:
@@ -853,7 +853,7 @@ class BaseComposeManager(DockerBaseClass):
         if self.compose_version >= LooseVersion("2.23.0"):
             # https://github.com/docker/compose/pull/11038
             args.append("--no-trunc")
-        kwargs = dict(cwd=self.project_src, check_rc=not self.use_json_events)
+        kwargs = {"cwd": self.project_src, "check_rc": not self.use_json_events}
         if self.compose_version >= LooseVersion("2.21.0"):
             # Breaking change in 2.21.0: https://github.com/docker/compose/pull/10918
             rc, containers, stderr = self.client.call_cli_json_stream(*args, **kwargs)
@@ -882,7 +882,7 @@ class BaseComposeManager(DockerBaseClass):
 
     def list_images(self):
         args = self.get_base_args() + ["images", "--format", "json"]
-        kwargs = dict(cwd=self.project_src, check_rc=not self.use_json_events)
+        kwargs = {"cwd": self.project_src, "check_rc": not self.use_json_events}
         rc, images, stderr = self.client.call_cli_json(*args, **kwargs)
         if self.use_json_events and rc != 0:
             self._handle_failed_cli_call(args, rc, images, stderr)

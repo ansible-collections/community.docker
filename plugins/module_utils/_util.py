@@ -23,38 +23,45 @@ DEFAULT_TLS_VERIFY = False
 DEFAULT_TLS_HOSTNAME = "localhost"  # deprecated
 DEFAULT_TIMEOUT_SECONDS = 60
 
-DOCKER_COMMON_ARGS = dict(
-    docker_host=dict(
-        type="str",
-        default=DEFAULT_DOCKER_HOST,
-        fallback=(env_fallback, ["DOCKER_HOST"]),
-        aliases=["docker_url"],
-    ),
-    tls_hostname=dict(type="str", fallback=(env_fallback, ["DOCKER_TLS_HOSTNAME"])),
-    api_version=dict(
-        type="str",
-        default="auto",
-        fallback=(env_fallback, ["DOCKER_API_VERSION"]),
-        aliases=["docker_api_version"],
-    ),
-    timeout=dict(
-        type="int",
-        default=DEFAULT_TIMEOUT_SECONDS,
-        fallback=(env_fallback, ["DOCKER_TIMEOUT"]),
-    ),
-    ca_path=dict(type="path", aliases=["ca_cert", "tls_ca_cert", "cacert_path"]),
-    client_cert=dict(type="path", aliases=["tls_client_cert", "cert_path"]),
-    client_key=dict(type="path", aliases=["tls_client_key", "key_path"]),
-    tls=dict(type="bool", default=DEFAULT_TLS, fallback=(env_fallback, ["DOCKER_TLS"])),
-    use_ssh_client=dict(type="bool", default=False),
-    validate_certs=dict(
-        type="bool",
-        default=DEFAULT_TLS_VERIFY,
-        fallback=(env_fallback, ["DOCKER_TLS_VERIFY"]),
-        aliases=["tls_verify"],
-    ),
-    debug=dict(type="bool", default=False),
-)
+DOCKER_COMMON_ARGS = {
+    "docker_host": {
+        "type": "str",
+        "default": DEFAULT_DOCKER_HOST,
+        "fallback": (env_fallback, ["DOCKER_HOST"]),
+        "aliases": ["docker_url"],
+    },
+    "tls_hostname": {
+        "type": "str",
+        "fallback": (env_fallback, ["DOCKER_TLS_HOSTNAME"]),
+    },
+    "api_version": {
+        "type": "str",
+        "default": "auto",
+        "fallback": (env_fallback, ["DOCKER_API_VERSION"]),
+        "aliases": ["docker_api_version"],
+    },
+    "timeout": {
+        "type": "int",
+        "default": DEFAULT_TIMEOUT_SECONDS,
+        "fallback": (env_fallback, ["DOCKER_TIMEOUT"]),
+    },
+    "ca_path": {"type": "path", "aliases": ["ca_cert", "tls_ca_cert", "cacert_path"]},
+    "client_cert": {"type": "path", "aliases": ["tls_client_cert", "cert_path"]},
+    "client_key": {"type": "path", "aliases": ["tls_client_key", "key_path"]},
+    "tls": {
+        "type": "bool",
+        "default": DEFAULT_TLS,
+        "fallback": (env_fallback, ["DOCKER_TLS"]),
+    },
+    "use_ssh_client": {"type": "bool", "default": False},
+    "validate_certs": {
+        "type": "bool",
+        "default": DEFAULT_TLS_VERIFY,
+        "fallback": (env_fallback, ["DOCKER_TLS_VERIFY"]),
+        "aliases": ["tls_verify"],
+    },
+    "debug": {"type": "bool", "default": False},
+}
 
 DOCKER_COMMON_ARGS_VARS = {
     option_name: f"ansible_docker_{option_name}"
@@ -245,11 +252,11 @@ class DifferenceTracker:
 
     def add(self, name, parameter=None, active=None):
         self._diff.append(
-            dict(
-                name=name,
-                parameter=parameter,
-                active=active,
-            )
+            {
+                "name": name,
+                "parameter": parameter,
+                "active": active,
+            }
         )
 
     def merge(self, other_tracker):
@@ -263,8 +270,8 @@ class DifferenceTracker:
         """
         Return texts ``before`` and ``after``.
         """
-        before = dict()
-        after = dict()
+        before = {}
+        after = {}
         for item in self._diff:
             before[item["name"]] = item["active"]
             after[item["name"]] = item["parameter"]
@@ -282,11 +289,11 @@ class DifferenceTracker:
         """
         result = []
         for entry in self._diff:
-            item = dict()
-            item[entry["name"]] = dict(
-                parameter=entry["parameter"],
-                container=entry["active"],
-            )
+            item = {}
+            item[entry["name"]] = {
+                "parameter": entry["parameter"],
+                "container": entry["active"],
+            }
             result.append(item)
         return result
 
@@ -335,7 +342,7 @@ def clean_dict_booleans_for_docker_api(data, allow_sequences=False):
             return "false"
         return str(value)
 
-    result = dict()
+    result = {}
     if data is not None:
         for k, v in data.items():
             result[str(k)] = (
@@ -389,7 +396,7 @@ def normalize_healthcheck(healthcheck, normalize_test=False):
     """
     Return dictionary of healthcheck parameters.
     """
-    result = dict()
+    result = {}
 
     # All supported healthcheck parameters
     options = (
@@ -420,10 +427,10 @@ def normalize_healthcheck(healthcheck, normalize_test=False):
             if key == "retries":
                 try:
                     value = int(value)
-                except ValueError:
+                except ValueError as exc:
                     raise ValueError(
                         f'Cannot parse number of retries for healthcheck. Expected an integer, got "{value}".'
-                    )
+                    ) from exc
             if key == "test" and value and normalize_test:
                 value = normalize_healthcheck_test(value)
             result[key] = value

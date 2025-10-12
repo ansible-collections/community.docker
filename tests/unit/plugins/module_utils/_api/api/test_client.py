@@ -364,7 +364,7 @@ class UnixSocketStreamTest(unittest.TestCase):
         try:
             while not self.stop_server:
                 try:
-                    connection, client_address = self.server_socket.accept()
+                    connection, dummy_client_address = self.server_socket.accept()
                 except socket.error:
                     # Probably no connection to accept yet
                     time.sleep(0.01)

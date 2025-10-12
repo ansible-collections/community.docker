@@ -271,7 +271,7 @@ class DockerHostManager(DockerBaseClass):
         try:
             if self.verbose_output:
                 return self.client.df()
-            return dict(LayersSize=self.client.df()["LayersSize"])
+            return {"LayersSize": self.client.df()["LayersSize"]}
         except APIError as exc:
             self.client.fail(f"Error inspecting docker host: {exc}")
 
@@ -292,7 +292,7 @@ class DockerHostManager(DockerBaseClass):
         header_images = ["Id", "RepoTags", "Created", "Size"]
         header_networks = ["Id", "Driver", "Name", "Scope"]
 
-        filter_arg = dict()
+        filter_arg = {}
         if filters:
             filter_arg["filters"] = filters
         try:
@@ -330,7 +330,7 @@ class DockerHostManager(DockerBaseClass):
             return items
 
         for item in items:
-            item_record = dict()
+            item_record = {}
 
             if docker_object == "containers":
                 for key in header_containers:
@@ -350,26 +350,26 @@ class DockerHostManager(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        containers=dict(type="bool", default=False),
-        containers_all=dict(type="bool", default=False),
-        containers_filters=dict(type="dict"),
-        images=dict(type="bool", default=False),
-        images_filters=dict(type="dict"),
-        networks=dict(type="bool", default=False),
-        networks_filters=dict(type="dict"),
-        volumes=dict(type="bool", default=False),
-        volumes_filters=dict(type="dict"),
-        disk_usage=dict(type="bool", default=False),
-        verbose_output=dict(type="bool", default=False),
-    )
+    argument_spec = {
+        "containers": {"type": "bool", "default": False},
+        "containers_all": {"type": "bool", "default": False},
+        "containers_filters": {"type": "dict"},
+        "images": {"type": "bool", "default": False},
+        "images_filters": {"type": "dict"},
+        "networks": {"type": "bool", "default": False},
+        "networks_filters": {"type": "dict"},
+        "volumes": {"type": "bool", "default": False},
+        "volumes_filters": {"type": "dict"},
+        "disk_usage": {"type": "bool", "default": False},
+        "verbose_output": {"type": "bool", "default": False},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        fail_results=dict(
-            can_talk_to_docker=False,
-        ),
+        fail_results={
+            "can_talk_to_docker": False,
+        },
     )
     if (
         client.module.params["api_version"] is None
@@ -379,9 +379,9 @@ def main():
         client.fail_results["can_talk_to_docker"] = True
 
     try:
-        results = dict(
-            changed=False,
-        )
+        results = {
+            "changed": False,
+        }
 
         DockerHostManager(client, results)
         client.module.exit_json(**results)

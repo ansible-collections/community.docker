@@ -185,7 +185,7 @@ class DockerPluginManager:
         self.check_mode = self.client.check_mode
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()
-        self.diff_result = dict()
+        self.diff_result = {}
 
         self.actions = []
         self.changed = False
@@ -255,7 +255,7 @@ class DockerPluginManager:
                 try:
                     # Get privileges
                     headers = {}
-                    registry, repo_name = auth.resolve_repository_name(
+                    registry, dummy_repo_name = auth.resolve_repository_name(
                         self.parameters.plugin_name
                     )
                     header = auth.get_config_header(self.client, registry)
@@ -416,19 +416,19 @@ class DockerPluginManager:
 
 
 def main():
-    argument_spec = dict(
-        alias=dict(type="str"),
-        plugin_name=dict(type="str", required=True),
-        state=dict(
-            type="str",
-            default="present",
-            choices=["present", "absent", "enable", "disable"],
-        ),
-        plugin_options=dict(type="dict", default={}),
-        debug=dict(type="bool", default=False),
-        force_remove=dict(type="bool", default=False),
-        enable_timeout=dict(type="int", default=0),
-    )
+    argument_spec = {
+        "alias": {"type": "str"},
+        "plugin_name": {"type": "str", "required": True},
+        "state": {
+            "type": "str",
+            "default": "present",
+            "choices": ["present", "absent", "enable", "disable"],
+        },
+        "plugin_options": {"type": "dict", "default": {}},
+        "debug": {"type": "bool", "default": False},
+        "force_remove": {"type": "bool", "default": False},
+        "enable_timeout": {"type": "int", "default": 0},
+    }
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,

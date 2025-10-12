@@ -204,10 +204,6 @@ def tls_context_to_json(context):
     }
 
 
-def to_bool(value):
-    return True if value else False
-
-
 def context_to_json(context, current):
     module_config = {}
     if "docker" in context.endpoints:
@@ -240,7 +236,7 @@ def context_to_json(context, current):
                 module_config["validate_certs"] = tls_cfg.verify
                 module_config["tls"] = True
             else:
-                module_config["tls"] = to_bool(endpoint.get("SkipTLSVerify"))
+                module_config["tls"] = bool(endpoint.get("SkipTLSVerify"))
     return {
         "current": current,
         "name": context.name,
@@ -252,11 +248,11 @@ def context_to_json(context, current):
 
 
 def main():
-    argument_spec = dict(
-        only_current=dict(type="bool", default=False),
-        name=dict(type="str"),
-        cli_context=dict(type="str"),
-    )
+    argument_spec = {
+        "only_current": {"type": "bool", "default": False},
+        "name": {"type": "str"},
+        "cli_context": {"type": "str"},
+    }
 
     module = AnsibleModule(
         argument_spec=argument_spec,

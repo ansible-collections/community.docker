@@ -395,7 +395,7 @@ class DockerNetworkManager:
         self.results = {"changed": False, "actions": []}
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()
-        self.diff_result = dict()
+        self.diff_result = {}
 
         self.existing_network = self.get_existing_network()
 
@@ -511,13 +511,13 @@ class DockerNetworkManager:
                 # Put network's IPAM config into the same format as module's IPAM config
                 net_ipam_configs = []
                 for net_ipam_config in net["IPAM"]["Config"]:
-                    config = dict()
+                    config = {}
                     for k, v in net_ipam_config.items():
                         config[normalize_ipam_config_key(k)] = v
                     net_ipam_configs.append(config)
                 # Compare lists of dicts as sets of dicts
                 for idx, ipam_config in enumerate(self.parameters.ipam_config):
-                    net_config = dict()
+                    net_config = {}
                     for net_ipam_config in net_ipam_configs:
                         if dicts_are_essentially_equal(ipam_config, net_ipam_config):
                             net_config = net_ipam_config
@@ -779,45 +779,54 @@ class DockerNetworkManager:
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="str", required=True, aliases=["network_name"]),
-        config_from=dict(type="str"),
-        config_only=dict(type="bool"),
-        connected=dict(type="list", default=[], elements="str", aliases=["containers"]),
-        state=dict(type="str", default="present", choices=["present", "absent"]),
-        driver=dict(type="str", default="bridge"),
-        driver_options=dict(type="dict", default={}),
-        force=dict(type="bool", default=False),
-        appends=dict(type="bool", default=False, aliases=["incremental"]),
-        ipam_driver=dict(type="str"),
-        ipam_driver_options=dict(type="dict"),
-        ipam_config=dict(
-            type="list",
-            elements="dict",
-            options=dict(
-                subnet=dict(type="str"),
-                iprange=dict(type="str"),
-                gateway=dict(type="str"),
-                aux_addresses=dict(type="dict"),
-            ),
-        ),
-        enable_ipv4=dict(type="bool"),
-        enable_ipv6=dict(type="bool"),
-        internal=dict(type="bool"),
-        labels=dict(type="dict", default={}),
-        debug=dict(type="bool", default=False),
-        scope=dict(type="str", choices=["local", "global", "swarm"]),
-        attachable=dict(type="bool"),
-        ingress=dict(type="bool"),
-    )
+    argument_spec = {
+        "name": {"type": "str", "required": True, "aliases": ["network_name"]},
+        "config_from": {"type": "str"},
+        "config_only": {"type": "bool"},
+        "connected": {
+            "type": "list",
+            "default": [],
+            "elements": "str",
+            "aliases": ["containers"],
+        },
+        "state": {
+            "type": "str",
+            "default": "present",
+            "choices": ["present", "absent"],
+        },
+        "driver": {"type": "str", "default": "bridge"},
+        "driver_options": {"type": "dict", "default": {}},
+        "force": {"type": "bool", "default": False},
+        "appends": {"type": "bool", "default": False, "aliases": ["incremental"]},
+        "ipam_driver": {"type": "str"},
+        "ipam_driver_options": {"type": "dict"},
+        "ipam_config": {
+            "type": "list",
+            "elements": "dict",
+            "options": {
+                "subnet": {"type": "str"},
+                "iprange": {"type": "str"},
+                "gateway": {"type": "str"},
+                "aux_addresses": {"type": "dict"},
+            },
+        },
+        "enable_ipv4": {"type": "bool"},
+        "enable_ipv6": {"type": "bool"},
+        "internal": {"type": "bool"},
+        "labels": {"type": "dict", "default": {}},
+        "debug": {"type": "bool", "default": False},
+        "scope": {"type": "str", "choices": ["local", "global", "swarm"]},
+        "attachable": {"type": "bool"},
+        "ingress": {"type": "bool"},
+    }
 
-    option_minimal_versions = dict(
-        config_from=dict(docker_api_version="1.30"),
-        config_only=dict(docker_api_version="1.30"),
-        scope=dict(docker_api_version="1.30"),
-        attachable=dict(docker_api_version="1.26"),
-        enable_ipv4=dict(docker_api_version="1.47"),
-    )
+    option_minimal_versions = {
+        "config_from": {"docker_api_version": "1.30"},
+        "config_only": {"docker_api_version": "1.30"},
+        "scope": {"docker_api_version": "1.30"},
+        "attachable": {"docker_api_version": "1.26"},
+        "enable_ipv4": {"docker_api_version": "1.47"},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,

@@ -147,22 +147,22 @@ class ImageRemover(DockerBaseClass):
 
     def get_diff_state(self, image):
         if not image:
-            return dict(exists=False)
-        return dict(
-            exists=True,
-            id=image["Id"],
-            tags=sorted(image.get("RepoTags") or []),
-            digests=sorted(image.get("RepoDigests") or []),
-        )
+            return {"exists": False}
+        return {
+            "exists": True,
+            "id": image["Id"],
+            "tags": sorted(image.get("RepoTags") or []),
+            "digests": sorted(image.get("RepoDigests") or []),
+        }
 
     def absent(self):
-        results = dict(
-            changed=False,
-            actions=[],
-            image={},
-            deleted=[],
-            untagged=[],
-        )
+        results = {
+            "changed": False,
+            "actions": [],
+            "image": {},
+            "deleted": [],
+            "untagged": [],
+        }
 
         name = self.name
         if is_image_name_id(name):
@@ -173,7 +173,7 @@ class ImageRemover(DockerBaseClass):
                 name = f"{self.name}:{self.tag}"
 
         if self.diff:
-            results["diff"] = dict(before=self.get_diff_state(image))
+            results["diff"] = {"before": self.get_diff_state(image)}
 
         if not image:
             if self.diff:
@@ -256,12 +256,12 @@ class ImageRemover(DockerBaseClass):
 
 
 def main():
-    argument_spec = dict(
-        name=dict(type="str", required=True),
-        tag=dict(type="str", default="latest"),
-        force=dict(type="bool", default=False),
-        prune=dict(type="bool", default=True),
-    )
+    argument_spec = {
+        "name": {"type": "str", "required": True},
+        "tag": {"type": "str", "default": "latest"},
+        "force": {"type": "bool", "default": False},
+        "prune": {"type": "bool", "default": True},
+    }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,

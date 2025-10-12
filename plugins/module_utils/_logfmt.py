@@ -96,14 +96,14 @@ class _Parser:
         if self.line[self.index : self.index + 2] != "\\u":
             raise InvalidLogFmt("Invalid unicode escape start")
         v = 0
-        for i in range(self.index + 2, self.index + 6):
+        for dummy_index in range(self.index + 2, self.index + 6):
             v <<= 4
             try:
                 v += _HEX_DICT[self.line[self.index]]
             except KeyError:
                 raise InvalidLogFmt(
                     f"Invalid unicode escape digit {self.line[self.index]!r}"
-                )
+                ) from None
         self.index += 6
         return chr(v)
 
