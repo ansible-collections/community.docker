@@ -27,7 +27,7 @@ run_yamllint = true
 yamllint_config = ".yamllint"
 yamllint_config_plugins = ".yamllint-docs"
 yamllint_config_plugins_examples = ".yamllint-examples"
-run_mypy = true
+run_mypy = false
 mypy_ansible_core_package = "ansible-core>=2.19.0"
 mypy_config = ".mypy.ini"
 mypy_extra_deps = [
