@@ -305,7 +305,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         except Exception as e:
             raise AnsibleError(
                 f"Unable to fetch hosts from Docker swarm API, this was the original exception: {e}"
-            )
+            ) from e
 
     def verify_file(self, path):
         """Return the possibly of a file being consumable by this plugin."""

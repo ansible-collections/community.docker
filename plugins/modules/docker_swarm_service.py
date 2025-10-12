@@ -919,10 +919,10 @@ def get_docker_environment(env, env_files):
         for item in env:
             try:
                 name, value = item.split("=", 1)
-            except ValueError:
+            except ValueError as exc:
                 raise ValueError(
                     "Invalid environment variable found in list, needs to be in format KEY=VALUE."
-                )
+                ) from exc
             env_dict[name] = value
     elif env is not None:
         raise ValueError(
@@ -983,7 +983,7 @@ def get_docker_networks(networks, network_ids):
         try:
             parsed_network["id"] = network_ids[network_name]
         except KeyError as e:
-            raise ValueError(f"Could not find a network named: {e}.")
+            raise ValueError(f"Could not find a network named: {e}.") from None
         parsed_networks.append(parsed_network)
     return parsed_networks or []
 
@@ -1370,7 +1370,9 @@ class DockerService(DockerBaseClass):
             try:
                 memory = human_to_bytes(memory)
             except ValueError as exc:
-                raise ValueError(f"Failed to convert limit_memory to bytes: {exc}")
+                raise ValueError(
+                    f"Failed to convert limit_memory to bytes: {exc}"
+                ) from exc
         return {
             "limit_cpu": cpus,
             "limit_memory": memory,
@@ -1392,7 +1394,9 @@ class DockerService(DockerBaseClass):
             try:
                 memory = human_to_bytes(memory)
             except ValueError as exc:
-                raise ValueError(f"Failed to convert reserve_memory to bytes: {exc}")
+                raise ValueError(
+                    f"Failed to convert reserve_memory to bytes: {exc}"
+                ) from exc
         return {
             "reserve_cpu": cpus,
             "reserve_memory": memory,
@@ -1559,7 +1563,7 @@ class DockerService(DockerBaseClass):
                     except ValueError as exc:
                         raise ValueError(
                             f"Failed to convert tmpfs_size to bytes: {exc}"
-                        )
+                        ) from exc
 
                 service_m["tmpfs_size"] = tmpfs_size
                 s.mounts.append(service_m)

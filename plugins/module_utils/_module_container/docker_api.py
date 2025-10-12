@@ -398,13 +398,15 @@ class DockerAPIEngineDriver(EngineDriver):
                     # New docker daemon versions do not allow containers to be removed
                     # if they are paused. Make sure we do not end up in an infinite loop.
                     if count == 3:
-                        raise RuntimeError(f"{exc} [tried to unpause three times]")
+                        raise RuntimeError(
+                            f"{exc} [tried to unpause three times]"
+                        ) from exc
                     count += 1
                     # Unpause
                     try:
                         self.unpause_container(client, container_id)
                     except Exception as exc2:
-                        raise RuntimeError(f"{exc2} [while unpausing]")
+                        raise RuntimeError(f"{exc2} [while unpausing]") from exc2
                     # Now try again
                     continue
                 raise
@@ -429,13 +431,15 @@ class DockerAPIEngineDriver(EngineDriver):
                     # New docker daemon versions do not allow containers to be removed
                     # if they are paused. Make sure we do not end up in an infinite loop.
                     if count == 3:
-                        raise RuntimeError(f"{exc} [tried to unpause three times]")
+                        raise RuntimeError(
+                            f"{exc} [tried to unpause three times]"
+                        ) from exc
                     count += 1
                     # Unpause
                     try:
                         self.unpause_container(client, container_id)
                     except Exception as exc2:
-                        raise RuntimeError(f"{exc2} [while unpausing]")
+                        raise RuntimeError(f"{exc2} [while unpausing]") from exc2
                     # Now try again
                     continue
                 if (

@@ -103,7 +103,7 @@ class _Parser:
             except KeyError:
                 raise InvalidLogFmt(
                     f"Invalid unicode escape digit {self.line[self.index]!r}"
-                )
+                ) from None
         self.index += 6
         return chr(v)
 

@@ -228,7 +228,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             }
             containers = client.get_json("/containers/json", params=params)
         except APIError as exc:
-            raise AnsibleError(f"Error listing containers: {exc}")
+            raise AnsibleError(f"Error listing containers: {exc}") from exc
 
         if add_legacy_groups:
             self.inventory.add_group("running")
@@ -262,7 +262,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             try:
                 inspect = client.get_json("/containers/{0}/json", container_id)
             except APIError as exc:
-                raise AnsibleError(f"Error inspecting container {name} - {exc}")
+                raise AnsibleError(
+                    f"Error inspecting container {name} - {exc}"
+                ) from exc
 
             state = inspect.get("State") or dict()
             config = inspect.get("Config") or dict()
@@ -401,8 +403,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         try:
             self._populate(client)
         except DockerException as e:
-            raise AnsibleError(f"An unexpected Docker error occurred: {e}")
+            raise AnsibleError(f"An unexpected Docker error occurred: {e}") from e
         except RequestException as e:
             raise AnsibleError(
                 f"An unexpected requests error occurred when trying to talk to the Docker daemon: {e}"
-            )
+            ) from e

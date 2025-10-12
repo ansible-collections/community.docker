@@ -39,10 +39,10 @@ class CancellableStream:
     def __next__(self):
         try:
             return next(self._stream)
-        except urllib3.exceptions.ProtocolError:
-            raise StopIteration
-        except socket.error:
-            raise StopIteration
+        except urllib3.exceptions.ProtocolError as exc:
+            raise StopIteration from exc
+        except socket.error as exc:
+            raise StopIteration from exc
 
     next = __next__
 

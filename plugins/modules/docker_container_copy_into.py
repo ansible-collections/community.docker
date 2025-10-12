@@ -484,7 +484,7 @@ def is_file_idempotent(
         )
     except OSError as exc:
         if exc.errno == 2:
-            raise DockerFileNotFound(f"Cannot find local file {managed_path}")
+            raise DockerFileNotFound(f"Cannot find local file {managed_path}") from exc
         raise
     if mode is None:
         mode = stat.S_IMODE(file_stat.st_mode)

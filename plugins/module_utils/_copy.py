@@ -285,7 +285,7 @@ def stat_file(client, container, in_path, follow_links=False, log=None):
         except Exception as exc:
             raise DockerUnexpectedError(
                 f"When retrieving information for {in_path} from {container}, obtained header {header!r} that cannot be loaded as JSON: {exc}"
-            )
+            ) from exc
 
         # https://pkg.go.dev/io/fs#FileMode: bit 32 - 5 means ModeSymlink
         if stat_data["mode"] & (1 << (32 - 5)) != 0:
@@ -513,7 +513,7 @@ def determine_user_group(client, container, log=None):
     user_id, group_id = stdout_lines
     try:
         return int(user_id), int(group_id)
-    except ValueError:
+    except ValueError as exc:
         raise DockerUnexpectedError(
             f'Expected two-line output with numeric IDs to obtain user and group ID for container {container}, but got "{user_id}" and "{group_id}" instead'
-        )
+        ) from exc

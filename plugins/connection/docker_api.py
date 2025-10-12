@@ -158,15 +158,15 @@ class Connection(ConnectionBase):
             if not_found_can_be_resource:
                 raise AnsibleConnectionFailure(
                     f'Could not find container "{remote_addr}" or resource in it ({e})'
-                )
+                ) from e
             raise AnsibleConnectionFailure(
                 f'Could not find container "{remote_addr}" ({e})'
-            )
+            ) from e
         except APIError as e:
             if e.response is not None and e.response.status_code == 409:
                 raise AnsibleConnectionFailure(
                     f'The container "{remote_addr}" has been paused ({e})'
-                )
+                ) from e
             self.client.fail(
                 f'An unexpected Docker error occurred for container "{remote_addr}": {e}'
             )
@@ -393,7 +393,7 @@ class Connection(ConnectionBase):
             except Exception as e:
                 raise AnsibleConnectionFailure(
                     f'Error while determining user and group ID of current user in container "{remote_addr}": {e}\nGot value: {ids!r}'
-                )
+                ) from e
 
         user_id, group_id = self.ids[self.actual_user]
         try:
@@ -411,9 +411,9 @@ class Connection(ConnectionBase):
                 not_found_can_be_resource=True,
             )
         except DockerFileNotFound as exc:
-            raise AnsibleFileNotFound(to_native(exc))
+            raise AnsibleFileNotFound(to_native(exc)) from exc
         except DockerFileCopyError as exc:
-            raise AnsibleConnectionFailure(to_native(exc))
+            raise AnsibleConnectionFailure(to_native(exc)) from exc
 
     def fetch_file(self, in_path, out_path):
         """Fetch a file from container to local."""
@@ -439,9 +439,9 @@ class Connection(ConnectionBase):
                 not_found_can_be_resource=True,
             )
         except DockerFileNotFound as exc:
-            raise AnsibleFileNotFound(to_native(exc))
+            raise AnsibleFileNotFound(to_native(exc)) from exc
         except DockerFileCopyError as exc:
-            raise AnsibleConnectionFailure(to_native(exc))
+            raise AnsibleConnectionFailure(to_native(exc)) from exc
 
     def close(self):
         """Terminate the connection. Nothing to do for Docker"""

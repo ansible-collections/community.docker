@@ -388,7 +388,6 @@ disable=raw-checker-failed,
         no-name-in-module,  # TODO figure out why pylint cannot find the module
         not-an-iterable,  # TODO: needs better typing info
         protected-access,
-        raise-missing-from,
         redefined-outer-name,  # needed for test fixtures
         simplifiable-if-expression,
         subprocess-popen-preexec-fn,

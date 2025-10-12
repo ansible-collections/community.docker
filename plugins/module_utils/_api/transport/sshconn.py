@@ -159,15 +159,15 @@ class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
         try:
             conn = self.pool.get(block=self.block, timeout=timeout)
 
-        except AttributeError:  # self.pool is None
-            raise urllib3.exceptions.ClosedPoolError(self, "Pool is closed.")
+        except AttributeError as exc:  # self.pool is None
+            raise urllib3.exceptions.ClosedPoolError(self, "Pool is closed.") from exc
 
-        except Empty:
+        except Empty as exc:
             if self.block:
                 raise urllib3.exceptions.EmptyPoolError(
                     self,
                     "Pool reached maximum size and no more connections are allowed.",
-                )
+                ) from exc
             pass  # Oh well, we'll create a new connection then
 
         return conn or self._new_conn()

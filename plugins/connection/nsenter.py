@@ -248,7 +248,7 @@ class Connection(ConnectionBase):
             if rc != 0:
                 raise AnsibleError(f"failed to transfer file to {out_path}: {err}")
         except IOError as e:
-            raise AnsibleError(f"failed to transfer file to {out_path}: {e}")
+            raise AnsibleError(f"failed to transfer file to {out_path}: {e}") from e
 
     def fetch_file(self, in_path, out_path):
         super().fetch_file(in_path, out_path)
@@ -268,7 +268,9 @@ class Connection(ConnectionBase):
             ) as out_file:
                 out_file.write(out)
         except IOError as e:
-            raise AnsibleError(f"failed to transfer file to {to_native(out_path)}: {e}")
+            raise AnsibleError(
+                f"failed to transfer file to {to_native(out_path)}: {e}"
+            ) from e
 
     def close(self):
         """terminate the connection; nothing to do here"""

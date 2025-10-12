@@ -132,7 +132,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             try:
                 self.docker_machine_path = get_bin_path("docker-machine")
             except ValueError as e:
-                raise AnsibleError(to_native(e))
+                raise AnsibleError(to_native(e)) from e
 
         command = [self.docker_machine_path]
         command.extend(args)

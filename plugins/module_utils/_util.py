@@ -420,10 +420,10 @@ def normalize_healthcheck(healthcheck, normalize_test=False):
             if key == "retries":
                 try:
                     value = int(value)
-                except ValueError:
+                except ValueError as exc:
                     raise ValueError(
                         f'Cannot parse number of retries for healthcheck. Expected an integer, got "{value}".'
-                    )
+                    ) from exc
             if key == "test" and value and normalize_test:
                 value = normalize_healthcheck_test(value)
             result[key] = value

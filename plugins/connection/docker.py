@@ -167,8 +167,8 @@ class Connection(ConnectionBase):
         else:
             try:
                 self.docker_cmd = get_bin_path("docker")
-            except ValueError:
-                raise AnsibleError("docker command not found in PATH")
+            except ValueError as exc:
+                raise AnsibleError("docker command not found in PATH") from exc
 
     @staticmethod
     def _sanitize_version(version):
@@ -523,10 +523,10 @@ class Connection(ConnectionBase):
                 p = subprocess.Popen(
                     args, stdin=in_file, stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 )
-            except OSError:
+            except OSError as exc:
                 raise AnsibleError(
                     "docker connection requires dd command in the container to put files"
-                )
+                ) from exc
             stdout, stderr = p.communicate()
 
             if p.returncode != 0:
@@ -588,10 +588,10 @@ class Connection(ConnectionBase):
                             stdout=out_file,
                             stderr=subprocess.PIPE,
                         )
-                    except OSError:
+                    except OSError as exc:
                         raise AnsibleError(
                             "docker connection requires dd command in the container to put files"
-                        )
+                        ) from exc
                     stdout, stderr = pp.communicate()
 
                     if pp.returncode != 0:
