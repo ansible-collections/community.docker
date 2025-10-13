@@ -22,6 +22,7 @@ import time
 import unittest
 from http.server import BaseHTTPRequestHandler
 from socketserver import ThreadingTCPServer
+from unittest import mock
 
 import pytest
 import requests
@@ -39,12 +40,6 @@ from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.c
 )
 
 from .. import fake_api
-
-
-try:
-    from unittest import mock
-except ImportError:
-    import mock
 
 
 DEFAULT_TIMEOUT_SECONDS = constants.DEFAULT_TIMEOUT_SECONDS

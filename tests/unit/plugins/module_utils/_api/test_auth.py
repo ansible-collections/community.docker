@@ -16,6 +16,7 @@ import random
 import shutil
 import tempfile
 import unittest
+from unittest import mock
 
 import pytest
 
@@ -26,12 +27,6 @@ from ansible_collections.community.docker.plugins.module_utils._api.credentials.
 from ansible_collections.community.docker.plugins.module_utils._api.credentials.store import (
     Store,
 )
-
-
-try:
-    from unittest import mock
-except ImportError:
-    import mock
 
 
 class RegressionTest(unittest.TestCase):

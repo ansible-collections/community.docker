@@ -14,16 +14,11 @@ import shutil
 import tempfile
 import typing as t
 import unittest
+from unittest import mock
 
 from pytest import fixture, mark
 
 from ansible_collections.community.docker.plugins.module_utils._api.utils import config
-
-
-try:
-    from unittest import mock
-except ImportError:
-    import mock
 
 
 class FindConfigFileTest(unittest.TestCase):
