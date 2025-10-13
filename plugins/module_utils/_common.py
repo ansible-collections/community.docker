@@ -34,11 +34,8 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 )
 
 
-HAS_DOCKER_PY = True
-HAS_DOCKER_PY_2 = False
-HAS_DOCKER_PY_3 = False
-HAS_DOCKER_ERROR = None
-HAS_DOCKER_TRACEBACK = None
+HAS_DOCKER_PY_2 = False  # pylint: disable=invalid-name
+HAS_DOCKER_PY_3 = False  # pylint: disable=invalid-name
 
 try:
     from docker import __version__ as docker_version
@@ -48,18 +45,22 @@ try:
     from requests.exceptions import SSLError
 
     if LooseVersion(docker_version) >= LooseVersion("3.0.0"):
-        HAS_DOCKER_PY_3 = True
+        HAS_DOCKER_PY_3 = True  # pylint: disable=invalid-name
         from docker import APIClient as Client
     elif LooseVersion(docker_version) >= LooseVersion("2.0.0"):
-        HAS_DOCKER_PY_2 = True
+        HAS_DOCKER_PY_2 = True  # pylint: disable=invalid-name
         from docker import APIClient as Client
     else:
         from docker import Client
 
 except ImportError as exc:
-    HAS_DOCKER_ERROR = str(exc)
-    HAS_DOCKER_TRACEBACK = traceback.format_exc()
-    HAS_DOCKER_PY = False
+    HAS_DOCKER_ERROR = str(exc)  # pylint: disable=invalid-name
+    HAS_DOCKER_TRACEBACK = traceback.format_exc()  # pylint: disable=invalid-name
+    HAS_DOCKER_PY = False  # pylint: disable=invalid-name
+else:
+    HAS_DOCKER_PY = True  # pylint: disable=invalid-name
+    HAS_DOCKER_ERROR = None  # pylint: disable=invalid-name
+    HAS_DOCKER_TRACEBACK = None  # pylint: disable=invalid-name
 
 
 # The next two imports ``docker.models`` and ``docker.ssladapter`` are used

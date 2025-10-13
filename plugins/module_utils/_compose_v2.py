@@ -42,11 +42,12 @@ try:
         from yaml import CSafeDumper as _SafeDumper
     except ImportError:
         from yaml import SafeDumper as _SafeDumper
-    HAS_PYYAML = True
-    PYYAML_IMPORT_ERROR = None
 except ImportError:
     HAS_PYYAML = False
-    PYYAML_IMPORT_ERROR = traceback.format_exc()
+    PYYAML_IMPORT_ERROR = traceback.format_exc()  # pylint: disable=invalid-name
+else:
+    HAS_PYYAML = True
+    PYYAML_IMPORT_ERROR = None  # pylint: disable=invalid-name
 
 
 DOCKER_COMPOSE_FILES = (

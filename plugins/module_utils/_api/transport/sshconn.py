@@ -25,11 +25,12 @@ from .._import_helper import HTTPAdapter, urllib3, urllib3_connection
 from .basehttpadapter import BaseHTTPAdapter
 
 
-PARAMIKO_IMPORT_ERROR = None
 try:
     import paramiko
 except ImportError:
-    PARAMIKO_IMPORT_ERROR = traceback.format_exc()
+    PARAMIKO_IMPORT_ERROR = traceback.format_exc()  # pylint: disable=invalid-name
+else:
+    PARAMIKO_IMPORT_ERROR = None  # pylint: disable=invalid-name
 
 
 RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer

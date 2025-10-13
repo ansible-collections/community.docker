@@ -17,14 +17,12 @@ from ansible_collections.community.docker.plugins.module_utils._api.transport im
 )
 
 
-HAS_MATCH_HOSTNAME = True
 try:
-    from backports.ssl_match_hostname import CertificateError, match_hostname
+    from ssl import CertificateError, match_hostname
 except ImportError:
-    try:
-        from ssl import CertificateError, match_hostname
-    except ImportError:
-        HAS_MATCH_HOSTNAME = False
+    HAS_MATCH_HOSTNAME = False  # pylint: disable=invalid-name
+else:
+    HAS_MATCH_HOSTNAME = True  # pylint: disable=invalid-name
 
 try:
     from ssl import OP_NO_SSLv2, OP_NO_SSLv3, OP_NO_TLSv1

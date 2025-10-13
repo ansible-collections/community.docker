@@ -17,7 +17,6 @@ import time
 import traceback
 
 
-PYWIN32_IMPORT_ERROR = None
 try:
     import pywintypes
     import win32api
@@ -25,7 +24,9 @@ try:
     import win32file
     import win32pipe
 except ImportError:
-    PYWIN32_IMPORT_ERROR = traceback.format_exc()
+    PYWIN32_IMPORT_ERROR = traceback.format_exc()  # pylint: disable=invalid-name
+else:
+    PYWIN32_IMPORT_ERROR = None  # pylint: disable=invalid-name
 
 
 ERROR_PIPE_BUSY = 0xE7

@@ -14,10 +14,6 @@ from __future__ import annotations
 import traceback
 
 
-REQUESTS_IMPORT_ERROR = None
-URLLIB3_IMPORT_ERROR = None
-
-
 try:
     from requests import Session  # noqa: F401, pylint: disable=unused-import
     from requests.adapters import (  # noqa: F401, pylint: disable=unused-import
@@ -28,7 +24,7 @@ try:
         InvalidSchema,
     )
 except ImportError:
-    REQUESTS_IMPORT_ERROR = traceback.format_exc()
+    REQUESTS_IMPORT_ERROR = traceback.format_exc()  # pylint: disable=invalid-name
 
     class Session:
         __attrs__ = []
@@ -42,7 +38,11 @@ except ImportError:
     class InvalidSchema(Exception):
         pass
 
+else:
+    REQUESTS_IMPORT_ERROR = None  # pylint: disable=invalid-name
 
+
+URLLIB3_IMPORT_ERROR = None  # pylint: disable=invalid-name
 try:
     from requests.packages import urllib3  # pylint: disable=unused-import
 
@@ -55,7 +55,7 @@ except ImportError:
             connection as urllib3_connection,  # pylint: disable=unused-import
         )
     except ImportError:
-        URLLIB3_IMPORT_ERROR = traceback.format_exc()
+        URLLIB3_IMPORT_ERROR = traceback.format_exc()  # pylint: disable=invalid-name
 
         class _HTTPConnectionPool:
             pass
