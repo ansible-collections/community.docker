@@ -4,13 +4,12 @@
 
 from __future__ import annotations
 
+from unittest.mock import create_autospec
+
 import pytest
 from ansible.inventory.data import InventoryData
 from ansible.parsing.dataloader import DataLoader
 from ansible.template import Templar
-from ansible_collections.community.internal_test_tools.tests.unit.compat.mock import (
-    create_autospec,
-)
 from ansible_collections.community.internal_test_tools.tests.unit.utils.trust import (
     make_trusted,
 )

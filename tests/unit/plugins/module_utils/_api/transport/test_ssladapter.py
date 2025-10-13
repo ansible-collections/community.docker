@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import unittest
+from ssl import OP_NO_SSLv2, OP_NO_SSLv3, OP_NO_TLSv1
 
 import pytest
 
@@ -23,13 +24,6 @@ except ImportError:
     HAS_MATCH_HOSTNAME = False  # pylint: disable=invalid-name
 else:
     HAS_MATCH_HOSTNAME = True  # pylint: disable=invalid-name
-
-try:
-    from ssl import OP_NO_SSLv2, OP_NO_SSLv3, OP_NO_TLSv1
-except ImportError:
-    OP_NO_SSLv2 = 0x1000000
-    OP_NO_SSLv3 = 0x2000000
-    OP_NO_TLSv1 = 0x4000000
 
 
 class SSLAdapterTest(unittest.TestCase):
