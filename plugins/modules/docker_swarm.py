@@ -15,7 +15,7 @@ description:
   - Add/Remove nodes or managers to an existing cluster.
 extends_documentation_fragment:
   - community.docker._docker
-  - community.docker._docker.docker_py_1_documentation
+  - community.docker._docker.docker_py_2_documentation
   - community.docker._attributes
   - community.docker._attributes.actiongroup_docker
 
@@ -198,7 +198,7 @@ options:
     version_added: 3.1.0
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"
+  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.0.0"
   - Docker API >= 1.25
 author:
   - Thierry Bouvet (@tbouvet)
@@ -724,7 +724,7 @@ def main():
         argument_spec=argument_spec,
         supports_check_mode=True,
         required_if=required_if,
-        min_docker_version="1.10.0",
+        min_docker_version="2.0.0",
         option_minimal_versions=option_minimal_versions,
     )
     sanitize_labels(client.module.params["labels"], "labels", client)

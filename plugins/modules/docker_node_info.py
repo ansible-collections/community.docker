@@ -18,7 +18,7 @@ description:
   - Must be executed on a host running as Swarm Manager, otherwise the module will fail.
 extends_documentation_fragment:
   - community.docker._docker
-  - community.docker._docker.docker_py_1_documentation
+  - community.docker._docker.docker_py_2_documentation
   - community.docker._attributes
   - community.docker._attributes.actiongroup_docker
   - community.docker._attributes.info_module
