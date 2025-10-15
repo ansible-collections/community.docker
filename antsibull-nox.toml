@@ -80,10 +80,12 @@ skip_directories = [
 run_galaxy_importer = true
 
 [sessions.ansible_test_sanity]
-include_devel = true
+include_devel = false
+max_version = "2.20"
 
 [sessions.ansible_test_units]
-include_devel = true
+include_devel = false
+max_version = "2.20"
 
 [sessions.ansible_test_integration]
 session_name_template = "ansible-test-integration-{ansible_core}{dash_docker_short}{dash_remote}{dash_python_version}{dash_target_dashized}"
@@ -183,49 +185,49 @@ ansible_core = "2.19"
 target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
 remote = [ "rhel/9.5", "ubuntu/22.04" ]
 
-# Ansible-core devel:
+# Ansible-core 2.20:
 
 [[sessions.ansible_test_integration.groups]]
-session_name = "ansible-test-integration-devel"
-description = "Meta session for running all ansible-test-integration-devel-* sessions."
+session_name = "ansible-test-integration-2.20"
+description = "Meta session for running all ansible-test-integration-2.20-* sessions."
 
 [[sessions.ansible_test_integration.groups.sessions]]
-ansible_core = "devel"
+ansible_core = "2.20"
 target = [ "azp/4/", "azp/5/" ]
 docker = [ "fedora42", "ubuntu2204", "ubuntu2404", "alpine322" ]
 
 [[sessions.ansible_test_integration.groups.sessions]]
-ansible_core = "devel"
+ansible_core = "2.20"
 target = [ "azp/4/", "azp/5/" ]
 python_version = "3.9"
 docker = "quay.io/ansible-community/test-image:debian-bullseye"
 
 [[sessions.ansible_test_integration.groups.sessions]]
-ansible_core = "devel"
+ansible_core = "2.20"
 target = [ "azp/4/", "azp/5/" ]
 python_version = "3.11"
 docker = "quay.io/ansible-community/test-image:debian-bookworm"
 
 [[sessions.ansible_test_integration.groups.sessions]]
-ansible_core = "devel"
+ansible_core = "2.20"
 target = [ "azp/4/", "azp/5/" ]
 python_version = "3.13"
 docker = "quay.io/ansible-community/test-image:debian-13-trixie"
 
 [[sessions.ansible_test_integration.groups.sessions]]
-ansible_core = "devel"
+ansible_core = "2.20"
 target = [ "azp/4/", "azp/5/" ]
 python_version = "3.13"
 docker = "quay.io/ansible-community/test-image:archlinux"
 
 [[sessions.ansible_test_integration.groups.sessions]]
-ansible_core = "devel"
+ansible_core = "2.20"
 target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
 remote = [ "rhel/9.6" ]
 ansible_vars = { force_docker_sdk_for_python_dev = { type = "value", value = true, template_value = "sdk-dev-latest" } }
 
 [[sessions.ansible_test_integration.groups.sessions]]
-ansible_core = "devel"
+ansible_core = "2.20"
 target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
 remote = [
     "rhel/10.0",
