@@ -24,7 +24,7 @@ author:
 
 extends_documentation_fragment:
   - community.docker._docker
-  - community.docker._docker.docker_py_1_documentation
+  - community.docker._docker.docker_py_2_documentation
   - community.docker._attributes
   - community.docker._attributes.actiongroup_docker
   - community.docker._attributes.info_module
@@ -83,7 +83,7 @@ options:
     default: false
 
 requirements:
-  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 1.10.0"
+  - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.0.0"
   - "Docker API >= 1.25"
 """
 
@@ -366,7 +366,7 @@ def main():
     client = AnsibleDockerSwarmClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        min_docker_version="1.10.0",
+        min_docker_version="2.0.0",
         option_minimal_versions=option_minimal_versions,
         fail_results={
             "can_talk_to_docker": False,

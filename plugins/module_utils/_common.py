@@ -63,26 +63,6 @@ else:
     HAS_DOCKER_TRACEBACK = None  # pylint: disable=invalid-name
 
 
-# The next two imports ``docker.models`` and ``docker.ssladapter`` are used
-# to ensure the user does not have both ``docker`` and ``docker-py`` modules
-# installed, as they utilize the same namespace are are incompatible
-try:
-    # docker (Docker SDK for Python >= 2.0.0)
-    import docker.models  # noqa: F401, pylint: disable=unused-import
-
-    HAS_DOCKER_MODELS = True
-except ImportError:
-    HAS_DOCKER_MODELS = False
-
-try:
-    # docker-py (Docker SDK for Python < 2.0.0)
-    import docker.ssladapter  # noqa: F401, pylint: disable=unused-import
-
-    HAS_DOCKER_SSLADAPTER = True
-except ImportError:
-    HAS_DOCKER_SSLADAPTER = False
-
-
 try:
     from requests.exceptions import (  # noqa: F401, pylint: disable=unused-import
         RequestException,
@@ -95,7 +75,7 @@ except ImportError:
         pass
 
 
-MIN_DOCKER_VERSION = "1.8.0"
+MIN_DOCKER_VERSION = "2.0.0"
 
 
 if not HAS_DOCKER_PY:
@@ -188,26 +168,14 @@ DOCKERPYUPGRADE_SWITCH_TO_DOCKER = (
     "Try `pip uninstall docker-py` followed by `pip install docker`."
 )
 DOCKERPYUPGRADE_UPGRADE_DOCKER = "Use `pip install --upgrade docker` to upgrade."
-DOCKERPYUPGRADE_RECOMMEND_DOCKER = "Use `pip install --upgrade docker-py` to upgrade."
 
 
 class AnsibleDockerClientBase(Client):
     def __init__(self, min_docker_version=None, min_docker_api_version=None):
         if min_docker_version is None:
             min_docker_version = MIN_DOCKER_VERSION
-        needs_docker_py2 = LooseVersion(min_docker_version) >= LooseVersion("2.0.0")
 
         self.docker_py_version = LooseVersion(docker_version)
-
-        if HAS_DOCKER_MODELS and HAS_DOCKER_SSLADAPTER:
-            self.fail(
-                "Cannot have both the docker-py and docker python modules (old and new version of Docker "
-                "SDK for Python) installed together as they use the same namespace and cause a corrupt "
-                "installation. Please uninstall both packages, and re-install only the docker-py or docker "
-                f"python module (for {platform.node()}'s Python {sys.executable}). It is recommended to install the docker module. Please "
-                "note that simply uninstalling one of the modules can leave the other module in a broken "
-                "state."
-            )
 
         if not HAS_DOCKER_PY:
             msg = missing_required_lib("Docker SDK for Python: docker>=5.0.0")
@@ -219,11 +187,7 @@ class AnsibleDockerClientBase(Client):
                 f"Error: Docker SDK for Python version is {docker_version} ({platform.node()}'s Python {sys.executable})."
                 f" Minimum version required is {min_docker_version}."
             )
-            if not needs_docker_py2:
-                # The minimal required version is < 2.0 (and the current version as well).
-                # Advertise docker (instead of docker-py).
-                msg += DOCKERPYUPGRADE_RECOMMEND_DOCKER
-            elif docker_version < LooseVersion("2.0"):
+            if docker_version < LooseVersion("2.0"):
                 msg += DOCKERPYUPGRADE_SWITCH_TO_DOCKER
             else:
                 msg += DOCKERPYUPGRADE_UPGRADE_DOCKER
@@ -751,16 +715,8 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
                     elif not support_docker_py:
                         msg = (
                             f"Docker SDK for Python version is {docker_version} ({platform.node()}'s Python {sys.executable})."
-                            f" Minimum version required is {data['docker_py_version']} to {usg}. "
+                            f" Minimum version required is {data['docker_py_version']} to {usg}. {DOCKERPYUPGRADE_UPGRADE_DOCKER}"
                         )
-                        if LooseVersion(data["docker_py_version"]) < LooseVersion(
-                            "2.0.0"
-                        ):
-                            msg += DOCKERPYUPGRADE_RECOMMEND_DOCKER
-                        elif self.docker_py_version < LooseVersion("2.0.0"):
-                            msg += DOCKERPYUPGRADE_SWITCH_TO_DOCKER
-                        else:
-                            msg += DOCKERPYUPGRADE_UPGRADE_DOCKER
                     else:
                         # should not happen
                         msg = f"Cannot {usg} with your configuration."

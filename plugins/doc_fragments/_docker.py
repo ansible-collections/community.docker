@@ -157,24 +157,7 @@ options:
       - name: ansible_docker_validate_certs
 """
 
-    # Additional, more specific stuff for minimal Docker SDK for Python version < 2.0
-
-    DOCKER_PY_1_DOCUMENTATION = r"""
-options: {}
-notes:
-  - This module uses the L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) to
-    communicate with the Docker daemon.
-requirements:
-  - "Docker SDK for Python: Please note that the L(docker-py,https://pypi.org/project/docker-py/)
-     Python module has been superseded by L(docker,https://pypi.org/project/docker/)
-     (see L(here,https://github.com/docker/docker-py/issues/1310) for details). Note that both
-     modules should *not* be installed at the same time. Also note that when both modules are
-     installed and one of them is uninstalled, the other might no longer function and a reinstall
-     of it is required."
-"""
-
     # Additional, more specific stuff for minimal Docker SDK for Python version >= 2.0.
-    # Note that Docker SDK for Python >= 2.0 requires Python 2.7 or newer.
 
     DOCKER_PY_2_DOCUMENTATION = r"""
 options: {}
@@ -182,11 +165,10 @@ notes:
   - This module uses the L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) to
     communicate with the Docker daemon.
 requirements:
-  - "Python >= 2.7"
   - "Docker SDK for Python: Please note that the L(docker-py,https://pypi.org/project/docker-py/)
      Python module has been superseded by L(docker,https://pypi.org/project/docker/)
      (see L(here,https://github.com/docker/docker-py/issues/1310) for details).
-     This module does *not* work with docker-py."
+     This module does B(not) work with docker-py."
 """
 
     # Docker doc fragment when using the vendored API access code

@@ -15,7 +15,7 @@ description:
   - This module allows to change the node's role, its availability, and to modify, add or remove node labels.
 extends_documentation_fragment:
   - community.docker._docker
-  - community.docker._docker.docker_py_1_documentation
+  - community.docker._docker.docker_py_2_documentation
   - community.docker._attributes
   - community.docker._attributes.actiongroup_docker
 
