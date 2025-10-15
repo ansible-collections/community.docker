@@ -468,6 +468,82 @@ class DockerAPIEngineDriver(EngineDriver):
 
 
 class DockerAPIEngine(Engine):
+    def get_value(self, module, container, api_version, options, image, host_info):
+        return self._get_value(
+            module, container, api_version, options, image, host_info
+        )
+
+    def compare_value(self, option, param_value, container_value):
+        if self._compare_value is not None:
+            return self._compare_value(option, param_value, container_value)
+        return super().compare_value(option, param_value, container_value)
+
+    def set_value(self, module, data, api_version, options, values):
+        if self._set_value is not None:
+            self._set_value(module, data, api_version, options, values)
+
+    def get_expected_values(
+        self, module, client, api_version, options, image, values, host_info
+    ):
+        if self._get_expected_values is None:
+            return values
+        return self._get_expected_values(
+            module, client, api_version, options, image, values, host_info
+        )
+
+    def ignore_mismatching_result(
+        self,
+        module,
+        client,
+        api_version,
+        option,
+        image,
+        container_value,
+        expected_value,
+        host_info,
+    ):
+        if self._ignore_mismatching_result is None:
+            return False
+        return self._ignore_mismatching_result(
+            module,
+            client,
+            api_version,
+            option,
+            image,
+            container_value,
+            expected_value,
+            host_info,
+        )
+
+    def preprocess_value(self, module, client, api_version, options, values):
+        if self._preprocess_value is None:
+            return values
+        return self._preprocess_value(module, client, api_version, options, values)
+
+    def update_value(self, module, data, api_version, options, values):
+        if self._update_value is not None:
+            self._update_value(module, data, api_version, options, values)
+
+    def can_set_value(self, api_version):
+        if self._can_set_value is None:
+            return self._set_value is not None
+        return self._can_set_value(api_version)
+
+    def can_update_value(self, api_version):
+        if self._can_update_value is None:
+            return self._update_value is not None
+        return self._can_update_value(api_version)
+
+    def needs_container_image(self, values):
+        if self._needs_container_image is None:
+            return False
+        return self._needs_container_image(values)
+
+    def needs_host_info(self, values):
+        if self._needs_host_info is None:
+            return False
+        return self._needs_host_info(values)
+
     def __init__(
         self,
         get_value,
@@ -488,29 +564,18 @@ class DockerAPIEngine(Engine):
         self.min_api_version_obj = (
             None if min_api_version is None else LooseVersion(min_api_version)
         )
-        self.get_value = get_value
-        self.set_value = set_value
-        self.get_expected_values = get_expected_values or (
-            lambda module, client, api_version, options, image, values, host_info: values
-        )
-        self.ignore_mismatching_result = ignore_mismatching_result or (
-            lambda module, client, api_version, option, image, container_value, expected_value, host_info: False
-        )
-        self.preprocess_value = preprocess_value or (
-            lambda module, client, api_version, options, values: values
-        )
-        self.update_value = update_value
-        self.can_set_value = can_set_value or (
-            lambda api_version: set_value is not None
-        )
-        self.can_update_value = can_update_value or (
-            lambda api_version: update_value is not None
-        )
-        self.needs_container_image = needs_container_image or (lambda values: False)
-        self.needs_host_info = needs_host_info or (lambda values: False)
-        if compare_value is not None:
-            self.compare_value = compare_value
         self.extra_option_minimal_versions = extra_option_minimal_versions
+        self._get_value = get_value
+        self._compare_value = compare_value  # can be None
+        self._set_value = set_value  # can be None
+        self._get_expected_values = get_expected_values  # can be None
+        self._ignore_mismatching_result = ignore_mismatching_result  # can be None
+        self._preprocess_value = preprocess_value  # can be None
+        self._update_value = update_value  # can be None
+        self._can_set_value = can_set_value  # can be None
+        self._can_update_value = can_update_value  # can be None
+        self._needs_container_image = needs_container_image  # can be None
+        self._needs_host_info = needs_host_info  # can be None
 
     @classmethod
     def config_value(

@@ -238,6 +238,7 @@ class Engine:
         image,
         container_value,
         expected_value,
+        host_info,
     ):
         pass
 
