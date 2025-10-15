@@ -202,7 +202,7 @@ class Engine(object):
         pass
 
     @abc.abstractmethod
-    def ignore_mismatching_result(self, module, client, api_version, option, image, container_value, expected_value):
+    def ignore_mismatching_result(self, module, client, api_version, option, image, container_value, expected_value, host_info):
         pass
 
     @abc.abstractmethod
