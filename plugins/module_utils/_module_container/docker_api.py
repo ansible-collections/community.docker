@@ -500,6 +500,7 @@ class DockerAPIEngine(Engine):
         image,
         container_value,
         expected_value,
+        host_info,
     ):
         if self._ignore_mismatching_result is None:
             return False
@@ -511,6 +512,7 @@ class DockerAPIEngine(Engine):
             image,
             container_value,
             expected_value,
+            host_info,
         )
 
     def preprocess_value(self, module, client, api_version, options, values):
