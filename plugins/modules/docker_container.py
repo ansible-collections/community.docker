@@ -809,8 +809,9 @@ options:
     description:
       - Platform for the container in the format C(os[/arch[/variant]]).
       - "Note that since community.docker 3.5.0, the module uses both the image's metadata and the Docker daemon's information
-        to normalize platform strings similarly to how Docker itself is doing this. If you notice idempotency problems, L(please
-        create an issue in the community.docker GitHub repository,
+        to normalize platform strings similarly to how Docker itself is doing this. If you notice idempotency problems, please
+        verify whether this is still a problem with the latest release of community.docker, and if it is,
+        L(create an issue in the community.docker GitHub repository,
         https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md).
         For older community.docker versions, you can use the O(comparisons) option with C(platform: ignore) to prevent accidental
         recreation of the container due to this."

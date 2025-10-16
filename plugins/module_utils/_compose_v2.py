@@ -343,7 +343,8 @@ def _warn_missing_dry_run_prefix(line, warn_missing_dry_run_prefix, warn_functio
         # This could be a bug, a change of docker compose's output format, ...
         # Tell the user to report it to us :-)
         warn_function(
-            f"Event line is missing dry-run mode marker: {line!r}. Please report this at "
+            f"Event line is missing dry-run mode marker: {line!r}. Please check with the latest community.docker version,"
+            " and if the problem still happens there, please report this at "
             "https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md"
         )
 
@@ -353,7 +354,8 @@ def _warn_unparsable_line(line, warn_function):
     # Tell the user to report it to us :-)
     if warn_function:
         warn_function(
-            f"Cannot parse event from line: {line!r}. Please report this at "
+            f"Cannot parse event from line: {line!r}. Please check with the latest community.docker version,"
+            " and if the problem still happens there, please report this at "
             "https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md"
         )
 
@@ -400,7 +402,8 @@ def parse_json_events(stderr, warn_function=None):
                 continue
             if warn_function:
                 warn_function(
-                    f"Cannot parse event from non-JSON line: {line!r}. Please report this at "
+                    f"Cannot parse event from non-JSON line: {line!r}. Please check with the latest community.docker version,"
+                    " and if the problem still happens there, please report this at "
                     "https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md"
                 )
             continue
@@ -409,7 +412,8 @@ def parse_json_events(stderr, warn_function=None):
         except Exception as exc:  # pylint: disable=broad-exception-caught
             if warn_function:
                 warn_function(
-                    f"Cannot parse event from line: {line!r}: {exc}. Please report this at "
+                    f"Cannot parse event from line: {line!r}: {exc}. Please check with the latest community.docker version,"
+                    " and if the problem still happens there, please report this at "
                     "https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md"
                 )
             continue
@@ -477,7 +481,8 @@ def parse_json_events(stderr, warn_function=None):
                 except KeyError:
                     if warn_function:
                         warn_function(
-                            f"Unknown resource type {resource_type_str!r} in line {line!r}. Please report this at "
+                            f"Unknown resource type {resource_type_str!r} in line {line!r}. Please check with the latest community.docker version,"
+                            " and if the problem still happens there, please report this at "
                             "https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&projects=&template=bug_report.md"
                         )
                     resource_type = ResourceType.UNKNOWN

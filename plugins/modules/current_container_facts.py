@@ -15,6 +15,7 @@ version_added: 1.1.0
 description:
   - Return facts about whether the module runs in a Docker or podman container.
   - This module attempts a best-effort detection. There might be special cases where it does not work; if you encounter one,
+    make sure that this is still a problem with the latest community.docker release, and if it is,
     L(please file an issue, https://github.com/ansible-collections/community.docker/issues/new?assignees=&labels=&template=bug_report.md).
 author:
   - Felix Fontein (@felixfontein)
