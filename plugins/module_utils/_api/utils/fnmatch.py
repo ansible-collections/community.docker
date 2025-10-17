@@ -28,7 +28,7 @@ import re
 
 __all__ = ["fnmatch", "fnmatchcase", "translate"]
 
-_cache = {}
+_cache: dict[str, re.Pattern] = {}
 _MAXCACHE = 100
 
 

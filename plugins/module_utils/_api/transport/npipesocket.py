@@ -17,6 +17,7 @@ import time
 import traceback
 
 
+PYWIN32_IMPORT_ERROR: str | None  # pylint: disable=invalid-name
 try:
     import pywintypes
     import win32api

@@ -69,9 +69,11 @@ DOCKER_COMMON_ARGS_VARS = {
     if option_name != "debug"
 }
 
-DOCKER_MUTUALLY_EXCLUSIVE = []
+DOCKER_MUTUALLY_EXCLUSIVE: list[tuple[str, ...] | list[str]] = []
 
-DOCKER_REQUIRED_TOGETHER = [["client_cert", "client_key"]]
+DOCKER_REQUIRED_TOGETHER: list[tuple[str, ...] | list[str]] = [
+    ["client_cert", "client_key"]
+]
 
 DEFAULT_DOCKER_REGISTRY = "https://index.docker.io/v1/"
 BYTE_SUFFIXES = ["B", "KB", "MB", "GB", "TB", "PB"]

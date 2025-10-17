@@ -12,8 +12,8 @@ import json
 import os
 import shutil
 import tempfile
-import typing as t
 import unittest
+from collections.abc import Callable
 from unittest import mock
 
 from pytest import fixture, mark
@@ -22,7 +22,7 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils import
 
 
 class FindConfigFileTest(unittest.TestCase):
-    mkdir: t.Callable[[str], os.PathLike[str]]
+    mkdir: Callable[[str], os.PathLike[str]]
 
     @fixture(autouse=True)
     def tmpdir(self, tmpdir):

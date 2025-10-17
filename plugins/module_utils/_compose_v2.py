@@ -14,6 +14,7 @@ import re
 import shutil
 import tempfile
 import traceback
+import typing as t
 from collections import namedtuple
 from shlex import quote
 
@@ -34,6 +35,7 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 )
 
 
+PYYAML_IMPORT_ERROR: None | str  # pylint: disable=invalid-name
 try:
     import yaml
 
@@ -41,7 +43,7 @@ try:
         # use C version if possible for speedup
         from yaml import CSafeDumper as _SafeDumper
     except ImportError:
-        from yaml import SafeDumper as _SafeDumper
+        from yaml import SafeDumper as _SafeDumper  # type: ignore
 except ImportError:
     HAS_PYYAML = False
     PYYAML_IMPORT_ERROR = traceback.format_exc()  # pylint: disable=invalid-name
@@ -144,8 +146,7 @@ class ResourceType:
     SERVICE = "service"
 
     @classmethod
-    def from_docker_compose_event(cls, resource_type):
-        # type: (Type[ResourceType], Text) -> Any
+    def from_docker_compose_event(cls, resource_type: str) -> t.Any:
         return {
             "Network": cls.NETWORK,
             "Image": cls.IMAGE,

@@ -12,6 +12,7 @@ import abc
 import os
 import re
 import shlex
+import typing as t
 from functools import partial
 
 from ansible.module_utils.common.text.converters import to_text
@@ -30,6 +31,12 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
     omit_none_from_dict,
     sanitize_labels,
 )
+
+
+if t.TYPE_CHECKING:
+    from ansible_collections.community.docker.plugins.module_utils._version import (
+        LooseVersion,
+    )
 
 
 _DEFAULT_IP_REPLACEMENT_STRING = (
@@ -207,9 +214,9 @@ class OptionGroup:
 
 
 class Engine:
-    min_api_version = None  # string or None
-    min_api_version_obj = None  # LooseVersion object or None
-    extra_option_minimal_versions = None  # dict[str, dict[str, Any]] or None
+    min_api_version: str | None = None
+    min_api_version_obj: LooseVersion | None = None
+    extra_option_minimal_versions: dict[str, dict[str, t.Any]] | None = None
 
     @abc.abstractmethod
     def get_value(self, module, container, api_version, options, image, host_info):
@@ -268,7 +275,7 @@ class Engine:
 
 
 class EngineDriver:
-    name = None  # string
+    name: str
 
     @abc.abstractmethod
     def setup(

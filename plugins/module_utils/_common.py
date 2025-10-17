@@ -36,6 +36,9 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 
 HAS_DOCKER_PY_2 = False  # pylint: disable=invalid-name
 HAS_DOCKER_PY_3 = False  # pylint: disable=invalid-name
+HAS_DOCKER_ERROR: None | str  # pylint: disable=invalid-name
+HAS_DOCKER_TRACEBACK: None | str  # pylint: disable=invalid-name
+docker_version: str | None  # pylint: disable=invalid-name
 
 try:
     from docker import __version__ as docker_version
@@ -51,12 +54,13 @@ try:
         HAS_DOCKER_PY_2 = True  # pylint: disable=invalid-name
         from docker import APIClient as Client
     else:
-        from docker import Client
+        from docker import Client  # type: ignore
 
 except ImportError as exc:
     HAS_DOCKER_ERROR = str(exc)  # pylint: disable=invalid-name
     HAS_DOCKER_TRACEBACK = traceback.format_exc()  # pylint: disable=invalid-name
     HAS_DOCKER_PY = False  # pylint: disable=invalid-name
+    docker_version = None  # pylint: disable=invalid-name
 else:
     HAS_DOCKER_PY = True  # pylint: disable=invalid-name
     HAS_DOCKER_ERROR = None  # pylint: disable=invalid-name
@@ -71,7 +75,7 @@ except ImportError:
     # Either Docker SDK for Python is no longer using requests, or Docker SDK for Python is not around either,
     # or Docker SDK for Python's dependency requests is missing. In any case, define an exception
     # class RequestException so that our code does not break.
-    class RequestException(Exception):
+    class RequestException(Exception):  # type: ignore
         pass
 
 
@@ -79,18 +83,16 @@ MIN_DOCKER_VERSION = "2.0.0"
 
 
 if not HAS_DOCKER_PY:
-    docker_version = None  # pylint: disable=invalid-name
-
     # No Docker SDK for Python. Create a place holder client to allow
     # instantiation of AnsibleModule and proper error handing
-    class Client:  # noqa: F811, pylint: disable=function-redefined
+    class Client:  # type: ignore # noqa: F811, pylint: disable=function-redefined
         def __init__(self, **kwargs):
             pass
 
-    class APIError(Exception):  # noqa: F811, pylint: disable=function-redefined
+    class APIError(Exception):  # type: ignore # noqa: F811, pylint: disable=function-redefined
         pass
 
-    class NotFound(Exception):  # noqa: F811, pylint: disable=function-redefined
+    class NotFound(Exception):  # type: ignore # noqa: F811, pylint: disable=function-redefined
         pass
 
 

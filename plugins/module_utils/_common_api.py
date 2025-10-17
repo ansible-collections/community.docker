@@ -28,7 +28,7 @@ try:
     )
 except ImportError:
     # Define an exception class RequestException so that our code does not break.
-    class RequestException(Exception):
+    class RequestException(Exception):  # type: ignore
         pass
 
 

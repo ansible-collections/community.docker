@@ -12,8 +12,10 @@
 from __future__ import annotations
 
 import traceback
+import typing as t
 
 
+REQUESTS_IMPORT_ERROR: str | None  # pylint: disable=invalid-name
 try:
     from requests import Session  # noqa: F401, pylint: disable=unused-import
     from requests.adapters import (  # noqa: F401, pylint: disable=unused-import
@@ -26,28 +28,29 @@ try:
 except ImportError:
     REQUESTS_IMPORT_ERROR = traceback.format_exc()  # pylint: disable=invalid-name
 
-    class Session:
-        __attrs__ = []
+    class Session:  # type: ignore
+        __attrs__: list[t.Never] = []
 
-    class HTTPAdapter:
-        __attrs__ = []
+    class HTTPAdapter:  # type: ignore
+        __attrs__: list[t.Never] = []
 
-    class HTTPError(Exception):
+    class HTTPError(Exception):  # type: ignore
         pass
 
-    class InvalidSchema(Exception):
+    class InvalidSchema(Exception):  # type: ignore
         pass
 
 else:
     REQUESTS_IMPORT_ERROR = None  # pylint: disable=invalid-name
 
 
-URLLIB3_IMPORT_ERROR = None  # pylint: disable=invalid-name
+URLLIB3_IMPORT_ERROR: str | None = None  # pylint: disable=invalid-name
 try:
     from requests.packages import urllib3  # pylint: disable=unused-import
 
-    # pylint: disable-next=unused-import
-    from requests.packages.urllib3 import connection as urllib3_connection
+    from requests.packages.urllib3 import (  # type: ignore  # pylint: disable=unused-import  # isort: skip
+        connection as urllib3_connection,
+    )
 except ImportError:
     try:
         import urllib3  # pylint: disable=unused-import
