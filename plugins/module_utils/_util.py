@@ -9,12 +9,19 @@ from __future__ import annotations
 
 import json
 import re
+import typing as t
 from datetime import timedelta
 from urllib.parse import urlparse
 
 from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.common.collections import is_sequence
 from ansible.module_utils.common.text.converters import to_text
+
+
+if t.TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from ansible.module_utils.basic import AnsibleModule
 
 
 DEFAULT_DOCKER_HOST = "unix:///var/run/docker.sock"
@@ -79,14 +86,14 @@ DEFAULT_DOCKER_REGISTRY = "https://index.docker.io/v1/"
 BYTE_SUFFIXES = ["B", "KB", "MB", "GB", "TB", "PB"]
 
 
-def is_image_name_id(name):
+def is_image_name_id(name: str) -> bool:
     """Check whether the given image name is in fact an image ID (hash)."""
     if re.match("^sha256:[0-9a-fA-F]{64}$", name):
         return True
     return False
 
 
-def is_valid_tag(tag, allow_empty=False):
+def is_valid_tag(tag: str, allow_empty: bool = False) -> bool:
     """Check whether the given string is a valid docker tag name."""
     if not tag:
         return allow_empty
@@ -95,7 +102,7 @@ def is_valid_tag(tag, allow_empty=False):
     return bool(re.match("^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$", tag))
 
 
-def sanitize_result(data):
+def sanitize_result(data: t.Any) -> t.Any:
     """Sanitize data object for return to Ansible.
 
     When the data object contains types such as docker.types.containers.HostConfig,
@@ -112,7 +119,7 @@ def sanitize_result(data):
     return data
 
 
-def log_debug(msg, pretty_print=False):
+def log_debug(msg: t.Any, pretty_print: bool = False):
     """Write a log message to docker.log.
 
     If ``pretty_print=True``, the message will be pretty-printed as JSON.
@@ -128,25 +135,28 @@ def log_debug(msg, pretty_print=False):
 
 
 class DockerBaseClass:
-    def __init__(self):
+    def __init__(self) -> None:
         self.debug = False
 
-    def log(self, msg, pretty_print=False):
+    def log(self, msg: t.Any, pretty_print: bool = False) -> None:
         pass
         # if self.debug:
         #     log_debug(msg, pretty_print=pretty_print)
 
 
 def update_tls_hostname(
-    result, old_behavior=False, deprecate_function=None, uses_tls=True
-):
+    result: dict[str, t.Any],
+    old_behavior: bool = False,
+    deprecate_function: Callable[[str], None] | None = None,
+    uses_tls: bool = True,
+) -> None:
     if result["tls_hostname"] is None:
         # get default machine name from the url
         parsed_url = urlparse(result["docker_host"])
         result["tls_hostname"] = parsed_url.netloc.rsplit(":", 1)[0]
 
 
-def compare_dict_allow_more_present(av, bv):
+def compare_dict_allow_more_present(av: dict, bv: dict) -> bool:
     """
     Compare two dictionaries for whether every entry of the first is in the second.
     """
@@ -158,7 +168,12 @@ def compare_dict_allow_more_present(av, bv):
     return True
 
 
-def compare_generic(a, b, method, datatype):
+def compare_generic(
+    a: t.Any,
+    b: t.Any,
+    method: t.Literal["ignore", "strict", "allow_more_present"],
+    datatype: t.Literal["value", "list", "set", "set(dict)", "dict"],
+) -> bool:
     """
     Compare values a and b as described by method and datatype.
 
@@ -249,10 +264,10 @@ def compare_generic(a, b, method, datatype):
 
 
 class DifferenceTracker:
-    def __init__(self):
-        self._diff = []
+    def __init__(self) -> None:
+        self._diff: list[dict[str, t.Any]] = []
 
-    def add(self, name, parameter=None, active=None):
+    def add(self, name: str, parameter: t.Any = None, active: t.Any = None) -> None:
         self._diff.append(
             {
                 "name": name,
@@ -261,14 +276,14 @@ class DifferenceTracker:
             }
         )
 
-    def merge(self, other_tracker):
+    def merge(self, other_tracker: DifferenceTracker) -> None:
         self._diff.extend(other_tracker._diff)
 
     @property
-    def empty(self):
+    def empty(self) -> bool:
         return len(self._diff) == 0
 
-    def get_before_after(self):
+    def get_before_after(self) -> tuple[dict[str, t.Any], dict[str, t.Any]]:
         """
         Return texts ``before`` and ``after``.
         """
@@ -279,13 +294,13 @@ class DifferenceTracker:
             after[item["name"]] = item["parameter"]
         return before, after
 
-    def has_difference_for(self, name):
+    def has_difference_for(self, name: str) -> bool:
         """
         Returns a boolean if a difference exists for name
         """
         return any(diff for diff in self._diff if diff["name"] == name)
 
-    def get_legacy_docker_container_diffs(self):
+    def get_legacy_docker_container_diffs(self) -> list[dict[str, t.Any]]:
         """
         Return differences in the docker_container legacy format.
         """
@@ -299,7 +314,7 @@ class DifferenceTracker:
             result.append(item)
         return result
 
-    def get_legacy_docker_diffs(self):
+    def get_legacy_docker_diffs(self) -> list[str]:
         """
         Return differences in the docker_container legacy format.
         """
@@ -307,8 +322,13 @@ class DifferenceTracker:
         return result
 
 
-def sanitize_labels(labels, labels_field, client=None, module=None):
-    def fail(msg):
+def sanitize_labels(
+    labels: dict[str, t.Any] | None,
+    labels_field: str,
+    client=None,
+    module: AnsibleModule | None = None,
+) -> None:
+    def fail(msg: str) -> t.NoReturn:
         if client is not None:
             client.fail(msg)
         if module is not None:
@@ -327,7 +347,21 @@ def sanitize_labels(labels, labels_field, client=None, module=None):
         labels[k] = to_text(v)
 
 
-def clean_dict_booleans_for_docker_api(data, allow_sequences=False):
+@t.overload
+def clean_dict_booleans_for_docker_api(
+    data: dict[str, t.Any], *, allow_sequences: t.Literal[False] = False
+) -> dict[str, str]: ...
+
+
+@t.overload
+def clean_dict_booleans_for_docker_api(
+    data: dict[str, t.Any], *, allow_sequences: bool
+) -> dict[str, str | list[str]]: ...
+
+
+def clean_dict_booleans_for_docker_api(
+    data: dict[str, t.Any], *, allow_sequences: bool = False
+) -> dict[str, str] | dict[str, str | list[str]]:
     """
     Go does not like Python booleans 'True' or 'False', while Ansible is just
     fine with them in YAML. As such, they need to be converted in cases where
@@ -355,7 +389,7 @@ def clean_dict_booleans_for_docker_api(data, allow_sequences=False):
     return result
 
 
-def convert_duration_to_nanosecond(time_str):
+def convert_duration_to_nanosecond(time_str: str) -> int:
     """
     Return time duration in nanosecond.
     """
@@ -374,9 +408,9 @@ def convert_duration_to_nanosecond(time_str):
     if not parts:
         raise ValueError(f"Invalid time duration - {time_str}")
 
-    parts = parts.groupdict()
+    parts_dict = parts.groupdict()
     time_params = {}
-    for name, value in parts.items():
+    for name, value in parts_dict.items():
         if value:
             time_params[name] = int(value)
 
@@ -388,13 +422,15 @@ def convert_duration_to_nanosecond(time_str):
     return time_in_nanoseconds
 
 
-def normalize_healthcheck_test(test):
+def normalize_healthcheck_test(test: t.Any) -> list[str]:
     if isinstance(test, (tuple, list)):
         return [str(e) for e in test]
     return ["CMD-SHELL", str(test)]
 
 
-def normalize_healthcheck(healthcheck, normalize_test=False):
+def normalize_healthcheck(
+    healthcheck: dict[str, t.Any], normalize_test: bool = False
+) -> dict[str, t.Any]:
     """
     Return dictionary of healthcheck parameters.
     """
@@ -440,7 +476,9 @@ def normalize_healthcheck(healthcheck, normalize_test=False):
     return result
 
 
-def parse_healthcheck(healthcheck):
+def parse_healthcheck(
+    healthcheck: dict[str, t.Any] | None,
+) -> tuple[dict[str, t.Any] | None, bool | None]:
     """
     Return dictionary of healthcheck parameters and boolean if
     healthcheck defined in image was requested to be disabled.
@@ -458,8 +496,8 @@ def parse_healthcheck(healthcheck):
     return result, False
 
 
-def omit_none_from_dict(d):
+def omit_none_from_dict(d: dict[str, t.Any]) -> dict[str, t.Any]:
     """
     Return a copy of the dictionary with all keys with value None omitted.
     """
-    return dict((k, v) for (k, v) in d.items() if v is not None)
+    return {k: v for (k, v) in d.items() if v is not None}

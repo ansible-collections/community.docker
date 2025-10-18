@@ -255,7 +255,7 @@ class DockerHostManager(DockerBaseClass):
                 returned_name = docker_object
                 filter_name = docker_object + "_filters"
                 filters = clean_dict_booleans_for_docker_api(
-                    client.module.params.get(filter_name), True
+                    client.module.params.get(filter_name), allow_sequences=True
                 )
                 self.results[returned_name] = self.get_docker_items_list(
                     docker_object, filters

@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import json
+import typing as t
 from time import sleep
 
 
@@ -28,10 +29,7 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 
 class AnsibleDockerSwarmClient(AnsibleDockerClient):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def get_swarm_node_id(self):
+    def get_swarm_node_id(self) -> str | None:
         """
         Get the 'NodeID' of the Swarm node or 'None' if host is not in Swarm. It returns the NodeID
         of Docker host the module is executed on
@@ -51,7 +49,7 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
                 return swarm_info["Swarm"]["NodeID"]
         return None
 
-    def check_if_swarm_node(self, node_id=None):
+    def check_if_swarm_node(self, node_id: str | None = None) -> bool | None:
         """
         Checking if host is part of Docker Swarm. If 'node_id' is not provided it reads the Docker host
         system information looking if specific key in output exists. If 'node_id' is provided then it tries to
@@ -83,11 +81,11 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
         try:
             node_info = self.get_node_inspect(node_id=node_id)
         except APIError:
-            return
+            return None
 
         return node_info["ID"] is not None
 
-    def check_if_swarm_manager(self):
+    def check_if_swarm_manager(self) -> bool:
         """
         Checks if node role is set as Manager in Swarm. The node is the docker host on which module action
         is performed. The inspect_swarm() will fail if node is not a manager
@@ -101,7 +99,7 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
         except APIError:
             return False
 
-    def fail_task_if_not_swarm_manager(self):
+    def fail_task_if_not_swarm_manager(self) -> None:
         """
         If host is not a swarm manager then Ansible task on this host should end with 'failed' state
         """
@@ -110,7 +108,7 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
                 "Error running docker swarm module: must run on swarm manager node"
             )
 
-    def check_if_swarm_worker(self):
+    def check_if_swarm_worker(self) -> bool:
         """
         Checks if node role is set as Worker in Swarm. The node is the docker host on which module action
         is performed. Will fail if run on host that is not part of Swarm via check_if_swarm_node()
@@ -122,7 +120,9 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
             return True
         return False
 
-    def check_if_swarm_node_is_down(self, node_id=None, repeat_check=1):
+    def check_if_swarm_node_is_down(
+        self, node_id: str | None = None, repeat_check: int = 1
+    ) -> bool:
         """
         Checks if node status on Swarm manager is 'down'. If node_id is provided it query manager about
         node specified in parameter, otherwise it query manager itself. If run on Swarm Worker node or
@@ -147,7 +147,19 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
                 return True
         return False
 
-    def get_node_inspect(self, node_id=None, skip_missing=False):
+    @t.overload
+    def get_node_inspect(
+        self, node_id: str | None = None, skip_missing: t.Literal[False] = False
+    ) -> dict[str, t.Any]: ...
+
+    @t.overload
+    def get_node_inspect(
+        self, node_id: str | None = None, skip_missing: bool = False
+    ) -> dict[str, t.Any] | None: ...
+
+    def get_node_inspect(
+        self, node_id: str | None = None, skip_missing: bool = False
+    ) -> dict[str, t.Any] | None:
         """
         Returns Swarm node info as in 'docker node inspect' command about single node
 
@@ -195,7 +207,7 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
                 node_info["Status"]["Addr"] = swarm_leader_ip
         return node_info
 
-    def get_all_nodes_inspect(self):
+    def get_all_nodes_inspect(self) -> list[dict[str, t.Any]]:
         """
         Returns Swarm node info as in 'docker node inspect' command about all registered nodes
 
@@ -217,7 +229,17 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
         node_info = json.loads(json_str)
         return node_info
 
-    def get_all_nodes_list(self, output="short"):
+    @t.overload
+    def get_all_nodes_list(self, output: t.Literal["short"] = "short") -> list[str]: ...
+
+    @t.overload
+    def get_all_nodes_list(
+        self, output: t.Literal["long"]
+    ) -> list[dict[str, t.Any]]: ...
+
+    def get_all_nodes_list(
+        self, output: t.Literal["short", "long"] = "short"
+    ) -> list[str] | list[dict[str, t.Any]]:
         """
         Returns list of nodes registered in Swarm
 
@@ -227,48 +249,46 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
             if 'output' is 'long' then returns data is list of dict containing the attributes as in
             output of command 'docker node ls'
         """
-        nodes_list = []
-
         nodes_inspect = self.get_all_nodes_inspect()
-        if nodes_inspect is None:
-            return None
 
         if output == "short":
+            nodes_list = []
             for node in nodes_inspect:
                 nodes_list.append(node["Description"]["Hostname"])
-        elif output == "long":
+            return nodes_list
+        if output == "long":
+            nodes_info_list = []
             for node in nodes_inspect:
-                node_property = {}
+                node_property: dict[str, t.Any] = {}
 
-                node_property.update({"ID": node["ID"]})
-                node_property.update({"Hostname": node["Description"]["Hostname"]})
-                node_property.update({"Status": node["Status"]["State"]})
-                node_property.update({"Availability": node["Spec"]["Availability"]})
+                node_property["ID"] = node["ID"]
+                node_property["Hostname"] = node["Description"]["Hostname"]
+                node_property["Status"] = node["Status"]["State"]
+                node_property["Availability"] = node["Spec"]["Availability"]
                 if "ManagerStatus" in node:
                     if node["ManagerStatus"]["Leader"] is True:
-                        node_property.update({"Leader": True})
-                    node_property.update(
-                        {"ManagerStatus": node["ManagerStatus"]["Reachability"]}
-                    )
-                node_property.update(
-                    {"EngineVersion": node["Description"]["Engine"]["EngineVersion"]}
-                )
+                        node_property["Leader"] = True
+                    node_property["ManagerStatus"] = node["ManagerStatus"][
+                        "Reachability"
+                    ]
+                node_property["EngineVersion"] = node["Description"]["Engine"][
+                    "EngineVersion"
+                ]
 
-                nodes_list.append(node_property)
-        else:
-            return None
+                nodes_info_list.append(node_property)
+            return nodes_info_list
 
-        return nodes_list
-
-    def get_node_name_by_id(self, nodeid):
+    def get_node_name_by_id(self, nodeid: str) -> str:
         return self.get_node_inspect(nodeid)["Description"]["Hostname"]
 
-    def get_unlock_key(self):
+    def get_unlock_key(self) -> str | None:
         if self.docker_py_version < LooseVersion("2.7.0"):
             return None
         return super().get_unlock_key()
 
-    def get_service_inspect(self, service_id, skip_missing=False):
+    def get_service_inspect(
+        self, service_id: str, skip_missing: bool = False
+    ) -> dict[str, t.Any] | None:
         """
         Returns Swarm service info as in 'docker service inspect' command about single service
 

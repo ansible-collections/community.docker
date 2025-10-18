@@ -14,12 +14,13 @@
 from __future__ import annotations
 
 import re
+import typing as t
 
 
 _VALID_STR = re.compile("^[A-Za-z0-9_-]+$")
 
 
-def _validate_part(string, part, part_name):
+def _validate_part(string: str, part: str, part_name: str) -> str:
     if not part:
         raise ValueError(f'Invalid platform string "{string}": {part_name} is empty')
     if not _VALID_STR.match(part):
@@ -79,7 +80,7 @@ _KNOWN_ARCH = (
 )
 
 
-def _normalize_os(os_str):
+def _normalize_os(os_str: str) -> str:
     # See normalizeOS() in https://github.com/containerd/containerd/blob/main/platforms/database.go
     os_str = os_str.lower()
     if os_str == "macos":
@@ -112,7 +113,7 @@ _NORMALIZE_ARCH = {
 }
 
 
-def _normalize_arch(arch_str, variant_str):
+def _normalize_arch(arch_str: str, variant_str: str) -> tuple[str, str]:
     # See normalizeArch() in https://github.com/containerd/containerd/blob/main/platforms/database.go
     arch_str = arch_str.lower()
     variant_str = variant_str.lower()
@@ -121,15 +122,16 @@ def _normalize_arch(arch_str, variant_str):
         res = _NORMALIZE_ARCH.get((arch_str, None))
     if res is None:
         return arch_str, variant_str
-    if res is not None:
-        arch_str = res[0]
-        if res[1] is not None:
-            variant_str = res[1]
-        return arch_str, variant_str
+    arch_str = res[0]
+    if res[1] is not None:
+        variant_str = res[1]
+    return arch_str, variant_str
 
 
 class _Platform:
-    def __init__(self, os=None, arch=None, variant=None):
+    def __init__(
+        self, os: str | None = None, arch: str | None = None, variant: str | None = None
+    ) -> None:
         self.os = os
         self.arch = arch
         self.variant = variant
@@ -140,7 +142,12 @@ class _Platform:
                 raise ValueError("If variant is given, os must be given too")
 
     @classmethod
-    def parse_platform_string(cls, string, daemon_os=None, daemon_arch=None):
+    def parse_platform_string(
+        cls,
+        string: str | None,
+        daemon_os: str | None = None,
+        daemon_arch: str | None = None,
+    ) -> t.Self:
         # See Parse() in https://github.com/containerd/containerd/blob/main/platforms/platforms.go
         if string is None:
             return cls()
@@ -182,6 +189,7 @@ class _Platform:
         )
         if variant is not None and not variant:
             raise ValueError(f'Invalid platform string "{string}": variant is empty')
+        assert arch is not None  # otherwise variant would be None as well
         arch, variant = _normalize_arch(arch, variant or "")
         if len(parts) == 2 and arch == "arm" and variant == "v7":
             variant = None
@@ -189,9 +197,12 @@ class _Platform:
             variant = "v8"
         return cls(os=_normalize_os(os), arch=arch, variant=variant or None)
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.variant:
-            parts = [self.os, self.arch, self.variant]
+            assert (
+                self.os is not None and self.arch is not None
+            )  # ensured in constructor
+            parts: list[str] = [self.os, self.arch, self.variant]
         elif self.os:
             if self.arch:
                 parts = [self.os, self.arch]
@@ -203,12 +214,14 @@ class _Platform:
             parts = []
         return "/".join(parts)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"_Platform(os={self.os!r}, arch={self.arch!r}, variant={self.variant!r})"
         )
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, _Platform):
+            return NotImplemented
         return (
             self.os == other.os
             and self.arch == other.arch
@@ -216,7 +229,9 @@ class _Platform:
         )
 
 
-def normalize_platform_string(string, daemon_os=None, daemon_arch=None):
+def normalize_platform_string(
+    string: str, daemon_os: str | None = None, daemon_arch: str | None = None
+) -> str:
     return str(
         _Platform.parse_platform_string(
             string, daemon_os=daemon_os, daemon_arch=daemon_arch
@@ -225,8 +240,12 @@ def normalize_platform_string(string, daemon_os=None, daemon_arch=None):
 
 
 def compose_platform_string(
-    os=None, arch=None, variant=None, daemon_os=None, daemon_arch=None
-):
+    os: str | None = None,
+    arch: str | None = None,
+    variant: str | None = None,
+    daemon_os: str | None = None,
+    daemon_arch: str | None = None,
+) -> str:
     if os is None and daemon_os is not None:
         os = _normalize_os(daemon_os)
     if arch is None and daemon_arch is not None:
@@ -235,7 +254,7 @@ def compose_platform_string(
     return str(_Platform(os=os, arch=arch, variant=variant or None))
 
 
-def compare_platform_strings(string1, string2):
+def compare_platform_strings(string1: str, string2: str) -> bool:
     return _Platform.parse_platform_string(string1) == _Platform.parse_platform_string(
         string2
     )
