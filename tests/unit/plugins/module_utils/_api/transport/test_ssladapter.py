@@ -19,7 +19,7 @@ from ansible_collections.community.docker.plugins.module_utils._api.transport im
 
 
 try:
-    from ssl import CertificateError, match_hostname
+    from ssl import CertificateError, match_hostname  # type: ignore
 except ImportError:
     HAS_MATCH_HOSTNAME = False  # pylint: disable=invalid-name
 else:

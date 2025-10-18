@@ -25,6 +25,7 @@ from .._import_helper import HTTPAdapter, urllib3, urllib3_connection
 from .basehttpadapter import BaseHTTPAdapter
 
 
+PARAMIKO_IMPORT_ERROR: str | None  # pylint: disable=invalid-name
 try:
     import paramiko
 except ImportError:

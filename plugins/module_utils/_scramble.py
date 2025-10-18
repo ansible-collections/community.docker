@@ -13,7 +13,7 @@ import random
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
 
 
-def generate_insecure_key():
+def generate_insecure_key() -> bytes:
     """Do NOT use this for cryptographic purposes!"""
     while True:
         # Generate a one-byte key. Right now the functions below do not use more
@@ -24,23 +24,23 @@ def generate_insecure_key():
             return key
 
 
-def scramble(value, key):
+def scramble(value: str, key: bytes) -> str:
     """Do NOT use this for cryptographic purposes!"""
     if len(key) < 1:
         raise ValueError("Key must be at least one byte")
-    value = to_bytes(value)
+    b_value = to_bytes(value)
     k = key[0]
-    value = bytes([k ^ b for b in value])
-    return "=S=" + to_native(base64.b64encode(value))
+    b_value = bytes([k ^ b for b in b_value])
+    return f"=S={to_native(base64.b64encode(b_value))}"
 
 
-def unscramble(value, key):
+def unscramble(value: str, key: bytes) -> str:
     """Do NOT use this for cryptographic purposes!"""
     if len(key) < 1:
         raise ValueError("Key must be at least one byte")
     if not value.startswith("=S="):
         raise ValueError("Value does not start with indicator")
-    value = base64.b64decode(value[3:])
+    b_value = base64.b64decode(value[3:])
     k = key[0]
-    value = bytes([k ^ b for b in value])
-    return to_text(value)
+    b_value = bytes([k ^ b for b in b_value])
+    return to_text(b_value)

@@ -18,12 +18,10 @@ class ImageArchiveManifestSummary:
     "docker image save some:tag > some.tar" command.
     """
 
-    def __init__(self, image_id, repo_tags):
+    def __init__(self, image_id: str, repo_tags: list[str]) -> None:
         """
         :param image_id:  File name portion of Config entry, e.g. abcde12345 from abcde12345.json
-        :type image_id: str
         :param repo_tags  Docker image names, e.g. ["hello-world:latest"]
-        :type repo_tags: list[str]
         """
 
         self.image_id = image_id
@@ -34,22 +32,21 @@ class ImageArchiveInvalidException(Exception):
     pass
 
 
-def api_image_id(archive_image_id):
+def api_image_id(archive_image_id: str) -> str:
     """
     Accepts an image hash in the format stored in manifest.json, and returns an equivalent identifier
     that represents the same image hash, but in the format presented by the Docker Engine API.
 
     :param archive_image_id: plain image hash
-    :type archive_image_id: str
-
     :returns: Prefixed hash used by REST api
-    :rtype: str
     """
 
     return f"sha256:{archive_image_id}"
 
 
-def load_archived_image_manifest(archive_path):
+def load_archived_image_manifest(
+    archive_path: str,
+) -> list[ImageArchiveManifestSummary] | None:
     """
     Attempts to get image IDs and image names from metadata stored in the image
     archive tar file.
@@ -62,10 +59,7 @@ def load_archived_image_manifest(archive_path):
         ImageArchiveInvalidException: A file already exists at archive_path, but could not extract an image ID from it.
 
     :param archive_path: Tar file to read
-    :type archive_path: str
-
     :return: None, if no file at archive_path, or a list of ImageArchiveManifestSummary objects.
-    :rtype: ImageArchiveManifestSummary
     """
 
     try:
@@ -76,8 +70,15 @@ def load_archived_image_manifest(archive_path):
         with tarfile.open(archive_path, "r") as tf:
             try:
                 try:
-                    with tf.extractfile("manifest.json") as ef:
+                    reader = tf.extractfile("manifest.json")
+                    if reader is None:
+                        raise ImageArchiveInvalidException(
+                            "Failed to read manifest.json"
+                        )
+                    with reader as ef:
                         manifest = json.load(ef)
+                except ImageArchiveInvalidException:
+                    raise
                 except Exception as exc:
                     raise ImageArchiveInvalidException(
                         f"Failed to decode and deserialize manifest.json: {exc}"
@@ -139,7 +140,7 @@ def load_archived_image_manifest(archive_path):
         ) from exc
 
 
-def archived_image_manifest(archive_path):
+def archived_image_manifest(archive_path: str) -> ImageArchiveManifestSummary | None:
     """
     Attempts to get Image.Id and image name from metadata stored in the image
     archive tar file.
@@ -152,10 +153,7 @@ def archived_image_manifest(archive_path):
         ImageArchiveInvalidException: A file already exists at archive_path, but could not extract an image ID from it.
 
     :param archive_path: Tar file to read
-    :type archive_path: str
-
     :return: None, if no file at archive_path, or the extracted image ID, which will not have a sha256: prefix.
-    :rtype: ImageArchiveManifestSummary
     """
 
     results = load_archived_image_manifest(archive_path)

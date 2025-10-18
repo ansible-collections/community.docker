@@ -10,6 +10,7 @@ from __future__ import annotations
 import abc
 import json
 import shlex
+import typing as t
 
 from ansible.module_utils.basic import AnsibleModule, env_fallback
 from ansible.module_utils.common.process import get_bin_path
@@ -29,6 +30,10 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
+
+
+if t.TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
 
 
 DOCKER_COMMON_ARGS = {
@@ -72,10 +77,16 @@ class DockerException(Exception):
 
 
 class AnsibleDockerClientBase:
+    docker_api_version_str: str | None
+    docker_api_version: LooseVersion | None
+
     def __init__(
-        self, common_args, min_docker_api_version=None, needs_api_version=True
-    ):
-        self._environment = {}
+        self,
+        common_args,
+        min_docker_api_version: str | None = None,
+        needs_api_version: bool = True,
+    ) -> None:
+        self._environment: dict[str, str] = {}
         if common_args["tls_hostname"]:
             self._environment["DOCKER_TLS_HOSTNAME"] = common_args["tls_hostname"]
         if common_args["api_version"] and common_args["api_version"] != "auto":
@@ -109,10 +120,10 @@ class AnsibleDockerClientBase:
             self._cli_base.extend(["--context", common_args["cli_context"]])
 
         # `--format json` was only added as a shorthand for `--format {{ json . }}` in Docker 23.0
-        dummy, self._version, dummy = self.call_cli_json(
+        dummy, self._version, dummy2 = self.call_cli_json(
             "version", "--format", "{{ json . }}", check_rc=True
         )
-        self._info = None
+        self._info: dict[str, t.Any] | None = None
 
         if needs_api_version:
             if not isinstance(self._version.get("Server"), dict) or not isinstance(
@@ -138,32 +149,47 @@ class AnsibleDockerClientBase:
                     "Internal error: cannot have needs_api_version=False with min_docker_api_version not None"
                 )
 
-    def log(self, msg, pretty_print=False):
+    def log(self, msg: str, pretty_print: bool = False):
         pass
         # if self.debug:
         #     from .util import log_debug
         #     log_debug(msg, pretty_print=pretty_print)
 
-    def get_cli(self):
+    def get_cli(self) -> str:
         return self._cli
 
-    def get_version_info(self):
+    def get_version_info(self) -> str:
         return self._version
 
-    def _compose_cmd(self, args):
+    def _compose_cmd(self, args: t.Sequence[str]) -> list[str]:
         return self._cli_base + list(args)
 
-    def _compose_cmd_str(self, args):
+    def _compose_cmd_str(self, args: t.Sequence[str]) -> str:
         return " ".join(shlex.quote(a) for a in self._compose_cmd(args))
 
     @abc.abstractmethod
-    def call_cli(self, *args, check_rc=False, data=None, cwd=None, environ_update=None):
+    def call_cli(
+        self,
+        *args: str,
+        check_rc: bool = False,
+        data: bytes | None = None,
+        cwd: str | None = None,
+        environ_update: dict[str, str] | None = None,
+    ) -> tuple[int, bytes, bytes]:
         pass
 
-    # def call_cli_json(self, *args, check_rc=False, data=None, cwd=None, environ_update=None, warn_on_stderr=False):
-    def call_cli_json(self, *args, **kwargs):
-        warn_on_stderr = kwargs.pop("warn_on_stderr", False)
-        rc, stdout, stderr = self.call_cli(*args, **kwargs)
+    def call_cli_json(
+        self,
+        *args: str,
+        check_rc: bool = False,
+        data: bytes | None = None,
+        cwd: str | None = None,
+        environ_update: dict[str, str] | None = None,
+        warn_on_stderr: bool = False,
+    ) -> tuple[int, t.Any, bytes]:
+        rc, stdout, stderr = self.call_cli(
+            *args, check_rc=check_rc, data=data, cwd=cwd, environ_update=environ_update
+        )
         if warn_on_stderr and stderr:
             self.warn(to_native(stderr))
         try:
@@ -174,10 +200,18 @@ class AnsibleDockerClientBase:
             )
         return rc, data, stderr
 
-    # def call_cli_json_stream(self, *args, check_rc=False, data=None, cwd=None, environ_update=None, warn_on_stderr=False):
-    def call_cli_json_stream(self, *args, **kwargs):
-        warn_on_stderr = kwargs.pop("warn_on_stderr", False)
-        rc, stdout, stderr = self.call_cli(*args, **kwargs)
+    def call_cli_json_stream(
+        self,
+        *args: str,
+        check_rc: bool = False,
+        data: bytes | None = None,
+        cwd: str | None = None,
+        environ_update: dict[str, str] | None = None,
+        warn_on_stderr: bool = False,
+    ) -> tuple[int, list[t.Any], bytes]:
+        rc, stdout, stderr = self.call_cli(
+            *args, check_rc=check_rc, data=data, cwd=cwd, environ_update=environ_update
+        )
         if warn_on_stderr and stderr:
             self.warn(to_native(stderr))
         result = []
@@ -193,25 +227,31 @@ class AnsibleDockerClientBase:
         return rc, result, stderr
 
     @abc.abstractmethod
-    def fail(self, msg, **kwargs):
+    def fail(self, msg: str, **kwargs) -> t.NoReturn:
         pass
 
     @abc.abstractmethod
-    def warn(self, msg):
+    def warn(self, msg: str) -> None:
         pass
 
     @abc.abstractmethod
-    def deprecate(self, msg, version=None, date=None, collection_name=None):
+    def deprecate(
+        self,
+        msg: str,
+        version: str | None = None,
+        date: str | None = None,
+        collection_name: str | None = None,
+    ) -> None:
         pass
 
-    def get_cli_info(self):
+    def get_cli_info(self) -> dict[str, t.Any]:
         if self._info is None:
-            dummy, self._info, dummy = self.call_cli_json(
+            dummy, self._info, dummy2 = self.call_cli_json(
                 "info", "--format", "{{ json . }}", check_rc=True
             )
         return self._info
 
-    def get_client_plugin_info(self, component):
+    def get_client_plugin_info(self, component: str) -> dict[str, t.Any] | None:
         cli_info = self.get_cli_info()
         if not isinstance(cli_info.get("ClientInfo"), dict):
             self.fail(
@@ -222,13 +262,13 @@ class AnsibleDockerClientBase:
                 return plugin
         return None
 
-    def _image_lookup(self, name, tag):
+    def _image_lookup(self, name: str, tag: str) -> list[dict[str, t.Any]]:
         """
         Including a tag in the name parameter sent to the Docker SDK for Python images method
         does not work consistently. Instead, get the result set for name and manually check
         if the tag exists.
         """
-        dummy, images, dummy = self.call_cli_json_stream(
+        dummy, images, dummy2 = self.call_cli_json_stream(
             "image",
             "ls",
             "--format",
@@ -247,7 +287,13 @@ class AnsibleDockerClientBase:
                     break
         return images
 
-    def find_image(self, name, tag):
+    @t.overload
+    def find_image(self, name: None, tag: str) -> None: ...
+
+    @t.overload
+    def find_image(self, name: str, tag: str) -> dict[str, t.Any] | None: ...
+
+    def find_image(self, name: str | None, tag: str) -> dict[str, t.Any] | None:
         """
         Lookup an image (by name and tag) and return the inspection results.
         """
@@ -298,7 +344,19 @@ class AnsibleDockerClientBase:
         self.log(f"Image {name}:{tag} not found.")
         return None
 
-    def find_image_by_id(self, image_id, accept_missing_image=False):
+    @t.overload
+    def find_image_by_id(
+        self, image_id: None, accept_missing_image: bool = False
+    ) -> None: ...
+
+    @t.overload
+    def find_image_by_id(
+        self, image_id: str | None, accept_missing_image: bool = False
+    ) -> dict[str, t.Any] | None: ...
+
+    def find_image_by_id(
+        self, image_id: str | None, accept_missing_image: bool = False
+    ) -> dict[str, t.Any] | None:
         """
         Lookup an image (by ID) and return the inspection results.
         """
@@ -320,17 +378,23 @@ class AnsibleDockerClientBase:
 class AnsibleModuleDockerClient(AnsibleDockerClientBase):
     def __init__(
         self,
-        argument_spec=None,
-        supports_check_mode=False,
-        mutually_exclusive=None,
-        required_together=None,
-        required_if=None,
-        required_one_of=None,
-        required_by=None,
-        min_docker_api_version=None,
-        fail_results=None,
-        needs_api_version=True,
-    ):
+        argument_spec: dict[str, t.Any] | None = None,
+        supports_check_mode: bool = False,
+        mutually_exclusive: Sequence[Sequence[str]] | None = None,
+        required_together: Sequence[Sequence[str]] | None = None,
+        required_if: (
+            Sequence[
+                tuple[str, t.Any, Sequence[str]]
+                | tuple[str, t.Any, Sequence[str], bool]
+            ]
+            | None
+        ) = None,
+        required_one_of: Sequence[Sequence[str]] | None = None,
+        required_by: Mapping[str, Sequence[str]] | None = None,
+        min_docker_api_version: str | None = None,
+        fail_results: dict[str, t.Any] | None = None,
+        needs_api_version: bool = True,
+    ) -> None:
 
         # Modules can put information in here which will always be returned
         # in case client.fail() is called.
@@ -342,12 +406,14 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
             merged_arg_spec.update(argument_spec)
             self.arg_spec = merged_arg_spec
 
-        mutually_exclusive_params = [("docker_host", "cli_context")]
+        mutually_exclusive_params: list[Sequence[str]] = [
+            ("docker_host", "cli_context")
+        ]
         mutually_exclusive_params += DOCKER_MUTUALLY_EXCLUSIVE
         if mutually_exclusive:
             mutually_exclusive_params += mutually_exclusive
 
-        required_together_params = []
+        required_together_params: list[Sequence[str]] = []
         required_together_params += DOCKER_REQUIRED_TOGETHER
         if required_together:
             required_together_params += required_together
@@ -373,7 +439,14 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
             needs_api_version=needs_api_version,
         )
 
-    def call_cli(self, *args, check_rc=False, data=None, cwd=None, environ_update=None):
+    def call_cli(
+        self,
+        *args: str,
+        check_rc: bool = False,
+        data: bytes | None = None,
+        cwd: str | None = None,
+        environ_update: dict[str, str] | None = None,
+    ) -> tuple[int, bytes, bytes]:
         environment = self._environment.copy()
         if environ_update:
             environment.update(environ_update)
@@ -390,14 +463,20 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
         )
         return rc, stdout, stderr
 
-    def fail(self, msg, **kwargs):
+    def fail(self, msg: str, **kwargs) -> t.NoReturn:
         self.fail_results.update(kwargs)
         self.module.fail_json(msg=msg, **sanitize_result(self.fail_results))
 
-    def warn(self, msg):
+    def warn(self, msg: str) -> None:
         self.module.warn(msg)
 
-    def deprecate(self, msg, version=None, date=None, collection_name=None):
+    def deprecate(
+        self,
+        msg: str,
+        version: str | None = None,
+        date: str | None = None,
+        collection_name: str | None = None,
+    ) -> None:
         self.module.deprecate(
             msg, version=version, date=date, collection_name=collection_name
         )
