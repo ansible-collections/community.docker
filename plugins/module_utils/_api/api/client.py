@@ -48,10 +48,9 @@ from ..transport.sshconn import PARAMIKO_IMPORT_ERROR, SSHHTTPAdapter
 from ..transport.ssladapter import SSLHTTPAdapter
 from ..transport.unixconn import UnixHTTPAdapter
 from ..utils import config, json_stream, utils
-from ..utils.decorators import update_headers
+from ..utils.decorators import minimum_version, update_headers
 from ..utils.proxy import ProxyConfig
 from ..utils.socket import consume_socket_output, demux_adaptor, frames_iter
-from ..utils.decorators import minimum_version
 
 
 log = logging.getLogger(__name__)
