@@ -11,9 +11,7 @@
 
 from __future__ import annotations
 
-from ansible_collections.community.docker.plugins.module_utils._version import (
-    LooseVersion,
-)
+import typing as t
 
 from .._import_helper import HTTPAdapter, urllib3
 from .basehttpadapter import BaseHTTPAdapter
@@ -30,14 +28,19 @@ PoolManager = urllib3.poolmanager.PoolManager
 class SSLHTTPAdapter(BaseHTTPAdapter):
     """An HTTPS Transport Adapter that uses an arbitrary SSL version."""
 
-    __attrs__ = HTTPAdapter.__attrs__ + ["assert_hostname", "ssl_version"]
+    __attrs__ = HTTPAdapter.__attrs__ + ["assert_hostname"]
 
-    def __init__(self, ssl_version=None, assert_hostname=None, **kwargs):
-        self.ssl_version = ssl_version
+    def __init__(
+        self,
+        assert_hostname: bool | None = None,
+        **kwargs,
+    ) -> None:
         self.assert_hostname = assert_hostname
         super().__init__(**kwargs)
 
-    def init_poolmanager(self, connections, maxsize, block=False):
+    def init_poolmanager(
+        self, connections: int, maxsize: int, block: bool = False, **kwargs: t.Any
+    ) -> None:
         kwargs = {
             "num_pools": connections,
             "maxsize": maxsize,
@@ -45,12 +48,10 @@ class SSLHTTPAdapter(BaseHTTPAdapter):
         }
         if self.assert_hostname is not None:
             kwargs["assert_hostname"] = self.assert_hostname
-        if self.ssl_version and self.can_override_ssl_version():
-            kwargs["ssl_version"] = self.ssl_version
 
         self.poolmanager = PoolManager(**kwargs)
 
-    def get_connection(self, *args, **kwargs):
+    def get_connection(self, *args, **kwargs) -> urllib3.ConnectionPool:
         """
         Ensure assert_hostname is set correctly on our pool
 
@@ -61,15 +62,7 @@ class SSLHTTPAdapter(BaseHTTPAdapter):
         conn = super().get_connection(*args, **kwargs)
         if (
             self.assert_hostname is not None
-            and conn.assert_hostname != self.assert_hostname
+            and conn.assert_hostname != self.assert_hostname  # type: ignore
         ):
-            conn.assert_hostname = self.assert_hostname
+            conn.assert_hostname = self.assert_hostname  # type: ignore
         return conn
-
-    def can_override_ssl_version(self):
-        urllib_ver = urllib3.__version__.split("-")[0]
-        if urllib_ver is None:
-            return False
-        if urllib_ver == "dev":
-            return True
-        return LooseVersion(urllib_ver) > LooseVersion("1.5")

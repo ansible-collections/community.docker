@@ -17,6 +17,7 @@ import signal
 import socket
 import subprocess
 import traceback
+import typing as t
 from queue import Empty
 from urllib.parse import urlparse
 
@@ -33,12 +34,15 @@ except ImportError:
 else:
     PARAMIKO_IMPORT_ERROR = None  # pylint: disable=invalid-name
 
+if t.TYPE_CHECKING:
+    from collections.abc import Buffer
+
 
 RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
 
 
 class SSHSocket(socket.socket):
-    def __init__(self, host):
+    def __init__(self, host: str) -> None:
         super().__init__(socket.AF_INET, socket.SOCK_STREAM)
         self.host = host
         self.port = None
@@ -48,9 +52,9 @@ class SSHSocket(socket.socket):
         if "@" in self.host:
             self.user, self.host = self.host.split("@")
 
-        self.proc = None
+        self.proc: subprocess.Popen | None = None
 
-    def connect(self, **kwargs):
+    def connect(self, *args_: t.Any, **kwargs: t.Any) -> None:
         args = ["ssh"]
         if self.user:
             args = args + ["-l", self.user]
@@ -82,37 +86,48 @@ class SSHSocket(socket.socket):
             preexec_fn=preexec_func,
         )
 
-    def _write(self, data):
-        if not self.proc or self.proc.stdin.closed:
+    def _write(self, data: Buffer) -> int:
+        if not self.proc:
             raise RuntimeError(
                 "SSH subprocess not initiated. connect() must be called first."
+            )
+        assert self.proc.stdin is not None
+        if self.proc.stdin.closed:
+            raise RuntimeError(
+                "SSH subprocess not initiated. connect() must be called first after close()."
             )
         written = self.proc.stdin.write(data)
         self.proc.stdin.flush()
         return written
 
-    def sendall(self, data):
+    def sendall(self, data: Buffer, *args, **kwargs) -> None:
         self._write(data)
 
-    def send(self, data):
+    def send(self, data: Buffer, *args, **kwargs) -> int:
         return self._write(data)
 
-    def recv(self, n):
+    def recv(self, n: int, *args, **kwargs) -> bytes:
         if not self.proc:
             raise RuntimeError(
                 "SSH subprocess not initiated. connect() must be called first."
             )
+        assert self.proc.stdout is not None
         return self.proc.stdout.read(n)
 
-    def makefile(self, mode):
+    def makefile(self, mode: str, *args, **kwargs) -> t.IO:  # type: ignore
         if not self.proc:
             self.connect()
-        self.proc.stdout.channel = self
+            assert self.proc is not None
+        assert self.proc.stdout is not None
+        self.proc.stdout.channel = self  # type: ignore
 
         return self.proc.stdout
 
-    def close(self):
-        if not self.proc or self.proc.stdin.closed:
+    def close(self) -> None:
+        if not self.proc:
+            return
+        assert self.proc.stdin is not None
+        if self.proc.stdin.closed:
             return
         self.proc.stdin.write(b"\n\n")
         self.proc.stdin.flush()
@@ -120,13 +135,19 @@ class SSHSocket(socket.socket):
 
 
 class SSHConnection(urllib3_connection.HTTPConnection):
-    def __init__(self, ssh_transport=None, timeout=60, host=None):
+    def __init__(
+        self,
+        *,
+        ssh_transport=None,
+        timeout: int = 60,
+        host: str,
+    ) -> None:
         super().__init__("localhost", timeout=timeout)
         self.ssh_transport = ssh_transport
         self.timeout = timeout
         self.ssh_host = host
 
-    def connect(self):
+    def connect(self) -> None:
         if self.ssh_transport:
             sock = self.ssh_transport.open_session()
             sock.settimeout(self.timeout)
@@ -142,7 +163,14 @@ class SSHConnection(urllib3_connection.HTTPConnection):
 class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
     scheme = "ssh"
 
-    def __init__(self, ssh_client=None, timeout=60, maxsize=10, host=None):
+    def __init__(
+        self,
+        *,
+        ssh_client: paramiko.SSHClient | None = None,
+        timeout: int = 60,
+        maxsize: int = 10,
+        host: str,
+    ) -> None:
         super().__init__("localhost", timeout=timeout, maxsize=maxsize)
         self.ssh_transport = None
         self.timeout = timeout
@@ -150,13 +178,17 @@ class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
             self.ssh_transport = ssh_client.get_transport()
         self.ssh_host = host
 
-    def _new_conn(self):
-        return SSHConnection(self.ssh_transport, self.timeout, self.ssh_host)
+    def _new_conn(self) -> SSHConnection:
+        return SSHConnection(
+            ssh_transport=self.ssh_transport,
+            timeout=self.timeout,
+            host=self.ssh_host,
+        )
 
     # When re-using connections, urllib3 calls fileno() on our
     # SSH channel instance, quickly overloading our fd limit. To avoid this,
     # we override _get_conn
-    def _get_conn(self, timeout):
+    def _get_conn(self, timeout: int) -> SSHConnection:
         conn = None
         try:
             conn = self.pool.get(block=self.block, timeout=timeout)
@@ -176,7 +208,6 @@ class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
 
 
 class SSHHTTPAdapter(BaseHTTPAdapter):
-
     __attrs__ = HTTPAdapter.__attrs__ + [
         "pools",
         "timeout",
@@ -187,13 +218,13 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
 
     def __init__(
         self,
-        base_url,
-        timeout=60,
-        pool_connections=constants.DEFAULT_NUM_POOLS,
-        max_pool_size=constants.DEFAULT_MAX_POOL_SIZE,
-        shell_out=False,
-    ):
-        self.ssh_client = None
+        base_url: str,
+        timeout: int = 60,
+        pool_connections: int = constants.DEFAULT_NUM_POOLS,
+        max_pool_size: int = constants.DEFAULT_MAX_POOL_SIZE,
+        shell_out: bool = False,
+    ) -> None:
+        self.ssh_client: paramiko.SSHClient | None = None
         if not shell_out:
             self._create_paramiko_client(base_url)
             self._connect()
@@ -209,30 +240,31 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
         )
         super().__init__()
 
-    def _create_paramiko_client(self, base_url):
+    def _create_paramiko_client(self, base_url: str) -> None:
         logging.getLogger("paramiko").setLevel(logging.WARNING)
         self.ssh_client = paramiko.SSHClient()
-        base_url = urlparse(base_url)
-        self.ssh_params = {
-            "hostname": base_url.hostname,
-            "port": base_url.port,
-            "username": base_url.username,
+        base_url_p = urlparse(base_url)
+        assert base_url_p.hostname is not None
+        self.ssh_params: dict[str, t.Any] = {
+            "hostname": base_url_p.hostname,
+            "port": base_url_p.port,
+            "username": base_url_p.username,
         }
         ssh_config_file = os.path.expanduser("~/.ssh/config")
         if os.path.exists(ssh_config_file):
             conf = paramiko.SSHConfig()
             with open(ssh_config_file, "rt", encoding="utf-8") as f:
                 conf.parse(f)
-            host_config = conf.lookup(base_url.hostname)
+            host_config = conf.lookup(base_url_p.hostname)
             if "proxycommand" in host_config:
                 self.ssh_params["sock"] = paramiko.ProxyCommand(
                     host_config["proxycommand"]
                 )
             if "hostname" in host_config:
                 self.ssh_params["hostname"] = host_config["hostname"]
-            if base_url.port is None and "port" in host_config:
+            if base_url_p.port is None and "port" in host_config:
                 self.ssh_params["port"] = host_config["port"]
-            if base_url.username is None and "user" in host_config:
+            if base_url_p.username is None and "user" in host_config:
                 self.ssh_params["username"] = host_config["user"]
             if "identityfile" in host_config:
                 self.ssh_params["key_filename"] = host_config["identityfile"]
@@ -240,11 +272,11 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
         self.ssh_client.load_system_host_keys()
         self.ssh_client.set_missing_host_key_policy(paramiko.RejectPolicy())
 
-    def _connect(self):
+    def _connect(self) -> None:
         if self.ssh_client:
             self.ssh_client.connect(**self.ssh_params)
 
-    def get_connection(self, url, proxies=None):
+    def get_connection(self, url: str | bytes, proxies=None) -> SSHConnectionPool:
         if not self.ssh_client:
             return SSHConnectionPool(
                 ssh_client=self.ssh_client,
@@ -271,7 +303,7 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
 
         return pool
 
-    def close(self):
+    def close(self) -> None:
         super().close()
         if self.ssh_client:
             self.ssh_client.close()

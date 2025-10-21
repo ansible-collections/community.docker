@@ -32,12 +32,12 @@ _cache: dict[str, re.Pattern] = {}
 _MAXCACHE = 100
 
 
-def _purge():
+def _purge() -> None:
     """Clear the pattern cache"""
     _cache.clear()
 
 
-def fnmatch(name, pat):
+def fnmatch(name: str, pat: str):
     """Test whether FILENAME matches PATTERN.
 
     Patterns are Unix shell style:
@@ -58,7 +58,7 @@ def fnmatch(name, pat):
     return fnmatchcase(name, pat)
 
 
-def fnmatchcase(name, pat):
+def fnmatchcase(name: str, pat: str) -> bool:
     """Test whether FILENAME matches PATTERN, including case.
     This is a version of fnmatch() which does not case-normalize
     its arguments.
@@ -74,7 +74,7 @@ def fnmatchcase(name, pat):
     return re_pat.match(name) is not None
 
 
-def translate(pat):
+def translate(pat: str) -> str:
     """Translate a shell PATTERN to a regular expression.
 
     There is no way to quote meta-characters.

@@ -11,6 +11,12 @@
 
 from __future__ import annotations
 
+import typing as t
+
+
+if t.TYPE_CHECKING:
+    from subprocess import CalledProcessError
+
 
 class StoreError(RuntimeError):
     pass
@@ -24,7 +30,7 @@ class InitializationError(StoreError):
     pass
 
 
-def process_store_error(cpe, program):
+def process_store_error(cpe: CalledProcessError, program: str) -> StoreError:
     message = cpe.output.decode("utf-8")
     if "credentials not found in native keychain" in message:
         return CredentialsNotFound(f"No matching credentials in {program}")

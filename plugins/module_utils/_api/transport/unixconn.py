@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import socket
+import typing as t
 
 from .. import constants
 from .._import_helper import HTTPAdapter, urllib3, urllib3_connection
@@ -22,26 +23,25 @@ RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
 
 
 class UnixHTTPConnection(urllib3_connection.HTTPConnection):
-
-    def __init__(self, base_url, unix_socket, timeout=60):
+    def __init__(self, base_url: str | bytes, unix_socket, timeout: int = 60) -> None:
         super().__init__("localhost", timeout=timeout)
         self.base_url = base_url
         self.unix_socket = unix_socket
         self.timeout = timeout
         self.disable_buffering = False
 
-    def connect(self):
+    def connect(self) -> None:
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.settimeout(self.timeout)
         sock.connect(self.unix_socket)
         self.sock = sock
 
-    def putheader(self, header, *values):
+    def putheader(self, header: str, *values: str) -> None:
         super().putheader(header, *values)
         if header == "Connection" and "Upgrade" in values:
             self.disable_buffering = True
 
-    def response_class(self, sock, *args, **kwargs):
+    def response_class(self, sock, *args, **kwargs) -> t.Any:
         # FIXME: We may need to disable buffering on Py3,
         # but there's no clear way to do it at the moment. See:
         # https://github.com/docker/docker-py/issues/1799
@@ -49,18 +49,23 @@ class UnixHTTPConnection(urllib3_connection.HTTPConnection):
 
 
 class UnixHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
-    def __init__(self, base_url, socket_path, timeout=60, maxsize=10):
+    def __init__(
+        self,
+        base_url: str | bytes,
+        socket_path: str,
+        timeout: int = 60,
+        maxsize: int = 10,
+    ) -> None:
         super().__init__("localhost", timeout=timeout, maxsize=maxsize)
         self.base_url = base_url
         self.socket_path = socket_path
         self.timeout = timeout
 
-    def _new_conn(self):
+    def _new_conn(self) -> UnixHTTPConnection:
         return UnixHTTPConnection(self.base_url, self.socket_path, self.timeout)
 
 
 class UnixHTTPAdapter(BaseHTTPAdapter):
-
     __attrs__ = HTTPAdapter.__attrs__ + [
         "pools",
         "socket_path",
@@ -70,11 +75,11 @@ class UnixHTTPAdapter(BaseHTTPAdapter):
 
     def __init__(
         self,
-        socket_url,
-        timeout=60,
-        pool_connections=constants.DEFAULT_NUM_POOLS,
-        max_pool_size=constants.DEFAULT_MAX_POOL_SIZE,
-    ):
+        socket_url: str,
+        timeout: int = 60,
+        pool_connections: int = constants.DEFAULT_NUM_POOLS,
+        max_pool_size: int = constants.DEFAULT_MAX_POOL_SIZE,
+    ) -> None:
         socket_path = socket_url.replace("http+unix://", "")
         if not socket_path.startswith("/"):
             socket_path = "/" + socket_path
@@ -86,7 +91,7 @@ class UnixHTTPAdapter(BaseHTTPAdapter):
         )
         super().__init__()
 
-    def get_connection(self, url, proxies=None):
+    def get_connection(self, url: str | bytes, proxies=None) -> UnixHTTPConnectionPool:
         with self.pools.lock:
             pool = self.pools.get(url)
             if pool:
@@ -99,7 +104,7 @@ class UnixHTTPAdapter(BaseHTTPAdapter):
 
         return pool
 
-    def request_url(self, request, proxies):
+    def request_url(self, request, proxies) -> str:
         # The select_proxy utility in requests errors out when the provided URL
         # does not have a hostname, like is the case when using a UNIX socket.
         # Since proxies are an irrelevant notion in the case of UNIX sockets

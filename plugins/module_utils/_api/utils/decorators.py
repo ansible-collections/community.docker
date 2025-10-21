@@ -12,16 +12,37 @@
 from __future__ import annotations
 
 import functools
+import typing as t
 
 from .. import errors
 from . import utils
 
 
-def minimum_version(version):
-    def decorator(f):
+if t.TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from ..api.client import APIClient
+
+    _Self = t.TypeVar("_Self")
+    _P = t.ParamSpec("_P")
+    _R = t.TypeVar("_R")
+
+
+def minimum_version(
+    version: str,
+) -> Callable[
+    [Callable[t.Concatenate[_Self, _P], _R]],
+    Callable[t.Concatenate[_Self, _P], _R],
+]:
+    def decorator(
+        f: Callable[t.Concatenate[_Self, _P], _R],
+    ) -> Callable[t.Concatenate[_Self, _P], _R]:
         @functools.wraps(f)
-        def wrapper(self, *args, **kwargs):
-            if utils.version_lt(self._version, version):
+        def wrapper(self: _Self, *args: _P.args, **kwargs: _P.kwargs) -> _R:
+            # We use _Self instead of APIClient since this is used for mixins for APIClient.
+            # This unfortunately means that self._version does not exist in the mixin,
+            # it only exists after mixing in. This is why we ignore types here.
+            if utils.version_lt(self._version, version):  # type: ignore
                 raise errors.InvalidVersion(
                     f"{f.__name__} is not available for version < {version}"
                 )
@@ -32,13 +53,16 @@ def minimum_version(version):
     return decorator
 
 
-def update_headers(f):
-    def inner(self, *args, **kwargs):
+def update_headers(
+    f: Callable[t.Concatenate[APIClient, _P], _R],
+) -> Callable[t.Concatenate[APIClient, _P], _R]:
+    def inner(self: APIClient, *args: _P.args, **kwargs: _P.kwargs) -> _R:
         if "HttpHeaders" in self._general_configs:
             if not kwargs.get("headers"):
                 kwargs["headers"] = self._general_configs["HttpHeaders"]
             else:
-                kwargs["headers"].update(self._general_configs["HttpHeaders"])
+                # We cannot (yet) model that kwargs["headers"] should be a dictionary
+                kwargs["headers"].update(self._general_configs["HttpHeaders"])  # type: ignore
         return f(self, *args, **kwargs)
 
     return inner

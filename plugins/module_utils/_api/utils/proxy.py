@@ -20,23 +20,23 @@ class ProxyConfig(dict):
     """
 
     @property
-    def http(self):
+    def http(self) -> str | None:
         return self.get("http")
 
     @property
-    def https(self):
+    def https(self) -> str | None:
         return self.get("https")
 
     @property
-    def ftp(self):
+    def ftp(self) -> str | None:
         return self.get("ftp")
 
     @property
-    def no_proxy(self):
+    def no_proxy(self) -> str | None:
         return self.get("no_proxy")
 
     @staticmethod
-    def from_dict(config):
+    def from_dict(config: dict[str, str]) -> ProxyConfig:
         """
         Instantiate a new ProxyConfig from a dictionary that represents a
         client configuration, as described in `the documentation`_.
@@ -51,7 +51,7 @@ class ProxyConfig(dict):
             no_proxy=config.get("noProxy"),
         )
 
-    def get_environment(self):
+    def get_environment(self) -> dict[str, str]:
         """
         Return a dictionary representing the environment variables used to
         set the proxy settings.
@@ -67,7 +67,7 @@ class ProxyConfig(dict):
             env["no_proxy"] = env["NO_PROXY"] = self.no_proxy
         return env
 
-    def inject_proxy_environment(self, environment):
+    def inject_proxy_environment(self, environment: list[str]) -> list[str]:
         """
         Given a list of strings representing environment variables, prepend the
         environment variables corresponding to the proxy settings.
@@ -82,5 +82,5 @@ class ProxyConfig(dict):
         # variables defined in "environment" to take precedence.
         return proxy_env + environment
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"ProxyConfig(http={self.http}, https={self.https}, ftp={self.ftp}, no_proxy={self.no_proxy})"

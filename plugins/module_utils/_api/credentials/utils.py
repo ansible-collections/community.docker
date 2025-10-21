@@ -15,7 +15,7 @@ import os
 from shutil import which
 
 
-def find_executable(executable, path=None):
+def find_executable(executable: str, path: str | None = None) -> str | None:
     """
     As distutils.spawn.find_executable, but on Windows, look up
     every extension declared in PATHEXT instead of just `.exe`
@@ -26,7 +26,7 @@ def find_executable(executable, path=None):
     return which(executable, path=path)
 
 
-def create_environment_dict(overrides):
+def create_environment_dict(overrides: dict[str, str] | None) -> dict[str, str]:
     """
     Create and return a copy of os.environ with the specified overrides
     """

@@ -552,7 +552,7 @@ def _execute_command(
 
     result = client.get_json("/exec/{0}/json", exec_id)
 
-    rc = result.get("ExitCode") or 0
+    rc: int = result.get("ExitCode") or 0
     stdout = stdout or b""
     stderr = stderr or b""
 
