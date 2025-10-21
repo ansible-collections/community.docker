@@ -710,8 +710,8 @@ class ImageManager(DockerBaseClass):
                     self.client._get(
                         self.client._url("/images/{0}/get", image_name), stream=True
                     ),
-                    DEFAULT_DATA_CHUNK_SIZE,
-                    False,
+                    chunk_size=DEFAULT_DATA_CHUNK_SIZE,
+                    decode=False,
                 )
             except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error getting image {image_name} - {exc}")
