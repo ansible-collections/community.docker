@@ -119,12 +119,12 @@ def split_port(
     host: str | None = parts["host"]
     proto: str = parts["proto"] or ""
     int_p: str = parts["int"]
-    ext_p: str | None = parts["ext"] or None
+    ext_p: str = parts["ext"]
     internal: list[str] = port_range(int_p, parts["int_end"], proto)  # type: ignore
-    external = port_range(ext_p, parts["ext_end"], "", len(internal) == 1)
+    external = port_range(ext_p or None, parts["ext_end"], "", len(internal) == 1)
 
     if host is None:
-        if external is not None and len(internal) != len(external):
+        if (external is not None and len(internal) != len(external)) or ext_p == "":
             raise ValueError("Port ranges don't match in length")
         return internal, external
     external_or_none: Sequence[str | None]
