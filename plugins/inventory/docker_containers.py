@@ -169,6 +169,7 @@ filters:
 """
 
 import re
+import typing as t
 
 from ansible.errors import AnsibleError
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
@@ -195,6 +196,11 @@ from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
 )
 
 
+if t.TYPE_CHECKING:
+    from ansible.inventory.data import InventoryData
+    from ansible.parsing.dataloader import DataLoader
+
+
 MIN_DOCKER_API = None
 
 
@@ -203,11 +209,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
     NAME = "community.docker.docker_containers"
 
-    def _slugify(self, value):
+    def _slugify(self, value: str) -> str:
         slug = re.sub(r"[^\w-]", "_", value).lower().lstrip("_")
         return f"docker_{slug}"
 
-    def _populate(self, client):
+    def _populate(self, client: AnsibleDockerClient) -> None:
         strict = self.get_option("strict")
 
         ssh_port = self.get_option("private_ssh_port")
@@ -216,6 +222,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         verbose_output = self.get_option("verbose_output")
         connection_type = self.get_option("connection_type")
         add_legacy_groups = self.get_option("add_legacy_groups")
+
+        if self.inventory is None:
+            raise AssertionError("Inventory must be there")
 
         try:
             params = {
@@ -298,7 +307,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                     # Lookup the public facing port Nat'ed to ssh port.
                     network_settings = inspect.get("NetworkSettings") or {}
                     port_settings = network_settings.get("Ports") or {}
-                    port = port_settings.get(f"{ssh_port}/tcp")[0]
+                    port = port_settings.get(f"{ssh_port}/tcp")[0]  # type: ignore[index]
                 except (IndexError, AttributeError, TypeError):
                     port = {}
 
@@ -387,16 +396,22 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 else:
                     self.inventory.add_host(name, group="stopped")
 
-    def verify_file(self, path):
+    def verify_file(self, path: str) -> bool:
         """Return the possibly of a file being consumable by this plugin."""
         return super().verify_file(path) and path.endswith(
             ("docker.yaml", "docker.yml")
         )
 
-    def _create_client(self):
+    def _create_client(self) -> AnsibleDockerClient:
         return AnsibleDockerClient(self, min_docker_api_version=MIN_DOCKER_API)
 
-    def parse(self, inventory, loader, path, cache=True):
+    def parse(
+        self,
+        inventory: InventoryData,
+        loader: DataLoader,
+        path: str,
+        cache: bool = True,
+    ) -> None:
         super().parse(inventory, loader, path, cache)
         self._read_config_data(path)
         client = self._create_client()

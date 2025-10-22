@@ -98,6 +98,7 @@ untagged:
 """
 
 import traceback
+import typing as t
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     DockerException,
@@ -118,8 +119,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class ImageRemover(DockerBaseClass):
-
-    def __init__(self, client):
+    def __init__(self, client: AnsibleDockerClient) -> None:
         super().__init__()
 
         self.client = client
@@ -142,10 +142,10 @@ class ImageRemover(DockerBaseClass):
                 self.name = repo
                 self.tag = repo_tag
 
-    def fail(self, msg):
+    def fail(self, msg: str) -> t.NoReturn:
         self.client.fail(msg)
 
-    def get_diff_state(self, image):
+    def get_diff_state(self, image: dict[str, t.Any] | None) -> dict[str, t.Any]:
         if not image:
             return {"exists": False}
         return {
@@ -155,13 +155,16 @@ class ImageRemover(DockerBaseClass):
             "digests": sorted(image.get("RepoDigests") or []),
         }
 
-    def absent(self):
-        results = {
+    def absent(self) -> dict[str, t.Any]:
+        actions: list[str] = []
+        deleted: list[str] = []
+        untagged: list[str] = []
+        results: dict[str, t.Any] = {
             "changed": False,
-            "actions": [],
+            "actions": actions,
             "image": {},
-            "deleted": [],
-            "untagged": [],
+            "deleted": deleted,
+            "untagged": untagged,
         }
 
         name = self.name
@@ -172,16 +175,18 @@ class ImageRemover(DockerBaseClass):
             if self.tag:
                 name = f"{self.name}:{self.tag}"
 
+        diff: dict[str, t.Any] = {}
         if self.diff:
-            results["diff"] = {"before": self.get_diff_state(image)}
+            results["diff"] = diff
+            diff["before"] = self.get_diff_state(image)
 
         if not image:
             if self.diff:
-                results["diff"]["after"] = self.get_diff_state(image)
+                diff["after"] = self.get_diff_state(image)
             return results
 
         results["changed"] = True
-        results["actions"].append(f"Removed image {name}")
+        actions.append(f"Removed image {name}")
         results["image"] = image
 
         if not self.check_mode:
@@ -199,22 +204,22 @@ class ImageRemover(DockerBaseClass):
 
             for entry in res:
                 if entry.get("Untagged"):
-                    results["untagged"].append(entry["Untagged"])
+                    untagged.append(entry["Untagged"])
                 if entry.get("Deleted"):
-                    results["deleted"].append(entry["Deleted"])
+                    deleted.append(entry["Deleted"])
 
-            results["untagged"] = sorted(results["untagged"])
-            results["deleted"] = sorted(results["deleted"])
+            untagged[:] = sorted(untagged)
+            deleted[:] = sorted(deleted)
 
             if self.diff:
                 image_after = self.client.find_image_by_id(
                     image["Id"], accept_missing_image=True
                 )
-                results["diff"]["after"] = self.get_diff_state(image_after)
+                diff["after"] = self.get_diff_state(image_after)
 
         elif is_image_name_id(name):
-            results["deleted"].append(image["Id"])
-            results["untagged"] = sorted(
+            deleted.append(image["Id"])
+            untagged[:] = sorted(
                 (image.get("RepoTags") or []) + (image.get("RepoDigests") or [])
             )
             if not self.force and results["untagged"]:
@@ -222,40 +227,40 @@ class ImageRemover(DockerBaseClass):
                     "Cannot delete image by ID that is still in use - use force=true"
                 )
             if self.diff:
-                results["diff"]["after"] = self.get_diff_state({})
+                diff["after"] = self.get_diff_state({})
 
         elif is_image_name_id(self.tag):
-            results["untagged"].append(name)
+            untagged.append(name)
             if (
                 len(image.get("RepoTags") or []) < 1
                 and len(image.get("RepoDigests") or []) < 2
             ):
-                results["deleted"].append(image["Id"])
+                deleted.append(image["Id"])
             if self.diff:
-                results["diff"]["after"] = self.get_diff_state(image)
+                diff["after"] = self.get_diff_state(image)
                 try:
-                    results["diff"]["after"]["digests"].remove(name)
+                    diff["after"]["digests"].remove(name)
                 except ValueError:
                     pass
 
         else:
-            results["untagged"].append(name)
+            untagged.append(name)
             if (
                 len(image.get("RepoTags") or []) < 2
                 and len(image.get("RepoDigests") or []) < 1
             ):
-                results["deleted"].append(image["Id"])
+                deleted.append(image["Id"])
             if self.diff:
-                results["diff"]["after"] = self.get_diff_state(image)
+                diff["after"] = self.get_diff_state(image)
                 try:
-                    results["diff"]["after"]["tags"].remove(name)
+                    diff["after"]["tags"].remove(name)
                 except ValueError:
                     pass
 
         return results
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True},
         "tag": {"type": "str", "default": "latest"},

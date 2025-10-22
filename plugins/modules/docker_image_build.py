@@ -282,6 +282,7 @@ command:
 import base64
 import os
 import traceback
+import typing as t
 
 from ansible.module_utils.common.text.converters import to_native
 from ansible.module_utils.common.text.formatters import human_to_bytes
@@ -304,7 +305,16 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 )
 
 
-def convert_to_bytes(value, module, name, unlimited_value=None):
+if t.TYPE_CHECKING:
+    from ansible.module_utils.basic import AnsibleModule
+
+
+def convert_to_bytes(
+    value: str | None,
+    module: AnsibleModule,
+    name: str,
+    unlimited_value: int | None = None,
+) -> int | None:
     if value is None:
         return value
     try:
@@ -315,11 +325,11 @@ def convert_to_bytes(value, module, name, unlimited_value=None):
         module.fail_json(msg=f"Failed to convert {name} to bytes: {exc}")
 
 
-def dict_to_list(dictionary, concat="="):
+def dict_to_list(dictionary: dict[str, t.Any], concat: str = "=") -> list[str]:
     return [f"{k}{concat}{v}" for k, v in sorted(dictionary.items())]
 
 
-def _quote_csv(text):
+def _quote_csv(text: str) -> str:
     if text.strip() == text and all(i not in text for i in '",\r\n'):
         return text
     text = text.replace('"', '""')
@@ -327,7 +337,7 @@ def _quote_csv(text):
 
 
 class ImageBuilder(DockerBaseClass):
-    def __init__(self, client):
+    def __init__(self, client: AnsibleModuleDockerClient) -> None:
         super().__init__()
         self.client = client
         self.check_mode = self.client.check_mode
@@ -420,14 +430,14 @@ class ImageBuilder(DockerBaseClass):
                         f" buildx plugin has version {buildx_version} which only supports one output."
                     )
 
-    def fail(self, msg, **kwargs):
+    def fail(self, msg: str, **kwargs: t.Any) -> t.NoReturn:
         self.client.fail(msg, **kwargs)
 
-    def add_list_arg(self, args, option, values):
+    def add_list_arg(self, args: list[str], option: str, values: list[str]) -> None:
         for value in values:
             args.extend([option, value])
 
-    def add_args(self, args):
+    def add_args(self, args: list[str]) -> dict[str, t.Any]:
         environ_update = {}
         if not self.outputs:
             args.extend(["--tag", f"{self.name}:{self.tag}"])
@@ -512,9 +522,9 @@ class ImageBuilder(DockerBaseClass):
                     )
         return environ_update
 
-    def build_image(self):
+    def build_image(self) -> dict[str, t.Any]:
         image = self.client.find_image(self.name, self.tag)
-        results = {
+        results: dict[str, t.Any] = {
             "changed": False,
             "actions": [],
             "image": image or {},
@@ -547,7 +557,7 @@ class ImageBuilder(DockerBaseClass):
         return results
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True},
         "tag": {"type": "str", "default": "latest"},

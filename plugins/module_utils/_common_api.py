@@ -416,7 +416,7 @@ class AnsibleDockerClientBase(Client):
 
         return result
 
-    def _image_lookup(self, name: str, tag: str) -> list[dict[str, t.Any]]:
+    def _image_lookup(self, name: str, tag: str | None) -> list[dict[str, t.Any]]:
         """
         Including a tag in the name parameter sent to the Docker SDK for Python images method
         does not work consistently. Instead, get the result set for name and manually check
@@ -448,7 +448,7 @@ class AnsibleDockerClientBase(Client):
                     break
         return images
 
-    def find_image(self, name: str, tag: str) -> dict[str, t.Any] | None:
+    def find_image(self, name: str, tag: str | None) -> dict[str, t.Any] | None:
         """
         Lookup an image (by name and tag) and return the inspection results.
         """
@@ -569,7 +569,6 @@ class AnsibleDockerClientBase(Client):
 
 
 class AnsibleDockerClient(AnsibleDockerClientBase):
-
     def __init__(
         self,
         argument_spec: dict[str, t.Any] | None = None,
@@ -590,7 +589,6 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
         option_minimal_versions_ignore_params: Sequence[str] | None = None,
         fail_results: dict[str, t.Any] | None = None,
     ):
-
         # Modules can put information in here which will always be returned
         # in case client.fail() is called.
         self.fail_results = fail_results or {}

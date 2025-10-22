@@ -44,7 +44,9 @@ import fcntl
 import os
 import pty
 import selectors
+import shlex
 import subprocess
+import typing as t
 
 import ansible.constants as C
 from ansible.errors import AnsibleError
@@ -63,12 +65,12 @@ class Connection(ConnectionBase):
     transport = "community.docker.nsenter"
     has_pipelining = False
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.cwd = None
         self._nsenter_pid = None
 
-    def _connect(self):
+    def _connect(self) -> t.Self:
         self._nsenter_pid = self.get_option("nsenter_pid")
 
         # Because nsenter requires very high privileges, our remote user
@@ -83,12 +85,15 @@ class Connection(ConnectionBase):
             self._connected = True
         return self
 
-    def exec_command(self, cmd, in_data=None, sudoable=True):
-        super().exec_command(cmd, in_data=in_data, sudoable=sudoable)
+    def exec_command(
+        self, cmd: str, in_data: bytes | None = None, sudoable: bool = True
+    ) -> tuple[int, bytes, bytes]:
+        super().exec_command(cmd, in_data=in_data, sudoable=sudoable)  # type: ignore[safe-super]
 
         display.debug("in nsenter.exec_command()")
 
-        executable = C.DEFAULT_EXECUTABLE.split()[0] if C.DEFAULT_EXECUTABLE else None
+        def_executable: str | None = C.DEFAULT_EXECUTABLE  # type: ignore[attr-defined]
+        executable = def_executable.split()[0] if def_executable else None
 
         if not os.path.exists(to_bytes(executable, errors="surrogate_or_strict")):
             raise AnsibleError(
@@ -109,12 +114,8 @@ class Connection(ConnectionBase):
             "--",
         ]
 
-        if isinstance(cmd, (str, bytes)):
-            cmd_parts = nsenter_cmd_parts + [cmd]
-            cmd = to_bytes(" ".join(cmd_parts))
-        else:
-            cmd_parts = nsenter_cmd_parts + cmd
-            cmd = [to_bytes(arg) for arg in cmd_parts]
+        cmd_parts = nsenter_cmd_parts + [cmd]
+        cmd = to_bytes(" ".join(cmd_parts))
 
         display.vvv(f"EXEC {to_text(cmd)}", host=self._play_context.remote_addr)
         display.debug("opening command with Popen()")
@@ -143,6 +144,9 @@ class Connection(ConnectionBase):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         ) as p:
+            assert p.stderr is not None
+            assert p.stdin is not None
+            assert p.stdout is not None
             # if we created a master, we can close the other half of the pty now, otherwise master is stdin
             if master is not None:
                 os.close(stdin)
@@ -234,8 +238,8 @@ class Connection(ConnectionBase):
             display.debug("done with nsenter.exec_command()")
             return (p.returncode, stdout, stderr)
 
-    def put_file(self, in_path, out_path):
-        super().put_file(in_path, out_path)
+    def put_file(self, in_path: str, out_path: str) -> None:
+        super().put_file(in_path, out_path)  # type: ignore[safe-super]
 
         in_path = unfrackpath(in_path, basedir=self.cwd)
         out_path = unfrackpath(out_path, basedir=self.cwd)
@@ -245,26 +249,30 @@ class Connection(ConnectionBase):
             with open(to_bytes(in_path, errors="surrogate_or_strict"), "rb") as in_file:
                 in_data = in_file.read()
             rc, dummy_out, err = self.exec_command(
-                cmd=["tee", out_path], in_data=in_data
+                cmd=f"tee {shlex.quote(out_path)}", in_data=in_data
             )
             if rc != 0:
-                raise AnsibleError(f"failed to transfer file to {out_path}: {err}")
+                raise AnsibleError(
+                    f"failed to transfer file to {out_path}: {to_text(err)}"
+                )
         except IOError as e:
             raise AnsibleError(f"failed to transfer file to {out_path}: {e}") from e
 
-    def fetch_file(self, in_path, out_path):
-        super().fetch_file(in_path, out_path)
+    def fetch_file(self, in_path: str, out_path: str) -> None:
+        super().fetch_file(in_path, out_path)  # type: ignore[safe-super]
 
         in_path = unfrackpath(in_path, basedir=self.cwd)
         out_path = unfrackpath(out_path, basedir=self.cwd)
 
         try:
-            rc, out, err = self.exec_command(cmd=["cat", in_path])
+            rc, out, err = self.exec_command(cmd=f"cat {shlex.quote(in_path)}")
             display.vvv(
                 f"FETCH {in_path} TO {out_path}", host=self._play_context.remote_addr
             )
             if rc != 0:
-                raise AnsibleError(f"failed to transfer file to {in_path}: {err}")
+                raise AnsibleError(
+                    f"failed to transfer file to {in_path}: {to_text(err)}"
+                )
             with open(
                 to_bytes(out_path, errors="surrogate_or_strict"), "wb"
             ) as out_file:
@@ -274,6 +282,6 @@ class Connection(ConnectionBase):
                 f"failed to transfer file to {to_native(out_path)}: {e}"
             ) from e
 
-    def close(self):
+    def close(self) -> None:
         """terminate the connection; nothing to do here"""
         self._connected = False

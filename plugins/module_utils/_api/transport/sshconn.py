@@ -139,7 +139,7 @@ class SSHConnection(urllib3_connection.HTTPConnection):
         self,
         *,
         ssh_transport=None,
-        timeout: int = 60,
+        timeout: int | float = 60,
         host: str,
     ) -> None:
         super().__init__("localhost", timeout=timeout)
@@ -167,7 +167,7 @@ class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
         self,
         *,
         ssh_client: paramiko.SSHClient | None = None,
-        timeout: int = 60,
+        timeout: int | float = 60,
         maxsize: int = 10,
         host: str,
     ) -> None:
@@ -188,7 +188,7 @@ class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
     # When re-using connections, urllib3 calls fileno() on our
     # SSH channel instance, quickly overloading our fd limit. To avoid this,
     # we override _get_conn
-    def _get_conn(self, timeout: int) -> SSHConnection:
+    def _get_conn(self, timeout: int | float) -> SSHConnection:
         conn = None
         try:
             conn = self.pool.get(block=self.block, timeout=timeout)
@@ -219,7 +219,7 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
     def __init__(
         self,
         base_url: str,
-        timeout: int = 60,
+        timeout: int | float = 60,
         pool_connections: int = constants.DEFAULT_NUM_POOLS,
         max_pool_size: int = constants.DEFAULT_MAX_POOL_SIZE,
         shell_out: bool = False,

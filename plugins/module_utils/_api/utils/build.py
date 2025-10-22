@@ -33,21 +33,22 @@ _SEP = re.compile("/|\\\\") if IS_WINDOWS_PLATFORM else re.compile("/")
 def tar(
     path: str,
     exclude: list[str] | None = None,
-    dockerfile: tuple[str, str] | tuple[None, None] | None = None,
+    dockerfile: tuple[str, str | None] | tuple[None, None] | None = None,
     fileobj: t.IO[bytes] | None = None,
     gzip: bool = False,
 ) -> t.IO[bytes]:
     root = os.path.abspath(path)
     exclude = exclude or []
     dockerfile = dockerfile or (None, None)
-    extra_files = []
+    extra_files: list[tuple[str, str]] = []
     if dockerfile[1] is not None:
+        assert dockerfile[0] is not None
         dockerignore_contents = "\n".join(
             (exclude or [".dockerignore"]) + [dockerfile[0]]
         )
         extra_files = [
             (".dockerignore", dockerignore_contents),
-            dockerfile,
+            dockerfile,  # type: ignore
         ]
     return create_archive(
         files=sorted(exclude_paths(root, exclude, dockerfile=dockerfile[0])),
@@ -278,7 +279,9 @@ class Pattern:
         return fnmatch.fnmatch(normalize_slashes(filepath), self.cleaned_pattern)
 
 
-def process_dockerfile(dockerfile: str, path: str) -> tuple[str | None, str | None]:
+def process_dockerfile(
+    dockerfile: str | None, path: str
+) -> tuple[str, str | None] | tuple[None, None]:
     if not dockerfile:
         return (None, None)
 

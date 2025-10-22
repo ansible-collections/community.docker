@@ -360,7 +360,7 @@ def clean_dict_booleans_for_docker_api(
 
 
 def clean_dict_booleans_for_docker_api(
-    data: dict[str, t.Any], *, allow_sequences: bool = False
+    data: dict[str, t.Any] | None, *, allow_sequences: bool = False
 ) -> dict[str, str] | dict[str, str | list[str]]:
     """
     Go does not like Python booleans 'True' or 'False', while Ansible is just

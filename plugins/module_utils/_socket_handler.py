@@ -12,6 +12,7 @@ import os.path
 import selectors
 import socket as pysocket
 import struct
+import typing as t
 
 from ansible_collections.community.docker.plugins.module_utils._api.utils import (
     socket as docker_socket,
@@ -23,58 +24,74 @@ from ansible_collections.community.docker.plugins.module_utils._socket_helper im
 )
 
 
+if t.TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from ansible.module_utils.basic import AnsibleModule
+
+    from ansible_collections.community.docker.plugins.module_utils._socket_helper import (
+        SocketLike,
+    )
+
+
 PARAMIKO_POLL_TIMEOUT = 0.01  # 10 milliseconds
 
 
+def _empty_writer(msg: str) -> None:
+    pass
+
+
 class DockerSocketHandlerBase:
-    def __init__(self, sock, log=None):
+    def __init__(
+        self, sock: SocketLike, log: Callable[[str], None] | None = None
+    ) -> None:
         make_unblocking(sock)
 
-        if log is not None:
-            self._log = log
-        else:
-            self._log = lambda msg: True
+        self._log = log or _empty_writer
         self._paramiko_read_workaround = hasattr(
             sock, "send_ready"
         ) and "paramiko" in str(type(sock))
 
         self._sock = sock
-        self._block_done_callback = None
-        self._block_buffer = []
+        self._block_done_callback: Callable[[int, bytes], None] | None = None
+        self._block_buffer: list[tuple[int, bytes]] = []
         self._eof = False
         self._read_buffer = b""
         self._write_buffer = b""
         self._end_of_writing = False
 
-        self._current_stream = None
+        self._current_stream: int | None = None
         self._current_missing = 0
         self._current_buffer = b""
 
         self._selector = selectors.DefaultSelector()
         self._selector.register(self._sock, selectors.EVENT_READ)
 
-    def __enter__(self):
+    def __enter__(self) -> t.Self:
         return self
 
-    def __exit__(self, type_, value, tb):
+    def __exit__(self, type_, value, tb) -> None:
         self._selector.close()
 
-    def set_block_done_callback(self, block_done_callback):
+    def set_block_done_callback(
+        self, block_done_callback: Callable[[int, bytes], None]
+    ) -> None:
         self._block_done_callback = block_done_callback
         if self._block_done_callback is not None:
             while self._block_buffer:
                 elt = self._block_buffer.pop(0)
                 self._block_done_callback(*elt)
 
-    def _add_block(self, stream_id, data):
+    def _add_block(self, stream_id: int, data: bytes) -> None:
         if self._block_done_callback is not None:
             self._block_done_callback(stream_id, data)
         else:
             self._block_buffer.append((stream_id, data))
 
-    def _read(self):
+    def _read(self) -> None:
         if self._eof:
             return
+        data: bytes | None
         if hasattr(self._sock, "recv"):
             try:
                 data = self._sock.recv(262144)
@@ -86,13 +103,13 @@ class DockerSocketHandlerBase:
                     self._eof = True
                     return
                 raise
-        elif isinstance(self._sock, getattr(pysocket, "SocketIO")):
-            data = self._sock.read()
+        elif isinstance(self._sock, pysocket.SocketIO):  # type: ignore[unreachable]
+            data = self._sock.read()  # type: ignore
         else:
-            data = os.read(self._sock.fileno())
+            data = os.read(self._sock.fileno())  # type: ignore  # TODO does this really work?!
         if data is None:
             # no data available
-            return
+            return  # type: ignore[unreachable]
         self._log(f"read {len(data)} bytes")
         if len(data) == 0:
             # Stream EOF
@@ -106,6 +123,7 @@ class DockerSocketHandlerBase:
                 self._read_buffer = self._read_buffer[n:]
                 self._current_missing -= n
                 if self._current_missing == 0:
+                    assert self._current_stream is not None
                     self._add_block(self._current_stream, self._current_buffer)
                     self._current_buffer = b""
             if len(self._read_buffer) < 8:
@@ -119,13 +137,13 @@ class DockerSocketHandlerBase:
                 self._eof = True
                 break
 
-    def _handle_end_of_writing(self):
+    def _handle_end_of_writing(self) -> None:
         if self._end_of_writing and len(self._write_buffer) == 0:
             self._end_of_writing = False
             self._log("Shutting socket down for writing")
             shutdown_writing(self._sock, self._log)
 
-    def _write(self):
+    def _write(self) -> None:
         if len(self._write_buffer) > 0:
             written = write_to_socket(self._sock, self._write_buffer)
             self._write_buffer = self._write_buffer[written:]
@@ -138,7 +156,9 @@ class DockerSocketHandlerBase:
                 self._selector.modify(self._sock, selectors.EVENT_READ)
             self._handle_end_of_writing()
 
-    def select(self, timeout=None, _internal_recursion=False):
+    def select(
+        self, timeout: int | float | None = None, _internal_recursion: bool = False
+    ) -> bool:
         if (
             not _internal_recursion
             and self._paramiko_read_workaround
@@ -147,12 +167,14 @@ class DockerSocketHandlerBase:
             # When the SSH transport is used, Docker SDK for Python internally uses Paramiko, whose
             # Channel object supports select(), but only for reading
             # (https://github.com/paramiko/paramiko/issues/695).
-            if self._sock.send_ready():
+            if self._sock.send_ready():  # type: ignore
                 self._write()
                 return True
             while timeout is None or timeout > PARAMIKO_POLL_TIMEOUT:
-                result = self.select(PARAMIKO_POLL_TIMEOUT, _internal_recursion=True)
-                if self._sock.send_ready():
+                result = int(
+                    self.select(PARAMIKO_POLL_TIMEOUT, _internal_recursion=True)
+                )
+                if self._sock.send_ready():  # type: ignore
                     self._read()
                     result += 1
                 if result > 0:
@@ -172,19 +194,19 @@ class DockerSocketHandlerBase:
                     self._write()
         result = len(events)
         if self._paramiko_read_workaround and len(self._write_buffer) > 0:
-            if self._sock.send_ready():
+            if self._sock.send_ready():  # type: ignore
                 self._write()
                 result += 1
         return result > 0
 
-    def is_eof(self):
+    def is_eof(self) -> bool:
         return self._eof
 
-    def end_of_writing(self):
+    def end_of_writing(self) -> None:
         self._end_of_writing = True
         self._handle_end_of_writing()
 
-    def consume(self):
+    def consume(self) -> tuple[bytes, bytes]:
         stdout = []
         stderr = []
 
@@ -203,12 +225,12 @@ class DockerSocketHandlerBase:
             self.select()
         return b"".join(stdout), b"".join(stderr)
 
-    def write(self, str_to_write):
+    def write(self, str_to_write: bytes) -> None:
         self._write_buffer += str_to_write
         if len(self._write_buffer) == len(str_to_write):
             self._write()
 
 
 class DockerSocketHandlerModule(DockerSocketHandlerBase):
-    def __init__(self, sock, module):
+    def __init__(self, sock: SocketLike, module: AnsibleModule) -> None:
         super().__init__(sock, module.debug)

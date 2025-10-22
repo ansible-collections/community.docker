@@ -101,6 +101,7 @@ tagged_images:
 """
 
 import traceback
+import typing as t
 
 from ansible.module_utils.common.text.formatters import human_to_bytes
 
@@ -121,7 +122,16 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 )
 
 
-def convert_to_bytes(value, module, name, unlimited_value=None):
+if t.TYPE_CHECKING:
+    from ansible.module_utils.basic import AnsibleModule
+
+
+def convert_to_bytes(
+    value: str | None,
+    module: AnsibleModule,
+    name: str,
+    unlimited_value: int | None = None,
+) -> int | None:
     if value is None:
         return value
     try:
@@ -132,8 +142,8 @@ def convert_to_bytes(value, module, name, unlimited_value=None):
         module.fail_json(msg=f"Failed to convert {name} to bytes: {exc}")
 
 
-def image_info(name, tag, image):
-    result = {"name": name, "tag": tag}
+def image_info(name: str, tag: str, image: dict[str, t.Any] | None) -> dict[str, t.Any]:
+    result: dict[str, t.Any] = {"name": name, "tag": tag}
     if image:
         result["id"] = image["Id"]
     else:
@@ -142,7 +152,7 @@ def image_info(name, tag, image):
 
 
 class ImageTagger(DockerBaseClass):
-    def __init__(self, client):
+    def __init__(self, client: AnsibleDockerClient) -> None:
         super().__init__()
 
         self.client = client
@@ -179,10 +189,12 @@ class ImageTagger(DockerBaseClass):
                 )
             self.repositories.append((repo, repo_tag))
 
-    def fail(self, msg):
+    def fail(self, msg: str) -> t.NoReturn:
         self.client.fail(msg)
 
-    def tag_image(self, image, name, tag):
+    def tag_image(
+        self, image: dict[str, t.Any], name: str, tag: str
+    ) -> tuple[bool, str, dict[str, t.Any] | None]:
         tagged_image = self.client.find_image(name=name, tag=tag)
         if tagged_image:
             # Idempotency checks
@@ -220,20 +232,22 @@ class ImageTagger(DockerBaseClass):
 
         return True, msg, tagged_image
 
-    def tag_images(self):
+    def tag_images(self) -> dict[str, t.Any]:
         if is_image_name_id(self.name):
             image = self.client.find_image_by_id(self.name, accept_missing_image=False)
         else:
             image = self.client.find_image(name=self.name, tag=self.tag)
             if not image:
                 self.fail(f"Cannot find image {self.name}:{self.tag}")
+        assert image is not None
 
-        before = []
-        after = []
-        tagged_images = []
-        results = {
+        before: list[dict[str, t.Any]] = []
+        after: list[dict[str, t.Any]] = []
+        tagged_images: list[str] = []
+        actions: list[str] = []
+        results: dict[str, t.Any] = {
             "changed": False,
-            "actions": [],
+            "actions": actions,
             "image": image,
             "tagged_images": tagged_images,
             "diff": {"before": {"images": before}, "after": {"images": after}},
@@ -244,19 +258,19 @@ class ImageTagger(DockerBaseClass):
             after.append(image_info(repository, tag, image if tagged else old_image))
             if tagged:
                 results["changed"] = True
-                results["actions"].append(
+                actions.append(
                     f"Tagged image {image['Id']} as {repository}:{tag}: {msg}"
                 )
                 tagged_images.append(f"{repository}:{tag}")
             else:
-                results["actions"].append(
+                actions.append(
                     f"Not tagged image {image['Id']} as {repository}:{tag}: {msg}"
                 )
 
         return results
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True},
         "tag": {"type": "str", "default": "latest"},

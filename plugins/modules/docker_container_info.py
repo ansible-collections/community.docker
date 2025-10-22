@@ -86,7 +86,7 @@ from ansible_collections.community.docker.plugins.module_utils._common_api impor
 )
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True},
     }
@@ -96,8 +96,9 @@ def main():
         supports_check_mode=True,
     )
 
+    container_id: str = client.module.params["name"]
     try:
-        container = client.get_container(client.module.params["name"])
+        container = client.get_container(container_id)
 
         client.module.exit_json(
             changed=False,

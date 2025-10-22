@@ -73,6 +73,7 @@ image:
 
 import base64
 import traceback
+import typing as t
 
 from ansible_collections.community.docker.plugins.module_utils._api.auth import (
     get_config_header,
@@ -96,15 +97,15 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class ImagePusher(DockerBaseClass):
-    def __init__(self, client):
+    def __init__(self, client: AnsibleDockerClient) -> None:
         super().__init__()
 
         self.client = client
         self.check_mode = self.client.check_mode
 
         parameters = self.client.module.params
-        self.name = parameters["name"]
-        self.tag = parameters["tag"]
+        self.name: str = parameters["name"]
+        self.tag: str = parameters["tag"]
 
         if is_image_name_id(self.name):
             self.client.fail("Cannot push an image by ID")
@@ -122,20 +123,21 @@ class ImagePusher(DockerBaseClass):
         if not is_valid_tag(self.tag, allow_empty=False):
             self.client.fail(f'"{self.tag}" is not a valid docker tag!')
 
-    def push(self):
+    def push(self) -> dict[str, t.Any]:
         image = self.client.find_image(name=self.name, tag=self.tag)
         if not image:
             self.client.fail(f"Cannot find image {self.name}:{self.tag}")
 
-        results = {
+        actions: list[str] = []
+        results: dict[str, t.Any] = {
             "changed": False,
-            "actions": [],
+            "actions": actions,
             "image": image,
         }
 
         push_registry, push_repo = resolve_repository_name(self.name)
         try:
-            results["actions"].append(f"Pushed image {self.name}:{self.tag}")
+            actions.append(f"Pushed image {self.name}:{self.tag}")
 
             headers = {}
             header = get_config_header(self.client, push_registry)
@@ -174,7 +176,7 @@ class ImagePusher(DockerBaseClass):
         return results
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True},
         "tag": {"type": "str", "default": "latest"},

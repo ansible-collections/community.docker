@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import base64
+import typing as t
 
 from ansible import constants as C
 from ansible.plugins.action import ActionBase
@@ -19,14 +20,17 @@ class ActionModule(ActionBase):
     # Set to True when transferring files to the remote
     TRANSFERS_FILES = False
 
-    def run(self, tmp=None, task_vars=None):
+    def run(
+        self, tmp: str | None = None, task_vars: dict[str, t.Any] | None = None
+    ) -> dict[str, t.Any]:
         self._supports_check_mode = True
         self._supports_async = True
 
         result = super().run(tmp, task_vars)
         del tmp  # tmp no longer has any effect
 
-        self._task.args["_max_file_size_for_diff"] = C.MAX_FILE_SIZE_FOR_DIFF
+        max_file_size_for_diff: int = C.MAX_FILE_SIZE_FOR_DIFF  # type: ignore
+        self._task.args["_max_file_size_for_diff"] = max_file_size_for_diff
 
         result = merge_hash(
             result,

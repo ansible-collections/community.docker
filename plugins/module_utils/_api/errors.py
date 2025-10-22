@@ -61,7 +61,7 @@ class APIError(_HTTPError, DockerException):
         # requests 1.1 does not
         super().__init__(message)
         self.response = response
-        self.explanation = explanation
+        self.explanation = explanation or ""
 
     def __str__(self) -> str:
         message = super().__str__()

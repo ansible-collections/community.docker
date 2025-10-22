@@ -107,6 +107,7 @@ options:
 
 import os
 import os.path
+import typing as t
 
 from ansible.errors import AnsibleConnectionFailure, AnsibleFileNotFound
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
@@ -138,6 +139,12 @@ from ansible_collections.community.docker.plugins.plugin_utils._socket_handler i
 )
 
 
+if t.TYPE_CHECKING:
+    from collections.abc import Callable
+
+    _T = t.TypeVar("_T")
+
+
 MIN_DOCKER_API = None
 
 
@@ -150,10 +157,16 @@ class Connection(ConnectionBase):
     transport = "community.docker.docker_api"
     has_pipelining = True
 
-    def _call_client(self, f, not_found_can_be_resource=False):
+    def _call_client(
+        self,
+        f: Callable[[AnsibleDockerClient], _T],
+        not_found_can_be_resource: bool = False,
+    ) -> _T:
+        if self.client is None:
+            raise AssertionError("Client must be present")
         remote_addr = self.get_option("remote_addr")
         try:
-            return f()
+            return f(self.client)
         except NotFound as e:
             if not_found_can_be_resource:
                 raise AnsibleConnectionFailure(
@@ -179,21 +192,21 @@ class Connection(ConnectionBase):
                 f'An unexpected requests error occurred for container "{remote_addr}" when trying to talk to the Docker daemon: {e}'
             )
 
-    def __init__(self, play_context, new_stdin, *args, **kwargs):
-        super().__init__(play_context, new_stdin, *args, **kwargs)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
 
-        self.client = None
-        self.ids = {}
+        self.client: AnsibleDockerClient | None = None
+        self.ids: dict[str | None, tuple[int, int]] = {}
 
         # Windows uses Powershell modules
         if getattr(self._shell, "_IS_WINDOWS", False):
             self.module_implementation_preferences = (".ps1", ".exe", "")
 
-        self.actual_user = None
+        self.actual_user: str | None = None
 
-    def _connect(self, port=None):
+    def _connect(self) -> Connection:
         """Connect to the container. Nothing to do"""
-        super()._connect()
+        super()._connect()  # type: ignore[safe-super]
         if not self._connected:
             self.actual_user = self.get_option("remote_user")
             display.vvv(
@@ -212,7 +225,7 @@ class Connection(ConnectionBase):
                 # This saves overhead from calling into docker when we do not need to
                 display.vvv("Trying to determine actual user")
                 result = self._call_client(
-                    lambda: self.client.get_json(
+                    lambda client: client.get_json(
                         "/containers/{0}/json", self.get_option("remote_addr")
                     )
                 )
@@ -221,12 +234,19 @@ class Connection(ConnectionBase):
                     if self.actual_user is not None:
                         display.vvv(f"Actual user is '{self.actual_user}'")
 
-    def exec_command(self, cmd, in_data=None, sudoable=False):
+        return self
+
+    def exec_command(
+        self, cmd: str, in_data: bytes | None = None, sudoable: bool = False
+    ) -> tuple[int, bytes, bytes]:
         """Run a command on the docker host"""
 
-        super().exec_command(cmd, in_data=in_data, sudoable=sudoable)
+        super().exec_command(cmd, in_data=in_data, sudoable=sudoable)  # type: ignore[safe-super]
 
-        command = [self._play_context.executable, "-c", to_text(cmd)]
+        if self.client is None:
+            raise AssertionError("Client must be present")
+
+        command = [self._play_context.executable, "-c", cmd]
 
         do_become = self.become and self.become.expect_prompt() and sudoable
 
@@ -277,7 +297,7 @@ class Connection(ConnectionBase):
                 )
 
         exec_data = self._call_client(
-            lambda: self.client.post_json_to_json(
+            lambda client: client.post_json_to_json(
                 "/containers/{0}/exec", self.get_option("remote_addr"), data=data
             )
         )
@@ -286,7 +306,7 @@ class Connection(ConnectionBase):
         data = {"Tty": False, "Detach": False}
         if need_stdin:
             exec_socket = self._call_client(
-                lambda: self.client.post_json_to_stream_socket(
+                lambda client: client.post_json_to_stream_socket(
                     "/exec/{0}/start", exec_id, data=data
                 )
             )
@@ -295,6 +315,8 @@ class Connection(ConnectionBase):
                     display, exec_socket, container=self.get_option("remote_addr")
                 ) as exec_socket_handler:
                     if do_become:
+                        assert self.become is not None
+
                         become_output = [b""]
 
                         def append_become_output(stream_id, data):
@@ -339,7 +361,7 @@ class Connection(ConnectionBase):
                 exec_socket.close()
         else:
             stdout, stderr = self._call_client(
-                lambda: self.client.post_json_to_stream(
+                lambda client: client.post_json_to_stream(
                     "/exec/{0}/start",
                     exec_id,
                     stream=False,
@@ -350,12 +372,12 @@ class Connection(ConnectionBase):
             )
 
         result = self._call_client(
-            lambda: self.client.get_json("/exec/{0}/json", exec_id)
+            lambda client: client.get_json("/exec/{0}/json", exec_id)
         )
 
         return result.get("ExitCode") or 0, stdout or b"", stderr or b""
 
-    def _prefix_login_path(self, remote_path):
+    def _prefix_login_path(self, remote_path: str) -> str:
         """Make sure that we put files into a standard path
 
         If a path is relative, then we need to choose where to put it.
@@ -373,19 +395,23 @@ class Connection(ConnectionBase):
             remote_path = os.path.join(os.path.sep, remote_path)
         return os.path.normpath(remote_path)
 
-    def put_file(self, in_path, out_path):
+    def put_file(self, in_path: str, out_path: str) -> None:
         """Transfer a file from local to docker container"""
-        super().put_file(in_path, out_path)
+        super().put_file(in_path, out_path)  # type: ignore[safe-super]
         display.vvv(f"PUT {in_path} TO {out_path}", host=self.get_option("remote_addr"))
+
+        if self.client is None:
+            raise AssertionError("Client must be present")
 
         out_path = self._prefix_login_path(out_path)
 
         if self.actual_user not in self.ids:
-            dummy, ids, dummy = self.exec_command(b"id -u && id -g")
+            dummy, ids, dummy2 = self.exec_command("id -u && id -g")
             remote_addr = self.get_option("remote_addr")
             try:
-                user_id, group_id = ids.splitlines()
-                self.ids[self.actual_user] = int(user_id), int(group_id)
+                b_user_id, b_group_id = ids.splitlines()
+                user_id, group_id = int(b_user_id), int(b_group_id)
+                self.ids[self.actual_user] = user_id, group_id
                 display.vvvv(
                     f'PUT: Determined uid={user_id} and gid={group_id} for user "{self.actual_user}"',
                     host=remote_addr,
@@ -398,8 +424,8 @@ class Connection(ConnectionBase):
         user_id, group_id = self.ids[self.actual_user]
         try:
             self._call_client(
-                lambda: put_file(
-                    self.client,
+                lambda client: put_file(
+                    client,
                     container=self.get_option("remote_addr"),
                     in_path=in_path,
                     out_path=out_path,
@@ -415,19 +441,22 @@ class Connection(ConnectionBase):
         except DockerFileCopyError as exc:
             raise AnsibleConnectionFailure(to_native(exc)) from exc
 
-    def fetch_file(self, in_path, out_path):
+    def fetch_file(self, in_path: str, out_path: str) -> None:
         """Fetch a file from container to local."""
-        super().fetch_file(in_path, out_path)
+        super().fetch_file(in_path, out_path)  # type: ignore[safe-super]
         display.vvv(
             f"FETCH {in_path} TO {out_path}", host=self.get_option("remote_addr")
         )
+
+        if self.client is None:
+            raise AssertionError("Client must be present")
 
         in_path = self._prefix_login_path(in_path)
 
         try:
             self._call_client(
-                lambda: fetch_file(
-                    self.client,
+                lambda client: fetch_file(
+                    client,
                     container=self.get_option("remote_addr"),
                     in_path=in_path,
                     out_path=out_path,
@@ -443,10 +472,10 @@ class Connection(ConnectionBase):
         except DockerFileCopyError as exc:
             raise AnsibleConnectionFailure(to_native(exc)) from exc
 
-    def close(self):
+    def close(self) -> None:
         """Terminate the connection. Nothing to do for Docker"""
-        super().close()
+        super().close()  # type: ignore[safe-super]
         self._connected = False
 
-    def reset(self):
+    def reset(self) -> None:
         self.ids.clear()

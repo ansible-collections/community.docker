@@ -80,7 +80,7 @@ import re
 from ansible.module_utils.basic import AnsibleModule
 
 
-def main():
+def main() -> None:
     module = AnsibleModule({}, supports_check_mode=True)
 
     cpuset_path = "/proc/self/cpuset"

@@ -297,7 +297,7 @@ def stat_file(
     in_path: str,
     follow_links: bool = False,
     log: Callable[[str], None] | None = None,
-) -> tuple[str | bytes, dict[str, t.Any] | None, str | None]:
+) -> tuple[str, dict[str, t.Any] | None, str | None]:
     """Fetch information on a file from a Docker container to local.
 
     Return a tuple ``(path, stat_data, link_target)`` where:

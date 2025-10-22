@@ -173,6 +173,7 @@ current_context_name:
 """
 
 import traceback
+import typing as t
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.common.text.converters import to_text
@@ -185,6 +186,7 @@ from ansible_collections.community.docker.plugins.module_utils._api.context.conf
 )
 from ansible_collections.community.docker.plugins.module_utils._api.context.context import (
     IN_MEMORY,
+    Context,
 )
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     ContextException,
@@ -192,7 +194,13 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
 )
 
 
-def tls_context_to_json(context):
+if t.TYPE_CHECKING:
+    from ansible_collections.community.docker.plugins.module_utils._api.tls import (
+        TLSConfig,
+    )
+
+
+def tls_context_to_json(context: TLSConfig | None) -> dict[str, t.Any] | None:
     if context is None:
         return None
     return {
@@ -204,8 +212,8 @@ def tls_context_to_json(context):
     }
 
 
-def context_to_json(context, current):
-    module_config = {}
+def context_to_json(context: Context, current: bool) -> dict[str, t.Any]:
+    module_config: dict[str, t.Any] = {}
     if "docker" in context.endpoints:
         endpoint = context.endpoints["docker"]
         if isinstance(endpoint.get("Host"), str):
@@ -247,7 +255,7 @@ def context_to_json(context, current):
     }
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "only_current": {"type": "bool", "default": False},
         "name": {"type": "str"},
@@ -262,28 +270,31 @@ def main():
         ],
     )
 
+    only_current: bool = module.params["only_current"]
+    name: str | None = module.params["name"]
+    cli_context: str | None = module.params["cli_context"]
     try:
-        if module.params["cli_context"]:
+        if cli_context:
             current_context_name, current_context_source = (
-                module.params["cli_context"],
+                cli_context,
                 "cli_context module option",
             )
         else:
             current_context_name, current_context_source = (
                 get_current_context_name_with_source()
             )
-        if module.params["name"]:
-            contexts = [ContextAPI.get_context(module.params["name"])]
-            if not contexts[0]:
-                module.fail_json(
-                    msg=f"There is no context of name {module.params['name']!r}"
-                )
-        elif module.params["only_current"]:
-            contexts = [ContextAPI.get_context(current_context_name)]
-            if not contexts[0]:
+        if name:
+            context_or_none = ContextAPI.get_context(name)
+            if not context_or_none:
+                module.fail_json(msg=f"There is no context of name {name!r}")
+            contexts = [context_or_none]
+        elif only_current:
+            context_or_none = ContextAPI.get_context(current_context_name)
+            if not context_or_none:
                 module.fail_json(
                     msg=f"There is no context of name {current_context_name!r}, which is configured as the default context ({current_context_source})",
                 )
+            contexts = [context_or_none]
         else:
             contexts = ContextAPI.contexts()
 

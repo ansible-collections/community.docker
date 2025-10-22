@@ -1355,7 +1355,7 @@ from ansible_collections.community.docker.plugins.module_utils._module_container
 )
 
 
-def main():
+def main() -> None:
     engine_driver = DockerAPIEngineDriver()
     run_module(engine_driver)
 

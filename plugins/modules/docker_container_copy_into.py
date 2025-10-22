@@ -169,6 +169,7 @@ import io
 import os
 import stat
 import traceback
+import typing as t
 
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
 from ansible.module_utils.common.validation import check_type_int
@@ -198,23 +199,29 @@ from ansible_collections.community.docker.plugins.module_utils._scramble import 
 )
 
 
-def are_fileobjs_equal(f1, f2):
+if t.TYPE_CHECKING:
+    import tarfile
+
+
+def are_fileobjs_equal(f1: t.IO[bytes], f2: t.IO[bytes]) -> bool:
     """Given two (buffered) file objects, compare their contents."""
+    f1on: t.IO[bytes] | None = f1
+    f2on: t.IO[bytes] | None = f2
     blocksize = 65536
     b1buf = b""
     b2buf = b""
     while True:
-        if f1 and len(b1buf) < blocksize:
-            f1b = f1.read(blocksize)
+        if f1on and len(b1buf) < blocksize:
+            f1b = f1on.read(blocksize)
             if not f1b:
                 # f1 is EOF, so stop reading from it
-                f1 = None
+                f1on = None
             b1buf += f1b
-        if f2 and len(b2buf) < blocksize:
-            f2b = f2.read(blocksize)
+        if f2on and len(b2buf) < blocksize:
+            f2b = f2on.read(blocksize)
             if not f2b:
                 # f2 is EOF, so stop reading from it
-                f2 = None
+                f2on = None
             b2buf += f2b
         if not b1buf or not b2buf:
             # At least one of f1 and f2 is EOF and all its data has
@@ -229,29 +236,33 @@ def are_fileobjs_equal(f1, f2):
         b2buf = b2buf[buflen:]
 
 
-def are_fileobjs_equal_read_first(f1, f2):
+def are_fileobjs_equal_read_first(
+    f1: t.IO[bytes], f2: t.IO[bytes]
+) -> tuple[bool, bytes]:
     """Given two (buffered) file objects, compare their contents.
 
     Returns a tuple (is_equal, content_of_f1), where the first element indicates
     whether the two file objects have the same content, and the second element is
     the content of the first file object."""
+    f1on: t.IO[bytes] | None = f1
+    f2on: t.IO[bytes] | None = f2
     blocksize = 65536
     b1buf = b""
     b2buf = b""
     is_equal = True
     content = []
     while True:
-        if f1 and len(b1buf) < blocksize:
-            f1b = f1.read(blocksize)
+        if f1on and len(b1buf) < blocksize:
+            f1b = f1on.read(blocksize)
             if not f1b:
                 # f1 is EOF, so stop reading from it
-                f1 = None
+                f1on = None
             b1buf += f1b
-        if f2 and len(b2buf) < blocksize:
-            f2b = f2.read(blocksize)
+        if f2on and len(b2buf) < blocksize:
+            f2b = f2on.read(blocksize)
             if not f2b:
                 # f2 is EOF, so stop reading from it
-                f2 = None
+                f2on = None
             b2buf += f2b
         if not b1buf or not b2buf:
             # At least one of f1 and f2 is EOF and all its data has
@@ -269,13 +280,13 @@ def are_fileobjs_equal_read_first(f1, f2):
         b2buf = b2buf[buflen:]
 
     content.append(b1buf)
-    if f1:
-        content.append(f1.read())
+    if f1on:
+        content.append(f1on.read())
 
     return is_equal, b"".join(content)
 
 
-def is_container_file_not_regular_file(container_stat):
+def is_container_file_not_regular_file(container_stat: dict[str, t.Any]) -> bool:
     for bit in (
         # https://pkg.go.dev/io/fs#FileMode
         32 - 1,  # ModeDir
@@ -292,7 +303,7 @@ def is_container_file_not_regular_file(container_stat):
     return False
 
 
-def get_container_file_mode(container_stat):
+def get_container_file_mode(container_stat: dict[str, t.Any]) -> int:
     mode = container_stat["mode"] & 0xFFF
     if container_stat["mode"] & (1 << (32 - 9)) != 0:  # ModeSetuid
         mode |= stat.S_ISUID  # set UID bit
@@ -303,7 +314,9 @@ def get_container_file_mode(container_stat):
     return mode
 
 
-def add_other_diff(diff, in_path, member):
+def add_other_diff(
+    diff: dict[str, t.Any] | None, in_path: str, member: tarfile.TarInfo
+) -> None:
     if diff is None:
         return
     diff["before_header"] = in_path
@@ -326,14 +339,14 @@ def add_other_diff(diff, in_path, member):
 
 
 def retrieve_diff(
-    client,
-    container,
-    container_path,
-    follow_links,
-    diff,
-    max_file_size_for_diff,
-    regular_stat=None,
-    link_target=None,
+    client: AnsibleDockerClient,
+    container: str,
+    container_path: str,
+    follow_links: bool,
+    diff: dict[str, t.Any] | None,
+    max_file_size_for_diff: int,
+    regular_stat: dict[str, t.Any] | None = None,
+    link_target: str | None = None,
 ):
     if diff is None:
         return
@@ -377,19 +390,21 @@ def retrieve_diff(
             return
 
     # We need to get hold of the content
-    def process_none(in_path):
+    def process_none(in_path: str) -> None:
         diff["before"] = ""
 
-    def process_regular(in_path, tar, member):
+    def process_regular(
+        in_path: str, tar: tarfile.TarFile, member: tarfile.TarInfo
+    ) -> None:
         add_diff_dst_from_regular_member(
             diff, max_file_size_for_diff, in_path, tar, member
         )
 
-    def process_symlink(in_path, member):
+    def process_symlink(in_path: str, member: tarfile.TarInfo) -> None:
         diff["before_header"] = in_path
         diff["before"] = member.linkname
 
-    def process_other(in_path, member):
+    def process_other(in_path: str, member: tarfile.TarInfo) -> None:
         add_other_diff(diff, in_path, member)
 
     fetch_file_ex(
@@ -404,7 +419,7 @@ def retrieve_diff(
     )
 
 
-def is_binary(content):
+def is_binary(content: bytes) -> bool:
     if b"\x00" in content:
         return True
     # TODO: better detection
@@ -413,8 +428,13 @@ def is_binary(content):
 
 
 def are_fileobjs_equal_with_diff_of_first(
-    f1, f2, size, diff, max_file_size_for_diff, container_path
-):
+    f1: t.IO[bytes],
+    f2: t.IO[bytes],
+    size: int,
+    diff: dict[str, t.Any] | None,
+    max_file_size_for_diff: int,
+    container_path: str,
+) -> bool:
     if diff is None:
         return are_fileobjs_equal(f1, f2)
     if size > max_file_size_for_diff > 0:
@@ -430,15 +450,22 @@ def are_fileobjs_equal_with_diff_of_first(
 
 
 def add_diff_dst_from_regular_member(
-    diff, max_file_size_for_diff, container_path, tar, member
-):
+    diff: dict[str, t.Any] | None,
+    max_file_size_for_diff: int,
+    container_path: str,
+    tar: tarfile.TarFile,
+    member: tarfile.TarInfo,
+) -> None:
     if diff is None:
         return
     if member.size > max_file_size_for_diff > 0:
         diff["dst_larger"] = max_file_size_for_diff
         return
 
-    with tar.extractfile(member) as tar_f:
+    mf = tar.extractfile(member)
+    if not mf:
+        raise AssertionError("Member should be present for regular file")
+    with mf as tar_f:
         content = tar_f.read()
 
     if is_binary(content):
@@ -448,35 +475,35 @@ def add_diff_dst_from_regular_member(
         diff["before"] = to_text(content)
 
 
-def copy_dst_to_src(diff):
+def copy_dst_to_src(diff: dict[str, t.Any] | None) -> None:
     if diff is None:
         return
-    for f, t in [
+    for frm, to in [
         ("dst_size", "src_size"),
         ("dst_binary", "src_binary"),
         ("before_header", "after_header"),
         ("before", "after"),
     ]:
-        if f in diff:
-            diff[t] = diff[f]
-        elif t in diff:
-            diff.pop(t)
+        if frm in diff:
+            diff[to] = diff[frm]
+        elif to in diff:
+            diff.pop(to)
 
 
 def is_file_idempotent(
-    client,
-    container,
-    managed_path,
-    container_path,
-    follow_links,
-    local_follow_links,
+    client: AnsibleDockerClient,
+    container: str,
+    managed_path: str,
+    container_path: str,
+    follow_links: bool,
+    local_follow_links: bool,
     owner_id,
     group_id,
     mode,
-    force=False,
-    diff=None,
-    max_file_size_for_diff=1,
-):
+    force: bool | None = False,
+    diff: dict[str, t.Any] | None = None,
+    max_file_size_for_diff: int = 1,
+) -> tuple[str, int, bool]:
     # Retrieve information of local file
     try:
         file_stat = (
@@ -644,10 +671,12 @@ def is_file_idempotent(
         return container_path, mode, False
 
     # Fetch file from container
-    def process_none(in_path):
+    def process_none(in_path: str) -> tuple[str, int, bool]:
         return container_path, mode, False
 
-    def process_regular(in_path, tar, member):
+    def process_regular(
+        in_path: str, tar: tarfile.TarFile, member: tarfile.TarInfo
+    ) -> tuple[str, int, bool]:
         # Check things like user/group ID and mode
         if any(
             [
@@ -663,14 +692,17 @@ def is_file_idempotent(
             )
             return container_path, mode, False
 
-        with tar.extractfile(member) as tar_f:
+        mf = tar.extractfile(member)
+        if mf is None:
+            raise AssertionError("Member should be present for regular file")
+        with mf as tar_f:
             with open(managed_path, "rb") as local_f:
                 is_equal = are_fileobjs_equal_with_diff_of_first(
                     tar_f, local_f, member.size, diff, max_file_size_for_diff, in_path
                 )
         return container_path, mode, is_equal
 
-    def process_symlink(in_path, member):
+    def process_symlink(in_path: str, member: tarfile.TarInfo) -> tuple[str, int, bool]:
         if diff is not None:
             diff["before_header"] = in_path
             diff["before"] = member.linkname
@@ -689,7 +721,7 @@ def is_file_idempotent(
         local_link_target = os.readlink(managed_path)
         return container_path, mode, member.linkname == local_link_target
 
-    def process_other(in_path, member):
+    def process_other(in_path: str, member: tarfile.TarInfo) -> tuple[str, int, bool]:
         add_other_diff(diff, in_path, member)
         return container_path, mode, False
 
@@ -706,23 +738,21 @@ def is_file_idempotent(
 
 
 def copy_file_into_container(
-    client,
-    container,
-    managed_path,
-    container_path,
-    follow_links,
-    local_follow_links,
+    client: AnsibleDockerClient,
+    container: str,
+    managed_path: str,
+    container_path: str,
+    follow_links: bool,
+    local_follow_links: bool,
     owner_id,
     group_id,
     mode,
-    force=False,
-    diff=False,
-    max_file_size_for_diff=1,
-):
-    if diff:
-        diff = {}
-    else:
-        diff = None
+    force: bool | None = False,
+    do_diff: bool = False,
+    max_file_size_for_diff: int = 1,
+) -> t.NoReturn:
+    diff: dict[str, t.Any] | None
+    diff = {} if do_diff else None
 
     container_path, mode, idempotent = is_file_idempotent(
         client,
@@ -762,18 +792,18 @@ def copy_file_into_container(
 
 
 def is_content_idempotent(
-    client,
-    container,
-    content,
-    container_path,
-    follow_links,
+    client: AnsibleDockerClient,
+    container: str,
+    content: bytes,
+    container_path: str,
+    follow_links: bool,
     owner_id,
     group_id,
     mode,
-    force=False,
-    diff=None,
-    max_file_size_for_diff=1,
-):
+    force: bool | None = False,
+    diff: dict[str, t.Any] | None = None,
+    max_file_size_for_diff: int = 1,
+) -> tuple[str, int, bool]:
     if diff is not None:
         if len(content) > max_file_size_for_diff > 0:
             diff["src_larger"] = max_file_size_for_diff
@@ -894,12 +924,14 @@ def is_content_idempotent(
         return container_path, mode, False
 
     # Fetch file from container
-    def process_none(in_path):
+    def process_none(in_path: str) -> tuple[str, int, bool]:
         if diff is not None:
             diff["before"] = ""
         return container_path, mode, False
 
-    def process_regular(in_path, tar, member):
+    def process_regular(
+        in_path: str, tar: tarfile.TarFile, member: tarfile.TarInfo
+    ) -> tuple[str, int, bool]:
         # Check things like user/group ID and mode
         if any(
             [
@@ -914,7 +946,10 @@ def is_content_idempotent(
             )
             return container_path, mode, False
 
-        with tar.extractfile(member) as tar_f:
+        mf = tar.extractfile(member)
+        if mf is None:
+            raise AssertionError("Member should be present for regular file")
+        with mf as tar_f:
             is_equal = are_fileobjs_equal_with_diff_of_first(
                 tar_f,
                 io.BytesIO(content),
@@ -925,14 +960,14 @@ def is_content_idempotent(
             )
         return container_path, mode, is_equal
 
-    def process_symlink(in_path, member):
+    def process_symlink(in_path: str, member: tarfile.TarInfo) -> tuple[str, int, bool]:
         if diff is not None:
             diff["before_header"] = in_path
             diff["before"] = member.linkname
 
         return container_path, mode, False
 
-    def process_other(in_path, member):
+    def process_other(in_path: str, member: tarfile.TarInfo) -> tuple[str, int, bool]:
         add_other_diff(diff, in_path, member)
         return container_path, mode, False
 
@@ -949,22 +984,19 @@ def is_content_idempotent(
 
 
 def copy_content_into_container(
-    client,
-    container,
-    content,
-    container_path,
-    follow_links,
+    client: AnsibleDockerClient,
+    container: str,
+    content: bytes,
+    container_path: str,
+    follow_links: bool,
     owner_id,
     group_id,
     mode,
-    force=False,
-    diff=False,
-    max_file_size_for_diff=1,
-):
-    if diff:
-        diff = {}
-    else:
-        diff = None
+    force: bool | None = False,
+    do_diff: bool = False,
+    max_file_size_for_diff: int = 1,
+) -> t.NoReturn:
+    diff: dict[str, t.Any] | None = {} if do_diff else None
 
     container_path, mode, idempotent = is_content_idempotent(
         client,
@@ -1007,7 +1039,7 @@ def copy_content_into_container(
     client.module.exit_json(**result)
 
 
-def parse_modern(mode):
+def parse_modern(mode: str | int) -> int:
     if isinstance(mode, str):
         return int(to_native(mode), 8)
     if isinstance(mode, int):
@@ -1015,13 +1047,13 @@ def parse_modern(mode):
     raise TypeError(f"must be an octal string or an integer, got {mode!r}")
 
 
-def parse_octal_string_only(mode):
+def parse_octal_string_only(mode: str) -> int:
     if isinstance(mode, str):
         return int(to_native(mode), 8)
     raise TypeError(f"must be an octal string, got {mode!r}")
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "container": {"type": "str", "required": True},
         "path": {"type": "path"},
@@ -1054,20 +1086,22 @@ def main():
         },
     )
 
-    container = client.module.params["container"]
-    managed_path = client.module.params["path"]
-    container_path = client.module.params["container_path"]
-    follow = client.module.params["follow"]
-    local_follow = client.module.params["local_follow"]
-    owner_id = client.module.params["owner_id"]
-    group_id = client.module.params["group_id"]
-    mode = client.module.params["mode"]
-    force = client.module.params["force"]
-    content = client.module.params["content"]
-    max_file_size_for_diff = client.module.params["_max_file_size_for_diff"] or 1
+    container: str = client.module.params["container"]
+    managed_path: str | None = client.module.params["path"]
+    container_path: str = client.module.params["container_path"]
+    follow: bool = client.module.params["follow"]
+    local_follow: bool = client.module.params["local_follow"]
+    owner_id: int | None = client.module.params["owner_id"]
+    group_id: int | None = client.module.params["group_id"]
+    mode: t.Any = client.module.params["mode"]
+    force: bool | None = client.module.params["force"]
+    content_str: str | None = client.module.params["content"]
+    max_file_size_for_diff: int = client.module.params["_max_file_size_for_diff"] or 1
 
     if mode is not None:
-        mode_parse = client.module.params["mode_parse"]
+        mode_parse: t.Literal["legacy", "modern", "octal_string_only"] = (
+            client.module.params["mode_parse"]
+        )
         try:
             if mode_parse == "legacy":
                 mode = check_type_int(mode)
@@ -1080,14 +1114,15 @@ def main():
         if mode < 0:
             client.fail(f"'mode' must not be negative; got {mode}")
 
-    if content is not None:
+    content: bytes | None = None
+    if content_str is not None:
         if client.module.params["content_is_b64"]:
             try:
-                content = base64.b64decode(content)
+                content = base64.b64decode(content_str)
             except Exception as e:  # pylint: disable=broad-exception-caught
                 client.fail(f"Cannot Base64 decode the content option: {e}")
         else:
-            content = to_bytes(content)
+            content = to_bytes(content_str)
 
     if not container_path.startswith(os.path.sep):
         container_path = os.path.join(os.path.sep, container_path)
@@ -1108,7 +1143,7 @@ def main():
                 group_id=group_id,
                 mode=mode,
                 force=force,
-                diff=client.module._diff,
+                do_diff=client.module._diff,
                 max_file_size_for_diff=max_file_size_for_diff,
             )
         elif managed_path is not None:
@@ -1123,7 +1158,7 @@ def main():
                 group_id=group_id,
                 mode=mode,
                 force=force,
-                diff=client.module._diff,
+                do_diff=client.module._diff,
                 max_file_size_for_diff=max_file_size_for_diff,
             )
         else:

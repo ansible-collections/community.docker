@@ -23,7 +23,7 @@ RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
 
 
 class NpipeHTTPConnection(urllib3_connection.HTTPConnection):
-    def __init__(self, npipe_path: str, timeout: int = 60) -> None:
+    def __init__(self, npipe_path: str, timeout: int | float = 60) -> None:
         super().__init__("localhost", timeout=timeout)
         self.npipe_path = npipe_path
         self.timeout = timeout
@@ -36,7 +36,9 @@ class NpipeHTTPConnection(urllib3_connection.HTTPConnection):
 
 
 class NpipeHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
-    def __init__(self, npipe_path: str, timeout: int = 60, maxsize: int = 10) -> None:
+    def __init__(
+        self, npipe_path: str, timeout: int | float = 60, maxsize: int = 10
+    ) -> None:
         super().__init__("localhost", timeout=timeout, maxsize=maxsize)
         self.npipe_path = npipe_path
         self.timeout = timeout
@@ -47,7 +49,7 @@ class NpipeHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
     # When re-using connections, urllib3 tries to call select() on our
     # NpipeSocket instance, causing a crash. To circumvent this, we override
     # _get_conn, where that check happens.
-    def _get_conn(self, timeout: int) -> NpipeHTTPConnection:
+    def _get_conn(self, timeout: int | float) -> NpipeHTTPConnection:
         conn = None
         try:
             conn = self.pool.get(block=self.block, timeout=timeout)
@@ -77,7 +79,7 @@ class NpipeHTTPAdapter(BaseHTTPAdapter):
     def __init__(
         self,
         base_url: str,
-        timeout: int = 60,
+        timeout: int | float = 60,
         pool_connections: int = constants.DEFAULT_NUM_POOLS,
         max_pool_size: int = constants.DEFAULT_MAX_POOL_SIZE,
     ) -> None:

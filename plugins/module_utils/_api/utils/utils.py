@@ -403,7 +403,7 @@ def kwargs_from_env(
     return params
 
 
-def convert_filters(filters: dict[str, bool | str | list[str]]) -> str:
+def convert_filters(filters: Mapping[str, bool | str | list[str]]) -> str:
     result = {}
     for k, v in filters.items():
         if isinstance(v, bool):

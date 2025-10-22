@@ -34,9 +34,20 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 if t.TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+
+    from ansible.module_utils.basic import AnsibleModule
+
     from ansible_collections.community.docker.plugins.module_utils._version import (
         LooseVersion,
     )
+
+    ValueType = t.Literal["set", "list", "dict", "bool", "int", "float", "str"]
+    AnsibleType = t.Literal["list", "dict", "bool", "int", "float", "str"]
+    ComparisonMode = t.Literal["ignore", "strict", "allow_more_present"]
+    ComparisonType = t.Literal["set", "set(dict)", "list", "dict", "value"]
+
+Client = t.TypeVar("Client")
 
 
 _DEFAULT_IP_REPLACEMENT_STRING = (
@@ -61,7 +72,9 @@ _MOUNT_OPTION_TYPES = {
 }
 
 
-def _get_ansible_type(value_type):
+def _get_ansible_type(
+    value_type: ValueType,
+) -> AnsibleType:
     if value_type == "set":
         return "list"
     if value_type not in ("list", "dict", "bool", "int", "float", "str"):
@@ -72,21 +85,22 @@ def _get_ansible_type(value_type):
 class Option:
     def __init__(
         self,
-        name,
-        value_type,
-        owner,
-        ansible_type=None,
-        elements=None,
-        ansible_elements=None,
-        ansible_suboptions=None,
-        ansible_aliases=None,
-        ansible_choices=None,
-        needs_no_suboptions=False,
-        default_comparison=None,
-        not_a_container_option=False,
-        not_an_ansible_option=False,
-        copy_comparison_from=None,
-        compare=None,
+        name: str,
+        *,
+        value_type: ValueType,
+        owner: OptionGroup,
+        ansible_type: AnsibleType | None = None,
+        elements: ValueType | None = None,
+        ansible_elements: AnsibleType | None = None,
+        ansible_suboptions: dict[str, t.Any] | None = None,
+        ansible_aliases: Sequence[str] | None = None,
+        ansible_choices: Sequence[str] | None = None,
+        needs_no_suboptions: bool = False,
+        default_comparison: ComparisonMode | None = None,
+        not_a_container_option: bool = False,
+        not_an_ansible_option: bool = False,
+        copy_comparison_from: str | None = None,
+        compare: Callable[[Option, t.Any, t.Any], bool] | None = None,
     ):
         self.name = name
         self.value_type = value_type
@@ -102,8 +116,8 @@ class Option:
         if (elements is None and ansible_elements is None) and needs_ansible_elements:
             raise ValueError("Ansible elements required for Ansible lists")
         self.elements = elements if needs_elements else None
-        self.ansible_elements = (
-            (ansible_elements or _get_ansible_type(elements))
+        self.ansible_elements: AnsibleType | None = (
+            (ansible_elements or _get_ansible_type(elements or "str"))
             if needs_ansible_elements
             else None
         )
@@ -126,10 +140,12 @@ class Option:
         self.ansible_suboptions = ansible_suboptions if needs_suboptions else None
         self.ansible_aliases = ansible_aliases or []
         self.ansible_choices = ansible_choices
-        comparison_type = self.value_type
-        if comparison_type == "set" and self.elements == "dict":
+        comparison_type: ComparisonType
+        if self.value_type == "set" and self.elements == "dict":
             comparison_type = "set(dict)"
-        elif comparison_type not in ("set", "list", "dict"):
+        elif self.value_type in ("set", "list", "dict"):
+            comparison_type = self.value_type  # type: ignore
+        else:
             comparison_type = "value"
         self.comparison_type = comparison_type
         if default_comparison is not None:
@@ -159,36 +175,45 @@ class Option:
 class OptionGroup:
     def __init__(
         self,
-        preprocess=None,
-        ansible_mutually_exclusive=None,
-        ansible_required_together=None,
-        ansible_required_one_of=None,
-        ansible_required_if=None,
-        ansible_required_by=None,
-    ):
+        *,
+        preprocess: (
+            Callable[[AnsibleModule, dict[str, t.Any]], dict[str, t.Any]] | None
+        ) = None,
+        ansible_mutually_exclusive: Sequence[Sequence[str]] | None = None,
+        ansible_required_together: Sequence[Sequence[str]] | None = None,
+        ansible_required_one_of: Sequence[Sequence[str]] | None = None,
+        ansible_required_if: (
+            Sequence[
+                tuple[str, t.Any, Sequence[str]]
+                | tuple[str, t.Any, Sequence[str], bool]
+            ]
+            | None
+        ) = None,
+        ansible_required_by: dict[str, Sequence[str]] | None = None,
+    ) -> None:
         if preprocess is None:
 
             def preprocess(module, values):
                 return values
 
         self.preprocess = preprocess
-        self.options = []
-        self.all_options = []
-        self.engines = {}
+        self.options: list[Option] = []
+        self.all_options: list[Option] = []
+        self.engines: dict[str, Engine] = {}
         self.ansible_mutually_exclusive = ansible_mutually_exclusive or []
         self.ansible_required_together = ansible_required_together or []
         self.ansible_required_one_of = ansible_required_one_of or []
         self.ansible_required_if = ansible_required_if or []
         self.ansible_required_by = ansible_required_by or {}
-        self.argument_spec = {}
+        self.argument_spec: dict[str, t.Any] = {}
 
-    def add_option(self, *args, **kwargs):
+    def add_option(self, *args, **kwargs) -> OptionGroup:
         option = Option(*args, owner=self, **kwargs)
         if not option.not_a_container_option:
             self.options.append(option)
         self.all_options.append(option)
         if not option.not_an_ansible_option:
-            ansible_option = {
+            ansible_option: dict[str, t.Any] = {
                 "type": option.ansible_type,
             }
             if option.ansible_elements is not None:
@@ -202,213 +227,297 @@ class OptionGroup:
             self.argument_spec[option.name] = ansible_option
         return self
 
-    def supports_engine(self, engine_name):
+    def supports_engine(self, engine_name: str) -> bool:
         return engine_name in self.engines
 
-    def get_engine(self, engine_name):
+    def get_engine(self, engine_name: str) -> Engine:
         return self.engines[engine_name]
 
-    def add_engine(self, engine_name, engine):
+    def add_engine(self, engine_name: str, engine: Engine) -> OptionGroup:
         self.engines[engine_name] = engine
         return self
 
 
-class Engine:
+class Engine(t.Generic[Client]):
     min_api_version: str | None = None
     min_api_version_obj: LooseVersion | None = None
     extra_option_minimal_versions: dict[str, dict[str, t.Any]] | None = None
 
     @abc.abstractmethod
-    def get_value(self, module, container, api_version, options, image, host_info):
+    def get_value(
+        self,
+        module: AnsibleModule,
+        container: dict[str, t.Any],
+        api_version: LooseVersion,
+        options: list[Option],
+        image: dict[str, t.Any] | None,
+        host_info: dict[str, t.Any] | None,
+    ) -> dict[str, t.Any]:
         pass
 
-    def compare_value(self, option, param_value, container_value):
+    def compare_value(
+        self, option: Option, param_value: t.Any, container_value: t.Any
+    ) -> bool:
         return option.compare(param_value, container_value)
 
     @abc.abstractmethod
-    def set_value(self, module, data, api_version, options, values):
+    def set_value(
+        self,
+        module: AnsibleModule,
+        data: dict[str, t.Any],
+        api_version: LooseVersion,
+        options: list[Option],
+        values: dict[str, t.Any],
+    ) -> None:
         pass
 
     @abc.abstractmethod
     def get_expected_values(
-        self, module, client, api_version, options, image, values, host_info
-    ):
+        self,
+        module: AnsibleModule,
+        client: Client,
+        api_version: LooseVersion,
+        options: list[Option],
+        image: dict[str, t.Any] | None,
+        values: dict[str, t.Any],
+        host_info: dict[str, t.Any] | None,
+    ) -> dict[str, t.Any]:
         pass
 
     @abc.abstractmethod
     def ignore_mismatching_result(
         self,
-        module,
-        client,
-        api_version,
-        option,
-        image,
-        container_value,
-        expected_value,
-        host_info,
-    ):
+        module: AnsibleModule,
+        client: Client,
+        api_version: LooseVersion,
+        option: Option,
+        image: dict[str, t.Any] | None,
+        container_value: t.Any,
+        expected_value: t.Any,
+        host_info: dict[str, t.Any] | None,
+    ) -> bool:
         pass
 
     @abc.abstractmethod
-    def preprocess_value(self, module, client, api_version, options, values):
+    def preprocess_value(
+        self,
+        module: AnsibleModule,
+        client: Client,
+        api_version: LooseVersion,
+        options: list[Option],
+        values: dict[str, t.Any],
+    ) -> dict[str, t.Any]:
         pass
 
     @abc.abstractmethod
-    def update_value(self, module, data, api_version, options, values):
+    def update_value(
+        self,
+        module: AnsibleModule,
+        data: dict[str, t.Any],
+        api_version: LooseVersion,
+        options: list[Option],
+        values: dict[str, t.Any],
+    ) -> None:
         pass
 
     @abc.abstractmethod
-    def can_set_value(self, api_version):
+    def can_set_value(self, api_version: LooseVersion) -> bool:
         pass
 
     @abc.abstractmethod
-    def can_update_value(self, api_version):
+    def can_update_value(self, api_version: LooseVersion) -> bool:
         pass
 
     @abc.abstractmethod
-    def needs_container_image(self, values):
+    def needs_container_image(self, values: dict[str, t.Any]) -> bool:
         pass
 
     @abc.abstractmethod
-    def needs_host_info(self, values):
+    def needs_host_info(self, values: dict[str, t.Any]) -> bool:
         pass
 
 
-class EngineDriver:
+class EngineDriver(t.Generic[Client]):
     name: str
 
     @abc.abstractmethod
     def setup(
         self,
-        argument_spec,
-        mutually_exclusive=None,
-        required_together=None,
-        required_one_of=None,
-        required_if=None,
-        required_by=None,
-    ):
-        # Return (module, active_options, client)
+        argument_spec: dict[str, t.Any],
+        mutually_exclusive: Sequence[Sequence[str]] | None = None,
+        required_together: Sequence[Sequence[str]] | None = None,
+        required_one_of: Sequence[Sequence[str]] | None = None,
+        required_if: (
+            Sequence[
+                tuple[str, t.Any, Sequence[str]]
+                | tuple[str, t.Any, Sequence[str], bool]
+            ]
+            | None
+        ) = None,
+        required_by: dict[str, Sequence[str]] | None = None,
+    ) -> tuple[AnsibleModule, list[OptionGroup], Client]:
         pass
 
     @abc.abstractmethod
-    def get_host_info(self, client):
+    def get_host_info(self, client: Client) -> dict[str, t.Any]:
         pass
 
     @abc.abstractmethod
-    def get_api_version(self, client):
+    def get_api_version(self, client: Client) -> LooseVersion:
         pass
 
     @abc.abstractmethod
-    def get_container_id(self, container):
+    def get_container_id(self, container: dict[str, t.Any]) -> str:
         pass
 
     @abc.abstractmethod
-    def get_image_from_container(self, container):
+    def get_image_from_container(self, container: dict[str, t.Any]) -> str:
         pass
 
     @abc.abstractmethod
-    def get_image_name_from_container(self, container):
+    def get_image_name_from_container(self, container: dict[str, t.Any]) -> str | None:
         pass
 
     @abc.abstractmethod
-    def is_container_removing(self, container):
+    def is_container_removing(self, container: dict[str, t.Any]) -> bool:
         pass
 
     @abc.abstractmethod
-    def is_container_running(self, container):
+    def is_container_running(self, container: dict[str, t.Any]) -> bool:
         pass
 
     @abc.abstractmethod
-    def is_container_paused(self, container):
+    def is_container_paused(self, container: dict[str, t.Any]) -> bool:
         pass
 
     @abc.abstractmethod
-    def inspect_container_by_name(self, client, container_name):
+    def inspect_container_by_name(
+        self, client: Client, container_name: str
+    ) -> dict[str, t.Any] | None:
         pass
 
     @abc.abstractmethod
-    def inspect_container_by_id(self, client, container_id):
+    def inspect_container_by_id(
+        self, client: Client, container_id: str
+    ) -> dict[str, t.Any] | None:
         pass
 
     @abc.abstractmethod
-    def inspect_image_by_id(self, client, image_id):
+    def inspect_image_by_id(
+        self, client: Client, image_id: str
+    ) -> dict[str, t.Any] | None:
         pass
 
     @abc.abstractmethod
-    def inspect_image_by_name(self, client, repository, tag):
+    def inspect_image_by_name(
+        self, client: Client, repository: str, tag: str
+    ) -> dict[str, t.Any] | None:
         pass
 
     @abc.abstractmethod
-    def pull_image(self, client, repository, tag, image_platform=None):
+    def pull_image(
+        self,
+        client: Client,
+        repository: str,
+        tag: str,
+        image_platform: str | None = None,
+    ) -> tuple[dict[str, t.Any] | None, bool]:
         pass
 
     @abc.abstractmethod
-    def pause_container(self, client, container_id):
+    def pause_container(self, client: Client, container_id: str) -> None:
         pass
 
     @abc.abstractmethod
-    def unpause_container(self, client, container_id):
+    def unpause_container(self, client: Client, container_id: str) -> None:
         pass
 
     @abc.abstractmethod
-    def disconnect_container_from_network(self, client, container_id, network_id):
+    def disconnect_container_from_network(
+        self, client: Client, container_id: str, network_id: str
+    ) -> None:
         pass
 
     @abc.abstractmethod
     def connect_container_to_network(
-        self, client, container_id, network_id, parameters=None
-    ):
+        self,
+        client: Client,
+        container_id: str,
+        network_id: str,
+        parameters: dict[str, t.Any] | None = None,
+    ) -> None:
         pass
 
-    def create_container_supports_more_than_one_network(self, client):
+    def create_container_supports_more_than_one_network(self, client: Client) -> bool:
         return False
 
     @abc.abstractmethod
     def create_container(
-        self, client, container_name, create_parameters, networks=None
-    ):
+        self,
+        client: Client,
+        container_name: str,
+        create_parameters: dict[str, t.Any],
+        networks: dict[str, dict[str, t.Any]] | None = None,
+    ) -> str:
         pass
 
     @abc.abstractmethod
-    def start_container(self, client, container_id):
+    def start_container(self, client: Client, container_id: str) -> None:
         pass
 
     @abc.abstractmethod
-    def wait_for_container(self, client, container_id, timeout=None):
+    def wait_for_container(
+        self, client: Client, container_id: str, timeout: int | float | None = None
+    ) -> int | None:
         pass
 
     @abc.abstractmethod
-    def get_container_output(self, client, container_id):
+    def get_container_output(
+        self, client: Client, container_id: str
+    ) -> tuple[bytes, t.Literal[True]] | tuple[str, t.Literal[False]]:
         pass
 
     @abc.abstractmethod
-    def update_container(self, client, container_id, update_parameters):
+    def update_container(
+        self, client: Client, container_id: str, update_parameters: dict[str, t.Any]
+    ) -> None:
         pass
 
     @abc.abstractmethod
-    def restart_container(self, client, container_id, timeout=None):
+    def restart_container(
+        self, client: Client, container_id: str, timeout: int | float | None = None
+    ) -> None:
         pass
 
     @abc.abstractmethod
-    def kill_container(self, client, container_id, kill_signal=None):
+    def kill_container(
+        self, client: Client, container_id: str, kill_signal: str | None = None
+    ) -> None:
         pass
 
     @abc.abstractmethod
-    def stop_container(self, client, container_id, timeout=None):
+    def stop_container(
+        self, client: Client, container_id: str, timeout: int | float | None = None
+    ) -> None:
         pass
 
     @abc.abstractmethod
     def remove_container(
-        self, client, container_id, remove_volumes=False, link=False, force=False
-    ):
+        self,
+        client: Client,
+        container_id: str,
+        remove_volumes: bool = False,
+        link: bool = False,
+        force: bool = False,
+    ) -> None:
         pass
 
     @abc.abstractmethod
-    def run(self, runner, client):
+    def run(self, runner: Callable[[], None], client: Client) -> None:
         pass
 
 
-def _is_volume_permissions(mode):
+def _is_volume_permissions(mode: str) -> bool:
     for part in mode.split(","):
         if part not in (
             "rw",
@@ -430,7 +539,7 @@ def _is_volume_permissions(mode):
     return True
 
 
-def _parse_port_range(range_or_port, module):
+def _parse_port_range(range_or_port: str, module: AnsibleModule) -> list[int]:
     """
     Parses a string containing either a single port or a range of ports.
 
@@ -450,7 +559,7 @@ def _parse_port_range(range_or_port, module):
         module.fail_json(msg=f'Invalid port: "{range_or_port}"')
 
 
-def _split_colon_ipv6(text, module):
+def _split_colon_ipv6(text: str, module: AnsibleModule) -> list[str]:
     """
     Split string by ':', while keeping IPv6 addresses in square brackets in one component.
     """
@@ -482,7 +591,9 @@ def _split_colon_ipv6(text, module):
     return result
 
 
-def _preprocess_command(module, values):
+def _preprocess_command(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
     if "command" not in values:
         return values
     value = values["command"]
@@ -509,7 +620,9 @@ def _preprocess_command(module, values):
     }
 
 
-def _preprocess_entrypoint(module, values):
+def _preprocess_entrypoint(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
     if "entrypoint" not in values:
         return values
     value = values["entrypoint"]
@@ -529,7 +642,9 @@ def _preprocess_entrypoint(module, values):
     }
 
 
-def _preprocess_env(module, values):
+def _preprocess_env(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
     if not values:
         return {}
     final_env = {}
@@ -553,7 +668,9 @@ def _preprocess_env(module, values):
     }
 
 
-def _preprocess_healthcheck(module, values):
+def _preprocess_healthcheck(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
     if not values:
         return {}
     return {
@@ -563,7 +680,12 @@ def _preprocess_healthcheck(module, values):
     }
 
 
-def _preprocess_convert_to_bytes(module, values, name, unlimited_value=None):
+def _preprocess_convert_to_bytes(
+    module: AnsibleModule,
+    values: dict[str, t.Any],
+    name: str,
+    unlimited_value: int | None = None,
+) -> dict[str, t.Any]:
     if name not in values:
         return values
     try:
@@ -578,7 +700,9 @@ def _preprocess_convert_to_bytes(module, values, name, unlimited_value=None):
         module.fail_json(msg=f"Failed to convert {name} to bytes: {exc}")
 
 
-def _preprocess_mac_address(module, values):
+def _preprocess_mac_address(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
     if "mac_address" not in values:
         return values
     return {
@@ -586,7 +710,9 @@ def _preprocess_mac_address(module, values):
     }
 
 
-def _preprocess_networks(module, values):
+def _preprocess_networks(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
     if (
         module.params["networks_cli_compatible"] is True
         and values.get("networks")
@@ -612,14 +738,18 @@ def _preprocess_networks(module, values):
     return values
 
 
-def _preprocess_sysctls(module, values):
+def _preprocess_sysctls(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
     if "sysctls" in values:
         for key, value in values["sysctls"].items():
             values["sysctls"][key] = to_text(value, errors="surrogate_or_strict")
     return values
 
 
-def _preprocess_tmpfs(module, values):
+def _preprocess_tmpfs(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
     if "tmpfs" not in values:
         return values
     result = {}
@@ -632,7 +762,9 @@ def _preprocess_tmpfs(module, values):
     return {"tmpfs": result}
 
 
-def _preprocess_ulimits(module, values):
+def _preprocess_ulimits(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
     if "ulimits" not in values:
         return values
     result = []
@@ -651,8 +783,10 @@ def _preprocess_ulimits(module, values):
     }
 
 
-def _preprocess_mounts(module, values):
-    last = {}
+def _preprocess_mounts(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
+    last: dict[str, str] = {}
 
     def check_collision(t, name):
         if t in last:
@@ -783,7 +917,9 @@ def _preprocess_mounts(module, values):
     return values
 
 
-def _preprocess_labels(module, values):
+def _preprocess_labels(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
     result = {}
     if "labels" in values:
         labels = values["labels"]
@@ -794,13 +930,15 @@ def _preprocess_labels(module, values):
     return result
 
 
-def _preprocess_log(module, values):
-    result = {}
+def _preprocess_log(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
+    result: dict[str, t.Any] = {}
     if "log_driver" not in values:
         return result
     result["log_driver"] = values["log_driver"]
     if "log_options" in values:
-        options = {}
+        options: dict[str, str] = {}
         for k, v in values["log_options"].items():
             if not isinstance(v, str):
                 value = to_text(v, errors="surrogate_or_strict")
@@ -814,7 +952,9 @@ def _preprocess_log(module, values):
     return result
 
 
-def _preprocess_ports(module, values):
+def _preprocess_ports(
+    module: AnsibleModule, values: dict[str, t.Any]
+) -> dict[str, t.Any]:
     if "published_ports" in values:
         if "all" in values["published_ports"]:
             module.fail_json(
@@ -822,7 +962,12 @@ def _preprocess_ports(module, values):
                 "to randomly assign port mappings for those not specified by published_ports."
             )
 
-        binds = {}
+        binds: dict[
+            str | int,
+            tuple[str]
+            | tuple[str, str | int]
+            | list[tuple[str] | tuple[str, str | int]],
+        ] = {}
         for port in values["published_ports"]:
             parts = _split_colon_ipv6(
                 to_text(port, errors="surrogate_or_strict"), module
@@ -834,6 +979,7 @@ def _preprocess_ports(module, values):
             container_ports = _parse_port_range(container_port, module)
 
             p_len = len(parts)
+            port_binds: Sequence[tuple[str] | tuple[str, str | int]]
             if p_len == 1:
                 port_binds = len(container_ports) * [(_DEFAULT_IP_REPLACEMENT_STRING,)]
             elif p_len == 2:
@@ -872,8 +1018,12 @@ def _preprocess_ports(module, values):
                     "Maybe you forgot to use square brackets ([...]) around an IPv6 address?"
                 )
 
-            for bind, container_port in zip(port_binds, container_ports):
-                idx = f"{container_port}/{protocol}" if protocol else container_port
+            for bind, container_port_val in zip(port_binds, container_ports):
+                idx = (
+                    f"{container_port_val}/{protocol}"
+                    if protocol
+                    else container_port_val
+                )
                 if idx in binds:
                     old_bind = binds[idx]
                     if isinstance(old_bind, list):
@@ -889,9 +1039,9 @@ def _preprocess_ports(module, values):
         for port in values["exposed_ports"]:
             port = to_text(port, errors="surrogate_or_strict").strip()
             protocol = "tcp"
-            match = re.search(r"(/.+$)", port)
-            if match:
-                protocol = match.group(1).replace("/", "")
+            matcher = re.search(r"(/.+$)", port)
+            if matcher:
+                protocol = matcher.group(1).replace("/", "")
                 port = re.sub(r"/.+$", "", port)
             exposed.append((port, protocol))
     if "published_ports" in values:
@@ -919,7 +1069,7 @@ def _preprocess_ports(module, values):
     return values
 
 
-def _compare_platform(option, param_value, container_value):
+def _compare_platform(option: Option, param_value: t.Any, container_value: t.Any):
     if option.comparison == "ignore":
         return True
     try:

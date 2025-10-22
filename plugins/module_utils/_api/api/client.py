@@ -53,6 +53,12 @@ from ..utils.proxy import ProxyConfig
 from ..utils.socket import consume_socket_output, demux_adaptor, frames_iter
 
 
+if t.TYPE_CHECKING:
+    from requests import Response
+
+    from ..._socket_helper import SocketLike
+
+
 log = logging.getLogger(__name__)
 
 
@@ -107,7 +113,7 @@ class APIClient(_Session):
         self,
         base_url: str | None = None,
         version: str | None = None,
-        timeout: int = DEFAULT_TIMEOUT_SECONDS,
+        timeout: int | float = DEFAULT_TIMEOUT_SECONDS,
         tls: bool | TLSConfig = False,
         user_agent: str = DEFAULT_USER_AGENT,
         num_pools: int | None = None,
@@ -124,7 +130,6 @@ class APIClient(_Session):
                 "If using TLS, the base_url argument must be provided."
             )
 
-        self.base_url = base_url
         self.timeout = timeout
         self.headers["User-Agent"] = user_agent
 
@@ -145,6 +150,7 @@ class APIClient(_Session):
         self.credstore_env = credstore_env
 
         base_url = utils.parse_host(base_url, IS_WINDOWS_PLATFORM, tls=bool(tls))
+        self.base_url = base_url
         # SSH has a different default for num_pools to all other adapters
         num_pools = (
             num_pools or DEFAULT_NUM_POOLS_SSH
@@ -284,7 +290,7 @@ class APIClient(_Session):
             return f"{self.base_url}/v{self._version}{pathfmt.format(*q_args)}"
         return f"{self.base_url}{pathfmt.format(*q_args)}"
 
-    def _raise_for_status(self, response) -> None:
+    def _raise_for_status(self, response: Response) -> None:
         """Raises stored :class:`APIError`, if one occurred."""
         try:
             response.raise_for_status()
@@ -294,7 +300,7 @@ class APIClient(_Session):
     @t.overload
     def _result(
         self,
-        response,
+        response: Response,
         *,
         get_json: t.Literal[False] = False,
         get_binary: t.Literal[False] = False,
@@ -303,7 +309,7 @@ class APIClient(_Session):
     @t.overload
     def _result(
         self,
-        response,
+        response: Response,
         *,
         get_json: t.Literal[True],
         get_binary: t.Literal[False] = False,
@@ -312,7 +318,7 @@ class APIClient(_Session):
     @t.overload
     def _result(
         self,
-        response,
+        response: Response,
         *,
         get_json: t.Literal[False] = False,
         get_binary: t.Literal[True],
@@ -320,11 +326,11 @@ class APIClient(_Session):
 
     @t.overload
     def _result(
-        self, response, *, get_json: bool = False, get_binary: bool = False
+        self, response: Response, *, get_json: bool = False, get_binary: bool = False
     ) -> t.Any | str | bytes: ...
 
     def _result(
-        self, response, *, get_json: bool = False, get_binary: bool = False
+        self, response: Response, *, get_json: bool = False, get_binary: bool = False
     ) -> t.Any | str | bytes:
         if get_json and get_binary:
             raise AssertionError("json and binary must not be both True")
@@ -336,7 +342,9 @@ class APIClient(_Session):
             return response.content
         return response.text
 
-    def _post_json(self, url: str, data: dict[str, str | None] | t.Any, **kwargs):
+    def _post_json(
+        self, url: str, data: dict[str, str | None] | t.Any, **kwargs
+    ) -> Response:
         # Go <1.1 cannot unserialize null to a string
         # so we do this disgusting thing here.
         data2: dict[str, t.Any] = {}
@@ -355,16 +363,16 @@ class APIClient(_Session):
     def _attach_params(self, override: dict[str, int] | None = None) -> dict[str, int]:
         return override or {"stdout": 1, "stderr": 1, "stream": 1}
 
-    def _get_raw_response_socket(self, response):
+    def _get_raw_response_socket(self, response: Response) -> SocketLike:
         self._raise_for_status(response)
         if self.base_url == "http+docker://localnpipe":
-            sock = response.raw._fp.fp.raw.sock
+            sock = response.raw._fp.fp.raw.sock  # type: ignore[union-attr]
         elif self.base_url.startswith("http+docker://ssh"):
-            sock = response.raw._fp.fp.channel
+            sock = response.raw._fp.fp.channel  # type: ignore[union-attr]
         else:
-            sock = response.raw._fp.fp.raw
+            sock = response.raw._fp.fp.raw  # type: ignore[union-attr]
             if self.base_url.startswith("https://"):
-                sock = sock._sock
+                sock = sock._sock  # type: ignore[union-attr]
         try:
             # Keep a reference to the response to stop it being garbage
             # collected. If the response is garbage collected, it will
@@ -379,18 +387,20 @@ class APIClient(_Session):
 
     @t.overload
     def _stream_helper(
-        self, response, *, decode: t.Literal[False] = False
+        self, response: Response, *, decode: t.Literal[False] = False
     ) -> t.Generator[bytes]: ...
 
     @t.overload
     def _stream_helper(
-        self, response, *, decode: t.Literal[True]
+        self, response: Response, *, decode: t.Literal[True]
     ) -> t.Generator[t.Any]: ...
 
-    def _stream_helper(self, response, *, decode: bool = False) -> t.Generator[t.Any]:
+    def _stream_helper(
+        self, response: Response, *, decode: bool = False
+    ) -> t.Generator[t.Any]:
         """Generator for data coming from a chunked-encoded HTTP response."""
 
-        if response.raw._fp.chunked:
+        if response.raw._fp.chunked:  # type: ignore[union-attr]
             if decode:
                 yield from json_stream.json_stream(
                     self._stream_helper(response, decode=False)
@@ -402,15 +412,15 @@ class APIClient(_Session):
                     data = reader.read(1)
                     if not data:
                         break
-                    if reader._fp.chunk_left:
-                        data += reader.read(reader._fp.chunk_left)
+                    if reader._fp.chunk_left:  # type: ignore[union-attr]
+                        data += reader.read(reader._fp.chunk_left)  # type: ignore[union-attr]
                     yield data
         else:
             # Response is not chunked, meaning we probably
             # encountered an error immediately
             yield self._result(response, get_json=decode)
 
-    def _multiplexed_buffer_helper(self, response) -> t.Generator[bytes]:
+    def _multiplexed_buffer_helper(self, response: Response) -> t.Generator[bytes]:
         """A generator of multiplexed data blocks read from a buffered
         response."""
         buf = self._result(response, get_binary=True)
@@ -426,7 +436,9 @@ class APIClient(_Session):
             walker = end
             yield buf[start:end]
 
-    def _multiplexed_response_stream_helper(self, response) -> t.Generator[bytes]:
+    def _multiplexed_response_stream_helper(
+        self, response: Response
+    ) -> t.Generator[bytes]:
         """A generator of multiplexed data blocks coming from a response
         stream."""
 
@@ -449,16 +461,16 @@ class APIClient(_Session):
 
     @t.overload
     def _stream_raw_result(
-        self, response, *, chunk_size: int = 1, decode: t.Literal[True] = True
+        self, response: Response, *, chunk_size: int = 1, decode: t.Literal[True] = True
     ) -> t.Generator[str]: ...
 
     @t.overload
     def _stream_raw_result(
-        self, response, *, chunk_size: int = 1, decode: t.Literal[False]
+        self, response: Response, *, chunk_size: int = 1, decode: t.Literal[False]
     ) -> t.Generator[bytes]: ...
 
     def _stream_raw_result(
-        self, response, *, chunk_size: int = 1, decode: bool = True
+        self, response: Response, *, chunk_size: int = 1, decode: bool = True
     ) -> t.Generator[str | bytes]:
         """Stream result for TTY-enabled container and raw binary data"""
         self._raise_for_status(response)
@@ -473,7 +485,7 @@ class APIClient(_Session):
     @t.overload
     def _read_from_socket(
         self,
-        response,
+        response: Response,
         *,
         stream: t.Literal[True],
         tty: bool = True,
@@ -483,7 +495,7 @@ class APIClient(_Session):
     @t.overload
     def _read_from_socket(
         self,
-        response,
+        response: Response,
         *,
         stream: t.Literal[True],
         tty: t.Literal[True] = True,
@@ -493,7 +505,7 @@ class APIClient(_Session):
     @t.overload
     def _read_from_socket(
         self,
-        response,
+        response: Response,
         *,
         stream: t.Literal[True],
         tty: t.Literal[False],
@@ -503,7 +515,7 @@ class APIClient(_Session):
     @t.overload
     def _read_from_socket(
         self,
-        response,
+        response: Response,
         *,
         stream: t.Literal[False],
         tty: bool = True,
@@ -513,7 +525,7 @@ class APIClient(_Session):
     @t.overload
     def _read_from_socket(
         self,
-        response,
+        response: Response,
         *,
         stream: t.Literal[False],
         tty: t.Literal[True] = True,
@@ -523,7 +535,7 @@ class APIClient(_Session):
     @t.overload
     def _read_from_socket(
         self,
-        response,
+        response: Response,
         *,
         stream: t.Literal[False],
         tty: t.Literal[False],
@@ -532,11 +544,11 @@ class APIClient(_Session):
 
     @t.overload
     def _read_from_socket(
-        self, response, *, stream: bool, tty: bool = True, demux: bool = False
+        self, response: Response, *, stream: bool, tty: bool = True, demux: bool = False
     ) -> t.Any: ...
 
     def _read_from_socket(
-        self, response, *, stream: bool, tty: bool = True, demux: bool = False
+        self, response: Response, *, stream: bool, tty: bool = True, demux: bool = False
     ) -> t.Any:
         """Consume all data from the socket, close the response and return the
         data. If stream=True, then a generator is returned instead and the
@@ -561,7 +573,7 @@ class APIClient(_Session):
         finally:
             response.close()
 
-    def _disable_socket_timeout(self, socket) -> None:
+    def _disable_socket_timeout(self, socket: SocketLike) -> None:
         """Depending on the combination of python version and whether we are
         connecting over http or https, we might need to access _sock, which
         may or may not exist; or we may need to just settimeout on socket
@@ -578,38 +590,38 @@ class APIClient(_Session):
             if not hasattr(s, "settimeout"):
                 continue
 
-            timeout = -1
+            timeout: int | float | None = -1
 
             if hasattr(s, "gettimeout"):
-                timeout = s.gettimeout()
+                timeout = s.gettimeout()  # type: ignore[union-attr]
 
             # Do not change the timeout if it is already disabled.
             if timeout is None or timeout == 0.0:
                 continue
 
-            s.settimeout(None)
+            s.settimeout(None)  # type: ignore[union-attr]
 
     @t.overload
     def _get_result_tty(
-        self, stream: t.Literal[True], res, is_tty: t.Literal[True]
+        self, stream: t.Literal[True], res: Response, is_tty: t.Literal[True]
     ) -> t.Generator[str]: ...
 
     @t.overload
     def _get_result_tty(
-        self, stream: t.Literal[True], res, is_tty: t.Literal[False]
+        self, stream: t.Literal[True], res: Response, is_tty: t.Literal[False]
     ) -> t.Generator[bytes]: ...
 
     @t.overload
     def _get_result_tty(
-        self, stream: t.Literal[False], res, is_tty: t.Literal[True]
+        self, stream: t.Literal[False], res: Response, is_tty: t.Literal[True]
     ) -> bytes: ...
 
     @t.overload
     def _get_result_tty(
-        self, stream: t.Literal[False], res, is_tty: t.Literal[False]
+        self, stream: t.Literal[False], res: Response, is_tty: t.Literal[False]
     ) -> bytes: ...
 
-    def _get_result_tty(self, stream: bool, res, is_tty: bool) -> t.Any:
+    def _get_result_tty(self, stream: bool, res: Response, is_tty: bool) -> t.Any:
         # We should also use raw streaming (without keep-alive)
         # if we are dealing with a tty-enabled container.
         if is_tty:
@@ -773,7 +785,7 @@ class APIClient(_Session):
         data: t.Any = None,
         headers: dict[str, str] | None = None,
         **kwargs,
-    ):
+    ) -> SocketLike:
         headers = headers.copy() if headers else {}
         headers.update(
             {

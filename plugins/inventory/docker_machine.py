@@ -101,6 +101,7 @@ compose:
 import json
 import re
 import subprocess
+import typing as t
 
 from ansible.errors import AnsibleError
 from ansible.module_utils.common.process import get_bin_path
@@ -117,6 +118,15 @@ from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
 )
 
 
+if t.TYPE_CHECKING:
+    from ansible.inventory.data import InventoryData
+    from ansible.parsing.dataloader import DataLoader
+
+    DaemonEnv = t.Literal[
+        "require", "require-silently", "optional", "optional-silently", "skip"
+    ]
+
+
 display = Display()
 
 
@@ -125,9 +135,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
     NAME = "community.docker.docker_machine"
 
-    docker_machine_path = None
+    docker_machine_path: str | None = None
 
-    def _run_command(self, args):
+    def _run_command(self, args: list[str]) -> str:
         if not self.docker_machine_path:
             try:
                 self.docker_machine_path = get_bin_path("docker-machine")
@@ -147,7 +157,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         return to_text(result).strip()
 
-    def _get_docker_daemon_variables(self, machine_name):
+    def _get_docker_daemon_variables(self, machine_name: str) -> list[tuple[str, str]]:
         """
         Capture settings from Docker Machine that would be needed to connect to the remote Docker daemon installed on
         the Docker Machine remote host. Note: passing '--shell=sh' is a workaround for 'Error: Unknown shell'.
@@ -180,7 +190,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         return env_vars
 
-    def _get_machine_names(self):
+    def _get_machine_names(self) -> list[str]:
         # Filter out machines that are not in the Running state as we probably cannot do anything useful actions
         # with them.
         ls_command = ["ls", "-q"]
@@ -194,7 +204,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         return ls_lines.splitlines()
 
-    def _inspect_docker_machine_host(self, node):
+    def _inspect_docker_machine_host(self, node: str) -> t.Any | None:
         try:
             inspect_lines = self._run_command(["inspect", node])
         except subprocess.CalledProcessError:
@@ -202,7 +212,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         return json.loads(inspect_lines)
 
-    def _ip_addr_docker_machine_host(self, node):
+    def _ip_addr_docker_machine_host(self, node: str) -> t.Any | None:
         try:
             ip_addr = self._run_command(["ip", node])
         except subprocess.CalledProcessError:
@@ -210,7 +220,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         return ip_addr
 
-    def _should_skip_host(self, machine_name, env_var_tuples, daemon_env):
+    def _should_skip_host(
+        self, machine_name: str, env_var_tuples, daemon_env: DaemonEnv
+    ) -> bool:
         if not env_var_tuples:
             warning_prefix = f"Unable to fetch Docker daemon env vars from Docker Machine for host {machine_name}"
             if daemon_env in ("require", "require-silently"):
@@ -224,8 +236,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             # daemon_env is 'optional-silently'
         return False
 
-    def _populate(self):
-        daemon_env = self.get_option("daemon_env")
+    def _populate(self) -> None:
+        if self.inventory is None:
+            raise AssertionError("Inventory must be there")
+
+        daemon_env: DaemonEnv = self.get_option("daemon_env")
         filters = parse_filters(self.get_option("filters"))
         try:
             for node in self._get_machine_names():
@@ -325,13 +340,19 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 f"Unable to fetch hosts from Docker Machine, this was the original exception: {e}"
             ) from e
 
-    def verify_file(self, path):
+    def verify_file(self, path: str) -> bool:
         """Return the possibility of a file being consumable by this plugin."""
         return super().verify_file(path) and path.endswith(
             ("docker_machine.yaml", "docker_machine.yml")
         )
 
-    def parse(self, inventory, loader, path, cache=True):
+    def parse(
+        self,
+        inventory: InventoryData,
+        loader: DataLoader,
+        path: str,
+        cache: bool = True,
+    ) -> None:
         super().parse(inventory, loader, path, cache)
         self._read_config_data(path)
         self._populate()

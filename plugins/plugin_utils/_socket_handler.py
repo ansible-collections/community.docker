@@ -7,11 +7,23 @@
 
 from __future__ import annotations
 
+import typing as t
+
 from ansible_collections.community.docker.plugins.module_utils._socket_handler import (
     DockerSocketHandlerBase,
 )
 
 
+if t.TYPE_CHECKING:
+    from ansible.utils.display import Display
+
+    from ansible_collections.community.docker.plugins.module_utils._socket_helper import (
+        SocketLike,
+    )
+
+
 class DockerSocketHandler(DockerSocketHandlerBase):
-    def __init__(self, display, sock, log=None, container=None):
+    def __init__(
+        self, display: Display, sock: SocketLike, container: str | None = None
+    ) -> None:
         super().__init__(sock, log=lambda msg: display.vvvv(msg, host=container))

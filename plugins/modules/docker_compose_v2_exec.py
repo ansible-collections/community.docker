@@ -166,6 +166,7 @@ rc:
 
 import shlex
 import traceback
+import typing as t
 
 from ansible.module_utils.common.text.converters import to_text
 
@@ -180,29 +181,32 @@ from ansible_collections.community.docker.plugins.module_utils._compose_v2 impor
 
 
 class ExecManager(BaseComposeManager):
-    def __init__(self, client):
+    def __init__(self, client: AnsibleModuleDockerClient) -> None:
         super().__init__(client)
         parameters = self.client.module.params
 
-        self.service = parameters["service"]
-        self.index = parameters["index"]
-        self.chdir = parameters["chdir"]
-        self.detach = parameters["detach"]
-        self.user = parameters["user"]
-        self.stdin = parameters["stdin"]
-        self.strip_empty_ends = parameters["strip_empty_ends"]
-        self.privileged = parameters["privileged"]
-        self.tty = parameters["tty"]
-        self.env = parameters["env"]
+        self.service: str = parameters["service"]
+        self.index: int | None = parameters["index"]
+        self.chdir: str | None = parameters["chdir"]
+        self.detach: bool = parameters["detach"]
+        self.user: str | None = parameters["user"]
+        self.stdin: str | None = parameters["stdin"]
+        self.strip_empty_ends: bool = parameters["strip_empty_ends"]
+        self.privileged: bool = parameters["privileged"]
+        self.tty: bool = parameters["tty"]
+        self.env: dict[str, t.Any] = parameters["env"]
 
-        self.argv = parameters["argv"]
+        self.argv: list[str]
         if parameters["command"] is not None:
             self.argv = shlex.split(parameters["command"])
+        else:
+            self.argv = parameters["argv"]
 
         if self.detach and self.stdin is not None:
             self.fail("If detach=true, stdin cannot be provided.")
 
-        if self.stdin is not None and parameters["stdin_add_newline"]:
+        stdin_add_newline: bool = parameters["stdin_add_newline"]
+        if self.stdin is not None and stdin_add_newline:
             self.stdin += "\n"
 
         if self.env is not None:
@@ -214,7 +218,7 @@ class ExecManager(BaseComposeManager):
                     )
                 self.env[name] = to_text(value, errors="surrogate_or_strict")
 
-    def get_exec_cmd(self, dry_run, no_start=False):
+    def get_exec_cmd(self, dry_run: bool) -> list[str]:
         args = self.get_base_args(plain_progress=True) + ["exec"]
         if self.index is not None:
             args.extend(["--index", str(self.index)])
@@ -237,9 +241,9 @@ class ExecManager(BaseComposeManager):
         args.extend(self.argv)
         return args
 
-    def run(self):
+    def run(self) -> dict[str, t.Any]:
         args = self.get_exec_cmd(self.check_mode)
-        kwargs = {
+        kwargs: dict[str, t.Any] = {
             "cwd": self.project_src,
         }
         if self.stdin is not None:
@@ -262,7 +266,7 @@ class ExecManager(BaseComposeManager):
         }
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "service": {"type": "str", "required": True},
         "index": {"type": "int"},

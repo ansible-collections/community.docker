@@ -118,6 +118,7 @@ volume:
 """
 
 import traceback
+import typing as t
 
 from ansible.module_utils.common.text.converters import to_native
 
@@ -137,31 +138,33 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class TaskParameters(DockerBaseClass):
-    def __init__(self, client):
+    volume_name: str
+
+    def __init__(self, client: AnsibleDockerClient) -> None:
         super().__init__()
         self.client = client
 
-        self.volume_name = None
-        self.driver = None
-        self.driver_options = None
-        self.labels = None
-        self.recreate = None
-        self.debug = None
+        self.driver: str = "local"
+        self.driver_options: dict[str, t.Any] = {}
+        self.labels: dict[str, t.Any] | None = None
+        self.recreate: t.Literal["always", "never", "options-changed"] = "never"
+        self.debug: bool = False
+        self.state: t.Literal["present", "absent"] = "present"
 
         for key, value in client.module.params.items():
             setattr(self, key, value)
 
 
 class DockerVolumeManager:
-
-    def __init__(self, client):
+    def __init__(self, client: AnsibleDockerClient) -> None:
         self.client = client
         self.parameters = TaskParameters(client)
         self.check_mode = self.client.check_mode
-        self.results = {"changed": False, "actions": []}
+        self.actions: list[str] = []
+        self.results: dict[str, t.Any] = {"changed": False, "actions": self.actions}
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()
-        self.diff_result = {}
+        self.diff_result: dict[str, t.Any] = {}
 
         self.existing_volume = self.get_existing_volume()
 
@@ -178,7 +181,7 @@ class DockerVolumeManager:
                 )
             self.results["diff"] = self.diff_result
 
-    def get_existing_volume(self):
+    def get_existing_volume(self) -> dict[str, t.Any] | None:
         try:
             volumes = self.client.get_json("/volumes")
         except APIError as e:
@@ -193,12 +196,13 @@ class DockerVolumeManager:
 
         return None
 
-    def has_different_config(self):
+    def has_different_config(self) -> DifferenceTracker:
         """
         Return the list of differences between the current parameters and the existing volume.
 
         :return: list of options that differ
         """
+        assert self.existing_volume is not None
         differences = DifferenceTracker()
         if (
             self.parameters.driver
@@ -239,7 +243,7 @@ class DockerVolumeManager:
 
         return differences
 
-    def create_volume(self):
+    def create_volume(self) -> None:
         if not self.existing_volume:
             if not self.check_mode:
                 try:
@@ -257,12 +261,12 @@ class DockerVolumeManager:
                 except APIError as e:
                     self.client.fail(to_native(e))
 
-            self.results["actions"].append(
+            self.actions.append(
                 f"Created volume {self.parameters.volume_name} with driver {self.parameters.driver}"
             )
             self.results["changed"] = True
 
-    def remove_volume(self):
+    def remove_volume(self) -> None:
         if self.existing_volume:
             if not self.check_mode:
                 try:
@@ -270,12 +274,10 @@ class DockerVolumeManager:
                 except APIError as e:
                     self.client.fail(to_native(e))
 
-            self.results["actions"].append(
-                f"Removed volume {self.parameters.volume_name}"
-            )
+            self.actions.append(f"Removed volume {self.parameters.volume_name}")
             self.results["changed"] = True
 
-    def present(self):
+    def present(self) -> None:
         differences = DifferenceTracker()
         if self.existing_volume:
             differences = self.has_different_config()
@@ -301,14 +303,14 @@ class DockerVolumeManager:
         volume_facts = self.get_existing_volume()
         self.results["volume"] = volume_facts
 
-    def absent(self):
+    def absent(self) -> None:
         self.diff_tracker.add(
             "exists", parameter=False, active=self.existing_volume is not None
         )
         self.remove_volume()
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "volume_name": {"type": "str", "required": True, "aliases": ["name"]},
         "state": {

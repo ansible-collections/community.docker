@@ -967,8 +967,8 @@ class BaseComposeManager(DockerBaseClass):
         self,
         result: dict[str, t.Any],
         events: Sequence[Event],
-        stdout: str,
-        stderr: str,
+        stdout: str | bytes,
+        stderr: str | bytes,
         ignore_service_pull_events: bool = False,
         ignore_build_events: bool = False,
     ):

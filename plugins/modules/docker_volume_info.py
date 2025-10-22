@@ -71,6 +71,7 @@ volume:
 """
 
 import traceback
+import typing as t
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     DockerException,
@@ -82,7 +83,9 @@ from ansible_collections.community.docker.plugins.module_utils._common_api impor
 )
 
 
-def get_existing_volume(client, volume_name):
+def get_existing_volume(
+    client: AnsibleDockerClient, volume_name: str
+) -> dict[str, t.Any] | None:
     try:
         return client.get_json("/volumes/{0}", volume_name)
     except NotFound:
@@ -91,7 +94,7 @@ def get_existing_volume(client, volume_name):
         client.fail(f"Error inspecting volume: {exc}")
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True, "aliases": ["volume_name"]},
     }

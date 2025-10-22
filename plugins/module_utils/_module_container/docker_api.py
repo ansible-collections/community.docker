@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import traceback
+import typing as t
 
 from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.common.text.formatters import human_to_bytes
@@ -101,6 +102,7 @@ from ansible_collections.community.docker.plugins.module_utils._module_container
     OPTIONS,
     Engine,
     EngineDriver,
+    _is_volume_permissions,
 )
 from ansible_collections.community.docker.plugins.module_utils._platform import (
     compose_platform_string,
@@ -115,40 +117,48 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 )
 
 
+if t.TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+
+    from ansible.module_utils.basic import AnsibleModule
+
+    from .base import Option, OptionGroup
+
+    Sentry = object
+
+
 _DEFAULT_IP_REPLACEMENT_STRING = (
     "[[DEFAULT_IP:iewahhaeB4Sae6Aen8IeShairoh4zeph7xaekoh8Geingunaesaeweiy3ooleiwi]]"
 )
 
 
-def _get_ansible_type(our_type):
-    if our_type == "set":
-        return "list"
-    if our_type not in ("list", "dict", "bool", "int", "float", "str"):
-        raise ValueError(f'Invalid type "{our_type}"')
-    return our_type
+_SENTRY: Sentry = object()
 
 
-_SENTRY = object()
-
-
-class DockerAPIEngineDriver(EngineDriver):
+class DockerAPIEngineDriver(EngineDriver[AnsibleDockerClient]):
     name = "docker_api"
 
     def setup(
         self,
-        argument_spec,
-        mutually_exclusive=None,
-        required_together=None,
-        required_one_of=None,
-        required_if=None,
-        required_by=None,
-    ):
-        argument_spec = argument_spec or {}
-        mutually_exclusive = mutually_exclusive or []
-        required_together = required_together or []
-        required_one_of = required_one_of or []
-        required_if = required_if or []
-        required_by = required_by or {}
+        argument_spec: dict[str, t.Any],
+        mutually_exclusive: Sequence[Sequence[str]] | None = None,
+        required_together: Sequence[Sequence[str]] | None = None,
+        required_one_of: Sequence[Sequence[str]] | None = None,
+        required_if: (
+            Sequence[
+                tuple[str, t.Any, Sequence[str]]
+                | tuple[str, t.Any, Sequence[str], bool]
+            ]
+            | None
+        ) = None,
+        required_by: dict[str, Sequence[str]] | None = None,
+    ) -> tuple[AnsibleModule, list[OptionGroup], AnsibleDockerClient]:
+        argument_spec = dict(argument_spec or {})
+        mutually_exclusive = list(mutually_exclusive or [])
+        required_together = list(required_together or [])
+        required_one_of = list(required_one_of or [])
+        required_if = list(required_if or [])
+        required_by = dict(required_by or {})
 
         active_options = []
         option_minimal_versions = {}
@@ -188,27 +198,27 @@ class DockerAPIEngineDriver(EngineDriver):
 
         return client.module, active_options, client
 
-    def get_host_info(self, client):
+    def get_host_info(self, client: AnsibleDockerClient) -> dict[str, t.Any]:
         return client.info()
 
-    def get_api_version(self, client):
+    def get_api_version(self, client: AnsibleDockerClient) -> LooseVersion:
         return client.docker_api_version
 
-    def get_container_id(self, container):
+    def get_container_id(self, container: dict[str, t.Any]) -> str:
         return container["Id"]
 
-    def get_image_from_container(self, container):
+    def get_image_from_container(self, container: dict[str, t.Any]) -> str:
         return container["Image"]
 
-    def get_image_name_from_container(self, container):
+    def get_image_name_from_container(self, container: dict[str, t.Any]) -> str | None:
         return container["Config"].get("Image")
 
-    def is_container_removing(self, container):
+    def is_container_removing(self, container: dict[str, t.Any]) -> bool:
         if container.get("State"):
             return container["State"].get("Status") == "removing"
         return False
 
-    def is_container_running(self, container):
+    def is_container_running(self, container: dict[str, t.Any]) -> bool:
         if container.get("State"):
             if container["State"].get("Running") and not container["State"].get(
                 "Ghost", False
@@ -216,38 +226,54 @@ class DockerAPIEngineDriver(EngineDriver):
                 return True
         return False
 
-    def is_container_paused(self, container):
+    def is_container_paused(self, container: dict[str, t.Any]) -> bool:
         if container.get("State"):
             return container["State"].get("Paused", False)
         return False
 
-    def inspect_container_by_name(self, client, container_name):
+    def inspect_container_by_name(
+        self, client: AnsibleDockerClient, container_name: str
+    ) -> dict[str, t.Any] | None:
         return client.get_container(container_name)
 
-    def inspect_container_by_id(self, client, container_id):
+    def inspect_container_by_id(
+        self, client: AnsibleDockerClient, container_id: str
+    ) -> dict[str, t.Any] | None:
         return client.get_container_by_id(container_id)
 
-    def inspect_image_by_id(self, client, image_id):
+    def inspect_image_by_id(
+        self, client: AnsibleDockerClient, image_id: str
+    ) -> dict[str, t.Any] | None:
         return client.find_image_by_id(image_id, accept_missing_image=True)
 
-    def inspect_image_by_name(self, client, repository, tag):
+    def inspect_image_by_name(
+        self, client: AnsibleDockerClient, repository: str, tag: str
+    ) -> dict[str, t.Any] | None:
         return client.find_image(repository, tag)
 
-    def pull_image(self, client, repository, tag, image_platform=None):
+    def pull_image(
+        self,
+        client: AnsibleDockerClient,
+        repository: str,
+        tag: str,
+        image_platform: str | None = None,
+    ) -> tuple[dict[str, t.Any] | None, bool]:
         return client.pull_image(repository, tag, image_platform=image_platform)
 
-    def pause_container(self, client, container_id):
+    def pause_container(self, client: AnsibleDockerClient, container_id: str) -> None:
         client.post_call("/containers/{0}/pause", container_id)
 
-    def unpause_container(self, client, container_id):
+    def unpause_container(self, client: AnsibleDockerClient, container_id: str) -> None:
         client.post_call("/containers/{0}/unpause", container_id)
 
-    def disconnect_container_from_network(self, client, container_id, network_id):
+    def disconnect_container_from_network(
+        self, client: AnsibleDockerClient, container_id: str, network_id: str
+    ) -> None:
         client.post_json(
             "/networks/{0}/disconnect", network_id, data={"Container": container_id}
         )
 
-    def _create_endpoint_config(self, parameters):
+    def _create_endpoint_config(self, parameters: dict[str, t.Any]) -> dict[str, t.Any]:
         parameters = parameters.copy()
         params = {}
         for para, dest_para in {
@@ -290,8 +316,12 @@ class DockerAPIEngineDriver(EngineDriver):
         return params
 
     def connect_container_to_network(
-        self, client, container_id, network_id, parameters=None
-    ):
+        self,
+        client: AnsibleDockerClient,
+        container_id: str,
+        network_id: str,
+        parameters: dict[str, t.Any] | None = None,
+    ) -> None:
         parameters = (parameters or {}).copy()
         params = self._create_endpoint_config(parameters or {})
         data = {
@@ -300,12 +330,18 @@ class DockerAPIEngineDriver(EngineDriver):
         }
         client.post_json("/networks/{0}/connect", network_id, data=data)
 
-    def create_container_supports_more_than_one_network(self, client):
+    def create_container_supports_more_than_one_network(
+        self, client: AnsibleDockerClient
+    ) -> bool:
         return client.docker_api_version >= LooseVersion("1.44")
 
     def create_container(
-        self, client, container_name, create_parameters, networks=None
-    ):
+        self,
+        client: AnsibleDockerClient,
+        container_name: str,
+        create_parameters: dict[str, t.Any],
+        networks: dict[str, dict[str, t.Any]] | None = None,
+    ) -> str:
         params = {"name": container_name}
         if "platform" in create_parameters:
             params["platform"] = create_parameters.pop("platform")
@@ -323,15 +359,22 @@ class DockerAPIEngineDriver(EngineDriver):
         client.report_warnings(new_container)
         return new_container["Id"]
 
-    def start_container(self, client, container_id):
+    def start_container(self, client: AnsibleDockerClient, container_id: str) -> None:
         client.post_json("/containers/{0}/start", container_id)
 
-    def wait_for_container(self, client, container_id, timeout=None):
+    def wait_for_container(
+        self,
+        client: AnsibleDockerClient,
+        container_id: str,
+        timeout: int | float | None = None,
+    ) -> int | None:
         return client.post_json_to_json(
             "/containers/{0}/wait", container_id, timeout=timeout
         )["StatusCode"]
 
-    def get_container_output(self, client, container_id):
+    def get_container_output(
+        self, client: AnsibleDockerClient, container_id: str
+    ) -> tuple[bytes, t.Literal[True]] | tuple[str, t.Literal[False]]:
         config = client.get_json("/containers/{0}/json", container_id)
         logging_driver = config["HostConfig"]["LogConfig"]["Type"]
         if logging_driver in ("json-file", "journald", "local"):
@@ -349,14 +392,24 @@ class DockerAPIEngineDriver(EngineDriver):
             return output, True
         return f"Result logged using `{logging_driver}` driver", False
 
-    def update_container(self, client, container_id, update_parameters):
+    def update_container(
+        self,
+        client: AnsibleDockerClient,
+        container_id: str,
+        update_parameters: dict[str, t.Any],
+    ) -> None:
         result = client.post_json_to_json(
             "/containers/{0}/update", container_id, data=update_parameters
         )
         client.report_warnings(result)
 
-    def restart_container(self, client, container_id, timeout=None):
-        client_timeout = client.timeout
+    def restart_container(
+        self,
+        client: AnsibleDockerClient,
+        container_id: str,
+        timeout: int | float | None = None,
+    ) -> None:
+        client_timeout: int | float | None = client.timeout
         if client_timeout is not None:
             client_timeout += timeout or 10
         client.post_call(
@@ -366,13 +419,23 @@ class DockerAPIEngineDriver(EngineDriver):
             timeout=client_timeout,
         )
 
-    def kill_container(self, client, container_id, kill_signal=None):
+    def kill_container(
+        self,
+        client: AnsibleDockerClient,
+        container_id: str,
+        kill_signal: str | None = None,
+    ) -> None:
         params = {}
         if kill_signal is not None:
             params["signal"] = kill_signal
         client.post_call("/containers/{0}/kill", container_id, params=params)
 
-    def stop_container(self, client, container_id, timeout=None):
+    def stop_container(
+        self,
+        client: AnsibleDockerClient,
+        container_id: str,
+        timeout: int | float | None = None,
+    ) -> None:
         if timeout:
             params = {"t": timeout}
         else:
@@ -414,8 +477,13 @@ class DockerAPIEngineDriver(EngineDriver):
             break
 
     def remove_container(
-        self, client, container_id, remove_volumes=False, link=False, force=False
-    ):
+        self,
+        client: AnsibleDockerClient,
+        container_id: str,
+        remove_volumes: bool = False,
+        link: bool = False,
+        force: bool = False,
+    ) -> None:
         params = {"v": remove_volumes, "link": link, "force": force}
         count = 0
         while True:
@@ -452,7 +520,7 @@ class DockerAPIEngineDriver(EngineDriver):
             # We only loop when explicitly requested by 'continue'
             break
 
-    def run(self, runner, client):
+    def run(self, runner: Callable[[], None], client: AnsibleDockerClient) -> None:
         try:
             runner()
         except DockerException as e:
@@ -467,24 +535,48 @@ class DockerAPIEngineDriver(EngineDriver):
             )
 
 
-class DockerAPIEngine(Engine):
-    def get_value(self, module, container, api_version, options, image, host_info):
+class DockerAPIEngine(Engine[AnsibleDockerClient]):
+    def get_value(
+        self,
+        module: AnsibleModule,
+        container: dict[str, t.Any],
+        api_version: LooseVersion,
+        options: list[Option],
+        image: dict[str, t.Any] | None,
+        host_info: dict[str, t.Any] | None,
+    ) -> dict[str, t.Any]:
         return self._get_value(
             module, container, api_version, options, image, host_info
         )
 
-    def compare_value(self, option, param_value, container_value):
+    def compare_value(
+        self, option: Option, param_value: t.Any, container_value: t.Any
+    ) -> bool:
         if self._compare_value is not None:
             return self._compare_value(option, param_value, container_value)
         return super().compare_value(option, param_value, container_value)
 
-    def set_value(self, module, data, api_version, options, values):
+    def set_value(
+        self,
+        module: AnsibleModule,
+        data: dict[str, t.Any],
+        api_version: LooseVersion,
+        options: list[Option],
+        values: dict[str, t.Any],
+    ) -> None:
         if self._set_value is not None:
             self._set_value(module, data, api_version, options, values)
 
     def get_expected_values(
-        self, module, client, api_version, options, image, values, host_info
-    ):
+        self,
+        module: AnsibleModule,
+        client: AnsibleDockerClient,
+        api_version: LooseVersion,
+        options: list[Option],
+        image: dict[str, t.Any] | None,
+        values: dict[str, t.Any],
+        host_info: dict[str, t.Any] | None,
+    ) -> dict[str, t.Any]:
         if self._get_expected_values is None:
             return values
         return self._get_expected_values(
@@ -493,15 +585,15 @@ class DockerAPIEngine(Engine):
 
     def ignore_mismatching_result(
         self,
-        module,
-        client,
-        api_version,
-        option,
-        image,
-        container_value,
-        expected_value,
-        host_info,
-    ):
+        module: AnsibleModule,
+        client: AnsibleDockerClient,
+        api_version: LooseVersion,
+        option: Option,
+        image: dict[str, t.Any] | None,
+        container_value: t.Any,
+        expected_value: t.Any,
+        host_info: dict[str, t.Any] | None,
+    ) -> bool:
         if self._ignore_mismatching_result is None:
             return False
         return self._ignore_mismatching_result(
@@ -515,50 +607,139 @@ class DockerAPIEngine(Engine):
             host_info,
         )
 
-    def preprocess_value(self, module, client, api_version, options, values):
+    def preprocess_value(
+        self,
+        module: AnsibleModule,
+        client: AnsibleDockerClient,
+        api_version: LooseVersion,
+        options: list[Option],
+        values: dict[str, t.Any],
+    ) -> dict[str, t.Any]:
         if self._preprocess_value is None:
             return values
         return self._preprocess_value(module, client, api_version, options, values)
 
-    def update_value(self, module, data, api_version, options, values):
+    def update_value(
+        self,
+        module: AnsibleModule,
+        data: dict[str, t.Any],
+        api_version: LooseVersion,
+        options: list[Option],
+        values: dict[str, t.Any],
+    ) -> None:
         if self._update_value is not None:
             self._update_value(module, data, api_version, options, values)
 
-    def can_set_value(self, api_version):
+    def can_set_value(self, api_version: LooseVersion) -> bool:
         if self._can_set_value is None:
             return self._set_value is not None
         return self._can_set_value(api_version)
 
-    def can_update_value(self, api_version):
+    def can_update_value(self, api_version: LooseVersion) -> bool:
         if self._can_update_value is None:
             return self._update_value is not None
         return self._can_update_value(api_version)
 
-    def needs_container_image(self, values):
+    def needs_container_image(self, values: dict[str, t.Any]) -> bool:
         if self._needs_container_image is None:
             return False
         return self._needs_container_image(values)
 
-    def needs_host_info(self, values):
+    def needs_host_info(self, values: dict[str, t.Any]) -> bool:
         if self._needs_host_info is None:
             return False
         return self._needs_host_info(values)
 
     def __init__(
         self,
-        get_value,
-        preprocess_value=None,
-        get_expected_values=None,
-        ignore_mismatching_result=None,
-        set_value=None,
-        update_value=None,
-        can_set_value=None,
-        can_update_value=None,
-        min_api_version=None,
-        compare_value=None,
-        needs_container_image=None,
-        needs_host_info=None,
-        extra_option_minimal_versions=None,
+        get_value: Callable[
+            [
+                AnsibleModule,
+                dict[str, t.Any],
+                LooseVersion,
+                list[Option],
+                dict[str, t.Any] | None,
+                dict[str, t.Any] | None,
+            ],
+            dict[str, t.Any],
+        ],
+        preprocess_value: (
+            Callable[
+                [
+                    AnsibleModule,
+                    AnsibleDockerClient,
+                    LooseVersion,
+                    list[Option],
+                    dict[str, t.Any],
+                ],
+                dict[str, t.Any],
+            ]
+            | None
+        ) = None,
+        get_expected_values: (
+            Callable[
+                [
+                    AnsibleModule,
+                    AnsibleDockerClient,
+                    LooseVersion,
+                    list[Option],
+                    dict[str, t.Any] | None,
+                    dict[str, t.Any],
+                    dict[str, t.Any] | None,
+                ],
+                dict[str, t.Any],
+            ]
+            | None
+        ) = None,
+        ignore_mismatching_result: (
+            Callable[
+                [
+                    AnsibleModule,
+                    AnsibleDockerClient,
+                    LooseVersion,
+                    Option,
+                    dict[str, t.Any] | None,
+                    t.Any,
+                    t.Any,
+                    dict[str, t.Any] | None,
+                ],
+                bool,
+            ]
+            | None
+        ) = None,
+        set_value: (
+            Callable[
+                [
+                    AnsibleModule,
+                    dict[str, t.Any],
+                    LooseVersion,
+                    list[Option],
+                    dict[str, t.Any],
+                ],
+                None,
+            ]
+            | None
+        ) = None,
+        update_value: (
+            Callable[
+                [
+                    AnsibleModule,
+                    dict[str, t.Any],
+                    LooseVersion,
+                    list[Option],
+                    dict[str, t.Any],
+                ],
+                None,
+            ]
+            | None
+        ) = None,
+        can_set_value: Callable[[LooseVersion], bool] | None = None,
+        can_update_value: Callable[[LooseVersion], bool] | None = None,
+        min_api_version: str | None = None,
+        compare_value: Callable[[Option, t.Any, t.Any], bool] | None = None,
+        needs_container_image: Callable[[dict[str, t.Any]], bool] | None = None,
+        needs_host_info: Callable[[dict[str, t.Any]], bool] | None = None,
+        extra_option_minimal_versions: dict[str, dict[str, t.Any]] | None = None,
     ):
         self.min_api_version = min_api_version
         self.min_api_version_obj = (
@@ -566,31 +747,73 @@ class DockerAPIEngine(Engine):
         )
         self.extra_option_minimal_versions = extra_option_minimal_versions
         self._get_value = get_value
-        self._compare_value = compare_value  # can be None
-        self._set_value = set_value  # can be None
-        self._get_expected_values = get_expected_values  # can be None
-        self._ignore_mismatching_result = ignore_mismatching_result  # can be None
-        self._preprocess_value = preprocess_value  # can be None
-        self._update_value = update_value  # can be None
-        self._can_set_value = can_set_value  # can be None
-        self._can_update_value = can_update_value  # can be None
-        self._needs_container_image = needs_container_image  # can be None
-        self._needs_host_info = needs_host_info  # can be None
+        self._compare_value = compare_value
+        self._set_value = set_value
+        self._get_expected_values = get_expected_values
+        self._ignore_mismatching_result = ignore_mismatching_result
+        self._preprocess_value = preprocess_value
+        self._update_value = update_value
+        self._can_set_value = can_set_value
+        self._can_update_value = can_update_value
+        self._needs_container_image = needs_container_image
+        self._needs_host_info = needs_host_info
 
     @classmethod
     def config_value(
         cls,
-        config_name,
-        postprocess_for_get=None,
-        preprocess_for_set=None,
-        get_expected_value=None,
-        ignore_mismatching_result=None,
-        min_api_version=None,
-        preprocess_value=None,
-        update_parameter=None,
-        extra_option_minimal_versions=None,
-    ):
-        def preprocess_value_(module, client, api_version, options, values):
+        config_name: str,
+        postprocess_for_get: (
+            Callable[[AnsibleModule, LooseVersion, t.Any, Sentry], t.Any | Sentry]
+            | None
+        ) = None,
+        preprocess_for_set: (
+            Callable[[AnsibleModule, LooseVersion, t.Any], t.Any] | None
+        ) = None,
+        get_expected_value: (
+            Callable[
+                [
+                    AnsibleModule,
+                    AnsibleDockerClient,
+                    LooseVersion,
+                    dict[str, t.Any] | None,
+                    t.Any,
+                    Sentry,
+                ],
+                t.Any | Sentry,
+            ]
+            | None
+        ) = None,
+        ignore_mismatching_result: (
+            Callable[
+                [
+                    AnsibleModule,
+                    AnsibleDockerClient,
+                    LooseVersion,
+                    Option,
+                    dict[str, t.Any] | None,
+                    t.Any,
+                    t.Any,
+                    dict[str, t.Any] | None,
+                ],
+                bool,
+            ]
+            | None
+        ) = None,
+        min_api_version: str | None = None,
+        preprocess_value: (
+            Callable[[AnsibleModule, AnsibleDockerClient, LooseVersion, t.Any], t.Any]
+            | None
+        ) = None,
+        update_parameter: str | None = None,
+        extra_option_minimal_versions: dict[str, dict[str, t.Any]] | None = None,
+    ) -> DockerAPIEngine:
+        def preprocess_value_(
+            module: AnsibleModule,
+            client: AnsibleDockerClient,
+            api_version: LooseVersion,
+            options: list[Option],
+            values: dict[str, t.Any],
+        ) -> dict[str, t.Any]:
             if len(options) != 1:
                 raise AssertionError(
                     "config_value can only be used for a single option"
@@ -605,7 +828,14 @@ class DockerAPIEngine(Engine):
                     values[options[0].name] = value
             return values
 
-        def get_value(module, container, api_version, options, image, host_info):
+        def get_value(
+            module: AnsibleModule,
+            container: dict[str, t.Any],
+            api_version: LooseVersion,
+            options: list[Option],
+            image: dict[str, t.Any] | None,
+            host_info: dict[str, t.Any] | None,
+        ) -> dict[str, t.Any]:
             if len(options) != 1:
                 raise AssertionError(
                     "config_value can only be used for a single option"
@@ -617,10 +847,31 @@ class DockerAPIEngine(Engine):
                 return {}
             return {options[0].name: value}
 
+        get_expected_values_: (
+            Callable[
+                [
+                    AnsibleModule,
+                    AnsibleDockerClient,
+                    LooseVersion,
+                    list[Option],
+                    dict[str, t.Any] | None,
+                    dict[str, t.Any],
+                    dict[str, t.Any] | None,
+                ],
+                dict[str, t.Any],
+            ]
+            | None
+        ) = None
         if get_expected_value:
 
-            def get_expected_values_(
-                module, client, api_version, options, image, values, host_info
+            def get_expected_values_(  # noqa: F811
+                module: AnsibleModule,
+                client: AnsibleDockerClient,
+                api_version: LooseVersion,
+                options: list[Option],
+                image: dict[str, t.Any] | None,
+                values: dict[str, t.Any],
+                host_info: dict[str, t.Any] | None,
             ):
                 if len(options) != 1:
                     raise AssertionError(
@@ -634,10 +885,13 @@ class DockerAPIEngine(Engine):
                     return values
                 return {options[0].name: value}
 
-        else:
-            get_expected_values_ = None
-
-        def set_value(module, data, api_version, options, values):
+        def set_value(
+            module: AnsibleModule,
+            data: dict[str, t.Any],
+            api_version: LooseVersion,
+            options: list[Option],
+            values: dict[str, t.Any],
+        ) -> None:
             if len(options) != 1:
                 raise AssertionError(
                     "config_value can only be used for a single option"
@@ -649,9 +903,28 @@ class DockerAPIEngine(Engine):
                 value = preprocess_for_set(module, api_version, value)
             data[config_name] = value
 
+        update_value: (
+            Callable[
+                [
+                    AnsibleModule,
+                    dict[str, t.Any],
+                    LooseVersion,
+                    list[Option],
+                    dict[str, t.Any],
+                ],
+                None,
+            ]
+            | None
+        ) = None
         if update_parameter:
 
-            def update_value(module, data, api_version, options, values):
+            def update_value(  # noqa: F811
+                module: AnsibleModule,
+                data: dict[str, t.Any],
+                api_version: LooseVersion,
+                options: list[Option],
+                values: dict[str, t.Any],
+            ) -> None:
                 if len(options) != 1:
                     raise AssertionError(
                         "update_parameter can only be used for a single option"
@@ -662,9 +935,6 @@ class DockerAPIEngine(Engine):
                 if preprocess_for_set:
                     value = preprocess_for_set(module, api_version, value)
                 data[update_parameter] = value
-
-        else:
-            update_value = None
 
         return cls(
             get_value=get_value,
@@ -680,17 +950,59 @@ class DockerAPIEngine(Engine):
     @classmethod
     def host_config_value(
         cls,
-        host_config_name,
-        postprocess_for_get=None,
-        preprocess_for_set=None,
-        get_expected_value=None,
-        ignore_mismatching_result=None,
-        min_api_version=None,
-        preprocess_value=None,
-        update_parameter=None,
-        extra_option_minimal_versions=None,
-    ):
-        def preprocess_value_(module, client, api_version, options, values):
+        host_config_name: str,
+        postprocess_for_get: (
+            Callable[[AnsibleModule, LooseVersion, t.Any, Sentry], t.Any | Sentry]
+            | None
+        ) = None,
+        preprocess_for_set: (
+            Callable[[AnsibleModule, LooseVersion, t.Any], t.Any] | None
+        ) = None,
+        get_expected_value: (
+            Callable[
+                [
+                    AnsibleModule,
+                    AnsibleDockerClient,
+                    LooseVersion,
+                    dict[str, t.Any] | None,
+                    t.Any,
+                    Sentry,
+                ],
+                t.Any | Sentry,
+            ]
+            | None
+        ) = None,
+        ignore_mismatching_result: (
+            Callable[
+                [
+                    AnsibleModule,
+                    AnsibleDockerClient,
+                    LooseVersion,
+                    Option,
+                    dict[str, t.Any] | None,
+                    t.Any,
+                    t.Any,
+                    dict[str, t.Any] | None,
+                ],
+                bool,
+            ]
+            | None
+        ) = None,
+        min_api_version: str | None = None,
+        preprocess_value: (
+            Callable[[AnsibleModule, AnsibleDockerClient, LooseVersion, t.Any], t.Any]
+            | None
+        ) = None,
+        update_parameter: str | None = None,
+        extra_option_minimal_versions: dict[str, dict[str, t.Any]] | None = None,
+    ) -> DockerAPIEngine:
+        def preprocess_value_(
+            module: AnsibleModule,
+            client: AnsibleDockerClient,
+            api_version: LooseVersion,
+            options: list[Option],
+            values: dict[str, t.Any],
+        ) -> dict[str, t.Any]:
             if len(options) != 1:
                 raise AssertionError(
                     "host_config_value can only be used for a single option"
@@ -705,7 +1017,14 @@ class DockerAPIEngine(Engine):
                     values[options[0].name] = value
             return values
 
-        def get_value(module, container, api_version, options, get_value, host_info):
+        def get_value(
+            module: AnsibleModule,
+            container: dict[str, t.Any],
+            api_version: LooseVersion,
+            options: list[Option],
+            image: dict[str, t.Any] | None,
+            host_info: dict[str, t.Any] | None,
+        ) -> dict[str, t.Any]:
             if len(options) != 1:
                 raise AssertionError(
                     "host_config_value can only be used for a single option"
@@ -717,11 +1036,32 @@ class DockerAPIEngine(Engine):
                 return {}
             return {options[0].name: value}
 
+        get_expected_values_: (
+            Callable[
+                [
+                    AnsibleModule,
+                    AnsibleDockerClient,
+                    LooseVersion,
+                    list[Option],
+                    dict[str, t.Any] | None,
+                    dict[str, t.Any],
+                    dict[str, t.Any] | None,
+                ],
+                dict[str, t.Any],
+            ]
+            | None
+        ) = None
         if get_expected_value:
 
-            def get_expected_values_(
-                module, client, api_version, options, image, values, host_info
-            ):
+            def get_expected_values_(  # noqa: F811
+                module: AnsibleModule,
+                client: AnsibleDockerClient,
+                api_version: LooseVersion,
+                options: list[Option],
+                image: dict[str, t.Any] | None,
+                values: dict[str, t.Any],
+                host_info: dict[str, t.Any] | None,
+            ) -> dict[str, t.Any]:
                 if len(options) != 1:
                     raise AssertionError(
                         "host_config_value can only be used for a single option"
@@ -734,10 +1074,13 @@ class DockerAPIEngine(Engine):
                     return values
                 return {options[0].name: value}
 
-        else:
-            get_expected_values_ = None
-
-        def set_value(module, data, api_version, options, values):
+        def set_value(
+            module: AnsibleModule,
+            data: dict[str, t.Any],
+            api_version: LooseVersion,
+            options: list[Option],
+            values: dict[str, t.Any],
+        ) -> None:
             if len(options) != 1:
                 raise AssertionError(
                     "host_config_value can only be used for a single option"
@@ -751,9 +1094,28 @@ class DockerAPIEngine(Engine):
                 value = preprocess_for_set(module, api_version, value)
             data["HostConfig"][host_config_name] = value
 
+        update_value: (
+            Callable[
+                [
+                    AnsibleModule,
+                    dict[str, t.Any],
+                    LooseVersion,
+                    list[Option],
+                    dict[str, t.Any],
+                ],
+                None,
+            ]
+            | None
+        ) = None
         if update_parameter:
 
-            def update_value(module, data, api_version, options, values):
+            def update_value(  # noqa: F811
+                module: AnsibleModule,
+                data: dict[str, t.Any],
+                api_version: LooseVersion,
+                options: list[Option],
+                values: dict[str, t.Any],
+            ) -> None:
                 if len(options) != 1:
                     raise AssertionError(
                         "update_parameter can only be used for a single option"
@@ -764,9 +1126,6 @@ class DockerAPIEngine(Engine):
                 if preprocess_for_set:
                     value = preprocess_for_set(module, api_version, value)
                 data[update_parameter] = value
-
-        else:
-            update_value = None
 
         return cls(
             get_value=get_value,
@@ -780,35 +1139,13 @@ class DockerAPIEngine(Engine):
         )
 
 
-def _is_volume_permissions(mode):
-    for part in mode.split(","):
-        if part not in (
-            "rw",
-            "ro",
-            "z",
-            "Z",
-            "consistent",
-            "delegated",
-            "cached",
-            "rprivate",
-            "private",
-            "rshared",
-            "shared",
-            "rslave",
-            "slave",
-            "nocopy",
-        ):
-            return False
-    return True
-
-
-def _normalize_port(port):
+def _normalize_port(port: str) -> str:
     if "/" not in port:
         return port + "/tcp"
     return port
 
 
-def _get_default_host_ip(module, client):
+def _get_default_host_ip(module: AnsibleModule, client: AnsibleDockerClient) -> str:
     if module.params["default_host_ip"] is not None:
         return module.params["default_host_ip"]
     ip = "0.0.0.0"
@@ -828,8 +1165,13 @@ def _get_default_host_ip(module, client):
 
 
 def _get_value_detach_interactive(
-    module, container, api_version, options, image, host_info
-):
+    module: AnsibleModule,
+    container: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    image: dict[str, t.Any] | None,
+    host_info: dict[str, t.Any] | None,
+) -> dict[str, t.Any]:
     attach_stdin = container["Config"].get("OpenStdin")
     attach_stderr = container["Config"].get("AttachStderr")
     attach_stdout = container["Config"].get("AttachStdout")
@@ -839,7 +1181,13 @@ def _get_value_detach_interactive(
     }
 
 
-def _set_value_detach_interactive(module, data, api_version, options, values):
+def _set_value_detach_interactive(
+    module: AnsibleModule,
+    data: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    values: dict[str, t.Any],
+) -> None:
     interactive = values.get("interactive")
     detach = values.get("detach")
 
@@ -856,7 +1204,14 @@ def _set_value_detach_interactive(module, data, api_version, options, values):
             data["StdinOnce"] = True
 
 
-def _get_expected_env_value(module, client, api_version, image, value, sentry):
+def _get_expected_env_value(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    image: dict[str, t.Any] | None,
+    value: t.Any,
+    sentry: Sentry,
+) -> t.Any | Sentry:
     expected_env = {}
     if image and image["Config"].get("Env"):
         for env_var in image["Config"]["Env"]:
@@ -872,13 +1227,23 @@ def _get_expected_env_value(module, client, api_version, image, value, sentry):
     return param_env
 
 
-def _preprocess_cpus(module, client, api_version, value):
+def _preprocess_cpus(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    value: t.Any,
+) -> t.Any:
     if value is not None:
         value = int(round(value * 1e9))
     return value
 
 
-def _preprocess_devices(module, client, api_version, value):
+def _preprocess_devices(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    value: t.Any,
+) -> t.Any:
     if not value:
         return value
     expected_devices = []
@@ -912,7 +1277,12 @@ def _preprocess_devices(module, client, api_version, value):
     return expected_devices
 
 
-def _preprocess_rate_bps(module, client, api_version, value):
+def _preprocess_rate_bps(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    value: t.Any,
+) -> t.Any:
     if not value:
         return value
     devices = []
@@ -926,7 +1296,12 @@ def _preprocess_rate_bps(module, client, api_version, value):
     return devices
 
 
-def _preprocess_rate_iops(module, client, api_version, value):
+def _preprocess_rate_iops(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    value: t.Any,
+) -> t.Any:
     if not value:
         return value
     devices = []
@@ -940,7 +1315,12 @@ def _preprocess_rate_iops(module, client, api_version, value):
     return devices
 
 
-def _preprocess_device_requests(module, client, api_version, value):
+def _preprocess_device_requests(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    value: t.Any,
+) -> t.Any:
     if not value:
         return value
     device_requests = []
@@ -957,7 +1337,12 @@ def _preprocess_device_requests(module, client, api_version, value):
     return device_requests
 
 
-def _preprocess_etc_hosts(module, client, api_version, value):
+def _preprocess_etc_hosts(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    value: t.Any,
+) -> t.Any:
     if value is None:
         return value
     results = []
@@ -966,7 +1351,12 @@ def _preprocess_etc_hosts(module, client, api_version, value):
     return results
 
 
-def _preprocess_healthcheck(module, client, api_version, value):
+def _preprocess_healthcheck(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    value: t.Any,
+) -> t.Any:
     if value is None:
         return value
     if not value or not (
@@ -988,13 +1378,20 @@ def _preprocess_healthcheck(module, client, api_version, value):
     )
 
 
-def _postprocess_healthcheck_get_value(module, api_version, value, sentry):
+def _postprocess_healthcheck_get_value(
+    module: AnsibleModule, api_version: LooseVersion, value: t.Any, sentry: Sentry
+) -> t.Any | Sentry:
     if value is None or value is sentry or value.get("Test") == ["NONE"]:
         return {"Test": ["NONE"]}
     return value
 
 
-def _preprocess_convert_to_bytes(module, values, name, unlimited_value=None):
+def _preprocess_convert_to_bytes(
+    module: AnsibleModule,
+    values: dict[str, t.Any],
+    name: str,
+    unlimited_value: int | None = None,
+) -> dict[str, t.Any]:
     if name not in values:
         return values
     try:
@@ -1009,7 +1406,7 @@ def _preprocess_convert_to_bytes(module, values, name, unlimited_value=None):
         module.fail_json(msg=f"Failed to convert {name} to bytes: {exc}")
 
 
-def _get_image_labels(image):
+def _get_image_labels(image: dict[str, t.Any] | None) -> dict[str, str]:
     if not image:
         return {}
 
@@ -1017,7 +1414,14 @@ def _get_image_labels(image):
     return image["Config"].get("Labels") or {}
 
 
-def _get_expected_labels_value(module, client, api_version, image, value, sentry):
+def _get_expected_labels_value(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    image: dict[str, t.Any] | None,
+    value: dict[str, t.Any],
+    sentry: Sentry,
+) -> dict[str, t.Any] | Sentry:
     if value is sentry:
         return sentry
     expected_labels = {}
@@ -1027,7 +1431,12 @@ def _get_expected_labels_value(module, client, api_version, image, value, sentry
     return expected_labels
 
 
-def _preprocess_links(module, client, api_version, value):
+def _preprocess_links(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    value: t.Any,
+) -> t.Any:
     if value is None:
         return None
 
@@ -1044,15 +1453,15 @@ def _preprocess_links(module, client, api_version, value):
 
 
 def _ignore_mismatching_label_result(
-    module,
-    client,
-    api_version,
-    option,
-    image,
-    container_value,
-    expected_value,
-    host_info,
-):
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    option: Option,
+    image: dict[str, t.Any] | None,
+    container_value: t.Any,
+    expected_value: t.Any,
+    host_info: dict[str, t.Any] | None,
+) -> bool:
     if (
         option.comparison == "strict"
         and module.params["image_label_mismatch"] == "fail"
@@ -1076,20 +1485,20 @@ def _ignore_mismatching_label_result(
     return False
 
 
-def _needs_host_info_network(values):
+def _needs_host_info_network(values: dict[str, t.Any]) -> bool:
     return values.get("network_mode") == "default"
 
 
 def _ignore_mismatching_network_result(
-    module,
-    client,
-    api_version,
-    option,
-    image,
-    container_value,
-    expected_value,
-    host_info,
-):
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    option: Option,
+    image: dict[str, t.Any] | None,
+    container_value: t.Any,
+    expected_value: t.Any,
+    host_info: dict[str, t.Any] | None,
+) -> bool:
     # 'networks' is handled out-of-band
     if option.name == "networks":
         return True
@@ -1102,7 +1511,13 @@ def _ignore_mismatching_network_result(
     return False
 
 
-def _preprocess_network_values(module, client, api_version, options, values):
+def _preprocess_network_values(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    options: list[Option],
+    values: dict[str, t.Any],
+) -> dict[str, t.Any]:
     if "networks" in values:
         for network in values["networks"]:
             network["id"] = _get_network_id(module, client, network["name"])
@@ -1119,27 +1534,40 @@ def _preprocess_network_values(module, client, api_version, options, values):
     return values
 
 
-def _get_network_id(module, client, network_name):
+def _get_network_id(
+    module: AnsibleModule, client: AnsibleDockerClient, network_name: str
+) -> str | None:
     try:
-        network_id = None
         params = {"filters": json.dumps({"name": [network_name]})}
         for network in client.get_json("/networks", params=params):
             if network["Name"] == network_name:
-                network_id = network["Id"]
-                break
-        return network_id
+                return network["Id"]
+        return None
     except Exception as exc:  # pylint: disable=broad-exception-caught
         client.fail(f"Error getting network id for {network_name} - {exc}")
 
 
-def _get_values_network(module, container, api_version, options, image, host_info):
+def _get_values_network(
+    module: AnsibleModule,
+    container: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    image: dict[str, t.Any] | None,
+    host_info: dict[str, t.Any] | None,
+) -> dict[str, t.Any]:
     value = container["HostConfig"].get("NetworkMode", _SENTRY)
     if value is _SENTRY:
         return {}
     return {"network_mode": value}
 
 
-def _set_values_network(module, data, api_version, options, values):
+def _set_values_network(
+    module: AnsibleModule,
+    data: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    values: dict[str, t.Any],
+) -> None:
     if "network_mode" not in values:
         return
     if "HostConfig" not in data:
@@ -1148,7 +1576,14 @@ def _set_values_network(module, data, api_version, options, values):
     data["HostConfig"]["NetworkMode"] = value
 
 
-def _get_values_mounts(module, container, api_version, options, image, host_info):
+def _get_values_mounts(
+    module: AnsibleModule,
+    container: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    image: dict[str, t.Any] | None,
+    host_info: dict[str, t.Any] | None,
+) -> dict[str, t.Any]:
     volumes = container["Config"].get("Volumes")
     binds = container["HostConfig"].get("Binds")
     # According to https://github.com/moby/moby/, support for HostConfig.Mounts
@@ -1157,10 +1592,10 @@ def _get_values_mounts(module, container, api_version, options, image, host_info
     # HostConfig.Mounts. I have no idea what about API 1.25...
     mounts = container["HostConfig"].get("Mounts")
     if mounts is not None:
-        result = []
-        empty_dict = {}
+        mounts_list = []
+        empty_dict: dict[str, t.Any] = {}
         for mount in mounts:
-            result.append(
+            mounts_list.append(
                 {
                     "type": mount.get("Type"),
                     "source": mount.get("Source"),
@@ -1207,7 +1642,7 @@ def _get_values_mounts(module, container, api_version, options, image, host_info
                     ),
                 }
             )
-        mounts = result
+        mounts = mounts_list
     result = {}
     if volumes is not None:
         result["volumes"] = volumes
@@ -1218,7 +1653,7 @@ def _get_values_mounts(module, container, api_version, options, image, host_info
     return result
 
 
-def _get_bind_from_dict(volume_dict):
+def _get_bind_from_dict(volume_dict: dict[str, t.Any] | None) -> list[str]:
     results = []
     if volume_dict:
         for host_path, config in volume_dict.items():
@@ -1229,7 +1664,7 @@ def _get_bind_from_dict(volume_dict):
     return results
 
 
-def _get_image_binds(volumes):
+def _get_image_binds(volumes: dict[str, t.Any] | list[dict[str, t.Any]]) -> list[str]:
     """
     Convert array of binds to array of strings with format host_path:container_path:mode
 
@@ -1246,8 +1681,14 @@ def _get_image_binds(volumes):
 
 
 def _get_expected_values_mounts(
-    module, client, api_version, options, image, values, host_info
-):
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    options: list[Option],
+    image: dict[str, t.Any] | None,
+    values: dict[str, t.Any],
+    host_info: dict[str, t.Any] | None,
+) -> dict[str, t.Any]:
     expected_values = {}
 
     # binds
@@ -1284,11 +1725,17 @@ def _get_expected_values_mounts(
     return expected_values
 
 
-def _set_values_mounts(module, data, api_version, options, values):
+def _set_values_mounts(
+    module: AnsibleModule,
+    data: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    values: dict[str, t.Any],
+) -> None:
     if "mounts" in values:
         if "HostConfig" not in data:
             data["HostConfig"] = {}
-        mounts = []
+        mounts: list[dict[str, t.Any]] = []
         for mount in values["mounts"]:
             mount_type = mount.get("type")
             mount_res = {
@@ -1300,7 +1747,7 @@ def _set_values_mounts(module, data, api_version, options, values):
             if "consistency" in mount:
                 mount_res["Consistency"] = mount["consistency"]
             if mount_type == "bind":
-                bind_opts = {}
+                bind_opts: dict[str, t.Any] = {}
                 if "propagation" in mount:
                     bind_opts["Propagation"] = mount["propagation"]
                 if "non_recursive" in mount:
@@ -1316,13 +1763,13 @@ def _set_values_mounts(module, data, api_version, options, values):
                 if bind_opts:
                     mount_res["BindOptions"] = bind_opts
             if mount_type == "volume":
-                volume_opts = {}
+                volume_opts: dict[str, t.Any] = {}
                 if mount.get("no_copy"):
                     volume_opts["NoCopy"] = True
                 if mount.get("labels"):
                     volume_opts["Labels"] = mount.get("labels")
                 if mount.get("volume_driver"):
-                    driver_config = {
+                    driver_config: dict[str, t.Any] = {
                         "Name": mount.get("volume_driver"),
                     }
                     if mount.get("volume_options"):
@@ -1333,7 +1780,7 @@ def _set_values_mounts(module, data, api_version, options, values):
                 if volume_opts:
                     mount_res["VolumeOptions"] = volume_opts
             if mount_type == "tmpfs":
-                tmpfs_opts = {}
+                tmpfs_opts: dict[str, t.Any] = {}
                 if mount.get("tmpfs_mode"):
                     tmpfs_opts["Mode"] = mount.get("tmpfs_mode")
                 if mount.get("tmpfs_size"):
@@ -1343,7 +1790,7 @@ def _set_values_mounts(module, data, api_version, options, values):
                 if tmpfs_opts:
                     mount_res["TmpfsOptions"] = tmpfs_opts
             if mount_type == "image":
-                image_opts = {}
+                image_opts: dict[str, t.Any] = {}
                 if "subpath" in mount:
                     image_opts["Subpath"] = mount["subpath"]
                 if image_opts:
@@ -1351,7 +1798,7 @@ def _set_values_mounts(module, data, api_version, options, values):
             mounts.append(mount_res)
         data["HostConfig"]["Mounts"] = mounts
     if "volumes" in values:
-        volumes = {}
+        volumes: dict[str, t.Any] = {}
         for volume in values["volumes"]:
             # Only pass anonymous volumes to create container
             if ":" in volume:
@@ -1369,7 +1816,14 @@ def _set_values_mounts(module, data, api_version, options, values):
         data["HostConfig"]["Binds"] = values["volume_binds"]
 
 
-def _get_values_log(module, container, api_version, options, image, host_info):
+def _get_values_log(
+    module: AnsibleModule,
+    container: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    image: dict[str, t.Any] | None,
+    host_info: dict[str, t.Any] | None,
+) -> dict[str, t.Any]:
     log_config = container["HostConfig"].get("LogConfig") or {}
     return {
         "log_driver": log_config.get("Type"),
@@ -1377,7 +1831,13 @@ def _get_values_log(module, container, api_version, options, image, host_info):
     }
 
 
-def _set_values_log(module, data, api_version, options, values):
+def _set_values_log(
+    module: AnsibleModule,
+    data: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    values: dict[str, t.Any],
+) -> None:
     if "log_driver" not in values:
         return
     log_config = {
@@ -1389,7 +1849,14 @@ def _set_values_log(module, data, api_version, options, values):
     data["HostConfig"]["LogConfig"] = log_config
 
 
-def _get_values_platform(module, container, api_version, options, image, host_info):
+def _get_values_platform(
+    module: AnsibleModule,
+    container: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    image: dict[str, t.Any] | None,
+    host_info: dict[str, t.Any] | None,
+) -> dict[str, t.Any]:
     if image and (image.get("Os") or image.get("Architecture") or image.get("Variant")):
         return {
             "platform": compose_platform_string(
@@ -1406,8 +1873,14 @@ def _get_values_platform(module, container, api_version, options, image, host_in
 
 
 def _get_expected_values_platform(
-    module, client, api_version, options, image, values, host_info
-):
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    options: list[Option],
+    image: dict[str, t.Any] | None,
+    values: dict[str, t.Any],
+    host_info: dict[str, t.Any] | None,
+) -> dict[str, t.Any]:
     expected_values = {}
     if "platform" in values:
         try:
@@ -1421,20 +1894,33 @@ def _get_expected_values_platform(
     return expected_values
 
 
-def _set_values_platform(module, data, api_version, options, values):
+def _set_values_platform(
+    module: AnsibleModule,
+    data: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    values: dict[str, t.Any],
+) -> None:
     if "platform" in values:
         data["platform"] = values["platform"]
 
 
-def _needs_container_image_platform(values):
+def _needs_container_image_platform(values: dict[str, t.Any]) -> bool:
     return "platform" in values
 
 
-def _needs_host_info_platform(values):
+def _needs_host_info_platform(values: dict[str, t.Any]) -> bool:
     return "platform" in values
 
 
-def _get_values_restart(module, container, api_version, options, image, host_info):
+def _get_values_restart(
+    module: AnsibleModule,
+    container: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    image: dict[str, t.Any] | None,
+    host_info: dict[str, t.Any] | None,
+) -> dict[str, t.Any]:
     restart_policy = container["HostConfig"].get("RestartPolicy") or {}
     return {
         "restart_policy": restart_policy.get("Name"),
@@ -1442,7 +1928,13 @@ def _get_values_restart(module, container, api_version, options, image, host_inf
     }
 
 
-def _set_values_restart(module, data, api_version, options, values):
+def _set_values_restart(
+    module: AnsibleModule,
+    data: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    values: dict[str, t.Any],
+) -> None:
     if "restart_policy" not in values:
         return
     restart_policy = {
@@ -1454,7 +1946,13 @@ def _set_values_restart(module, data, api_version, options, values):
     data["HostConfig"]["RestartPolicy"] = restart_policy
 
 
-def _update_value_restart(module, data, api_version, options, values):
+def _update_value_restart(
+    module: AnsibleModule,
+    data: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    values: dict[str, t.Any],
+) -> None:
     if "restart_policy" not in values:
         return
     data["RestartPolicy"] = {
@@ -1481,9 +1979,15 @@ def _get_values_ports(module, container, api_version, options, image, host_info)
 
 
 def _get_expected_values_ports(
-    module, client, api_version, options, image, values, host_info
-):
-    expected_values = {}
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    options: list[Option],
+    image: dict[str, t.Any] | None,
+    values: dict[str, t.Any],
+    host_info: dict[str, t.Any] | None,
+) -> dict[str, t.Any]:
+    expected_values: dict[str, t.Any] = {}
 
     if "published_ports" in values:
         expected_bound_ports = {}
@@ -1538,9 +2042,15 @@ def _get_expected_values_ports(
     return expected_values
 
 
-def _set_values_ports(module, data, api_version, options, values):
+def _set_values_ports(
+    module: AnsibleModule,
+    data: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    values: dict[str, t.Any],
+) -> None:
     if "ports" in values:
-        exposed_ports = {}
+        exposed_ports: dict[str, dict[str, t.Any]] = {}
         for port_definition in values["ports"]:
             port = port_definition
             proto = "tcp"
@@ -1562,7 +2072,13 @@ def _set_values_ports(module, data, api_version, options, values):
         data["HostConfig"]["PublishAllPorts"] = values["publish_all_ports"]
 
 
-def _preprocess_value_ports(module, client, api_version, options, values):
+def _preprocess_value_ports(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    options: list[Option],
+    values: dict[str, t.Any],
+) -> dict[str, t.Any]:
     if "published_ports" not in values:
         return values
     found = False
@@ -1579,7 +2095,12 @@ def _preprocess_value_ports(module, client, api_version, options, values):
     return values
 
 
-def _preprocess_container_names(module, client, api_version, value):
+def _preprocess_container_names(
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    value: t.Any,
+) -> t.Any:
     if value is None or not value.startswith("container:"):
         return value
     container_name = value[len("container:") :]
@@ -1594,14 +2115,27 @@ def _preprocess_container_names(module, client, api_version, value):
     return f"container:{container['Id']}"
 
 
-def _get_value_command(module, container, api_version, options, image, host_info):
+def _get_value_command(
+    module: AnsibleModule,
+    container: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    image: dict[str, t.Any] | None,
+    host_info: dict[str, t.Any] | None,
+) -> dict[str, t.Any]:
     value = container["Config"].get("Cmd", _SENTRY)
     if value is _SENTRY:
         return {}
     return {"command": value}
 
 
-def _set_value_command(module, data, api_version, options, values):
+def _set_value_command(
+    module: AnsibleModule,
+    data: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    values: dict[str, t.Any],
+) -> None:
     if "command" not in values:
         return
     value = values["command"]
@@ -1609,8 +2143,14 @@ def _set_value_command(module, data, api_version, options, values):
 
 
 def _get_expected_values_command(
-    module, client, api_version, options, image, values, host_info
-):
+    module: AnsibleModule,
+    client: AnsibleDockerClient,
+    api_version: LooseVersion,
+    options: list[Option],
+    image: dict[str, t.Any] | None,
+    values: dict[str, t.Any],
+    host_info: dict[str, t.Any] | None,
+) -> dict[str, t.Any]:
     expected_values = {}
     if "command" in values:
         command = values["command"]
@@ -1620,7 +2160,7 @@ def _get_expected_values_command(
     return expected_values
 
 
-def _needs_container_image_command(values):
+def _needs_container_image_command(values: dict[str, t.Any]) -> bool:
     return values.get("command") == []
 
 

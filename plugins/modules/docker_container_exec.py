@@ -165,6 +165,7 @@ exec_id:
 
 import shlex
 import traceback
+import typing as t
 
 from ansible.module_utils.common.text.converters import to_bytes, to_text
 
@@ -185,7 +186,7 @@ from ansible_collections.community.docker.plugins.module_utils._socket_handler i
 )
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "container": {"type": "str", "required": True},
         "argv": {"type": "list", "elements": "str"},
@@ -211,16 +212,16 @@ def main():
         required_one_of=[("argv", "command")],
     )
 
-    container = client.module.params["container"]
-    argv = client.module.params["argv"]
-    command = client.module.params["command"]
-    chdir = client.module.params["chdir"]
-    detach = client.module.params["detach"]
-    user = client.module.params["user"]
-    stdin = client.module.params["stdin"]
-    strip_empty_ends = client.module.params["strip_empty_ends"]
-    tty = client.module.params["tty"]
-    env = client.module.params["env"]
+    container: str = client.module.params["container"]
+    argv: list[str] | None = client.module.params["argv"]
+    command: str | None = client.module.params["command"]
+    chdir: str | None = client.module.params["chdir"]
+    detach: bool = client.module.params["detach"]
+    user: str | None = client.module.params["user"]
+    stdin: str | None = client.module.params["stdin"]
+    strip_empty_ends: bool = client.module.params["strip_empty_ends"]
+    tty: bool = client.module.params["tty"]
+    env: dict[str, t.Any] = client.module.params["env"]
 
     if env is not None:
         for name, value in list(env.items()):
@@ -233,6 +234,7 @@ def main():
 
     if command is not None:
         argv = shlex.split(command)
+    assert argv is not None
 
     if detach and stdin is not None:
         client.module.fail_json(msg="If detach=true, stdin cannot be provided.")
@@ -258,7 +260,7 @@ def main():
         exec_data = client.post_json_to_json(
             "/containers/{0}/exec", container, data=data
         )
-        exec_id = exec_data["Id"]
+        exec_id: str = exec_data["Id"]
 
         data = {
             "Tty": tty,
@@ -269,6 +271,8 @@ def main():
             client.module.exit_json(changed=True, exec_id=exec_id)
 
         else:
+            stdout: bytes | None
+            stderr: bytes | None
             if stdin and not detach:
                 exec_socket = client.post_json_to_stream_socket(
                     "/exec/{0}/start", exec_id, data=data
@@ -283,28 +287,37 @@ def main():
                         stdout, stderr = exec_socket_handler.consume()
                 finally:
                     exec_socket.close()
+            elif tty:
+                stdout, stderr = client.post_json_to_stream(
+                    "/exec/{0}/start",
+                    exec_id,
+                    data=data,
+                    stream=False,
+                    tty=True,
+                    demux=True,
+                )
             else:
                 stdout, stderr = client.post_json_to_stream(
                     "/exec/{0}/start",
                     exec_id,
                     data=data,
                     stream=False,
-                    tty=tty,
+                    tty=False,
                     demux=True,
                 )
 
             result = client.get_json("/exec/{0}/json", exec_id)
 
-            stdout = to_text(stdout or b"")
-            stderr = to_text(stderr or b"")
+            stdout_t = to_text(stdout or b"")
+            stderr_t = to_text(stderr or b"")
             if strip_empty_ends:
-                stdout = stdout.rstrip("\r\n")
-                stderr = stderr.rstrip("\r\n")
+                stdout_t = stdout_t.rstrip("\r\n")
+                stderr_t = stderr_t.rstrip("\r\n")
 
             client.module.exit_json(
                 changed=True,
-                stdout=stdout,
-                stderr=stderr,
+                stdout=stdout_t,
+                stderr=stderr_t,
                 rc=result.get("ExitCode") or 0,
             )
     except NotFound:
