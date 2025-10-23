@@ -158,6 +158,7 @@ import json
 import os
 import tempfile
 import traceback
+import typing as t
 from time import sleep
 
 from ansible.module_utils.common.text.converters import to_native
@@ -183,7 +184,9 @@ except ImportError:
     HAS_YAML = False
 
 
-def docker_stack_services(client, stack_name):
+def docker_stack_services(
+    client: AnsibleModuleDockerClient, stack_name: str
+) -> list[str]:
     dummy_rc, out, err = client.call_cli(
         "stack", "services", stack_name, "--format", "{{.Name}}"
     )
@@ -192,7 +195,9 @@ def docker_stack_services(client, stack_name):
     return to_native(out).strip().split("\n")
 
 
-def docker_service_inspect(client, service_name):
+def docker_service_inspect(
+    client: AnsibleModuleDockerClient, service_name: str
+) -> dict[str, t.Any] | None:
     rc, out, dummy_err = client.call_cli("service", "inspect", service_name)
     if rc != 0:
         return None
@@ -200,7 +205,9 @@ def docker_service_inspect(client, service_name):
     return ret
 
 
-def docker_stack_deploy(client, stack_name, compose_files):
+def docker_stack_deploy(
+    client: AnsibleModuleDockerClient, stack_name: str, compose_files: list[str]
+) -> tuple[int, str, str]:
     command = ["stack", "deploy"]
     if client.module.params["prune"]:
         command += ["--prune"]
@@ -217,14 +224,21 @@ def docker_stack_deploy(client, stack_name, compose_files):
     return rc, to_native(out), to_native(err)
 
 
-def docker_stack_inspect(client, stack_name):
-    ret = {}
+def docker_stack_inspect(
+    client: AnsibleModuleDockerClient, stack_name: str
+) -> dict[str, dict[str, t.Any] | None]:
+    ret: dict[str, dict[str, t.Any] | None] = {}
     for service_name in docker_stack_services(client, stack_name):
         ret[service_name] = docker_service_inspect(client, service_name)
     return ret
 
 
-def docker_stack_rm(client, stack_name, retries, interval):
+def docker_stack_rm(
+    client: AnsibleModuleDockerClient,
+    stack_name: str,
+    retries: int,
+    interval: int | float,
+) -> tuple[int, str, str]:
     command = ["stack", "rm", stack_name]
     if not client.module.params["detach"]:
         command += ["--detach=false"]
@@ -237,7 +251,7 @@ def docker_stack_rm(client, stack_name, retries, interval):
     return rc, to_native(out), to_native(err)
 
 
-def main():
+def main() -> None:
     client = AnsibleModuleDockerClient(
         argument_spec={
             "name": {"type": "str", "required": True},
@@ -258,10 +272,10 @@ def main():
     )
 
     if not HAS_JSONDIFF:
-        return client.fail("jsondiff is not installed, try 'pip install jsondiff'")
+        client.fail("jsondiff is not installed, try 'pip install jsondiff'")
 
     if not HAS_YAML:
-        return client.fail("yaml is not installed, try 'pip install pyyaml'")
+        client.fail("yaml is not installed, try 'pip install pyyaml'")
 
     try:
         state = client.module.params["state"]
