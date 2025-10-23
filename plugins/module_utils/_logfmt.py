@@ -13,6 +13,9 @@ See https://pkg.go.dev/github.com/kr/logfmt?utm_source=godoc for information on 
 
 from __future__ import annotations
 
+import typing as t
+from enum import Enum
+
 
 # The format is defined in https://pkg.go.dev/github.com/kr/logfmt?utm_source=godoc
 # (look for "EBNFish")
@@ -22,7 +25,7 @@ class InvalidLogFmt(Exception):
     pass
 
 
-class _Mode:
+class _Mode(Enum):
     GARBAGE = 0
     KEY = 1
     EQUAL = 2
@@ -68,29 +71,29 @@ _HEX_DICT = {
 }
 
 
-def _is_ident(cur):
+def _is_ident(cur: str) -> bool:
     return cur > " " and cur not in ('"', "=")
 
 
 class _Parser:
-    def __init__(self, line):
+    def __init__(self, line: str) -> None:
         self.line = line
         self.index = 0
         self.length = len(line)
 
-    def done(self):
+    def done(self) -> bool:
         return self.index >= self.length
 
-    def cur(self):
+    def cur(self) -> str:
         return self.line[self.index]
 
-    def next(self):
+    def next(self) -> None:
         self.index += 1
 
-    def prev(self):
+    def prev(self) -> None:
         self.index -= 1
 
-    def parse_unicode_sequence(self):
+    def parse_unicode_sequence(self) -> str:
         if self.index + 6 > self.length:
             raise InvalidLogFmt("Not enough space for unicode escape")
         if self.line[self.index : self.index + 2] != "\\u":
@@ -108,27 +111,27 @@ class _Parser:
         return chr(v)
 
 
-def parse_line(line, logrus_mode=False):
-    result = {}
+def parse_line(line: str, logrus_mode: bool = False) -> dict[str, t.Any]:
+    result: dict[str, t.Any] = {}
     parser = _Parser(line)
-    key = []
-    value = []
+    key: list[str] = []
+    value: list[str] = []
     mode = _Mode.GARBAGE
 
-    def handle_kv(has_no_value=False):
+    def handle_kv(has_no_value: bool = False) -> None:
         k = "".join(key)
         v = None if has_no_value else "".join(value)
         result[k] = v
         del key[:]
         del value[:]
 
-    def parse_garbage(cur):
+    def parse_garbage(cur: str) -> _Mode:
         if _is_ident(cur):
             return _Mode.KEY
         parser.next()
         return _Mode.GARBAGE
 
-    def parse_key(cur):
+    def parse_key(cur: str) -> _Mode:
         if _is_ident(cur):
             key.append(cur)
             parser.next()
@@ -142,7 +145,7 @@ def parse_line(line, logrus_mode=False):
         parser.next()
         return _Mode.GARBAGE
 
-    def parse_equal(cur):
+    def parse_equal(cur: str) -> _Mode:
         if _is_ident(cur):
             value.append(cur)
             parser.next()
@@ -154,7 +157,7 @@ def parse_line(line, logrus_mode=False):
         parser.next()
         return _Mode.GARBAGE
 
-    def parse_ident_value(cur):
+    def parse_ident_value(cur: str) -> _Mode:
         if _is_ident(cur):
             value.append(cur)
             parser.next()
@@ -163,7 +166,7 @@ def parse_line(line, logrus_mode=False):
         parser.next()
         return _Mode.GARBAGE
 
-    def parse_quoted_value(cur):
+    def parse_quoted_value(cur: str) -> _Mode:
         if cur == "\\":
             parser.next()
             if parser.done():

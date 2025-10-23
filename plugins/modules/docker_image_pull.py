@@ -91,6 +91,7 @@ image:
 """
 
 import traceback
+import typing as t
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     DockerException,
@@ -114,7 +115,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 )
 
 
-def image_info(image):
+def image_info(image: dict[str, t.Any] | None) -> dict[str, t.Any]:
     result = {}
     if image:
         result["id"] = image["Id"]
@@ -124,17 +125,17 @@ def image_info(image):
 
 
 class ImagePuller(DockerBaseClass):
-    def __init__(self, client):
+    def __init__(self, client: AnsibleDockerClient) -> None:
         super().__init__()
 
         self.client = client
         self.check_mode = self.client.check_mode
 
         parameters = self.client.module.params
-        self.name = parameters["name"]
-        self.tag = parameters["tag"]
-        self.platform = parameters["platform"]
-        self.pull_mode = parameters["pull"]
+        self.name: str = parameters["name"]
+        self.tag: str = parameters["tag"]
+        self.platform: str | None = parameters["platform"]
+        self.pull_mode: t.Literal["always", "not_present"] = parameters["pull"]
 
         if is_image_name_id(self.name):
             self.client.fail("Cannot pull an image by ID")
@@ -147,13 +148,15 @@ class ImagePuller(DockerBaseClass):
             self.name = repo
             self.tag = repo_tag
 
-    def pull(self):
+    def pull(self) -> dict[str, t.Any]:
         image = self.client.find_image(name=self.name, tag=self.tag)
+        actions: list[str] = []
+        diff = {"before": image_info(image), "after": image_info(image)}
         results = {
             "changed": False,
-            "actions": [],
+            "actions": actions,
             "image": image or {},
-            "diff": {"before": image_info(image), "after": image_info(image)},
+            "diff": diff,
         }
 
         if image and self.pull_mode == "not_present":
@@ -175,21 +178,22 @@ class ImagePuller(DockerBaseClass):
             if compare_platform_strings(wanted_platform, image_platform):
                 return results
 
-        results["actions"].append(f"Pulled image {self.name}:{self.tag}")
+        actions.append(f"Pulled image {self.name}:{self.tag}")
         if self.check_mode:
             results["changed"] = True
-            results["diff"]["after"] = image_info({"Id": "unknown"})
+            diff["after"] = image_info({"Id": "unknown"})
         else:
-            results["image"], not_changed = self.client.pull_image(
+            image, not_changed = self.client.pull_image(
                 self.name, tag=self.tag, image_platform=self.platform
             )
+            results["image"] = image
             results["changed"] = not not_changed
-            results["diff"]["after"] = image_info(results["image"])
+            diff["after"] = image_info(image)
 
         return results
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True},
         "tag": {"type": "str", "default": "latest"},

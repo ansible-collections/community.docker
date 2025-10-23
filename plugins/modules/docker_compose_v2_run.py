@@ -239,6 +239,7 @@ rc:
 
 import shlex
 import traceback
+import typing as t
 
 from ansible.module_utils.common.text.converters import to_text
 
@@ -253,42 +254,45 @@ from ansible_collections.community.docker.plugins.module_utils._compose_v2 impor
 
 
 class ExecManager(BaseComposeManager):
-    def __init__(self, client):
+    def __init__(self, client: AnsibleModuleDockerClient) -> None:
         super().__init__(client)
         parameters = self.client.module.params
 
-        self.service = parameters["service"]
-        self.build = parameters["build"]
-        self.cap_add = parameters["cap_add"]
-        self.cap_drop = parameters["cap_drop"]
-        self.entrypoint = parameters["entrypoint"]
-        self.interactive = parameters["interactive"]
-        self.labels = parameters["labels"]
-        self.name = parameters["name"]
-        self.no_deps = parameters["no_deps"]
-        self.publish = parameters["publish"]
-        self.quiet_pull = parameters["quiet_pull"]
-        self.remove_orphans = parameters["remove_orphans"]
-        self.do_cleanup = parameters["cleanup"]
-        self.service_ports = parameters["service_ports"]
-        self.use_aliases = parameters["use_aliases"]
-        self.volumes = parameters["volumes"]
-        self.chdir = parameters["chdir"]
-        self.detach = parameters["detach"]
-        self.user = parameters["user"]
-        self.stdin = parameters["stdin"]
-        self.strip_empty_ends = parameters["strip_empty_ends"]
-        self.tty = parameters["tty"]
-        self.env = parameters["env"]
+        self.service: str = parameters["service"]
+        self.build: bool = parameters["build"]
+        self.cap_add: list[str] | None = parameters["cap_add"]
+        self.cap_drop: list[str] | None = parameters["cap_drop"]
+        self.entrypoint: str | None = parameters["entrypoint"]
+        self.interactive: bool = parameters["interactive"]
+        self.labels: list[str] | None = parameters["labels"]
+        self.name: str | None = parameters["name"]
+        self.no_deps: bool = parameters["no_deps"]
+        self.publish: list[str] | None = parameters["publish"]
+        self.quiet_pull: bool = parameters["quiet_pull"]
+        self.remove_orphans: bool = parameters["remove_orphans"]
+        self.do_cleanup: bool = parameters["cleanup"]
+        self.service_ports: bool = parameters["service_ports"]
+        self.use_aliases: bool = parameters["use_aliases"]
+        self.volumes: list[str] | None = parameters["volumes"]
+        self.chdir: str | None = parameters["chdir"]
+        self.detach: bool = parameters["detach"]
+        self.user: str | None = parameters["user"]
+        self.stdin: str | None = parameters["stdin"]
+        self.strip_empty_ends: bool = parameters["strip_empty_ends"]
+        self.tty: bool = parameters["tty"]
+        self.env: dict[str, t.Any] | None = parameters["env"]
 
-        self.argv = parameters["argv"]
+        self.argv: list[str]
         if parameters["command"] is not None:
             self.argv = shlex.split(parameters["command"])
+        else:
+            self.argv = parameters["argv"]
 
         if self.detach and self.stdin is not None:
             self.fail("If detach=true, stdin cannot be provided.")
 
-        if self.stdin is not None and parameters["stdin_add_newline"]:
+        stdin_add_newline: bool = parameters["stdin_add_newline"]
+        if self.stdin is not None and stdin_add_newline:
             self.stdin += "\n"
 
         if self.env is not None:
@@ -300,7 +304,7 @@ class ExecManager(BaseComposeManager):
                     )
                 self.env[name] = to_text(value, errors="surrogate_or_strict")
 
-    def get_run_cmd(self, dry_run, no_start=False):
+    def get_run_cmd(self, dry_run: bool) -> list[str]:
         args = self.get_base_args(plain_progress=True) + ["run"]
         if self.build:
             args.append("--build")
@@ -355,9 +359,9 @@ class ExecManager(BaseComposeManager):
             args.extend(self.argv)
         return args
 
-    def run(self):
+    def run(self) -> dict[str, t.Any]:
         args = self.get_run_cmd(self.check_mode)
-        kwargs = {
+        kwargs: dict[str, t.Any] = {
             "cwd": self.project_src,
         }
         if self.stdin is not None:
@@ -382,7 +386,7 @@ class ExecManager(BaseComposeManager):
         }
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "service": {"type": "str", "required": True},
         "argv": {"type": "list", "elements": "str"},

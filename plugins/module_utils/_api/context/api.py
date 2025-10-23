@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import typing as t
 
 from .. import errors
 from .config import (
@@ -24,7 +25,11 @@ from .config import (
 from .context import Context
 
 
-def create_default_context():
+if t.TYPE_CHECKING:
+    from ..tls import TLSConfig
+
+
+def create_default_context() -> Context:
     host = None
     if os.environ.get("DOCKER_HOST"):
         host = os.environ.get("DOCKER_HOST")
@@ -42,7 +47,7 @@ class ContextAPI:
     DEFAULT_CONTEXT = None
 
     @classmethod
-    def get_default_context(cls):
+    def get_default_context(cls) -> Context:
         context = cls.DEFAULT_CONTEXT
         if context is None:
             context = create_default_context()
@@ -52,13 +57,13 @@ class ContextAPI:
     @classmethod
     def create_context(
         cls,
-        name,
-        orchestrator=None,
-        host=None,
-        tls_cfg=None,
-        default_namespace=None,
-        skip_tls_verify=False,
-    ):
+        name: str,
+        orchestrator: str | None = None,
+        host: str | None = None,
+        tls_cfg: TLSConfig | None = None,
+        default_namespace: str | None = None,
+        skip_tls_verify: bool = False,
+    ) -> Context:
         """Creates a new context.
         Returns:
             (Context): a Context object.
@@ -108,7 +113,7 @@ class ContextAPI:
         return ctx
 
     @classmethod
-    def get_context(cls, name=None):
+    def get_context(cls, name: str | None = None) -> Context | None:
         """Retrieves a context object.
         Args:
             name (str): The name of the context
@@ -136,7 +141,7 @@ class ContextAPI:
         return Context.load_context(name)
 
     @classmethod
-    def contexts(cls):
+    def contexts(cls) -> list[Context]:
         """Context list.
         Returns:
             (Context): List of context objects.
@@ -170,7 +175,7 @@ class ContextAPI:
         return contexts
 
     @classmethod
-    def get_current_context(cls):
+    def get_current_context(cls) -> Context | None:
         """Get current context.
         Returns:
             (Context): current context object.
@@ -178,7 +183,7 @@ class ContextAPI:
         return cls.get_context()
 
     @classmethod
-    def set_current_context(cls, name="default"):
+    def set_current_context(cls, name: str = "default") -> None:
         ctx = cls.get_context(name)
         if not ctx:
             raise errors.ContextNotFound(name)
@@ -188,7 +193,7 @@ class ContextAPI:
             raise errors.ContextException(f"Failed to set current context: {err}")
 
     @classmethod
-    def remove_context(cls, name):
+    def remove_context(cls, name: str) -> None:
         """Remove a context. Similar to the ``docker context rm`` command.
 
         Args:
@@ -220,7 +225,7 @@ class ContextAPI:
         ctx.remove()
 
     @classmethod
-    def inspect_context(cls, name="default"):
+    def inspect_context(cls, name: str = "default") -> dict[str, t.Any]:
         """Inspect a context. Similar to the ``docker context inspect`` command.
 
         Args:

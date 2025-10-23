@@ -12,10 +12,16 @@
 from __future__ import annotations
 
 import os
-import ssl
+import typing as t
 
 from . import errors
 from .transport.ssladapter import SSLHTTPAdapter
+
+
+if t.TYPE_CHECKING:
+    from ansible_collections.community.docker.plugins.module_utils._api.api.client import (
+        APIClient,
+    )
 
 
 class TLSConfig:
@@ -27,25 +33,22 @@ class TLSConfig:
         ca_cert (str): Path to CA cert file.
         verify (bool or str): This can be ``False`` or a path to a CA cert
             file.
-        ssl_version (int): A valid `SSL version`_.
         assert_hostname (bool): Verify the hostname of the server.
 
     .. _`SSL version`:
         https://docs.python.org/3.5/library/ssl.html#ssl.PROTOCOL_TLSv1
     """
 
-    cert = None
-    ca_cert = None
-    verify = None
-    ssl_version = None
+    cert: tuple[str, str] | None = None
+    ca_cert: str | None = None
+    verify: bool | None = None
 
     def __init__(
         self,
-        client_cert=None,
-        ca_cert=None,
-        verify=None,
-        ssl_version=None,
-        assert_hostname=None,
+        client_cert: tuple[str, str] | None = None,
+        ca_cert: str | None = None,
+        verify: bool | None = None,
+        assert_hostname: bool | None = None,
     ):
         # Argument compatibility/mapping with
         # https://docs.docker.com/engine/articles/https/
@@ -54,12 +57,6 @@ class TLSConfig:
         # leaving verify=False
 
         self.assert_hostname = assert_hostname
-
-        # If the user provides an SSL version, we should use their preference
-        if ssl_version:
-            self.ssl_version = ssl_version
-        else:
-            self.ssl_version = ssl.PROTOCOL_TLS_CLIENT
 
         # "client_cert" must have both or neither cert/key files. In
         # either case, Alert the user when both are expected, but any are
@@ -90,11 +87,10 @@ class TLSConfig:
                 "Invalid CA certificate provided for `ca_cert`."
             )
 
-    def configure_client(self, client):
+    def configure_client(self, client: APIClient) -> None:
         """
         Configure a client with these TLS options.
         """
-        client.ssl_version = self.ssl_version
 
         if self.verify and self.ca_cert:
             client.verify = self.ca_cert
@@ -107,7 +103,6 @@ class TLSConfig:
         client.mount(
             "https://",
             SSLHTTPAdapter(
-                ssl_version=self.ssl_version,
                 assert_hostname=self.assert_hostname,
             ),
         )

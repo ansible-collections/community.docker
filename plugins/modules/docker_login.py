@@ -120,6 +120,7 @@ import base64
 import json
 import os
 import traceback
+import typing as t
 
 from ansible.module_utils.common.text.converters import to_bytes, to_text
 
@@ -154,11 +155,11 @@ class DockerFileStore:
 
     program = "<legacy config>"
 
-    def __init__(self, config_path):
+    def __init__(self, config_path: str) -> None:
         self._config_path = config_path
 
         # Make sure we have a minimal config if none is available.
-        self._config = {"auths": {}}
+        self._config: dict[str, t.Any] = {"auths": {}}
 
         try:
             # Attempt to read the existing config.
@@ -172,14 +173,14 @@ class DockerFileStore:
         self._config.update(config)
 
     @property
-    def config_path(self):
+    def config_path(self) -> str:
         """
         Return the config path configured in this DockerFileStore instance.
         """
 
         return self._config_path
 
-    def get(self, server):
+    def get(self, server: str) -> dict[str, t.Any]:
         """
         Retrieve credentials for `server` if there are any in the config file.
         Otherwise raise a `StoreError`
@@ -193,7 +194,7 @@ class DockerFileStore:
 
         return {"Username": username, "Secret": password}
 
-    def _write(self):
+    def _write(self) -> None:
         """
         Write config back out to disk.
         """
@@ -209,7 +210,7 @@ class DockerFileStore:
         finally:
             os.close(f)
 
-    def store(self, server, username, password):
+    def store(self, server: str, username: str, password: str) -> None:
         """
         Add a credentials for `server` to the current configuration.
         """
@@ -225,7 +226,7 @@ class DockerFileStore:
 
         self._write()
 
-    def erase(self, server):
+    def erase(self, server: str) -> None:
         """
         Remove credentials for the given server from the configuration.
         """
@@ -236,9 +237,7 @@ class DockerFileStore:
 
 
 class LoginManager(DockerBaseClass):
-
-    def __init__(self, client, results):
-
+    def __init__(self, client: AnsibleDockerClient, results: dict[str, t.Any]) -> None:
         super().__init__()
 
         self.client = client
@@ -246,14 +245,14 @@ class LoginManager(DockerBaseClass):
         parameters = self.client.module.params
         self.check_mode = self.client.check_mode
 
-        self.registry_url = parameters.get("registry_url")
-        self.username = parameters.get("username")
-        self.password = parameters.get("password")
-        self.reauthorize = parameters.get("reauthorize")
-        self.config_path = parameters.get("config_path")
-        self.state = parameters.get("state")
+        self.registry_url: str = parameters.get("registry_url")
+        self.username: str | None = parameters.get("username")
+        self.password: str | None = parameters.get("password")
+        self.reauthorize: bool = parameters.get("reauthorize")
+        self.config_path: str = parameters.get("config_path")
+        self.state: t.Literal["present", "absent"] = parameters.get("state")
 
-    def run(self):
+    def run(self) -> None:
         """
         Do the actual work of this task here. This allows instantiation for partial
         testing.
@@ -264,10 +263,10 @@ class LoginManager(DockerBaseClass):
         else:
             self.logout()
 
-    def fail(self, msg):
+    def fail(self, msg: str) -> t.NoReturn:
         self.client.fail(msg)
 
-    def _login(self, reauth):
+    def _login(self, reauth: bool) -> dict[str, t.Any]:
         if self.config_path and os.path.exists(self.config_path):
             self.client._auth_configs = auth.load_config(
                 self.config_path, credstore_env=self.client.credstore_env
@@ -297,7 +296,7 @@ class LoginManager(DockerBaseClass):
             )
         return self.client._result(response, get_json=True)
 
-    def login(self):
+    def login(self) -> None:
         """
         Log into the registry with provided username/password. On success update the config
         file with the new authorization.
@@ -331,7 +330,7 @@ class LoginManager(DockerBaseClass):
 
         self.update_credentials()
 
-    def logout(self):
+    def logout(self) -> None:
         """
         Log out of the registry. On success update the config file.
 
@@ -353,13 +352,16 @@ class LoginManager(DockerBaseClass):
             store.erase(self.registry_url)
         self.results["changed"] = True
 
-    def update_credentials(self):
+    def update_credentials(self) -> None:
         """
         If the authorization is not stored attempt to store authorization values via
         the appropriate credential helper or to the config file.
 
         :return: None
         """
+        # This is only called from login()
+        assert self.username is not None
+        assert self.password is not None
 
         # Check to see if credentials already exist.
         store = self.get_credential_store_instance(self.registry_url, self.config_path)
@@ -385,7 +387,9 @@ class LoginManager(DockerBaseClass):
             )
             self.results["changed"] = True
 
-    def get_credential_store_instance(self, registry, dockercfg_path):
+    def get_credential_store_instance(
+        self, registry: str, dockercfg_path: str
+    ) -> Store | DockerFileStore:
         """
         Return an instance of docker.credentials.Store used by the given registry.
 
@@ -408,8 +412,7 @@ class LoginManager(DockerBaseClass):
         return DockerFileStore(dockercfg_path)
 
 
-def main():
-
+def main() -> None:
     argument_spec = {
         "registry_url": {
             "type": "str",

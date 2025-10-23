@@ -129,6 +129,7 @@ actions:
 """
 
 import traceback
+import typing as t
 
 from ansible.module_utils.common.text.converters import to_native
 
@@ -149,35 +150,36 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class TaskParameters(DockerBaseClass):
-    def __init__(self, client):
+    plugin_name: str
+
+    def __init__(self, client: AnsibleDockerClient) -> None:
         super().__init__()
         self.client = client
-        self.plugin_name = None
-        self.alias = None
-        self.plugin_options = None
-        self.debug = None
-        self.force_remove = None
-        self.enable_timeout = None
+        self.alias: str | None = None
+        self.plugin_options: dict[str, t.Any] = {}
+        self.debug: bool = False
+        self.force_remove: bool = False
+        self.enable_timeout: int = 0
+        self.state: t.Literal["present", "absent", "enable", "disable"] = "present"
 
         for key, value in client.module.params.items():
             setattr(self, key, value)
 
 
-def prepare_options(options):
+def prepare_options(options: dict[str, t.Any] | None) -> list[str]:
     return (
-        [f'{k}={v if v is not None else ""}' for k, v in options.items()]
+        [f"{k}={v if v is not None else ''}" for k, v in options.items()]
         if options
         else []
     )
 
 
-def parse_options(options_list):
+def parse_options(options_list: list[str] | None) -> dict[str, str]:
     return dict(x.split("=", 1) for x in options_list) if options_list else {}
 
 
 class DockerPluginManager:
-
-    def __init__(self, client):
+    def __init__(self, client: AnsibleDockerClient) -> None:
         self.client = client
 
         self.parameters = TaskParameters(client)
@@ -185,9 +187,9 @@ class DockerPluginManager:
         self.check_mode = self.client.check_mode
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()
-        self.diff_result = {}
+        self.diff_result: dict[str, t.Any] = {}
 
-        self.actions = []
+        self.actions: list[str] = []
         self.changed = False
 
         self.existing_plugin = self.get_existing_plugin()
@@ -209,7 +211,7 @@ class DockerPluginManager:
                 )
             self.diff = self.diff_result
 
-    def get_existing_plugin(self):
+    def get_existing_plugin(self) -> dict[str, t.Any] | None:
         try:
             return self.client.get_json("/plugins/{0}/json", self.preferred_name)
         except NotFound:
@@ -217,12 +219,13 @@ class DockerPluginManager:
         except APIError as e:
             self.client.fail(to_native(e))
 
-    def has_different_config(self):
+    def has_different_config(self) -> DifferenceTracker:
         """
         Return the list of differences between the current parameters and the existing plugin.
 
         :return: list of options that differ
         """
+        assert self.existing_plugin is not None
         differences = DifferenceTracker()
         if self.parameters.plugin_options:
             settings = self.existing_plugin.get("Settings")
@@ -249,7 +252,7 @@ class DockerPluginManager:
 
         return differences
 
-    def install_plugin(self):
+    def install_plugin(self) -> None:
         if not self.existing_plugin:
             if not self.check_mode:
                 try:
@@ -297,7 +300,7 @@ class DockerPluginManager:
             self.actions.append(f"Installed plugin {self.preferred_name}")
             self.changed = True
 
-    def remove_plugin(self):
+    def remove_plugin(self) -> None:
         force = self.parameters.force_remove
         if self.existing_plugin:
             if not self.check_mode:
@@ -311,7 +314,7 @@ class DockerPluginManager:
             self.actions.append(f"Removed plugin {self.preferred_name}")
             self.changed = True
 
-    def update_plugin(self):
+    def update_plugin(self) -> None:
         if self.existing_plugin:
             differences = self.has_different_config()
             if not differences.empty:
@@ -328,7 +331,7 @@ class DockerPluginManager:
         else:
             self.client.fail("Cannot update the plugin: Plugin does not exist")
 
-    def present(self):
+    def present(self) -> None:
         differences = DifferenceTracker()
         if self.existing_plugin:
             differences = self.has_different_config()
@@ -345,13 +348,10 @@ class DockerPluginManager:
         if self.diff or self.check_mode or self.parameters.debug:
             self.diff_tracker.merge(differences)
 
-        if not self.check_mode and not self.parameters.debug:
-            self.actions = None
-
-    def absent(self):
+    def absent(self) -> None:
         self.remove_plugin()
 
-    def enable(self):
+    def enable(self) -> None:
         timeout = self.parameters.enable_timeout
         if self.existing_plugin:
             if not self.existing_plugin.get("Enabled"):
@@ -380,7 +380,7 @@ class DockerPluginManager:
             self.actions.append(f"Enabled plugin {self.preferred_name}")
             self.changed = True
 
-    def disable(self):
+    def disable(self) -> None:
         if self.existing_plugin:
             if self.existing_plugin.get("Enabled"):
                 if not self.check_mode:
@@ -396,7 +396,7 @@ class DockerPluginManager:
             self.client.fail("Plugin not found: Plugin does not exist.")
 
     @property
-    def result(self):
+    def result(self) -> dict[str, t.Any]:
         plugin_data = {}
         if self.parameters.state != "absent":
             try:
@@ -406,16 +406,22 @@ class DockerPluginManager:
             except NotFound:
                 # This can happen in check mode
                 pass
-        result = {
+        result: dict[str, t.Any] = {
             "actions": self.actions,
             "changed": self.changed,
             "diff": self.diff,
             "plugin": plugin_data,
         }
-        return dict((k, v) for k, v in result.items() if v is not None)
+        if (
+            self.parameters.state == "present"
+            and not self.check_mode
+            and not self.parameters.debug
+        ):
+            result["actions"] = None
+        return {k: v for k, v in result.items() if v is not None}
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "alias": {"type": "str"},
         "plugin_name": {"type": "str", "required": True},

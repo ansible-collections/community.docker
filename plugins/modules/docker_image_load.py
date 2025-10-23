@@ -80,6 +80,7 @@ images:
 
 import errno
 import traceback
+import typing as t
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     DockerException,
@@ -95,7 +96,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class ImageManager(DockerBaseClass):
-    def __init__(self, client, results):
+    def __init__(self, client: AnsibleDockerClient, results: dict[str, t.Any]) -> None:
         super().__init__()
 
         self.client = client
@@ -108,7 +109,7 @@ class ImageManager(DockerBaseClass):
         self.load_images()
 
     @staticmethod
-    def _extract_output_line(line, output):
+    def _extract_output_line(line: dict[str, t.Any], output: list[str]) -> None:
         """
         Extract text line from stream output and, if found, adds it to output.
         """
@@ -118,12 +119,12 @@ class ImageManager(DockerBaseClass):
             text_line = line.get("stream") or line.get("status") or ""
             output.extend(text_line.splitlines())
 
-    def load_images(self):
+    def load_images(self) -> None:
         """
         Load images from a .tar archive
         """
         # Load image(s) from file
-        load_output = []
+        load_output: list[str] = []
         try:
             self.log(f"Opening image {self.path}")
             with open(self.path, "rb") as image_tar:
@@ -179,7 +180,7 @@ class ImageManager(DockerBaseClass):
         self.results["stdout"] = "\n".join(load_output)
 
 
-def main():
+def main() -> None:
     client = AnsibleDockerClient(
         argument_spec={
             "path": {"type": "path", "required": True},
@@ -188,7 +189,7 @@ def main():
     )
 
     try:
-        results = {
+        results: dict[str, t.Any] = {
             "image_names": [],
             "images": [],
         }

@@ -284,6 +284,7 @@ network:
 import re
 import time
 import traceback
+import typing as t
 
 from ansible.module_utils.common.text.converters import to_native
 
@@ -303,29 +304,31 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class TaskParameters(DockerBaseClass):
-    def __init__(self, client):
+    name: str
+
+    def __init__(self, client: AnsibleDockerClient) -> None:
         super().__init__()
         self.client = client
 
-        self.name = None
-        self.connected = None
-        self.config_from = None
-        self.config_only = None
-        self.driver = None
-        self.driver_options = None
-        self.ipam_driver = None
-        self.ipam_driver_options = None
-        self.ipam_config = None
-        self.appends = None
-        self.force = None
-        self.internal = None
-        self.labels = None
-        self.debug = None
-        self.enable_ipv4 = None
-        self.enable_ipv6 = None
-        self.scope = None
-        self.attachable = None
-        self.ingress = None
+        self.connected: list[str] = []
+        self.config_from: str | None = None
+        self.config_only: bool | None = None
+        self.driver: str = "bridge"
+        self.driver_options: dict[str, t.Any] = {}
+        self.ipam_driver: str | None = None
+        self.ipam_driver_options: dict[str, t.Any] | None = None
+        self.ipam_config: list[dict[str, t.Any]] | None = None
+        self.appends: bool = False
+        self.force: bool = False
+        self.internal: bool | None = None
+        self.labels: dict[str, t.Any] = {}
+        self.debug: bool = False
+        self.enable_ipv4: bool | None = None
+        self.enable_ipv6: bool | None = None
+        self.scope: t.Literal["local", "global", "swarm"] | None = None
+        self.attachable: bool | None = None
+        self.ingress: bool | None = None
+        self.state: t.Literal["present", "absent"] = "present"
 
         for key, value in client.module.params.items():
             setattr(self, key, value)
@@ -333,10 +336,10 @@ class TaskParameters(DockerBaseClass):
         # config_only sets driver to 'null' (and scope to 'local') so force that here. Otherwise we get
         # diffs of 'null' --> 'bridge' given that the driver option defaults to 'bridge'.
         if self.config_only:
-            self.driver = "null"
+            self.driver = "null"  # type: ignore[unreachable]
 
 
-def container_names_in_network(network):
+def container_names_in_network(network: dict[str, t.Any]) -> list[str]:
     return (
         [c["Name"] for c in network["Containers"].values()]
         if network["Containers"]
@@ -348,7 +351,7 @@ CIDR_IPV4 = re.compile(r"^([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])$
 CIDR_IPV6 = re.compile(r"^[0-9a-fA-F:]+/([0-9]|[1-9][0-9]|1[0-2][0-9])$")
 
 
-def validate_cidr(cidr):
+def validate_cidr(cidr: str) -> t.Literal["ipv4", "ipv6"]:
     """Validate CIDR. Return IP version of a CIDR string on success.
 
     :param cidr: Valid CIDR
@@ -364,7 +367,7 @@ def validate_cidr(cidr):
     raise ValueError(f'"{cidr}" is not a valid CIDR')
 
 
-def normalize_ipam_config_key(key):
+def normalize_ipam_config_key(key: str) -> str:
     """Normalizes IPAM config keys returned by Docker API to match Ansible keys.
 
     :param key: Docker API key
@@ -376,7 +379,7 @@ def normalize_ipam_config_key(key):
     return special_cases.get(key, key.lower())
 
 
-def dicts_are_essentially_equal(a, b):
+def dicts_are_essentially_equal(a: dict[str, t.Any], b: dict[str, t.Any]):
     """Make sure that a is a subset of b, where None entries of a are ignored."""
     for k, v in a.items():
         if v is None:
@@ -387,15 +390,15 @@ def dicts_are_essentially_equal(a, b):
 
 
 class DockerNetworkManager:
-
-    def __init__(self, client):
+    def __init__(self, client: AnsibleDockerClient) -> None:
         self.client = client
         self.parameters = TaskParameters(client)
         self.check_mode = self.client.check_mode
-        self.results = {"changed": False, "actions": []}
+        self.actions: list[str] = []
+        self.results: dict[str, t.Any] = {"changed": False, "actions": self.actions}
         self.diff = self.client.module._diff
         self.diff_tracker = DifferenceTracker()
-        self.diff_result = {}
+        self.diff_result: dict[str, t.Any] = {}
 
         self.existing_network = self.get_existing_network()
 
@@ -429,10 +432,12 @@ class DockerNetworkManager:
                 )
             self.results["diff"] = self.diff_result
 
-    def get_existing_network(self):
+    def get_existing_network(self) -> dict[str, t.Any] | None:
         return self.client.get_network(name=self.parameters.name)
 
-    def has_different_config(self, net):
+    def has_different_config(
+        self, net: dict[str, t.Any]
+    ) -> tuple[bool, DifferenceTracker]:
         """
         Evaluates an existing network and returns a tuple containing a boolean
         indicating if the configuration is different and a list of differences.
@@ -601,9 +606,9 @@ class DockerNetworkManager:
 
         return not differences.empty, differences
 
-    def create_network(self):
+    def create_network(self) -> None:
         if not self.existing_network:
-            data = {
+            data: dict[str, t.Any] = {
                 "Name": self.parameters.name,
                 "Driver": self.parameters.driver,
                 "Options": self.parameters.driver_options,
@@ -661,12 +666,12 @@ class DockerNetworkManager:
                 resp = self.client.post_json_to_json("/networks/create", data=data)
                 self.client.report_warnings(resp, ["Warning"])
                 self.existing_network = self.client.get_network(network_id=resp["Id"])
-            self.results["actions"].append(
+            self.actions.append(
                 f"Created network {self.parameters.name} with driver {self.parameters.driver}"
             )
             self.results["changed"] = True
 
-    def remove_network(self):
+    def remove_network(self) -> None:
         if self.existing_network:
             self.disconnect_all_containers()
             if not self.check_mode:
@@ -674,15 +679,15 @@ class DockerNetworkManager:
                 if self.existing_network.get("Scope", "local") == "swarm":
                     while self.get_existing_network():
                         time.sleep(0.1)
-            self.results["actions"].append(f"Removed network {self.parameters.name}")
+            self.actions.append(f"Removed network {self.parameters.name}")
             self.results["changed"] = True
 
-    def is_container_connected(self, container_name):
+    def is_container_connected(self, container_name: str) -> bool:
         if not self.existing_network:
             return False
         return container_name in container_names_in_network(self.existing_network)
 
-    def is_container_exist(self, container_name):
+    def is_container_exist(self, container_name: str) -> bool:
         try:
             container = self.client.get_container(container_name)
             return bool(container)
@@ -698,7 +703,7 @@ class DockerNetworkManager:
                 exception=traceback.format_exc(),
             )
 
-    def connect_containers(self):
+    def connect_containers(self) -> None:
         for name in self.parameters.connected:
             if not self.is_container_connected(name) and self.is_container_exist(name):
                 if not self.check_mode:
@@ -709,11 +714,11 @@ class DockerNetworkManager:
                     self.client.post_json(
                         "/networks/{0}/connect", self.parameters.name, data=data
                     )
-                self.results["actions"].append(f"Connected container {name}")
+                self.actions.append(f"Connected container {name}")
                 self.results["changed"] = True
                 self.diff_tracker.add(f"connected.{name}", parameter=True, active=False)
 
-    def disconnect_missing(self):
+    def disconnect_missing(self) -> None:
         if not self.existing_network:
             return
         containers = self.existing_network["Containers"]
@@ -724,26 +729,29 @@ class DockerNetworkManager:
             if name not in self.parameters.connected:
                 self.disconnect_container(name)
 
-    def disconnect_all_containers(self):
-        containers = self.client.get_network(name=self.parameters.name)["Containers"]
+    def disconnect_all_containers(self) -> None:
+        network = self.client.get_network(name=self.parameters.name)
+        if not network:
+            return
+        containers = network["Containers"]
         if not containers:
             return
         for cont in containers.values():
             self.disconnect_container(cont["Name"])
 
-    def disconnect_container(self, container_name):
+    def disconnect_container(self, container_name: str) -> None:
         if not self.check_mode:
             data = {"Container": container_name, "Force": True}
             self.client.post_json(
                 "/networks/{0}/disconnect", self.parameters.name, data=data
             )
-        self.results["actions"].append(f"Disconnected container {container_name}")
+        self.actions.append(f"Disconnected container {container_name}")
         self.results["changed"] = True
         self.diff_tracker.add(
             f"connected.{container_name}", parameter=False, active=True
         )
 
-    def present(self):
+    def present(self) -> None:
         different = False
         differences = DifferenceTracker()
         if self.existing_network:
@@ -771,14 +779,14 @@ class DockerNetworkManager:
         network_facts = self.get_existing_network()
         self.results["network"] = network_facts
 
-    def absent(self):
+    def absent(self) -> None:
         self.diff_tracker.add(
             "exists", parameter=False, active=self.existing_network is not None
         )
         self.remove_network()
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True, "aliases": ["network_name"]},
         "config_from": {"type": "str"},

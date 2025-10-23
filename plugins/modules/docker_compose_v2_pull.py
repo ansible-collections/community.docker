@@ -111,6 +111,7 @@ actions:
 """
 
 import traceback
+import typing as t
 
 from ansible_collections.community.docker.plugins.module_utils._common_cli import (
     AnsibleModuleDockerClient,
@@ -126,14 +127,14 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 
 
 class PullManager(BaseComposeManager):
-    def __init__(self, client):
+    def __init__(self, client: AnsibleModuleDockerClient) -> None:
         super().__init__(client)
         parameters = self.client.module.params
 
-        self.policy = parameters["policy"]
-        self.ignore_buildable = parameters["ignore_buildable"]
-        self.include_deps = parameters["include_deps"]
-        self.services = parameters["services"] or []
+        self.policy: t.Literal["always", "missing"] = parameters["policy"]
+        self.ignore_buildable: bool = parameters["ignore_buildable"]
+        self.include_deps: bool = parameters["include_deps"]
+        self.services: list[str] = parameters["services"] or []
 
         if self.policy != "always" and self.compose_version < LooseVersion("2.22.0"):
             # https://github.com/docker/compose/pull/10981 - 2.22.0
@@ -146,7 +147,7 @@ class PullManager(BaseComposeManager):
                 f"--ignore-buildable is only supported since Docker Compose 2.15.0. {self.client.get_cli()} has version {self.compose_version}"
             )
 
-    def get_pull_cmd(self, dry_run, no_start=False):
+    def get_pull_cmd(self, dry_run: bool):
         args = self.get_base_args() + ["pull"]
         if self.policy != "always":
             args.extend(["--policy", self.policy])
@@ -161,8 +162,8 @@ class PullManager(BaseComposeManager):
             args.append(service)
         return args
 
-    def run(self):
-        result = {}
+    def run(self) -> dict[str, t.Any]:
+        result: dict[str, t.Any] = {}
         args = self.get_pull_cmd(self.check_mode)
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode, nonzero_rc=rc != 0)
@@ -179,7 +180,7 @@ class PullManager(BaseComposeManager):
         return result
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "policy": {
             "type": "str",

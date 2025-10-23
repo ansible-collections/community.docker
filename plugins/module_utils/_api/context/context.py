@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import typing as t
 from shutil import copyfile, rmtree
 
 from ..errors import ContextException
@@ -33,21 +34,21 @@ class Context:
 
     def __init__(
         self,
-        name,
-        orchestrator=None,
-        host=None,
-        endpoints=None,
-        skip_tls_verify=False,
-        tls=False,
-        description=None,
-    ):
+        name: str,
+        orchestrator: str | None = None,
+        host: str | None = None,
+        endpoints: dict[str, dict[str, t.Any]] | None = None,
+        skip_tls_verify: bool = False,
+        tls: bool = False,
+        description: str | None = None,
+    ) -> None:
         if not name:
             raise ValueError("Name not provided")
         self.name = name
         self.context_type = None
         self.orchestrator = orchestrator
         self.endpoints = {}
-        self.tls_cfg = {}
+        self.tls_cfg: dict[str, TLSConfig] = {}
         self.meta_path = IN_MEMORY
         self.tls_path = IN_MEMORY
         self.description = description
@@ -89,12 +90,12 @@ class Context:
 
     def set_endpoint(
         self,
-        name="docker",
-        host=None,
-        tls_cfg=None,
-        skip_tls_verify=False,
-        def_namespace=None,
-    ):
+        name: str = "docker",
+        host: str | None = None,
+        tls_cfg: TLSConfig | None = None,
+        skip_tls_verify: bool = False,
+        def_namespace: str | None = None,
+    ) -> None:
         self.endpoints[name] = {
             "Host": get_context_host(host, not skip_tls_verify or tls_cfg is not None),
             "SkipTLSVerify": skip_tls_verify,
@@ -105,11 +106,11 @@ class Context:
         if tls_cfg:
             self.tls_cfg[name] = tls_cfg
 
-    def inspect(self):
+    def inspect(self) -> dict[str, t.Any]:
         return self()
 
     @classmethod
-    def load_context(cls, name):
+    def load_context(cls, name: str) -> t.Self | None:
         meta = Context._load_meta(name)
         if meta:
             instance = cls(
@@ -125,12 +126,12 @@ class Context:
         return None
 
     @classmethod
-    def _load_meta(cls, name):
+    def _load_meta(cls, name: str) -> dict[str, t.Any] | None:
         meta_file = get_meta_file(name)
         if not os.path.isfile(meta_file):
             return None
 
-        metadata = {}
+        metadata: dict[str, t.Any] = {}
         try:
             with open(meta_file, "rt", encoding="utf-8") as f:
                 metadata = json.load(f)
@@ -154,7 +155,7 @@ class Context:
 
         return metadata
 
-    def _load_certs(self):
+    def _load_certs(self) -> None:
         certs = {}
         tls_dir = get_tls_dir(self.name)
         for endpoint in self.endpoints:
@@ -184,7 +185,7 @@ class Context:
         self.tls_cfg = certs
         self.tls_path = tls_dir
 
-    def save(self):
+    def save(self) -> None:
         meta_dir = get_meta_dir(self.name)
         if not os.path.isdir(meta_dir):
             os.makedirs(meta_dir)
@@ -216,54 +217,54 @@ class Context:
         self.meta_path = get_meta_dir(self.name)
         self.tls_path = get_tls_dir(self.name)
 
-    def remove(self):
+    def remove(self) -> None:
         if os.path.isdir(self.meta_path):
             rmtree(self.meta_path)
         if os.path.isdir(self.tls_path):
             rmtree(self.tls_path)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__}: '{self.name}'>"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return json.dumps(self.__call__(), indent=2)
 
-    def __call__(self):
+    def __call__(self) -> dict[str, t.Any]:
         result = self.Metadata
         result.update(self.TLSMaterial)
         result.update(self.Storage)
         return result
 
-    def is_docker_host(self):
+    def is_docker_host(self) -> bool:
         return self.context_type is None
 
     @property
-    def Name(self):  # pylint: disable=invalid-name
+    def Name(self) -> str:  # pylint: disable=invalid-name
         return self.name
 
     @property
-    def Host(self):  # pylint: disable=invalid-name
+    def Host(self) -> str | None:  # pylint: disable=invalid-name
         if not self.orchestrator or self.orchestrator == "swarm":
             endpoint = self.endpoints.get("docker", None)
             if endpoint:
-                return endpoint.get("Host", None)
+                return endpoint.get("Host", None)  # type: ignore
             return None
 
-        return self.endpoints[self.orchestrator].get("Host", None)
+        return self.endpoints[self.orchestrator].get("Host", None)  # type: ignore
 
     @property
-    def Orchestrator(self):  # pylint: disable=invalid-name
+    def Orchestrator(self) -> str | None:  # pylint: disable=invalid-name
         return self.orchestrator
 
     @property
-    def Metadata(self):  # pylint: disable=invalid-name
-        meta = {}
+    def Metadata(self) -> dict[str, t.Any]:  # pylint: disable=invalid-name
+        meta: dict[str, t.Any] = {}
         if self.orchestrator:
             meta = {"StackOrchestrator": self.orchestrator}
         return {"Name": self.name, "Metadata": meta, "Endpoints": self.endpoints}
 
     @property
-    def TLSConfig(self):  # pylint: disable=invalid-name
+    def TLSConfig(self) -> TLSConfig | None:  # pylint: disable=invalid-name
         key = self.orchestrator
         if not key or key == "swarm":
             key = "docker"
@@ -272,13 +273,15 @@ class Context:
         return None
 
     @property
-    def TLSMaterial(self):  # pylint: disable=invalid-name
-        certs = {}
+    def TLSMaterial(self) -> dict[str, t.Any]:  # pylint: disable=invalid-name
+        certs: dict[str, t.Any] = {}
         for endpoint, tls in self.tls_cfg.items():
-            cert, key = tls.cert
-            certs[endpoint] = list(map(os.path.basename, [tls.ca_cert, cert, key]))
+            paths = [tls.ca_cert, *tls.cert] if tls.cert else [tls.ca_cert]
+            certs[endpoint] = [
+                os.path.basename(path) if path else None for path in paths
+            ]
         return {"TLSMaterial": certs}
 
     @property
-    def Storage(self):  # pylint: disable=invalid-name
+    def Storage(self) -> dict[str, t.Any]:  # pylint: disable=invalid-name
         return {"Storage": {"MetadataPath": self.meta_path, "TLSPath": self.tls_path}}

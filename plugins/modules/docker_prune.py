@@ -247,7 +247,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 )
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "containers": {"type": "bool", "default": False},
         "containers_filters": {"type": "dict"},

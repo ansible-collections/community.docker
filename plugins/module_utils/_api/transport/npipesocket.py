@@ -15,8 +15,10 @@ import functools
 import io
 import time
 import traceback
+import typing as t
 
 
+PYWIN32_IMPORT_ERROR: str | None  # pylint: disable=invalid-name
 try:
     import pywintypes
     import win32api
@@ -28,6 +30,13 @@ except ImportError:
 else:
     PYWIN32_IMPORT_ERROR = None  # pylint: disable=invalid-name
 
+if t.TYPE_CHECKING:
+    from collections.abc import Buffer, Callable
+
+    _Self = t.TypeVar("_Self")
+    _P = t.ParamSpec("_P")
+    _R = t.TypeVar("_R")
+
 
 ERROR_PIPE_BUSY = 0xE7
 SECURITY_SQOS_PRESENT = 0x100000
@@ -36,10 +45,12 @@ SECURITY_ANONYMOUS = 0
 MAXIMUM_RETRY_COUNT = 10
 
 
-def check_closed(f):
+def check_closed(
+    f: Callable[t.Concatenate[_Self, _P], _R],
+) -> Callable[t.Concatenate[_Self, _P], _R]:
     @functools.wraps(f)
-    def wrapped(self, *args, **kwargs):
-        if self._closed:
+    def wrapped(self: _Self, *args: _P.args, **kwargs: _P.kwargs) -> _R:
+        if self._closed:  # type: ignore
             raise RuntimeError("Can not reuse socket after connection was closed.")
         return f(self, *args, **kwargs)
 
@@ -53,25 +64,25 @@ class NpipeSocket:
     implemented.
     """
 
-    def __init__(self, handle=None):
+    def __init__(self, handle=None) -> None:
         self._timeout = win32pipe.NMPWAIT_USE_DEFAULT_WAIT
         self._handle = handle
-        self._address = None
+        self._address: str | None = None
         self._closed = False
-        self.flags = None
+        self.flags: int | None = None
 
-    def accept(self):
+    def accept(self) -> t.NoReturn:
         raise NotImplementedError()
 
-    def bind(self, address):
+    def bind(self, address) -> t.NoReturn:
         raise NotImplementedError()
 
-    def close(self):
+    def close(self) -> None:
         self._handle.Close()
         self._closed = True
 
     @check_closed
-    def connect(self, address, retry_count=0):
+    def connect(self, address, retry_count: int = 0) -> None:
         try:
             handle = win32file.CreateFile(
                 address,
@@ -99,14 +110,14 @@ class NpipeSocket:
                     return self.connect(address, retry_count)
             raise e
 
-        self.flags = win32pipe.GetNamedPipeInfo(handle)[0]
+        self.flags = win32pipe.GetNamedPipeInfo(handle)[0]  # type: ignore
 
         self._handle = handle
         self._address = address
 
     @check_closed
-    def connect_ex(self, address):
-        return self.connect(address)
+    def connect_ex(self, address) -> None:
+        self.connect(address)
 
     @check_closed
     def detach(self):
@@ -114,25 +125,25 @@ class NpipeSocket:
         return self._handle
 
     @check_closed
-    def dup(self):
+    def dup(self) -> NpipeSocket:
         return NpipeSocket(self._handle)
 
-    def getpeername(self):
+    def getpeername(self) -> str | None:
         return self._address
 
-    def getsockname(self):
+    def getsockname(self) -> str | None:
         return self._address
 
-    def getsockopt(self, level, optname, buflen=None):
+    def getsockopt(self, level, optname, buflen=None) -> t.NoReturn:
         raise NotImplementedError()
 
-    def ioctl(self, control, option):
+    def ioctl(self, control, option) -> t.NoReturn:
         raise NotImplementedError()
 
-    def listen(self, backlog):
+    def listen(self, backlog) -> t.NoReturn:
         raise NotImplementedError()
 
-    def makefile(self, mode=None, bufsize=None):
+    def makefile(self, mode: str, bufsize: int | None = None):
         if mode.strip("b") != "r":
             raise NotImplementedError()
         rawio = NpipeFileIOBase(self)
@@ -141,30 +152,30 @@ class NpipeSocket:
         return io.BufferedReader(rawio, buffer_size=bufsize)
 
     @check_closed
-    def recv(self, bufsize, flags=0):
+    def recv(self, bufsize: int, flags: int = 0) -> str:
         dummy_err, data = win32file.ReadFile(self._handle, bufsize)
         return data
 
     @check_closed
-    def recvfrom(self, bufsize, flags=0):
+    def recvfrom(self, bufsize: int, flags: int = 0) -> tuple[str, str | None]:
         data = self.recv(bufsize, flags)
         return (data, self._address)
 
     @check_closed
-    def recvfrom_into(self, buf, nbytes=0, flags=0):
-        return self.recv_into(buf, nbytes, flags), self._address
+    def recvfrom_into(
+        self, buf: Buffer, nbytes: int = 0, flags: int = 0
+    ) -> tuple[int, str | None]:
+        return self.recv_into(buf, nbytes), self._address
 
     @check_closed
-    def recv_into(self, buf, nbytes=0):
-        readbuf = buf
-        if not isinstance(buf, memoryview):
-            readbuf = memoryview(buf)
+    def recv_into(self, buf: Buffer, nbytes: int = 0) -> int:
+        readbuf = buf if isinstance(buf, memoryview) else memoryview(buf)
 
         event = win32event.CreateEvent(None, True, True, None)
         try:
             overlapped = pywintypes.OVERLAPPED()
             overlapped.hEvent = event
-            dummy_err, dummy_data = win32file.ReadFile(
+            dummy_err, dummy_data = win32file.ReadFile(  # type: ignore
                 self._handle, readbuf[:nbytes] if nbytes else readbuf, overlapped
             )
             wait_result = win32event.WaitForSingleObject(event, self._timeout)
@@ -176,12 +187,12 @@ class NpipeSocket:
             win32api.CloseHandle(event)
 
     @check_closed
-    def send(self, string, flags=0):
+    def send(self, string: Buffer, flags: int = 0) -> int:
         event = win32event.CreateEvent(None, True, True, None)
         try:
             overlapped = pywintypes.OVERLAPPED()
             overlapped.hEvent = event
-            win32file.WriteFile(self._handle, string, overlapped)
+            win32file.WriteFile(self._handle, string, overlapped)  # type: ignore
             wait_result = win32event.WaitForSingleObject(event, self._timeout)
             if wait_result == win32event.WAIT_TIMEOUT:
                 win32file.CancelIo(self._handle)
@@ -191,20 +202,20 @@ class NpipeSocket:
             win32api.CloseHandle(event)
 
     @check_closed
-    def sendall(self, string, flags=0):
+    def sendall(self, string: Buffer, flags: int = 0) -> int:
         return self.send(string, flags)
 
     @check_closed
-    def sendto(self, string, address):
+    def sendto(self, string: Buffer, address: str) -> int:
         self.connect(address)
         return self.send(string)
 
-    def setblocking(self, flag):
+    def setblocking(self, flag: bool):
         if flag:
             return self.settimeout(None)
         return self.settimeout(0)
 
-    def settimeout(self, value):
+    def settimeout(self, value: int | float | None) -> None:
         if value is None:
             # Blocking mode
             self._timeout = win32event.INFINITE
@@ -214,39 +225,39 @@ class NpipeSocket:
             # Timeout mode - Value converted to milliseconds
             self._timeout = int(value * 1000)
 
-    def gettimeout(self):
+    def gettimeout(self) -> int | float | None:
         return self._timeout
 
-    def setsockopt(self, level, optname, value):
+    def setsockopt(self, level, optname, value) -> t.NoReturn:
         raise NotImplementedError()
 
     @check_closed
-    def shutdown(self, how):
+    def shutdown(self, how) -> None:
         return self.close()
 
 
 class NpipeFileIOBase(io.RawIOBase):
-    def __init__(self, npipe_socket):
+    def __init__(self, npipe_socket) -> None:
         self.sock = npipe_socket
 
-    def close(self):
+    def close(self) -> None:
         super().close()
         self.sock = None
 
-    def fileno(self):
+    def fileno(self) -> int:
         return self.sock.fileno()
 
-    def isatty(self):
+    def isatty(self) -> bool:
         return False
 
-    def readable(self):
+    def readable(self) -> bool:
         return True
 
-    def readinto(self, buf):
+    def readinto(self, buf: Buffer) -> int:
         return self.sock.recv_into(buf)
 
-    def seekable(self):
+    def seekable(self) -> bool:
         return False
 
-    def writable(self):
+    def writable(self) -> bool:
         return False

@@ -212,6 +212,7 @@ disk_usage:
 """
 
 import traceback
+import typing as t
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     APIError,
@@ -231,9 +232,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class DockerHostManager(DockerBaseClass):
-
-    def __init__(self, client, results):
-
+    def __init__(self, client: AnsibleDockerClient, results: dict[str, t.Any]) -> None:
         super().__init__()
 
         self.client = client
@@ -253,21 +252,21 @@ class DockerHostManager(DockerBaseClass):
         for docker_object in listed_objects:
             if self.client.module.params[docker_object]:
                 returned_name = docker_object
-                filter_name = docker_object + "_filters"
+                filter_name = f"{docker_object}_filters"
                 filters = clean_dict_booleans_for_docker_api(
-                    client.module.params.get(filter_name), True
+                    client.module.params.get(filter_name), allow_sequences=True
                 )
                 self.results[returned_name] = self.get_docker_items_list(
                     docker_object, filters
                 )
 
-    def get_docker_host_info(self):
+    def get_docker_host_info(self) -> dict[str, t.Any]:
         try:
             return self.client.info()
         except APIError as exc:
             self.client.fail(f"Error inspecting docker host: {exc}")
 
-    def get_docker_disk_usage_facts(self):
+    def get_docker_disk_usage_facts(self) -> dict[str, t.Any]:
         try:
             if self.verbose_output:
                 return self.client.df()
@@ -275,9 +274,13 @@ class DockerHostManager(DockerBaseClass):
         except APIError as exc:
             self.client.fail(f"Error inspecting docker host: {exc}")
 
-    def get_docker_items_list(self, docker_object=None, filters=None, verbose=False):
-        items = None
-        items_list = []
+    def get_docker_items_list(
+        self,
+        docker_object: str,
+        filters: dict[str, t.Any] | None = None,
+        verbose: bool = False,
+    ) -> list[dict[str, t.Any]]:
+        items = []
 
         header_containers = [
             "Id",
@@ -329,6 +332,7 @@ class DockerHostManager(DockerBaseClass):
         if self.verbose_output:
             return items
 
+        items_list = []
         for item in items:
             item_record = {}
 
@@ -349,7 +353,7 @@ class DockerHostManager(DockerBaseClass):
         return items_list
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "containers": {"type": "bool", "default": False},
         "containers_all": {"type": "bool", "default": False},

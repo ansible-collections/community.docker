@@ -148,6 +148,8 @@ keyed_groups:
     prefix: label
 """
 
+import typing as t
+
 from ansible.errors import AnsibleError
 from ansible.parsing.utils.addresses import parse_address
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
@@ -167,6 +169,11 @@ from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
 )
 
 
+if t.TYPE_CHECKING:
+    from ansible.inventory.data import InventoryData
+    from ansible.parsing.dataloader import DataLoader
+
+
 try:
     import docker
 
@@ -180,10 +187,13 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
     NAME = "community.docker.docker_swarm"
 
-    def _fail(self, msg):
+    def _fail(self, msg: str) -> t.NoReturn:
         raise AnsibleError(msg)
 
-    def _populate(self):
+    def _populate(self) -> None:
+        if self.inventory is None:
+            raise AssertionError("Inventory must be there")
+
         raw_params = {
             "docker_host": self.get_option("docker_host"),
             "tls": self.get_option("tls"),
@@ -307,13 +317,19 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 f"Unable to fetch hosts from Docker swarm API, this was the original exception: {e}"
             ) from e
 
-    def verify_file(self, path):
+    def verify_file(self, path: str) -> bool:
         """Return the possibly of a file being consumable by this plugin."""
         return super().verify_file(path) and path.endswith(
             ("docker_swarm.yaml", "docker_swarm.yml")
         )
 
-    def parse(self, inventory, loader, path, cache=True):
+    def parse(
+        self,
+        inventory: InventoryData,
+        loader: DataLoader,
+        path: str,
+        cache: bool = True,
+    ) -> None:
         if not HAS_DOCKER:
             raise AnsibleError(
                 "The Docker swarm dynamic inventory plugin requires the Docker SDK for Python: "

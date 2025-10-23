@@ -136,6 +136,7 @@ images:
 """
 
 import traceback
+import typing as t
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     DockerException,
@@ -155,9 +156,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class ImageManager(DockerBaseClass):
-
-    def __init__(self, client, results):
-
+    def __init__(self, client: AnsibleDockerClient, results: dict[str, t.Any]) -> None:
         super().__init__()
 
         self.client = client
@@ -170,10 +169,10 @@ class ImageManager(DockerBaseClass):
         else:
             self.results["images"] = self.get_all_images()
 
-    def fail(self, msg):
+    def fail(self, msg: str) -> t.NoReturn:
         self.client.fail(msg)
 
-    def get_facts(self):
+    def get_facts(self) -> list[dict[str, t.Any]]:
         """
         Lookup and inspect each image name found in the names parameter.
 
@@ -200,7 +199,7 @@ class ImageManager(DockerBaseClass):
                 results.append(image)
         return results
 
-    def get_all_images(self):
+    def get_all_images(self) -> list[dict[str, t.Any]]:
         results = []
         params = {
             "only_ids": 0,
@@ -218,7 +217,7 @@ class ImageManager(DockerBaseClass):
         return results
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "list", "elements": "str"},
     }

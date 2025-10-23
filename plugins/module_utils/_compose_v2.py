@@ -14,6 +14,7 @@ import re
 import shutil
 import tempfile
 import traceback
+import typing as t
 from collections import namedtuple
 from shlex import quote
 
@@ -34,6 +35,7 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 )
 
 
+PYYAML_IMPORT_ERROR: None | str  # pylint: disable=invalid-name
 try:
     import yaml
 
@@ -41,13 +43,20 @@ try:
         # use C version if possible for speedup
         from yaml import CSafeDumper as _SafeDumper
     except ImportError:
-        from yaml import SafeDumper as _SafeDumper
+        from yaml import SafeDumper as _SafeDumper  # type: ignore
 except ImportError:
     HAS_PYYAML = False
     PYYAML_IMPORT_ERROR = traceback.format_exc()  # pylint: disable=invalid-name
 else:
     HAS_PYYAML = True
     PYYAML_IMPORT_ERROR = None  # pylint: disable=invalid-name
+
+if t.TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+
+    from ansible_collections.community.docker.plugins.module_utils._common_cli import (
+        AnsibleModuleDockerClient as _Client,
+    )
 
 
 DOCKER_COMPOSE_FILES = (
@@ -144,8 +153,7 @@ class ResourceType:
     SERVICE = "service"
 
     @classmethod
-    def from_docker_compose_event(cls, resource_type):
-        # type: (Type[ResourceType], Text) -> Any
+    def from_docker_compose_event(cls, resource_type: str) -> t.Any:
         return {
             "Network": cls.NETWORK,
             "Image": cls.IMAGE,
@@ -240,7 +248,9 @@ _RE_BUILD_PROGRESS_EVENT = re.compile(r"^\s*==>\s+(?P<msg>.*)$")
 MINIMUM_COMPOSE_VERSION = "2.18.0"
 
 
-def _extract_event(line, warn_function=None):
+def _extract_event(
+    line: str, warn_function: Callable[[str], None] | None = None
+) -> tuple[Event | None, bool]:
     match = _RE_RESOURCE_EVENT.match(line)
     if match is not None:
         status = match.group("status")
@@ -323,7 +333,9 @@ def _extract_event(line, warn_function=None):
     return None, False
 
 
-def _extract_logfmt_event(line, warn_function=None):
+def _extract_logfmt_event(
+    line: str, warn_function: Callable[[str], None] | None = None
+) -> tuple[Event | None, bool]:
     try:
         result = _parse_logfmt_line(line, logrus_mode=True)
     except _InvalidLogFmt:
@@ -338,7 +350,11 @@ def _extract_logfmt_event(line, warn_function=None):
     return None, False
 
 
-def _warn_missing_dry_run_prefix(line, warn_missing_dry_run_prefix, warn_function):
+def _warn_missing_dry_run_prefix(
+    line: str,
+    warn_missing_dry_run_prefix: bool,
+    warn_function: Callable[[str], None] | None,
+) -> None:
     if warn_missing_dry_run_prefix and warn_function:
         # This could be a bug, a change of docker compose's output format, ...
         # Tell the user to report it to us :-)
@@ -349,7 +365,9 @@ def _warn_missing_dry_run_prefix(line, warn_missing_dry_run_prefix, warn_functio
         )
 
 
-def _warn_unparsable_line(line, warn_function):
+def _warn_unparsable_line(
+    line: str, warn_function: Callable[[str], None] | None
+) -> None:
     # This could be a bug, a change of docker compose's output format, ...
     # Tell the user to report it to us :-)
     if warn_function:
@@ -360,14 +378,16 @@ def _warn_unparsable_line(line, warn_function):
         )
 
 
-def _find_last_event_for(events, resource_id):
+def _find_last_event_for(
+    events: list[Event], resource_id: str
+) -> tuple[int, Event] | None:
     for index, event in enumerate(reversed(events)):
         if event.resource_id == resource_id:
             return len(events) - 1 - index, event
     return None
 
 
-def _concat_event_msg(event, append_msg):
+def _concat_event_msg(event: Event, append_msg: str) -> Event:
     return Event(
         event.resource_type,
         event.resource_id,
@@ -382,7 +402,9 @@ _JSON_LEVEL_TO_STATUS_MAP = {
 }
 
 
-def parse_json_events(stderr, warn_function=None):
+def parse_json_events(
+    stderr: bytes, warn_function: Callable[[str], None] | None = None
+) -> list[Event]:
     events = []
     stderr_lines = stderr.splitlines()
     if stderr_lines and stderr_lines[-1] == b"":
@@ -523,7 +545,12 @@ def parse_json_events(stderr, warn_function=None):
     return events
 
 
-def parse_events(stderr, dry_run=False, warn_function=None, nonzero_rc=False):
+def parse_events(
+    stderr: bytes,
+    dry_run: bool = False,
+    warn_function: Callable[[str], None] | None = None,
+    nonzero_rc: bool = False,
+) -> list[Event]:
     events = []
     error_event = None
     stderr_lines = stderr.splitlines()
@@ -597,7 +624,11 @@ def parse_events(stderr, dry_run=False, warn_function=None, nonzero_rc=False):
     return events
 
 
-def has_changes(events, ignore_service_pull_events=False, ignore_build_events=False):
+def has_changes(
+    events: Sequence[Event],
+    ignore_service_pull_events: bool = False,
+    ignore_build_events: bool = False,
+) -> bool:
     for event in events:
         if event.status in DOCKER_STATUS_WORKING:
             if ignore_service_pull_events and event.status in DOCKER_STATUS_PULL:
@@ -613,7 +644,7 @@ def has_changes(events, ignore_service_pull_events=False, ignore_build_events=Fa
     return False
 
 
-def extract_actions(events):
+def extract_actions(events: Sequence[Event]) -> list[dict[str, t.Any]]:
     actions = []
     pull_actions = set()
     for event in events:
@@ -645,7 +676,9 @@ def extract_actions(events):
     return actions
 
 
-def emit_warnings(events, warn_function):
+def emit_warnings(
+    events: Sequence[Event], warn_function: Callable[[str], None]
+) -> None:
     for event in events:
         # If a message is present, assume it is a warning
         if (
@@ -656,13 +689,21 @@ def emit_warnings(events, warn_function):
             )
 
 
-def is_failed(events, rc):
+def is_failed(events: Sequence[Event], rc: int) -> bool:
     if rc:
         return True
     return False
 
 
-def update_failed(result, events, args, stdout, stderr, rc, cli):
+def update_failed(
+    result: dict[str, t.Any],
+    events: Sequence[Event],
+    args: list[str],
+    stdout: str | bytes,
+    stderr: str | bytes,
+    rc: int,
+    cli: str,
+) -> bool:
     if not rc:
         return False
     errors = []
@@ -696,7 +737,7 @@ def update_failed(result, events, args, stdout, stderr, rc, cli):
     return True
 
 
-def common_compose_argspec():
+def common_compose_argspec() -> dict[str, t.Any]:
     return {
         "project_src": {"type": "path"},
         "project_name": {"type": "str"},
@@ -708,7 +749,7 @@ def common_compose_argspec():
     }
 
 
-def common_compose_argspec_ex():
+def common_compose_argspec_ex() -> dict[str, t.Any]:
     return {
         "argspec": common_compose_argspec(),
         "mutually_exclusive": [("definition", "project_src"), ("definition", "files")],
@@ -721,16 +762,18 @@ def common_compose_argspec_ex():
     }
 
 
-def combine_binary_output(*outputs):
+def combine_binary_output(*outputs: bytes | None) -> bytes:
     return b"\n".join(out for out in outputs if out)
 
 
-def combine_text_output(*outputs):
+def combine_text_output(*outputs: str | None) -> str:
     return "\n".join(out for out in outputs if out)
 
 
 class BaseComposeManager(DockerBaseClass):
-    def __init__(self, client, min_version=MINIMUM_COMPOSE_VERSION):
+    def __init__(
+        self, client: _Client, min_version: str = MINIMUM_COMPOSE_VERSION
+    ) -> None:
         super().__init__()
         self.client = client
         self.check_mode = self.client.check_mode
@@ -794,12 +837,12 @@ class BaseComposeManager(DockerBaseClass):
         # more precisely in https://github.com/docker/compose/pull/11478
         self.use_json_events = self.compose_version >= LooseVersion("2.29.0")
 
-    def get_compose_version(self):
+    def get_compose_version(self) -> str:
         return (
             self.get_compose_version_from_cli() or self.get_compose_version_from_api()
         )
 
-    def get_compose_version_from_cli(self):
+    def get_compose_version_from_cli(self) -> str | None:
         rc, version_info, dummy_stderr = self.client.call_cli(
             "compose", "version", "--format", "json"
         )
@@ -813,7 +856,7 @@ class BaseComposeManager(DockerBaseClass):
         except Exception:  # pylint: disable=broad-exception-caught
             return None
 
-    def get_compose_version_from_api(self):
+    def get_compose_version_from_api(self) -> str:
         compose = self.client.get_client_plugin_info("compose")
         if compose is None:
             self.fail(
@@ -826,11 +869,11 @@ class BaseComposeManager(DockerBaseClass):
             )
         return compose["Version"].lstrip("v")
 
-    def fail(self, msg, **kwargs):
+    def fail(self, msg: str, **kwargs: t.Any) -> t.NoReturn:
         self.cleanup()
         self.client.fail(msg, **kwargs)
 
-    def get_base_args(self, plain_progress=False):
+    def get_base_args(self, plain_progress: bool = False) -> list[str]:
         args = ["compose", "--ansi", "never"]
         if self.use_json_events and not plain_progress:
             args.extend(["--progress", "json"])
@@ -848,28 +891,33 @@ class BaseComposeManager(DockerBaseClass):
             args.extend(["--profile", profile])
         return args
 
-    def _handle_failed_cli_call(self, args, rc, stdout, stderr):
+    def _handle_failed_cli_call(
+        self, args: list[str], rc: int, stdout: str | bytes, stderr: bytes
+    ) -> t.NoReturn:
         events = parse_json_events(stderr, warn_function=self.client.warn)
-        result = {}
+        result: dict[str, t.Any] = {}
         self.update_failed(result, events, args, stdout, stderr, rc)
         self.client.module.exit_json(**result)
 
-    def list_containers_raw(self):
+    def list_containers_raw(self) -> list[dict[str, t.Any]]:
         args = self.get_base_args() + ["ps", "--format", "json", "--all"]
         if self.compose_version >= LooseVersion("2.23.0"):
             # https://github.com/docker/compose/pull/11038
             args.append("--no-trunc")
-        kwargs = {"cwd": self.project_src, "check_rc": not self.use_json_events}
         if self.compose_version >= LooseVersion("2.21.0"):
             # Breaking change in 2.21.0: https://github.com/docker/compose/pull/10918
-            rc, containers, stderr = self.client.call_cli_json_stream(*args, **kwargs)
+            rc, containers, stderr = self.client.call_cli_json_stream(
+                *args, cwd=self.project_src, check_rc=not self.use_json_events
+            )
         else:
-            rc, containers, stderr = self.client.call_cli_json(*args, **kwargs)
+            rc, containers, stderr = self.client.call_cli_json(
+                *args, cwd=self.project_src, check_rc=not self.use_json_events
+            )
         if self.use_json_events and rc != 0:
-            self._handle_failed_cli_call(args, rc, containers, stderr)
+            self._handle_failed_cli_call(args, rc, json.dumps(containers), stderr)
         return containers
 
-    def list_containers(self):
+    def list_containers(self) -> list[dict[str, t.Any]]:
         result = []
         for container in self.list_containers_raw():
             labels = {}
@@ -886,10 +934,11 @@ class BaseComposeManager(DockerBaseClass):
             result.append(container)
         return result
 
-    def list_images(self):
+    def list_images(self) -> list[str]:
         args = self.get_base_args() + ["images", "--format", "json"]
-        kwargs = {"cwd": self.project_src, "check_rc": not self.use_json_events}
-        rc, images, stderr = self.client.call_cli_json(*args, **kwargs)
+        rc, images, stderr = self.client.call_cli_json(
+            *args, cwd=self.project_src, check_rc=not self.use_json_events
+        )
         if self.use_json_events and rc != 0:
             self._handle_failed_cli_call(args, rc, images, stderr)
         if isinstance(images, dict):
@@ -899,7 +948,9 @@ class BaseComposeManager(DockerBaseClass):
             images = list(images.values())
         return images
 
-    def parse_events(self, stderr, dry_run=False, nonzero_rc=False):
+    def parse_events(
+        self, stderr: bytes, dry_run: bool = False, nonzero_rc: bool = False
+    ) -> list[Event]:
         if self.use_json_events:
             return parse_json_events(stderr, warn_function=self.client.warn)
         return parse_events(
@@ -909,17 +960,17 @@ class BaseComposeManager(DockerBaseClass):
             nonzero_rc=nonzero_rc,
         )
 
-    def emit_warnings(self, events):
+    def emit_warnings(self, events: Sequence[Event]) -> None:
         emit_warnings(events, warn_function=self.client.warn)
 
     def update_result(
         self,
-        result,
-        events,
-        stdout,
-        stderr,
-        ignore_service_pull_events=False,
-        ignore_build_events=False,
+        result: dict[str, t.Any],
+        events: Sequence[Event],
+        stdout: str | bytes,
+        stderr: str | bytes,
+        ignore_service_pull_events: bool = False,
+        ignore_build_events: bool = False,
     ):
         result["changed"] = result.get("changed", False) or has_changes(
             events,
@@ -930,7 +981,15 @@ class BaseComposeManager(DockerBaseClass):
         result["stdout"] = combine_text_output(result.get("stdout"), to_native(stdout))
         result["stderr"] = combine_text_output(result.get("stderr"), to_native(stderr))
 
-    def update_failed(self, result, events, args, stdout, stderr, rc):
+    def update_failed(
+        self,
+        result: dict[str, t.Any],
+        events: Sequence[Event],
+        args: list[str],
+        stdout: str | bytes,
+        stderr: bytes,
+        rc: int,
+    ):
         return update_failed(
             result,
             events,
@@ -941,14 +1000,14 @@ class BaseComposeManager(DockerBaseClass):
             cli=self.client.get_cli(),
         )
 
-    def cleanup_result(self, result):
+    def cleanup_result(self, result: dict[str, t.Any]) -> None:
         if not result.get("failed"):
             # Only return stdout and stderr if it is not empty
             for res in ("stdout", "stderr"):
                 if result.get(res) == "":
                     result.pop(res)
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         for directory in self.cleanup_dirs:
             try:
                 shutil.rmtree(directory, True)

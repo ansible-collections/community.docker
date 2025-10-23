@@ -23,12 +23,12 @@ RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
 
 
 class NpipeHTTPConnection(urllib3_connection.HTTPConnection):
-    def __init__(self, npipe_path, timeout=60):
+    def __init__(self, npipe_path: str, timeout: int | float = 60) -> None:
         super().__init__("localhost", timeout=timeout)
         self.npipe_path = npipe_path
         self.timeout = timeout
 
-    def connect(self):
+    def connect(self) -> None:
         sock = NpipeSocket()
         sock.settimeout(self.timeout)
         sock.connect(self.npipe_path)
@@ -36,18 +36,20 @@ class NpipeHTTPConnection(urllib3_connection.HTTPConnection):
 
 
 class NpipeHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
-    def __init__(self, npipe_path, timeout=60, maxsize=10):
+    def __init__(
+        self, npipe_path: str, timeout: int | float = 60, maxsize: int = 10
+    ) -> None:
         super().__init__("localhost", timeout=timeout, maxsize=maxsize)
         self.npipe_path = npipe_path
         self.timeout = timeout
 
-    def _new_conn(self):
+    def _new_conn(self) -> NpipeHTTPConnection:
         return NpipeHTTPConnection(self.npipe_path, self.timeout)
 
     # When re-using connections, urllib3 tries to call select() on our
     # NpipeSocket instance, causing a crash. To circumvent this, we override
     # _get_conn, where that check happens.
-    def _get_conn(self, timeout):
+    def _get_conn(self, timeout: int | float) -> NpipeHTTPConnection:
         conn = None
         try:
             conn = self.pool.get(block=self.block, timeout=timeout)
@@ -67,7 +69,6 @@ class NpipeHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
 
 
 class NpipeHTTPAdapter(BaseHTTPAdapter):
-
     __attrs__ = HTTPAdapter.__attrs__ + [
         "npipe_path",
         "pools",
@@ -77,11 +78,11 @@ class NpipeHTTPAdapter(BaseHTTPAdapter):
 
     def __init__(
         self,
-        base_url,
-        timeout=60,
-        pool_connections=constants.DEFAULT_NUM_POOLS,
-        max_pool_size=constants.DEFAULT_MAX_POOL_SIZE,
-    ):
+        base_url: str,
+        timeout: int | float = 60,
+        pool_connections: int = constants.DEFAULT_NUM_POOLS,
+        max_pool_size: int = constants.DEFAULT_MAX_POOL_SIZE,
+    ) -> None:
         self.npipe_path = base_url.replace("npipe://", "")
         self.timeout = timeout
         self.max_pool_size = max_pool_size
@@ -90,7 +91,7 @@ class NpipeHTTPAdapter(BaseHTTPAdapter):
         )
         super().__init__()
 
-    def get_connection(self, url, proxies=None):
+    def get_connection(self, url: str | bytes, proxies=None) -> NpipeHTTPConnectionPool:
         with self.pools.lock:
             pool = self.pools.get(url)
             if pool:
@@ -103,7 +104,7 @@ class NpipeHTTPAdapter(BaseHTTPAdapter):
 
         return pool
 
-    def request_url(self, request, proxies):
+    def request_url(self, request, proxies) -> str:
         # The select_proxy utility in requests errors out when the provided URL
         # does not have a hostname, like is the case when using a UNIX socket.
         # Since proxies are an irrelevant notion in the case of UNIX sockets

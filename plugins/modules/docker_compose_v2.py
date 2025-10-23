@@ -437,6 +437,7 @@ actions:
 """
 
 import traceback
+import typing as t
 
 from ansible.module_utils.common.validation import check_type_int
 
@@ -455,26 +456,32 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 
 
 class ServicesManager(BaseComposeManager):
-    def __init__(self, client):
+    def __init__(self, client: AnsibleModuleDockerClient) -> None:
         super().__init__(client)
         parameters = self.client.module.params
 
-        self.state = parameters["state"]
-        self.dependencies = parameters["dependencies"]
-        self.pull = parameters["pull"]
-        self.build = parameters["build"]
-        self.ignore_build_events = parameters["ignore_build_events"]
-        self.recreate = parameters["recreate"]
-        self.remove_images = parameters["remove_images"]
-        self.remove_volumes = parameters["remove_volumes"]
-        self.remove_orphans = parameters["remove_orphans"]
-        self.renew_anon_volumes = parameters["renew_anon_volumes"]
-        self.timeout = parameters["timeout"]
-        self.services = parameters["services"] or []
-        self.scale = parameters["scale"] or {}
-        self.wait = parameters["wait"]
-        self.wait_timeout = parameters["wait_timeout"]
-        self.yes = parameters["assume_yes"]
+        self.state: t.Literal["absent", "present", "stopped", "restarted"] = parameters[
+            "state"
+        ]
+        self.dependencies: bool = parameters["dependencies"]
+        self.pull: t.Literal["always", "missing", "never", "policy"] = parameters[
+            "pull"
+        ]
+        self.build: t.Literal["always", "never", "policy"] = parameters["build"]
+        self.ignore_build_events: bool = parameters["ignore_build_events"]
+        self.recreate: t.Literal["always", "never", "auto"] = parameters["recreate"]
+        self.remove_images: t.Literal["all", "local"] | None = parameters[
+            "remove_images"
+        ]
+        self.remove_volumes: bool = parameters["remove_volumes"]
+        self.remove_orphans: bool = parameters["remove_orphans"]
+        self.renew_anon_volumes: bool = parameters["renew_anon_volumes"]
+        self.timeout: int | None = parameters["timeout"]
+        self.services: list[str] = parameters["services"] or []
+        self.scale: dict[str, t.Any] = parameters["scale"] or {}
+        self.wait: bool = parameters["wait"]
+        self.wait_timeout: int | None = parameters["wait_timeout"]
+        self.yes: bool = parameters["assume_yes"]
         if self.compose_version < LooseVersion("2.32.0") and self.yes:
             self.fail(
                 f"assume_yes=true needs Docker Compose 2.32.0 or newer, not version {self.compose_version}"
@@ -491,7 +498,7 @@ class ServicesManager(BaseComposeManager):
                 self.fail(f"The value {value!r} for `scale[{key!r}]` is negative")
             self.scale[key] = value
 
-    def run(self):
+    def run(self) -> dict[str, t.Any]:
         if self.state == "present":
             result = self.cmd_up()
         elif self.state == "stopped":
@@ -508,7 +515,7 @@ class ServicesManager(BaseComposeManager):
         self.cleanup_result(result)
         return result
 
-    def get_up_cmd(self, dry_run, no_start=False):
+    def get_up_cmd(self, dry_run: bool, no_start: bool = False) -> list[str]:
         args = self.get_base_args() + ["up", "--detach", "--no-color", "--quiet-pull"]
         if self.pull != "policy":
             args.extend(["--pull", self.pull])
@@ -549,8 +556,8 @@ class ServicesManager(BaseComposeManager):
             args.append(service)
         return args
 
-    def cmd_up(self):
-        result = {}
+    def cmd_up(self) -> dict[str, t.Any]:
+        result: dict[str, t.Any] = {}
         args = self.get_up_cmd(self.check_mode)
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode, nonzero_rc=rc != 0)
@@ -566,7 +573,7 @@ class ServicesManager(BaseComposeManager):
         self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
-    def get_stop_cmd(self, dry_run):
+    def get_stop_cmd(self, dry_run: bool) -> list[str]:
         args = self.get_base_args() + ["stop"]
         if self.timeout is not None:
             args.extend(["--timeout", f"{self.timeout}"])
@@ -577,17 +584,17 @@ class ServicesManager(BaseComposeManager):
             args.append(service)
         return args
 
-    def _are_containers_stopped(self):
+    def _are_containers_stopped(self) -> bool:
         for container in self.list_containers_raw():
             if container["State"] not in ("created", "exited", "stopped", "killed"):
                 return False
         return True
 
-    def cmd_stop(self):
+    def cmd_stop(self) -> dict[str, t.Any]:
         # Since 'docker compose stop' **always** claims it is stopping containers, even if they are already
         # stopped, we have to do this a bit more complicated.
 
-        result = {}
+        result: dict[str, t.Any] = {}
         # Make sure all containers are created
         args_1 = self.get_up_cmd(self.check_mode, no_start=True)
         rc_1, stdout_1, stderr_1 = self.client.call_cli(*args_1, cwd=self.project_src)
@@ -630,7 +637,7 @@ class ServicesManager(BaseComposeManager):
         )
         return result
 
-    def get_restart_cmd(self, dry_run):
+    def get_restart_cmd(self, dry_run: bool) -> list[str]:
         args = self.get_base_args() + ["restart"]
         if not self.dependencies:
             args.append("--no-deps")
@@ -643,8 +650,8 @@ class ServicesManager(BaseComposeManager):
             args.append(service)
         return args
 
-    def cmd_restart(self):
-        result = {}
+    def cmd_restart(self) -> dict[str, t.Any]:
+        result: dict[str, t.Any] = {}
         args = self.get_restart_cmd(self.check_mode)
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode, nonzero_rc=rc != 0)
@@ -653,7 +660,7 @@ class ServicesManager(BaseComposeManager):
         self.update_failed(result, events, args, stdout, stderr, rc)
         return result
 
-    def get_down_cmd(self, dry_run):
+    def get_down_cmd(self, dry_run: bool) -> list[str]:
         args = self.get_base_args() + ["down"]
         if self.remove_orphans:
             args.append("--remove-orphans")
@@ -670,8 +677,8 @@ class ServicesManager(BaseComposeManager):
             args.append(service)
         return args
 
-    def cmd_down(self):
-        result = {}
+    def cmd_down(self) -> dict[str, t.Any]:
+        result: dict[str, t.Any] = {}
         args = self.get_down_cmd(self.check_mode)
         rc, stdout, stderr = self.client.call_cli(*args, cwd=self.project_src)
         events = self.parse_events(stderr, dry_run=self.check_mode, nonzero_rc=rc != 0)
@@ -681,7 +688,7 @@ class ServicesManager(BaseComposeManager):
         return result
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "state": {
             "type": "str",

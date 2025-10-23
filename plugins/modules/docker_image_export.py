@@ -94,6 +94,7 @@ images:
 """
 
 import traceback
+import typing as t
 
 from ansible_collections.community.docker.plugins.module_utils._api.constants import (
     DEFAULT_DATA_CHUNK_SIZE,
@@ -121,7 +122,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class ImageExportManager(DockerBaseClass):
-    def __init__(self, client):
+    def __init__(self, client: AnsibleDockerClient) -> None:
         super().__init__()
 
         self.client = client
@@ -151,10 +152,10 @@ class ImageExportManager(DockerBaseClass):
         if not self.names:
             self.fail("At least one image name must be specified")
 
-    def fail(self, msg):
+    def fail(self, msg: str) -> t.NoReturn:
         self.client.fail(msg)
 
-    def get_export_reason(self):
+    def get_export_reason(self) -> str | None:
         if self.force:
             return "Exporting since force=true"
 
@@ -178,13 +179,13 @@ class ImageExportManager(DockerBaseClass):
                     found = True
                     break
             if not found:
-                return f'Overwriting archive since it contains unexpected image {archived_image.image_id} named {", ".join(archived_image.repo_tags)}'
+                return f"Overwriting archive since it contains unexpected image {archived_image.image_id} named {', '.join(archived_image.repo_tags)}"
         if left_names:
             return f"Overwriting archive since it is missing image(s) {', '.join([name['joined'] for name in left_names])}"
 
         return None
 
-    def write_chunks(self, chunks):
+    def write_chunks(self, chunks: t.Generator[bytes]) -> None:
         try:
             with open(self.path, "wb") as fd:
                 for chunk in chunks:
@@ -192,7 +193,7 @@ class ImageExportManager(DockerBaseClass):
         except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error writing image archive {self.path} - {exc}")
 
-    def export_images(self):
+    def export_images(self) -> None:
         image_names = [name["joined"] for name in self.names]
         image_names_str = ", ".join(image_names)
         if len(image_names) == 1:
@@ -202,8 +203,8 @@ class ImageExportManager(DockerBaseClass):
                     self.client._get(
                         self.client._url("/images/{0}/get", image_names[0]), stream=True
                     ),
-                    DEFAULT_DATA_CHUNK_SIZE,
-                    False,
+                    chunk_size=DEFAULT_DATA_CHUNK_SIZE,
+                    decode=False,
                 )
             except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error getting image {image_names[0]} - {exc}")
@@ -216,15 +217,15 @@ class ImageExportManager(DockerBaseClass):
                         stream=True,
                         params={"names": image_names},
                     ),
-                    DEFAULT_DATA_CHUNK_SIZE,
-                    False,
+                    chunk_size=DEFAULT_DATA_CHUNK_SIZE,
+                    decode=False,
                 )
             except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error getting images {image_names_str} - {exc}")
 
         self.write_chunks(chunks)
 
-    def run(self):
+    def run(self) -> dict[str, t.Any]:
         tag = self.tag
         if not tag:
             tag = "latest"
@@ -260,7 +261,7 @@ class ImageExportManager(DockerBaseClass):
         return results
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "path": {"type": "path"},
         "force": {"type": "bool", "default": False},

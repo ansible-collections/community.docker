@@ -16,6 +16,7 @@ import os.path
 import shutil
 import stat
 import tarfile
+import typing as t
 
 from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
 
@@ -23,6 +24,16 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
     APIError,
     NotFound,
 )
+
+
+if t.TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from _typeshed import WriteableBuffer
+
+    from ansible_collections.community.docker.plugins.module_utils._api.api.client import (
+        APIClient,
+    )
 
 
 class DockerFileCopyError(Exception):
@@ -37,7 +48,9 @@ class DockerFileNotFound(DockerFileCopyError):
     pass
 
 
-def _put_archive(client, container, path, data):
+def _put_archive(
+    client: APIClient, container: str, path: str, data: bytes | t.Generator[bytes]
+) -> bool:
     # data can also be file object for streaming. This is because _put uses requests's put().
     # See https://requests.readthedocs.io/en/latest/user/advanced/#streaming-uploads
     url = client._url("/containers/{0}/archive", container)
@@ -47,8 +60,14 @@ def _put_archive(client, container, path, data):
 
 
 def _symlink_tar_creator(
-    b_in_path, file_stat, out_file, user_id, group_id, mode=None, user_name=None
-):
+    b_in_path: bytes,
+    file_stat: os.stat_result,
+    out_file: str | bytes,
+    user_id: int,
+    group_id: int,
+    mode: int | None = None,
+    user_name: str | None = None,
+) -> bytes:
     if not stat.S_ISLNK(file_stat.st_mode):
         raise DockerUnexpectedError("stat information is not for a symlink")
     bio = io.BytesIO()
@@ -75,16 +94,28 @@ def _symlink_tar_creator(
 
 
 def _symlink_tar_generator(
-    b_in_path, file_stat, out_file, user_id, group_id, mode=None, user_name=None
-):
+    b_in_path: bytes,
+    file_stat: os.stat_result,
+    out_file: str | bytes,
+    user_id: int,
+    group_id: int,
+    mode: int | None = None,
+    user_name: str | None = None,
+) -> t.Generator[bytes]:
     yield _symlink_tar_creator(
         b_in_path, file_stat, out_file, user_id, group_id, mode, user_name
     )
 
 
 def _regular_file_tar_generator(
-    b_in_path, file_stat, out_file, user_id, group_id, mode=None, user_name=None
-):
+    b_in_path: bytes,
+    file_stat: os.stat_result,
+    out_file: str | bytes,
+    user_id: int,
+    group_id: int,
+    mode: int | None = None,
+    user_name: str | None = None,
+) -> t.Generator[bytes]:
     if not stat.S_ISREG(file_stat.st_mode):
         raise DockerUnexpectedError("stat information is not for a regular file")
     tarinfo = tarfile.TarInfo()
@@ -136,8 +167,13 @@ def _regular_file_tar_generator(
 
 
 def _regular_content_tar_generator(
-    content, out_file, user_id, group_id, mode, user_name=None
-):
+    content: bytes,
+    out_file: str | bytes,
+    user_id: int,
+    group_id: int,
+    mode: int,
+    user_name: str | None = None,
+) -> t.Generator[bytes]:
     tarinfo = tarfile.TarInfo()
     tarinfo.name = (
         os.path.splitdrive(to_text(out_file))[1].replace(os.sep, "/").lstrip("/")
@@ -175,16 +211,16 @@ def _regular_content_tar_generator(
 
 
 def put_file(
-    client,
-    container,
-    in_path,
-    out_path,
-    user_id,
-    group_id,
-    mode=None,
-    user_name=None,
-    follow_links=False,
-):
+    client: APIClient,
+    container: str,
+    in_path: str,
+    out_path: str,
+    user_id: int,
+    group_id: int,
+    mode: int | None = None,
+    user_name: str | None = None,
+    follow_links: bool = False,
+) -> None:
     """Transfer a file from local to Docker container."""
     if not os.path.exists(to_bytes(in_path, errors="surrogate_or_strict")):
         raise DockerFileNotFound(f"file or module does not exist: {to_native(in_path)}")
@@ -232,8 +268,15 @@ def put_file(
 
 
 def put_file_content(
-    client, container, content, out_path, user_id, group_id, mode, user_name=None
-):
+    client: APIClient,
+    container: str,
+    content: bytes,
+    out_path: str,
+    user_id: int,
+    group_id: int,
+    mode: int,
+    user_name: str | None = None,
+) -> None:
     """Transfer a file from local to Docker container."""
     out_dir, out_file = os.path.split(out_path)
 
@@ -248,7 +291,13 @@ def put_file_content(
         )
 
 
-def stat_file(client, container, in_path, follow_links=False, log=None):
+def stat_file(
+    client: APIClient,
+    container: str,
+    in_path: str,
+    follow_links: bool = False,
+    log: Callable[[str], None] | None = None,
+) -> tuple[str, dict[str, t.Any] | None, str | None]:
     """Fetch information on a file from a Docker container to local.
 
     Return a tuple ``(path, stat_data, link_target)`` where:
@@ -265,12 +314,12 @@ def stat_file(client, container, in_path, follow_links=False, log=None):
     while True:
         if in_path in considered_in_paths:
             raise DockerFileCopyError(
-                f'Found infinite symbolic link loop when trying to stating "{in_path}"'
+                f"Found infinite symbolic link loop when trying to stating {in_path!r}"
             )
         considered_in_paths.add(in_path)
 
         if log:
-            log(f'FETCH: Stating "{in_path}"')
+            log(f"FETCH: Stating {in_path!r}")
 
         response = client._head(
             client._url("/containers/{0}/archive", container),
@@ -299,24 +348,24 @@ def stat_file(client, container, in_path, follow_links=False, log=None):
 
 
 class _RawGeneratorFileobj(io.RawIOBase):
-    def __init__(self, stream):
+    def __init__(self, stream: t.Generator[bytes]):
         self._stream = stream
         self._buf = b""
 
-    def readable(self):
+    def readable(self) -> bool:
         return True
 
-    def _readinto_from_buf(self, b, index, length):
+    def _readinto_from_buf(self, b: WriteableBuffer, index: int, length: int) -> int:
         cpy = min(length - index, len(self._buf))
         if cpy:
-            b[index : index + cpy] = self._buf[:cpy]
+            b[index : index + cpy] = self._buf[:cpy]  # type: ignore # TODO!
             self._buf = self._buf[cpy:]
             index += cpy
         return index
 
-    def readinto(self, b):
+    def readinto(self, b: WriteableBuffer) -> int:
         index = 0
-        length = len(b)
+        length = len(b)  # type: ignore # TODO!
 
         index = self._readinto_from_buf(b, index, length)
         if index == length:
@@ -330,25 +379,28 @@ class _RawGeneratorFileobj(io.RawIOBase):
         return self._readinto_from_buf(b, index, length)
 
 
-def _stream_generator_to_fileobj(stream):
+def _stream_generator_to_fileobj(stream: t.Generator[bytes]) -> io.BufferedReader:
     """Given a generator that generates chunks of bytes, create a readable buffered stream."""
     raw = _RawGeneratorFileobj(stream)
     return io.BufferedReader(raw)
 
 
+_T = t.TypeVar("_T")
+
+
 def fetch_file_ex(
-    client,
-    container,
-    in_path,
-    process_none,
-    process_regular,
-    process_symlink,
-    process_other,
-    follow_links=False,
-    log=None,
-):
+    client: APIClient,
+    container: str,
+    in_path: str,
+    process_none: Callable[[str], _T],
+    process_regular: Callable[[str, tarfile.TarFile, tarfile.TarInfo], _T],
+    process_symlink: Callable[[str, tarfile.TarInfo], _T],
+    process_other: Callable[[str, tarfile.TarInfo], _T],
+    follow_links: bool = False,
+    log: Callable[[str], None] | None = None,
+) -> _T:
     """Fetch a file (as a tar file entry) from a Docker container to local."""
-    considered_in_paths = set()
+    considered_in_paths: set[str] = set()
 
     while True:
         if in_path in considered_in_paths:
@@ -372,8 +424,8 @@ def fetch_file_ex(
         with tarfile.open(
             fileobj=_stream_generator_to_fileobj(stream), mode="r|"
         ) as tar:
-            symlink_member = None
-            result = None
+            symlink_member: tarfile.TarInfo | None = None
+            result: _T | None = None
             found = False
             for member in tar:
                 if found:
@@ -398,35 +450,46 @@ def fetch_file_ex(
                     log(f'FETCH: Following symbolic link to "{in_path}"')
                 continue
             if found:
-                return result
+                return result  # type: ignore
             raise DockerUnexpectedError("Received tarfile is empty!")
 
 
-def fetch_file(client, container, in_path, out_path, follow_links=False, log=None):
+def fetch_file(
+    client: APIClient,
+    container: str,
+    in_path: str,
+    out_path: str,
+    follow_links: bool = False,
+    log: Callable[[str], None] | None = None,
+) -> str:
     b_out_path = to_bytes(out_path, errors="surrogate_or_strict")
 
-    def process_none(in_path):
+    def process_none(in_path: str) -> str:
         raise DockerFileNotFound(
             f"File {in_path} does not exist in container {container}"
         )
 
-    def process_regular(in_path, tar, member):
+    def process_regular(
+        in_path: str, tar: tarfile.TarFile, member: tarfile.TarInfo
+    ) -> str:
         if not follow_links and os.path.exists(b_out_path):
             os.unlink(b_out_path)
 
-        with tar.extractfile(member) as in_f:
-            with open(b_out_path, "wb") as out_f:
-                shutil.copyfileobj(in_f, out_f)
+        reader = tar.extractfile(member)
+        if reader:
+            with reader as in_f:
+                with open(b_out_path, "wb") as out_f:
+                    shutil.copyfileobj(in_f, out_f)
         return in_path
 
-    def process_symlink(in_path, member):
+    def process_symlink(in_path, member) -> str:
         if os.path.exists(b_out_path):
             os.unlink(b_out_path)
 
         os.symlink(member.linkname, b_out_path)
         return in_path
 
-    def process_other(in_path, member):
+    def process_other(in_path, member) -> str:
         raise DockerFileCopyError(
             f'Remote file "{in_path}" is not a regular file or a symbolic link'
         )
@@ -444,7 +507,13 @@ def fetch_file(client, container, in_path, out_path, follow_links=False, log=Non
     )
 
 
-def _execute_command(client, container, command, log=None, check_rc=False):
+def _execute_command(
+    client: APIClient,
+    container: str,
+    command: list[str],
+    log: Callable[[str], None] | None = None,
+    check_rc: bool = False,
+) -> tuple[int, bytes, bytes]:
     if log:
         log(f"Executing {command} in {container}")
 
@@ -483,7 +552,7 @@ def _execute_command(client, container, command, log=None, check_rc=False):
 
     result = client.get_json("/exec/{0}/json", exec_id)
 
-    rc = result.get("ExitCode") or 0
+    rc: int = result.get("ExitCode") or 0
     stdout = stdout or b""
     stderr = stderr or b""
 
@@ -493,13 +562,15 @@ def _execute_command(client, container, command, log=None, check_rc=False):
     if check_rc and rc != 0:
         command_str = " ".join(command)
         raise DockerUnexpectedError(
-            f'Obtained unexpected exit code {rc} when running "{command_str}" in {container}.\nSTDOUT: {stdout}\nSTDERR: {stderr}'
+            f'Obtained unexpected exit code {rc} when running "{command_str}" in {container}.\nSTDOUT: {stdout!r}\nSTDERR: {stderr!r}'
         )
 
     return rc, stdout, stderr
 
 
-def determine_user_group(client, container, log=None):
+def determine_user_group(
+    client: APIClient, container: str, log: Callable[[str], None] | None = None
+) -> tuple[int, int]:
     dummy_rc, stdout, dummy_stderr = _execute_command(
         client, container, ["/bin/sh", "-c", "id -u && id -g"], check_rc=True, log=log
     )
@@ -507,7 +578,7 @@ def determine_user_group(client, container, log=None):
     stdout_lines = stdout.splitlines()
     if len(stdout_lines) != 2:
         raise DockerUnexpectedError(
-            f"Expected two-line output to obtain user and group ID for container {container}, but got {len(stdout_lines)} lines:\n{stdout}"
+            f"Expected two-line output to obtain user and group ID for container {container}, but got {len(stdout_lines)} lines:\n{stdout!r}"
         )
 
     user_id, group_id = stdout_lines
@@ -515,5 +586,5 @@ def determine_user_group(client, container, log=None):
         return int(user_id), int(group_id)
     except ValueError as exc:
         raise DockerUnexpectedError(
-            f'Expected two-line output with numeric IDs to obtain user and group ID for container {container}, but got "{user_id}" and "{group_id}" instead'
+            f"Expected two-line output with numeric IDs to obtain user and group ID for container {container}, but got {user_id!r} and {group_id!r} instead"
         ) from exc

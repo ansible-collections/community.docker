@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import typing as t
 
 from ..constants import IS_WINDOWS_PLATFORM
 
@@ -24,11 +25,11 @@ LEGACY_DOCKER_CONFIG_FILENAME = ".dockercfg"
 log = logging.getLogger(__name__)
 
 
-def get_default_config_file():
+def get_default_config_file() -> str:
     return os.path.join(home_dir(), DOCKER_CONFIG_FILENAME)
 
 
-def find_config_file(config_path=None):
+def find_config_file(config_path: str | None = None) -> str | None:
     homedir = home_dir()
     paths = list(
         filter(
@@ -54,14 +55,14 @@ def find_config_file(config_path=None):
     return None
 
 
-def config_path_from_environment():
+def config_path_from_environment() -> str | None:
     config_dir = os.environ.get("DOCKER_CONFIG")
     if not config_dir:
         return None
     return os.path.join(config_dir, os.path.basename(DOCKER_CONFIG_FILENAME))
 
 
-def home_dir():
+def home_dir() -> str:
     """
     Get the user's home directory, using the same logic as the Docker Engine
     client - use %USERPROFILE% on Windows, $HOME/getuid on POSIX.
@@ -71,7 +72,7 @@ def home_dir():
     return os.path.expanduser("~")
 
 
-def load_general_config(config_path=None):
+def load_general_config(config_path: str | None = None) -> dict[str, t.Any]:
     config_file = find_config_file(config_path)
 
     if not config_file:

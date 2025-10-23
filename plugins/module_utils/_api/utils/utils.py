@@ -18,6 +18,7 @@ import os
 import os.path
 import shlex
 import string
+import typing as t
 from urllib.parse import urlparse, urlunparse
 
 from ansible_collections.community.docker.plugins.module_utils._version import (
@@ -34,32 +35,23 @@ from ..constants import (
 from ..tls import TLSConfig
 
 
+if t.TYPE_CHECKING:
+    import ssl
+    from collections.abc import Mapping, Sequence
+
+
 URLComponents = collections.namedtuple(
     "URLComponents",
     "scheme netloc url params query fragment",
 )
 
 
-def create_ipam_pool(*args, **kwargs):
-    raise errors.DeprecatedMethod(
-        "utils.create_ipam_pool has been removed. Please use a "
-        "docker.types.IPAMPool object instead."
-    )
-
-
-def create_ipam_config(*args, **kwargs):
-    raise errors.DeprecatedMethod(
-        "utils.create_ipam_config has been removed. Please use a "
-        "docker.types.IPAMConfig object instead."
-    )
-
-
-def decode_json_header(header):
+def decode_json_header(header: str) -> dict[str, t.Any]:
     data = base64.b64decode(header).decode("utf-8")
     return json.loads(data)
 
 
-def compare_version(v1, v2):
+def compare_version(v1: str, v2: str) -> t.Literal[-1, 0, 1]:
     """Compare docker versions
 
     >>> v1 = '1.9'
@@ -80,43 +72,64 @@ def compare_version(v1, v2):
     return 1
 
 
-def version_lt(v1, v2):
+def version_lt(v1: str, v2: str) -> bool:
     return compare_version(v1, v2) > 0
 
 
-def version_gte(v1, v2):
+def version_gte(v1: str, v2: str) -> bool:
     return not version_lt(v1, v2)
 
 
-def _convert_port_binding(binding):
+def _convert_port_binding(
+    binding: (
+        tuple[str, str | int | None]
+        | tuple[str | int | None]
+        | dict[str, str]
+        | str
+        | int
+    ),
+) -> dict[str, str]:
     result = {"HostIp": "", "HostPort": ""}
+    host_port: str | int | None = ""
     if isinstance(binding, tuple):
         if len(binding) == 2:
-            result["HostPort"] = binding[1]
+            host_port = binding[1]  # type: ignore
             result["HostIp"] = binding[0]
         elif isinstance(binding[0], str):
             result["HostIp"] = binding[0]
         else:
-            result["HostPort"] = binding[0]
+            host_port = binding[0]
     elif isinstance(binding, dict):
         if "HostPort" in binding:
-            result["HostPort"] = binding["HostPort"]
+            host_port = binding["HostPort"]
             if "HostIp" in binding:
                 result["HostIp"] = binding["HostIp"]
         else:
             raise ValueError(binding)
     else:
-        result["HostPort"] = binding
+        host_port = binding
 
-    if result["HostPort"] is None:
-        result["HostPort"] = ""
-    else:
-        result["HostPort"] = str(result["HostPort"])
-
+    result["HostPort"] = str(host_port) if host_port is not None else ""
     return result
 
 
-def convert_port_bindings(port_bindings):
+def convert_port_bindings(
+    port_bindings: dict[
+        str | int,
+        tuple[str, str | int | None]
+        | tuple[str | int | None]
+        | dict[str, str]
+        | str
+        | int
+        | list[
+            tuple[str, str | int | None]
+            | tuple[str | int | None]
+            | dict[str, str]
+            | str
+            | int
+        ],
+    ],
+) -> dict[str, list[dict[str, str]]]:
     result = {}
     for k, v in port_bindings.items():
         key = str(k)
@@ -129,9 +142,11 @@ def convert_port_bindings(port_bindings):
     return result
 
 
-def convert_volume_binds(binds):
+def convert_volume_binds(
+    binds: list[str] | Mapping[str | bytes, dict[str, str | bytes] | bytes | str | int],
+) -> list[str]:
     if isinstance(binds, list):
-        return binds
+        return binds  # type: ignore
 
     result = []
     for k, v in binds.items():
@@ -149,7 +164,7 @@ def convert_volume_binds(binds):
             if "ro" in v:
                 mode = "ro" if v["ro"] else "rw"
             elif "mode" in v:
-                mode = v["mode"]
+                mode = v["mode"]  # type: ignore # TODO
             else:
                 mode = "rw"
 
@@ -165,9 +180,9 @@ def convert_volume_binds(binds):
             ]
             if "propagation" in v and v["propagation"] in propagation_modes:
                 if mode:
-                    mode = ",".join([mode, v["propagation"]])
+                    mode = ",".join([mode, v["propagation"]])  # type: ignore # TODO
                 else:
-                    mode = v["propagation"]
+                    mode = v["propagation"]  # type: ignore # TODO
 
             result.append(f"{k}:{bind}:{mode}")
         else:
@@ -177,7 +192,7 @@ def convert_volume_binds(binds):
     return result
 
 
-def convert_tmpfs_mounts(tmpfs):
+def convert_tmpfs_mounts(tmpfs: dict[str, str] | list[str]) -> dict[str, str]:
     if isinstance(tmpfs, dict):
         return tmpfs
 
@@ -204,9 +219,11 @@ def convert_tmpfs_mounts(tmpfs):
     return result
 
 
-def convert_service_networks(networks):
+def convert_service_networks(
+    networks: list[str | dict[str, str]],
+) -> list[dict[str, str]]:
     if not networks:
-        return networks
+        return networks  # type: ignore
     if not isinstance(networks, list):
         raise TypeError("networks parameter must be a list.")
 
@@ -218,17 +235,17 @@ def convert_service_networks(networks):
     return result
 
 
-def parse_repository_tag(repo_name):
+def parse_repository_tag(repo_name: str) -> tuple[str, str | None]:
     parts = repo_name.rsplit("@", 1)
     if len(parts) == 2:
-        return tuple(parts)
+        return tuple(parts)  # type: ignore
     parts = repo_name.rsplit(":", 1)
     if len(parts) == 2 and "/" not in parts[1]:
-        return tuple(parts)
+        return tuple(parts)  # type: ignore
     return repo_name, None
 
 
-def parse_host(addr, is_win32=False, tls=False):
+def parse_host(addr: str | None, is_win32: bool = False, tls: bool = False) -> str:
     # Sensible defaults
     if not addr and is_win32:
         return DEFAULT_NPIPE
@@ -308,7 +325,7 @@ def parse_host(addr, is_win32=False, tls=False):
     ).rstrip("/")
 
 
-def parse_devices(devices):
+def parse_devices(devices: Sequence[dict[str, str] | str]) -> list[dict[str, str]]:
     device_list = []
     for device in devices:
         if isinstance(device, dict):
@@ -337,7 +354,10 @@ def parse_devices(devices):
     return device_list
 
 
-def kwargs_from_env(ssl_version=None, assert_hostname=None, environment=None):
+def kwargs_from_env(
+    assert_hostname: bool | None = None,
+    environment: Mapping[str, str] | None = None,
+) -> dict[str, t.Any]:
     if not environment:
         environment = os.environ
     host = environment.get("DOCKER_HOST")
@@ -347,14 +367,14 @@ def kwargs_from_env(ssl_version=None, assert_hostname=None, environment=None):
 
     # empty string for tls verify counts as "false".
     # Any value or 'unset' counts as true.
-    tls_verify = environment.get("DOCKER_TLS_VERIFY")
-    if tls_verify == "":
+    tls_verify_str = environment.get("DOCKER_TLS_VERIFY")
+    if tls_verify_str == "":
         tls_verify = False
     else:
-        tls_verify = tls_verify is not None
+        tls_verify = tls_verify_str is not None
     enable_tls = cert_path or tls_verify
 
-    params = {}
+    params: dict[str, t.Any] = {}
 
     if host:
         params["base_url"] = host
@@ -377,14 +397,13 @@ def kwargs_from_env(ssl_version=None, assert_hostname=None, environment=None):
         ),
         ca_cert=os.path.join(cert_path, "ca.pem"),
         verify=tls_verify,
-        ssl_version=ssl_version,
         assert_hostname=assert_hostname,
     )
 
     return params
 
 
-def convert_filters(filters):
+def convert_filters(filters: Mapping[str, bool | str | list[str]]) -> str:
     result = {}
     for k, v in filters.items():
         if isinstance(v, bool):
@@ -397,7 +416,7 @@ def convert_filters(filters):
     return json.dumps(result)
 
 
-def parse_bytes(s):
+def parse_bytes(s: int | float | str) -> int | float:
     if isinstance(s, (int, float)):
         return s
     if len(s) == 0:
@@ -435,14 +454,16 @@ def parse_bytes(s):
     return s
 
 
-def normalize_links(links):
+def normalize_links(links: dict[str, str] | Sequence[tuple[str, str]]) -> list[str]:
     if isinstance(links, dict):
-        links = links.items()
+        sorted_links = sorted(links.items())
+    else:
+        sorted_links = sorted(links)
 
-    return [f"{k}:{v}" if v else k for k, v in sorted(links)]
+    return [f"{k}:{v}" if v else k for k, v in sorted_links]
 
 
-def parse_env_file(env_file):
+def parse_env_file(env_file: str | os.PathLike) -> dict[str, str]:
     """
     Reads a line-separated environment file.
     The format of each line should be "key=value".
@@ -451,7 +472,6 @@ def parse_env_file(env_file):
 
     with open(env_file, "rt", encoding="utf-8") as f:
         for line in f:
-
             if line[0] == "#":
                 continue
 
@@ -471,11 +491,11 @@ def parse_env_file(env_file):
     return environment
 
 
-def split_command(command):
+def split_command(command: str) -> list[str]:
     return shlex.split(command)
 
 
-def format_environment(environment):
+def format_environment(environment: Mapping[str, str | bytes]) -> list[str]:
     def format_env(key, value):
         if value is None:
             return key
@@ -487,16 +507,9 @@ def format_environment(environment):
     return [format_env(*var) for var in environment.items()]
 
 
-def format_extra_hosts(extra_hosts, task=False):
+def format_extra_hosts(extra_hosts: Mapping[str, str], task: bool = False) -> list[str]:
     # Use format dictated by Swarm API if container is part of a task
     if task:
         return [f"{v} {k}" for k, v in sorted(extra_hosts.items())]
 
     return [f"{k}:{v}" for k, v in sorted(extra_hosts.items())]
-
-
-def create_host_config(self, *args, **kwargs):
-    raise errors.DeprecatedMethod(
-        "utils.create_host_config has been removed. Please use a "
-        "docker.types.HostConfig object instead."
-    )

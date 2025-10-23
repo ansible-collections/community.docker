@@ -367,6 +367,7 @@ import errno
 import json
 import os
 import traceback
+import typing as t
 
 from ansible.module_utils.common.text.converters import to_native
 from ansible.module_utils.common.text.formatters import human_to_bytes
@@ -411,7 +412,18 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 )
 
 
-def convert_to_bytes(value, module, name, unlimited_value=None):
+if t.TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from ansible.module_utils.basic import AnsibleModule
+
+
+def convert_to_bytes(
+    value: str | None,
+    module: AnsibleModule,
+    name: str,
+    unlimited_value: int | None = None,
+) -> int | None:
     if value is None:
         return value
     try:
@@ -423,8 +435,7 @@ def convert_to_bytes(value, module, name, unlimited_value=None):
 
 
 class ImageManager(DockerBaseClass):
-
-    def __init__(self, client, results):
+    def __init__(self, client: AnsibleDockerClient, results: dict[str, t.Any]) -> None:
         """
         Configure a docker_image task.
 
@@ -441,12 +452,14 @@ class ImageManager(DockerBaseClass):
         parameters = self.client.module.params
         self.check_mode = self.client.check_mode
 
-        self.source = parameters["source"]
-        build = parameters["build"] or {}
-        pull = parameters["pull"] or {}
-        self.archive_path = parameters["archive_path"]
-        self.cache_from = build.get("cache_from")
-        self.container_limits = build.get("container_limits")
+        self.source: t.Literal["build", "load", "pull", "local"] | None = parameters[
+            "source"
+        ]
+        build: dict[str, t.Any] = parameters["build"] or {}
+        pull: dict[str, t.Any] = parameters["pull"] or {}
+        self.archive_path: str | None = parameters["archive_path"]
+        self.cache_from: list[str] | None = build.get("cache_from")
+        self.container_limits: dict[str, t.Any] | None = build.get("container_limits")
         if self.container_limits and "memory" in self.container_limits:
             self.container_limits["memory"] = convert_to_bytes(
                 self.container_limits["memory"],
@@ -460,32 +473,36 @@ class ImageManager(DockerBaseClass):
                 "build.container_limits.memswap",
                 unlimited_value=-1,
             )
-        self.dockerfile = build.get("dockerfile")
-        self.force_source = parameters["force_source"]
-        self.force_absent = parameters["force_absent"]
-        self.force_tag = parameters["force_tag"]
-        self.load_path = parameters["load_path"]
-        self.name = parameters["name"]
-        self.network = build.get("network")
-        self.extra_hosts = clean_dict_booleans_for_docker_api(build.get("etc_hosts"))
-        self.nocache = build.get("nocache", False)
-        self.build_path = build.get("path")
-        self.pull = build.get("pull")
-        self.target = build.get("target")
-        self.repository = parameters["repository"]
-        self.rm = build.get("rm", True)
-        self.state = parameters["state"]
-        self.tag = parameters["tag"]
-        self.http_timeout = build.get("http_timeout")
-        self.pull_platform = pull.get("platform")
-        self.push = parameters["push"]
-        self.buildargs = build.get("args")
-        self.build_platform = build.get("platform")
-        self.use_config_proxy = build.get("use_config_proxy")
-        self.shm_size = convert_to_bytes(
+        self.dockerfile: str | None = build.get("dockerfile")
+        self.force_source: bool = parameters["force_source"]
+        self.force_absent: bool = parameters["force_absent"]
+        self.force_tag: bool = parameters["force_tag"]
+        self.load_path: str | None = parameters["load_path"]
+        self.name: str = parameters["name"]
+        self.network: str | None = build.get("network")
+        self.extra_hosts: dict[str, str] = clean_dict_booleans_for_docker_api(
+            build.get("etc_hosts")  # type: ignore
+        )
+        self.nocache: bool = build.get("nocache", False)
+        self.build_path: str | None = build.get("path")
+        self.pull: bool | None = build.get("pull")
+        self.target: str | None = build.get("target")
+        self.repository: str | None = parameters["repository"]
+        self.rm: bool = build.get("rm", True)
+        self.state: t.Literal["absent", "present"] = parameters["state"]
+        self.tag: str = parameters["tag"]
+        self.http_timeout: int | None = build.get("http_timeout")
+        self.pull_platform: str | None = pull.get("platform")
+        self.push: bool = parameters["push"]
+        self.buildargs: dict[str, t.Any] | None = build.get("args")
+        self.build_platform: str | None = build.get("platform")
+        self.use_config_proxy: bool | None = build.get("use_config_proxy")
+        self.shm_size: int | None = convert_to_bytes(
             build.get("shm_size"), self.client.module, "build.shm_size"
         )
-        self.labels = clean_dict_booleans_for_docker_api(build.get("labels"))
+        self.labels: dict[str, str] = clean_dict_booleans_for_docker_api(
+            build.get("labels")  # type: ignore
+        )
 
         # If name contains a tag, it takes precedence over tag parameter.
         if not is_image_name_id(self.name):
@@ -507,10 +524,10 @@ class ImageManager(DockerBaseClass):
         elif self.state == "absent":
             self.absent()
 
-    def fail(self, msg):
+    def fail(self, msg: str) -> t.NoReturn:
         self.client.fail(msg)
 
-    def present(self):
+    def present(self) -> None:
         """
         Handles state = 'present', which includes building, loading or pulling an image,
         depending on user provided parameters.
@@ -530,6 +547,7 @@ class ImageManager(DockerBaseClass):
                     )
 
                 # Build the image
+                assert self.build_path is not None
                 if not os.path.isdir(self.build_path):
                     self.fail(
                         f"Requested build path {self.build_path} could not be found or you do not have access."
@@ -546,6 +564,7 @@ class ImageManager(DockerBaseClass):
                     self.results.update(self.build_image())
 
             elif self.source == "load":
+                assert self.load_path is not None
                 # Load the image from an archive
                 if not os.path.isfile(self.load_path):
                     self.fail(
@@ -596,7 +615,7 @@ class ImageManager(DockerBaseClass):
         elif self.repository:
             self.tag_image(self.name, self.tag, self.repository, push=self.push)
 
-    def absent(self):
+    def absent(self) -> None:
         """
         Handles state = 'absent', which removes an image.
 
@@ -627,8 +646,11 @@ class ImageManager(DockerBaseClass):
 
     @staticmethod
     def archived_image_action(
-        failure_logger, archive_path, current_image_name, current_image_id
-    ):
+        failure_logger: Callable[[str], None],
+        archive_path: str,
+        current_image_name: str,
+        current_image_id: str,
+    ) -> str | None:
         """
         If the archive is missing or requires replacement, return an action message.
 
@@ -667,7 +689,7 @@ class ImageManager(DockerBaseClass):
             f"overwriting archive with image {archived.image_id} named {name}"
         )
 
-    def archive_image(self, name, tag):
+    def archive_image(self, name: str, tag: str | None) -> None:
         """
         Archive an image to a .tar file. Called when archive_path is passed.
 
@@ -676,6 +698,7 @@ class ImageManager(DockerBaseClass):
         :param tag: Optional image tag; assumed to be "latest" if None
         :type tag: str | None
         """
+        assert self.archive_path is not None
 
         if not tag:
             tag = "latest"
@@ -710,8 +733,8 @@ class ImageManager(DockerBaseClass):
                     self.client._get(
                         self.client._url("/images/{0}/get", image_name), stream=True
                     ),
-                    DEFAULT_DATA_CHUNK_SIZE,
-                    False,
+                    chunk_size=DEFAULT_DATA_CHUNK_SIZE,
+                    decode=False,
                 )
             except Exception as exc:  # pylint: disable=broad-exception-caught
                 self.fail(f"Error getting image {image_name} - {exc}")
@@ -725,7 +748,7 @@ class ImageManager(DockerBaseClass):
 
         self.results["image"] = image
 
-    def push_image(self, name, tag=None):
+    def push_image(self, name: str, tag: str | None = None) -> None:
         """
         If the name of the image contains a repository path, then push the image.
 
@@ -799,7 +822,9 @@ class ImageManager(DockerBaseClass):
                     self.results["image"] = {}
                 self.results["image"]["push_status"] = status
 
-    def tag_image(self, name, tag, repository, push=False):
+    def tag_image(
+        self, name: str, tag: str, repository: str, push: bool = False
+    ) -> None:
         """
         Tag an image into a repository.
 
@@ -852,7 +877,7 @@ class ImageManager(DockerBaseClass):
             self.push_image(repo, repo_tag)
 
     @staticmethod
-    def _extract_output_line(line, output):
+    def _extract_output_line(line: dict[str, t.Any], output: list[str]):
         """
         Extract text line from stream output and, if found, adds it to output.
         """
@@ -862,14 +887,15 @@ class ImageManager(DockerBaseClass):
             text_line = line.get("stream") or line.get("status") or ""
             output.extend(text_line.splitlines())
 
-    def build_image(self):
+    def build_image(self) -> dict[str, t.Any]:
         """
         Build an image
 
         :return: image dict
         """
+        assert self.build_path is not None
         remote = context = None
-        headers = {}
+        headers: dict[str, str | bytes] = {}
         buildargs = {}
         if self.buildargs:
             for key, value in self.buildargs.items():
@@ -898,12 +924,12 @@ class ImageManager(DockerBaseClass):
                             [line.strip() for line in f.read().splitlines()],
                         )
                     )
-            dockerfile = process_dockerfile(dockerfile, self.build_path)
+            dockerfile_data = process_dockerfile(dockerfile, self.build_path)
             context = tar(
-                self.build_path, exclude=exclude, dockerfile=dockerfile, gzip=False
+                self.build_path, exclude=exclude, dockerfile=dockerfile_data, gzip=False
             )
 
-        params = {
+        params: dict[str, t.Any] = {
             "t": f"{self.name}:{self.tag}" if self.tag else self.name,
             "remote": remote,
             "q": False,
@@ -960,7 +986,7 @@ class ImageManager(DockerBaseClass):
         if context is not None:
             context.close()
 
-        build_output = []
+        build_output: list[str] = []
         for line in self.client._stream_helper(response, decode=True):
             # line = json.loads(line)
             self.log(line, pretty_print=True)
@@ -982,14 +1008,15 @@ class ImageManager(DockerBaseClass):
             "image": self.client.find_image(name=self.name, tag=self.tag),
         }
 
-    def load_image(self):
+    def load_image(self) -> dict[str, t.Any] | None:
         """
         Load an image from a .tar archive
 
         :return: image dict
         """
         # Load image(s) from file
-        load_output = []
+        assert self.load_path is not None
+        load_output: list[str] = []
         has_output = False
         try:
             self.log(f"Opening image {self.load_path}")
@@ -1078,7 +1105,7 @@ class ImageManager(DockerBaseClass):
         return self.client.find_image(self.name, self.tag)
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "source": {"type": "str", "choices": ["build", "load", "pull", "local"]},
         "build": {

@@ -118,6 +118,7 @@ import os.path
 import re
 import selectors
 import subprocess
+import typing as t
 from shlex import quote
 
 from ansible.errors import AnsibleConnectionFailure, AnsibleError, AnsibleFileNotFound
@@ -140,8 +141,8 @@ class Connection(ConnectionBase):
     transport = "community.docker.docker"
     has_pipelining = True
 
-    def __init__(self, play_context, new_stdin, *args, **kwargs):
-        super().__init__(play_context, new_stdin, *args, **kwargs)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
 
         # Note: docker supports running as non-root in some configurations.
         # (For instance, setting the UNIX socket file to be readable and
@@ -152,11 +153,11 @@ class Connection(ConnectionBase):
         # configured to be connected to by root and they are not running as
         # root.
 
-        self._docker_args = []
-        self._container_user_cache = {}
-        self._version = None
-        self.remote_user = None
-        self.timeout = None
+        self._docker_args: list[bytes | str] = []
+        self._container_user_cache: dict[str, str | None] = {}
+        self._version: str | None = None
+        self.remote_user: str | None = None
+        self.timeout: int | float | None = None
 
         # Windows uses Powershell modules
         if getattr(self._shell, "_IS_WINDOWS", False):
@@ -171,12 +172,12 @@ class Connection(ConnectionBase):
                 raise AnsibleError("docker command not found in PATH") from exc
 
     @staticmethod
-    def _sanitize_version(version):
+    def _sanitize_version(version: str) -> str:
         version = re.sub("[^0-9a-zA-Z.]", "", version)
         version = re.sub("^v", "", version)
         return version
 
-    def _old_docker_version(self):
+    def _old_docker_version(self) -> tuple[list[str], str, bytes, int]:
         cmd_args = self._docker_args
 
         old_version_subcommand = ["version"]
@@ -189,7 +190,7 @@ class Connection(ConnectionBase):
 
         return old_docker_cmd, to_native(cmd_output), err, p.returncode
 
-    def _new_docker_version(self):
+    def _new_docker_version(self) -> tuple[list[str], str, bytes, int]:
         # no result yet, must be newer Docker version
         cmd_args = self._docker_args
 
@@ -202,8 +203,7 @@ class Connection(ConnectionBase):
             cmd_output, err = p.communicate()
             return new_docker_cmd, to_native(cmd_output), err, p.returncode
 
-    def _get_docker_version(self):
-
+    def _get_docker_version(self) -> str:
         cmd, cmd_output, err, returncode = self._old_docker_version()
         if returncode == 0:
             for line in to_text(cmd_output, errors="surrogate_or_strict").split("\n"):
@@ -218,7 +218,7 @@ class Connection(ConnectionBase):
 
         return self._sanitize_version(to_text(cmd_output, errors="surrogate_or_strict"))
 
-    def _get_docker_remote_user(self):
+    def _get_docker_remote_user(self) -> str | None:
         """Get the default user configured in the docker container"""
         container = self.get_option("remote_addr")
         if container in self._container_user_cache:
@@ -243,7 +243,7 @@ class Connection(ConnectionBase):
         self._container_user_cache[container] = user
         return user
 
-    def _build_exec_cmd(self, cmd):
+    def _build_exec_cmd(self, cmd: list[bytes | str]) -> list[bytes | str]:
         """Build the local docker exec command to run cmd on remote_host
 
         If remote_user is available and is supported by the docker
@@ -298,7 +298,7 @@ class Connection(ConnectionBase):
 
         return local_cmd
 
-    def _set_docker_args(self):
+    def _set_docker_args(self) -> None:
         # TODO: this is mostly for backwards compatibility, play_context is used as fallback for older versions
         # docker arguments
         del self._docker_args[:]
@@ -308,7 +308,7 @@ class Connection(ConnectionBase):
         if extra_args:
             self._docker_args += extra_args.split(" ")
 
-    def _set_conn_data(self):
+    def _set_conn_data(self) -> None:
         """initialize for the connection, cannot do only in init since all data is not ready at that point"""
 
         self._set_docker_args()
@@ -323,8 +323,7 @@ class Connection(ConnectionBase):
             self.timeout = self._play_context.timeout
 
     @property
-    def docker_version(self):
-
+    def docker_version(self) -> str:
         if not self._version:
             self._set_docker_args()
 
@@ -341,7 +340,7 @@ class Connection(ConnectionBase):
                 )
         return self._version
 
-    def _get_actual_user(self):
+    def _get_actual_user(self) -> str | None:
         if self.remote_user is not None:
             # An explicit user is provided
             if self.docker_version == "dev" or LooseVersion(
@@ -353,7 +352,7 @@ class Connection(ConnectionBase):
             actual_user = self._get_docker_remote_user()
             if actual_user != self.get_option("remote_user"):
                 display.warning(
-                    f'docker {self.docker_version} does not support remote_user, using container default: {actual_user or "?"}'
+                    f"docker {self.docker_version} does not support remote_user, using container default: {actual_user or '?'}"
                 )
             return actual_user
         if self._display.verbosity > 2:
@@ -363,9 +362,9 @@ class Connection(ConnectionBase):
             return self._get_docker_remote_user()
         return None
 
-    def _connect(self, port=None):
+    def _connect(self) -> t.Self:
         """Connect to the container. Nothing to do"""
-        super()._connect()
+        super()._connect()  # type: ignore[safe-super]
         if not self._connected:
             self._set_conn_data()
             actual_user = self._get_actual_user()
@@ -374,13 +373,16 @@ class Connection(ConnectionBase):
                 host=self.get_option("remote_addr"),
             )
             self._connected = True
+        return self
 
-    def exec_command(self, cmd, in_data=None, sudoable=False):
+    def exec_command(
+        self, cmd: str, in_data: bytes | None = None, sudoable: bool = False
+    ) -> tuple[int, bytes, bytes]:
         """Run a command on the docker host"""
 
         self._set_conn_data()
 
-        super().exec_command(cmd, in_data=in_data, sudoable=sudoable)
+        super().exec_command(cmd, in_data=in_data, sudoable=sudoable)  # type: ignore[safe-super]
 
         local_cmd = self._build_exec_cmd([self._play_context.executable, "-c", cmd])
 
@@ -395,6 +397,9 @@ class Connection(ConnectionBase):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         ) as p:
+            assert p.stdin is not None
+            assert p.stdout is not None
+            assert p.stderr is not None
             display.debug("done running command with Popen()")
 
             if self.become and self.become.expect_prompt() and sudoable:
@@ -489,10 +494,10 @@ class Connection(ConnectionBase):
             remote_path = os.path.join(os.path.sep, remote_path)
         return os.path.normpath(remote_path)
 
-    def put_file(self, in_path, out_path):
+    def put_file(self, in_path: str, out_path: str) -> None:
         """Transfer a file from local to docker container"""
         self._set_conn_data()
-        super().put_file(in_path, out_path)
+        super().put_file(in_path, out_path)  # type: ignore[safe-super]
         display.vvv(f"PUT {in_path} TO {out_path}", host=self.get_option("remote_addr"))
 
         out_path = self._prefix_login_path(out_path)
@@ -534,10 +539,10 @@ class Connection(ConnectionBase):
                     f"failed to transfer file {to_native(in_path)} to {to_native(out_path)}:\n{to_native(stdout)}\n{to_native(stderr)}"
                 )
 
-    def fetch_file(self, in_path, out_path):
+    def fetch_file(self, in_path: str, out_path: str) -> None:
         """Fetch a file from container to local."""
         self._set_conn_data()
-        super().fetch_file(in_path, out_path)
+        super().fetch_file(in_path, out_path)  # type: ignore[safe-super]
         display.vvv(
             f"FETCH {in_path} TO {out_path}", host=self.get_option("remote_addr")
         )
@@ -596,7 +601,7 @@ class Connection(ConnectionBase):
 
                     if pp.returncode != 0:
                         raise AnsibleError(
-                            f"failed to fetch file {in_path} to {out_path}:\n{stdout}\n{stderr}"
+                            f"failed to fetch file {in_path} to {out_path}:\n{stdout!r}\n{stderr!r}"
                         )
 
         # Rename if needed
@@ -606,11 +611,11 @@ class Connection(ConnectionBase):
                 to_bytes(out_path, errors="strict"),
             )
 
-    def close(self):
+    def close(self) -> None:
         """Terminate the connection. Nothing to do for Docker"""
-        super().close()
+        super().close()  # type: ignore[safe-super]
         self._connected = False
 
-    def reset(self):
+    def reset(self) -> None:
         # Clear container user cache
         self._container_user_cache = {}

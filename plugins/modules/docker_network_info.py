@@ -107,7 +107,7 @@ from ansible_collections.community.docker.plugins.module_utils._common_api impor
 )
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True},
     }

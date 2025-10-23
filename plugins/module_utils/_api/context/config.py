@@ -23,7 +23,7 @@ from ..utils.utils import parse_host
 METAFILE = "meta.json"
 
 
-def get_current_context_name_with_source():
+def get_current_context_name_with_source() -> tuple[str, str]:
     if os.environ.get("DOCKER_HOST"):
         return "default", "DOCKER_HOST environment variable set"
     if os.environ.get("DOCKER_CONTEXT"):
@@ -41,11 +41,11 @@ def get_current_context_name_with_source():
     return "default", "fallback value"
 
 
-def get_current_context_name():
+def get_current_context_name() -> str:
     return get_current_context_name_with_source()[0]
 
 
-def write_context_name_to_docker_config(name=None):
+def write_context_name_to_docker_config(name: str | None = None) -> Exception | None:
     if name == "default":
         name = None
     docker_cfg_path = find_config_file()
@@ -62,44 +62,45 @@ def write_context_name_to_docker_config(name=None):
     elif name:
         config["currentContext"] = name
     else:
-        return
+        return None
     if not docker_cfg_path:
         docker_cfg_path = get_default_config_file()
     try:
         with open(docker_cfg_path, "wt", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
+        return None
     except Exception as e:  # pylint: disable=broad-exception-caught
         return e
 
 
-def get_context_id(name):
+def get_context_id(name: str) -> str:
     return hashlib.sha256(name.encode("utf-8")).hexdigest()
 
 
-def get_context_dir():
+def get_context_dir() -> str:
     docker_cfg_path = find_config_file() or get_default_config_file()
     return os.path.join(os.path.dirname(docker_cfg_path), "contexts")
 
 
-def get_meta_dir(name=None):
+def get_meta_dir(name: str | None = None) -> str:
     meta_dir = os.path.join(get_context_dir(), "meta")
     if name:
         return os.path.join(meta_dir, get_context_id(name))
     return meta_dir
 
 
-def get_meta_file(name):
+def get_meta_file(name) -> str:
     return os.path.join(get_meta_dir(name), METAFILE)
 
 
-def get_tls_dir(name=None, endpoint=""):
+def get_tls_dir(name: str | None = None, endpoint: str = "") -> str:
     context_dir = get_context_dir()
     if name:
         return os.path.join(context_dir, "tls", get_context_id(name), endpoint)
     return os.path.join(context_dir, "tls")
 
 
-def get_context_host(path=None, tls=False):
+def get_context_host(path: str | None = None, tls: bool = False) -> str:
     host = parse_host(path, IS_WINDOWS_PLATFORM, tls)
     if host == DEFAULT_UNIX_SOCKET:
         # remove http+ from default docker socket url

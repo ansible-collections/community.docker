@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import socket
+import typing as t
 
 from .._import_helper import urllib3
 from ..errors import DockerException
@@ -29,11 +30,11 @@ class CancellableStream:
         >>> events.close()
     """
 
-    def __init__(self, stream, response):
+    def __init__(self, stream, response) -> None:
         self._stream = stream
         self._response = response
 
-    def __iter__(self):
+    def __iter__(self) -> t.Self:
         return self
 
     def __next__(self):
@@ -46,7 +47,7 @@ class CancellableStream:
 
     next = __next__
 
-    def close(self):
+    def close(self) -> None:
         """
         Closes the event streaming.
         """

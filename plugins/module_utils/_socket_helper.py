@@ -12,9 +12,14 @@ import os
 import os.path
 import socket as pysocket
 import typing as t
+from collections.abc import Callable
 
 
-def make_file_unblocking(file) -> None:
+if t.TYPE_CHECKING:
+    SocketLike = pysocket.socket
+
+
+def make_file_unblocking(file: SocketLike) -> None:
     fcntl.fcntl(
         file.fileno(),
         fcntl.F_SETFL,
@@ -22,7 +27,7 @@ def make_file_unblocking(file) -> None:
     )
 
 
-def make_file_blocking(file) -> None:
+def make_file_blocking(file: SocketLike) -> None:
     fcntl.fcntl(
         file.fileno(),
         fcntl.F_SETFL,
@@ -30,11 +35,11 @@ def make_file_blocking(file) -> None:
     )
 
 
-def make_unblocking(sock) -> None:
+def make_unblocking(sock: SocketLike) -> None:
     if hasattr(sock, "_sock"):
         sock._sock.setblocking(0)
     elif hasattr(sock, "setblocking"):
-        sock.setblocking(0)
+        sock.setblocking(0)  # type: ignore  # TODO: CHECK!
     else:
         make_file_unblocking(sock)
 
@@ -43,7 +48,9 @@ def _empty_writer(msg: str) -> None:
     pass
 
 
-def shutdown_writing(sock, log: t.Callable[[str], None] = _empty_writer) -> None:
+def shutdown_writing(
+    sock: SocketLike, log: Callable[[str], None] = _empty_writer
+) -> None:
     # FIXME: This does **not work with SSLSocket**! Apparently SSLSocket does not allow to send
     #        a close_notify TLS alert without completely shutting down the connection.
     #        Calling sock.shutdown(pysocket.SHUT_WR) simply turns of TLS encryption and from that
@@ -56,14 +63,14 @@ def shutdown_writing(sock, log: t.Callable[[str], None] = _empty_writer) -> None
         except TypeError as e:
             # probably: "TypeError: shutdown() takes 1 positional argument but 2 were given"
             log(f"Shutting down for writing not possible; trying shutdown instead: {e}")
-            sock.shutdown()
+            sock.shutdown()  # type: ignore
     elif isinstance(sock, getattr(pysocket, "SocketIO")):
         sock._sock.shutdown(pysocket.SHUT_WR)
     else:
         log("No idea how to signal end of writing")
 
 
-def write_to_socket(sock, data: bytes) -> None:
+def write_to_socket(sock: SocketLike, data: bytes) -> int:
     if hasattr(sock, "_send_until_done"):
         # WrappedSocket (urllib3/contrib/pyopenssl) does not have `send`, but
         # only `sendall`, which uses `_send_until_done` under the hood.
