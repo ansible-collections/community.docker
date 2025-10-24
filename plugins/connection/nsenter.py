@@ -92,6 +92,7 @@ class Connection(ConnectionBase):
 
         display.debug("in nsenter.exec_command()")
 
+        # pylint: disable-next=no-member
         def_executable: str | None = C.DEFAULT_EXECUTABLE  # type: ignore[attr-defined]
         executable = def_executable.split()[0] if def_executable else None
 

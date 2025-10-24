@@ -652,6 +652,8 @@ class APIClient(_Session):
 
     def get_adapter(self, url: str) -> BaseAdapter:
         try:
+            # pylint finds our Session stub instead of requests.Session:
+            # pylint: disable-next=no-member
             return super().get_adapter(url)
         except _InvalidSchema as e:
             if self._custom_adapter:

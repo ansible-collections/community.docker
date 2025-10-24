@@ -383,7 +383,6 @@ disable=raw-checker-failed,
         consider-using-with,
         fixme,
         import-error,  # TODO figure out why pylint cannot find the module
-        no-member,
         no-name-in-module,  # TODO figure out why pylint cannot find the module
         protected-access,
         redefined-outer-name,  # needed for test fixtures
