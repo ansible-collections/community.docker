@@ -237,11 +237,12 @@ class SwarmNodeManager(DockerBaseClass):
                     node_spec["Labels"] = self.parameters.labels
                     changed = True
         elif self.parameters.labels_state == "merge":
-            node_spec["Labels"] = dict(node_info["Spec"]["Labels"] or {})
+            labels: dict[str, str] = dict(node_info["Spec"]["Labels"] or {})
+            node_spec["Labels"] = labels
             if self.parameters.labels is not None:
                 for key, value in self.parameters.labels.items():
-                    if node_spec["Labels"].get(key) != value:
-                        node_spec["Labels"][key] = value
+                    if labels.get(key) != value:
+                        labels[key] = value
                         changed = True
 
             if self.parameters.labels_to_remove is not None:
