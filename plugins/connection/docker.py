@@ -525,6 +525,7 @@ class Connection(ConnectionBase):
             )
             args = [to_bytes(i, errors="surrogate_or_strict") for i in args]
             try:
+                # pylint: disable-next=consider-using-with
                 p = subprocess.Popen(
                     args, stdin=in_file, stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 )
@@ -587,6 +588,7 @@ class Connection(ConnectionBase):
                     to_bytes(actual_out_path, errors="surrogate_or_strict"), "wb"
                 ) as out_file:
                     try:
+                        # pylint: disable-next=consider-using-with
                         pp = subprocess.Popen(
                             args,
                             stdin=subprocess.PIPE,

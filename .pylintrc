@@ -379,7 +379,6 @@ disable=raw-checker-failed,
         wrong-import-order,
         wrong-import-position,
         # To clean up:
-        consider-using-with,
         fixme,
         import-error,  # TODO figure out why pylint cannot find the module
         no-name-in-module,  # TODO figure out why pylint cannot find the module
