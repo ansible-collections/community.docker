@@ -384,7 +384,6 @@ disable=raw-checker-failed,
         import-error,  # TODO figure out why pylint cannot find the module
         no-name-in-module,  # TODO figure out why pylint cannot find the module
         protected-access,
-        redefined-outer-name,  # needed for test fixtures
         subprocess-popen-preexec-fn,
         unexpected-keyword-arg,
         unused-argument,

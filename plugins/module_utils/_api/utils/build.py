@@ -98,7 +98,7 @@ def create_archive(
     extra_files = extra_files or []
     if not fileobj:
         fileobj = tempfile.NamedTemporaryFile()
-    t = tarfile.open(mode="w:gz" if gzip else "w", fileobj=fileobj)
+    tarf = tarfile.open(mode="w:gz" if gzip else "w", fileobj=fileobj)
     if files is None:
         files = build_file_list(root)
     extra_names = set(e[0] for e in extra_files)
@@ -108,7 +108,7 @@ def create_archive(
             continue
         full_path = os.path.join(root, path)
 
-        i = t.gettarinfo(full_path, arcname=path)
+        i = tarf.gettarinfo(full_path, arcname=path)
         if i is None:
             # This happens when we encounter a socket file. We can safely
             # ignore it and proceed.
@@ -126,20 +126,20 @@ def create_archive(
         if i.isfile():
             try:
                 with open(full_path, "rb") as f:
-                    t.addfile(i, f)
+                    tarf.addfile(i, f)
             except IOError as exc:
                 raise IOError(f"Can not read file in context: {full_path}") from exc
         else:
             # Directories, FIFOs, symlinks... do not need to be read.
-            t.addfile(i, None)
+            tarf.addfile(i, None)
 
     for name, contents in extra_files:
         info = tarfile.TarInfo(name)
         contents_encoded = contents.encode("utf-8")
         info.size = len(contents_encoded)
-        t.addfile(info, io.BytesIO(contents_encoded))
+        tarf.addfile(info, io.BytesIO(contents_encoded))
 
-    t.close()
+    tarf.close()
     fileobj.seek(0)
     return fileobj
 
@@ -147,7 +147,7 @@ def create_archive(
 def mkbuildcontext(dockerfile: io.BytesIO | t.IO[bytes]) -> t.IO[bytes]:
     f = tempfile.NamedTemporaryFile()  # pylint: disable=consider-using-with
     try:
-        with tarfile.open(mode="w", fileobj=f) as t:
+        with tarfile.open(mode="w", fileobj=f) as tarf:
             if isinstance(dockerfile, io.StringIO):  # type: ignore
                 raise TypeError("Please use io.BytesIO to create in-memory Dockerfiles")
             if isinstance(dockerfile, io.BytesIO):
@@ -155,8 +155,8 @@ def mkbuildcontext(dockerfile: io.BytesIO | t.IO[bytes]) -> t.IO[bytes]:
                 dfinfo.size = len(dockerfile.getvalue())
                 dockerfile.seek(0)
             else:
-                dfinfo = t.gettarinfo(fileobj=dockerfile, arcname="Dockerfile")
-            t.addfile(dfinfo, dockerfile)
+                dfinfo = tarf.gettarinfo(fileobj=dockerfile, arcname="Dockerfile")
+            tarf.addfile(dfinfo, dockerfile)
         f.seek(0)
     except Exception:  # noqa: E722
         f.close()
