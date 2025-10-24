@@ -143,7 +143,7 @@ except ImportError:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
     pass
 
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 
 from ansible_collections.community.docker.plugins.module_utils._common import (
     RequestException,
@@ -253,7 +253,7 @@ class SwarmNodeManager(DockerBaseClass):
                                 changed = True
                         else:
                             self.client.module.warn(
-                                f"Label '{to_native(key)}' listed both in 'labels' and 'labels_to_remove'. "
+                                f"Label '{to_text(key)}' listed both in 'labels' and 'labels_to_remove'. "
                                 "Keeping the assigned label value."
                             )
                     else:

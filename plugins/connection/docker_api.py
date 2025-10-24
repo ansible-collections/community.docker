@@ -110,7 +110,7 @@ import os.path
 import typing as t
 
 from ansible.errors import AnsibleConnectionFailure, AnsibleFileNotFound
-from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
+from ansible.module_utils.common.text.converters import to_bytes, to_text
 from ansible.plugins.connection import ConnectionBase
 from ansible.utils.display import Display
 
@@ -335,13 +335,13 @@ class Connection(ConnectionBase):
                                 stdout, stderr = exec_socket_handler.consume()
                                 raise AnsibleConnectionFailure(
                                     "timeout waiting for privilege escalation password prompt:\n"
-                                    + to_native(become_output[0])
+                                    + to_text(become_output[0])
                                 )
 
                             if exec_socket_handler.is_eof():
                                 raise AnsibleConnectionFailure(
                                     "privilege output closed while waiting for password prompt:\n"
-                                    + to_native(become_output[0])
+                                    + to_text(become_output[0])
                                 )
 
                         if not self.become.check_success(become_output[0]):
@@ -437,9 +437,9 @@ class Connection(ConnectionBase):
                 not_found_can_be_resource=True,
             )
         except DockerFileNotFound as exc:
-            raise AnsibleFileNotFound(to_native(exc)) from exc
+            raise AnsibleFileNotFound(to_text(exc)) from exc
         except DockerFileCopyError as exc:
-            raise AnsibleConnectionFailure(to_native(exc)) from exc
+            raise AnsibleConnectionFailure(to_text(exc)) from exc
 
     def fetch_file(self, in_path: str, out_path: str) -> None:
         """Fetch a file from container to local."""
@@ -468,9 +468,9 @@ class Connection(ConnectionBase):
                 not_found_can_be_resource=True,
             )
         except DockerFileNotFound as exc:
-            raise AnsibleFileNotFound(to_native(exc)) from exc
+            raise AnsibleFileNotFound(to_text(exc)) from exc
         except DockerFileCopyError as exc:
-            raise AnsibleConnectionFailure(to_native(exc)) from exc
+            raise AnsibleConnectionFailure(to_text(exc)) from exc
 
     def close(self) -> None:
         """Terminate the connection. Nothing to do for Docker"""

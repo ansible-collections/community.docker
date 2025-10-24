@@ -171,7 +171,7 @@ import stat
 import traceback
 import typing as t
 
-from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
+from ansible.module_utils.common.text.converters import to_bytes, to_text
 from ansible.module_utils.common.validation import check_type_int
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
@@ -1041,7 +1041,7 @@ def copy_content_into_container(
 
 def parse_modern(mode: str | int) -> int:
     if isinstance(mode, str):
-        return int(to_native(mode), 8)
+        return int(to_text(mode), 8)
     if isinstance(mode, int):
         return mode
     raise TypeError(f"must be an octal string or an integer, got {mode!r}")
@@ -1049,7 +1049,7 @@ def parse_modern(mode: str | int) -> int:
 
 def parse_octal_string_only(mode: str) -> int:
     if isinstance(mode, str):
-        return int(to_native(mode), 8)
+        return int(to_text(mode), 8)
     raise TypeError(f"must be an octal string, got {mode!r}")
 
 
@@ -1185,7 +1185,7 @@ def main() -> None:
     except DockerUnexpectedError as exc:
         client.fail(f"Unexpected error: {exc}", exception=traceback.format_exc())
     except DockerFileCopyError as exc:
-        client.fail(to_native(exc))
+        client.fail(to_text(exc))
     except OSError as exc:
         client.fail(f"Unexpected error: {exc}", exception=traceback.format_exc())
 

@@ -284,7 +284,7 @@ import os
 import traceback
 import typing as t
 
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.common.text.formatters import human_to_bytes
 
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
@@ -545,12 +545,12 @@ class ImageBuilder(DockerBaseClass):
             if rc != 0:
                 self.fail(
                     f"Building {self.name}:{self.tag} failed",
-                    stdout=to_native(stdout),
-                    stderr=to_native(stderr),
+                    stdout=to_text(stdout),
+                    stderr=to_text(stderr),
                     command=args,
                 )
-            results["stdout"] = to_native(stdout)
-            results["stderr"] = to_native(stderr)
+            results["stdout"] = to_text(stdout)
+            results["stderr"] = to_text(stderr)
             results["image"] = self.client.find_image(self.name, self.tag) or {}
             results["command"] = args
 

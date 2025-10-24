@@ -123,7 +123,7 @@ from shlex import quote
 
 from ansible.errors import AnsibleConnectionFailure, AnsibleError, AnsibleFileNotFound
 from ansible.module_utils.common.process import get_bin_path
-from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
+from ansible.module_utils.common.text.converters import to_bytes, to_text
 from ansible.plugins.connection import BUFSIZE, ConnectionBase
 from ansible.utils.display import Display
 
@@ -188,7 +188,7 @@ class Connection(ConnectionBase):
         ) as p:
             cmd_output, err = p.communicate()
 
-        return old_docker_cmd, to_native(cmd_output), err, p.returncode
+        return old_docker_cmd, to_text(cmd_output), err, p.returncode
 
     def _new_docker_version(self) -> tuple[list[str], str, bytes, int]:
         # no result yet, must be newer Docker version
@@ -201,7 +201,7 @@ class Connection(ConnectionBase):
             new_docker_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         ) as p:
             cmd_output, err = p.communicate()
-            return new_docker_cmd, to_native(cmd_output), err, p.returncode
+            return new_docker_cmd, to_text(cmd_output), err, p.returncode
 
     def _get_docker_version(self) -> str:
         cmd, cmd_output, err, returncode = self._old_docker_version()
@@ -213,7 +213,7 @@ class Connection(ConnectionBase):
         cmd, cmd_output, err, returncode = self._new_docker_version()
         if returncode:
             raise AnsibleError(
-                f"Docker version check ({to_native(cmd)}) failed: {to_native(err)}"
+                f"Docker version check ({to_text(cmd)}) failed: {to_text(err)}"
             )
 
         return self._sanitize_version(to_text(cmd_output, errors="surrogate_or_strict"))
@@ -427,7 +427,7 @@ class Connection(ConnectionBase):
                             stdout, stderr = p.communicate()
                             raise AnsibleError(
                                 "timeout waiting for privilege escalation password prompt:\n"
-                                + to_native(become_output)
+                                + to_text(become_output)
                             )
 
                         chunks = b""
@@ -445,7 +445,7 @@ class Connection(ConnectionBase):
                             stdout, stderr = p.communicate()
                             raise AnsibleError(
                                 "privilege output closed while waiting for password prompt:\n"
-                                + to_native(become_output)
+                                + to_text(become_output)
                             )
                         become_output += chunks
                 finally:
@@ -503,7 +503,7 @@ class Connection(ConnectionBase):
         out_path = self._prefix_login_path(out_path)
         if not os.path.exists(to_bytes(in_path, errors="surrogate_or_strict")):
             raise AnsibleFileNotFound(
-                f"file or module does not exist: {to_native(in_path)}"
+                f"file or module does not exist: {to_text(in_path)}"
             )
 
         out_path = quote(out_path)
@@ -536,7 +536,7 @@ class Connection(ConnectionBase):
 
             if p.returncode != 0:
                 raise AnsibleError(
-                    f"failed to transfer file {to_native(in_path)} to {to_native(out_path)}:\n{to_native(stdout)}\n{to_native(stderr)}"
+                    f"failed to transfer file {to_text(in_path)} to {to_text(out_path)}:\n{to_text(stdout)}\n{to_text(stderr)}"
                 )
 
     def fetch_file(self, in_path: str, out_path: str) -> None:

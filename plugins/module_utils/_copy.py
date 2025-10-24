@@ -18,7 +18,7 @@ import stat
 import tarfile
 import typing as t
 
-from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
+from ansible.module_utils.common.text.converters import to_bytes, to_text
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     APIError,
@@ -223,7 +223,7 @@ def put_file(
 ) -> None:
     """Transfer a file from local to Docker container."""
     if not os.path.exists(to_bytes(in_path, errors="surrogate_or_strict")):
-        raise DockerFileNotFound(f"file or module does not exist: {to_native(in_path)}")
+        raise DockerFileNotFound(f"file or module does not exist: {to_text(in_path)}")
 
     b_in_path = to_bytes(in_path, errors="surrogate_or_strict")
 

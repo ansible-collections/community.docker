@@ -10,7 +10,7 @@ from __future__ import annotations
 import base64
 import random
 
-from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
+from ansible.module_utils.common.text.converters import to_bytes, to_text
 
 
 def generate_insecure_key() -> bytes:
@@ -31,7 +31,7 @@ def scramble(value: str, key: bytes) -> str:
     b_value = to_bytes(value)
     k = key[0]
     b_value = bytes([k ^ b for b in b_value])
-    return f"=S={to_native(base64.b64encode(b_value))}"
+    return f"=S={to_text(base64.b64encode(b_value))}"
 
 
 def unscramble(value: str, key: bytes) -> str:

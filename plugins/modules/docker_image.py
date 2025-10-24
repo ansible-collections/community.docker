@@ -369,7 +369,7 @@ import os
 import traceback
 import typing as t
 
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.common.text.formatters import human_to_bytes
 
 from ansible_collections.community.docker.plugins.module_utils._api.auth import (
@@ -899,7 +899,7 @@ class ImageManager(DockerBaseClass):
         buildargs = {}
         if self.buildargs:
             for key, value in self.buildargs.items():
-                buildargs[key] = to_native(value)
+                buildargs[key] = to_text(value)
 
         container_limits = self.container_limits or {}
         for key in container_limits.keys():

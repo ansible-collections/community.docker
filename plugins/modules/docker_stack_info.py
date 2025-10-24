@@ -77,7 +77,7 @@ EXAMPLES = r"""
 import json
 import traceback
 
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 
 from ansible_collections.community.docker.plugins.module_utils._common_cli import (
     AnsibleModuleDockerClient,
@@ -99,7 +99,7 @@ def main() -> None:
             changed=False,
             rc=rc,
             stdout="\n".join([json.dumps(entry) for entry in ret]),
-            stderr=to_native(stderr).strip(),
+            stderr=to_text(stderr).strip(),
             results=ret,
         )
     except DockerException as e:

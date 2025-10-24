@@ -14,7 +14,7 @@ import typing as t
 
 from ansible.module_utils.basic import AnsibleModule, env_fallback
 from ansible.module_utils.common.process import get_bin_path
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 
 from ansible_collections.community.docker.plugins.module_utils._api.auth import (
     resolve_repository_name,
@@ -132,9 +132,7 @@ class AnsibleDockerClientBase:
                 self.fail(
                     "Cannot determine Docker Daemon information. Are you maybe using podman instead of docker?"
                 )
-            self.docker_api_version_str = to_native(
-                self._version["Server"]["ApiVersion"]
-            )
+            self.docker_api_version_str = to_text(self._version["Server"]["ApiVersion"])
             self.docker_api_version = LooseVersion(self.docker_api_version_str)
             min_docker_api_version = min_docker_api_version or "1.25"
             if self.docker_api_version < LooseVersion(min_docker_api_version):
@@ -191,12 +189,12 @@ class AnsibleDockerClientBase:
             *args, check_rc=check_rc, data=data, cwd=cwd, environ_update=environ_update
         )
         if warn_on_stderr and stderr:
-            self.warn(to_native(stderr))
+            self.warn(to_text(stderr))
         try:
             data = json.loads(stdout)
         except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(
-                f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_native(stdout)}"
+                f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_text(stdout)}"
             )
         return rc, data, stderr
 
@@ -213,7 +211,7 @@ class AnsibleDockerClientBase:
             *args, check_rc=check_rc, data=data, cwd=cwd, environ_update=environ_update
         )
         if warn_on_stderr and stderr:
-            self.warn(to_native(stderr))
+            self.warn(to_text(stderr))
         result = []
         try:
             for line in stdout.splitlines():
@@ -222,7 +220,7 @@ class AnsibleDockerClientBase:
                     result.append(json.loads(line))
         except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(
-                f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_native(stdout)}"
+                f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_text(stdout)}"
             )
         return rc, result, stderr
 
@@ -338,7 +336,7 @@ class AnsibleDockerClientBase:
                 self.log(f"Image {name}:{tag} not found.")
                 return None
             if rc != 0:
-                self.fail(f"Error inspecting image {name}:{tag} - {to_native(stderr)}")
+                self.fail(f"Error inspecting image {name}:{tag} - {to_text(stderr)}")
             return image[0]
 
         self.log(f"Image {name}:{tag} not found.")
@@ -367,11 +365,11 @@ class AnsibleDockerClientBase:
         rc, image, stderr = self.call_cli_json("image", "inspect", image_id)
         if not image:
             if not accept_missing_image:
-                self.fail(f"Error inspecting image ID {image_id} - {to_native(stderr)}")
+                self.fail(f"Error inspecting image ID {image_id} - {to_text(stderr)}")
             self.log(f"Image {image_id} not found.")
             return None
         if rc != 0:
-            self.fail(f"Error inspecting image ID {image_id} - {to_native(stderr)}")
+            self.fail(f"Error inspecting image ID {image_id} - {to_text(stderr)}")
         return image[0]
 
 
