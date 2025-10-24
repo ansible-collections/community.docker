@@ -469,7 +469,7 @@ class FormatEnvironmentTest(unittest.TestCase):
         env_dict = {"ARTIST_NAME": b"\xec\x86\xa1\xec\xa7\x80\xec\x9d\x80"}
         assert format_environment(env_dict) == ["ARTIST_NAME=송지은"]
 
-    def test_format_env_no_value(self):
+    def test_format_env_no_value(self) -> None:
         env_dict = {
             "FOO": None,
             "BAR": "",

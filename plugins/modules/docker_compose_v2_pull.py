@@ -147,7 +147,7 @@ class PullManager(BaseComposeManager):
                 f"--ignore-buildable is only supported since Docker Compose 2.15.0. {self.client.get_cli()} has version {self.compose_version}"
             )
 
-    def get_pull_cmd(self, dry_run: bool):
+    def get_pull_cmd(self, dry_run: bool) -> list[str]:
         args = self.get_base_args() + ["pull"]
         if self.policy != "always":
             args.extend(["--policy", self.policy])

@@ -8,6 +8,7 @@
 
 from __future__ import annotations
 
+import typing as t
 import unittest
 
 from ansible_collections.community.docker.plugins.module_utils._api.api.client import (
@@ -27,7 +28,7 @@ class DecoratorsTest(unittest.TestCase):
             "X-Docker-Locale": "en-US",
         }
 
-        def f(self, headers=None):
+        def f(self: t.Any, headers: t.Any = None) -> t.Any:
             return headers
 
         client = APIClient(version=DEFAULT_DOCKER_API_VERSION)

@@ -37,7 +37,7 @@ def _purge() -> None:
     _cache.clear()
 
 
-def fnmatch(name: str, pat: str):
+def fnmatch(name: str, pat: str) -> bool:
     """Test whether FILENAME matches PATTERN.
 
     Patterns are Unix shell style:

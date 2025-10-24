@@ -133,126 +133,102 @@ class ResolveAuthTest(unittest.TestCase):
     )
 
     def test_resolve_authconfig_hostname_only(self) -> None:
-        assert (
-            auth.resolve_authconfig(self.auth_config, "my.registry.net")["username"]
-            == "privateuser"
-        )
+        ac = auth.resolve_authconfig(self.auth_config, "my.registry.net")
+        assert ac is not None
+        assert ac["username"] == "privateuser"
 
     def test_resolve_authconfig_no_protocol(self) -> None:
-        assert (
-            auth.resolve_authconfig(self.auth_config, "my.registry.net/v1/")["username"]
-            == "privateuser"
-        )
+        ac = auth.resolve_authconfig(self.auth_config, "my.registry.net/v1/")
+        assert ac is not None
+        assert ac["username"] == "privateuser"
 
     def test_resolve_authconfig_no_path(self) -> None:
-        assert (
-            auth.resolve_authconfig(self.auth_config, "http://my.registry.net")[
-                "username"
-            ]
-            == "privateuser"
-        )
+        ac = auth.resolve_authconfig(self.auth_config, "http://my.registry.net")
+        assert ac is not None
+        assert ac["username"] == "privateuser"
 
     def test_resolve_authconfig_no_path_trailing_slash(self) -> None:
-        assert (
-            auth.resolve_authconfig(self.auth_config, "http://my.registry.net/")[
-                "username"
-            ]
-            == "privateuser"
-        )
+        ac = auth.resolve_authconfig(self.auth_config, "http://my.registry.net/")
+        assert ac is not None
+        assert ac["username"] == "privateuser"
 
     def test_resolve_authconfig_no_path_wrong_secure_proto(self) -> None:
-        assert (
-            auth.resolve_authconfig(self.auth_config, "https://my.registry.net")[
-                "username"
-            ]
-            == "privateuser"
-        )
+        ac = auth.resolve_authconfig(self.auth_config, "https://my.registry.net")
+        assert ac is not None
+        assert ac["username"] == "privateuser"
 
     def test_resolve_authconfig_no_path_wrong_insecure_proto(self) -> None:
-        assert (
-            auth.resolve_authconfig(self.auth_config, "http://index.docker.io")[
-                "username"
-            ]
-            == "indexuser"
-        )
+        ac = auth.resolve_authconfig(self.auth_config, "http://index.docker.io")
+        assert ac is not None
+        assert ac["username"] == "indexuser"
 
     def test_resolve_authconfig_path_wrong_proto(self) -> None:
-        assert (
-            auth.resolve_authconfig(self.auth_config, "https://my.registry.net/v1/")[
-                "username"
-            ]
-            == "privateuser"
-        )
+        ac = auth.resolve_authconfig(self.auth_config, "https://my.registry.net/v1/")
+        assert ac is not None
+        assert ac["username"] == "privateuser"
 
     def test_resolve_authconfig_default_registry(self) -> None:
-        assert auth.resolve_authconfig(self.auth_config)["username"] == "indexuser"
+        ac = auth.resolve_authconfig(self.auth_config)
+        assert ac is not None
+        assert ac["username"] == "indexuser"
 
     def test_resolve_authconfig_default_explicit_none(self) -> None:
-        assert (
-            auth.resolve_authconfig(self.auth_config, None)["username"] == "indexuser"
-        )
+        ac = auth.resolve_authconfig(self.auth_config, None)
+        assert ac is not None
+        assert ac["username"] == "indexuser"
 
     def test_resolve_authconfig_fully_explicit(self) -> None:
-        assert (
-            auth.resolve_authconfig(self.auth_config, "http://my.registry.net/v1/")[
-                "username"
-            ]
-            == "privateuser"
-        )
+        ac = auth.resolve_authconfig(self.auth_config, "http://my.registry.net/v1/")
+        assert ac is not None
+        assert ac["username"] == "privateuser"
 
     def test_resolve_authconfig_legacy_config(self) -> None:
-        assert (
-            auth.resolve_authconfig(self.auth_config, "legacy.registry.url")["username"]
-            == "legacyauth"
-        )
+        ac = auth.resolve_authconfig(self.auth_config, "legacy.registry.url")
+        assert ac is not None
+        assert ac["username"] == "legacyauth"
 
     def test_resolve_authconfig_no_match(self) -> None:
         assert auth.resolve_authconfig(self.auth_config, "does.not.exist") is None
 
     def test_resolve_registry_and_auth_library_image(self) -> None:
         image = "image"
-        assert (
-            auth.resolve_authconfig(
-                self.auth_config, auth.resolve_repository_name(image)[0]
-            )["username"]
-            == "indexuser"
+        ac = auth.resolve_authconfig(
+            self.auth_config, auth.resolve_repository_name(image)[0]
         )
+        assert ac is not None
+        assert ac["username"] == "indexuser"
 
     def test_resolve_registry_and_auth_hub_image(self) -> None:
         image = "username/image"
-        assert (
-            auth.resolve_authconfig(
-                self.auth_config, auth.resolve_repository_name(image)[0]
-            )["username"]
-            == "indexuser"
+        ac = auth.resolve_authconfig(
+            self.auth_config, auth.resolve_repository_name(image)[0]
         )
+        assert ac is not None
+        assert ac["username"] == "indexuser"
 
     def test_resolve_registry_and_auth_explicit_hub(self) -> None:
         image = "docker.io/username/image"
-        assert (
-            auth.resolve_authconfig(
-                self.auth_config, auth.resolve_repository_name(image)[0]
-            )["username"]
-            == "indexuser"
+        ac = auth.resolve_authconfig(
+            self.auth_config, auth.resolve_repository_name(image)[0]
         )
+        assert ac is not None
+        assert ac["username"] == "indexuser"
 
     def test_resolve_registry_and_auth_explicit_legacy_hub(self) -> None:
         image = "index.docker.io/username/image"
-        assert (
-            auth.resolve_authconfig(
-                self.auth_config, auth.resolve_repository_name(image)[0]
-            )["username"]
-            == "indexuser"
+        ac = auth.resolve_authconfig(
+            self.auth_config, auth.resolve_repository_name(image)[0]
         )
+        assert ac is not None
+        assert ac["username"] == "indexuser"
 
     def test_resolve_registry_and_auth_private_registry(self) -> None:
         image = "my.registry.net/image"
-        assert (
-            auth.resolve_authconfig(
-                self.auth_config, auth.resolve_repository_name(image)[0]
-            )["username"]
-            == "privateuser"
+        ac = auth.resolve_authconfig(
+            self.auth_config, auth.resolve_repository_name(image)[0]
         )
+        assert ac is not None
+        assert ac["username"] == "privateuser"
 
     def test_resolve_registry_and_auth_unauthenticated_registry(self) -> None:
         image = "other.registry.net/image"
@@ -278,7 +254,9 @@ class ResolveAuthTest(unittest.TestCase):
             "ansible_collections.community.docker.plugins.module_utils._api.auth.AuthConfig._resolve_authconfig_credstore"
         ) as m:
             m.return_value = None
-            assert "indexuser" == auth.resolve_authconfig(auth_config, None)["username"]
+            ac = auth.resolve_authconfig(auth_config, None)
+            assert ac is not None
+            assert "indexuser" == ac["username"]
 
 
 class LoadConfigTest(unittest.TestCase):
@@ -797,7 +775,7 @@ class CredstoreTest(unittest.TestCase):
 
 class InMemoryStore(Store):
     def __init__(  # pylint: disable=super-init-not-called
-        self, *args, **kwargs
+        self, *args: t.Any, **kwargs: t.Any
     ) -> None:
         self.__store: dict[str | bytes, dict[str, t.Any]] = {}
 

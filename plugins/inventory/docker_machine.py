@@ -221,7 +221,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         return ip_addr
 
     def _should_skip_host(
-        self, machine_name: str, env_var_tuples, daemon_env: DaemonEnv
+        self,
+        machine_name: str,
+        env_var_tuples: list[tuple[str, str]],
+        daemon_env: DaemonEnv,
     ) -> bool:
         if not env_var_tuples:
             warning_prefix = f"Unable to fetch Docker daemon env vars from Docker Machine for host {machine_name}"

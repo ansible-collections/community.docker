@@ -146,7 +146,7 @@ class AnsibleDockerClientBase(Client):
                 f"Docker API version is {self.docker_api_version_str}. Minimum version required is {min_docker_api_version}."
             )
 
-    def log(self, msg: t.Any, pretty_print: bool = False):
+    def log(self, msg: t.Any, pretty_print: bool = False) -> None:
         pass
         # if self.debug:
         #     from .util import log_debug
@@ -295,7 +295,7 @@ class AnsibleDockerClientBase(Client):
             ),
         }
 
-        def depr(*args, **kwargs):
+        def depr(*args: t.Any, **kwargs: t.Any) -> None:
             self.deprecate(*args, **kwargs)
 
         update_tls_hostname(

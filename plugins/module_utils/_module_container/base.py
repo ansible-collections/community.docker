@@ -193,7 +193,9 @@ class OptionGroup:
     ) -> None:
         if preprocess is None:
 
-            def preprocess(module, values):
+            def preprocess(
+                module: AnsibleModule, values: dict[str, t.Any]
+            ) -> dict[str, t.Any]:
                 return values
 
         self.preprocess = preprocess
@@ -207,8 +209,8 @@ class OptionGroup:
         self.ansible_required_by = ansible_required_by or {}
         self.argument_spec: dict[str, t.Any] = {}
 
-    def add_option(self, *args, **kwargs) -> OptionGroup:
-        option = Option(*args, owner=self, **kwargs)
+    def add_option(self, name: str, **kwargs: t.Any) -> OptionGroup:
+        option = Option(name, owner=self, **kwargs)
         if not option.not_a_container_option:
             self.options.append(option)
         self.all_options.append(option)
@@ -788,7 +790,7 @@ def _preprocess_mounts(
 ) -> dict[str, t.Any]:
     last: dict[str, str] = {}
 
-    def check_collision(t, name):
+    def check_collision(t: str, name: str) -> None:
         if t in last:
             if name == last[t]:
                 module.fail_json(
@@ -1069,7 +1071,9 @@ def _preprocess_ports(
     return values
 
 
-def _compare_platform(option: Option, param_value: t.Any, container_value: t.Any):
+def _compare_platform(
+    option: Option, param_value: t.Any, container_value: t.Any
+) -> bool:
     if option.comparison == "ignore":
         return True
     try:

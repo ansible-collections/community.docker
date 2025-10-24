@@ -347,7 +347,7 @@ def retrieve_diff(
     max_file_size_for_diff: int,
     regular_stat: dict[str, t.Any] | None = None,
     link_target: str | None = None,
-):
+) -> None:
     if diff is None:
         return
     if regular_stat is not None:
@@ -497,9 +497,9 @@ def is_file_idempotent(
     container_path: str,
     follow_links: bool,
     local_follow_links: bool,
-    owner_id,
-    group_id,
-    mode,
+    owner_id: int,
+    group_id: int,
+    mode: int | None,
     force: bool | None = False,
     diff: dict[str, t.Any] | None = None,
     max_file_size_for_diff: int = 1,
@@ -744,9 +744,9 @@ def copy_file_into_container(
     container_path: str,
     follow_links: bool,
     local_follow_links: bool,
-    owner_id,
-    group_id,
-    mode,
+    owner_id: int,
+    group_id: int,
+    mode: int | None,
     force: bool | None = False,
     do_diff: bool = False,
     max_file_size_for_diff: int = 1,
@@ -797,9 +797,9 @@ def is_content_idempotent(
     content: bytes,
     container_path: str,
     follow_links: bool,
-    owner_id,
-    group_id,
-    mode,
+    owner_id: int,
+    group_id: int,
+    mode: int,
     force: bool | None = False,
     diff: dict[str, t.Any] | None = None,
     max_file_size_for_diff: int = 1,
@@ -989,9 +989,9 @@ def copy_content_into_container(
     content: bytes,
     container_path: str,
     follow_links: bool,
-    owner_id,
-    group_id,
-    mode,
+    owner_id: int,
+    group_id: int,
+    mode: int,
     force: bool | None = False,
     do_diff: bool = False,
     max_file_size_for_diff: int = 1,
@@ -1133,6 +1133,7 @@ def main() -> None:
             owner_id, group_id = determine_user_group(client, container)
 
         if content is not None:
+            assert mode is not None  # see required_by above
             copy_content_into_container(
                 client,
                 container,

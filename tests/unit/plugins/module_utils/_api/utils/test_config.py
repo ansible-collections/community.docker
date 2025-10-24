@@ -12,6 +12,7 @@ import json
 import os
 import shutil
 import tempfile
+import typing as t
 import unittest
 from collections.abc import Callable
 from unittest import mock
@@ -25,7 +26,7 @@ class FindConfigFileTest(unittest.TestCase):
     mkdir: Callable[[str], os.PathLike[str]]
 
     @fixture(autouse=True)
-    def tmpdir(self, tmpdir) -> None:
+    def tmpdir(self, tmpdir: t.Any) -> None:
         self.mkdir = tmpdir.mkdir
 
     def test_find_config_fallback(self) -> None:

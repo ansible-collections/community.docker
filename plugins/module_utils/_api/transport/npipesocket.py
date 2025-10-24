@@ -64,7 +64,7 @@ class NpipeSocket:
     implemented.
     """
 
-    def __init__(self, handle=None) -> None:
+    def __init__(self, handle: t.Any | None = None) -> None:
         self._timeout = win32pipe.NMPWAIT_USE_DEFAULT_WAIT
         self._handle = handle
         self._address: str | None = None
@@ -74,15 +74,17 @@ class NpipeSocket:
     def accept(self) -> t.NoReturn:
         raise NotImplementedError()
 
-    def bind(self, address) -> t.NoReturn:
+    def bind(self, address: t.Any) -> t.NoReturn:
         raise NotImplementedError()
 
     def close(self) -> None:
+        if self._handle is None:
+            raise ValueError("Handle not present")
         self._handle.Close()
         self._closed = True
 
     @check_closed
-    def connect(self, address, retry_count: int = 0) -> None:
+    def connect(self, address: str, retry_count: int = 0) -> None:
         try:
             handle = win32file.CreateFile(
                 address,
@@ -116,11 +118,11 @@ class NpipeSocket:
         self._address = address
 
     @check_closed
-    def connect_ex(self, address) -> None:
+    def connect_ex(self, address: str) -> None:
         self.connect(address)
 
     @check_closed
-    def detach(self):
+    def detach(self) -> t.Any:
         self._closed = True
         return self._handle
 
@@ -134,16 +136,18 @@ class NpipeSocket:
     def getsockname(self) -> str | None:
         return self._address
 
-    def getsockopt(self, level, optname, buflen=None) -> t.NoReturn:
+    def getsockopt(
+        self, level: t.Any, optname: t.Any, buflen: t.Any = None
+    ) -> t.NoReturn:
         raise NotImplementedError()
 
-    def ioctl(self, control, option) -> t.NoReturn:
+    def ioctl(self, control: t.Any, option: t.Any) -> t.NoReturn:
         raise NotImplementedError()
 
-    def listen(self, backlog) -> t.NoReturn:
+    def listen(self, backlog: t.Any) -> t.NoReturn:
         raise NotImplementedError()
 
-    def makefile(self, mode: str, bufsize: int | None = None):
+    def makefile(self, mode: str, bufsize: int | None = None) -> t.IO[bytes]:
         if mode.strip("b") != "r":
             raise NotImplementedError()
         rawio = NpipeFileIOBase(self)
@@ -153,6 +157,8 @@ class NpipeSocket:
 
     @check_closed
     def recv(self, bufsize: int, flags: int = 0) -> str:
+        if self._handle is None:
+            raise ValueError("Handle not present")
         dummy_err, data = win32file.ReadFile(self._handle, bufsize)
         return data
 
@@ -169,6 +175,8 @@ class NpipeSocket:
 
     @check_closed
     def recv_into(self, buf: Buffer, nbytes: int = 0) -> int:
+        if self._handle is None:
+            raise ValueError("Handle not present")
         readbuf = buf if isinstance(buf, memoryview) else memoryview(buf)
 
         event = win32event.CreateEvent(None, True, True, None)
@@ -188,6 +196,8 @@ class NpipeSocket:
 
     @check_closed
     def send(self, string: Buffer, flags: int = 0) -> int:
+        if self._handle is None:
+            raise ValueError("Handle not present")
         event = win32event.CreateEvent(None, True, True, None)
         try:
             overlapped = pywintypes.OVERLAPPED()
@@ -210,7 +220,7 @@ class NpipeSocket:
         self.connect(address)
         return self.send(string)
 
-    def setblocking(self, flag: bool):
+    def setblocking(self, flag: bool) -> None:
         if flag:
             return self.settimeout(None)
         return self.settimeout(0)
@@ -228,16 +238,16 @@ class NpipeSocket:
     def gettimeout(self) -> int | float | None:
         return self._timeout
 
-    def setsockopt(self, level, optname, value) -> t.NoReturn:
+    def setsockopt(self, level: t.Any, optname: t.Any, value: t.Any) -> t.NoReturn:
         raise NotImplementedError()
 
     @check_closed
-    def shutdown(self, how) -> None:
+    def shutdown(self, how: t.Any) -> None:
         return self.close()
 
 
 class NpipeFileIOBase(io.RawIOBase):
-    def __init__(self, npipe_socket) -> None:
+    def __init__(self, npipe_socket: NpipeSocket | None) -> None:
         self.sock = npipe_socket
 
     def close(self) -> None:
@@ -245,7 +255,10 @@ class NpipeFileIOBase(io.RawIOBase):
         self.sock = None
 
     def fileno(self) -> int:
-        return self.sock.fileno()
+        if self.sock is None:
+            raise RuntimeError("socket is closed")
+        # TODO: This is definitely a bug, NpipeSocket.fileno() does not exist!
+        return self.sock.fileno()  # type: ignore
 
     def isatty(self) -> bool:
         return False
@@ -254,6 +267,8 @@ class NpipeFileIOBase(io.RawIOBase):
         return True
 
     def readinto(self, buf: Buffer) -> int:
+        if self.sock is None:
+            raise RuntimeError("socket is closed")
         return self.sock.recv_into(buf)
 
     def seekable(self) -> bool:

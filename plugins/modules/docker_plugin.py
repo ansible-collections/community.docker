@@ -204,12 +204,10 @@ class DockerPluginManager:
         elif state == "disable":
             self.disable()
 
-        if self.diff or self.check_mode or self.parameters.debug:
-            if self.diff:
-                self.diff_result["before"], self.diff_result["after"] = (
-                    self.diff_tracker.get_before_after()
-                )
-            self.diff = self.diff_result
+        if self.diff:
+            self.diff_result["before"], self.diff_result["after"] = (
+                self.diff_tracker.get_before_after()
+            )
 
     def get_existing_plugin(self) -> dict[str, t.Any] | None:
         try:
@@ -409,7 +407,7 @@ class DockerPluginManager:
         result: dict[str, t.Any] = {
             "actions": self.actions,
             "changed": self.changed,
-            "diff": self.diff,
+            "diff": self.diff_result,
             "plugin": plugin_data,
         }
         if (

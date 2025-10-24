@@ -31,7 +31,7 @@ def templar() -> Templar:
 
 
 @pytest.fixture(scope="module")
-def inventory(templar) -> InventoryModule:
+def inventory(templar: Templar) -> InventoryModule:
     r = InventoryModule()
     r.inventory = InventoryData()
     r.templar = templar
@@ -91,7 +91,7 @@ LOVING_THARP_SERVICE = {
 def create_get_option(
     options: dict[str, t.Any], default: t.Any = False
 ) -> Callable[[str], t.Any]:
-    def get_option(option):
+    def get_option(option: str) -> t.Any:
         if option in options:
             return options[option]
         return default
@@ -116,12 +116,12 @@ class FakeClient:
             self.get_results[f"/containers/{host['Id']}/json"] = host
         self.get_results["/containers/json"] = list_reply
 
-    def get_json(self, url: str, *param: str, **kwargs) -> t.Any:
+    def get_json(self, url: str, *param: str, **kwargs: t.Any) -> t.Any:
         url = url.format(*param)
         return self.get_results[url]
 
 
-def test_populate(inventory: InventoryModule, mocker) -> None:
+def test_populate(inventory: InventoryModule, mocker: t.Any) -> None:
     assert inventory.inventory is not None
     client = FakeClient(LOVING_THARP)
 
@@ -158,7 +158,7 @@ def test_populate(inventory: InventoryModule, mocker) -> None:
     assert len(inventory.inventory.hosts) == 1
 
 
-def test_populate_service(inventory: InventoryModule, mocker) -> None:
+def test_populate_service(inventory: InventoryModule, mocker: t.Any) -> None:
     assert inventory.inventory is not None
     client = FakeClient(LOVING_THARP_SERVICE)
 
@@ -218,7 +218,7 @@ def test_populate_service(inventory: InventoryModule, mocker) -> None:
     assert len(inventory.inventory.hosts) == 1
 
 
-def test_populate_stack(inventory: InventoryModule, mocker) -> None:
+def test_populate_stack(inventory: InventoryModule, mocker: t.Any) -> None:
     assert inventory.inventory is not None
     client = FakeClient(LOVING_THARP_STACK)
 
@@ -280,7 +280,7 @@ def test_populate_stack(inventory: InventoryModule, mocker) -> None:
     assert len(inventory.inventory.hosts) == 1
 
 
-def test_populate_filter_none(inventory: InventoryModule, mocker) -> None:
+def test_populate_filter_none(inventory: InventoryModule, mocker: t.Any) -> None:
     assert inventory.inventory is not None
     client = FakeClient(LOVING_THARP)
 
@@ -304,7 +304,7 @@ def test_populate_filter_none(inventory: InventoryModule, mocker) -> None:
     assert len(inventory.inventory.hosts) == 0
 
 
-def test_populate_filter(inventory: InventoryModule, mocker) -> None:
+def test_populate_filter(inventory: InventoryModule, mocker: t.Any) -> None:
     assert inventory.inventory is not None
     client = FakeClient(LOVING_THARP)
 

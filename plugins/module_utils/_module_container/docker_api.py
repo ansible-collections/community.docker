@@ -872,7 +872,7 @@ class DockerAPIEngine(Engine[AnsibleDockerClient]):
                 image: dict[str, t.Any] | None,
                 values: dict[str, t.Any],
                 host_info: dict[str, t.Any] | None,
-            ):
+            ) -> dict[str, t.Any]:
                 if len(options) != 1:
                     raise AssertionError(
                         "host_config_value can only be used for a single option"
@@ -1961,7 +1961,14 @@ def _update_value_restart(
     }
 
 
-def _get_values_ports(module, container, api_version, options, image, host_info):
+def _get_values_ports(
+    module: AnsibleModule,
+    container: dict[str, t.Any],
+    api_version: LooseVersion,
+    options: list[Option],
+    image: dict[str, t.Any] | None,
+    host_info: dict[str, t.Any] | None,
+) -> dict[str, t.Any]:
     host_config = container["HostConfig"]
     config = container["Config"]
 

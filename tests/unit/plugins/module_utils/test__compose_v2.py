@@ -369,7 +369,7 @@ def test_parse_events(
 ) -> None:
     collected_warnings = []
 
-    def collect_warning(msg):
+    def collect_warning(msg: str) -> None:
         collected_warnings.append(msg)
 
     collected_events = parse_events(

@@ -91,7 +91,7 @@ if not HAS_DOCKER_PY:
     # No Docker SDK for Python. Create a place holder client to allow
     # instantiation of AnsibleModule and proper error handing
     class Client:  # type: ignore # noqa: F811, pylint: disable=function-redefined
-        def __init__(self, **kwargs):
+        def __init__(self, **kwargs: t.Any) -> None:
             pass
 
     class APIError(Exception):  # type: ignore # noqa: F811, pylint: disable=function-redefined
@@ -226,7 +226,7 @@ class AnsibleDockerClientBase(Client):
                 f"Docker API version is {self.docker_api_version_str}. Minimum version required is {min_docker_api_version}."
             )
 
-    def log(self, msg: t.Any, pretty_print: bool = False):
+    def log(self, msg: t.Any, pretty_print: bool = False) -> None:
         pass
         # if self.debug:
         #     from .util import log_debug
@@ -609,7 +609,7 @@ class AnsibleDockerClientBase(Client):
 
         return new_tag, old_tag == new_tag
 
-    def inspect_distribution(self, image: str, **kwargs) -> dict[str, t.Any]:
+    def inspect_distribution(self, image: str, **kwargs: t.Any) -> dict[str, t.Any]:
         """
         Get image digest by directly calling the Docker API when running Docker SDK < 4.0.0
         since prior versions did not support accessing private repositories.
@@ -629,7 +629,6 @@ class AnsibleDockerClientBase(Client):
 
 
 class AnsibleDockerClient(AnsibleDockerClientBase):
-
     def __init__(
         self,
         argument_spec: dict[str, t.Any] | None = None,
@@ -651,7 +650,6 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
         option_minimal_versions_ignore_params: Sequence[str] | None = None,
         fail_results: dict[str, t.Any] | None = None,
     ):
-
         # Modules can put information in here which will always be returned
         # in case client.fail() is called.
         self.fail_results = fail_results or {}

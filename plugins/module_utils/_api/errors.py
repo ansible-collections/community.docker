@@ -18,6 +18,10 @@ from ansible.module_utils.common.text.converters import to_native
 from ._import_helper import HTTPError as _HTTPError
 
 
+if t.TYPE_CHECKING:
+    from requests import Response
+
+
 class DockerException(Exception):
     """
     A base class from which all other exceptions inherit.
@@ -55,7 +59,10 @@ class APIError(_HTTPError, DockerException):
     """
 
     def __init__(
-        self, message: str | Exception, response=None, explanation: str | None = None
+        self,
+        message: str | Exception,
+        response: Response | None = None,
+        explanation: str | None = None,
     ) -> None:
         # requests 1.2 supports response as a keyword argument, but
         # requests 1.1 does not

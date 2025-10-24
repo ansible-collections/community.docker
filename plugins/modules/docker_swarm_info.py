@@ -247,7 +247,9 @@ class DockerSwarmManager(DockerBaseClass):
             self.client.fail(f"Error inspecting docker swarm: {exc}")
 
     def get_docker_items_list(
-        self, docker_object: t.Literal["nodes", "tasks", "services"], filters=None
+        self,
+        docker_object: t.Literal["nodes", "tasks", "services"],
+        filters: dict[str, str],
     ) -> list[dict[str, t.Any]]:
         items_list: list[dict[str, t.Any]] = []
 

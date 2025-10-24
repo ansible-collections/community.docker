@@ -35,7 +35,7 @@ else:
     PARAMIKO_IMPORT_ERROR = None  # pylint: disable=invalid-name
 
 if t.TYPE_CHECKING:
-    from collections.abc import Buffer
+    from collections.abc import Buffer, Mapping
 
 
 RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
@@ -67,7 +67,7 @@ class SSHSocket(socket.socket):
         preexec_func = None
         if not constants.IS_WINDOWS_PLATFORM:
 
-            def f():
+            def f() -> None:
                 signal.signal(signal.SIGINT, signal.SIG_IGN)
 
             preexec_func = f
@@ -100,13 +100,13 @@ class SSHSocket(socket.socket):
         self.proc.stdin.flush()
         return written
 
-    def sendall(self, data: Buffer, *args, **kwargs) -> None:
+    def sendall(self, data: Buffer, *args: t.Any, **kwargs: t.Any) -> None:
         self._write(data)
 
-    def send(self, data: Buffer, *args, **kwargs) -> int:
+    def send(self, data: Buffer, *args: t.Any, **kwargs: t.Any) -> int:
         return self._write(data)
 
-    def recv(self, n: int, *args, **kwargs) -> bytes:
+    def recv(self, n: int, *args: t.Any, **kwargs: t.Any) -> bytes:
         if not self.proc:
             raise RuntimeError(
                 "SSH subprocess not initiated. connect() must be called first."
@@ -114,7 +114,7 @@ class SSHSocket(socket.socket):
         assert self.proc.stdout is not None
         return self.proc.stdout.read(n)
 
-    def makefile(self, mode: str, *args, **kwargs) -> t.IO:  # type: ignore
+    def makefile(self, mode: str, *args: t.Any, **kwargs: t.Any) -> t.IO:  # type: ignore
         if not self.proc:
             self.connect()
             assert self.proc is not None
@@ -138,7 +138,7 @@ class SSHConnection(urllib3_connection.HTTPConnection):
     def __init__(
         self,
         *,
-        ssh_transport=None,
+        ssh_transport: paramiko.Transport | None = None,
         timeout: int | float = 60,
         host: str,
     ) -> None:
@@ -146,18 +146,19 @@ class SSHConnection(urllib3_connection.HTTPConnection):
         self.ssh_transport = ssh_transport
         self.timeout = timeout
         self.ssh_host = host
+        self.sock: paramiko.Channel | SSHSocket | None = None
 
     def connect(self) -> None:
         if self.ssh_transport:
-            sock = self.ssh_transport.open_session()
-            sock.settimeout(self.timeout)
-            sock.exec_command("docker system dial-stdio")
+            channel = self.ssh_transport.open_session()
+            channel.settimeout(self.timeout)
+            channel.exec_command("docker system dial-stdio")
+            self.sock = channel
         else:
             sock = SSHSocket(self.ssh_host)
             sock.settimeout(self.timeout)
             sock.connect()
-
-        self.sock = sock
+            self.sock = sock
 
 
 class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
@@ -172,7 +173,7 @@ class SSHConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
         host: str,
     ) -> None:
         super().__init__("localhost", timeout=timeout, maxsize=maxsize)
-        self.ssh_transport = None
+        self.ssh_transport: paramiko.Transport | None = None
         self.timeout = timeout
         if ssh_client:
             self.ssh_transport = ssh_client.get_transport()
@@ -276,7 +277,9 @@ class SSHHTTPAdapter(BaseHTTPAdapter):
         if self.ssh_client:
             self.ssh_client.connect(**self.ssh_params)
 
-    def get_connection(self, url: str | bytes, proxies=None) -> SSHConnectionPool:
+    def get_connection(
+        self, url: str | bytes, proxies: Mapping[str, str] | None = None
+    ) -> SSHConnectionPool:
         if not self.ssh_client:
             return SSHConnectionPool(
                 ssh_client=self.ssh_client,

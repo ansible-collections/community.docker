@@ -1463,8 +1463,8 @@ class DockerService(DockerBaseClass):
     def from_ansible_params(
         cls,
         ap: dict[str, t.Any],
-        old_service,
-        image_digest,
+        old_service: DockerService | None,
+        image_digest: str,
         secret_ids: dict[str, str],
         config_ids: dict[str, str],
         network_ids: dict[str, str],

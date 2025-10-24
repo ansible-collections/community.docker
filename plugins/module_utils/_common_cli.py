@@ -82,7 +82,7 @@ class AnsibleDockerClientBase:
 
     def __init__(
         self,
-        common_args,
+        common_args: dict[str, t.Any],
         min_docker_api_version: str | None = None,
         needs_api_version: bool = True,
     ) -> None:
@@ -91,15 +91,15 @@ class AnsibleDockerClientBase:
             self._environment["DOCKER_TLS_HOSTNAME"] = common_args["tls_hostname"]
         if common_args["api_version"] and common_args["api_version"] != "auto":
             self._environment["DOCKER_API_VERSION"] = common_args["api_version"]
-        self._cli = common_args.get("docker_cli")
-        if self._cli is None:
+        cli = common_args.get("docker_cli")
+        if cli is None:
             try:
-                self._cli = get_bin_path("docker")
+                cli = get_bin_path("docker")
             except ValueError:
                 self.fail(
                     "Cannot find docker CLI in path. Please provide it explicitly with the docker_cli parameter"
                 )
-
+        self._cli = cli
         self._cli_base = [self._cli]
         docker_host = common_args["docker_host"]
         if not docker_host and not common_args["cli_context"]:
@@ -149,7 +149,7 @@ class AnsibleDockerClientBase:
                     "Internal error: cannot have needs_api_version=False with min_docker_api_version not None"
                 )
 
-    def log(self, msg: str, pretty_print: bool = False):
+    def log(self, msg: str, pretty_print: bool = False) -> None:
         pass
         # if self.debug:
         #     from .util import log_debug
@@ -227,7 +227,7 @@ class AnsibleDockerClientBase:
         return rc, result, stderr
 
     @abc.abstractmethod
-    def fail(self, msg: str, **kwargs) -> t.NoReturn:
+    def fail(self, msg: str, **kwargs: t.Any) -> t.NoReturn:
         pass
 
     @abc.abstractmethod
@@ -395,7 +395,6 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
         fail_results: dict[str, t.Any] | None = None,
         needs_api_version: bool = True,
     ) -> None:
-
         # Modules can put information in here which will always be returned
         # in case client.fail() is called.
         self.fail_results = fail_results or {}
@@ -463,7 +462,7 @@ class AnsibleModuleDockerClient(AnsibleDockerClientBase):
         )
         return rc, stdout, stderr
 
-    def fail(self, msg: str, **kwargs) -> t.NoReturn:
+    def fail(self, msg: str, **kwargs: t.Any) -> t.NoReturn:
         self.fail_results.update(kwargs)
         self.module.fail_json(msg=msg, **sanitize_result(self.fail_results))
 

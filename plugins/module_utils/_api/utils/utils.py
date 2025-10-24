@@ -502,8 +502,8 @@ def split_command(command: str) -> list[str]:
     return shlex.split(command)
 
 
-def format_environment(environment: Mapping[str, str | bytes]) -> list[str]:
-    def format_env(key, value):
+def format_environment(environment: Mapping[str, str | bytes | None]) -> list[str]:
+    def format_env(key: str, value: str | bytes | None) -> str:
         if value is None:
             return key
         if isinstance(value, bytes):

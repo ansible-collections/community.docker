@@ -43,6 +43,12 @@ from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.c
 from .. import fake_api
 
 
+if t.TYPE_CHECKING:
+    from ansible_collections.community.docker.plugins.module_utils._api.auth import (
+        AuthConfig,
+    )
+
+
 DEFAULT_TIMEOUT_SECONDS = constants.DEFAULT_TIMEOUT_SECONDS
 
 
@@ -52,8 +58,8 @@ def response(
     headers: dict[str, str] | None = None,
     reason: str = "",
     elapsed: int = 0,
-    request=None,
-    raw=None,
+    request: requests.PreparedRequest | None = None,
+    raw: urllib3.HTTPResponse | None = None,
 ) -> requests.Response:
     res = requests.Response()
     res.status_code = status_code
@@ -63,18 +69,18 @@ def response(
     res.headers = requests.structures.CaseInsensitiveDict(headers or {})
     res.reason = reason
     res.elapsed = datetime.timedelta(elapsed)
-    res.request = request
+    res.request = request  # type: ignore
     res.raw = raw
     return res
 
 
 def fake_resolve_authconfig(  # pylint: disable=keyword-arg-before-vararg
-    authconfig, *args, registry=None, **kwargs
+    authconfig: AuthConfig, *args: t.Any, registry: str | None = None, **kwargs: t.Any
 ) -> None:
     return None
 
 
-def fake_inspect_container(self, container: str, tty: bool = False):
+def fake_inspect_container(self: object, container: str, tty: bool = False) -> t.Any:
     return fake_api.get_fake_inspect_container(tty=tty)[1]
 
 
@@ -95,24 +101,32 @@ def fake_resp(
 fake_request = mock.Mock(side_effect=fake_resp)
 
 
-def fake_get(self, url: str, *args, **kwargs) -> requests.Response:
+def fake_get(
+    self: APIClient, url: str, *args: str, **kwargs: t.Any
+) -> requests.Response:
     return fake_request("GET", url, *args, **kwargs)
 
 
-def fake_post(self, url: str, *args, **kwargs) -> requests.Response:
+def fake_post(
+    self: APIClient, url: str, *args: str, **kwargs: t.Any
+) -> requests.Response:
     return fake_request("POST", url, *args, **kwargs)
 
 
-def fake_put(self, url: str, *args, **kwargs) -> requests.Response:
+def fake_put(
+    self: APIClient, url: str, *args: str, **kwargs: t.Any
+) -> requests.Response:
     return fake_request("PUT", url, *args, **kwargs)
 
 
-def fake_delete(self, url: str, *args, **kwargs) -> requests.Response:
+def fake_delete(
+    self: APIClient, url: str, *args: str, **kwargs: t.Any
+) -> requests.Response:
     return fake_request("DELETE", url, *args, **kwargs)
 
 
 def fake_read_from_socket(
-    self,
+    self: APIClient,
     response: requests.Response,
     stream: bool,
     tty: bool = False,
@@ -253,9 +267,9 @@ class DockerApiTest(BaseAPIClientTest):
             "serveraddress": None,
         }
 
-    def _socket_path_for_client_session(self, client) -> str:
+    def _socket_path_for_client_session(self, client: APIClient) -> str:
         socket_adapter = client.get_adapter("http+docker://")
-        return socket_adapter.socket_path
+        return socket_adapter.socket_path  # type: ignore[attr-defined]
 
     def test_url_compatibility_unix(self) -> None:
         c = APIClient(base_url="unix://socket", version=DEFAULT_DOCKER_API_VERSION)
@@ -384,7 +398,7 @@ class UnixSocketStreamTest(unittest.TestCase):
         finally:
             self.server_socket.close()
 
-    def early_response_sending_handler(self, connection) -> None:
+    def early_response_sending_handler(self, connection: socket.socket) -> None:
         data = b""
         headers = None
 
@@ -494,7 +508,7 @@ class TCPSocketStreamTest(unittest.TestCase):
         stderr_data = cls.stderr_data
 
         class Handler(BaseHTTPRequestHandler):
-            def do_POST(self):  # pylint: disable=invalid-name
+            def do_POST(self) -> None:  # pylint: disable=invalid-name
                 resp_data = self.get_resp_data()
                 self.send_response(101)
                 self.send_header("Content-Type", "application/vnd.docker.raw-stream")
@@ -506,7 +520,7 @@ class TCPSocketStreamTest(unittest.TestCase):
                 self.wfile.write(resp_data)
                 self.wfile.flush()
 
-            def get_resp_data(self):
+            def get_resp_data(self) -> bytes:
                 path = self.path.split("/")[-1]
                 if path == "tty":
                     return stdout_data + stderr_data
@@ -520,7 +534,7 @@ class TCPSocketStreamTest(unittest.TestCase):
                 raise NotImplementedError(f"Unknown path {path}")
 
             @staticmethod
-            def frame_header(stream, data):
+            def frame_header(stream: int, data: bytes) -> bytes:
                 return struct.pack(">BxxxL", stream, len(data))
 
         return Handler

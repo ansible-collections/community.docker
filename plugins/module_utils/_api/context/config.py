@@ -89,7 +89,7 @@ def get_meta_dir(name: str | None = None) -> str:
     return meta_dir
 
 
-def get_meta_file(name) -> str:
+def get_meta_file(name: str) -> str:
     return os.path.join(get_meta_dir(name), METAFILE)
 
 

@@ -192,7 +192,7 @@ class Connection(ConnectionBase):
                 f'An unexpected requests error occurred for container "{remote_addr}" when trying to talk to the Docker daemon: {e}'
             )
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.client: AnsibleDockerClient | None = None
@@ -319,7 +319,7 @@ class Connection(ConnectionBase):
 
                         become_output = [b""]
 
-                        def append_become_output(stream_id, data):
+                        def append_become_output(stream_id: int, data: bytes) -> None:
                             become_output[0] += data
 
                         exec_socket_handler.set_block_done_callback(

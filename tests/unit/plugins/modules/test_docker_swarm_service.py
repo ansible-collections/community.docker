@@ -16,7 +16,7 @@ from ansible_collections.community.docker.plugins.modules import (
 APIError = pytest.importorskip("docker.errors.APIError")
 
 
-def test_retry_on_out_of_sequence_error(mocker) -> None:
+def test_retry_on_out_of_sequence_error(mocker: t.Any) -> None:
     run_mock = mocker.MagicMock(
         side_effect=APIError(
             message="",
@@ -32,7 +32,7 @@ def test_retry_on_out_of_sequence_error(mocker) -> None:
     assert run_mock.call_count == 3
 
 
-def test_no_retry_on_general_api_error(mocker) -> None:
+def test_no_retry_on_general_api_error(mocker: t.Any) -> None:
     run_mock = mocker.MagicMock(
         side_effect=APIError(message="", response=None, explanation="some error")
     )
@@ -44,7 +44,7 @@ def test_no_retry_on_general_api_error(mocker) -> None:
     assert run_mock.call_count == 1
 
 
-def test_get_docker_environment(mocker) -> None:
+def test_get_docker_environment(mocker: t.Any) -> None:
     env_file_result = {"TEST1": "A", "TEST2": "B", "TEST3": "C"}
     env_dict = {"TEST3": "CC", "TEST4": "D"}
     env_string = "TEST3=CC,TEST4=D"

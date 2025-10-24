@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import tarfile
+import typing as t
 
 import pytest
 
@@ -22,7 +23,7 @@ from ..test_support.docker_image_archive_stubbing import (
 
 
 @pytest.fixture
-def tar_file_name(tmpdir) -> str:
+def tar_file_name(tmpdir: t.Any) -> str:
     """
     Return the name of a non-existing tar file in an existing temporary directory.
     """
@@ -38,7 +39,7 @@ def test_api_image_id_from_archive_id(expected: str, value: str) -> None:
     assert api_image_id(value) == expected
 
 
-def test_archived_image_manifest_extracts(tar_file_name) -> None:
+def test_archived_image_manifest_extracts(tar_file_name: str) -> None:
     expected_id = "abcde12345"
     expected_tags = ["foo:latest", "bar:v1"]
 
@@ -52,7 +53,7 @@ def test_archived_image_manifest_extracts(tar_file_name) -> None:
 
 
 def test_archived_image_manifest_extracts_nothing_when_file_not_present(
-    tar_file_name,
+    tar_file_name: str,
 ) -> None:
     image_id = archived_image_manifest(tar_file_name)
 
@@ -69,7 +70,7 @@ def test_archived_image_manifest_raises_when_file_not_a_tar() -> None:
 
 
 def test_archived_image_manifest_raises_when_tar_missing_manifest(
-    tar_file_name,
+    tar_file_name: str,
 ) -> None:
     write_irrelevant_tar(tar_file_name)
 
@@ -81,7 +82,9 @@ def test_archived_image_manifest_raises_when_tar_missing_manifest(
         assert "manifest.json" in str(e.__cause__)
 
 
-def test_archived_image_manifest_raises_when_manifest_missing_id(tar_file_name) -> None:
+def test_archived_image_manifest_raises_when_manifest_missing_id(
+    tar_file_name: str,
+) -> None:
     manifest = [{"foo": "bar"}]
 
     write_imitation_archive_with_manifest(tar_file_name, manifest)

@@ -156,7 +156,7 @@ class ExcludePathsTest(unittest.TestCase):
     def test_single_filename_trailing_slash(self) -> None:
         assert self.exclude(["a.py/"]) == convert_paths(self.all_paths - set(["a.py"]))
 
-    def test_wildcard_filename_start(self):
+    def test_wildcard_filename_start(self) -> None:
         assert self.exclude(["*.py"]) == convert_paths(
             self.all_paths - set(["a.py", "b.py", "cde.py"])
         )

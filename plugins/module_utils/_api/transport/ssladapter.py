@@ -33,7 +33,7 @@ class SSLHTTPAdapter(BaseHTTPAdapter):
     def __init__(
         self,
         assert_hostname: bool | None = None,
-        **kwargs,
+        **kwargs: t.Any,
     ) -> None:
         self.assert_hostname = assert_hostname
         super().__init__(**kwargs)
@@ -51,7 +51,7 @@ class SSLHTTPAdapter(BaseHTTPAdapter):
 
         self.poolmanager = PoolManager(**kwargs)
 
-    def get_connection(self, *args, **kwargs) -> urllib3.ConnectionPool:
+    def get_connection(self, *args: t.Any, **kwargs: t.Any) -> urllib3.ConnectionPool:
         """
         Ensure assert_hostname is set correctly on our pool
 

@@ -106,7 +106,7 @@ class AuthConfig(dict):
 
     @classmethod
     def parse_auth(
-        cls, entries: dict[str, dict[str, t.Any]], raise_on_error=False
+        cls, entries: dict[str, dict[str, t.Any]], raise_on_error: bool = False
     ) -> dict[str, dict[str, t.Any]]:
         """
         Parses authentication entries
@@ -294,7 +294,7 @@ class AuthConfig(dict):
         except StoreError as e:
             raise errors.DockerException(f"Credentials store error: {e}")
 
-    def _get_store_instance(self, name: str):
+    def _get_store_instance(self, name: str) -> Store:
         if name not in self._stores:
             self._stores[name] = Store(name, environment=self._credstore_env)
         return self._stores[name]
@@ -326,8 +326,10 @@ class AuthConfig(dict):
 
 
 def resolve_authconfig(
-    authconfig, registry: str | None = None, credstore_env: dict[str, str] | None = None
-):
+    authconfig: AuthConfig | dict[str, t.Any],
+    registry: str | None = None,
+    credstore_env: dict[str, str] | None = None,
+) -> dict[str, t.Any] | None:
     if not isinstance(authconfig, AuthConfig):
         authconfig = AuthConfig(authconfig, credstore_env)
     return authconfig.resolve_authconfig(registry)
