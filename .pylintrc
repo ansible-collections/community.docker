@@ -379,7 +379,6 @@ disable=raw-checker-failed,
         wrong-import-order,
         wrong-import-position,
         # To clean up:
-        arguments-differ,
         consider-using-with,
         fixme,
         import-error,  # TODO figure out why pylint cannot find the module
