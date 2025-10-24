@@ -379,7 +379,7 @@ def normalize_ipam_config_key(key: str) -> str:
     return special_cases.get(key, key.lower())
 
 
-def dicts_are_essentially_equal(a: dict[str, t.Any], b: dict[str, t.Any]):
+def dicts_are_essentially_equal(a: dict[str, t.Any], b: dict[str, t.Any]) -> bool:
     """Make sure that a is a subset of b, where None entries of a are ignored."""
     for k, v in a.items():
         if v is None:

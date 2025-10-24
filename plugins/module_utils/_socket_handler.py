@@ -26,6 +26,7 @@ from ansible_collections.community.docker.plugins.module_utils._socket_helper im
 
 if t.TYPE_CHECKING:
     from collections.abc import Callable
+    from types import TracebackType
 
     from ansible.module_utils.basic import AnsibleModule
 
@@ -70,7 +71,12 @@ class DockerSocketHandlerBase:
     def __enter__(self) -> t.Self:
         return self
 
-    def __exit__(self, type_, value, tb) -> None:
+    def __exit__(
+        self,
+        type_: t.Type[BaseException] | None,
+        value: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
         self._selector.close()
 
     def set_block_done_callback(
@@ -210,7 +216,7 @@ class DockerSocketHandlerBase:
         stdout = []
         stderr = []
 
-        def append_block(stream_id, data):
+        def append_block(stream_id: int, data: bytes) -> None:
             if stream_id == docker_socket.STDOUT:
                 stdout.append(data)
             elif stream_id == docker_socket.STDERR:

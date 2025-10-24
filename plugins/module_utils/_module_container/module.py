@@ -292,7 +292,7 @@ class ContainerManager(DockerBaseClass, t.Generic[Client]):
                 if self.module.params[param] is None:
                     self.module.params[param] = value
 
-    def fail(self, *args, **kwargs) -> t.NoReturn:
+    def fail(self, *args: str, **kwargs: t.Any) -> t.NoReturn:
         # mypy doesn't know that Client has fail() method
         raise self.client.fail(*args, **kwargs)  # type: ignore
 
@@ -714,7 +714,7 @@ class ContainerManager(DockerBaseClass, t.Generic[Client]):
         container_image: dict[str, t.Any] | None,
         image: dict[str, t.Any] | None,
         host_info: dict[str, t.Any] | None,
-    ):
+    ) -> None:
         assert container.raw is not None
         container_values = engine.get_value(
             self.module,
@@ -767,12 +767,12 @@ class ContainerManager(DockerBaseClass, t.Generic[Client]):
                         # Since the order does not matter, sort so that the diff output is better.
                         if option.name == "expected_mounts":
                             # For selected values, use one entry as key
-                            def sort_key_fn(x):
+                            def sort_key_fn(x: dict[str, t.Any]) -> t.Any:
                                 return x["target"]
 
                         else:
                             # We sort the list of dictionaries by using the sorted items of a dict as its key.
-                            def sort_key_fn(x):
+                            def sort_key_fn(x: dict[str, t.Any]) -> t.Any:
                                 return sorted(
                                     (a, to_text(b, errors="surrogate_or_strict"))
                                     for a, b in x.items()

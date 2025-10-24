@@ -134,6 +134,7 @@ node:
 """
 
 import traceback
+import typing as t
 
 
 try:
@@ -157,18 +158,19 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class TaskParameters(DockerBaseClass):
-    def __init__(self, client):
+    hostname: str
+
+    def __init__(self, client: AnsibleDockerSwarmClient) -> None:
         super().__init__()
 
         # Spec
-        self.name = None
-        self.labels = None
-        self.labels_state = None
-        self.labels_to_remove = None
+        self.labels: dict[str, t.Any] | None = None
+        self.labels_state: t.Literal["merge", "replace"] = "merge"
+        self.labels_to_remove: list[str] | None = None
 
         # Node
-        self.availability = None
-        self.role = None
+        self.availability: t.Literal["active", "pause", "drain"] | None = None
+        self.role: t.Literal["worker", "manager"] | None = None
 
         for key, value in client.module.params.items():
             setattr(self, key, value)
@@ -177,9 +179,9 @@ class TaskParameters(DockerBaseClass):
 
 
 class SwarmNodeManager(DockerBaseClass):
-
-    def __init__(self, client, results):
-
+    def __init__(
+        self, client: AnsibleDockerSwarmClient, results: dict[str, t.Any]
+    ) -> None:
         super().__init__()
 
         self.client = client
@@ -192,10 +194,9 @@ class SwarmNodeManager(DockerBaseClass):
 
         self.node_update()
 
-    def node_update(self):
+    def node_update(self) -> None:
         if not (self.client.check_if_swarm_node(node_id=self.parameters.hostname)):
             self.client.fail("This node is not part of a swarm.")
-            return
 
         if self.client.check_if_swarm_node_is_down():
             self.client.fail("Can not update the node. The node is down.")
@@ -206,7 +207,7 @@ class SwarmNodeManager(DockerBaseClass):
             self.client.fail(f"Failed to get node information for {exc}")
 
         changed = False
-        node_spec = {
+        node_spec: dict[str, t.Any] = {
             "Availability": self.parameters.availability,
             "Role": self.parameters.role,
             "Labels": self.parameters.labels,
@@ -277,7 +278,7 @@ class SwarmNodeManager(DockerBaseClass):
             self.results["changed"] = changed
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "hostname": {"type": "str", "required": True},
         "labels": {"type": "dict"},

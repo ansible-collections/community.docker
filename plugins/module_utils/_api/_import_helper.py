@@ -67,7 +67,7 @@ except ImportError:
             pass
 
         class FakeURLLIB3:
-            def __init__(self):
+            def __init__(self) -> None:
                 self._collections = self
                 self.poolmanager = self
                 self.connection = self
@@ -81,14 +81,14 @@ except ImportError:
                 )
 
         class FakeURLLIB3Connection:
-            def __init__(self):
+            def __init__(self) -> None:
                 self.HTTPConnection = _HTTPConnection  # pylint: disable=invalid-name
 
         urllib3 = FakeURLLIB3()
         urllib3_connection = FakeURLLIB3Connection()
 
 
-def fail_on_missing_imports():
+def fail_on_missing_imports() -> None:
     if REQUESTS_IMPORT_ERROR is not None:
         from .errors import MissingRequirementException  # pylint: disable=cyclic-import
 

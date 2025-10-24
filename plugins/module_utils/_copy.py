@@ -330,6 +330,8 @@ def stat_file(
         client._raise_for_status(response)
         header = response.headers.get("x-docker-container-path-stat")
         try:
+            if header is None:
+                raise ValueError("x-docker-container-path-stat header not present")
             stat_data = json.loads(base64.b64decode(header))
         except Exception as exc:
             raise DockerUnexpectedError(
@@ -482,14 +484,14 @@ def fetch_file(
                     shutil.copyfileobj(in_f, out_f)
         return in_path
 
-    def process_symlink(in_path, member) -> str:
+    def process_symlink(in_path: str, member: tarfile.TarInfo) -> str:
         if os.path.exists(b_out_path):
             os.unlink(b_out_path)
 
         os.symlink(member.linkname, b_out_path)
         return in_path
 
-    def process_other(in_path, member) -> str:
+    def process_other(in_path: str, member: tarfile.TarInfo) -> str:
         raise DockerFileCopyError(
             f'Remote file "{in_path}" is not a regular file or a symbolic link'
         )

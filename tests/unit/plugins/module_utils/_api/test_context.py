@@ -28,20 +28,20 @@ from ansible_collections.community.docker.plugins.module_utils._api.context.cont
 
 class BaseContextTest(unittest.TestCase):
     @pytest.mark.skipif(IS_WINDOWS_PLATFORM, reason="Linux specific path check")
-    def test_url_compatibility_on_linux(self):
+    def test_url_compatibility_on_linux(self) -> None:
         c = Context("test")
         assert c.Host == DEFAULT_UNIX_SOCKET[5:]
 
     @pytest.mark.skipif(not IS_WINDOWS_PLATFORM, reason="Windows specific path check")
-    def test_url_compatibility_on_windows(self):
+    def test_url_compatibility_on_windows(self) -> None:
         c = Context("test")
         assert c.Host == DEFAULT_NPIPE
 
-    def test_fail_on_default_context_create(self):
+    def test_fail_on_default_context_create(self) -> None:
         with pytest.raises(errors.ContextException):
             ContextAPI.create_context("default")
 
-    def test_default_in_context_list(self):
+    def test_default_in_context_list(self) -> None:
         found = False
         ctx = ContextAPI.contexts()
         for c in ctx:
@@ -49,14 +49,16 @@ class BaseContextTest(unittest.TestCase):
                 found = True
         assert found is True
 
-    def test_get_current_context(self):
-        assert ContextAPI.get_current_context().Name == "default"
+    def test_get_current_context(self) -> None:
+        context = ContextAPI.get_current_context()
+        assert context is not None
+        assert context.Name == "default"
 
-    def test_https_host(self):
+    def test_https_host(self) -> None:
         c = Context("test", host="tcp://testdomain:8080", tls=True)
         assert c.Host == "https://testdomain:8080"
 
-    def test_context_inspect_without_params(self):
+    def test_context_inspect_without_params(self) -> None:
         ctx = ContextAPI.inspect_context()
         assert ctx["Name"] == "default"
         assert ctx["Metadata"]["StackOrchestrator"] == "swarm"

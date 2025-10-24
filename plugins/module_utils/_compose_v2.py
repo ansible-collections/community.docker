@@ -971,7 +971,7 @@ class BaseComposeManager(DockerBaseClass):
         stderr: str | bytes,
         ignore_service_pull_events: bool = False,
         ignore_build_events: bool = False,
-    ):
+    ) -> None:
         result["changed"] = result.get("changed", False) or has_changes(
             events,
             ignore_service_pull_events=ignore_service_pull_events,
@@ -989,7 +989,7 @@ class BaseComposeManager(DockerBaseClass):
         stdout: str | bytes,
         stderr: bytes,
         rc: int,
-    ):
+    ) -> bool:
         return update_failed(
             result,
             events,

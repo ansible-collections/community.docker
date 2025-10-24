@@ -22,7 +22,9 @@ from ..transport.npipesocket import NpipeSocket
 
 
 if t.TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Sequence
+
+    from ..._socket_helper import SocketLike
 
 
 STDOUT = 1
@@ -38,14 +40,14 @@ class SocketError(Exception):
 NPIPE_ENDED = 109
 
 
-def read(socket, n: int = 4096) -> bytes | None:
+def read(socket: SocketLike, n: int = 4096) -> bytes | None:
     """
     Reads at most n bytes from socket
     """
 
     recoverable_errors = (errno.EINTR, errno.EDEADLK, errno.EWOULDBLOCK)
 
-    if not isinstance(socket, NpipeSocket):
+    if not isinstance(socket, NpipeSocket):  # type: ignore[unreachable]
         if not hasattr(select, "poll"):
             # Limited to 1024
             select.select([socket], [], [])
@@ -66,7 +68,7 @@ def read(socket, n: int = 4096) -> bytes | None:
         return None  # TODO ???
     except Exception as e:
         is_pipe_ended = (
-            isinstance(socket, NpipeSocket)
+            isinstance(socket, NpipeSocket)  # type: ignore[unreachable]
             and len(e.args) > 0
             and e.args[0] == NPIPE_ENDED
         )
@@ -77,7 +79,7 @@ def read(socket, n: int = 4096) -> bytes | None:
         raise
 
 
-def read_exactly(socket, n: int) -> bytes:
+def read_exactly(socket: SocketLike, n: int) -> bytes:
     """
     Reads exactly n bytes from socket
     Raises SocketError if there is not enough data
@@ -91,7 +93,7 @@ def read_exactly(socket, n: int) -> bytes:
     return data
 
 
-def next_frame_header(socket) -> tuple[int, int]:
+def next_frame_header(socket: SocketLike) -> tuple[int, int]:
     """
     Returns the stream and size of the next frame of data waiting to be read
     from socket, according to the protocol defined here:
@@ -107,7 +109,7 @@ def next_frame_header(socket) -> tuple[int, int]:
     return (stream, actual)
 
 
-def frames_iter(socket, tty: bool) -> t.Generator[tuple[int, bytes]]:
+def frames_iter(socket: SocketLike, tty: bool) -> t.Generator[tuple[int, bytes]]:
     """
     Return a generator of frames read from socket. A frame is a tuple where
     the first item is the stream number and the second item is a chunk of data.
@@ -120,7 +122,7 @@ def frames_iter(socket, tty: bool) -> t.Generator[tuple[int, bytes]]:
     return frames_iter_no_tty(socket)
 
 
-def frames_iter_no_tty(socket) -> t.Generator[tuple[int, bytes]]:
+def frames_iter_no_tty(socket: SocketLike) -> t.Generator[tuple[int, bytes]]:
     """
     Returns a generator of data read from the socket when the tty setting is
     not enabled.
@@ -141,7 +143,7 @@ def frames_iter_no_tty(socket) -> t.Generator[tuple[int, bytes]]:
             yield (stream, result)
 
 
-def frames_iter_tty(socket) -> t.Generator[bytes]:
+def frames_iter_tty(socket: SocketLike) -> t.Generator[bytes]:
     """
     Return a generator of data read from the socket when the tty setting is
     enabled.
@@ -155,20 +157,42 @@ def frames_iter_tty(socket) -> t.Generator[bytes]:
 
 
 @t.overload
-def consume_socket_output(frames, demux: t.Literal[False] = False) -> bytes: ...
-
-
-@t.overload
-def consume_socket_output(frames, demux: t.Literal[True]) -> tuple[bytes, bytes]: ...
+def consume_socket_output(
+    frames: Sequence[bytes] | t.Generator[bytes], demux: t.Literal[False] = False
+) -> bytes: ...
 
 
 @t.overload
 def consume_socket_output(
-    frames, demux: bool = False
+    frames: (
+        Sequence[tuple[bytes | None, bytes | None]]
+        | t.Generator[tuple[bytes | None, bytes | None]]
+    ),
+    demux: t.Literal[True],
+) -> tuple[bytes, bytes]: ...
+
+
+@t.overload
+def consume_socket_output(
+    frames: (
+        Sequence[bytes]
+        | Sequence[tuple[bytes | None, bytes | None]]
+        | t.Generator[bytes]
+        | t.Generator[tuple[bytes | None, bytes | None]]
+    ),
+    demux: bool = False,
 ) -> bytes | tuple[bytes, bytes]: ...
 
 
-def consume_socket_output(frames, demux: bool = False) -> bytes | tuple[bytes, bytes]:
+def consume_socket_output(
+    frames: (
+        Sequence[bytes]
+        | Sequence[tuple[bytes | None, bytes | None]]
+        | t.Generator[bytes]
+        | t.Generator[tuple[bytes | None, bytes | None]]
+    ),
+    demux: bool = False,
+) -> bytes | tuple[bytes, bytes]:
     """
     Iterate through frames read from the socket and return the result.
 
@@ -183,12 +207,13 @@ def consume_socket_output(frames, demux: bool = False) -> bytes | tuple[bytes, b
     if demux is False:
         # If the streams are multiplexed, the generator returns strings, that
         # we just need to concatenate.
-        return b"".join(frames)
+        return b"".join(frames)  # type: ignore
 
     # If the streams are demultiplexed, the generator yields tuples
     # (stdout, stderr)
     out: list[bytes | None] = [None, None]
-    for frame in frames:
+    frame: tuple[bytes | None, bytes | None]
+    for frame in frames:  # type: ignore
         # It is guaranteed that for each frame, one and only one stream
         # is not None.
         if frame == (None, None):
@@ -202,7 +227,7 @@ def consume_socket_output(frames, demux: bool = False) -> bytes | tuple[bytes, b
             if out[1] is None:
                 out[1] = frame[1]
             else:
-                out[1] += frame[1]
+                out[1] += frame[1]  # type: ignore[operator]
     return tuple(out)  # type: ignore
 
 

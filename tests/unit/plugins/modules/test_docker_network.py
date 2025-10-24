@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+import typing as t
+
 import pytest
 
 from ansible_collections.community.docker.plugins.modules.docker_network import (
@@ -23,7 +25,9 @@ from ansible_collections.community.docker.plugins.modules.docker_network import 
         ("fdd1:ac8c:0557:7ce2::/128", "ipv6"),
     ],
 )
-def test_validate_cidr_positives(cidr, expected):
+def test_validate_cidr_positives(
+    cidr: str, expected: t.Literal["ipv4", "ipv6"]
+) -> None:
     assert validate_cidr(cidr) == expected
 
 
@@ -36,7 +40,7 @@ def test_validate_cidr_positives(cidr, expected):
         "fdd1:ac8c:0557:7ce2::",
     ],
 )
-def test_validate_cidr_negatives(cidr):
+def test_validate_cidr_negatives(cidr: str) -> None:
     with pytest.raises(ValueError) as e:
         validate_cidr(cidr)
     assert f'"{cidr}" is not a valid CIDR' == str(e.value)

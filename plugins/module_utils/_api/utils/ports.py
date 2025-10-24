@@ -108,7 +108,7 @@ def port_range(
 
 
 def split_port(
-    port: str,
+    port: str | int,
 ) -> tuple[list[str], list[str] | list[tuple[str, str | None]] | None]:
     port = str(port)
     match = PORT_SPEC.match(port)

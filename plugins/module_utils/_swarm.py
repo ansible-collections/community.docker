@@ -28,7 +28,6 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
 
 
 class AnsibleDockerSwarmClient(AnsibleDockerClient):
-
     def get_swarm_node_id(self) -> str | None:
         """
         Get the 'NodeID' of the Swarm node or 'None' if host is not in Swarm. It returns the NodeID
@@ -281,7 +280,7 @@ class AnsibleDockerSwarmClient(AnsibleDockerClient):
     def get_node_name_by_id(self, nodeid: str) -> str:
         return self.get_node_inspect(nodeid)["Description"]["Hostname"]
 
-    def get_unlock_key(self) -> str | None:
+    def get_unlock_key(self) -> dict[str, t.Any] | None:
         if self.docker_py_version < LooseVersion("2.7.0"):
             return None
         return super().get_unlock_key()

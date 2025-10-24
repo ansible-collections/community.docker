@@ -6,10 +6,13 @@ from __future__ import annotations
 
 import json
 import tarfile
+import typing as t
 from tempfile import TemporaryFile
 
 
-def write_imitation_archive(file_name, image_id, repo_tags):
+def write_imitation_archive(
+    file_name: str, image_id: str, repo_tags: list[str]
+) -> None:
     """
     Write a tar file meeting these requirements:
 
@@ -21,7 +24,7 @@ def write_imitation_archive(file_name, image_id, repo_tags):
     :type file_name: str
     :param image_id: Fake sha256 hash (without the sha256: prefix)
     :type image_id: str
-    :param repo_tags: list of fake image:tag's
+    :param repo_tags: list of fake image tags
     :type repo_tags: list
     """
 
@@ -30,7 +33,9 @@ def write_imitation_archive(file_name, image_id, repo_tags):
     write_imitation_archive_with_manifest(file_name, manifest)
 
 
-def write_imitation_archive_with_manifest(file_name, manifest):
+def write_imitation_archive_with_manifest(
+    file_name: str, manifest: list[dict[str, t.Any]]
+) -> None:
     with tarfile.open(file_name, "w") as tf:
         with TemporaryFile() as f:
             f.write(json.dumps(manifest).encode("utf-8"))
@@ -42,7 +47,7 @@ def write_imitation_archive_with_manifest(file_name, manifest):
             tf.addfile(ti, f)
 
 
-def write_irrelevant_tar(file_name):
+def write_irrelevant_tar(file_name: str) -> None:
     """
     Create a tar file that does not match the spec for "docker image save" / "docker image load" commands.
 

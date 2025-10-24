@@ -65,7 +65,7 @@ class Connection(ConnectionBase):
     transport = "community.docker.nsenter"
     has_pipelining = False
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
         self.cwd = None
         self._nsenter_pid = None

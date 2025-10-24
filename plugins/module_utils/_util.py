@@ -23,6 +23,12 @@ if t.TYPE_CHECKING:
 
     from ansible.module_utils.basic import AnsibleModule
 
+    from ._common import AnsibleDockerClientBase as CADCB
+    from ._common_api import AnsibleDockerClientBase as CAPIADCB
+    from ._common_cli import AnsibleDockerClientBase as CCLIADCB
+
+    Client = t.Union[CADCB, CAPIADCB, CCLIADCB]
+
 
 DEFAULT_DOCKER_HOST = "unix:///var/run/docker.sock"
 DEFAULT_TLS = False
@@ -119,7 +125,7 @@ def sanitize_result(data: t.Any) -> t.Any:
     return data
 
 
-def log_debug(msg: t.Any, pretty_print: bool = False):
+def log_debug(msg: t.Any, pretty_print: bool = False) -> None:
     """Write a log message to docker.log.
 
     If ``pretty_print=True``, the message will be pretty-printed as JSON.
@@ -325,7 +331,7 @@ class DifferenceTracker:
 def sanitize_labels(
     labels: dict[str, t.Any] | None,
     labels_field: str,
-    client=None,
+    client: Client | None = None,
     module: AnsibleModule | None = None,
 ) -> None:
     def fail(msg: str) -> t.NoReturn:
@@ -371,7 +377,7 @@ def clean_dict_booleans_for_docker_api(
     which is the expected format of filters which accept lists such as labels.
     """
 
-    def sanitize(value):
+    def sanitize(value: t.Any) -> str:
         if value is True:
             return "true"
         if value is False:

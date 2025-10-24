@@ -11,7 +11,7 @@ from ansible_collections.community.docker.plugins.module_utils._compose_v2 impor
 )
 
 
-EVENT_TEST_CASES: list[tuple[str, str, bool, bool, str, list[Event], list[Event]]] = [
+EVENT_TEST_CASES: list[tuple[str, str, bool, bool, str, list[Event], list[str]]] = [
     # #######################################################################################################################
     # ## Docker Compose 2.18.1 ##############################################################################################
     # #######################################################################################################################

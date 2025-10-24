@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import typing as t
+
 import pytest
 
 from ansible_collections.community.docker.plugins.modules.docker_container_copy_into import (
@@ -30,7 +32,7 @@ from ansible_collections.community.docker.plugins.modules.docker_container_copy_
         ("-1", -1),
     ],
 )
-def test_parse_string(value, expected):
+def test_parse_string(value: str, expected: int) -> None:
     assert parse_modern(value) == expected
     assert parse_octal_string_only(value) == expected
 
@@ -45,10 +47,10 @@ def test_parse_string(value, expected):
         123456789012345678901234567890123456789012345678901234567890,
     ],
 )
-def test_parse_int(value):
+def test_parse_int(value: int) -> None:
     assert parse_modern(value) == value
     with pytest.raises(TypeError, match=f"^must be an octal string, got {value}L?$"):
-        parse_octal_string_only(value)
+        parse_octal_string_only(value)  # type: ignore
 
 
 @pytest.mark.parametrize(
@@ -60,7 +62,7 @@ def test_parse_int(value):
         {},
     ],
 )
-def test_parse_bad_type(value):
+def test_parse_bad_type(value: t.Any) -> None:
     with pytest.raises(TypeError, match="^must be an octal string or an integer, got "):
         parse_modern(value)
     with pytest.raises(TypeError, match="^must be an octal string, got "):
@@ -75,7 +77,7 @@ def test_parse_bad_type(value):
         "9",
     ],
 )
-def test_parse_bad_value(value):
+def test_parse_bad_value(value: str) -> None:
     with pytest.raises(ValueError):
         parse_modern(value)
     with pytest.raises(ValueError):

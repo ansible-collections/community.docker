@@ -11,12 +11,19 @@
 
 from __future__ import annotations
 
+import typing as t
 from queue import Empty
 
 from .. import constants
 from .._import_helper import HTTPAdapter, urllib3, urllib3_connection
 from .basehttpadapter import BaseHTTPAdapter
 from .npipesocket import NpipeSocket
+
+
+if t.TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from requests import PreparedRequest
 
 
 RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
@@ -91,7 +98,9 @@ class NpipeHTTPAdapter(BaseHTTPAdapter):
         )
         super().__init__()
 
-    def get_connection(self, url: str | bytes, proxies=None) -> NpipeHTTPConnectionPool:
+    def get_connection(
+        self, url: str | bytes, proxies: Mapping[str, str] | None = None
+    ) -> NpipeHTTPConnectionPool:
         with self.pools.lock:
             pool = self.pools.get(url)
             if pool:
@@ -104,7 +113,9 @@ class NpipeHTTPAdapter(BaseHTTPAdapter):
 
         return pool
 
-    def request_url(self, request, proxies) -> str:
+    def request_url(
+        self, request: PreparedRequest, proxies: Mapping[str, str] | None
+    ) -> str:
         # The select_proxy utility in requests errors out when the provided URL
         # does not have a hostname, like is the case when using a UNIX socket.
         # Since proxies are an irrelevant notion in the case of UNIX sockets

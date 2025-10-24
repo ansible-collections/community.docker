@@ -292,6 +292,7 @@ actions:
 
 import json
 import traceback
+import typing as t
 
 
 try:
@@ -314,40 +315,40 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class TaskParameters(DockerBaseClass):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-        self.advertise_addr = None
-        self.listen_addr = None
-        self.remote_addrs = None
-        self.join_token = None
-        self.data_path_addr = None
-        self.data_path_port = None
+        self.advertise_addr: str | None = None
+        self.listen_addr: str | None = None
+        self.remote_addrs: list[str] | None = None
+        self.join_token: str | None = None
+        self.data_path_addr: str | None = None
+        self.data_path_port: int | None = None
         self.spec = None
 
         # Spec
-        self.snapshot_interval = None
-        self.task_history_retention_limit = None
-        self.keep_old_snapshots = None
-        self.log_entries_for_slow_followers = None
-        self.heartbeat_tick = None
-        self.election_tick = None
-        self.dispatcher_heartbeat_period = None
-        self.node_cert_expiry = None
-        self.name = None
-        self.labels = None
+        self.snapshot_interval: int | None = None
+        self.task_history_retention_limit: int | None = None
+        self.keep_old_snapshots: int | None = None
+        self.log_entries_for_slow_followers: int | None = None
+        self.heartbeat_tick: int | None = None
+        self.election_tick: int | None = None
+        self.dispatcher_heartbeat_period: int | None = None
+        self.node_cert_expiry: int | None = None
+        self.name: str | None = None
+        self.labels: dict[str, t.Any] | None = None
         self.log_driver = None
-        self.signing_ca_cert = None
-        self.signing_ca_key = None
-        self.ca_force_rotate = None
-        self.autolock_managers = None
-        self.rotate_worker_token = None
-        self.rotate_manager_token = None
-        self.default_addr_pool = None
-        self.subnet_size = None
+        self.signing_ca_cert: str | None = None
+        self.signing_ca_key: str | None = None
+        self.ca_force_rotate: int | None = None
+        self.autolock_managers: bool | None = None
+        self.rotate_worker_token: bool | None = None
+        self.rotate_manager_token: bool | None = None
+        self.default_addr_pool: list[str] | None = None
+        self.subnet_size: int | None = None
 
     @staticmethod
-    def from_ansible_params(client):
+    def from_ansible_params(client: AnsibleDockerSwarmClient) -> TaskParameters:
         result = TaskParameters()
         for key, value in client.module.params.items():
             if key in result.__dict__:
@@ -356,7 +357,7 @@ class TaskParameters(DockerBaseClass):
         result.update_parameters(client)
         return result
 
-    def update_from_swarm_info(self, swarm_info):
+    def update_from_swarm_info(self, swarm_info: dict[str, t.Any]) -> None:
         spec = swarm_info["Spec"]
 
         ca_config = spec.get("CAConfig") or {}
@@ -400,7 +401,7 @@ class TaskParameters(DockerBaseClass):
         if "LogDriver" in spec["TaskDefaults"]:
             self.log_driver = spec["TaskDefaults"]["LogDriver"]
 
-    def update_parameters(self, client):
+    def update_parameters(self, client: AnsibleDockerSwarmClient) -> None:
         assign = {
             "snapshot_interval": "snapshot_interval",
             "task_history_retention_limit": "task_history_retention_limit",
@@ -427,7 +428,12 @@ class TaskParameters(DockerBaseClass):
                 params[dest] = value
         self.spec = client.create_swarm_spec(**params)
 
-    def compare_to_active(self, other, client, differences):
+    def compare_to_active(
+        self,
+        other: TaskParameters,
+        client: AnsibleDockerSwarmClient,
+        differences: DifferenceTracker,
+    ) -> DifferenceTracker:
         for k in self.__dict__:
             if k in (
                 "advertise_addr",
@@ -459,26 +465,28 @@ class TaskParameters(DockerBaseClass):
 
 
 class SwarmManager(DockerBaseClass):
-
-    def __init__(self, client, results):
-
+    def __init__(
+        self, client: AnsibleDockerSwarmClient, results: dict[str, t.Any]
+    ) -> None:
         super().__init__()
 
         self.client = client
         self.results = results
         self.check_mode = self.client.check_mode
-        self.swarm_info = {}
+        self.swarm_info: dict[str, t.Any] = {}
 
-        self.state = client.module.params["state"]
-        self.force = client.module.params["force"]
-        self.node_id = client.module.params["node_id"]
+        self.state: t.Literal["present", "join", "absent", "remove"] = (
+            client.module.params["state"]
+        )
+        self.force: bool = client.module.params["force"]
+        self.node_id: str | None = client.module.params["node_id"]
 
         self.differences = DifferenceTracker()
         self.parameters = TaskParameters.from_ansible_params(client)
 
         self.created = False
 
-    def __call__(self):
+    def __call__(self) -> None:
         choice_map = {
             "present": self.init_swarm,
             "join": self.join,
@@ -486,14 +494,14 @@ class SwarmManager(DockerBaseClass):
             "remove": self.remove,
         }
 
-        choice_map.get(self.state)()
+        choice_map[self.state]()
 
         if self.client.module._diff or self.parameters.debug:
             diff = {}
             diff["before"], diff["after"] = self.differences.get_before_after()
             self.results["diff"] = diff
 
-    def inspect_swarm(self):
+    def inspect_swarm(self) -> None:
         try:
             data = self.client.inspect_swarm()
             json_str = json.dumps(data, ensure_ascii=False)
@@ -507,7 +515,7 @@ class SwarmManager(DockerBaseClass):
         except APIError:
             pass
 
-    def get_unlock_key(self):
+    def get_unlock_key(self) -> dict[str, t.Any]:
         default = {"UnlockKey": None}
         if not self.has_swarm_lock_changed():
             return default
@@ -516,18 +524,18 @@ class SwarmManager(DockerBaseClass):
         except APIError:
             return default
 
-    def has_swarm_lock_changed(self):
-        return self.parameters.autolock_managers and (
+    def has_swarm_lock_changed(self) -> bool:
+        return bool(self.parameters.autolock_managers) and (
             self.created or self.differences.has_difference_for("autolock_managers")
         )
 
-    def init_swarm(self):
+    def init_swarm(self) -> None:
         if not self.force and self.client.check_if_swarm_manager():
             self.__update_swarm()
             return
 
         if not self.check_mode:
-            init_arguments = {
+            init_arguments: dict[str, t.Any] = {
                 "advertise_addr": self.parameters.advertise_addr,
                 "listen_addr": self.parameters.listen_addr,
                 "force_new_cluster": self.force,
@@ -562,7 +570,7 @@ class SwarmManager(DockerBaseClass):
             "UnlockKey": self.swarm_info.get("UnlockKey"),
         }
 
-    def __update_swarm(self):
+    def __update_swarm(self) -> None:
         try:
             self.inspect_swarm()
             version = self.swarm_info["Version"]["Index"]
@@ -587,13 +595,12 @@ class SwarmManager(DockerBaseClass):
                 )
         except APIError as exc:
             self.client.fail(f"Can not update a Swarm Cluster: {exc}")
-            return
 
         self.inspect_swarm()
         self.results["actions"].append("Swarm cluster updated")
         self.results["changed"] = True
 
-    def join(self):
+    def join(self) -> None:
         if self.client.check_if_swarm_node():
             self.results["actions"].append("This node is already part of a swarm.")
             return
@@ -614,7 +621,7 @@ class SwarmManager(DockerBaseClass):
         self.differences.add("joined", parameter=True, active=False)
         self.results["changed"] = True
 
-    def leave(self):
+    def leave(self) -> None:
         if not self.client.check_if_swarm_node():
             self.results["actions"].append("This node is not part of a swarm.")
             return
@@ -627,7 +634,7 @@ class SwarmManager(DockerBaseClass):
         self.differences.add("joined", parameter="absent", active="present")
         self.results["changed"] = True
 
-    def remove(self):
+    def remove(self) -> None:
         if not self.client.check_if_swarm_manager():
             self.client.fail("This node is not a manager.")
 
@@ -655,11 +662,12 @@ class SwarmManager(DockerBaseClass):
         self.results["changed"] = True
 
 
-def _detect_remove_operation(client):
+def _detect_remove_operation(client: AnsibleDockerSwarmClient) -> bool:
     return client.module.params["state"] == "remove"
 
 
-def main():
+def main() -> None:
+    # TODO: missing option log_driver?
     argument_spec = {
         "advertise_addr": {"type": "str"},
         "data_path_addr": {"type": "str"},

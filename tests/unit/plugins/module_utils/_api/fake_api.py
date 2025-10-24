@@ -8,12 +8,18 @@
 
 from __future__ import annotations
 
+import typing as t
+
 from ansible_collections.community.docker.plugins.module_utils._api import constants
 from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.constants import (
     DEFAULT_DOCKER_API_VERSION,
 )
 
 from . import fake_stat
+
+
+if t.TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 CURRENT_VERSION = f"v{DEFAULT_DOCKER_API_VERSION}"
@@ -38,7 +44,7 @@ FAKE_SECRET_NAME = "super_secret"
 # for clarity and readability
 
 
-def get_fake_version():
+def get_fake_version() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {
         "ApiVersion": "1.35",
@@ -73,7 +79,7 @@ def get_fake_version():
     return status_code, response
 
 
-def get_fake_info():
+def get_fake_info() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {
         "Containers": 1,
@@ -86,23 +92,23 @@ def get_fake_info():
     return status_code, response
 
 
-def post_fake_auth():
+def post_fake_auth() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Status": "Login Succeeded", "IdentityToken": "9cbaf023786cd7"}
     return status_code, response
 
 
-def get_fake_ping():
+def get_fake_ping() -> tuple[int, str]:
     return 200, "OK"
 
 
-def get_fake_search():
+def get_fake_search() -> tuple[int, list[dict[str, t.Any]]]:
     status_code = 200
     response = [{"Name": "busybox", "Description": "Fake Description"}]
     return status_code, response
 
 
-def get_fake_images():
+def get_fake_images() -> tuple[int, list[dict[str, t.Any]]]:
     status_code = 200
     response = [
         {
@@ -115,7 +121,7 @@ def get_fake_images():
     return status_code, response
 
 
-def get_fake_image_history():
+def get_fake_image_history() -> tuple[int, list[dict[str, t.Any]]]:
     status_code = 200
     response = [
         {"Id": "b750fe79269d", "Created": 1364102658, "CreatedBy": "/bin/bash"},
@@ -125,14 +131,14 @@ def get_fake_image_history():
     return status_code, response
 
 
-def post_fake_import_image():
+def post_fake_import_image() -> tuple[int, str]:
     status_code = 200
     response = "Import messages..."
 
     return status_code, response
 
 
-def get_fake_containers():
+def get_fake_containers() -> tuple[int, list[dict[str, t.Any]]]:
     status_code = 200
     response = [
         {
@@ -146,25 +152,25 @@ def get_fake_containers():
     return status_code, response
 
 
-def post_fake_start_container():
+def post_fake_start_container() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_CONTAINER_ID}
     return status_code, response
 
 
-def post_fake_resize_container():
+def post_fake_resize_container() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_CONTAINER_ID}
     return status_code, response
 
 
-def post_fake_create_container():
+def post_fake_create_container() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_CONTAINER_ID}
     return status_code, response
 
 
-def get_fake_inspect_container(tty=False):
+def get_fake_inspect_container(tty: bool = False) -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {
         "Id": FAKE_CONTAINER_ID,
@@ -188,7 +194,7 @@ def get_fake_inspect_container(tty=False):
     return status_code, response
 
 
-def get_fake_inspect_image():
+def get_fake_inspect_image() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {
         "Id": FAKE_IMAGE_ID,
@@ -221,19 +227,19 @@ def get_fake_inspect_image():
     return status_code, response
 
 
-def get_fake_insert_image():
+def get_fake_insert_image() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"StatusCode": 0}
     return status_code, response
 
 
-def get_fake_wait():
+def get_fake_wait() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"StatusCode": 0}
     return status_code, response
 
 
-def get_fake_logs():
+def get_fake_logs() -> tuple[int, bytes]:
     status_code = 200
     response = (
         b"\x01\x00\x00\x00\x00\x00\x00\x00"
@@ -244,13 +250,13 @@ def get_fake_logs():
     return status_code, response
 
 
-def get_fake_diff():
+def get_fake_diff() -> tuple[int, list[dict[str, t.Any]]]:
     status_code = 200
     response = [{"Path": "/test", "Kind": 1}]
     return status_code, response
 
 
-def get_fake_events():
+def get_fake_events() -> tuple[int, list[dict[str, t.Any]]]:
     status_code = 200
     response = [
         {
@@ -263,19 +269,19 @@ def get_fake_events():
     return status_code, response
 
 
-def get_fake_export():
+def get_fake_export() -> tuple[int, str]:
     status_code = 200
     response = "Byte Stream...."
     return status_code, response
 
 
-def post_fake_exec_create():
+def post_fake_exec_create() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_EXEC_ID}
     return status_code, response
 
 
-def post_fake_exec_start():
+def post_fake_exec_start() -> tuple[int, bytes]:
     status_code = 200
     response = (
         b"\x01\x00\x00\x00\x00\x00\x00\x11bin\nboot\ndev\netc\n"
@@ -285,12 +291,12 @@ def post_fake_exec_start():
     return status_code, response
 
 
-def post_fake_exec_resize():
+def post_fake_exec_resize() -> tuple[int, str]:
     status_code = 201
     return status_code, ""
 
 
-def get_fake_exec_inspect():
+def get_fake_exec_inspect() -> tuple[int, dict[str, t.Any]]:
     return 200, {
         "OpenStderr": True,
         "OpenStdout": True,
@@ -309,102 +315,102 @@ def get_fake_exec_inspect():
     }
 
 
-def post_fake_stop_container():
+def post_fake_stop_container() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_CONTAINER_ID}
     return status_code, response
 
 
-def post_fake_kill_container():
+def post_fake_kill_container() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_CONTAINER_ID}
     return status_code, response
 
 
-def post_fake_pause_container():
+def post_fake_pause_container() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_CONTAINER_ID}
     return status_code, response
 
 
-def post_fake_unpause_container():
+def post_fake_unpause_container() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_CONTAINER_ID}
     return status_code, response
 
 
-def post_fake_restart_container():
+def post_fake_restart_container() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_CONTAINER_ID}
     return status_code, response
 
 
-def post_fake_rename_container():
+def post_fake_rename_container() -> tuple[int, None]:
     status_code = 204
     return status_code, None
 
 
-def delete_fake_remove_container():
+def delete_fake_remove_container() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_CONTAINER_ID}
     return status_code, response
 
 
-def post_fake_image_create():
+def post_fake_image_create() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_IMAGE_ID}
     return status_code, response
 
 
-def delete_fake_remove_image():
+def delete_fake_remove_image() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_IMAGE_ID}
     return status_code, response
 
 
-def get_fake_get_image():
+def get_fake_get_image() -> tuple[int, str]:
     status_code = 200
     response = "Byte Stream...."
     return status_code, response
 
 
-def post_fake_load_image():
+def post_fake_load_image() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_IMAGE_ID}
     return status_code, response
 
 
-def post_fake_commit():
+def post_fake_commit() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_CONTAINER_ID}
     return status_code, response
 
 
-def post_fake_push():
+def post_fake_push() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_IMAGE_ID}
     return status_code, response
 
 
-def post_fake_build_container():
+def post_fake_build_container() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_CONTAINER_ID}
     return status_code, response
 
 
-def post_fake_tag_image():
+def post_fake_tag_image() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"Id": FAKE_IMAGE_ID}
     return status_code, response
 
 
-def get_fake_stats():
+def get_fake_stats() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = fake_stat.OBJ
     return status_code, response
 
 
-def get_fake_top():
+def get_fake_top() -> tuple[int, dict[str, t.Any]]:
     return 200, {
         "Processes": [
             [
@@ -431,7 +437,7 @@ def get_fake_top():
     }
 
 
-def get_fake_volume_list():
+def get_fake_volume_list() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {
         "Volumes": [
@@ -452,7 +458,7 @@ def get_fake_volume_list():
     return status_code, response
 
 
-def get_fake_volume():
+def get_fake_volume() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {
         "Name": "perfectcherryblossom",
@@ -464,23 +470,23 @@ def get_fake_volume():
     return status_code, response
 
 
-def fake_remove_volume():
+def fake_remove_volume() -> tuple[int, None]:
     return 204, None
 
 
-def post_fake_update_container():
+def post_fake_update_container() -> tuple[int, dict[str, t.Any]]:
     return 200, {"Warnings": []}
 
 
-def post_fake_update_node():
+def post_fake_update_node() -> tuple[int, None]:
     return 200, None
 
 
-def post_fake_join_swarm():
+def post_fake_join_swarm() -> tuple[int, None]:
     return 200, None
 
 
-def get_fake_network_list():
+def get_fake_network_list() -> tuple[int, list[dict[str, t.Any]]]:
     return 200, [
         {
             "Name": "bridge",
@@ -510,27 +516,27 @@ def get_fake_network_list():
     ]
 
 
-def get_fake_network():
+def get_fake_network() -> tuple[int, dict[str, t.Any]]:
     return 200, get_fake_network_list()[1][0]
 
 
-def post_fake_network():
+def post_fake_network() -> tuple[int, dict[str, t.Any]]:
     return 201, {"Id": FAKE_NETWORK_ID, "Warnings": []}
 
 
-def delete_fake_network():
+def delete_fake_network() -> tuple[int, None]:
     return 204, None
 
 
-def post_fake_network_connect():
+def post_fake_network_connect() -> tuple[int, None]:
     return 200, None
 
 
-def post_fake_network_disconnect():
+def post_fake_network_disconnect() -> tuple[int, None]:
     return 200, None
 
 
-def post_fake_secret():
+def post_fake_secret() -> tuple[int, dict[str, t.Any]]:
     status_code = 200
     response = {"ID": FAKE_SECRET_ID}
     return status_code, response
@@ -541,7 +547,7 @@ prefix = "http+docker://localhost"  # pylint: disable=invalid-name
 if constants.IS_WINDOWS_PLATFORM:
     prefix = "http+docker://localnpipe"  # pylint: disable=invalid-name
 
-fake_responses = {
+fake_responses: dict[str | tuple[str, str], Callable] = {
     f"{prefix}/version": get_fake_version,
     f"{prefix}/{CURRENT_VERSION}/version": get_fake_version,
     f"{prefix}/{CURRENT_VERSION}/info": get_fake_info,
@@ -574,6 +580,7 @@ fake_responses = {
     f"{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/unpause": post_fake_unpause_container,
     f"{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/restart": post_fake_restart_container,
     f"{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b": delete_fake_remove_container,
+    # TODO: the following is a duplicate of the import endpoint further above!
     f"{prefix}/{CURRENT_VERSION}/images/create": post_fake_image_create,
     f"{prefix}/{CURRENT_VERSION}/images/e9aa60c60128": delete_fake_remove_image,
     f"{prefix}/{CURRENT_VERSION}/images/e9aa60c60128/get": get_fake_get_image,

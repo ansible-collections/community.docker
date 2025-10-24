@@ -27,7 +27,7 @@ else:
 
 
 class SSLAdapterTest(unittest.TestCase):
-    def test_only_uses_tls(self):
+    def test_only_uses_tls(self) -> None:
         ssl_context = ssladapter.urllib3.util.ssl_.create_urllib3_context()
 
         assert ssl_context.options & OP_NO_SSLv3
@@ -68,19 +68,19 @@ class MatchHostnameTest(unittest.TestCase):
         "version": 3,
     }
 
-    def test_match_ip_address_success(self):
+    def test_match_ip_address_success(self) -> None:
         assert match_hostname(self.cert, "127.0.0.1") is None
 
-    def test_match_localhost_success(self):
+    def test_match_localhost_success(self) -> None:
         assert match_hostname(self.cert, "localhost") is None
 
-    def test_match_dns_success(self):
+    def test_match_dns_success(self) -> None:
         assert match_hostname(self.cert, "touhou.gensokyo.jp") is None
 
-    def test_match_ip_address_failure(self):
+    def test_match_ip_address_failure(self) -> None:
         with pytest.raises(CertificateError):
             match_hostname(self.cert, "192.168.0.25")
 
-    def test_match_dns_failure(self):
+    def test_match_dns_failure(self) -> None:
         with pytest.raises(CertificateError):
             match_hostname(self.cert, "foobar.co.uk")

@@ -18,7 +18,13 @@ from .._import_helper import urllib3
 from ..errors import DockerException
 
 
-class CancellableStream:
+if t.TYPE_CHECKING:
+    from requests import Response
+
+_T = t.TypeVar("_T")
+
+
+class CancellableStream(t.Generic[_T]):
     """
     Stream wrapper for real-time events, logs, etc. from the server.
 
@@ -30,14 +36,14 @@ class CancellableStream:
         >>> events.close()
     """
 
-    def __init__(self, stream, response) -> None:
+    def __init__(self, stream: t.Generator[_T], response: Response) -> None:
         self._stream = stream
         self._response = response
 
     def __iter__(self) -> t.Self:
         return self
 
-    def __next__(self):
+    def __next__(self) -> _T:
         try:
             return next(self._stream)
         except urllib3.exceptions.ProtocolError as exc:
@@ -56,7 +62,7 @@ class CancellableStream:
             # find the underlying socket object
             # based on api.client._get_raw_response_socket
 
-            sock_fp = self._response.raw._fp.fp
+            sock_fp = self._response.raw._fp.fp  # type: ignore
 
             if hasattr(sock_fp, "raw"):
                 sock_raw = sock_fp.raw
@@ -74,7 +80,7 @@ class CancellableStream:
                     "Cancellable streams not supported for the SSH protocol"
                 )
             else:
-                sock = sock_fp._sock
+                sock = sock_fp._sock  # type: ignore
 
             if hasattr(urllib3.contrib, "pyopenssl") and isinstance(
                 sock, urllib3.contrib.pyopenssl.WrappedSocket

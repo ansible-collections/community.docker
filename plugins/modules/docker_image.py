@@ -667,7 +667,7 @@ class ImageManager(DockerBaseClass):
         :rtype: str
         """
 
-        def build_msg(reason):
+        def build_msg(reason: str) -> str:
             return f"Archived image {current_image_name} to {archive_path}, {reason}"
 
         try:
@@ -877,7 +877,7 @@ class ImageManager(DockerBaseClass):
             self.push_image(repo, repo_tag)
 
     @staticmethod
-    def _extract_output_line(line: dict[str, t.Any], output: list[str]):
+    def _extract_output_line(line: dict[str, t.Any], output: list[str]) -> None:
         """
         Extract text line from stream output and, if found, adds it to output.
         """
@@ -1165,18 +1165,18 @@ def main() -> None:
         ("source", "load", ["load_path"]),
     ]
 
-    def detect_etc_hosts(client):
+    def detect_etc_hosts(client: AnsibleDockerClient) -> bool:
         return client.module.params["build"] and bool(
             client.module.params["build"].get("etc_hosts")
         )
 
-    def detect_build_platform(client):
+    def detect_build_platform(client: AnsibleDockerClient) -> bool:
         return (
             client.module.params["build"]
             and client.module.params["build"].get("platform") is not None
         )
 
-    def detect_pull_platform(client):
+    def detect_pull_platform(client: AnsibleDockerClient) -> bool:
         return (
             client.module.params["pull"]
             and client.module.params["pull"].get("platform") is not None

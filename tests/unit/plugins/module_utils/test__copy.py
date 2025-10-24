@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import typing as t
+
 import pytest
 
 from ansible_collections.community.docker.plugins.module_utils._copy import (
@@ -11,7 +13,13 @@ from ansible_collections.community.docker.plugins.module_utils._copy import (
 )
 
 
-def _simple_generator(sequence):
+if t.TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    T = t.TypeVar("T")
+
+
+def _simple_generator(sequence: Sequence[T]) -> t.Generator[T]:
     yield from sequence
 
 
@@ -60,10 +68,12 @@ def _simple_generator(sequence):
         ),
     ],
 )
-def test__stream_generator_to_fileobj(chunks, read_sizes):
-    chunks = [count * data for count, data in chunks]
-    stream = _simple_generator(chunks)
-    expected = b"".join(chunks)
+def test__stream_generator_to_fileobj(
+    chunks: list[tuple[int, bytes]], read_sizes: list[int]
+) -> None:
+    data_chunks = [count * data for count, data in chunks]
+    stream = _simple_generator(data_chunks)
+    expected = b"".join(data_chunks)
 
     buffer = b""
     totally_read = 0

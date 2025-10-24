@@ -55,6 +55,7 @@ from ..utils.socket import consume_socket_output, demux_adaptor, frames_iter
 
 if t.TYPE_CHECKING:
     from requests import Response
+    from requests.adapters import BaseAdapter
 
     from ..._socket_helper import SocketLike
 
@@ -258,23 +259,23 @@ class APIClient(_Session):
         return kwargs
 
     @update_headers
-    def _post(self, url: str, **kwargs):
+    def _post(self, url: str, **kwargs: t.Any) -> Response:
         return self.post(url, **self._set_request_timeout(kwargs))
 
     @update_headers
-    def _get(self, url: str, **kwargs):
+    def _get(self, url: str, **kwargs: t.Any) -> Response:
         return self.get(url, **self._set_request_timeout(kwargs))
 
     @update_headers
-    def _head(self, url: str, **kwargs):
+    def _head(self, url: str, **kwargs: t.Any) -> Response:
         return self.head(url, **self._set_request_timeout(kwargs))
 
     @update_headers
-    def _put(self, url: str, **kwargs):
+    def _put(self, url: str, **kwargs: t.Any) -> Response:
         return self.put(url, **self._set_request_timeout(kwargs))
 
     @update_headers
-    def _delete(self, url: str, **kwargs):
+    def _delete(self, url: str, **kwargs: t.Any) -> Response:
         return self.delete(url, **self._set_request_timeout(kwargs))
 
     def _url(self, pathfmt: str, *args: str, versioned_api: bool = True) -> str:
@@ -343,7 +344,7 @@ class APIClient(_Session):
         return response.text
 
     def _post_json(
-        self, url: str, data: dict[str, str | None] | t.Any, **kwargs
+        self, url: str, data: dict[str, str | None] | t.Any, **kwargs: t.Any
     ) -> Response:
         # Go <1.1 cannot unserialize null to a string
         # so we do this disgusting thing here.
@@ -556,22 +557,30 @@ class APIClient(_Session):
         """
         socket = self._get_raw_response_socket(response)
 
-        gen: t.Generator = frames_iter(socket, tty)
+        gen = frames_iter(socket, tty)
 
         if demux:
             # The generator will output tuples (stdout, stderr)
-            gen = (demux_adaptor(*frame) for frame in gen)
+            demux_gen: t.Generator[tuple[bytes | None, bytes | None]] = (
+                demux_adaptor(*frame) for frame in gen
+            )
+            if stream:
+                return demux_gen
+            try:
+                # Wait for all the frames, concatenate them, and return the result
+                return consume_socket_output(demux_gen, demux=True)
+            finally:
+                response.close()
         else:
             # The generator will output strings
-            gen = (data for (dummy, data) in gen)
-
-        if stream:
-            return gen
-        try:
-            # Wait for all the frames, concatenate them, and return the result
-            return consume_socket_output(gen, demux=demux)
-        finally:
-            response.close()
+            mux_gen: t.Generator[bytes] = (data for (dummy, data) in gen)
+            if stream:
+                return mux_gen
+            try:
+                # Wait for all the frames, concatenate them, and return the result
+                return consume_socket_output(mux_gen, demux=False)
+            finally:
+                response.close()
 
     def _disable_socket_timeout(self, socket: SocketLike) -> None:
         """Depending on the combination of python version and whether we are
@@ -637,11 +646,11 @@ class APIClient(_Session):
             return self._multiplexed_response_stream_helper(res)
         return sep.join(list(self._multiplexed_buffer_helper(res)))
 
-    def _unmount(self, *args) -> None:
+    def _unmount(self, *args: t.Any) -> None:
         for proto in args:
             self.adapters.pop(proto)
 
-    def get_adapter(self, url: str):
+    def get_adapter(self, url: str) -> BaseAdapter:
         try:
             return super().get_adapter(url)
         except _InvalidSchema as e:
@@ -696,19 +705,19 @@ class APIClient(_Session):
         else:
             log.debug("No auth config found")
 
-    def get_binary(self, pathfmt: str, *args: str, **kwargs) -> bytes:
+    def get_binary(self, pathfmt: str, *args: str, **kwargs: t.Any) -> bytes:
         return self._result(
             self._get(self._url(pathfmt, *args, versioned_api=True), **kwargs),
             get_binary=True,
         )
 
-    def get_json(self, pathfmt: str, *args: str, **kwargs) -> t.Any:
+    def get_json(self, pathfmt: str, *args: str, **kwargs: t.Any) -> t.Any:
         return self._result(
             self._get(self._url(pathfmt, *args, versioned_api=True), **kwargs),
             get_json=True,
         )
 
-    def get_text(self, pathfmt: str, *args: str, **kwargs) -> str:
+    def get_text(self, pathfmt: str, *args: str, **kwargs: t.Any) -> str:
         return self._result(
             self._get(self._url(pathfmt, *args, versioned_api=True), **kwargs)
         )
@@ -718,7 +727,7 @@ class APIClient(_Session):
         pathfmt: str,
         *args: str,
         chunk_size: int = DEFAULT_DATA_CHUNK_SIZE,
-        **kwargs,
+        **kwargs: t.Any,
     ) -> t.Generator[bytes]:
         res = self._get(
             self._url(pathfmt, *args, versioned_api=True), stream=True, **kwargs
@@ -726,23 +735,25 @@ class APIClient(_Session):
         self._raise_for_status(res)
         return self._stream_raw_result(res, chunk_size=chunk_size, decode=False)
 
-    def delete_call(self, pathfmt: str, *args: str, **kwargs) -> None:
+    def delete_call(self, pathfmt: str, *args: str, **kwargs: t.Any) -> None:
         self._raise_for_status(
             self._delete(self._url(pathfmt, *args, versioned_api=True), **kwargs)
         )
 
-    def delete_json(self, pathfmt: str, *args: str, **kwargs) -> t.Any:
+    def delete_json(self, pathfmt: str, *args: str, **kwargs: t.Any) -> t.Any:
         return self._result(
             self._delete(self._url(pathfmt, *args, versioned_api=True), **kwargs),
             get_json=True,
         )
 
-    def post_call(self, pathfmt: str, *args: str, **kwargs) -> None:
+    def post_call(self, pathfmt: str, *args: str, **kwargs: t.Any) -> None:
         self._raise_for_status(
             self._post(self._url(pathfmt, *args, versioned_api=True), **kwargs)
         )
 
-    def post_json(self, pathfmt: str, *args: str, data: t.Any = None, **kwargs) -> None:
+    def post_json(
+        self, pathfmt: str, *args: str, data: t.Any = None, **kwargs: t.Any
+    ) -> None:
         self._raise_for_status(
             self._post_json(
                 self._url(pathfmt, *args, versioned_api=True), data, **kwargs
@@ -750,7 +761,7 @@ class APIClient(_Session):
         )
 
     def post_json_to_binary(
-        self, pathfmt: str, *args: str, data: t.Any = None, **kwargs
+        self, pathfmt: str, *args: str, data: t.Any = None, **kwargs: t.Any
     ) -> bytes:
         return self._result(
             self._post_json(
@@ -760,7 +771,7 @@ class APIClient(_Session):
         )
 
     def post_json_to_json(
-        self, pathfmt: str, *args: str, data: t.Any = None, **kwargs
+        self, pathfmt: str, *args: str, data: t.Any = None, **kwargs: t.Any
     ) -> t.Any:
         return self._result(
             self._post_json(
@@ -770,7 +781,7 @@ class APIClient(_Session):
         )
 
     def post_json_to_text(
-        self, pathfmt: str, *args: str, data: t.Any = None, **kwargs
+        self, pathfmt: str, *args: str, data: t.Any = None, **kwargs: t.Any
     ) -> str:
         return self._result(
             self._post_json(
@@ -784,7 +795,7 @@ class APIClient(_Session):
         *args: str,
         data: t.Any = None,
         headers: dict[str, str] | None = None,
-        **kwargs,
+        **kwargs: t.Any,
     ) -> SocketLike:
         headers = headers.copy() if headers else {}
         headers.update(
@@ -813,7 +824,7 @@ class APIClient(_Session):
         stream: t.Literal[True],
         tty: bool = True,
         demux: t.Literal[False] = False,
-        **kwargs,
+        **kwargs: t.Any,
     ) -> t.Generator[bytes]: ...
 
     @t.overload
@@ -826,7 +837,7 @@ class APIClient(_Session):
         stream: t.Literal[True],
         tty: t.Literal[True] = True,
         demux: t.Literal[True],
-        **kwargs,
+        **kwargs: t.Any,
     ) -> t.Generator[tuple[bytes, None]]: ...
 
     @t.overload
@@ -839,7 +850,7 @@ class APIClient(_Session):
         stream: t.Literal[True],
         tty: t.Literal[False],
         demux: t.Literal[True],
-        **kwargs,
+        **kwargs: t.Any,
     ) -> t.Generator[tuple[bytes, None] | tuple[None, bytes]]: ...
 
     @t.overload
@@ -852,7 +863,7 @@ class APIClient(_Session):
         stream: t.Literal[False],
         tty: bool = True,
         demux: t.Literal[False] = False,
-        **kwargs,
+        **kwargs: t.Any,
     ) -> bytes: ...
 
     @t.overload
@@ -865,7 +876,7 @@ class APIClient(_Session):
         stream: t.Literal[False],
         tty: t.Literal[True] = True,
         demux: t.Literal[True],
-        **kwargs,
+        **kwargs: t.Any,
     ) -> tuple[bytes, None]: ...
 
     @t.overload
@@ -878,7 +889,7 @@ class APIClient(_Session):
         stream: t.Literal[False],
         tty: t.Literal[False],
         demux: t.Literal[True],
-        **kwargs,
+        **kwargs: t.Any,
     ) -> tuple[bytes, bytes]: ...
 
     def post_json_to_stream(
@@ -890,7 +901,7 @@ class APIClient(_Session):
         stream: bool = False,
         demux: bool = False,
         tty: bool = False,
-        **kwargs,
+        **kwargs: t.Any,
     ) -> t.Any:
         headers = headers.copy() if headers else {}
         headers.update(
@@ -912,7 +923,7 @@ class APIClient(_Session):
             demux=demux,
         )
 
-    def post_to_json(self, pathfmt: str, *args: str, **kwargs) -> t.Any:
+    def post_to_json(self, pathfmt: str, *args: str, **kwargs: t.Any) -> t.Any:
         return self._result(
             self._post(self._url(pathfmt, *args, versioned_api=True), **kwargs),
             get_json=True,

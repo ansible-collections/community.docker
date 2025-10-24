@@ -52,13 +52,15 @@ TEST_CERT_DIR = os.path.join(
 
 
 class KwargsFromEnvTest(unittest.TestCase):
-    def setUp(self):
+    os_environ: dict[str, str]
+
+    def setUp(self) -> None:
         self.os_environ = os.environ.copy()
 
-    def tearDown(self):
-        os.environ = self.os_environ
+    def tearDown(self) -> None:
+        os.environ = self.os_environ  # type: ignore
 
-    def test_kwargs_from_env_empty(self):
+    def test_kwargs_from_env_empty(self) -> None:
         os.environ.update(DOCKER_HOST="", DOCKER_CERT_PATH="")
         os.environ.pop("DOCKER_TLS_VERIFY", None)
 
@@ -66,7 +68,7 @@ class KwargsFromEnvTest(unittest.TestCase):
         assert kwargs.get("base_url") is None
         assert kwargs.get("tls") is None
 
-    def test_kwargs_from_env_tls(self):
+    def test_kwargs_from_env_tls(self) -> None:
         os.environ.update(
             DOCKER_HOST="tcp://192.168.59.103:2376",
             DOCKER_CERT_PATH=TEST_CERT_DIR,
@@ -90,7 +92,7 @@ class KwargsFromEnvTest(unittest.TestCase):
         except TypeError as e:
             self.fail(e)
 
-    def test_kwargs_from_env_tls_verify_false(self):
+    def test_kwargs_from_env_tls_verify_false(self) -> None:
         os.environ.update(
             DOCKER_HOST="tcp://192.168.59.103:2376",
             DOCKER_CERT_PATH=TEST_CERT_DIR,
@@ -113,7 +115,7 @@ class KwargsFromEnvTest(unittest.TestCase):
         except TypeError as e:
             self.fail(e)
 
-    def test_kwargs_from_env_tls_verify_false_no_cert(self):
+    def test_kwargs_from_env_tls_verify_false_no_cert(self) -> None:
         temp_dir = tempfile.mkdtemp()
         cert_dir = os.path.join(temp_dir, ".docker")
         shutil.copytree(TEST_CERT_DIR, cert_dir)
@@ -125,7 +127,7 @@ class KwargsFromEnvTest(unittest.TestCase):
         kwargs = kwargs_from_env(assert_hostname=True)
         assert "tcp://192.168.59.103:2376" == kwargs["base_url"]
 
-    def test_kwargs_from_env_no_cert_path(self):
+    def test_kwargs_from_env_no_cert_path(self) -> None:
         try:
             temp_dir = tempfile.mkdtemp()
             cert_dir = os.path.join(temp_dir, ".docker")
@@ -142,7 +144,7 @@ class KwargsFromEnvTest(unittest.TestCase):
             if temp_dir:
                 shutil.rmtree(temp_dir)
 
-    def test_kwargs_from_env_alternate_env(self):
+    def test_kwargs_from_env_alternate_env(self) -> None:
         # Values in os.environ are entirely ignored if an alternate is
         # provided
         os.environ.update(
@@ -160,30 +162,32 @@ class KwargsFromEnvTest(unittest.TestCase):
 
 
 class ConverVolumeBindsTest(unittest.TestCase):
-    def test_convert_volume_binds_empty(self):
+    def test_convert_volume_binds_empty(self) -> None:
         assert convert_volume_binds({}) == []
         assert convert_volume_binds([]) == []
 
-    def test_convert_volume_binds_list(self):
+    def test_convert_volume_binds_list(self) -> None:
         data = ["/a:/a:ro", "/b:/c:z"]
         assert convert_volume_binds(data) == data
 
-    def test_convert_volume_binds_complete(self):
-        data = {"/mnt/vol1": {"bind": "/data", "mode": "ro"}}
+    def test_convert_volume_binds_complete(self) -> None:
+        data: dict[str | bytes, dict[str, str]] = {
+            "/mnt/vol1": {"bind": "/data", "mode": "ro"}
+        }
         assert convert_volume_binds(data) == ["/mnt/vol1:/data:ro"]
 
-    def test_convert_volume_binds_compact(self):
-        data = {"/mnt/vol1": "/data"}
+    def test_convert_volume_binds_compact(self) -> None:
+        data: dict[str | bytes, str] = {"/mnt/vol1": "/data"}
         assert convert_volume_binds(data) == ["/mnt/vol1:/data:rw"]
 
-    def test_convert_volume_binds_no_mode(self):
-        data = {"/mnt/vol1": {"bind": "/data"}}
+    def test_convert_volume_binds_no_mode(self) -> None:
+        data: dict[str | bytes, dict[str, str]] = {"/mnt/vol1": {"bind": "/data"}}
         assert convert_volume_binds(data) == ["/mnt/vol1:/data:rw"]
 
-    def test_convert_volume_binds_unicode_bytes_input(self):
+    def test_convert_volume_binds_unicode_bytes_input(self) -> None:
         expected = ["/mnt/지연:/unicode/박:rw"]
 
-        data = {
+        data: dict[str | bytes, dict[str, str | bytes]] = {
             "/mnt/지연".encode("utf-8"): {
                 "bind": "/unicode/박".encode("utf-8"),
                 "mode": "rw",
@@ -191,15 +195,17 @@ class ConverVolumeBindsTest(unittest.TestCase):
         }
         assert convert_volume_binds(data) == expected
 
-    def test_convert_volume_binds_unicode_unicode_input(self):
+    def test_convert_volume_binds_unicode_unicode_input(self) -> None:
         expected = ["/mnt/지연:/unicode/박:rw"]
 
-        data = {"/mnt/지연": {"bind": "/unicode/박", "mode": "rw"}}
+        data: dict[str | bytes, dict[str, str]] = {
+            "/mnt/지연": {"bind": "/unicode/박", "mode": "rw"}
+        }
         assert convert_volume_binds(data) == expected
 
 
 class ParseEnvFileTest(unittest.TestCase):
-    def generate_tempfile(self, file_content=None):
+    def generate_tempfile(self, file_content: str) -> str:
         """
         Generates a temporary file for tests with the content
         of 'file_content' and returns the filename.
@@ -209,31 +215,31 @@ class ParseEnvFileTest(unittest.TestCase):
             local_tempfile.write(file_content.encode("UTF-8"))
         return local_tempfile.name
 
-    def test_parse_env_file_proper(self):
+    def test_parse_env_file_proper(self) -> None:
         env_file = self.generate_tempfile(file_content="USER=jdoe\nPASS=secret")
         get_parse_env_file = parse_env_file(env_file)
         assert get_parse_env_file == {"USER": "jdoe", "PASS": "secret"}
         os.unlink(env_file)
 
-    def test_parse_env_file_with_equals_character(self):
+    def test_parse_env_file_with_equals_character(self) -> None:
         env_file = self.generate_tempfile(file_content="USER=jdoe\nPASS=sec==ret")
         get_parse_env_file = parse_env_file(env_file)
         assert get_parse_env_file == {"USER": "jdoe", "PASS": "sec==ret"}
         os.unlink(env_file)
 
-    def test_parse_env_file_commented_line(self):
+    def test_parse_env_file_commented_line(self) -> None:
         env_file = self.generate_tempfile(file_content="USER=jdoe\n#PASS=secret")
         get_parse_env_file = parse_env_file(env_file)
         assert get_parse_env_file == {"USER": "jdoe"}
         os.unlink(env_file)
 
-    def test_parse_env_file_newline(self):
+    def test_parse_env_file_newline(self) -> None:
         env_file = self.generate_tempfile(file_content="\nUSER=jdoe\n\n\nPASS=secret")
         get_parse_env_file = parse_env_file(env_file)
         assert get_parse_env_file == {"USER": "jdoe", "PASS": "secret"}
         os.unlink(env_file)
 
-    def test_parse_env_file_invalid_line(self):
+    def test_parse_env_file_invalid_line(self) -> None:
         env_file = self.generate_tempfile(file_content="USER jdoe")
         with pytest.raises(DockerException):
             parse_env_file(env_file)
@@ -241,7 +247,7 @@ class ParseEnvFileTest(unittest.TestCase):
 
 
 class ParseHostTest(unittest.TestCase):
-    def test_parse_host(self):
+    def test_parse_host(self) -> None:
         invalid_hosts = [
             "foo://0.0.0.0",
             "tcp://",
@@ -282,16 +288,16 @@ class ParseHostTest(unittest.TestCase):
         for host in invalid_hosts:
             msg = f"Should have failed to parse invalid host: {host}"
             with self.assertRaises(DockerException, msg=msg):
-                parse_host(host, None)
+                parse_host(host)
 
         for host, expected in valid_hosts.items():
             self.assertEqual(
-                parse_host(host, None),
+                parse_host(host),
                 expected,
                 msg=f"Failed to parse valid host: {host}",
             )
 
-    def test_parse_host_empty_value(self):
+    def test_parse_host_empty_value(self) -> None:
         unix_socket = "http+unix:///var/run/docker.sock"
         npipe = "npipe:////./pipe/docker_engine"
 
@@ -299,17 +305,17 @@ class ParseHostTest(unittest.TestCase):
             assert parse_host(val, is_win32=False) == unix_socket
             assert parse_host(val, is_win32=True) == npipe
 
-    def test_parse_host_tls(self):
+    def test_parse_host_tls(self) -> None:
         host_value = "myhost.docker.net:3348"
         expected_result = "https://myhost.docker.net:3348"
         assert parse_host(host_value, tls=True) == expected_result
 
-    def test_parse_host_tls_tcp_proto(self):
+    def test_parse_host_tls_tcp_proto(self) -> None:
         host_value = "tcp://myhost.docker.net:3348"
         expected_result = "https://myhost.docker.net:3348"
         assert parse_host(host_value, tls=True) == expected_result
 
-    def test_parse_host_trailing_slash(self):
+    def test_parse_host_trailing_slash(self) -> None:
         host_value = "tcp://myhost.docker.net:2376/"
         expected_result = "http://myhost.docker.net:2376"
         assert parse_host(host_value) == expected_result
@@ -318,31 +324,31 @@ class ParseHostTest(unittest.TestCase):
 class ParseRepositoryTagTest(unittest.TestCase):
     sha = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
-    def test_index_image_no_tag(self):
+    def test_index_image_no_tag(self) -> None:
         assert parse_repository_tag("root") == ("root", None)
 
-    def test_index_image_tag(self):
+    def test_index_image_tag(self) -> None:
         assert parse_repository_tag("root:tag") == ("root", "tag")
 
-    def test_index_user_image_no_tag(self):
+    def test_index_user_image_no_tag(self) -> None:
         assert parse_repository_tag("user/repo") == ("user/repo", None)
 
-    def test_index_user_image_tag(self):
+    def test_index_user_image_tag(self) -> None:
         assert parse_repository_tag("user/repo:tag") == ("user/repo", "tag")
 
-    def test_private_reg_image_no_tag(self):
+    def test_private_reg_image_no_tag(self) -> None:
         assert parse_repository_tag("url:5000/repo") == ("url:5000/repo", None)
 
-    def test_private_reg_image_tag(self):
+    def test_private_reg_image_tag(self) -> None:
         assert parse_repository_tag("url:5000/repo:tag") == ("url:5000/repo", "tag")
 
-    def test_index_image_sha(self):
+    def test_index_image_sha(self) -> None:
         assert parse_repository_tag(f"root@sha256:{self.sha}") == (
             "root",
             f"sha256:{self.sha}",
         )
 
-    def test_private_reg_image_sha(self):
+    def test_private_reg_image_sha(self) -> None:
         assert parse_repository_tag(f"url:5000/repo@sha256:{self.sha}") == (
             "url:5000/repo",
             f"sha256:{self.sha}",
@@ -350,7 +356,7 @@ class ParseRepositoryTagTest(unittest.TestCase):
 
 
 class ParseDeviceTest(unittest.TestCase):
-    def test_dict(self):
+    def test_dict(self) -> None:
         devices = parse_devices(
             [
                 {
@@ -366,7 +372,7 @@ class ParseDeviceTest(unittest.TestCase):
             "CgroupPermissions": "r",
         }
 
-    def test_partial_string_definition(self):
+    def test_partial_string_definition(self) -> None:
         devices = parse_devices(["/dev/sda1"])
         assert devices[0] == {
             "PathOnHost": "/dev/sda1",
@@ -374,7 +380,7 @@ class ParseDeviceTest(unittest.TestCase):
             "CgroupPermissions": "rwm",
         }
 
-    def test_permissionless_string_definition(self):
+    def test_permissionless_string_definition(self) -> None:
         devices = parse_devices(["/dev/sda1:/dev/mnt1"])
         assert devices[0] == {
             "PathOnHost": "/dev/sda1",
@@ -382,7 +388,7 @@ class ParseDeviceTest(unittest.TestCase):
             "CgroupPermissions": "rwm",
         }
 
-    def test_full_string_definition(self):
+    def test_full_string_definition(self) -> None:
         devices = parse_devices(["/dev/sda1:/dev/mnt1:r"])
         assert devices[0] == {
             "PathOnHost": "/dev/sda1",
@@ -390,7 +396,7 @@ class ParseDeviceTest(unittest.TestCase):
             "CgroupPermissions": "r",
         }
 
-    def test_hybrid_list(self):
+    def test_hybrid_list(self) -> None:
         devices = parse_devices(
             [
                 "/dev/sda1:/dev/mnt1:rw",
@@ -415,12 +421,12 @@ class ParseDeviceTest(unittest.TestCase):
 
 
 class ParseBytesTest(unittest.TestCase):
-    def test_parse_bytes_valid(self):
+    def test_parse_bytes_valid(self) -> None:
         assert parse_bytes("512MB") == 536870912
         assert parse_bytes("512M") == 536870912
         assert parse_bytes("512m") == 536870912
 
-    def test_parse_bytes_invalid(self):
+    def test_parse_bytes_invalid(self) -> None:
         with pytest.raises(DockerException):
             parse_bytes("512MK")
         with pytest.raises(DockerException):
@@ -428,15 +434,15 @@ class ParseBytesTest(unittest.TestCase):
         with pytest.raises(DockerException):
             parse_bytes("127.0.0.1K")
 
-    def test_parse_bytes_float(self):
+    def test_parse_bytes_float(self) -> None:
         assert parse_bytes("1.5k") == 1536
 
 
 class UtilsTest(unittest.TestCase):
     longMessage = True
 
-    def test_convert_filters(self):
-        tests = [
+    def test_convert_filters(self) -> None:
+        tests: list[tuple[dict[str, bool | str | int | list[str | int]], str]] = [
             ({"dangling": True}, '{"dangling": ["true"]}'),
             ({"dangling": "true"}, '{"dangling": ["true"]}'),
             ({"exited": 0}, '{"exited": ["0"]}'),
@@ -446,7 +452,7 @@ class UtilsTest(unittest.TestCase):
         for filters, expected in tests:
             assert convert_filters(filters) == expected
 
-    def test_decode_json_header(self):
+    def test_decode_json_header(self) -> None:
         obj = {"a": "b", "c": 1}
         data = base64.urlsafe_b64encode(bytes(json.dumps(obj), "utf-8"))
         decoded_data = decode_json_header(data)
@@ -454,16 +460,16 @@ class UtilsTest(unittest.TestCase):
 
 
 class SplitCommandTest(unittest.TestCase):
-    def test_split_command_with_unicode(self):
+    def test_split_command_with_unicode(self) -> None:
         assert split_command("echo μμ") == ["echo", "μμ"]
 
 
 class FormatEnvironmentTest(unittest.TestCase):
-    def test_format_env_binary_unicode_value(self):
+    def test_format_env_binary_unicode_value(self) -> None:
         env_dict = {"ARTIST_NAME": b"\xec\x86\xa1\xec\xa7\x80\xec\x9d\x80"}
         assert format_environment(env_dict) == ["ARTIST_NAME=송지은"]
 
-    def test_format_env_no_value(self):
+    def test_format_env_no_value(self) -> None:
         env_dict = {
             "FOO": None,
             "BAR": "",

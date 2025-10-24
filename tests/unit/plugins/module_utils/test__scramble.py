@@ -20,7 +20,7 @@ from ansible_collections.community.docker.plugins.module_utils._scramble import 
         ("hello", b"\x01", "=S=aWRtbW4="),
     ],
 )
-def test_scramble_unscramble(plaintext, key, scrambled):
+def test_scramble_unscramble(plaintext: str, key: bytes, scrambled: str) -> None:
     scrambled_ = scramble(plaintext, key)
     print(f"{scrambled_!r} == {scrambled!r}")
     assert scrambled_ == scrambled

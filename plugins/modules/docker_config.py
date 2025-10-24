@@ -198,6 +198,7 @@ config_name:
 import base64
 import hashlib
 import traceback
+import typing as t
 
 
 try:
@@ -220,9 +221,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class ConfigManager(DockerBaseClass):
-
-    def __init__(self, client, results):
-
+    def __init__(self, client: AnsibleDockerClient, results: dict[str, t.Any]) -> None:
         super().__init__()
 
         self.client = client
@@ -253,10 +252,10 @@ class ConfigManager(DockerBaseClass):
 
         if self.rolling_versions:
             self.version = 0
-        self.data_key = None
-        self.configs = []
+        self.data_key: str | None = None
+        self.configs: list[dict[str, t.Any]] = []
 
-    def __call__(self):
+    def __call__(self) -> None:
         self.get_config()
         if self.state == "present":
             self.data_key = hashlib.sha224(self.data).hexdigest()
@@ -265,7 +264,7 @@ class ConfigManager(DockerBaseClass):
         elif self.state == "absent":
             self.absent()
 
-    def get_version(self, config):
+    def get_version(self, config: dict[str, t.Any]) -> int:
         try:
             return int(
                 config.get("Spec", {}).get("Labels", {}).get("ansible_version", 0)
@@ -273,14 +272,14 @@ class ConfigManager(DockerBaseClass):
         except ValueError:
             return 0
 
-    def remove_old_versions(self):
+    def remove_old_versions(self) -> None:
         if not self.rolling_versions or self.versions_to_keep < 0:
             return
         if not self.check_mode:
             while len(self.configs) > max(self.versions_to_keep, 1):
                 self.remove_config(self.configs.pop(0))
 
-    def get_config(self):
+    def get_config(self) -> None:
         """Find an existing config."""
         try:
             configs = self.client.configs(filters={"name": self.name})
@@ -299,9 +298,9 @@ class ConfigManager(DockerBaseClass):
                 config for config in configs if config["Spec"]["Name"] == self.name
             ]
 
-    def create_config(self):
+    def create_config(self) -> str | None:
         """Create a new config"""
-        config_id = None
+        config_id: str | dict[str, t.Any] | None = None
         # We ca not see the data after creation, so adding a label we can use for idempotency check
         labels = {"ansible_key": self.data_key}
         if self.rolling_versions:
@@ -325,18 +324,18 @@ class ConfigManager(DockerBaseClass):
             self.client.fail(f"Error creating config: {exc}")
 
         if isinstance(config_id, dict):
-            config_id = config_id["ID"]
+            return config_id["ID"]
 
         return config_id
 
-    def remove_config(self, config):
+    def remove_config(self, config: dict[str, t.Any]) -> None:
         try:
             if not self.check_mode:
                 self.client.remove_config(config["ID"])
         except APIError as exc:
             self.client.fail(f"Error removing config {config['Spec']['Name']}: {exc}")
 
-    def present(self):
+    def present(self) -> None:
         """Handles state == 'present', creating or updating the config"""
         if self.configs:
             config = self.configs[-1]
@@ -378,7 +377,7 @@ class ConfigManager(DockerBaseClass):
             self.results["config_id"] = self.create_config()
             self.results["config_name"] = self.name
 
-    def absent(self):
+    def absent(self) -> None:
         """Handles state == 'absent', removing the config"""
         if self.configs:
             for config in self.configs:
@@ -386,7 +385,7 @@ class ConfigManager(DockerBaseClass):
             self.results["changed"] = True
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True},
         "state": {

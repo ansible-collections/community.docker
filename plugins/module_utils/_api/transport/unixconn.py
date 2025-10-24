@@ -19,12 +19,20 @@ from .._import_helper import HTTPAdapter, urllib3, urllib3_connection
 from .basehttpadapter import BaseHTTPAdapter
 
 
+if t.TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from requests import PreparedRequest
+
+    from ..._socket_helper import SocketLike
+
+
 RecentlyUsedContainer = urllib3._collections.RecentlyUsedContainer
 
 
 class UnixHTTPConnection(urllib3_connection.HTTPConnection):
     def __init__(
-        self, base_url: str | bytes, unix_socket, timeout: int | float = 60
+        self, base_url: str | bytes, unix_socket: str, timeout: int | float = 60
     ) -> None:
         super().__init__("localhost", timeout=timeout)
         self.base_url = base_url
@@ -43,7 +51,7 @@ class UnixHTTPConnection(urllib3_connection.HTTPConnection):
         if header == "Connection" and "Upgrade" in values:
             self.disable_buffering = True
 
-    def response_class(self, sock, *args, **kwargs) -> t.Any:
+    def response_class(self, sock: SocketLike, *args: t.Any, **kwargs: t.Any) -> t.Any:
         # FIXME: We may need to disable buffering on Py3,
         # but there's no clear way to do it at the moment. See:
         # https://github.com/docker/docker-py/issues/1799
@@ -88,12 +96,16 @@ class UnixHTTPAdapter(BaseHTTPAdapter):
         self.socket_path = socket_path
         self.timeout = timeout
         self.max_pool_size = max_pool_size
-        self.pools = RecentlyUsedContainer(
-            pool_connections, dispose_func=lambda p: p.close()
-        )
+
+        def f(p: t.Any) -> None:
+            p.close()
+
+        self.pools = RecentlyUsedContainer(pool_connections, dispose_func=f)
         super().__init__()
 
-    def get_connection(self, url: str | bytes, proxies=None) -> UnixHTTPConnectionPool:
+    def get_connection(
+        self, url: str | bytes, proxies: Mapping[str, str] | None = None
+    ) -> UnixHTTPConnectionPool:
         with self.pools.lock:
             pool = self.pools.get(url)
             if pool:
@@ -106,7 +118,7 @@ class UnixHTTPAdapter(BaseHTTPAdapter):
 
         return pool
 
-    def request_url(self, request, proxies) -> str:
+    def request_url(self, request: PreparedRequest, proxies: Mapping[str, str]) -> str:
         # The select_proxy utility in requests errors out when the provided URL
         # does not have a hostname, like is the case when using a UNIX socket.
         # Since proxies are an irrelevant notion in the case of UNIX sockets

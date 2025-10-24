@@ -141,7 +141,7 @@ class Connection(ConnectionBase):
     transport = "community.docker.docker"
     has_pipelining = True
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
 
         # Note: docker supports running as non-root in some configurations.
@@ -476,7 +476,7 @@ class Connection(ConnectionBase):
             display.debug("done with docker.exec_command()")
             return (p.returncode, stdout, stderr)
 
-    def _prefix_login_path(self, remote_path):
+    def _prefix_login_path(self, remote_path: str) -> str:
         """Make sure that we put files into a standard path
 
         If a path is relative, then we need to choose where to put it.

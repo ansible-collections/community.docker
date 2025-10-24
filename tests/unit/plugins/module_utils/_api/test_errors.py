@@ -21,97 +21,97 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
 
 
 class APIErrorTest(unittest.TestCase):
-    def test_api_error_is_caught_by_dockerexception(self):
+    def test_api_error_is_caught_by_dockerexception(self) -> None:
         try:
             raise APIError("this should be caught by DockerException")
         except DockerException:
             pass
 
-    def test_status_code_200(self):
+    def test_status_code_200(self) -> None:
         """The status_code property is present with 200 response."""
         resp = requests.Response()
         resp.status_code = 200
         err = APIError("", response=resp)
         assert err.status_code == 200
 
-    def test_status_code_400(self):
+    def test_status_code_400(self) -> None:
         """The status_code property is present with 400 response."""
         resp = requests.Response()
         resp.status_code = 400
         err = APIError("", response=resp)
         assert err.status_code == 400
 
-    def test_status_code_500(self):
+    def test_status_code_500(self) -> None:
         """The status_code property is present with 500 response."""
         resp = requests.Response()
         resp.status_code = 500
         err = APIError("", response=resp)
         assert err.status_code == 500
 
-    def test_is_server_error_200(self):
+    def test_is_server_error_200(self) -> None:
         """Report not server error on 200 response."""
         resp = requests.Response()
         resp.status_code = 200
         err = APIError("", response=resp)
         assert err.is_server_error() is False
 
-    def test_is_server_error_300(self):
+    def test_is_server_error_300(self) -> None:
         """Report not server error on 300 response."""
         resp = requests.Response()
         resp.status_code = 300
         err = APIError("", response=resp)
         assert err.is_server_error() is False
 
-    def test_is_server_error_400(self):
+    def test_is_server_error_400(self) -> None:
         """Report not server error on 400 response."""
         resp = requests.Response()
         resp.status_code = 400
         err = APIError("", response=resp)
         assert err.is_server_error() is False
 
-    def test_is_server_error_500(self):
+    def test_is_server_error_500(self) -> None:
         """Report server error on 500 response."""
         resp = requests.Response()
         resp.status_code = 500
         err = APIError("", response=resp)
         assert err.is_server_error() is True
 
-    def test_is_client_error_500(self):
+    def test_is_client_error_500(self) -> None:
         """Report not client error on 500 response."""
         resp = requests.Response()
         resp.status_code = 500
         err = APIError("", response=resp)
         assert err.is_client_error() is False
 
-    def test_is_client_error_400(self):
+    def test_is_client_error_400(self) -> None:
         """Report client error on 400 response."""
         resp = requests.Response()
         resp.status_code = 400
         err = APIError("", response=resp)
         assert err.is_client_error() is True
 
-    def test_is_error_300(self):
+    def test_is_error_300(self) -> None:
         """Report no error on 300 response."""
         resp = requests.Response()
         resp.status_code = 300
         err = APIError("", response=resp)
         assert err.is_error() is False
 
-    def test_is_error_400(self):
+    def test_is_error_400(self) -> None:
         """Report error on 400 response."""
         resp = requests.Response()
         resp.status_code = 400
         err = APIError("", response=resp)
         assert err.is_error() is True
 
-    def test_is_error_500(self):
+    def test_is_error_500(self) -> None:
         """Report error on 500 response."""
         resp = requests.Response()
         resp.status_code = 500
         err = APIError("", response=resp)
         assert err.is_error() is True
 
-    def test_create_error_from_exception(self):
+    def test_create_error_from_exception(self) -> None:
         resp = requests.Response()
         resp.status_code = 500
         err = APIError("")
@@ -126,10 +126,10 @@ class APIErrorTest(unittest.TestCase):
 
 
 class CreateUnexpectedKwargsErrorTest(unittest.TestCase):
-    def test_create_unexpected_kwargs_error_single(self):
+    def test_create_unexpected_kwargs_error_single(self) -> None:
         e = create_unexpected_kwargs_error("f", {"foo": "bar"})
         assert str(e) == "f() got an unexpected keyword argument 'foo'"
 
-    def test_create_unexpected_kwargs_error_multiple(self):
+    def test_create_unexpected_kwargs_error_multiple(self) -> None:
         e = create_unexpected_kwargs_error("f", {"foo": "bar", "baz": "bosh"})
         assert str(e) == "f() got unexpected keyword arguments 'baz', 'foo'"

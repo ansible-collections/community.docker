@@ -93,16 +93,7 @@ from ansible_collections.community.docker.plugins.module_utils._common_cli impor
 )
 
 
-def docker_stack_task(module, stack_name):
-    docker_bin = module.get_bin_path("docker", required=True)
-    rc, out, err = module.run_command(
-        [docker_bin, "stack", "ps", stack_name, "--format={{json .}}"]
-    )
-
-    return rc, out.strip(), err.strip()
-
-
-def main():
+def main() -> None:
     client = AnsibleModuleDockerClient(
         argument_spec={"name": {"type": "str", "required": True}},
         supports_check_mode=True,

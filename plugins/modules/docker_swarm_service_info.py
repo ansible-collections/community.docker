@@ -63,6 +63,7 @@ service:
 """
 
 import traceback
+import typing as t
 
 
 try:
@@ -79,12 +80,12 @@ from ansible_collections.community.docker.plugins.module_utils._swarm import (
 )
 
 
-def get_service_info(client):
+def get_service_info(client: AnsibleDockerSwarmClient) -> dict[str, t.Any] | None:
     service = client.module.params["name"]
     return client.get_service_inspect(service_id=service, skip_missing=True)
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True},
     }

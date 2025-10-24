@@ -190,6 +190,7 @@ secret_name:
 import base64
 import hashlib
 import traceback
+import typing as t
 
 
 try:
@@ -212,9 +213,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class SecretManager(DockerBaseClass):
-
-    def __init__(self, client, results):
-
+    def __init__(self, client: AnsibleDockerClient, results: dict[str, t.Any]) -> None:
         super().__init__()
 
         self.client = client
@@ -244,10 +243,10 @@ class SecretManager(DockerBaseClass):
 
         if self.rolling_versions:
             self.version = 0
-        self.data_key = None
-        self.secrets = []
+        self.data_key: str | None = None
+        self.secrets: list[dict[str, t.Any]] = []
 
-    def __call__(self):
+    def __call__(self) -> None:
         self.get_secret()
         if self.state == "present":
             self.data_key = hashlib.sha224(self.data).hexdigest()
@@ -256,7 +255,7 @@ class SecretManager(DockerBaseClass):
         elif self.state == "absent":
             self.absent()
 
-    def get_version(self, secret):
+    def get_version(self, secret: dict[str, t.Any]) -> int:
         try:
             return int(
                 secret.get("Spec", {}).get("Labels", {}).get("ansible_version", 0)
@@ -264,14 +263,14 @@ class SecretManager(DockerBaseClass):
         except ValueError:
             return 0
 
-    def remove_old_versions(self):
+    def remove_old_versions(self) -> None:
         if not self.rolling_versions or self.versions_to_keep < 0:
             return
         if not self.check_mode:
             while len(self.secrets) > max(self.versions_to_keep, 1):
                 self.remove_secret(self.secrets.pop(0))
 
-    def get_secret(self):
+    def get_secret(self) -> None:
         """Find an existing secret."""
         try:
             secrets = self.client.secrets(filters={"name": self.name})
@@ -290,9 +289,9 @@ class SecretManager(DockerBaseClass):
                 secret for secret in secrets if secret["Spec"]["Name"] == self.name
             ]
 
-    def create_secret(self):
+    def create_secret(self) -> str | None:
         """Create a new secret"""
-        secret_id = None
+        secret_id: str | dict[str, t.Any] | None = None
         # We cannot see the data after creation, so adding a label we can use for idempotency check
         labels = {"ansible_key": self.data_key}
         if self.rolling_versions:
@@ -312,18 +311,18 @@ class SecretManager(DockerBaseClass):
             self.client.fail(f"Error creating secret: {exc}")
 
         if isinstance(secret_id, dict):
-            secret_id = secret_id["ID"]
+            return secret_id["ID"]
 
         return secret_id
 
-    def remove_secret(self, secret):
+    def remove_secret(self, secret: dict[str, t.Any]) -> None:
         try:
             if not self.check_mode:
                 self.client.remove_secret(secret["ID"])
         except APIError as exc:
             self.client.fail(f"Error removing secret {secret['Spec']['Name']}: {exc}")
 
-    def present(self):
+    def present(self) -> None:
         """Handles state == 'present', creating or updating the secret"""
         if self.secrets:
             secret = self.secrets[-1]
@@ -357,7 +356,7 @@ class SecretManager(DockerBaseClass):
             self.results["secret_id"] = self.create_secret()
             self.results["secret_name"] = self.name
 
-    def absent(self):
+    def absent(self) -> None:
         """Handles state == 'absent', removing the secret"""
         if self.secrets:
             for secret in self.secrets:
@@ -365,7 +364,7 @@ class SecretManager(DockerBaseClass):
             self.results["changed"] = True
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True},
         "state": {
