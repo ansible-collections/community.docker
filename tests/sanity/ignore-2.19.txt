@@ -6,6 +6,7 @@ plugins/module_utils/_api/utils/build.py no-assert
 plugins/module_utils/_module_container/module.py no-assert
 plugins/module_utils/_platform.py no-assert
 plugins/module_utils/_socket_handler.py no-assert
+plugins/modules/docker_container_copy_into.py no-assert
 plugins/modules/docker_container_copy_into.py validate-modules:undocumented-parameter # _max_file_size_for_diff is used by the action plugin
 plugins/modules/docker_container_exec.py no-assert
 plugins/modules/docker_image.py no-assert

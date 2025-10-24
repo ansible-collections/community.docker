@@ -5,6 +5,7 @@ plugins/module_utils/_api/api/client.py pep8:E704
 plugins/module_utils/_api/transport/sshconn.py no-assert
 plugins/module_utils/_api/utils/build.py no-assert
 plugins/module_utils/_api/utils/ports.py pep8:E704
+plugins/module_utils/_api/utils/proxy.py pep8:E704
 plugins/module_utils/_api/utils/socket.py pep8:E704
 plugins/module_utils/_common_cli.py pep8:E704
 plugins/module_utils/_module_container/module.py no-assert
@@ -12,6 +13,7 @@ plugins/module_utils/_platform.py no-assert
 plugins/module_utils/_socket_handler.py no-assert
 plugins/module_utils/_swarm.py pep8:E704
 plugins/module_utils/_util.py pep8:E704
+plugins/modules/docker_container_copy_into.py no-assert
 plugins/modules/docker_container_copy_into.py validate-modules:undocumented-parameter # _max_file_size_for_diff is used by the action plugin
 plugins/modules/docker_container_exec.py no-assert
 plugins/modules/docker_image.py no-assert
@@ -19,4 +21,5 @@ plugins/modules/docker_image_tag.py no-assert
 plugins/modules/docker_login.py no-assert
 plugins/modules/docker_plugin.py no-assert
 plugins/modules/docker_swarm_service.py no-assert
+plugins/modules/docker_swarm_service.py pep8:E704
 plugins/modules/docker_volume.py no-assert
