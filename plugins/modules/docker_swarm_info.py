@@ -186,6 +186,7 @@ tasks:
 """
 
 import traceback
+import typing as t
 
 
 try:
@@ -207,16 +208,20 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 
 class DockerSwarmManager(DockerBaseClass):
-
-    def __init__(self, client, results):
-
+    def __init__(
+        self, client: AnsibleDockerSwarmClient, results: dict[str, t.Any]
+    ) -> None:
         super().__init__()
 
         self.client = client
         self.results = results
         self.verbose_output = self.client.module.params["verbose_output"]
 
-        listed_objects = ["tasks", "services", "nodes"]
+        listed_objects: list[t.Literal["nodes", "tasks", "services"]] = [
+            "tasks",
+            "services",
+            "nodes",
+        ]
 
         self.client.fail_task_if_not_swarm_manager()
 
@@ -235,15 +240,16 @@ class DockerSwarmManager(DockerBaseClass):
         if self.client.module.params["unlock_key"]:
             self.results["swarm_unlock_key"] = self.get_docker_swarm_unlock_key()
 
-    def get_docker_swarm_facts(self):
+    def get_docker_swarm_facts(self) -> dict[str, t.Any]:
         try:
             return self.client.inspect_swarm()
         except APIError as exc:
             self.client.fail(f"Error inspecting docker swarm: {exc}")
 
-    def get_docker_items_list(self, docker_object=None, filters=None):
-        items = None
-        items_list = []
+    def get_docker_items_list(
+        self, docker_object: t.Literal["nodes", "tasks", "services"], filters=None
+    ) -> list[dict[str, t.Any]]:
+        items_list: list[dict[str, t.Any]] = []
 
         try:
             if docker_object == "nodes":
@@ -252,6 +258,8 @@ class DockerSwarmManager(DockerBaseClass):
                 items = self.client.tasks(filters=filters)
             elif docker_object == "services":
                 items = self.client.services(filters=filters)
+            else:
+                raise ValueError(f"Invalid docker_object {docker_object}")
         except APIError as exc:
             self.client.fail(
                 f"Error inspecting docker swarm for object '{docker_object}': {exc}"
@@ -276,7 +284,7 @@ class DockerSwarmManager(DockerBaseClass):
         return items_list
 
     @staticmethod
-    def get_essential_facts_nodes(item):
+    def get_essential_facts_nodes(item: dict[str, t.Any]) -> dict[str, t.Any]:
         object_essentials = {}
 
         object_essentials["ID"] = item.get("ID")
@@ -298,7 +306,7 @@ class DockerSwarmManager(DockerBaseClass):
 
         return object_essentials
 
-    def get_essential_facts_tasks(self, item):
+    def get_essential_facts_tasks(self, item: dict[str, t.Any]) -> dict[str, t.Any]:
         object_essentials = {}
 
         object_essentials["ID"] = item["ID"]
@@ -319,7 +327,7 @@ class DockerSwarmManager(DockerBaseClass):
         return object_essentials
 
     @staticmethod
-    def get_essential_facts_services(item):
+    def get_essential_facts_services(item: dict[str, t.Any]) -> dict[str, t.Any]:
         object_essentials = {}
 
         object_essentials["ID"] = item["ID"]
@@ -343,12 +351,12 @@ class DockerSwarmManager(DockerBaseClass):
 
         return object_essentials
 
-    def get_docker_swarm_unlock_key(self):
+    def get_docker_swarm_unlock_key(self) -> str | None:
         unlock_key = self.client.get_unlock_key() or {}
         return unlock_key.get("UnlockKey") or None
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "nodes": {"type": "bool", "default": False},
         "nodes_filters": {"type": "dict"},

@@ -84,7 +84,6 @@ EXAMPLES = r"""
 
 import json
 import traceback
-import typing as t
 
 from ansible.module_utils.common.text.converters import to_native
 

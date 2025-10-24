@@ -87,6 +87,7 @@ nodes:
 """
 
 import traceback
+import typing as t
 
 from ansible_collections.community.docker.plugins.module_utils._common import (
     RequestException,
@@ -103,9 +104,8 @@ except ImportError:
     pass
 
 
-def get_node_facts(client):
-
-    results = []
+def get_node_facts(client: AnsibleDockerSwarmClient) -> list[dict[str, t.Any]]:
+    results: list[dict[str, t.Any]] = []
 
     if client.module.params["self"] is True:
         self_node_id = client.get_swarm_node_id()
@@ -114,8 +114,8 @@ def get_node_facts(client):
         return results
 
     if client.module.params["name"] is None:
-        node_info = client.get_all_nodes_inspect()
-        return node_info
+        node_info_list = client.get_all_nodes_inspect()
+        return node_info_list
 
     nodes = client.module.params["name"]
     if not isinstance(nodes, list):
@@ -130,7 +130,7 @@ def get_node_facts(client):
     return results
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "list", "elements": "str"},
         "self": {"type": "bool", "default": False},

@@ -853,6 +853,7 @@ EXAMPLES = r"""
 import shlex
 import time
 import traceback
+import typing as t
 
 from ansible.module_utils.basic import human_to_bytes
 from ansible.module_utils.common.text.converters import to_text
@@ -891,7 +892,9 @@ except ImportError:
     pass
 
 
-def get_docker_environment(env, env_files):
+def get_docker_environment(
+    env: str | dict[str, t.Any] | list[t.Any] | None, env_files: list[str] | None
+) -> list[str] | None:
     """
     Will return a list of "KEY=VALUE" items. Supplied env variable can
     be either a list or a dictionary.
@@ -899,7 +902,7 @@ def get_docker_environment(env, env_files):
     If environment files are combined with explicit environment variables,
     the explicit environment variables take precedence.
     """
-    env_dict = {}
+    env_dict: dict[str, str] = {}
     if env_files:
         for env_file in env_files:
             parsed_env_file = parse_env_file(env_file)
@@ -936,7 +939,9 @@ def get_docker_environment(env, env_files):
     return sorted(env_list)
 
 
-def get_docker_networks(networks, network_ids):
+def get_docker_networks(
+    networks: list[str | dict[str, t.Any]] | None, network_ids: dict[str, str]
+) -> list[dict[str, t.Any]] | None:
     """
     Validate a list of network names or a list of network dictionaries.
     Network names will be resolved to ids by using the network_ids mapping.
@@ -945,6 +950,7 @@ def get_docker_networks(networks, network_ids):
         return None
     parsed_networks = []
     for network in networks:
+        parsed_network: dict[str, t.Any]
         if isinstance(network, str):
             parsed_network = {"name": network}
         elif isinstance(network, dict):
@@ -988,7 +994,7 @@ def get_docker_networks(networks, network_ids):
     return parsed_networks or []
 
 
-def get_nanoseconds_from_raw_option(name, value):
+def get_nanoseconds_from_raw_option(name: str, value: t.Any) -> int | None:
     if value is None:
         return None
     if isinstance(value, int):
@@ -1003,12 +1009,14 @@ def get_nanoseconds_from_raw_option(name, value):
     )
 
 
-def get_value(key, values, default=None):
+def get_value(key: str, values: dict[str, t.Any], default: t.Any = None) -> t.Any:
     value = values.get(key)
     return value if value is not None else default
 
 
-def has_dict_changed(new_dict, old_dict):
+def has_dict_changed(
+    new_dict: dict[str, t.Any] | None, old_dict: dict[str, t.Any] | None
+) -> bool:
     """
     Check if new_dict has differences compared to old_dict while
     ignoring keys in old_dict which are None in new_dict.
@@ -1019,6 +1027,9 @@ def has_dict_changed(new_dict, old_dict):
         return True
     if not old_dict and new_dict:
         return True
+    if old_dict is None:
+        # in this case new_dict is empty, only the type checker didn't notice
+        return False
     defined_options = {
         option: value for option, value in new_dict.items() if value is not None
     }
@@ -1031,12 +1042,17 @@ def has_dict_changed(new_dict, old_dict):
     return False
 
 
-def has_list_changed(new_list, old_list, sort_lists=True, sort_key=None):
+def has_list_changed(
+    new_list: list[t.Any] | None,
+    old_list: list[t.Any] | None,
+    sort_lists: bool = True,
+    sort_key: str | None = None,
+) -> bool:
     """
     Check two lists have differences. Sort lists by default.
     """
 
-    def sort_list(unsorted_list):
+    def sort_list(unsorted_list: list[t.Any]) -> list[t.Any]:
         """
         Sort a given list.
         The list may contain dictionaries, so use the sort key to handle them.
@@ -1093,7 +1109,10 @@ def has_list_changed(new_list, old_list, sort_lists=True, sort_key=None):
     return False
 
 
-def have_networks_changed(new_networks, old_networks):
+def have_networks_changed(
+    new_networks: list[dict[str, t.Any]] | None,
+    old_networks: list[dict[str, t.Any]] | None,
+) -> bool:
     """Special case list checking for networks to sort aliases"""
 
     if new_networks is None:
@@ -1123,68 +1142,72 @@ def have_networks_changed(new_networks, old_networks):
 
 
 class DockerService(DockerBaseClass):
-    def __init__(self, docker_api_version, docker_py_version):
+    def __init__(
+        self, docker_api_version: LooseVersion, docker_py_version: LooseVersion
+    ) -> None:
         super().__init__()
-        self.image = ""
-        self.command = None
-        self.args = None
-        self.endpoint_mode = None
-        self.dns = None
-        self.healthcheck = None
-        self.healthcheck_disabled = None
-        self.hostname = None
-        self.hosts = None
-        self.tty = None
-        self.dns_search = None
-        self.dns_options = None
-        self.env = None
-        self.force_update = None
-        self.groups = None
-        self.log_driver = None
-        self.log_driver_options = None
-        self.labels = None
-        self.container_labels = None
-        self.sysctls = None
-        self.limit_cpu = None
-        self.limit_memory = None
-        self.reserve_cpu = None
-        self.reserve_memory = None
-        self.mode = "replicated"
-        self.user = None
-        self.mounts = None
-        self.configs = None
-        self.secrets = None
-        self.constraints = None
-        self.replicas_max_per_node = None
-        self.networks = None
-        self.stop_grace_period = None
-        self.stop_signal = None
-        self.publish = None
-        self.placement_preferences = None
-        self.replicas = -1
+        self.image: str | None = ""
+        self.command: t.Any = None
+        self.args: list[str] | None = None
+        self.endpoint_mode: t.Literal["vip", "dnsrr"] | None = None
+        self.dns: list[str] | None = None
+        self.healthcheck: dict[str, t.Any] | None = None
+        self.healthcheck_disabled: bool | None = None
+        self.hostname: str | None = None
+        self.hosts: dict[str, t.Any] | None = None
+        self.tty: bool | None = None
+        self.dns_search: list[str] | None = None
+        self.dns_options: list[str] | None = None
+        self.env: t.Any = None
+        self.force_update: int | None = None
+        self.groups: list[str] | None = None
+        self.log_driver: str | None = None
+        self.log_driver_options: dict[str, t.Any] | None = None
+        self.labels: dict[str, t.Any] | None = None
+        self.container_labels: dict[str, t.Any] | None = None
+        self.sysctls: dict[str, t.Any] | None = None
+        self.limit_cpu: float | None = None
+        self.limit_memory: int | None = None
+        self.reserve_cpu: float | None = None
+        self.reserve_memory: int | None = None
+        self.mode: t.Literal["replicated", "global", "replicated-job"] = "replicated"
+        self.user: str | None = None
+        self.mounts: list[dict[str, t.Any]] | None = None
+        self.configs: list[dict[str, t.Any]] | None = None
+        self.secrets: list[dict[str, t.Any]] | None = None
+        self.constraints: list[str] | None = None
+        self.replicas_max_per_node: int | None = None
+        self.networks: list[t.Any] | None = None
+        self.stop_grace_period: int | None = None
+        self.stop_signal: str | None = None
+        self.publish: list[dict[str, t.Any]] | None = None
+        self.placement_preferences: list[dict[str, t.Any]] | None = None
+        self.replicas: int | None = -1
         self.service_id = False
         self.service_version = False
-        self.read_only = None
-        self.restart_policy = None
-        self.restart_policy_attempts = None
-        self.restart_policy_delay = None
-        self.restart_policy_window = None
-        self.rollback_config = None
-        self.update_delay = None
-        self.update_parallelism = None
-        self.update_failure_action = None
-        self.update_monitor = None
-        self.update_max_failure_ratio = None
-        self.update_order = None
-        self.working_dir = None
-        self.init = None
-        self.cap_add = None
-        self.cap_drop = None
+        self.read_only: bool | None = None
+        self.restart_policy: t.Literal["none", "on-failure", "any"] | None = None
+        self.restart_policy_attempts: int | None = None
+        self.restart_policy_delay: str | None = None
+        self.restart_policy_window: str | None = None
+        self.rollback_config: dict[str, t.Any] | None = None
+        self.update_delay: str | None = None
+        self.update_parallelism: int | None = None
+        self.update_failure_action: (
+            t.Literal["continue", "pause", "rollback"] | None
+        ) = None
+        self.update_monitor: str | None = None
+        self.update_max_failure_ratio: float | None = None
+        self.update_order: str | None = None
+        self.working_dir: str | None = None
+        self.init: bool | None = None
+        self.cap_add: list[str] | None = None
+        self.cap_drop: list[str] | None = None
 
         self.docker_api_version = docker_api_version
         self.docker_py_version = docker_py_version
 
-    def get_facts(self):
+    def get_facts(self) -> dict[str, t.Any]:
         return {
             "image": self.image,
             "mounts": self.mounts,
@@ -1242,19 +1265,21 @@ class DockerService(DockerBaseClass):
         }
 
     @property
-    def can_update_networks(self):
+    def can_update_networks(self) -> bool:
         # Before Docker API 1.29 adding/removing networks was not supported
         return self.docker_api_version >= LooseVersion(
             "1.29"
         ) and self.docker_py_version >= LooseVersion("2.7")
 
     @property
-    def can_use_task_template_networks(self):
+    def can_use_task_template_networks(self) -> bool:
         # In Docker API 1.25 attaching networks to TaskTemplate is preferred over Spec
         return self.docker_py_version >= LooseVersion("2.7")
 
     @staticmethod
-    def get_restart_config_from_ansible_params(params):
+    def get_restart_config_from_ansible_params(
+        params: dict[str, t.Any],
+    ) -> dict[str, t.Any]:
         restart_config = params["restart_config"] or {}
         condition = get_value(
             "condition",
@@ -1282,7 +1307,9 @@ class DockerService(DockerBaseClass):
         }
 
     @staticmethod
-    def get_update_config_from_ansible_params(params):
+    def get_update_config_from_ansible_params(
+        params: dict[str, t.Any],
+    ) -> dict[str, t.Any]:
         update_config = params["update_config"] or {}
         parallelism = get_value(
             "parallelism",
@@ -1320,7 +1347,9 @@ class DockerService(DockerBaseClass):
         }
 
     @staticmethod
-    def get_rollback_config_from_ansible_params(params):
+    def get_rollback_config_from_ansible_params(
+        params: dict[str, t.Any],
+    ) -> dict[str, t.Any] | None:
         if params["rollback_config"] is None:
             return None
         rollback_config = params["rollback_config"] or {}
@@ -1340,7 +1369,7 @@ class DockerService(DockerBaseClass):
         }
 
     @staticmethod
-    def get_logging_from_ansible_params(params):
+    def get_logging_from_ansible_params(params: dict[str, t.Any]) -> dict[str, t.Any]:
         logging_config = params["logging"] or {}
         driver = get_value(
             "driver",
@@ -1356,7 +1385,7 @@ class DockerService(DockerBaseClass):
         }
 
     @staticmethod
-    def get_limits_from_ansible_params(params):
+    def get_limits_from_ansible_params(params: dict[str, t.Any]) -> dict[str, t.Any]:
         limits = params["limits"] or {}
         cpus = get_value(
             "cpus",
@@ -1379,7 +1408,9 @@ class DockerService(DockerBaseClass):
         }
 
     @staticmethod
-    def get_reservations_from_ansible_params(params):
+    def get_reservations_from_ansible_params(
+        params: dict[str, t.Any],
+    ) -> dict[str, t.Any]:
         reservations = params["reservations"] or {}
         cpus = get_value(
             "cpus",
@@ -1403,7 +1434,7 @@ class DockerService(DockerBaseClass):
         }
 
     @staticmethod
-    def get_placement_from_ansible_params(params):
+    def get_placement_from_ansible_params(params: dict[str, t.Any]) -> dict[str, t.Any]:
         placement = params["placement"] or {}
         constraints = get_value("constraints", placement)
 
@@ -1419,14 +1450,14 @@ class DockerService(DockerBaseClass):
     @classmethod
     def from_ansible_params(
         cls,
-        ap,
+        ap: dict[str, t.Any],
         old_service,
         image_digest,
-        secret_ids,
-        config_ids,
-        network_ids,
-        client,
-    ):
+        secret_ids: dict[str, str],
+        config_ids: dict[str, str],
+        network_ids: dict[str, str],
+        client: AnsibleDockerClient,
+    ) -> DockerService:
         s = DockerService(client.docker_api_version, client.docker_py_version)
         s.image = image_digest
         s.args = ap["args"]
@@ -1596,7 +1627,7 @@ class DockerService(DockerBaseClass):
 
         return s
 
-    def compare(self, os):
+    def compare(self, os: DockerService) -> tuple[bool, DifferenceTracker, bool, bool]:
         differences = DifferenceTracker()
         needs_rebuild = False
         force_update = False
@@ -1784,7 +1815,7 @@ class DockerService(DockerBaseClass):
             differences.add(
                 "update_order", parameter=self.update_order, active=os.update_order
             )
-        has_image_changed, change = self.has_image_changed(os.image)
+        has_image_changed, change = self.has_image_changed(os.image or "")
         if has_image_changed:
             differences.add("image", parameter=self.image, active=change)
         if self.user and self.user != os.user:
@@ -1828,7 +1859,7 @@ class DockerService(DockerBaseClass):
             force_update,
         )
 
-    def has_healthcheck_changed(self, old_publish):
+    def has_healthcheck_changed(self, old_publish: DockerService) -> bool:
         if self.healthcheck_disabled is False and self.healthcheck is None:
             return False
         if self.healthcheck_disabled:
@@ -1838,14 +1869,14 @@ class DockerService(DockerBaseClass):
                 return False
         return self.healthcheck != old_publish.healthcheck
 
-    def has_publish_changed(self, old_publish):
+    def has_publish_changed(self, old_publish: list[dict[str, t.Any]] | None) -> bool:
         if self.publish is None:
             return False
         old_publish = old_publish or []
         if len(self.publish) != len(old_publish):
             return True
 
-        def publish_sorter(item):
+        def publish_sorter(item: dict[str, t.Any]) -> tuple[int, int, str]:
             return (
                 item.get("published_port") or 0,
                 item.get("target_port") or 0,
@@ -1869,12 +1900,13 @@ class DockerService(DockerBaseClass):
                 return True
         return False
 
-    def has_image_changed(self, old_image):
+    def has_image_changed(self, old_image: str) -> tuple[bool, str]:
+        assert self.image is not None
         if "@" not in self.image:
             old_image = old_image.split("@")[0]
         return self.image != old_image, old_image
 
-    def build_container_spec(self):
+    def build_container_spec(self) -> types.ContainerSpec:
         mounts = None
         if self.mounts is not None:
             mounts = []
@@ -1945,7 +1977,7 @@ class DockerService(DockerBaseClass):
 
                 secrets.append(types.SecretReference(**secret_args))
 
-        dns_config_args = {}
+        dns_config_args: dict[str, t.Any] = {}
         if self.dns is not None:
             dns_config_args["nameservers"] = self.dns
         if self.dns_search is not None:
@@ -1954,7 +1986,7 @@ class DockerService(DockerBaseClass):
             dns_config_args["options"] = self.dns_options
         dns_config = types.DNSConfig(**dns_config_args) if dns_config_args else None
 
-        container_spec_args = {}
+        container_spec_args: dict[str, t.Any] = {}
         if self.command is not None:
             container_spec_args["command"] = self.command
         if self.args is not None:
@@ -2004,8 +2036,8 @@ class DockerService(DockerBaseClass):
 
         return types.ContainerSpec(self.image, **container_spec_args)
 
-    def build_placement(self):
-        placement_args = {}
+    def build_placement(self) -> types.Placement | None:
+        placement_args: dict[str, t.Any] = {}
         if self.constraints is not None:
             placement_args["constraints"] = self.constraints
         if self.replicas_max_per_node is not None:
@@ -2018,8 +2050,8 @@ class DockerService(DockerBaseClass):
             ]
         return types.Placement(**placement_args) if placement_args else None
 
-    def build_update_config(self):
-        update_config_args = {}
+    def build_update_config(self) -> types.UpdateConfig | None:
+        update_config_args: dict[str, t.Any] = {}
         if self.update_parallelism is not None:
             update_config_args["parallelism"] = self.update_parallelism
         if self.update_delay is not None:
@@ -2034,16 +2066,16 @@ class DockerService(DockerBaseClass):
             update_config_args["order"] = self.update_order
         return types.UpdateConfig(**update_config_args) if update_config_args else None
 
-    def build_log_driver(self):
-        log_driver_args = {}
+    def build_log_driver(self) -> types.DriverConfig | None:
+        log_driver_args: dict[str, t.Any] = {}
         if self.log_driver is not None:
             log_driver_args["name"] = self.log_driver
         if self.log_driver_options is not None:
             log_driver_args["options"] = self.log_driver_options
         return types.DriverConfig(**log_driver_args) if log_driver_args else None
 
-    def build_restart_policy(self):
-        restart_policy_args = {}
+    def build_restart_policy(self) -> types.RestartPolicy | None:
+        restart_policy_args: dict[str, t.Any] = {}
         if self.restart_policy is not None:
             restart_policy_args["condition"] = self.restart_policy
         if self.restart_policy_delay is not None:
@@ -2056,7 +2088,7 @@ class DockerService(DockerBaseClass):
             types.RestartPolicy(**restart_policy_args) if restart_policy_args else None
         )
 
-    def build_rollback_config(self):
+    def build_rollback_config(self) -> types.RollbackConfig | None:
         if self.rollback_config is None:
             return None
         rollback_config_options = [
@@ -2078,8 +2110,8 @@ class DockerService(DockerBaseClass):
             else None
         )
 
-    def build_resources(self):
-        resources_args = {}
+    def build_resources(self) -> types.Resources | None:
+        resources_args: dict[str, t.Any] = {}
         if self.limit_cpu is not None:
             resources_args["cpu_limit"] = int(self.limit_cpu * 1000000000.0)
         if self.limit_memory is not None:
@@ -2090,12 +2122,16 @@ class DockerService(DockerBaseClass):
             resources_args["mem_reservation"] = self.reserve_memory
         return types.Resources(**resources_args) if resources_args else None
 
-    def build_task_template(self, container_spec, placement=None):
+    def build_task_template(
+        self,
+        container_spec: types.ContainerSpec,
+        placement: types.Placement | None = None,
+    ) -> types.TaskTemplate:
         log_driver = self.build_log_driver()
         restart_policy = self.build_restart_policy()
         resources = self.build_resources()
 
-        task_template_args = {}
+        task_template_args: dict[str, t.Any] = {}
         if placement is not None:
             task_template_args["placement"] = placement
         if log_driver is not None:
@@ -2112,12 +2148,12 @@ class DockerService(DockerBaseClass):
                 task_template_args["networks"] = networks
         return types.TaskTemplate(container_spec=container_spec, **task_template_args)
 
-    def build_service_mode(self):
+    def build_service_mode(self) -> types.ServiceMode:
         if self.mode == "global":
             self.replicas = None
         return types.ServiceMode(self.mode, replicas=self.replicas)
 
-    def build_networks(self):
+    def build_networks(self) -> list[dict[str, t.Any]] | None:
         networks = None
         if self.networks is not None:
             networks = []
@@ -2130,8 +2166,8 @@ class DockerService(DockerBaseClass):
                 networks.append(docker_network)
         return networks
 
-    def build_endpoint_spec(self):
-        endpoint_spec_args = {}
+    def build_endpoint_spec(self) -> types.EndpointSpec | None:
+        endpoint_spec_args: dict[str, t.Any] = {}
         if self.publish is not None:
             ports = []
             for port in self.publish:
@@ -2149,7 +2185,7 @@ class DockerService(DockerBaseClass):
             endpoint_spec_args["mode"] = self.endpoint_mode
         return types.EndpointSpec(**endpoint_spec_args) if endpoint_spec_args else None
 
-    def build_docker_service(self):
+    def build_docker_service(self) -> dict[str, t.Any]:
         container_spec = self.build_container_spec()
         placement = self.build_placement()
         task_template = self.build_task_template(container_spec, placement)
@@ -2159,7 +2195,10 @@ class DockerService(DockerBaseClass):
         service_mode = self.build_service_mode()
         endpoint_spec = self.build_endpoint_spec()
 
-        service = {"task_template": task_template, "mode": service_mode}
+        service: dict[str, t.Any] = {
+            "task_template": task_template,
+            "mode": service_mode,
+        }
         if update_config:
             service["update_config"] = update_config
         if rollback_config:
@@ -2176,13 +2215,12 @@ class DockerService(DockerBaseClass):
 
 
 class DockerServiceManager:
-
-    def __init__(self, client):
+    def __init__(self, client: AnsibleDockerClient):
         self.client = client
         self.retries = 2
-        self.diff_tracker = None
+        self.diff_tracker: DifferenceTracker | None = None
 
-    def get_service(self, name):
+    def get_service(self, name: str) -> DockerService | None:
         try:
             raw_data = self.client.inspect_service(name)
         except NotFound:
@@ -2415,7 +2453,9 @@ class DockerServiceManager:
         ds.init = task_template_data["ContainerSpec"].get("Init", False)
         return ds
 
-    def update_service(self, name, old_service, new_service):
+    def update_service(
+        self, name: str, old_service: DockerService, new_service: DockerService
+    ) -> None:
         service_data = new_service.build_docker_service()
         result = self.client.update_service(
             old_service.service_id,
@@ -2427,15 +2467,15 @@ class DockerServiceManager:
         # (see https://github.com/docker/docker-py/pull/2272)
         self.client.report_warnings(result, ["Warning"])
 
-    def create_service(self, name, service):
+    def create_service(self, name: str, service: DockerService) -> None:
         service_data = service.build_docker_service()
         result = self.client.create_service(name=name, **service_data)
         self.client.report_warnings(result, ["Warning"])
 
-    def remove_service(self, name):
+    def remove_service(self, name: str) -> None:
         self.client.remove_service(name)
 
-    def get_image_digest(self, name, resolve=False):
+    def get_image_digest(self, name: str, resolve: bool = False) -> str:
         if not name or not resolve:
             return name
         repo, tag = parse_repository_tag(name)
@@ -2446,10 +2486,10 @@ class DockerServiceManager:
         digest = distribution_data["Descriptor"]["digest"]
         return f"{name}@{digest}"
 
-    def get_networks_names_ids(self):
+    def get_networks_names_ids(self) -> dict[str, str]:
         return {network["Name"]: network["Id"] for network in self.client.networks()}
 
-    def get_missing_secret_ids(self):
+    def get_missing_secret_ids(self) -> dict[str, str]:
         """
         Resolve missing secret ids by looking them up by name
         """
@@ -2471,7 +2511,7 @@ class DockerServiceManager:
                 self.client.fail(f'Could not find a secret named "{secret_name}"')
         return secrets
 
-    def get_missing_config_ids(self):
+    def get_missing_config_ids(self) -> dict[str, str]:
         """
         Resolve missing config ids by looking them up by name
         """
@@ -2493,7 +2533,7 @@ class DockerServiceManager:
                 self.client.fail(f'Could not find a config named "{config_name}"')
         return configs
 
-    def run(self):
+    def run(self) -> tuple[str, bool, bool, list[str], dict[str, t.Any]]:
         self.diff_tracker = DifferenceTracker()
         module = self.client.module
 
@@ -2582,7 +2622,7 @@ class DockerServiceManager:
 
         return msg, changed, rebuilt, differences.get_legacy_docker_diffs(), facts
 
-    def run_safe(self):
+    def run_safe(self) -> tuple[str, bool, bool, list[str], dict[str, t.Any]]:
         while True:
             try:
                 return self.run()
@@ -2596,20 +2636,20 @@ class DockerServiceManager:
                     raise
 
 
-def _detect_publish_mode_usage(client):
+def _detect_publish_mode_usage(client: AnsibleDockerClient) -> bool:
     for publish_def in client.module.params["publish"] or []:
         if publish_def.get("mode"):
             return True
     return False
 
 
-def _detect_healthcheck_start_period(client):
+def _detect_healthcheck_start_period(client: AnsibleDockerClient) -> bool:
     if client.module.params["healthcheck"]:
         return client.module.params["healthcheck"]["start_period"] is not None
     return False
 
 
-def _detect_mount_tmpfs_usage(client):
+def _detect_mount_tmpfs_usage(client: AnsibleDockerClient) -> bool:
     for mount in client.module.params["mounts"] or []:
         if mount.get("type") == "tmpfs":
             return True
@@ -2620,14 +2660,14 @@ def _detect_mount_tmpfs_usage(client):
     return False
 
 
-def _detect_update_config_failure_action_rollback(client):
+def _detect_update_config_failure_action_rollback(client: AnsibleDockerClient) -> bool:
     rollback_config_failure_action = (client.module.params["update_config"] or {}).get(
         "failure_action"
     )
     return rollback_config_failure_action == "rollback"
 
 
-def main():
+def main() -> None:
     argument_spec = {
         "name": {"type": "str", "required": True},
         "image": {"type": "str"},
@@ -2948,6 +2988,7 @@ def main():
             "swarm_service": facts,
         }
         if client.module._diff:
+            assert dsm.diff_tracker is not None
             before, after = dsm.diff_tracker.get_before_after()
             results["diff"] = {"before": before, "after": after}
 

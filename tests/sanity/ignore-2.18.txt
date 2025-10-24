@@ -18,4 +18,5 @@ plugins/modules/docker_image.py no-assert
 plugins/modules/docker_image_tag.py no-assert
 plugins/modules/docker_login.py no-assert
 plugins/modules/docker_plugin.py no-assert
+plugins/modules/docker_swarm_service.py no-assert
 plugins/modules/docker_volume.py no-assert
