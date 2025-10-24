@@ -21,5 +21,5 @@ from ansible_collections.community.docker.plugins.modules.docker_image_build imp
         ('\rhello, "hi" !\n', '"\rhello, ""hi"" !\n"'),
     ],
 )
-def test__quote_csv(value, expected):
+def test__quote_csv(value: str, expected: str) -> None:
     assert _quote_csv(value) == expected

@@ -14,7 +14,7 @@ from ansible_collections.community.docker.plugins.module_utils._compose_v2 impor
 from .compose_v2_test_cases import EVENT_TEST_CASES
 
 
-EXTRA_TEST_CASES = [
+EXTRA_TEST_CASES: list[tuple[str, str, bool, bool, str, list[Event], list[str]]] = [
     (
         "2.24.2-manual-build-dry-run",
         "2.24.2",
@@ -227,9 +227,7 @@ EXTRA_TEST_CASES = [
         False,
         False,
         # fmt: off
-        " bash_1 Skipped \n"
-        " bash_2 Pulling \n"
-        " bash_2 Pulled \n",
+        " bash_1 Skipped \n bash_2 Pulling \n bash_2 Pulled \n",
         # fmt: on
         [
             Event(
@@ -361,15 +359,24 @@ _ALL_TEST_CASES = EVENT_TEST_CASES + EXTRA_TEST_CASES
     ids=[tc[0] for tc in _ALL_TEST_CASES],
 )
 def test_parse_events(
-    test_id, compose_version, dry_run, nonzero_rc, stderr, events, warnings
-):
+    test_id: str,
+    compose_version: str,
+    dry_run: bool,
+    nonzero_rc: bool,
+    stderr: str,
+    events: list[Event],
+    warnings: list[str],
+) -> None:
     collected_warnings = []
 
     def collect_warning(msg):
         collected_warnings.append(msg)
 
     collected_events = parse_events(
-        stderr, dry_run=dry_run, warn_function=collect_warning, nonzero_rc=nonzero_rc
+        stderr.encode("utf-8"),
+        dry_run=dry_run,
+        warn_function=collect_warning,
+        nonzero_rc=nonzero_rc,
     )
 
     print(collected_events)

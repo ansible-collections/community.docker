@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import typing as t
 from unittest.mock import create_autospec
 
 import pytest
@@ -19,14 +20,18 @@ from ansible_collections.community.docker.plugins.inventory.docker_containers im
 )
 
 
+if t.TYPE_CHECKING:
+    from collections.abc import Callable
+
+
 @pytest.fixture(scope="module")
-def templar():
+def templar() -> Templar:
     dataloader = create_autospec(DataLoader, instance=True)
     return Templar(loader=dataloader)
 
 
 @pytest.fixture(scope="module")
-def inventory(templar):
+def inventory(templar) -> InventoryModule:
     r = InventoryModule()
     r.inventory = InventoryData()
     r.templar = templar
@@ -83,7 +88,9 @@ LOVING_THARP_SERVICE = {
 }
 
 
-def create_get_option(options, default=False):
+def create_get_option(
+    options: dict[str, t.Any], default: t.Any = False
+) -> Callable[[str], t.Any]:
     def get_option(option):
         if option in options:
             return options[option]
@@ -93,9 +100,9 @@ def create_get_option(options, default=False):
 
 
 class FakeClient:
-    def __init__(self, *hosts):
-        self.get_results = {}
-        list_reply = []
+    def __init__(self, *hosts: dict[str, t.Any]) -> None:
+        self.get_results: dict[str, t.Any] = {}
+        list_reply: list[dict[str, t.Any]] = []
         for host in hosts:
             list_reply.append(
                 {
@@ -109,15 +116,16 @@ class FakeClient:
             self.get_results[f"/containers/{host['Id']}/json"] = host
         self.get_results["/containers/json"] = list_reply
 
-    def get_json(self, url, *param, **kwargs):
+    def get_json(self, url: str, *param: str, **kwargs) -> t.Any:
         url = url.format(*param)
         return self.get_results[url]
 
 
-def test_populate(inventory, mocker):
+def test_populate(inventory: InventoryModule, mocker) -> None:
+    assert inventory.inventory is not None
     client = FakeClient(LOVING_THARP)
 
-    inventory.get_option = mocker.MagicMock(
+    inventory.get_option = mocker.MagicMock(  # type: ignore[method-assign]
         side_effect=create_get_option(
             {
                 "verbose_output": True,
@@ -130,9 +138,10 @@ def test_populate(inventory, mocker):
             }
         )
     )
-    inventory._populate(client)
+    inventory._populate(client)  # type: ignore
 
     host_1 = inventory.inventory.get_host("loving_tharp")
+    assert host_1 is not None
     host_1_vars = host_1.get_vars()
 
     assert host_1_vars["ansible_host"] == "loving_tharp"
@@ -149,10 +158,11 @@ def test_populate(inventory, mocker):
     assert len(inventory.inventory.hosts) == 1
 
 
-def test_populate_service(inventory, mocker):
+def test_populate_service(inventory: InventoryModule, mocker) -> None:
+    assert inventory.inventory is not None
     client = FakeClient(LOVING_THARP_SERVICE)
 
-    inventory.get_option = mocker.MagicMock(
+    inventory.get_option = mocker.MagicMock(  # type: ignore[method-assign]
         side_effect=create_get_option(
             {
                 "verbose_output": False,
@@ -166,9 +176,10 @@ def test_populate_service(inventory, mocker):
             }
         )
     )
-    inventory._populate(client)
+    inventory._populate(client)  # type: ignore
 
     host_1 = inventory.inventory.get_host("loving_tharp")
+    assert host_1 is not None
     host_1_vars = host_1.get_vars()
 
     assert host_1_vars["ansible_host"] == "loving_tharp"
@@ -207,10 +218,11 @@ def test_populate_service(inventory, mocker):
     assert len(inventory.inventory.hosts) == 1
 
 
-def test_populate_stack(inventory, mocker):
+def test_populate_stack(inventory: InventoryModule, mocker) -> None:
+    assert inventory.inventory is not None
     client = FakeClient(LOVING_THARP_STACK)
 
-    inventory.get_option = mocker.MagicMock(
+    inventory.get_option = mocker.MagicMock(  # type: ignore[method-assign]
         side_effect=create_get_option(
             {
                 "verbose_output": False,
@@ -226,9 +238,10 @@ def test_populate_stack(inventory, mocker):
             }
         )
     )
-    inventory._populate(client)
+    inventory._populate(client)  # type: ignore
 
     host_1 = inventory.inventory.get_host("loving_tharp")
+    assert host_1 is not None
     host_1_vars = host_1.get_vars()
 
     assert host_1_vars["ansible_ssh_host"] == "127.0.0.1"
@@ -267,10 +280,11 @@ def test_populate_stack(inventory, mocker):
     assert len(inventory.inventory.hosts) == 1
 
 
-def test_populate_filter_none(inventory, mocker):
+def test_populate_filter_none(inventory: InventoryModule, mocker) -> None:
+    assert inventory.inventory is not None
     client = FakeClient(LOVING_THARP)
 
-    inventory.get_option = mocker.MagicMock(
+    inventory.get_option = mocker.MagicMock(  # type: ignore[method-assign]
         side_effect=create_get_option(
             {
                 "verbose_output": True,
@@ -285,15 +299,16 @@ def test_populate_filter_none(inventory, mocker):
             }
         )
     )
-    inventory._populate(client)
+    inventory._populate(client)  # type: ignore
 
     assert len(inventory.inventory.hosts) == 0
 
 
-def test_populate_filter(inventory, mocker):
+def test_populate_filter(inventory: InventoryModule, mocker) -> None:
+    assert inventory.inventory is not None
     client = FakeClient(LOVING_THARP)
 
-    inventory.get_option = mocker.MagicMock(
+    inventory.get_option = mocker.MagicMock(  # type: ignore[method-assign]
         side_effect=create_get_option(
             {
                 "verbose_output": True,
@@ -309,9 +324,10 @@ def test_populate_filter(inventory, mocker):
             }
         )
     )
-    inventory._populate(client)
+    inventory._populate(client)  # type: ignore
 
     host_1 = inventory.inventory.get_host("loving_tharp")
+    assert host_1 is not None
     host_1_vars = host_1.get_vars()
 
     assert host_1_vars["ansible_host"] == "loving_tharp"

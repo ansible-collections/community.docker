@@ -14,8 +14,7 @@ from ansible.plugins.loader import connection_loader
 
 
 class TestDockerConnectionClass(unittest.TestCase):
-
-    def setUp(self):
+    def setUp(self) -> None:
         self.play_context = PlayContext()
         self.play_context.prompt = (
             "[sudo via ansible, key=ouzmdnewuhucvuaabtjmweasarviygqq] password: "
@@ -29,7 +28,7 @@ class TestDockerConnectionClass(unittest.TestCase):
                 "community.docker.docker", self.play_context, self.in_stream
             )
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         pass
 
     @mock.patch(
@@ -42,7 +41,7 @@ class TestDockerConnectionClass(unittest.TestCase):
     )
     def test_docker_connection_module_too_old(
         self, mock_new_docker_version, mock_old_docker_version
-    ):
+    ) -> None:
         self.dc._version = None
         self.dc.remote_user = "foo"
         self.assertRaisesRegex(
@@ -61,7 +60,7 @@ class TestDockerConnectionClass(unittest.TestCase):
     )
     def test_docker_connection_module(
         self, mock_new_docker_version, mock_old_docker_version
-    ):
+    ) -> None:
         self.dc._version = None
 
     # old version and new version fail
@@ -75,7 +74,7 @@ class TestDockerConnectionClass(unittest.TestCase):
     )
     def test_docker_connection_module_wrong_cmd(
         self, mock_new_docker_version, mock_old_docker_version
-    ):
+    ) -> None:
         self.dc._version = None
         self.dc.remote_user = "foo"
         self.assertRaisesRegex(

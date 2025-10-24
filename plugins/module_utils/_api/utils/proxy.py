@@ -11,6 +11,8 @@
 
 from __future__ import annotations
 
+import typing as t
+
 from .utils import format_environment
 
 
@@ -67,7 +69,17 @@ class ProxyConfig(dict):
             env["no_proxy"] = env["NO_PROXY"] = self.no_proxy
         return env
 
-    def inject_proxy_environment(self, environment: list[str]) -> list[str]:
+    @t.overload
+    def inject_proxy_environment(self, environment: list[str]) -> list[str]: ...
+
+    @t.overload
+    def inject_proxy_environment(
+        self, environment: list[str] | None
+    ) -> list[str] | None: ...
+
+    def inject_proxy_environment(
+        self, environment: list[str] | None
+    ) -> list[str] | None:
         """
         Given a list of strings representing environment variables, prepend the
         environment variables corresponding to the proxy settings.

@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import typing as t
+
 import pytest
 
 from ansible_collections.community.docker.plugins.module_utils._logfmt import (
@@ -12,7 +14,7 @@ from ansible_collections.community.docker.plugins.module_utils._logfmt import (
 )
 
 
-SUCCESS_TEST_CASES = [
+SUCCESS_TEST_CASES: list[tuple[str, dict[str, t.Any], dict[str, t.Any]]] = [
     (
         'time="2024-02-02T08:14:10+01:00" level=warning msg="a network with name influxNetwork exists but was not'
         ' created for project \\"influxdb\\".\\nSet `external: true` to use an existing network"',
@@ -59,7 +61,7 @@ SUCCESS_TEST_CASES = [
 ]
 
 
-FAILURE_TEST_CASES = [
+FAILURE_TEST_CASES: list[tuple[str, dict[str, t.Any], str]] = [
     (
         'foo=bar a=14 baz="hello kitty" cool%story=bro f %^asdf',
         {"logrus_mode": True},
@@ -84,14 +86,16 @@ FAILURE_TEST_CASES = [
 
 
 @pytest.mark.parametrize("line, kwargs, result", SUCCESS_TEST_CASES)
-def test_parse_line_success(line, kwargs, result):
+def test_parse_line_success(
+    line: str, kwargs: dict[str, t.Any], result: dict[str, t.Any]
+) -> None:
     res = parse_line(line, **kwargs)
     print(repr(res))
     assert res == result
 
 
 @pytest.mark.parametrize("line, kwargs, message", FAILURE_TEST_CASES)
-def test_parse_line_failure(line, kwargs, message):
+def test_parse_line_failure(line: str, kwargs: dict[str, t.Any], message: str) -> None:
     with pytest.raises(InvalidLogFmt) as exc:
         parse_line(line, **kwargs)
 

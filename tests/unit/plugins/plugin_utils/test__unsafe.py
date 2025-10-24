@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import typing as t
+
 import pytest
 from ansible_collections.community.internal_test_tools.tests.unit.utils.trust import (
     SUPPORTS_DATA_TAGGING,
@@ -23,7 +25,9 @@ from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
 )
 
 
-TEST_MAKE_UNSAFE = [
+TEST_MAKE_UNSAFE: list[
+    tuple[t.Any, list[tuple[t.Any, ...]], list[tuple[t.Any, ...]]]
+] = [
     (
         _make_trusted("text"),
         [],
@@ -97,7 +101,11 @@ if not SUPPORTS_DATA_TAGGING:
 @pytest.mark.parametrize(
     "value, check_unsafe_paths, check_safe_paths", TEST_MAKE_UNSAFE
 )
-def test_make_unsafe(value, check_unsafe_paths, check_safe_paths):
+def test_make_unsafe(
+    value: t.Any,
+    check_unsafe_paths: list[tuple[t.Any, ...]],
+    check_safe_paths: list[tuple[t.Any, ...]],
+) -> None:
     unsafe_value = make_unsafe(value)
     assert unsafe_value == value
     for check_path in check_unsafe_paths:
@@ -112,7 +120,7 @@ def test_make_unsafe(value, check_unsafe_paths, check_safe_paths):
         assert _is_trusted(obj)
 
 
-def test_make_unsafe_idempotence():
+def test_make_unsafe_idempotence() -> None:
     assert make_unsafe(None) is None
 
     unsafe_str = _make_untrusted("{{test}}")
@@ -122,8 +130,8 @@ def test_make_unsafe_idempotence():
     assert id(make_unsafe(safe_str)) != id(safe_str)
 
 
-def test_make_unsafe_dict_key():
-    value = {
+def test_make_unsafe_dict_key() -> None:
+    value: dict[t.Any, t.Any] = {
         _make_trusted("test"): 2,
     }
     if not SUPPORTS_DATA_TAGGING:
@@ -144,8 +152,8 @@ def test_make_unsafe_dict_key():
         assert not _is_trusted(obj)
 
 
-def test_make_unsafe_set():
-    value = set([_make_trusted("test")])
+def test_make_unsafe_set() -> None:
+    value: set[t.Any] = set([_make_trusted("test")])
     if not SUPPORTS_DATA_TAGGING:
         value.add(_make_trusted(b"test"))
     unsafe_value = make_unsafe(value)

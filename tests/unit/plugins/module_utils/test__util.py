@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import typing as t
+
 import pytest
 
 from ansible_collections.community.docker.plugins.module_utils._util import (
@@ -14,15 +16,41 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 )
 
 
-DICT_ALLOW_MORE_PRESENT = (
+if t.TYPE_CHECKING:
+
+    class DAMSpec(t.TypedDict):
+        av: dict[str, t.Any]
+        bv: dict[str, t.Any]
+        result: bool
+
+    class Spec(t.TypedDict):
+        a: t.Any
+        b: t.Any
+        method: t.Literal["strict", "ignore", "allow_more_present"]
+        type: t.Literal["value", "list", "set", "set(dict)", "dict"]
+        result: bool
+
+
+DICT_ALLOW_MORE_PRESENT: list[DAMSpec] = [
     {"av": {}, "bv": {"a": 1}, "result": True},
     {"av": {"a": 1}, "bv": {"a": 1, "b": 2}, "result": True},
     {"av": {"a": 1}, "bv": {"b": 2}, "result": False},
     {"av": {"a": 1}, "bv": {"a": None, "b": 1}, "result": False},
     {"av": {"a": None}, "bv": {"b": 1}, "result": False},
-)
+]
 
-COMPARE_GENERIC = [
+DICT_ALLOW_MORE_PRESENT_SPECS: list[Spec] = [
+    {
+        "a": entry["av"],
+        "b": entry["bv"],
+        "method": "allow_more_present",
+        "type": "dict",
+        "result": entry["result"],
+    }
+    for entry in DICT_ALLOW_MORE_PRESENT
+]
+
+COMPARE_GENERIC: list[Spec] = [
     ########################################################################################
     # value
     {"a": 1, "b": 2, "method": "strict", "type": "value", "result": False},
@@ -386,43 +414,34 @@ COMPARE_GENERIC = [
         "type": "dict",
         "result": True,
     },
-] + [
-    {
-        "a": entry["av"],
-        "b": entry["bv"],
-        "method": "allow_more_present",
-        "type": "dict",
-        "result": entry["result"],
-    }
-    for entry in DICT_ALLOW_MORE_PRESENT
 ]
 
 
 @pytest.mark.parametrize("entry", DICT_ALLOW_MORE_PRESENT)
-def test_dict_allow_more_present(entry):
+def test_dict_allow_more_present(entry: DAMSpec) -> None:
     assert compare_dict_allow_more_present(entry["av"], entry["bv"]) == entry["result"]
 
 
-@pytest.mark.parametrize("entry", COMPARE_GENERIC)
-def test_compare_generic(entry):
+@pytest.mark.parametrize("entry", COMPARE_GENERIC + DICT_ALLOW_MORE_PRESENT_SPECS)
+def test_compare_generic(entry: Spec) -> None:
     assert (
         compare_generic(entry["a"], entry["b"], entry["method"], entry["type"])
         == entry["result"]
     )
 
 
-def test_convert_duration_to_nanosecond():
+def test_convert_duration_to_nanosecond() -> None:
     nanoseconds = convert_duration_to_nanosecond("5s")
     assert nanoseconds == 5000000000
     nanoseconds = convert_duration_to_nanosecond("1m5s")
     assert nanoseconds == 65000000000
     with pytest.raises(ValueError):
-        convert_duration_to_nanosecond([1, 2, 3])
+        convert_duration_to_nanosecond([1, 2, 3])  # type: ignore
     with pytest.raises(ValueError):
         convert_duration_to_nanosecond("10x")
 
 
-def test_parse_healthcheck():
+def test_parse_healthcheck() -> None:
     result, disabled = parse_healthcheck(
         {
             "test": "sleep 1",

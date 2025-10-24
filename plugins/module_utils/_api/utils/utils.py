@@ -46,7 +46,7 @@ URLComponents = collections.namedtuple(
 )
 
 
-def decode_json_header(header: str) -> dict[str, t.Any]:
+def decode_json_header(header: str | bytes) -> dict[str, t.Any]:
     data = base64.b64decode(header).decode("utf-8")
     return json.loads(data)
 
@@ -143,7 +143,12 @@ def convert_port_bindings(
 
 
 def convert_volume_binds(
-    binds: list[str] | Mapping[str | bytes, dict[str, str | bytes] | bytes | str | int],
+    binds: (
+        list[str]
+        | Mapping[
+            str | bytes, dict[str, str | bytes] | dict[str, str] | bytes | str | int
+        ]
+    ),
 ) -> list[str]:
     if isinstance(binds, list):
         return binds  # type: ignore
@@ -403,7 +408,9 @@ def kwargs_from_env(
     return params
 
 
-def convert_filters(filters: Mapping[str, bool | str | list[str]]) -> str:
+def convert_filters(
+    filters: Mapping[str, bool | str | int | list[int] | list[str] | list[str | int]],
+) -> str:
     result = {}
     for k, v in filters.items():
         if isinstance(v, bool):

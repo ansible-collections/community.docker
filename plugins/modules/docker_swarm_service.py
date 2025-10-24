@@ -939,6 +939,18 @@ def get_docker_environment(
     return sorted(env_list)
 
 
+@t.overload
+def get_docker_networks(
+    networks: list[str | dict[str, t.Any]], network_ids: dict[str, str]
+) -> list[dict[str, t.Any]]: ...
+
+
+@t.overload
+def get_docker_networks(
+    networks: list[str | dict[str, t.Any]] | None, network_ids: dict[str, str]
+) -> list[dict[str, t.Any]] | None: ...
+
+
 def get_docker_networks(
     networks: list[str | dict[str, t.Any]] | None, network_ids: dict[str, str]
 ) -> list[dict[str, t.Any]] | None:

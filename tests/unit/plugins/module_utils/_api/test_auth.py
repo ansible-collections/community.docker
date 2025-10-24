@@ -15,6 +15,7 @@ import os.path
 import random
 import shutil
 import tempfile
+import typing as t
 import unittest
 from unittest import mock
 
@@ -30,7 +31,7 @@ from ansible_collections.community.docker.plugins.module_utils._api.credentials.
 
 
 class RegressionTest(unittest.TestCase):
-    def test_803_urlsafe_encode(self):
+    def test_803_urlsafe_encode(self) -> None:
         auth_data = {"username": "root", "password": "GR?XGR?XGR?XGR?X"}
         encoded = auth.encode_header(auth_data)
         assert b"/" not in encoded
@@ -38,75 +39,75 @@ class RegressionTest(unittest.TestCase):
 
 
 class ResolveRepositoryNameTest(unittest.TestCase):
-    def test_resolve_repository_name_hub_library_image(self):
+    def test_resolve_repository_name_hub_library_image(self) -> None:
         assert auth.resolve_repository_name("image") == ("docker.io", "image")
 
-    def test_resolve_repository_name_dotted_hub_library_image(self):
+    def test_resolve_repository_name_dotted_hub_library_image(self) -> None:
         assert auth.resolve_repository_name("image.valid") == (
             "docker.io",
             "image.valid",
         )
 
-    def test_resolve_repository_name_hub_image(self):
+    def test_resolve_repository_name_hub_image(self) -> None:
         assert auth.resolve_repository_name("username/image") == (
             "docker.io",
             "username/image",
         )
 
-    def test_explicit_hub_index_library_image(self):
+    def test_explicit_hub_index_library_image(self) -> None:
         assert auth.resolve_repository_name("docker.io/image") == ("docker.io", "image")
 
-    def test_explicit_legacy_hub_index_library_image(self):
+    def test_explicit_legacy_hub_index_library_image(self) -> None:
         assert auth.resolve_repository_name("index.docker.io/image") == (
             "docker.io",
             "image",
         )
 
-    def test_resolve_repository_name_private_registry(self):
+    def test_resolve_repository_name_private_registry(self) -> None:
         assert auth.resolve_repository_name("my.registry.net/image") == (
             "my.registry.net",
             "image",
         )
 
-    def test_resolve_repository_name_private_registry_with_port(self):
+    def test_resolve_repository_name_private_registry_with_port(self) -> None:
         assert auth.resolve_repository_name("my.registry.net:5000/image") == (
             "my.registry.net:5000",
             "image",
         )
 
-    def test_resolve_repository_name_private_registry_with_username(self):
+    def test_resolve_repository_name_private_registry_with_username(self) -> None:
         assert auth.resolve_repository_name("my.registry.net/username/image") == (
             "my.registry.net",
             "username/image",
         )
 
-    def test_resolve_repository_name_no_dots_but_port(self):
+    def test_resolve_repository_name_no_dots_but_port(self) -> None:
         assert auth.resolve_repository_name("hostname:5000/image") == (
             "hostname:5000",
             "image",
         )
 
-    def test_resolve_repository_name_no_dots_but_port_and_username(self):
+    def test_resolve_repository_name_no_dots_but_port_and_username(self) -> None:
         assert auth.resolve_repository_name("hostname:5000/username/image") == (
             "hostname:5000",
             "username/image",
         )
 
-    def test_resolve_repository_name_localhost(self):
+    def test_resolve_repository_name_localhost(self) -> None:
         assert auth.resolve_repository_name("localhost/image") == ("localhost", "image")
 
-    def test_resolve_repository_name_localhost_with_username(self):
+    def test_resolve_repository_name_localhost_with_username(self) -> None:
         assert auth.resolve_repository_name("localhost/username/image") == (
             "localhost",
             "username/image",
         )
 
-    def test_invalid_index_name(self):
+    def test_invalid_index_name(self) -> None:
         with pytest.raises(errors.InvalidRepository):
             auth.resolve_repository_name("-gecko.com/image")
 
 
-def encode_auth(auth_info):
+def encode_auth(auth_info: dict[str, t.Any]) -> bytes:
     return base64.b64encode(
         auth_info.get("username", "").encode("utf-8")
         + b":"
@@ -131,19 +132,19 @@ class ResolveAuthTest(unittest.TestCase):
         }
     )
 
-    def test_resolve_authconfig_hostname_only(self):
+    def test_resolve_authconfig_hostname_only(self) -> None:
         assert (
             auth.resolve_authconfig(self.auth_config, "my.registry.net")["username"]
             == "privateuser"
         )
 
-    def test_resolve_authconfig_no_protocol(self):
+    def test_resolve_authconfig_no_protocol(self) -> None:
         assert (
             auth.resolve_authconfig(self.auth_config, "my.registry.net/v1/")["username"]
             == "privateuser"
         )
 
-    def test_resolve_authconfig_no_path(self):
+    def test_resolve_authconfig_no_path(self) -> None:
         assert (
             auth.resolve_authconfig(self.auth_config, "http://my.registry.net")[
                 "username"
@@ -151,7 +152,7 @@ class ResolveAuthTest(unittest.TestCase):
             == "privateuser"
         )
 
-    def test_resolve_authconfig_no_path_trailing_slash(self):
+    def test_resolve_authconfig_no_path_trailing_slash(self) -> None:
         assert (
             auth.resolve_authconfig(self.auth_config, "http://my.registry.net/")[
                 "username"
@@ -159,7 +160,7 @@ class ResolveAuthTest(unittest.TestCase):
             == "privateuser"
         )
 
-    def test_resolve_authconfig_no_path_wrong_secure_proto(self):
+    def test_resolve_authconfig_no_path_wrong_secure_proto(self) -> None:
         assert (
             auth.resolve_authconfig(self.auth_config, "https://my.registry.net")[
                 "username"
@@ -167,7 +168,7 @@ class ResolveAuthTest(unittest.TestCase):
             == "privateuser"
         )
 
-    def test_resolve_authconfig_no_path_wrong_insecure_proto(self):
+    def test_resolve_authconfig_no_path_wrong_insecure_proto(self) -> None:
         assert (
             auth.resolve_authconfig(self.auth_config, "http://index.docker.io")[
                 "username"
@@ -175,7 +176,7 @@ class ResolveAuthTest(unittest.TestCase):
             == "indexuser"
         )
 
-    def test_resolve_authconfig_path_wrong_proto(self):
+    def test_resolve_authconfig_path_wrong_proto(self) -> None:
         assert (
             auth.resolve_authconfig(self.auth_config, "https://my.registry.net/v1/")[
                 "username"
@@ -183,15 +184,15 @@ class ResolveAuthTest(unittest.TestCase):
             == "privateuser"
         )
 
-    def test_resolve_authconfig_default_registry(self):
+    def test_resolve_authconfig_default_registry(self) -> None:
         assert auth.resolve_authconfig(self.auth_config)["username"] == "indexuser"
 
-    def test_resolve_authconfig_default_explicit_none(self):
+    def test_resolve_authconfig_default_explicit_none(self) -> None:
         assert (
             auth.resolve_authconfig(self.auth_config, None)["username"] == "indexuser"
         )
 
-    def test_resolve_authconfig_fully_explicit(self):
+    def test_resolve_authconfig_fully_explicit(self) -> None:
         assert (
             auth.resolve_authconfig(self.auth_config, "http://my.registry.net/v1/")[
                 "username"
@@ -199,16 +200,16 @@ class ResolveAuthTest(unittest.TestCase):
             == "privateuser"
         )
 
-    def test_resolve_authconfig_legacy_config(self):
+    def test_resolve_authconfig_legacy_config(self) -> None:
         assert (
             auth.resolve_authconfig(self.auth_config, "legacy.registry.url")["username"]
             == "legacyauth"
         )
 
-    def test_resolve_authconfig_no_match(self):
+    def test_resolve_authconfig_no_match(self) -> None:
         assert auth.resolve_authconfig(self.auth_config, "does.not.exist") is None
 
-    def test_resolve_registry_and_auth_library_image(self):
+    def test_resolve_registry_and_auth_library_image(self) -> None:
         image = "image"
         assert (
             auth.resolve_authconfig(
@@ -217,7 +218,7 @@ class ResolveAuthTest(unittest.TestCase):
             == "indexuser"
         )
 
-    def test_resolve_registry_and_auth_hub_image(self):
+    def test_resolve_registry_and_auth_hub_image(self) -> None:
         image = "username/image"
         assert (
             auth.resolve_authconfig(
@@ -226,7 +227,7 @@ class ResolveAuthTest(unittest.TestCase):
             == "indexuser"
         )
 
-    def test_resolve_registry_and_auth_explicit_hub(self):
+    def test_resolve_registry_and_auth_explicit_hub(self) -> None:
         image = "docker.io/username/image"
         assert (
             auth.resolve_authconfig(
@@ -235,7 +236,7 @@ class ResolveAuthTest(unittest.TestCase):
             == "indexuser"
         )
 
-    def test_resolve_registry_and_auth_explicit_legacy_hub(self):
+    def test_resolve_registry_and_auth_explicit_legacy_hub(self) -> None:
         image = "index.docker.io/username/image"
         assert (
             auth.resolve_authconfig(
@@ -244,7 +245,7 @@ class ResolveAuthTest(unittest.TestCase):
             == "indexuser"
         )
 
-    def test_resolve_registry_and_auth_private_registry(self):
+    def test_resolve_registry_and_auth_private_registry(self) -> None:
         image = "my.registry.net/image"
         assert (
             auth.resolve_authconfig(
@@ -253,7 +254,7 @@ class ResolveAuthTest(unittest.TestCase):
             == "privateuser"
         )
 
-    def test_resolve_registry_and_auth_unauthenticated_registry(self):
+    def test_resolve_registry_and_auth_unauthenticated_registry(self) -> None:
         image = "other.registry.net/image"
         assert (
             auth.resolve_authconfig(
@@ -262,7 +263,7 @@ class ResolveAuthTest(unittest.TestCase):
             is None
         )
 
-    def test_resolve_auth_with_empty_credstore_and_auth_dict(self):
+    def test_resolve_auth_with_empty_credstore_and_auth_dict(self) -> None:
         auth_config = auth.AuthConfig(
             {
                 "auths": auth.parse_auth(
@@ -281,13 +282,13 @@ class ResolveAuthTest(unittest.TestCase):
 
 
 class LoadConfigTest(unittest.TestCase):
-    def test_load_config_no_file(self):
+    def test_load_config_no_file(self) -> None:
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
         cfg = auth.load_config(folder)
         assert cfg is not None
 
-    def test_load_legacy_config(self):
+    def test_load_legacy_config(self) -> None:
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
         cfg_path = os.path.join(folder, ".dockercfg")
@@ -299,13 +300,13 @@ class LoadConfigTest(unittest.TestCase):
         cfg = auth.load_config(cfg_path)
         assert auth.resolve_authconfig(cfg) is not None
         assert cfg.auths[auth.INDEX_NAME] is not None
-        cfg = cfg.auths[auth.INDEX_NAME]
-        assert cfg["username"] == "sakuya"
-        assert cfg["password"] == "izayoi"
-        assert cfg["email"] == "sakuya@scarlet.net"
-        assert cfg.get("Auth") is None
+        cfg2 = cfg.auths[auth.INDEX_NAME]
+        assert cfg2["username"] == "sakuya"
+        assert cfg2["password"] == "izayoi"
+        assert cfg2["email"] == "sakuya@scarlet.net"
+        assert cfg2.get("Auth") is None
 
-    def test_load_json_config(self):
+    def test_load_json_config(self) -> None:
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
         cfg_path = os.path.join(folder, ".dockercfg")
@@ -316,13 +317,13 @@ class LoadConfigTest(unittest.TestCase):
         cfg = auth.load_config(cfg_path)
         assert auth.resolve_authconfig(cfg) is not None
         assert cfg.auths[auth.INDEX_URL] is not None
-        cfg = cfg.auths[auth.INDEX_URL]
-        assert cfg["username"] == "sakuya"
-        assert cfg["password"] == "izayoi"
-        assert cfg["email"] == email
-        assert cfg.get("Auth") is None
+        cfg2 = cfg.auths[auth.INDEX_URL]
+        assert cfg2["username"] == "sakuya"
+        assert cfg2["password"] == "izayoi"
+        assert cfg2["email"] == email
+        assert cfg2.get("Auth") is None
 
-    def test_load_modern_json_config(self):
+    def test_load_modern_json_config(self) -> None:
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
         cfg_path = os.path.join(folder, "config.json")
@@ -333,12 +334,12 @@ class LoadConfigTest(unittest.TestCase):
         cfg = auth.load_config(cfg_path)
         assert auth.resolve_authconfig(cfg) is not None
         assert cfg.auths[auth.INDEX_URL] is not None
-        cfg = cfg.auths[auth.INDEX_URL]
-        assert cfg["username"] == "sakuya"
-        assert cfg["password"] == "izayoi"
-        assert cfg["email"] == email
+        cfg2 = cfg.auths[auth.INDEX_URL]
+        assert cfg2["username"] == "sakuya"
+        assert cfg2["password"] == "izayoi"
+        assert cfg2["email"] == email
 
-    def test_load_config_with_random_name(self):
+    def test_load_config_with_random_name(self) -> None:
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
 
@@ -353,13 +354,13 @@ class LoadConfigTest(unittest.TestCase):
         cfg = auth.load_config(dockercfg_path).auths
         assert registry in cfg
         assert cfg[registry] is not None
-        cfg = cfg[registry]
-        assert cfg["username"] == "sakuya"
-        assert cfg["password"] == "izayoi"
-        assert cfg["email"] == "sakuya@scarlet.net"
-        assert cfg.get("auth") is None
+        cfg2 = cfg[registry]
+        assert cfg2["username"] == "sakuya"
+        assert cfg2["password"] == "izayoi"
+        assert cfg2["email"] == "sakuya@scarlet.net"
+        assert cfg2.get("auth") is None
 
-    def test_load_config_custom_config_env(self):
+    def test_load_config_custom_config_env(self) -> None:
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
 
@@ -375,13 +376,13 @@ class LoadConfigTest(unittest.TestCase):
             cfg = auth.load_config(None).auths
             assert registry in cfg
             assert cfg[registry] is not None
-            cfg = cfg[registry]
-            assert cfg["username"] == "sakuya"
-            assert cfg["password"] == "izayoi"
-            assert cfg["email"] == "sakuya@scarlet.net"
-            assert cfg.get("auth") is None
+            cfg2 = cfg[registry]
+            assert cfg2["username"] == "sakuya"
+            assert cfg2["password"] == "izayoi"
+            assert cfg2["email"] == "sakuya@scarlet.net"
+            assert cfg2.get("auth") is None
 
-    def test_load_config_custom_config_env_with_auths(self):
+    def test_load_config_custom_config_env_with_auths(self) -> None:
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
 
@@ -398,13 +399,13 @@ class LoadConfigTest(unittest.TestCase):
         with mock.patch.dict(os.environ, {"DOCKER_CONFIG": folder}):
             cfg = auth.load_config(None)
             assert registry in cfg.auths
-            cfg = cfg.auths[registry]
-            assert cfg["username"] == "sakuya"
-            assert cfg["password"] == "izayoi"
-            assert cfg["email"] == "sakuya@scarlet.net"
-            assert cfg.get("auth") is None
+            cfg2 = cfg.auths[registry]
+            assert cfg2["username"] == "sakuya"
+            assert cfg2["password"] == "izayoi"
+            assert cfg2["email"] == "sakuya@scarlet.net"
+            assert cfg2.get("auth") is None
 
-    def test_load_config_custom_config_env_utf8(self):
+    def test_load_config_custom_config_env_utf8(self) -> None:
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
 
@@ -421,13 +422,13 @@ class LoadConfigTest(unittest.TestCase):
         with mock.patch.dict(os.environ, {"DOCKER_CONFIG": folder}):
             cfg = auth.load_config(None)
             assert registry in cfg.auths
-            cfg = cfg.auths[registry]
-            assert cfg["username"] == b"sakuya\xc3\xa6".decode("utf8")
-            assert cfg["password"] == b"izayoi\xc3\xa6".decode("utf8")
-            assert cfg["email"] == "sakuya@scarlet.net"
-            assert cfg.get("auth") is None
+            cfg2 = cfg.auths[registry]
+            assert cfg2["username"] == b"sakuya\xc3\xa6".decode("utf8")
+            assert cfg2["password"] == b"izayoi\xc3\xa6".decode("utf8")
+            assert cfg2["email"] == "sakuya@scarlet.net"
+            assert cfg2.get("auth") is None
 
-    def test_load_config_unknown_keys(self):
+    def test_load_config_unknown_keys(self) -> None:
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
         dockercfg_path = os.path.join(folder, "config.json")
@@ -438,7 +439,7 @@ class LoadConfigTest(unittest.TestCase):
         cfg = auth.load_config(dockercfg_path)
         assert dict(cfg) == {"auths": {}}
 
-    def test_load_config_invalid_auth_dict(self):
+    def test_load_config_invalid_auth_dict(self) -> None:
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder)
         dockercfg_path = os.path.join(folder, "config.json")
@@ -449,7 +450,7 @@ class LoadConfigTest(unittest.TestCase):
         cfg = auth.load_config(dockercfg_path)
         assert dict(cfg) == {"auths": {"scarlet.net": {}}}
 
-    def test_load_config_identity_token(self):
+    def test_load_config_identity_token(self) -> None:
         folder = tempfile.mkdtemp()
         registry = "scarlet.net"
         token = "1ce1cebb-503e-7043-11aa-7feb8bd4a1ce"
@@ -462,13 +463,13 @@ class LoadConfigTest(unittest.TestCase):
 
         cfg = auth.load_config(dockercfg_path)
         assert registry in cfg.auths
-        cfg = cfg.auths[registry]
-        assert "IdentityToken" in cfg
-        assert cfg["IdentityToken"] == token
+        cfg2 = cfg.auths[registry]
+        assert "IdentityToken" in cfg2
+        assert cfg2["IdentityToken"] == token
 
 
 class CredstoreTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.authconfig = auth.AuthConfig({"credsStore": "default"})
         self.default_store = InMemoryStore("default")
         self.authconfig._stores["default"] = self.default_store
@@ -483,7 +484,7 @@ class CredstoreTest(unittest.TestCase):
             "hunter2",
         )
 
-    def test_get_credential_store(self):
+    def test_get_credential_store(self) -> None:
         auth_config = auth.AuthConfig(
             {
                 "credHelpers": {
@@ -498,7 +499,7 @@ class CredstoreTest(unittest.TestCase):
         assert auth_config.get_credential_store("registry2.io") == "powerlock"
         assert auth_config.get_credential_store("registry3.io") == "blackbox"
 
-    def test_get_credential_store_no_default(self):
+    def test_get_credential_store_no_default(self) -> None:
         auth_config = auth.AuthConfig(
             {
                 "credHelpers": {
@@ -510,7 +511,7 @@ class CredstoreTest(unittest.TestCase):
         assert auth_config.get_credential_store("registry2.io") == "powerlock"
         assert auth_config.get_credential_store("registry3.io") is None
 
-    def test_get_credential_store_default_index(self):
+    def test_get_credential_store_default_index(self) -> None:
         auth_config = auth.AuthConfig(
             {
                 "credHelpers": {"https://index.docker.io/v1/": "powerlock"},
@@ -522,7 +523,7 @@ class CredstoreTest(unittest.TestCase):
         assert auth_config.get_credential_store("docker.io") == "powerlock"
         assert auth_config.get_credential_store("images.io") == "truesecret"
 
-    def test_get_credential_store_with_plain_dict(self):
+    def test_get_credential_store_with_plain_dict(self) -> None:
         auth_config = {
             "credHelpers": {"registry1.io": "truesecret", "registry2.io": "powerlock"},
             "credsStore": "blackbox",
@@ -532,7 +533,7 @@ class CredstoreTest(unittest.TestCase):
         assert auth.get_credential_store(auth_config, "registry2.io") == "powerlock"
         assert auth.get_credential_store(auth_config, "registry3.io") == "blackbox"
 
-    def test_get_all_credentials_credstore_only(self):
+    def test_get_all_credentials_credstore_only(self) -> None:
         assert self.authconfig.get_all_credentials() == {
             "https://gensokyo.jp/v2": {
                 "Username": "sakuya",
@@ -556,7 +557,7 @@ class CredstoreTest(unittest.TestCase):
             },
         }
 
-    def test_get_all_credentials_with_empty_credhelper(self):
+    def test_get_all_credentials_with_empty_credhelper(self) -> None:
         self.authconfig["credHelpers"] = {
             "registry1.io": "truesecret",
         }
@@ -585,7 +586,7 @@ class CredstoreTest(unittest.TestCase):
             "registry1.io": None,
         }
 
-    def test_get_all_credentials_with_credhelpers_only(self):
+    def test_get_all_credentials_with_credhelpers_only(self) -> None:
         del self.authconfig["credsStore"]
         assert self.authconfig.get_all_credentials() == {}
 
@@ -617,7 +618,7 @@ class CredstoreTest(unittest.TestCase):
             },
         }
 
-    def test_get_all_credentials_with_auths_entries(self):
+    def test_get_all_credentials_with_auths_entries(self) -> None:
         self.authconfig.add_auth(
             "registry1.io",
             {
@@ -655,7 +656,7 @@ class CredstoreTest(unittest.TestCase):
             },
         }
 
-    def test_get_all_credentials_with_empty_auths_entry(self):
+    def test_get_all_credentials_with_empty_auths_entry(self) -> None:
         self.authconfig.add_auth("default.com", {})
 
         assert self.authconfig.get_all_credentials() == {
@@ -681,7 +682,7 @@ class CredstoreTest(unittest.TestCase):
             },
         }
 
-    def test_get_all_credentials_credstore_overrides_auth_entry(self):
+    def test_get_all_credentials_credstore_overrides_auth_entry(self) -> None:
         self.authconfig.add_auth(
             "default.com",
             {
@@ -714,7 +715,7 @@ class CredstoreTest(unittest.TestCase):
             },
         }
 
-    def test_get_all_credentials_helpers_override_default(self):
+    def test_get_all_credentials_helpers_override_default(self) -> None:
         self.authconfig["credHelpers"] = {
             "https://default.com/v2": "truesecret",
         }
@@ -744,7 +745,7 @@ class CredstoreTest(unittest.TestCase):
             },
         }
 
-    def test_get_all_credentials_3_sources(self):
+    def test_get_all_credentials_3_sources(self) -> None:
         self.authconfig["credHelpers"] = {
             "registry1.io": "truesecret",
         }
@@ -795,24 +796,27 @@ class CredstoreTest(unittest.TestCase):
 
 
 class InMemoryStore(Store):
-    def __init__(self, *args, **kwargs):  # pylint: disable=super-init-not-called
-        self.__store = {}
+    def __init__(  # pylint: disable=super-init-not-called
+        self, *args, **kwargs
+    ) -> None:
+        self.__store: dict[str | bytes, dict[str, t.Any]] = {}
 
-    def get(self, server):
+    def get(self, server: str | bytes) -> dict[str, t.Any]:
         try:
             return self.__store[server]
         except KeyError:
             raise CredentialsNotFound() from None
 
-    def store(self, server, username, secret):
+    def store(self, server: str, username: str, secret: str) -> bytes:
         self.__store[server] = {
             "ServerURL": server,
             "Username": username,
             "Secret": secret,
         }
+        return b""
 
-    def list(self):
+    def list(self) -> dict[str | bytes, str]:
         return dict((k, v["Username"]) for k, v in self.__store.items())
 
-    def erase(self, server):
+    def erase(self, server: str | bytes) -> None:
         del self.__store[server]

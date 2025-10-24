@@ -33,8 +33,7 @@ ENV = {
 
 
 class ProxyConfigTest(unittest.TestCase):
-
-    def test_from_dict(self):
+    def test_from_dict(self) -> None:
         config = ProxyConfig.from_dict(
             {
                 "httpProxy": HTTP,
@@ -48,7 +47,7 @@ class ProxyConfigTest(unittest.TestCase):
         self.assertEqual(CONFIG.ftp, config.ftp)
         self.assertEqual(CONFIG.no_proxy, config.no_proxy)
 
-    def test_new(self):
+    def test_new(self) -> None:
         config = ProxyConfig()
         self.assertIsNone(config.http)
         self.assertIsNone(config.https)
@@ -61,22 +60,24 @@ class ProxyConfigTest(unittest.TestCase):
         self.assertEqual(config.ftp, "c")
         self.assertEqual(config.no_proxy, "d")
 
-    def test_truthiness(self):
+    def test_truthiness(self) -> None:
         assert not ProxyConfig()
         assert ProxyConfig(http="non-zero")
         assert ProxyConfig(https="non-zero")
         assert ProxyConfig(ftp="non-zero")
         assert ProxyConfig(no_proxy="non-zero")
 
-    def test_environment(self):
+    def test_environment(self) -> None:
         self.assertDictEqual(CONFIG.get_environment(), ENV)
         empty = ProxyConfig()
         self.assertDictEqual(empty.get_environment(), {})
 
-    def test_inject_proxy_environment(self):
+    def test_inject_proxy_environment(self) -> None:
         # Proxy config is non null, env is None.
+        envlist = CONFIG.inject_proxy_environment(None)
+        assert envlist is not None
         self.assertSetEqual(
-            set(CONFIG.inject_proxy_environment(None)),
+            set(envlist),
             set(f"{k}={v}" for k, v in ENV.items()),
         )
 

@@ -22,7 +22,7 @@ from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.c
 
 
 class DecoratorsTest(unittest.TestCase):
-    def test_update_headers(self):
+    def test_update_headers(self) -> None:
         sample_headers = {
             "X-Docker-Locale": "en-US",
         }
