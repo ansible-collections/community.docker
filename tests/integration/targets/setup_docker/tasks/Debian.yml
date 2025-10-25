@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Get OS version
-  ansible.builtin.shell: uname -r
+  ansible.builtin.command: uname -r
   register: os_version
 
 - name: Install pre-reqs

@@ -47,7 +47,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         filename: "/tmp/{{ config_name_1 }}.txt"
   register: configs_1
@@ -72,7 +72,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         filename: "/tmp/{{ config_name_1 }}.txt"
       - config_name: "{{ config_name_2 }}"
@@ -89,7 +89,7 @@
     configs:
       - config_name: "{{ config_name_1 }}"
         filename: "/tmp/{{ config_name_1 }}.txt"
-      - config_id: "{{ config_result_2.config_id|default('') }}"
+      - config_id: "{{ config_result_2.config_id | default('') }}"
         config_name: "{{ config_name_2 }}"
         filename: "/tmp/{{ config_name_2 }}.txt"
   register: configs_4
@@ -215,7 +215,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         uid: 1000
   register: configs_1
@@ -228,7 +228,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         uid: 1000
   register: configs_2
@@ -241,7 +241,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         uid: 1002
   register: configs_3
@@ -254,7 +254,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         uid: "1001"
   register: configs_4
@@ -267,7 +267,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         uid: "1001"
   register: configs_5
@@ -305,7 +305,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         gid: 1000
   register: configs_1
@@ -318,7 +318,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         gid: 1000
   register: configs_2
@@ -331,7 +331,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         gid: 1002
   register: configs_3
@@ -344,7 +344,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         gid: "1001"
   register: configs_4
@@ -357,7 +357,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         gid: "1001"
   register: configs_5
@@ -394,7 +394,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         mode: "0600"
   register: configs_1
@@ -407,7 +407,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         mode: "0600"
   register: configs_2
@@ -420,7 +420,7 @@
     resolve_image: false
     command: '/bin/sh -v -c "sleep 10m"'
     configs:
-      - config_id: "{{ config_result_1.config_id|default('') }}"
+      - config_id: "{{ config_result_1.config_id | default('') }}"
         config_name: "{{ config_name_1 }}"
         mode: "0777"
   register: configs_3

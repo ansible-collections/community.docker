@@ -96,7 +96,7 @@
 
     - name: fake image key as it is not predictable
       ansible.builtin.set_fact:
-        ansible_docker_service_output: "{{ output.swarm_service|combine({'image': docker_test_image_busybox}) }}"
+        ansible_docker_service_output: "{{ output.swarm_service | combine({'image': docker_test_image_busybox}) }}"
 
     - name: assert service matches expectations
       ansible.builtin.assert:

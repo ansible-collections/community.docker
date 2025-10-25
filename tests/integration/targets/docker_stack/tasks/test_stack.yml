@@ -51,8 +51,8 @@
 
     - name: Template compose files
       ansible.builtin.template:
-        src: "{{item}}"
-        dest: "{{remote_tmp_dir}}/"
+        src: "{{ item }}"
+        dest: "{{ remote_tmp_dir }}/"
       with_items:
         - stack_compose_base.yml
         - stack_compose_overrides.yml
@@ -63,7 +63,7 @@
         state: present
         name: test_stack
         compose:
-          - "{{remote_tmp_dir}}/stack_compose_base.yml"
+          - "{{ remote_tmp_dir }}/stack_compose_base.yml"
 
     - name: assert test_stack changed on stack creation with compose file
       ansible.builtin.assert:
@@ -77,8 +77,8 @@
     #     state: present
     #     name: test_stack
     #     compose:
-    #     - "{{stack_compose_base}}"
-    #     - "{{stack_compose_overrides}}"
+    #     - "{{ stack_compose_base }}"
+    #     - "{{ stack_compose_overrides }}"
     #
     # - name: assert test_stack correctly changed on update with yaml
     #   assert:
