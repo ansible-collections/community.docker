@@ -7,7 +7,7 @@
 
 namespace: community
 name: docker
-version: 4.8.2
+version: 4.8.3
 readme: README.md
 authors:
   - Ansible Docker Working Group
