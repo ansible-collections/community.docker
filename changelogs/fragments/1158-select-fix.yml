@@ -1,3 +1,0 @@
-bugfixes:
-  - "docker, nsenter connection plugins - fix handling of ``become`` plugin password prompt handling in case multiple events arrive at the same time
-     (https://github.com/ansible-collections/community.docker/pull/1158)."

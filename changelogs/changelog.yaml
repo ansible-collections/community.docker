@@ -2187,3 +2187,30 @@ releases:
       - 1139-six.yml
       - 4.8.1.yml
     release_date: '2025-10-05'
+  4.8.2:
+    changes:
+      bugfixes:
+        - docker connection plugin - fix crash instead of warning if Docker version
+          does not support ``remote_user`` (https://github.com/ansible-collections/community.docker/pull/1161).
+        - docker, nsenter connection plugins - fix handling of ``become`` plugin password
+          prompt handling in case multiple events arrive at the same time (https://github.com/ansible-collections/community.docker/pull/1158).
+        - docker_api connection plugin - fix bug that could lead to loss of data when
+          waiting for ``become`` plugin prompt (https://github.com/ansible-collections/community.docker/pull/1152).
+        - docker_compose_v2_exec - fix crash instead of reporting error if ``detach=true``
+          and ``stdin`` is provided (https://github.com/ansible-collections/community.docker/pull/1161).
+        - docker_compose_v2_run - fix crash instead of reporting error if ``detach=true``
+          and ``stdin`` is provided (https://github.com/ansible-collections/community.docker/pull/1161).
+        - docker_container_exec - fix bug that could lead to loss of stdout/stderr
+          data (https://github.com/ansible-collections/community.docker/pull/1152).
+        - docker_container_exec - make ``detach=true`` work. So far this resulted
+          in no execution being done (https://github.com/ansible-collections/community.docker/pull/1145).
+        - docker_plugin - fix diff mode for plugin options (https://github.com/ansible-collections/community.docker/pull/1146).
+      release_summary: Bugfix release.
+    fragments:
+      - 1145-fix.yml
+      - 1146-fix.yml
+      - 1152-fix.yml
+      - 1158-select-fix.yml
+      - 1161-fix.yml
+      - 4.8.2.yml
+    release_date: '2025-10-25'
