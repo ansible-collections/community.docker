@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Buildx is available from Alpine 3.14 on
-  set_fact:
+  ansible.builtin.set_fact:
     docker_has_buildx: "{{ ansible_facts.distribution_version is version('3.14', '>=') }}"
 
 - name: Install Docker buildx CLI plugin
-  apk:
+  community.general.apk:
     name: docker-cli-buildx
   when: docker_has_buildx

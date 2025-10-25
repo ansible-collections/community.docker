@@ -8,7 +8,7 @@
   gather_facts: true
   tasks:
     - name: remove docker containers
-      docker_container:
+      community.docker.docker_container:
         name: "{{ item }}"
         state: absent
         force_kill: true

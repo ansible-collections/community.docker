@@ -9,11 +9,11 @@
 ####################################################################
 
 - name: Get docker daemon information directly
-  docker_host_info:
+  community.docker.docker_host_info:
   register: output
 
 - name: Make sure we got information
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output.host_info.Name is string'
       - 'output.containers is not defined'
@@ -23,19 +23,19 @@
       - 'output.disk_usage is not defined'
 
 - name: Show contents of ~/.ssh
-  command: ls -lah ~/.ssh
+  ansible.builtin.command: ls -lah ~/.ssh
   ignore_errors: true
 
 - name: Recover home directory on remote
-  command: echo $HOME
+  ansible.builtin.command: echo $HOME
   register: remote_home
 
 - name: Print remote home directory
-  debug:
+  ansible.builtin.debug:
     var: remote_home.stdout
 
 - name: Create SSH config
-  copy:
+  ansible.builtin.copy:
     dest: "{{ remote_home.stdout }}/.ssh/config"
     mode: '0600'
     content: |
@@ -44,13 +44,13 @@
       IdentityFile ~/.ssh/id_rsa
 
 - name: Get docker daemon information via ssh (paramiko) to localhost
-  docker_host_info:
+  community.docker.docker_host_info:
     docker_host: "ssh://root@localhost"
   register: output
   ignore_errors: true
 
 - name: Make sure we got information
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output.host_info.Name is string'
       - 'output.containers is not defined'
@@ -64,13 +64,13 @@
   # `from cryptography.hazmat.primitives.asymmetric.x25519 import ...`.
 
 - name: Get docker daemon information via ssh (OpenSSH) to localhost
-  docker_host_info:
+  community.docker.docker_host_info:
     docker_host: "ssh://root@localhost"
     use_ssh_client: true
   register: output
 
 - name: Make sure we got information
-  assert:
+  ansible.builtin.assert:
     that:
       - output is succeeded
       - 'output.host_info.Name is string'

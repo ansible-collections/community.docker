@@ -4,14 +4,14 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Install paramiko from system repository
-  package:
+  ansible.builtin.package:
     name: python-paramiko
   become: true
   when:
     - ansible_distribution == 'CentOS' and ansible_distribution_major_version|int <= 7
 
 - name: Install paramiko
-  pip:
+  ansible.builtin.pip:
     name: "paramiko{% if cryptography_version.stdout is version('2.5.0', '<') %}<2.5.0{% endif %}"
     extra_args: "-c {{ remote_constraints }}"
   become: true

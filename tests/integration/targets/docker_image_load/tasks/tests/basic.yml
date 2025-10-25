@@ -3,25 +3,25 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-- set_fact:
+- ansible.builtin.set_fact:
     image_names:
       - "{{ docker_test_image_hello_world }}"
       - "{{ docker_test_image_simple_1 }}"
       - "{{ docker_test_image_simple_2 }}"
 
 - name: Make sure images are there
-  docker_image_pull:
+  community.docker.docker_image_pull:
     name: "{{ item }}"
   register: images
   loop: "{{ image_names }}"
 
 - name: Compile list of all image names and IDs
-  set_fact:
+  ansible.builtin.set_fact:
     image_ids: "{{ images.results | map(attribute='image') | map(attribute='Id') | list }}"
     all_images: "{{ image_names + (images.results | map(attribute='image') | map(attribute='Id') | list) }}"
 
 - name: Create archives
-  docker_image_export:
+  community.docker.docker_image_export:
     names: "{{ item.images }}"
     path: "{{ remote_tmp_dir }}/{{ item.file }}"
   loop:
@@ -44,7 +44,7 @@
 # All images by IDs
 
 - name: Remove all images
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ item }}"
     force: true
   loop: "{{ all_images }}"
@@ -52,52 +52,52 @@
   register: remove_all_images
 
 - name: Prune all containers (if removing failed)
-  docker_prune:
+  community.docker.docker_prune:
     containers: true
   when: remove_all_images is failed
 
 - name: Obtain all docker containers and images (if removing failed)
-  shell: docker ps -a ; docker images -a
+  ansible.builtin.shell: docker ps -a ; docker images -a
   when: remove_all_images is failed
   register: docker_container_image_list
 
 - name: Show all docker containers and images (if removing failed)
-  debug:
+  ansible.builtin.debug:
     var: docker_container_image_list.stdout_lines
   when: remove_all_images is failed
 
 - name: Remove all images (after pruning)
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ item }}"
     force: true
   loop: "{{ all_images }}"
   when: remove_all_images is failed
 
 - name: Load all images (IDs)
-  docker_image_load:
+  community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-2.tar"
   register: result
 
 - name: Print loaded image names
-  debug:
+  ansible.builtin.debug:
     var: result.image_names
 
-- assert:
+- ansible.builtin.assert:
     that:
       - result is changed
       - result.image_names | sort == image_ids | sort
       - result.image_names | length == result.images | length
 
 - name: Load all images (IDs, should be same result)
-  docker_image_load:
+  community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-2.tar"
   register: result_2
 
 - name: Print loaded image names
-  debug:
+  ansible.builtin.debug:
     var: result_2.image_names
 
-- assert:
+- ansible.builtin.assert:
     that:
       - result_2 is changed
       - result_2.image_names | sort == image_ids | sort
@@ -106,24 +106,24 @@
 # Mixed images and IDs
 
 - name: Remove all images
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ item }}"
   loop: "{{ all_images }}"
 
 - name: Load all images (mixed images and IDs)
-  docker_image_load:
+  community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-3.tar"
   register: result
 
 - name: Print loading log
-  debug:
+  ansible.builtin.debug:
     var: result.stdout_lines
 
 - name: Print loaded image names
-  debug:
+  ansible.builtin.debug:
     var: result.image_names
 
-- assert:
+- ansible.builtin.assert:
     that:
       - result is changed
       # For some reason, *sometimes* only the named image is found; in fact, in that case, the log only mentions that image and nothing else
@@ -135,20 +135,20 @@
 # Same image twice
 
 - name: Remove all images
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ item }}"
   loop: "{{ all_images }}"
 
 - name: Load all images (same image twice)
-  docker_image_load:
+  community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-4.tar"
   register: result
 
 - name: Print loaded image names
-  debug:
+  ansible.builtin.debug:
     var: result.image_names
 
-- assert:
+- ansible.builtin.assert:
     that:
       - result is changed
       - result.image_names | length == 1
@@ -159,20 +159,20 @@
 # Single image by ID
 
 - name: Remove all images
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ item }}"
   loop: "{{ all_images }}"
 
 - name: Load all images (single image by ID)
-  docker_image_load:
+  community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-5.tar"
   register: result
 
 - name: Print loaded image names
-  debug:
+  ansible.builtin.debug:
     var: result.image_names
 
-- assert:
+- ansible.builtin.assert:
     that:
       - result is changed
       - result.image_names | length == 1
@@ -181,32 +181,32 @@
       - result.images[0].Id == image_ids[0]
 
 - name: Try to get image info by name
-  docker_image_info:
+  community.docker.docker_image_info:
     name: "{{ image_names[0] }}"
   register: result
 
 - name: Make sure that image does not exist by name
-  assert:
+  ansible.builtin.assert:
     that:
       - result.images | length == 0
 
 # All images by names
 
 - name: Remove all images
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ item }}"
   loop: "{{ all_images }}"
 
 - name: Load all images (names)
-  docker_image_load:
+  community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-1.tar"
   register: result
 
 - name: Print loaded image names
-  debug:
+  ansible.builtin.debug:
     var: result.image_names
 
-- assert:
+- ansible.builtin.assert:
     that:
       - result.image_names | sort == image_names | sort
       - result.image_names | length == result.images | length

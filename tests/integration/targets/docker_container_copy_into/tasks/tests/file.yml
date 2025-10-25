@@ -4,16 +4,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cname: "{{ cname_prefix ~ '-f' }}"
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cnames: "{{ cnames + [cname] }}"
 
 # Create container
 
 - name: Create container
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command:
       - /bin/sh
@@ -30,14 +30,14 @@
 # Create files
 
 - name: Create file 1
-  copy:
+  ansible.builtin.copy:
     dest: '{{ remote_tmp_dir }}/file_1'
     content: |
       Content 1
     mode: "0644"
 
 - name: Create file 2
-  copy:
+  ansible.builtin.copy:
     dest: '{{ remote_tmp_dir }}/file_2'
     content: |-
       Content 2
@@ -45,7 +45,7 @@
     mode: "0644"
 
 - name: Create link 1
-  file:
+  ansible.builtin.file:
     dest: '{{ remote_tmp_dir }}/link_1'
     state: link
     src: file_1
@@ -53,7 +53,7 @@
     mode: "0644"
 
 - name: Create link 2
-  file:
+  ansible.builtin.file:
     dest: '{{ remote_tmp_dir }}/link_2'
     state: link
     src: dead
@@ -67,7 +67,7 @@
 ######################### Copy
 
 - name: Copy file (check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -76,7 +76,7 @@
   register: result_1
 
 - name: Copy file (check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -85,14 +85,14 @@
   register: result_1_diff
 
 - name: Copy file (check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
   register: result_2
 
 - name: Copy file (idempotent, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -101,7 +101,7 @@
   register: result_3
 
 - name: Copy file (idempotent, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -110,14 +110,14 @@
   register: result_3_diff
 
 - name: Copy file (idempotent)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
   register: result_4
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -129,7 +129,7 @@
   register: result_5
 
 - name: Copy file (force, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -139,7 +139,7 @@
   register: result_6
 
 - name: Copy file (force, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -149,7 +149,7 @@
   register: result_6_diff
 
 - name: Copy file (force)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -157,7 +157,7 @@
   register: result_7
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -169,7 +169,7 @@
   register: result_8
 
 - name: Copy file (force=false, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -183,7 +183,7 @@
   register: result_9
 
 - name: Copy file (force=false, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -197,7 +197,7 @@
   register: result_9_diff
 
 - name: Copy file (force=false)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -209,7 +209,7 @@
   register: result_10
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -221,7 +221,7 @@
   register: result_11
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - "'diff' not in result_1"
@@ -265,7 +265,7 @@
 ######################### Follow link - idempotence
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -277,7 +277,7 @@
   register: result_0
 
 - name: Copy file following link (check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -287,7 +287,7 @@
   register: result_1
 
 - name: Copy file following link (check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -297,7 +297,7 @@
   register: result_1_diff
 
 - name: Copy file following link
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -305,7 +305,7 @@
   register: result_2
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -318,7 +318,7 @@
   register: result_3
 
 - name: Copy file following link (force, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -329,7 +329,7 @@
   register: result_4
 
 - name: Copy file following link (force, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -340,7 +340,7 @@
   register: result_4_diff
 
 - name: Copy file following link (force)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -349,7 +349,7 @@
   register: result_5
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -362,7 +362,7 @@
   register: result_6
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_0.stdout | b64decode == 'Content 1\n'
       - result_0.stderr == "4 777 symbolic link 0 0 '/lnk' -> 'file'"
@@ -396,7 +396,7 @@
 ######################### Do not follow link - replace by file
 
 - name: Copy file not following link (check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -406,7 +406,7 @@
   register: result_1
 
 - name: Copy file not following link (check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -416,7 +416,7 @@
   register: result_1_diff
 
 - name: Copy file not following link
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -424,7 +424,7 @@
   register: result_2
 
 - name: Copy file not following link (idempotent, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -433,7 +433,7 @@
   register: result_3
 
 - name: Copy file not following link (idempotent, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -442,14 +442,14 @@
   register: result_3_diff
 
 - name: Copy file not following link (idempotent)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
   register: result_4
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -461,7 +461,7 @@
   register: result_5
 
 - name: Copy file not following link (force, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -471,7 +471,7 @@
   register: result_6
 
 - name: Copy file not following link (force, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -481,7 +481,7 @@
   register: result_6_diff
 
 - name: Copy file not following link (force)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/lnk'
@@ -489,7 +489,7 @@
   register: result_7
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -501,7 +501,7 @@
   register: result_8
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - result_1.container_path == '/lnk'
@@ -539,7 +539,7 @@
 ######################### Replace directory by file
 
 - name: Copy file to replace directory (check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/dir'
@@ -549,7 +549,7 @@
   register: result_1
 
 - name: Copy file to replace directory (check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/dir'
@@ -559,7 +559,7 @@
   register: result_1_diff
 
 - name: Copy file to replace directory (check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/dir'
@@ -567,7 +567,7 @@
   register: result_2
 
 - name: Copy file to replace directory (idempotent, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/dir'
@@ -576,7 +576,7 @@
   register: result_3
 
 - name: Copy file to replace directory (idempotent, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/dir'
@@ -585,14 +585,14 @@
   register: result_3_diff
 
 - name: Copy file to replace directory (idempotent)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/dir'
   register: result_4
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -604,7 +604,7 @@
   register: result_5
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - result_1.container_path == '/dir'
@@ -630,7 +630,7 @@
 ######################### Modify
 
 - name: Copy file (changed, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -639,7 +639,7 @@
   register: result_1
 
 - name: Copy file (changed, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -648,14 +648,14 @@
   register: result_1_diff
 
 - name: Copy file (changed)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
   register: result_2
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -667,7 +667,7 @@
   register: result_3
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - "'diff' not in result_1"
@@ -683,7 +683,7 @@
 ######################### Change mode
 
 - name: Copy file (mode changed, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -694,7 +694,7 @@
   register: result_1
 
 - name: Copy file (mode changed, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -705,7 +705,7 @@
   register: result_1_diff
 
 - name: Copy file (mode changed)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -714,7 +714,7 @@
   register: result_2
 
 - name: Copy file (idempotent, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -725,7 +725,7 @@
   register: result_3
 
 - name: Copy file (idempotent, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -736,7 +736,7 @@
   register: result_3_diff
 
 - name: Copy file (idempotent)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -745,7 +745,7 @@
   register: result_4
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -757,7 +757,7 @@
   register: result_5
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - "'diff' not in result_1"
@@ -781,7 +781,7 @@
 ######################### Change owner and group
 
 - name: Copy file (owner/group changed, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -794,7 +794,7 @@
   register: result_1
 
 - name: Copy file (owner/group changed, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -807,7 +807,7 @@
   register: result_1_diff
 
 - name: Copy file (owner/group changed)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -818,7 +818,7 @@
   register: result_2
 
 - name: Copy file (idempotent, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -831,7 +831,7 @@
   register: result_3
 
 - name: Copy file (idempotent, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -844,7 +844,7 @@
   register: result_3_diff
 
 - name: Copy file (idempotent)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -855,7 +855,7 @@
   register: result_4
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -867,7 +867,7 @@
   register: result_5
 
 - name: Copy file (owner/group changed again, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -880,7 +880,7 @@
   register: result_6
 
 - name: Copy file (owner/group changed again, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -893,7 +893,7 @@
   register: result_6_diff
 
 - name: Copy file (owner/group changed again)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_2'
     container_path: '/file'
@@ -904,7 +904,7 @@
   register: result_7
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -916,7 +916,7 @@
   register: result_8
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - "'diff' not in result_1"
@@ -950,13 +950,13 @@
 ######################### Operate with stopped container
 
 - name: Stop container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: stopped
     stop_timeout: 1
 
 - name: Copy file (stopped container, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -969,7 +969,7 @@
   register: result_1
 
 - name: Copy file (stopped container, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -982,7 +982,7 @@
   register: result_1_diff
 
 - name: Copy file (stopped container)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -993,7 +993,7 @@
   register: result_2
 
 - name: Copy file (stopped container, idempotent, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -1006,7 +1006,7 @@
   register: result_3
 
 - name: Copy file (stopped container, idempotent, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -1019,7 +1019,7 @@
   register: result_3_diff
 
 - name: Copy file (stopped container, idempotent)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -1030,7 +1030,7 @@
   register: result_4
 
 - name: Copy file (stopped container, no owner/group provided, should fail)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     path: '{{ remote_tmp_dir }}/file_1'
     container_path: '/file'
@@ -1040,12 +1040,12 @@
   ignore_errors: true
 
 - name: Start container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: started
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -1057,7 +1057,7 @@
   register: result_6
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - "'diff' not in result_1"
@@ -1084,7 +1084,7 @@
 # Cleanup
 
 - name: Remove container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true

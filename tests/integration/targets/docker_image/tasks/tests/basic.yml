@@ -8,24 +8,24 @@
 ####################################################################
 
 - name: Make sure image is not there
-  docker_image:
+  community.docker.docker_image:
     name: "{{ docker_test_image_hello_world }}"
     state: absent
     force_absent: true
   register: absent_1
 
 - name: Make sure image is not there (idempotency)
-  docker_image:
+  community.docker.docker_image:
     name: "{{ docker_test_image_hello_world }}"
     state: absent
   register: absent_2
 
-- assert:
+- ansible.builtin.assert:
     that:
       - absent_2 is not changed
 
 - name: Make sure image is there
-  docker_image:
+  community.docker.docker_image:
     name: "{{ docker_test_image_hello_world }}"
     state: present
     source: pull
@@ -34,7 +34,7 @@
   register: present_1
 
 - name: Make sure image is there (idempotent)
-  docker_image:
+  community.docker.docker_image:
     name: "{{ docker_test_image_hello_world }}"
     state: present
     source: pull
@@ -42,32 +42,32 @@
       platform: amd64
   register: present_2
 
-- assert:
+- ansible.builtin.assert:
     that:
       - present_1 is changed
       - present_2 is not changed
 
 - name: Make sure tag is not there
-  docker_image:
+  community.docker.docker_image:
     name: "{{ docker_test_image_hello_world_base }}:alias"
     state: absent
 
 - name: Tag image with alias
-  docker_image:
+  community.docker.docker_image:
     source: local
     name: "{{ docker_test_image_hello_world }}"
     repository: "{{ docker_test_image_hello_world_base }}:alias"
   register: tag_1
 
 - name: Tag image with alias (idempotent)
-  docker_image:
+  community.docker.docker_image:
     source: local
     name: "{{ docker_test_image_hello_world }}"
     repository: "{{ docker_test_image_hello_world_base }}:alias"
   register: tag_2
 
 - name: Tag image with alias (force, still idempotent)
-  docker_image:
+  community.docker.docker_image:
     source: local
     name: "{{ docker_test_image_hello_world }}"
     repository: "{{ docker_test_image_hello_world_base }}:alias"
@@ -75,13 +75,13 @@
   register: tag_3
 
 - name: Tag image with ID instead of name
-  docker_image:
+  community.docker.docker_image:
     source: local
     name: "{{ present_1.image.Id }}"
     repository: "{{ docker_test_image_hello_world_base }}:alias"
   register: tag_4
 
-- assert:
+- ansible.builtin.assert:
     that:
       - tag_1 is changed
       - tag_2 is not changed
@@ -89,12 +89,12 @@
       - tag_4 is not changed
 
 - name: Cleanup alias tag
-  docker_image:
+  community.docker.docker_image:
     name: "{{ docker_test_image_hello_world_base }}:alias"
     state: absent
 
 - name: Tag image with ID instead of name (use ID for repository, must fail)
-  docker_image:
+  community.docker.docker_image:
     source: local
     name: "{{ docker_test_image_hello_world }}"
     repository: "{{ present_1.image.Id }}"
@@ -102,7 +102,7 @@
   ignore_errors: true
 
 - name: Push image with ID (must fail)
-  docker_image:
+  community.docker.docker_image:
     source: local
     name: "{{ present_1.image.Id }}"
     push: true
@@ -110,7 +110,7 @@
   ignore_errors: true
 
 - name: Pull image ID (must fail)
-  docker_image:
+  community.docker.docker_image:
     source: pull
     name: "{{ present_1.image.Id }}"
     force_source: true
@@ -118,7 +118,7 @@
   ignore_errors: true
 
 - name: Build image ID (must fail)
-  docker_image:
+  community.docker.docker_image:
     source: build
     name: "{{ present_1.image.Id }}"
     build:
@@ -127,7 +127,7 @@
   register: fail_4
   ignore_errors: true
 
-- assert:
+- ansible.builtin.assert:
     that:
       - fail_1 is failed
       - "'`repository` must not be an image ID' in fail_1.msg"

@@ -10,22 +10,22 @@
       vars:
         dm_ls_format: !unsafe '{{.Name}} | {{.DriverName}} | {{.State}} | {{.URL}} | {{.Error}}'
         success_regex: "^vm | [^|]+ | Running | tcp://.+ |$"
-      command: docker-machine ls --format '{{ dm_ls_format }}'
+      ansible.builtin.command: docker-machine ls --format '{{ dm_ls_format }}'
       register: result
       failed_when: result.rc != 0 or result.stdout is not match(success_regex)
 
     - name: verify Docker Machine ip
-      command: docker-machine ip vm
+      ansible.builtin.command: docker-machine ip vm
       register: result
       failed_when: result.rc != 0 or result.stdout != hostvars['vm'].ansible_host
 
     - name: verify Docker Machine env
-      command: docker-machine env --shell=sh vm
+      ansible.builtin.command: docker-machine env --shell=sh vm
       register: result
 
-    - debug: var=result.stdout
+    - ansible.builtin.debug: var=result.stdout
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - "'DOCKER_TLS_VERIFY=\"{{ hostvars['vm'].dm_DOCKER_TLS_VERIFY }}\"' in result.stdout"
           - "'DOCKER_HOST=\"{{ hostvars['vm'].dm_DOCKER_HOST }}\"' in result.stdout"
@@ -36,10 +36,10 @@
   gather_facts: false
   tasks:
     - name: do something to verify that accept-new ssh setting was applied by the docker-machine inventory plugin
-      raw: uname -a
+      ansible.builtin.raw: uname -a
       register: result
 
-    - debug: var=result.stdout
+    - ansible.builtin.debug: var=result.stdout
 
 - hosts: 127.0.0.1
   gather_facts: false
@@ -50,6 +50,6 @@
     DOCKER_TLS_VERIFY: "{{ hostvars['vm'].dm_DOCKER_TLS_VERIFY }}"
   tasks:
     - name: run a Docker container on the target Docker Machine host to verify that Docker daemon connection settings from the docker-machine inventory plugin work as expected
-      docker_container:
+      community.docker.docker_container:
         name: test
         image: "{{ docker_test_image_hello_world }}"

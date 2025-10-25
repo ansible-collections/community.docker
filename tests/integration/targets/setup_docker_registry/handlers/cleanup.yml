@@ -4,45 +4,45 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: "Make sure all images are removed"
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ item }}"
   with_items: "{{ docker_registry_setup_inames }}"
 
 - name: "Get registry logs"
-  command: "docker logs {{ docker_registry_container_name_registry }}"
+  ansible.builtin.command: "docker logs {{ docker_registry_container_name_registry }}"
   register: registry_logs
   no_log: true
   ignore_errors: true
 
 - name: "Printing registry logs"
-  debug:
+  ansible.builtin.debug:
     var: registry_logs.stdout_lines
   when: registry_logs is not failed
 
 - name: "Get nginx logs for first instance"
-  command: "docker logs {{ docker_registry_container_name_nginx }}"
+  ansible.builtin.command: "docker logs {{ docker_registry_container_name_nginx }}"
   register: nginx_logs
   no_log: true
   ignore_errors: true
 
 - name: "Get nginx logs for second instance"
-  command: "docker logs {{ docker_registry_container_name_nginx2 }}"
+  ansible.builtin.command: "docker logs {{ docker_registry_container_name_nginx2 }}"
   register: nginx2_logs
   no_log: true
   ignore_errors: true
 
 - name: "Printing nginx logs for first instance"
-  debug:
+  ansible.builtin.debug:
     var: nginx_logs.stdout_lines
   when: nginx_logs is not failed
 
 - name: "Printing nginx logs for second instance"
-  debug:
+  ansible.builtin.debug:
     var: nginx2_logs.stdout_lines
   when: nginx_logs is not failed
 
 - name: "Make sure all containers are removed"
-  docker_container:
+  community.docker.docker_container:
     name: "{{ item }}"
     state: absent
     force_kill: true
@@ -53,6 +53,6 @@
   until: result is success
 
 - name: "Make sure all volumes are removed"
-  command: "docker volume rm -f {{ item }}"
+  ansible.builtin.command: "docker volume rm -f {{ item }}"
   with_items: "{{ docker_registry_setup_vnames }}"
   ignore_errors: true

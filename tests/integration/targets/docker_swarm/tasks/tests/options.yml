@@ -3,11 +3,11 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-- debug:
+- ansible.builtin.debug:
     msg: Running tests/options.yml
 
 - name: Create a Swarm cluster
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     advertise_addr: "{{ansible_default_ipv4.address | default('127.0.0.1')}}"
     name: default
@@ -18,7 +18,7 @@
 ####################################################################
 
 - name: autolock_managers (check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     autolock_managers: true
   check_mode: true
@@ -27,7 +27,7 @@
   ignore_errors: true
 
 - name: autolock_managers
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     autolock_managers: true
   diff: true
@@ -35,7 +35,7 @@
   ignore_errors: true
 
 - name: autolock_managers (idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     autolock_managers: true
   diff: true
@@ -43,7 +43,7 @@
   ignore_errors: true
 
 - name: autolock_managers (idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     autolock_managers: true
   check_mode: true
@@ -52,7 +52,7 @@
   ignore_errors: true
 
 - name: autolock_managers (change, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     autolock_managers: false
   check_mode: true
@@ -61,7 +61,7 @@
   ignore_errors: true
 
 - name: autolock_managers (change)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     autolock_managers: false
   diff: true
@@ -69,7 +69,7 @@
   ignore_errors: true
 
 - name: autolock_managers (force new swarm)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     force: true
     advertise_addr: "{{ansible_default_ipv4.address | default('127.0.0.1')}}"
@@ -79,7 +79,7 @@
   ignore_errors: true
 
 - name: assert autolock_managers changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -108,7 +108,7 @@
   when: docker_py_version is version('2.6.0', '>=')
 
 - name: assert UnlockKey in swarm_facts
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_2.swarm_facts.UnlockKey is truthy'
       - 'output_3.swarm_facts.UnlockKey is none'
@@ -116,7 +116,7 @@
       - 'output_7.swarm_facts.UnlockKey is truthy'
   when: docker_py_version is version('2.7.0', '>=')
 
-- assert:
+- ansible.builtin.assert:
     that:
       - output_1 is failed
       - "('version is ' ~ docker_py_version ~ ' ') in output_1.msg"
@@ -128,7 +128,7 @@
 ####################################################################
 
 - name: ca_force_rotate (check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     ca_force_rotate: 1
   check_mode: true
@@ -137,7 +137,7 @@
   ignore_errors: true
 
 - name: ca_force_rotate
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     ca_force_rotate: 1
   diff: true
@@ -145,7 +145,7 @@
   ignore_errors: true
 
 - name: ca_force_rotate (idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     ca_force_rotate: 1
   diff: true
@@ -153,7 +153,7 @@
   ignore_errors: true
 
 - name: ca_force_rotate (idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     ca_force_rotate: 1
   check_mode: true
@@ -162,7 +162,7 @@
   ignore_errors: true
 
 - name: ca_force_rotate (change, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     ca_force_rotate: 0
   check_mode: true
@@ -171,7 +171,7 @@
   ignore_errors: true
 
 - name: ca_force_rotate (change)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     ca_force_rotate: 0
   diff: true
@@ -179,7 +179,7 @@
   ignore_errors: true
 
 - name: assert ca_force_rotate changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -206,7 +206,7 @@
       - 'output_6.diff.before is defined'
       - 'output_6.diff.after is defined'
   when: docker_py_version is version('2.6.0', '>=')
-- assert:
+- ansible.builtin.assert:
     that:
       - output_1 is failed
       - "('version is ' ~ docker_py_version ~ ' ') in output_1.msg"
@@ -218,7 +218,7 @@
 ####################################################################
 
 - name: dispatcher_heartbeat_period (check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     dispatcher_heartbeat_period: 10
   check_mode: true
@@ -226,21 +226,21 @@
   register: output_1
 
 - name: dispatcher_heartbeat_period
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     dispatcher_heartbeat_period: 10
   diff: true
   register: output_2
 
 - name: dispatcher_heartbeat_period (idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     dispatcher_heartbeat_period: 10
   diff: true
   register: output_3
 
 - name: dispatcher_heartbeat_period (idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     dispatcher_heartbeat_period: 10
   check_mode: true
@@ -248,7 +248,7 @@
   register: output_4
 
 - name: dispatcher_heartbeat_period (change, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     dispatcher_heartbeat_period: 23
   check_mode: true
@@ -256,14 +256,14 @@
   register: output_5
 
 - name: dispatcher_heartbeat_period (change)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     dispatcher_heartbeat_period: 23
   diff: true
   register: output_6
 
 - name: assert dispatcher_heartbeat_period changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -295,7 +295,7 @@
 ####################################################################
 
 - name: election_tick (check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     election_tick: 20
   check_mode: true
@@ -303,21 +303,21 @@
   register: output_1
 
 - name: election_tick
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     election_tick: 20
   diff: true
   register: output_2
 
 - name: election_tick (idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     election_tick: 20
   diff: true
   register: output_3
 
 - name: election_tick (idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     election_tick: 20
   check_mode: true
@@ -325,7 +325,7 @@
   register: output_4
 
 - name: election_tick (change, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     election_tick: 5
   check_mode: true
@@ -333,14 +333,14 @@
   register: output_5
 
 - name: election_tick (change)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     election_tick: 5
   diff: true
   register: output_6
 
 - name: assert election_tick changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -372,7 +372,7 @@
 ####################################################################
 
 - name: heartbeat_tick (check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     heartbeat_tick: 2
   check_mode: true
@@ -380,21 +380,21 @@
   register: output_1
 
 - name: heartbeat_tick
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     heartbeat_tick: 2
   diff: true
   register: output_2
 
 - name: heartbeat_tick (idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     heartbeat_tick: 2
   diff: true
   register: output_3
 
 - name: heartbeat_tick (idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     heartbeat_tick: 2
   check_mode: true
@@ -402,7 +402,7 @@
   register: output_4
 
 - name: heartbeat_tick (change, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     heartbeat_tick: 3
   check_mode: true
@@ -410,14 +410,14 @@
   register: output_5
 
 - name: heartbeat_tick (change)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     heartbeat_tick: 3
   diff: true
   register: output_6
 
 - name: assert heartbeat_tick changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -448,7 +448,7 @@
 ## keep_old_snapshots ##############################################
 ####################################################################
 - name: keep_old_snapshots (check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     keep_old_snapshots: 1
   check_mode: true
@@ -456,21 +456,21 @@
   register: output_1
 
 - name: keep_old_snapshots
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     keep_old_snapshots: 1
   diff: true
   register: output_2
 
 - name: keep_old_snapshots (idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     keep_old_snapshots: 1
   diff: true
   register: output_3
 
 - name: keep_old_snapshots (idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     keep_old_snapshots: 1
   check_mode: true
@@ -478,7 +478,7 @@
   register: output_4
 
 - name: keep_old_snapshots (change, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     keep_old_snapshots: 2
   check_mode: true
@@ -486,14 +486,14 @@
   register: output_5
 
 - name: keep_old_snapshots (change)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     keep_old_snapshots: 2
   diff: true
   register: output_6
 
 - name: assert keep_old_snapshots changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -524,7 +524,7 @@
 ## labels ##########################################################
 ####################################################################
 - name: labels (check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     labels:
       a: v1
@@ -535,7 +535,7 @@
   ignore_errors: true
 
 - name: labels
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     labels:
       a: v1
@@ -545,7 +545,7 @@
   ignore_errors: true
 
 - name: labels (idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     labels:
       a: v1
@@ -555,7 +555,7 @@
   ignore_errors: true
 
 - name: labels (idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     labels:
       a: v1
@@ -566,7 +566,7 @@
   ignore_errors: true
 
 - name: labels (change, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     labels:
       a: v1
@@ -577,7 +577,7 @@
   ignore_errors: true
 
 - name: labels (change)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     labels:
       a: v1
@@ -587,7 +587,7 @@
   ignore_errors: true
 
 - name: labels (not specifying, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
   check_mode: true
   diff: true
@@ -595,14 +595,14 @@
   ignore_errors: true
 
 - name: labels (not specifying)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
   diff: true
   register: output_8
   ignore_errors: true
 
 - name: labels (idempotency, check that labels are still there)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     labels:
       a: v1
@@ -612,7 +612,7 @@
   ignore_errors: true
 
 - name: labels (empty, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     labels: {}
   check_mode: true
@@ -621,7 +621,7 @@
   ignore_errors: true
 
 - name: labels (empty)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     labels: {}
   diff: true
@@ -629,7 +629,7 @@
   ignore_errors: true
 
 - name: labels (empty, idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     labels: {}
   check_mode: true
@@ -638,7 +638,7 @@
   ignore_errors: true
 
 - name: labels (empty, idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     labels: {}
   diff: true
@@ -646,7 +646,7 @@
   ignore_errors: true
 
 - name: assert labels changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -701,7 +701,7 @@
       - 'output_13.diff.before is defined'
       - 'output_13.diff.after is defined'
   when: docker_py_version is version('2.6.0', '>=')
-- assert:
+- ansible.builtin.assert:
     that:
       - output_1 is failed
       - "('version is ' ~ docker_py_version ~ ' ') in output_1.msg"
@@ -712,7 +712,7 @@
 ## log_entries_for_slow_followers ##################################
 ####################################################################
 - name: log_entries_for_slow_followers (check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     log_entries_for_slow_followers: 42
   check_mode: true
@@ -720,21 +720,21 @@
   register: output_1
 
 - name: log_entries_for_slow_followers
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     log_entries_for_slow_followers: 42
   diff: true
   register: output_2
 
 - name: log_entries_for_slow_followers (idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     log_entries_for_slow_followers: 42
   diff: true
   register: output_3
 
 - name: log_entries_for_slow_followers (idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     log_entries_for_slow_followers: 42
   check_mode: true
@@ -742,7 +742,7 @@
   register: output_4
 
 - name: log_entries_for_slow_followers (change, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     log_entries_for_slow_followers: 23
   check_mode: true
@@ -750,14 +750,14 @@
   register: output_5
 
 - name: log_entries_for_slow_followers (change)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     log_entries_for_slow_followers: 23
   diff: true
   register: output_6
 
 - name: assert log_entries_for_slow_followers changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -788,7 +788,7 @@
 ## name ############################################################
 ####################################################################
 - name: name (idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     name: default
   check_mode: true
@@ -796,7 +796,7 @@
   register: output_1
 
 - name: name (idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     name: default
   diff: true
@@ -806,7 +806,7 @@
 # it causes a failure. This might change in the future, so we also
 # accept a change for this test.
 - name: name (change, should fail)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     name: foobar
   diff: true
@@ -814,7 +814,7 @@
   ignore_errors: true
 
 - name: assert name changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is not changed'
       - 'output_1.actions[0] == "No modification"'
@@ -830,7 +830,7 @@
 ## node_cert_expiry ################################################
 ####################################################################
 - name: node_cert_expiry (check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     node_cert_expiry: 7896000000000000
   check_mode: true
@@ -838,21 +838,21 @@
   register: output_1
 
 - name: node_cert_expiry
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     node_cert_expiry: 7896000000000000
   diff: true
   register: output_2
 
 - name: node_cert_expiry (idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     node_cert_expiry: 7896000000000000
   diff: true
   register: output_3
 
 - name: node_cert_expiry (idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     node_cert_expiry: 7896000000000000
   check_mode: true
@@ -860,7 +860,7 @@
   register: output_4
 
 - name: node_cert_expiry (change, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     node_cert_expiry: 8766000000000000
   check_mode: true
@@ -868,14 +868,14 @@
   register: output_5
 
 - name: node_cert_expiry (change)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     node_cert_expiry: 8766000000000000
   diff: true
   register: output_6
 
 - name: assert node_cert_expiry changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -906,7 +906,7 @@
 ## rotate_manager_token ############################################
 ####################################################################
 - name: rotate_manager_token (true, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     rotate_manager_token: true
   check_mode: true
@@ -914,21 +914,21 @@
   register: output_1
 
 - name: rotate_manager_token (true)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     rotate_manager_token: true
   diff: true
   register: output_2
 
 - name: rotate_manager_token (false, idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     rotate_manager_token: false
   diff: true
   register: output_3
 
 - name: rotate_manager_token (false, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     rotate_manager_token: false
   check_mode: true
@@ -936,7 +936,7 @@
   register: output_4
 
 - name: assert rotate_manager_token changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -959,7 +959,7 @@
 ## rotate_worker_token #############################################
 ####################################################################
 - name: rotate_worker_token (true, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     rotate_worker_token: true
   check_mode: true
@@ -967,21 +967,21 @@
   register: output_1
 
 - name: rotate_worker_token (true)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     rotate_worker_token: true
   diff: true
   register: output_2
 
 - name: rotate_worker_token (false, idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     rotate_worker_token: false
   diff: true
   register: output_3
 
 - name: rotate_worker_token (false, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     rotate_worker_token: false
   check_mode: true
@@ -989,7 +989,7 @@
   register: output_4
 
 - name: assert rotate_worker_token changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -1012,7 +1012,7 @@
 ## snapshot_interval ###############################################
 ####################################################################
 - name: snapshot_interval (check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     snapshot_interval: 12345
   check_mode: true
@@ -1020,21 +1020,21 @@
   register: output_1
 
 - name: snapshot_interval
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     snapshot_interval: 12345
   diff: true
   register: output_2
 
 - name: snapshot_interval (idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     snapshot_interval: 12345
   diff: true
   register: output_3
 
 - name: snapshot_interval (idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     snapshot_interval: 12345
   check_mode: true
@@ -1042,7 +1042,7 @@
   register: output_4
 
 - name: snapshot_interval (change, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     snapshot_interval: 54321
   check_mode: true
@@ -1050,14 +1050,14 @@
   register: output_5
 
 - name: snapshot_interval (change)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     snapshot_interval: 54321
   diff: true
   register: output_6
 
 - name: assert snapshot_interval changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -1088,7 +1088,7 @@
 ## task_history_retention_limit ####################################
 ####################################################################
 - name: task_history_retention_limit (check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     task_history_retention_limit: 23
   check_mode: true
@@ -1096,21 +1096,21 @@
   register: output_1
 
 - name: task_history_retention_limit
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     task_history_retention_limit: 23
   diff: true
   register: output_2
 
 - name: task_history_retention_limit (idempotent)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     task_history_retention_limit: 23
   diff: true
   register: output_3
 
 - name: task_history_retention_limit (idempotent, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     task_history_retention_limit: 23
   check_mode: true
@@ -1118,7 +1118,7 @@
   register: output_4
 
 - name: task_history_retention_limit (change, check mode)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     task_history_retention_limit: 7
   check_mode: true
@@ -1126,14 +1126,14 @@
   register: output_5
 
 - name: task_history_retention_limit (change)
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
     task_history_retention_limit: 7
   diff: true
   register: output_6
 
 - name: assert task_history_retention_limit changes
-  assert:
+  ansible.builtin.assert:
     that:
       - 'output_1 is changed'
       - 'output_1.actions[0] == "Swarm cluster updated"'
@@ -1160,4 +1160,4 @@
       - 'output_6.diff.before is defined'
       - 'output_6.diff.after is defined'
 
-- include_tasks: cleanup.yml
+- ansible.builtin.include_tasks: cleanup.yml

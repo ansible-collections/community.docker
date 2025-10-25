@@ -23,17 +23,17 @@
 
   block:
     - name: Registering container name
-      set_fact:
+      ansible.builtin.set_fact:
         cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
         dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
 
     - name: Create project directory
-      file:
+      ansible.builtin.file:
         path: '{{ project_src }}'
         state: directory
 
     - name: Make sure images are not around
-      docker_image_remove:
+      community.docker.docker_image_remove:
         name: '{{ item }}'
       loop:
         - '{{ non_existing_image }}'
@@ -44,24 +44,24 @@
 ####################################################################
 
     - name: Template project file with non-existing image
-      copy:
+      ansible.builtin.copy:
         dest: '{{ project_src }}/docker-compose.yml'
         content: '{{ test_service_non_existing }}'
 
     - name: Pull (check)
-      docker_compose_v2_pull:
+      community.docker.docker_compose_v2_pull:
         project_src: '{{ project_src }}'
       check_mode: true
       register: pull_1_check
       ignore_errors: true
 
     - name: Pull
-      docker_compose_v2_pull:
+      community.docker.docker_compose_v2_pull:
         project_src: '{{ project_src }}'
       register: pull_1
       ignore_errors: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - pull_1_check is failed or pull_1_check is changed
           - pull_1_check is changed or pull_1_check.msg.startswith('Error when processing ')
@@ -75,69 +75,69 @@
 ####################################################################
 
     - name: Template project file with simple image
-      copy:
+      ansible.builtin.copy:
         dest: '{{ project_src }}/docker-compose.yml'
         content: '{{ test_service_simple }}'
 
     - when: docker_compose_version is version('2.22.0', '>=')
       block:
         - name: Pull with policy=missing (check)
-          docker_compose_v2_pull:
+          community.docker.docker_compose_v2_pull:
             project_src: '{{ project_src }}'
             policy: missing
           check_mode: true
           register: pull_1_check
 
         - name: Pull with policy=missing
-          docker_compose_v2_pull:
+          community.docker.docker_compose_v2_pull:
             project_src: '{{ project_src }}'
             policy: missing
           register: pull_1
 
         - name: Pull with policy=missing (idempotent, check)
-          docker_compose_v2_pull:
+          community.docker.docker_compose_v2_pull:
             project_src: '{{ project_src }}'
             policy: missing
           check_mode: true
           register: pull_2_check
 
         - name: Pull with policy=missing (idempotent)
-          docker_compose_v2_pull:
+          community.docker.docker_compose_v2_pull:
             project_src: '{{ project_src }}'
             policy: missing
           register: pull_2
 
         - name: Make sure image is not around
-          docker_image_remove:
+          community.docker.docker_image_remove:
             name: '{{ docker_test_image_simple_1 }}'
 
         - name: Pull with policy=always (check)
-          docker_compose_v2_pull:
+          community.docker.docker_compose_v2_pull:
             project_src: '{{ project_src }}'
             policy: always
           check_mode: true
           register: pull_3_check
 
         - name: Pull with policy=always
-          docker_compose_v2_pull:
+          community.docker.docker_compose_v2_pull:
             project_src: '{{ project_src }}'
             policy: always
           register: pull_3
 
         - name: Pull with policy=always (check, idempotent)
-          docker_compose_v2_pull:
+          community.docker.docker_compose_v2_pull:
             project_src: '{{ project_src }}'
             policy: always
           check_mode: true
           register: pull_4_check
 
         - name: Pull with policy=always (idempotent)
-          docker_compose_v2_pull:
+          community.docker.docker_compose_v2_pull:
             project_src: '{{ project_src }}'
             policy: always
           register: pull_4
 
-        - assert:
+        - ansible.builtin.assert:
             that:
               - pull_1_check is changed
               - (pull_1_check.actions | selectattr('status', 'eq', 'Pulling') | first) is truthy
@@ -165,32 +165,32 @@
     - when: docker_compose_version is version('2.22.0', '<')
       block:
         - name: Pull with policy=always (check)
-          docker_compose_v2_pull:
+          community.docker.docker_compose_v2_pull:
             project_src: '{{ project_src }}'
             policy: always
           check_mode: true
           register: pull_1_check
 
         - name: Pull with policy=always
-          docker_compose_v2_pull:
+          community.docker.docker_compose_v2_pull:
             project_src: '{{ project_src }}'
             policy: always
           register: pull_1
 
         - name: Pull with policy=always (again, check)
-          docker_compose_v2_pull:
+          community.docker.docker_compose_v2_pull:
             project_src: '{{ project_src }}'
             policy: always
           check_mode: true
           register: pull_2_check
 
         - name: Pull with policy=always (again)
-          docker_compose_v2_pull:
+          community.docker.docker_compose_v2_pull:
             project_src: '{{ project_src }}'
             policy: always
           register: pull_2
 
-        - assert:
+        - ansible.builtin.assert:
             that:
               - pull_1_check is changed
               - (pull_1_check.actions | selectattr('status', 'eq', 'Pulling') | first) is truthy

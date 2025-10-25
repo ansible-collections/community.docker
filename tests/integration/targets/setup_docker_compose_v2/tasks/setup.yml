@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Include distribution specific variables
-  include_vars: "{{ lookup('first_found', params) }}"
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
       files:
@@ -18,7 +18,7 @@
 
 - block:
     - name: Include distribution specific tasks
-      include_tasks: "{{ lookup('first_found', params) }}"
+      ansible.builtin.include_tasks: "{{ lookup('first_found', params) }}"
       vars:
         params:
           files:
@@ -30,21 +30,21 @@
             - "{{ role_path }}/tasks"
 
     - name: Install Python on Whales
-      pip:
+      ansible.builtin.pip:
         state: present
         name: python-on-whales
         extra_args: "-c {{ remote_constraints }}"
 
     - name: Register docker-compose version
-      command: "docker compose version --short"
+      ansible.builtin.command: "docker compose version --short"
       register: docker_compose_version
 
     - name: Declare docker-compose version
-      set_fact:
+      ansible.builtin.set_fact:
         docker_compose_version: "{{ docker_compose_version.stdout }}"
 
     - name: Declare docker-compose as existing
-      set_fact:
+      ansible.builtin.set_fact:
         has_docker_compose: '{{ docker_compose_version is version("2.0", ">=") }}'
 
   when: not skip_docker_compose

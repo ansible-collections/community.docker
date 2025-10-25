@@ -5,7 +5,7 @@
 
 # Create random name prefix (for containers, networks, ...)
 - name: Create random container name prefix
-  set_fact:
+  ansible.builtin.set_fact:
     cname_prefix: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
 
 - name: Make sure image is absent

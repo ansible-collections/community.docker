@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cname: "{{ cname_prefix ~ '-comparisons' }}"
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cnames: "{{ cnames + [cname] }}"
 
 ####################################################################
@@ -15,7 +15,7 @@
 ####################################################################
 
 - name: value
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -24,7 +24,7 @@
   register: value_1
 
 - name: value (change, ignore)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -36,7 +36,7 @@
   register: value_2
 
 - name: value (change, strict)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -48,13 +48,13 @@
   register: value_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - value_1 is changed
       - value_2 is not changed
@@ -65,7 +65,7 @@
 ####################################################################
 
 - name: list
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -76,7 +76,7 @@
   register: list_1
 
 - name: list (change, ignore)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -89,7 +89,7 @@
   register: list_2
 
 - name: list (change, strict)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -102,13 +102,13 @@
   register: list_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - list_1 is changed
       - list_2 is not changed
@@ -119,7 +119,7 @@
 ####################################################################
 
 - name: set
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -130,7 +130,7 @@
   register: set_1
 
 - name: set (change, ignore)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -145,7 +145,7 @@
   register: set_2
 
 - name: set (change, allow_more_present)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -160,7 +160,7 @@
   register: set_3
 
 - name: set (change, allow_more_present)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -174,7 +174,7 @@
   register: set_4
 
 - name: set (change, strict)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -188,13 +188,13 @@
   register: set_5
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - set_1 is changed
       - set_2 is not changed
@@ -207,7 +207,7 @@
 ####################################################################
 
 - name: set(dict)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -218,7 +218,7 @@
   register: set_dict_1
 
 - name: set(dict) (change, ignore)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -233,7 +233,7 @@
   register: set_dict_2
 
 - name: set(dict) (change, allow_more_present)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -248,7 +248,7 @@
   register: set_dict_3
 
 - name: set(dict) (change, allow_more_present)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -262,7 +262,7 @@
   register: set_dict_4
 
 - name: set(dict) (change, strict)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -276,13 +276,13 @@
   register: set_dict_5
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - set_dict_1 is changed
       - set_dict_2 is not changed
@@ -295,7 +295,7 @@
 ####################################################################
 
 - name: dict
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -306,7 +306,7 @@
   register: dict_1
 
 - name: dict (change, ignore)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -321,7 +321,7 @@
   register: dict_2
 
 - name: dict (change, allow_more_present)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -336,7 +336,7 @@
   register: dict_3
 
 - name: dict (change, allow_more_present)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -350,7 +350,7 @@
   register: dict_4
 
 - name: dict (change, strict)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -364,13 +364,13 @@
   register: dict_5
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - dict_1 is changed
       - dict_2 is not changed
@@ -384,11 +384,11 @@
 
 - name: Pull {{ docker_test_image_hello_world }} image to make sure wildcard_2 test succeeds
   # If the image isn't there, it will pull it and return 'changed'.
-  docker_image_pull:
+  community.docker.docker_image_pull:
     name: "{{ docker_test_image_hello_world }}"
 
 - name: wildcard
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -402,7 +402,7 @@
   register: wildcard_1
 
 - name: wildcard (change, ignore)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -418,7 +418,7 @@
   register: wildcard_2
 
 - name: wildcard (change, strict)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -435,7 +435,7 @@
   register: wildcard_3
 
 - name: wildcard (no change, strict)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -452,13 +452,13 @@
   register: wildcard_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - wildcard_1 is changed
       - wildcard_2 is not changed

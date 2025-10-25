@@ -10,11 +10,11 @@
 
 - block:
     - name: Pick image prefix
-      set_fact:
+      ansible.builtin.set_fact:
         iname_prefix: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
 
     - name: Define image names
-      set_fact:
+      ansible.builtin.set_fact:
         image_1: "{{ docker_test_image_hello_world }}"
         image_2: "{{ docker_test_image_alpine }}"
         image_3: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
@@ -25,7 +25,7 @@
           - "{{ iname_prefix }}-tagged-2:baz"
 
     - name: Make sure images we work with are there
-      docker_image_pull:
+      community.docker.docker_image_pull:
         name: "{{ item }}"
       loop:
         - "{{ image_1 }}"
@@ -35,12 +35,12 @@
       diff: true
 
     - name: Remove tagged images
-      docker_image_remove:
+      community.docker.docker_image_remove:
         name: "{{ item }}"
       loop: "{{ image_names }}"
 
     - name: Tag image 1 (check mode)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_1 }}"
         repository:
           - "{{ iname_prefix }}-tagged-1:latest"
@@ -50,7 +50,7 @@
       check_mode: true
 
     - name: Tag image 1
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_1 }}"
         repository:
           - "{{ iname_prefix }}-tagged-1:latest"
@@ -59,11 +59,11 @@
       diff: true
 
     - name: Fetch image infos
-      docker_image_info:
+      community.docker.docker_image_info:
         name: "{{ image_names }}"
       register: info_1
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - tag_1 is changed
           - tag_1.diff.before.images | length == 2
@@ -79,7 +79,7 @@
           - tag_1_check == tag_1
 
     - name: Tag image 1 (idempotent, check mode)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_1 }}"
         repository:
           - "{{ iname_prefix }}-tagged-1:latest"
@@ -89,7 +89,7 @@
       check_mode: true
 
     - name: Tag image 1 (idempotent)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_1 }}"
         repository:
           - "{{ iname_prefix }}-tagged-1:latest"
@@ -97,7 +97,7 @@
       register: tag_2
       diff: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - tag_2 is not changed
           - tag_2.diff.before == tag_2.diff.after
@@ -105,7 +105,7 @@
           - tag_2_check == tag_2
 
     - name: Tag image 1 (idempotent, different input format, check mode)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_1 }}"
         tag: foo
         repository:
@@ -116,7 +116,7 @@
       check_mode: true
 
     - name: Tag image 1 (idempotent, different input format)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_1 }}"
         tag: foo
         repository:
@@ -125,7 +125,7 @@
       register: tag_3
       diff: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - tag_3 is not changed
           - tag_3.diff.before == tag_3.diff.after
@@ -133,7 +133,7 @@
           - tag_3_check == tag_3
 
     - name: Tag image 1 (one more, check mode)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_1 }}"
         repository:
           - "{{ iname_prefix }}-tagged-1:latest"
@@ -144,7 +144,7 @@
       check_mode: true
 
     - name: Tag image 1 (one more)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_1 }}"
         repository:
           - "{{ iname_prefix }}-tagged-1:latest"
@@ -154,11 +154,11 @@
       diff: true
 
     - name: Fetch image infos
-      docker_image_info:
+      community.docker.docker_image_info:
         name: "{{ image_names }}"
       register: info_4
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - tag_4 is changed
           - tag_4.diff.before.images | length == 3
@@ -176,7 +176,7 @@
           - tag_4_check == tag_4
 
     - name: Tag image 2 (only change missing one, check mode)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_2 }}"
         existing_images: keep
         repository:
@@ -188,7 +188,7 @@
       check_mode: true
 
     - name: Tag image 2 (only change missing one)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_2 }}"
         existing_images: keep
         repository:
@@ -199,11 +199,11 @@
       diff: true
 
     - name: Fetch image infos
-      docker_image_info:
+      community.docker.docker_image_info:
         name: "{{ image_names }}"
       register: info_5
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - tag_5 is changed
           - tag_5.diff.before.images | length == 3
@@ -222,7 +222,7 @@
           - tag_5_check == tag_5
 
     - name: Tag image 2 (idempotent, check mode)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_2 }}"
         existing_images: keep
         repository:
@@ -234,7 +234,7 @@
       check_mode: true
 
     - name: Tag image 2 (idempotent)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_2 }}"
         existing_images: keep
         repository:
@@ -244,7 +244,7 @@
       register: tag_6
       diff: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - tag_6 is not changed
           - tag_6.diff.before == tag_6.diff.after
@@ -252,7 +252,7 @@
           - tag_6_check == tag_6
 
     - name: Tag image 2 (only change wrong ones, check mode)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_2 }}"
         existing_images: overwrite
         repository:
@@ -264,7 +264,7 @@
       check_mode: true
 
     - name: Tag image 2 (only change wrong ones)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_2 }}"
         existing_images: overwrite
         repository:
@@ -275,11 +275,11 @@
       diff: true
 
     - name: Fetch image infos
-      docker_image_info:
+      community.docker.docker_image_info:
         name: "{{ image_names }}"
       register: info_7
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - tag_7 is changed
           - tag_7.diff.before.images | length == 3
@@ -299,7 +299,7 @@
           - tag_7_check == tag_7
 
     - name: Tag image 2 (idempotent, check mode)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_2 }}"
         existing_images: overwrite
         repository:
@@ -311,7 +311,7 @@
       check_mode: true
 
     - name: Tag image 2 (idempotent)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_2 }}"
         existing_images: overwrite
         repository:
@@ -321,7 +321,7 @@
       register: tag_8
       diff: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - tag_8 is not changed
           - tag_8.diff.before == tag_8.diff.after
@@ -329,7 +329,7 @@
           - tag_8_check == tag_8
 
     - name: Tag image 3 (source image has digest)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_3 }}"
         existing_images: overwrite
         repository:
@@ -337,7 +337,7 @@
       register: tag_9
       diff: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - tag_9 is changed
           - tag_9.diff.before.images | length == 1
@@ -345,7 +345,7 @@
           - tag_9.diff.after.images[0].id == pulled_images.results[2].image.Id
 
     - name: Tag image 3 (source image is ID)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ pulled_images.results[2].image.Id }}"
         existing_images: overwrite
         repository:
@@ -353,7 +353,7 @@
       register: tag_10
       diff: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - tag_10 is changed
           - tag_10.diff.before.images | length == 1
@@ -361,7 +361,7 @@
           - tag_10.diff.after.images[0].id == pulled_images.results[2].image.Id
 
     - name: Tag image 3 (fail because of digest)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_3 }}"
         existing_images: overwrite
         repository:
@@ -369,14 +369,14 @@
       register: tag_11
       ignore_errors: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - tag_11 is failed
           - >-
             tag_11.msg == ('repository[1] must not have a digest; got: ' ~ iname_prefix ~ '-tagged-2@sha256:' ~ docker_test_image_digest_v1)
 
     - name: Tag image 3 (fail because of image ID)
-      docker_image_tag:
+      community.docker.docker_image_tag:
         name: "{{ image_3 }}"
         existing_images: overwrite
         repository:
@@ -384,7 +384,7 @@
       register: tag_12
       ignore_errors: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - tag_12 is failed
           - >-
@@ -392,11 +392,11 @@
 
   always:
     - name: Remove tagged images
-      docker_image_remove:
+      community.docker.docker_image_remove:
         name: "{{ item }}"
       loop: "{{ image_names }}"
 
   when: docker_api_version is version('1.25', '>=')
 
-- fail: msg="Too old docker / docker-py version to run docker_image_info tests!"
+- ansible.builtin.fail: msg="Too old docker / docker-py version to run docker_image_info tests!"
   when: not(docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)

@@ -10,15 +10,15 @@
 
   tasks:
     - name: Setup docker
-      import_role:
+      ansible.builtin.import_role:
         name: setup_docker
 
     - name: Setup Docker Python deps
-      import_role:
+      ansible.builtin.import_role:
         name: setup_docker_python_deps
 
     - name: Start containers
-      docker_container:
+      community.docker.docker_container:
         name: "{{ item.name }}"
         image: "{{ docker_test_image_alpine }}"
         state: started

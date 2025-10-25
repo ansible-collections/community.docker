@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: CLEANUP | Leave Docker Swarm
-  docker_swarm:
+  community.docker.docker_swarm:
     state: absent
     force: true
   ignore_errors: true
@@ -14,25 +14,25 @@
   when: leave_swarm is failed
   block:
     - name: CLEANUP | Kill docker daemon
-      command: systemctl kill -s 9 docker
+      ansible.builtin.command: systemctl kill -s 9 docker
       become: true
 
     - name: CLEANUP | Clear out /var/lib/docker
-      shell: rm -rf  /var/lib/docker/*
+      ansible.builtin.shell: rm -rf  /var/lib/docker/*
 
     - name: CLEANUP | Start docker daemon
-      service:
+      ansible.builtin.service:
         name: docker
         state: started
       become: true
 
     - name: CLEANUP | Wait for docker daemon to be fully started
-      command: docker ps
+      ansible.builtin.command: docker ps
       register: result
       until: result is success
       retries: 10
 
     - name: CLEANUP | Leave Docker Swarm
-      docker_swarm:
+      community.docker.docker_swarm:
         state: absent
         force: true

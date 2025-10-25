@@ -4,20 +4,20 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cname: "{{ cname_prefix ~ '-update' }}"
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cnames: "{{ cnames + [cname] }}"
 
 # We do not test cpuset_cpus and cpuset_mems since changing it fails if the system does
 # not have 'enough' CPUs. We do not test kernel_memory since it is deprecated and fails.
 
-- set_fact:
+- ansible.builtin.set_fact:
     has_blkio_weight: true
 
 - name: Create container
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -37,16 +37,16 @@
 - when: create is failed
   block:
     - name: Make sure container is not there
-      docker_container:
+      community.docker.docker_container:
         name: "{{ cname }}"
         state: absent
 
     - when: "'setting cgroup config for procHooks process caused: failed to write' in create.msg and 'io.bfq.weight' in create.msg"
-      set_fact:
+      ansible.builtin.set_fact:
         has_blkio_weight: false
 
     - name: Create container again
-      docker_container:
+      community.docker.docker_container:
         image: "{{ docker_test_image_alpine }}"
         command: '/bin/sh -c "sleep 10m"'
         name: "{{ cname }}"
@@ -63,11 +63,11 @@
       register: create_2
 
     - when: "'setting cgroup config for procHooks process caused: failed to write' in create.msg and 'io.bfq.weight' in create.msg"
-      set_fact:
+      ansible.builtin.set_fact:
         create: "{{ create_2 }}"
 
 - name: Update values
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -85,7 +85,7 @@
   diff: true
 
 - name: Update values again
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -103,7 +103,7 @@
   diff: true
 
 - name: Recreate container
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 20m"'  # this will force re-creation
     name: "{{ cname }}"
@@ -122,14 +122,14 @@
   diff: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
 - name: Check general things
-  assert:
+  ansible.builtin.assert:
     that:
       - create is changed
       - update is changed
@@ -144,7 +144,7 @@
       - create.container.Id != recreate.container.Id
 
 - name: Check diff for first update
-  assert:
+  ansible.builtin.assert:
     that:
       # blkio_weight sometimes cannot be set, then we end up with 0 instead of the value we had
       - >-
@@ -169,7 +169,7 @@
       - update.diff.after.restart_retries == 2
 
 - name: Check diff for second update
-  assert:
+  ansible.builtin.assert:
     that:
       - >-
         not has_blkio_weight or update2.diff.before.blkio_weight == 234 or ('Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([])))
@@ -194,7 +194,7 @@
       - update2.diff.after.restart_retries == 0
 
 - name: Check diff for recreation
-  assert:
+  ansible.builtin.assert:
     that:
       - >-
         not has_blkio_weight or recreate.diff.before.blkio_weight == 135 or ('Docker warning: Your kernel does not support Block I/O weight or the cgroup is not mounted. Weight discarded.' in (create.warnings | default([])))

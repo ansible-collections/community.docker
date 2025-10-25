@@ -8,10 +8,10 @@
   gather_facts: false
   tasks:
     - name: Show all groups
-      debug:
+      ansible.builtin.debug:
         var: groups
     - name: Make sure that the default groups are there, but no others
-      assert:
+      ansible.builtin.assert:
         that:
           - groups.all | length >= 2
           - groups.ungrouped | length >= 2
@@ -26,11 +26,11 @@
         - inventory_hostname.startswith('ansible-docker-test-docker-inventory-container-')
       block:
         - name: Run raw command
-          raw: ls /
+          ansible.builtin.raw: ls /
           register: output
 
         - name: Check whether we have some directories we expect in the output
-          assert:
+          ansible.builtin.assert:
             that:
               - "'bin' in output.stdout_lines"
               - "'dev' in output.stdout_lines"

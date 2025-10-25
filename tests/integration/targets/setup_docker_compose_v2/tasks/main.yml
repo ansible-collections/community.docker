@@ -8,9 +8,9 @@
 # and should not be used as examples of how to write Ansible roles #
 ####################################################################
 
-- set_fact:
+- ansible.builtin.set_fact:
     has_docker_compose: false
 
 - when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in ['CentOS6', 'RedHat6'] and ansible_python_version is version('3.7', '>=')
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: setup.yml

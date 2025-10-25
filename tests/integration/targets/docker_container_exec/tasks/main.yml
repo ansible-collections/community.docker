@@ -10,29 +10,29 @@
 
 - block:
     - name: Create random container name
-      set_fact:
+      ansible.builtin.set_fact:
         cname: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
 
     - name: Make sure container is not there
-      docker_container:
+      community.docker.docker_container:
         name: "{{ cname }}"
         state: absent
         force_kill: true
 
     - name: Execute in a non-present container
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ cname }}"
         command: "/bin/bash -c 'ls -a'"
       register: result
       ignore_errors: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - result is failed
           - "'Could not find container' in result.msg"
 
     - name: Make sure container exists
-      docker_container:
+      community.docker.docker_container:
         name: "{{ cname }}"
         image: "{{ docker_test_image_alpine }}"
         command: '/bin/sh -c "sleep 10m"'
@@ -40,12 +40,12 @@
         force_kill: true
 
     - name: Execute in a present container (command)
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ cname }}"
         command: "/bin/sh -c 'ls -a'"
       register: result_cmd
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - result_cmd.rc == 0
           - "'stdout' in result_cmd"
@@ -54,7 +54,7 @@
           - "'stderr_lines' in result_cmd"
 
     - name: Execute in a present container (argv)
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ cname }}"
         argv:
           - /bin/sh
@@ -62,7 +62,7 @@
           - ls -a
       register: result_argv
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - result_argv.rc == 0
           - "'stdout' in result_argv"
@@ -72,7 +72,7 @@
           - result_cmd.stdout == result_argv.stdout
 
     - name: Execute in a present container (cat without stdin)
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ cname }}"
         argv:
           - /bin/sh
@@ -80,7 +80,7 @@
           - cat
       register: result
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - result.rc == 0
           - result.stdout == ''
@@ -89,7 +89,7 @@
           - result.stderr_lines == []
 
     - name: Execute in a present container (cat with stdin)
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ cname }}"
         argv:
           - /bin/sh
@@ -99,7 +99,7 @@
         strip_empty_ends: false
       register: result
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - result.rc == 0
           - result.stdout == 'Hello world!\n'
@@ -108,7 +108,7 @@
           - result.stderr_lines == []
 
     - name: Execute in a present container (cat with stdin, no newline)
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ cname }}"
         argv:
           - /bin/sh
@@ -119,7 +119,7 @@
         strip_empty_ends: false
       register: result
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - result.rc == 0
           - result.stdout == 'Hello world!'
@@ -128,7 +128,7 @@
           - result.stderr_lines == []
 
     - name: Execute in a present container (cat with stdin, newline but stripping)
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ cname }}"
         argv:
           - /bin/sh
@@ -139,7 +139,7 @@
         strip_empty_ends: true
       register: result
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - result.rc == 0
           - result.stdout == 'Hello world!'
@@ -148,12 +148,12 @@
           - result.stderr_lines == []
 
     - name: Prepare long string
-      set_fact:
+      ansible.builtin.set_fact:
         very_long_string: "{{ 'something long ' * 10000 }}"
         very_long_string2: "{{ 'something else ' * 5000 }}"
 
     - name: Execute in a present container (long stdin)
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ cname }}"
         argv:
           - /bin/sh
@@ -164,7 +164,7 @@
           {{ very_long_string2 }}
       register: result
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - result is changed
           - result.rc == 0
@@ -175,7 +175,7 @@
           - "'exec_id' not in result"
 
     - name: Execute in a present container (detached)
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ cname }}"
         argv:
           - /bin/sh
@@ -184,9 +184,9 @@
         detach: true
       register: result
 
-    - debug: var=result
+    - ansible.builtin.debug: var=result
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - result is changed
           - "'rc' not in result"
@@ -195,7 +195,7 @@
           - result.exec_id is string
 
     - name: Execute in a present container (environment variable)
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ cname }}"
         argv:
           - /bin/sh
@@ -207,7 +207,7 @@
             baz
       register: result
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - result.rc == 0
           - result.stdout == 'bar\nbaz'
@@ -216,7 +216,7 @@
           - result.stderr_lines == ['bar baz']
 
     - name: Check result of detach test
-      docker_container_exec:
+      community.docker.docker_container_exec:
         container: "{{ cname }}"
         argv:
           - /bin/sh
@@ -225,7 +225,7 @@
         strip_empty_ends: false
       register: result
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - result.rc == 0
           - result.stdout == 'Detach worked.\n'
@@ -235,12 +235,12 @@
 
   always:
     - name: Cleanup
-      docker_container:
+      community.docker.docker_container:
         name: "{{ cname }}"
         state: absent
         force_kill: true
 
   when: docker_api_version is version('1.25', '>=')
 
-- fail: msg="Too old docker / docker-py version to run docker_container_exec tests!"
+- ansible.builtin.fail: msg="Too old docker / docker-py version to run docker_container_exec tests!"
   when: not(docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)

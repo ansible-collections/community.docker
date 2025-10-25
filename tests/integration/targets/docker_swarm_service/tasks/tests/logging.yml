@@ -4,11 +4,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering service name
-  set_fact:
+  ansible.builtin.set_fact:
     service_name: "{{ name_prefix ~ '-logging' }}"
 
 - name: Registering service name
-  set_fact:
+  ansible.builtin.set_fact:
     service_names: "{{ service_names + [service_name] }}"
 
 ####################################################################
@@ -16,7 +16,7 @@
 ####################################################################
 
 - name: logging.driver
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -26,7 +26,7 @@
   register: logging_driver_1
 
 - name: logging.driver (idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -36,7 +36,7 @@
   register: logging_driver_2
 
 - name: logging.driver (change)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -46,12 +46,12 @@
   register: logging_driver_3
 
 - name: cleanup
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - logging_driver_1 is changed
       - logging_driver_2 is not changed
@@ -62,7 +62,7 @@
 ####################################################################
 
 - name: logging_options
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -75,7 +75,7 @@
   register: logging_options_1
 
 - name: logging_options (idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -88,7 +88,7 @@
   register: logging_options_2
 
 - name: logging_options (change)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -102,7 +102,7 @@
   register: logging_options_3
 
 - name: logging_options (empty)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -113,7 +113,7 @@
   register: logging_options_4
 
 - name: logging_options (empty idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -124,12 +124,12 @@
   register: logging_options_5
 
 - name: cleanup
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - logging_options_1 is changed
       - logging_options_2 is not changed

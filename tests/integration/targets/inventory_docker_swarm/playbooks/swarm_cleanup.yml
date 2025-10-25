@@ -8,6 +8,6 @@
   gather_facts: true
   tasks:
     - name: Make sure swarm is removed
-      docker_swarm:
+      community.docker.docker_swarm:
         state: absent
         force: true

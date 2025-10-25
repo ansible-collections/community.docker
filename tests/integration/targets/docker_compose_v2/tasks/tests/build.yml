@@ -18,13 +18,13 @@
 
   block:
     - name: Registering container name
-      set_fact:
+      ansible.builtin.set_fact:
         cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
         dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
         images: "{{ images + [iname] }}"
 
     - name: Create project directory
-      file:
+      ansible.builtin.file:
         path: '{{ item }}'
         state: directory
       loop:
@@ -32,45 +32,45 @@
         - '{{ project_src }}/build'
 
     - name: Template default project file
-      copy:
+      ansible.builtin.copy:
         dest: '{{ project_src }}/docker-compose.yml'
         content: '{{ test_service }}'
 
     - name: Template Dockerfile
-      copy:
+      ansible.builtin.copy:
         dest: '{{ project_src }}/build/Dockerfile'
         content: |
           FROM {{ docker_test_image_alpine }}
           ENTRYPOINT ["/bin/sh", "-c", "sleep 10m"]
 
     - name: Present (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       check_mode: true
       register: present_1_check
 
     - name: Present
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       register: present_1
 
     - name: Present (idempotent check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       check_mode: true
       register: present_2_check
 
     - name: Present (idempotent)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       register: present_2
 
     - name: Present (idempotent check, build=always, ignore_build_events=false)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         build: always
@@ -79,7 +79,7 @@
       register: present_3_check
 
     - name: Present (idempotent, build=always, ignore_build_events=false)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         build: always
@@ -87,7 +87,7 @@
       register: present_3
 
     - name: Present (idempotent check, build=always, ignore_build_events=true)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         build: always
@@ -96,14 +96,14 @@
       register: present_4_check
 
     - name: Present (idempotent, build=always, ignore_build_events=true)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         build: always
         ignore_build_events: true
       register: present_4
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - present_1_check is changed
           - present_1_check.warnings | default([]) | select('regex', ' please report this at ') | length == 0
@@ -135,6 +135,6 @@
 
   always:
     - name: Cleanup
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: absent

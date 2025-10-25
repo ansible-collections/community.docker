@@ -3,14 +3,14 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-- set_fact:
+- ansible.builtin.set_fact:
     image_names:
       - "{{ docker_test_image_hello_world }}"
       - "{{ docker_test_image_simple_1 }}"
       - "{{ docker_test_image_simple_2 }}"
 
 - name: Make sure images are there
-  docker_image_pull:
+  community.docker.docker_image_pull:
     name: "{{ item }}"
   register: images
   loop: "{{ image_names }}"
@@ -37,7 +37,7 @@
 
   block:
     - name: Create archives
-      docker_image_export:
+      community.docker.docker_image_export:
         names: "{{ item.images }}"
         path: "{{ remote_tmp_dir }}/{{ item.file }}"
       loop: "{{ image_tasks }}"
@@ -46,14 +46,14 @@
       register: result
 
     - name: Extract manifest.json files
-      command: tar xvf "{{ remote_tmp_dir }}/{{ item.file }}" manifest.json --to-stdout
+      ansible.builtin.command: tar xvf "{{ remote_tmp_dir }}/{{ item.file }}" manifest.json --to-stdout
       loop: "{{ image_tasks }}"
       loop_control:
         label: "{{ item.file }}"
       register: manifests
 
     - name: Do basic tests
-      assert:
+      ansible.builtin.assert:
         that:
           - item.0.images | length == item.1 | length
           - item.1 | unique | length == item.2 | length

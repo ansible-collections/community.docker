@@ -4,13 +4,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cname: "{{ cname_prefix ~ '-options' }}"
     cname_h1: "{{ cname_prefix ~ '-options-h1' }}"
     cname_h2: "{{ cname_prefix ~ '-options-h2' }}"
     cname_h3: "{{ cname_prefix ~ '-options-h3' }}"
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cnames: "{{ cnames + [cname, cname_h1, cname_h2, cname_h3] }}"
 
 ####################################################################
@@ -18,7 +18,7 @@
 ####################################################################
 
 - name: auto_remove
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "echo"'
     name: "{{ cname }}"
@@ -27,16 +27,16 @@
   register: auto_remove_1
 
 - name: Give container 1 second to be sure it terminated
-  pause:
+  ansible.builtin.pause:
     seconds: 1
 
 - name: auto_remove (verify)
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
   register: auto_remove_2
 
-- assert:
+- ansible.builtin.assert:
     that:
       - auto_remove_1 is changed
       - auto_remove_2 is not changed
@@ -46,7 +46,7 @@
 ####################################################################
 
 - name: blkio_weight
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -56,7 +56,7 @@
   ignore_errors: true
 
 - name: blkio_weight (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -66,7 +66,7 @@
   ignore_errors: true
 
 - name: blkio_weight (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -77,19 +77,19 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
 - when: blkio_weight_1 is failed
-  assert:
+  ansible.builtin.assert:
     that:
       - "'setting cgroup config for procHooks process caused: failed to write' in blkio_weight_1.msg"
 
 - when: blkio_weight_1 is not failed
-  assert:
+  ansible.builtin.assert:
     that:
       - blkio_weight_1 is changed
       - blkio_weight_2 is not failed
@@ -103,7 +103,7 @@
 ####################################################################
 
 - name: capabilities, cap_drop
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -115,7 +115,7 @@
   register: capabilities_1
 
 - name: capabilities, cap_drop (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -127,7 +127,7 @@
   register: capabilities_2
 
 - name: capabilities, cap_drop (less)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -138,7 +138,7 @@
   register: capabilities_3
 
 - name: capabilities, cap_drop (changed)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -151,13 +151,13 @@
   register: capabilities_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - capabilities_1 is changed
       - capabilities_2 is not changed
@@ -169,7 +169,7 @@
 ####################################################################
 
 - name: cgroupns_mode
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -179,7 +179,7 @@
   ignore_errors: true
 
 - name: cgroupns_mode (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -189,7 +189,7 @@
   ignore_errors: true
 
 - name: cgroupns_mode (changed)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -199,13 +199,13 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - cgroupns_mode_1 is changed
       - cgroupns_mode_2 is not changed and cgroupns_mode_2 is not failed
@@ -214,12 +214,12 @@
         ('Docker warning: Your kernel does not support cgroup namespaces.  Cgroup namespace setting discarded.' in (cgroupns_mode_3.warnings | default([]))) or
         (cgroupns_mode_3 is failed and 'error mounting "cgroup" to rootfs at "/sys/fs/cgroup"' in cgroupns_mode_3.msg)
   when: docker_api_version is version('1.41', '>=') and cgroupns_mode_1 is not failed
-- assert:
+- ansible.builtin.assert:
     that:
       - >-
         'error mounting "cgroup" to rootfs at "/sys/fs/cgroup"' in cgroupns_mode_1.msg
   when: docker_api_version is version('1.41', '>=') and cgroupns_mode_1 is failed
-- assert:
+- ansible.builtin.assert:
     that:
       - cgroupns_mode_1 is failed
       - |
@@ -231,7 +231,7 @@
 ####################################################################
 
 - name: cgroup_parent
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -240,7 +240,7 @@
   register: cgroup_parent_1
 
 - name: cgroup_parent (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -249,13 +249,13 @@
   register: cgroup_parent_2
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - cgroup_parent_1 is changed
       - cgroup_parent_2 is not changed
@@ -267,7 +267,7 @@
 # old
 
 - name: command (compatibility)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
     command: '/bin/sh -v -c "sleep 10m"'
@@ -276,7 +276,7 @@
   register: command_1
 
 - name: command (compatibility, idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
     command: '/bin/sh -v -c "sleep 10m"'
@@ -285,7 +285,7 @@
   register: command_2
 
 - name: command (compatibility, idempotency, list)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
     command:
@@ -298,7 +298,7 @@
   register: command_3
 
 - name: command (compatibility, fewer parameters)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
     command: '/bin/sh -c "sleep 10m"'
@@ -308,7 +308,7 @@
   register: command_4
 
 - name: command (compatibility, empty list)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
     command: []
@@ -318,13 +318,13 @@
   register: command_5
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - command_1 is changed
       - command_2 is not changed
@@ -335,7 +335,7 @@
 # new
 
 - name: command (correct)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
     command: '/bin/sh -v -c "sleep 10m"'
@@ -344,7 +344,7 @@
   register: command_1
 
 - name: command (correct, idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
     command: '/bin/sh -v -c "sleep 10m"'
@@ -353,7 +353,7 @@
   register: command_2
 
 - name: command (correct, idempotency, list)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
     command:
@@ -366,7 +366,7 @@
   register: command_3
 
 - name: command (correct, fewer parameters)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
     command: '/bin/sh -c "sleep 10m"'
@@ -376,7 +376,7 @@
   register: command_4
 
 - name: command (correct, empty list)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
     command: []
@@ -386,7 +386,7 @@
   register: command_5
 
 - name: command (correct, empty list, idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
     command: []
@@ -396,13 +396,13 @@
   register: command_6
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - command_1 is changed
       - command_2 is not changed
@@ -416,7 +416,7 @@
 ####################################################################
 
 - name: cpu_period
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -425,7 +425,7 @@
   register: cpu_period_1
 
 - name: cpu_period (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -434,7 +434,7 @@
   register: cpu_period_2
 
 - name: cpu_period (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -444,13 +444,13 @@
   register: cpu_period_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - cpu_period_1 is changed
       - cpu_period_2 is not changed
@@ -461,7 +461,7 @@
 ####################################################################
 
 - name: cpu_quota
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -470,7 +470,7 @@
   register: cpu_quota_1
 
 - name: cpu_quota (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -479,7 +479,7 @@
   register: cpu_quota_2
 
 - name: cpu_quota (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -489,13 +489,13 @@
   register: cpu_quota_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - cpu_quota_1 is changed
       - cpu_quota_2 is not changed
@@ -506,7 +506,7 @@
 ####################################################################
 
 - name: cpu_shares
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -515,7 +515,7 @@
   register: cpu_shares_1
 
 - name: cpu_shares (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -524,7 +524,7 @@
   register: cpu_shares_2
 
 - name: cpu_shares (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -534,13 +534,13 @@
   register: cpu_shares_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - cpu_shares_1 is changed
       - cpu_shares_2 is not changed
@@ -551,7 +551,7 @@
 ####################################################################
 
 - name: cpuset_cpus
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -560,7 +560,7 @@
   register: cpuset_cpus_1
 
 - name: cpuset_cpus (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -569,7 +569,7 @@
   register: cpuset_cpus_2
 
 - name: cpuset_cpus (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -582,13 +582,13 @@
   register: cpuset_cpus_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - cpuset_cpus_1 is changed
       - cpuset_cpus_2 is not changed
@@ -599,7 +599,7 @@
 ####################################################################
 
 - name: cpuset_mems
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -608,7 +608,7 @@
   register: cpuset_mems_1
 
 - name: cpuset_mems (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -617,7 +617,7 @@
   register: cpuset_mems_2
 
 - name: cpuset_mems (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -630,13 +630,13 @@
   register: cpuset_mems_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - cpuset_mems_1 is changed
       - cpuset_mems_2 is not changed
@@ -647,7 +647,7 @@
 ####################################################################
 
 - name: cpus
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -656,7 +656,7 @@
   register: cpus_1
 
 - name: cpus (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -665,7 +665,7 @@
   register: cpus_2
 
 - name: cpus (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -677,13 +677,13 @@
   register: cpus_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - cpus_1 is changed
       - cpus_2 is not changed and cpus_2 is not failed
@@ -694,7 +694,7 @@
 ####################################################################
 
 - name: debug (create)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -703,14 +703,14 @@
   register: debug_1
 
 - name: debug (start)
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: started
     debug: true
   register: debug_2
 
 - name: debug (stop)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     name: "{{ cname }}"
     state: stopped
@@ -719,14 +719,14 @@
   register: debug_3
 
 - name: debug (absent)
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     debug: true
     force_kill: true
   register: debug_4
 
-- assert:
+- ansible.builtin.assert:
     that:
       - debug_1 is changed
       - debug_2 is changed
@@ -738,21 +738,21 @@
 ####################################################################
 
 - name: detach without cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_hello_world }}"
     detach: false
   register: detach_no_cleanup
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
   register: detach_no_cleanup_cleanup
   diff: false
 
 - name: detach with cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_hello_world }}"
     detach: false
@@ -760,14 +760,14 @@
   register: detach_cleanup
 
 - name: cleanup (unnecessary)
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
   register: detach_cleanup_cleanup
   diff: false
 
 - name: detach with auto_remove and cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_hello_world }}"
     detach: false
@@ -777,14 +777,14 @@
   ignore_errors: true
 
 - name: cleanup (unnecessary)
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
   register: detach_auto_remove_cleanup
   diff: false
 
 - name: detach with cleanup and non-zero status
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "exit 42"'
@@ -793,7 +793,7 @@
   register: detach_cleanup_nonzero
   ignore_errors: true
 
-- assert:
+- ansible.builtin.assert:
     that:
       # NOTE that 'Output' sometimes fails to contain the correct output
       #      of hello-world. We don't know why this happens, but it happens
@@ -819,7 +819,7 @@
 ####################################################################
 
 - name: devices
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -830,7 +830,7 @@
   register: devices_1
 
 - name: devices (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -841,7 +841,7 @@
   register: devices_2
 
 - name: devices (less)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -851,7 +851,7 @@
   register: devices_3
 
 - name: devices (changed)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -863,13 +863,13 @@
   register: devices_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - devices_1 is changed
       - devices_2 is not changed
@@ -881,7 +881,7 @@
 ####################################################################
 
 - name: device_read_bps
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -895,7 +895,7 @@
   ignore_errors: true
 
 - name: device_read_bps (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -909,7 +909,7 @@
   ignore_errors: true
 
 - name: device_read_bps (lesser entries)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -921,7 +921,7 @@
   ignore_errors: true
 
 - name: device_read_bps (changed)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -936,14 +936,14 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
 - when: device_read_bps_1 is not failed
-  assert:
+  ansible.builtin.assert:
     that:
       - device_read_bps_1 is not failed
       - device_read_bps_1 is changed
@@ -955,7 +955,7 @@
       - device_read_bps_4 is changed
 
 - when: device_read_bps_1 is failed
-  assert:
+  ansible.builtin.assert:
     that:
       - "'error setting cgroup config for procHooks process' in device_read_bps_1.msg and 'blkio.throttle.read_bps_device: no such device' in device_read_bps_1.msg"
 
@@ -964,7 +964,7 @@
 ####################################################################
 
 - name: device_read_iops
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -978,7 +978,7 @@
   ignore_errors: true
 
 - name: device_read_iops (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -992,7 +992,7 @@
   ignore_errors: true
 
 - name: device_read_iops (less)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1004,7 +1004,7 @@
   ignore_errors: true
 
 - name: device_read_iops (changed)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1019,14 +1019,14 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
 - when: device_read_iops_1 is not failed
-  assert:
+  ansible.builtin.assert:
     that:
       - device_read_iops_1 is not failed
       - device_read_iops_1 is changed
@@ -1038,7 +1038,7 @@
       - device_read_iops_4 is changed
 
 - when: device_read_iops_1 is failed
-  assert:
+  ansible.builtin.assert:
     that:
       - "'error setting cgroup config for procHooks process' in device_read_iops_1.msg and 'blkio.throttle.read_iops_device: no such device' in device_read_iops_1.msg"
 
@@ -1047,7 +1047,7 @@
 ####################################################################
 
 - name: device_write_bps and device_write_iops
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1062,7 +1062,7 @@
   ignore_errors: true
 
 - name: device_write_bps and device_write_iops (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1077,7 +1077,7 @@
   ignore_errors: true
 
 - name: device_write_bps device_write_iops (changed)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1093,14 +1093,14 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
 - when: device_write_limit_1 is not failed
-  assert:
+  ansible.builtin.assert:
     that:
       - device_write_limit_1 is not failed and device_write_limit_2 is not failed and device_write_limit_3 is not failed
       - device_write_limit_1 is changed
@@ -1108,7 +1108,7 @@
       - device_write_limit_3 is changed
 
 - when: device_write_limit_1 is failed
-  assert:
+  ansible.builtin.assert:
     that:
       - "'error setting cgroup config for procHooks process' in device_write_limit_1.msg and 'blkio.throttle.write_bps_device: no such device' in device_write_limit_1.msg"
 
@@ -1117,7 +1117,7 @@
 ####################################################################
 
 - name: device_requests
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1127,7 +1127,7 @@
   ignore_errors: true
 
 - name: device_requests (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1137,18 +1137,18 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - device_requests_1 is changed
       - device_requests_2 is not changed
   when: docker_api_version is version('1.40', '>=')
-- assert:
+- ansible.builtin.assert:
     that:
       - device_requests_1 is failed
       - |
@@ -1160,7 +1160,7 @@
 ####################################################################
 
 - name: device_cgroup_rules
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1172,7 +1172,7 @@
   ignore_errors: true
 
 - name: cgroupns_mode (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1184,7 +1184,7 @@
   ignore_errors: true
 
 - name: cgroupns_mode (changed)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1196,19 +1196,19 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - device_cgroup_rules_1 is changed
       - device_cgroup_rules_2 is not changed
       - device_cgroup_rules_3 is changed
   when: docker_api_version is version('1.28', '>=')
-- assert:
+- ansible.builtin.assert:
     that:
       - device_cgroup_rules_1 is failed
       - |
@@ -1220,7 +1220,7 @@
 ####################################################################
 
 - name: dns_opts
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1231,7 +1231,7 @@
   register: dns_opts_1
 
 - name: dns_opts (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1242,7 +1242,7 @@
   register: dns_opts_2
 
 - name: dns_opts (less resolv.conf options)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1252,7 +1252,7 @@
   register: dns_opts_3
 
 - name: dns_opts (more resolv.conf options)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1264,13 +1264,13 @@
   register: dns_opts_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - dns_opts_1 is changed
       - dns_opts_2 is not changed
@@ -1282,7 +1282,7 @@
 ####################################################################
 
 - name: dns_search_domains
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1293,7 +1293,7 @@
   register: dns_search_domains_1
 
 - name: dns_search_domains (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1304,7 +1304,7 @@
   register: dns_search_domains_2
 
 - name: dns_search_domains (different order)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1316,7 +1316,7 @@
   register: dns_search_domains_3
 
 - name: dns_search_domains (changed elements)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1328,13 +1328,13 @@
   register: dns_search_domains_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - dns_search_domains_1 is changed
       - dns_search_domains_2 is not changed
@@ -1346,7 +1346,7 @@
 ####################################################################
 
 - name: dns_servers
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1357,7 +1357,7 @@
   register: dns_servers_1
 
 - name: dns_servers (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1368,7 +1368,7 @@
   register: dns_servers_2
 
 - name: dns_servers (changed order)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1380,7 +1380,7 @@
   register: dns_servers_3
 
 - name: dns_servers (changed elements)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1392,13 +1392,13 @@
   register: dns_servers_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - dns_servers_1 is changed
       - dns_servers_2 is not changed
@@ -1410,7 +1410,7 @@
 ####################################################################
 
 - name: domainname
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1419,7 +1419,7 @@
   register: domainname_1
 
 - name: domainname (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1428,7 +1428,7 @@
   register: domainname_2
 
 - name: domainname (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1438,13 +1438,13 @@
   register: domainname_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - domainname_1 is changed
       - domainname_2 is not changed
@@ -1457,7 +1457,7 @@
 # Old
 
 - name: entrypoint (compatibility)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
     entrypoint:
@@ -1470,7 +1470,7 @@
   register: entrypoint_1
 
 - name: entrypoint (compatibility, idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
     entrypoint:
@@ -1483,7 +1483,7 @@
   register: entrypoint_2
 
 - name: entrypoint (compatibility, change order, should not be idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
     entrypoint:
@@ -1497,7 +1497,7 @@
   register: entrypoint_3
 
 - name: entrypoint (compatibility, fewer parameters)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
     entrypoint:
@@ -1510,7 +1510,7 @@
   register: entrypoint_4
 
 - name: entrypoint (compatibility, other parameters)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
     entrypoint:
@@ -1523,7 +1523,7 @@
   register: entrypoint_5
 
 - name: entrypoint (compatibility, force empty)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: compatibility
     entrypoint: []
@@ -1533,13 +1533,13 @@
   register: entrypoint_6
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - entrypoint_1 is changed
       - entrypoint_2 is not changed
@@ -1551,7 +1551,7 @@
 # New
 
 - name: entrypoint (correct)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
     entrypoint:
@@ -1564,7 +1564,7 @@
   register: entrypoint_1
 
 - name: entrypoint (correct, idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
     entrypoint:
@@ -1577,7 +1577,7 @@
   register: entrypoint_2
 
 - name: entrypoint (correct, change order, should not be idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
     entrypoint:
@@ -1591,7 +1591,7 @@
   register: entrypoint_3
 
 - name: entrypoint (correct, fewer parameters)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
     entrypoint:
@@ -1604,7 +1604,7 @@
   register: entrypoint_4
 
 - name: entrypoint (correct, other parameters)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
     entrypoint:
@@ -1617,7 +1617,7 @@
   register: entrypoint_5
 
 - name: entrypoint (correct, force empty)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command_handling: correct
     entrypoint: []
@@ -1627,13 +1627,13 @@
   register: entrypoint_6
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - entrypoint_1 is changed
       - entrypoint_2 is not changed
@@ -1647,7 +1647,7 @@
 ####################################################################
 
 - name: env
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1661,7 +1661,7 @@
   register: env_1
 
 - name: env (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1675,7 +1675,7 @@
   register: env_2
 
 - name: env (less environment variables)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1685,7 +1685,7 @@
   register: env_3
 
 - name: env (more environment variables)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1697,7 +1697,7 @@
   register: env_4
 
 - name: env (fail unwrapped values)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1709,13 +1709,13 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - env_1 is changed
       - "'TEST1=val1' in env_1.container.Config.Env"
@@ -1737,12 +1737,12 @@
 ####################################################################
 
 - name: Copy env-file
-  copy:
+  ansible.builtin.copy:
     src: env-file
     dest: "{{ remote_tmp_dir }}/env-file"
 
 - name: env_file
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1751,7 +1751,7 @@
   register: env_file_1
 
 - name: env_file (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1760,7 +1760,7 @@
   register: env_file_2
 
 - name: env_file (with env, idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1771,7 +1771,7 @@
   register: env_file_3
 
 - name: env_file (with env)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1784,7 +1784,7 @@
   register: env_file_4
 
 - name: env_file (with env, idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1795,7 +1795,7 @@
   register: env_file_5
 
 - name: env_file (with env, override)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1808,13 +1808,13 @@
   register: env_file_6
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - env_file_1 is changed
       - "'TEST3=val3' in env_file_1.container.Config.Env"
@@ -1836,7 +1836,7 @@
 ####################################################################
 
 - name: etc_hosts
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1847,7 +1847,7 @@
   register: etc_hosts_1
 
 - name: etc_hosts (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1858,7 +1858,7 @@
   register: etc_hosts_2
 
 - name: etc_hosts (less hosts)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1868,7 +1868,7 @@
   register: etc_hosts_3
 
 - name: etc_hosts (more hosts)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1880,13 +1880,13 @@
   register: etc_hosts_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - etc_hosts_1 is changed
       - etc_hosts_2 is not changed
@@ -1898,7 +1898,7 @@
 ####################################################################
 
 - name: exposed_ports
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1909,7 +1909,7 @@
   register: exposed_ports_1
 
 - name: exposed_ports (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1920,7 +1920,7 @@
   register: exposed_ports_2
 
 - name: exposed_ports (less ports)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1930,7 +1930,7 @@
   register: exposed_ports_3
 
 - name: exposed_ports (more ports)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1942,13 +1942,13 @@
   register: exposed_ports_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - exposed_ports_1 is changed
       - exposed_ports_2 is not changed
@@ -1966,7 +1966,7 @@
 ####################################################################
 
 - name: groups
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1977,7 +1977,7 @@
   register: groups_1
 
 - name: groups (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1988,7 +1988,7 @@
   register: groups_2
 
 - name: groups (less groups)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -1998,7 +1998,7 @@
   register: groups_3
 
 - name: groups (more groups)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2010,13 +2010,13 @@
   register: groups_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - groups_1 is changed
       - groups_2 is not changed
@@ -2028,7 +2028,7 @@
 ####################################################################
 
 - name: healthcheck
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2045,7 +2045,7 @@
   register: healthcheck_1
 
 - name: healthcheck (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2062,7 +2062,7 @@
   register: healthcheck_2
 
 - name: healthcheck (changed)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2079,7 +2079,7 @@
   register: healthcheck_3
 
 - name: healthcheck (no change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2088,7 +2088,7 @@
   register: healthcheck_4
 
 - name: healthcheck (disabled)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2100,7 +2100,7 @@
   register: healthcheck_5
 
 - name: healthcheck (disabled, idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2112,7 +2112,7 @@
   register: healthcheck_6
 
 - name: healthcheck (disabled, idempotency, strict)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2126,7 +2126,7 @@
   register: healthcheck_7
 
 - name: healthcheck (string in healthcheck test, changed)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2137,7 +2137,7 @@
   register: healthcheck_8
 
 - name: healthcheck (string in healthcheck test, idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2148,13 +2148,13 @@
   register: healthcheck_9
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - healthcheck_1 is changed
       - healthcheck_2 is not changed
@@ -2171,7 +2171,7 @@
 ####################################################################
 
 - name: hostname
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2180,7 +2180,7 @@
   register: hostname_1
 
 - name: hostname (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2189,7 +2189,7 @@
   register: hostname_2
 
 - name: hostname (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2199,13 +2199,13 @@
   register: hostname_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - hostname_1 is changed
       - hostname_2 is not changed
@@ -2216,7 +2216,7 @@
 ####################################################################
 
 - name: init
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2225,7 +2225,7 @@
   register: init_1
 
 - name: init (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2234,7 +2234,7 @@
   register: init_2
 
 - name: init (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2244,13 +2244,13 @@
   register: init_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - init_1 is changed
       - init_2 is not changed
@@ -2261,7 +2261,7 @@
 ####################################################################
 
 - name: interactive
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2270,7 +2270,7 @@
   register: interactive_1
 
 - name: interactive (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2279,7 +2279,7 @@
   register: interactive_2
 
 - name: interactive (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2289,13 +2289,13 @@
   register: interactive_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - interactive_1 is changed
       - interactive_2 is not changed
@@ -2307,14 +2307,14 @@
 
 - name: Pull images to make sure ignore_image test succeeds
   # If the image isn't there, it will pull it and return 'changed'.
-  docker_image_pull:
+  community.docker.docker_image_pull:
     name: "{{ item }}"
   loop:
     - "{{ docker_test_image_hello_world }}"
     - "{{ docker_test_image_registry_nginx }}"
 
 - name: image
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2322,7 +2322,7 @@
   register: image_1
 
 - name: image (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2331,7 +2331,7 @@
   diff: true
 
 - name: ignore_image
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     comparisons:
       image: ignore
@@ -2341,7 +2341,7 @@
   diff: true
 
 - name: ignore_image (labels and env differ in image, image_comparison=current-image)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_registry_nginx }}"
     comparisons:
       image: ignore
@@ -2352,7 +2352,7 @@
   diff: true
 
 - name: ignore_image (labels and env differ in image, image_comparison=desired-image)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_registry_nginx }}"
     comparisons:
       image: ignore
@@ -2364,7 +2364,7 @@
   diff: true
 
 - name: image change
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     name: "{{ cname }}"
     state: started
@@ -2373,13 +2373,13 @@
   diff: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - image_1 is changed
       - image_2 is not changed
@@ -2393,18 +2393,18 @@
 ####################################################################
 
 - name: Registering image name
-  set_fact:
+  ansible.builtin.set_fact:
     iname_labels: "{{ cname_prefix ~ '-labels' }}"
 - name: Registering image name
-  set_fact:
+  ansible.builtin.set_fact:
     inames: "{{ inames + [iname_labels] }}"
 - name: build image with labels
-  command:
+  ansible.builtin.command:
     cmd: "docker build --label img_label=base --tag {{ iname_labels }} -"
     stdin: "FROM {{ docker_test_image_alpine }}"
 
 - name: image_label_mismatch
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_labels }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2412,7 +2412,7 @@
   register: image_label_mismatch_1
 
 - name: image_label_mismatch (ignore,unmanaged labels)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_labels }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2421,7 +2421,7 @@
   register: image_label_mismatch_2
 
 - name: image_label_mismatch (ignore,missing img label)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_labels }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2431,7 +2431,7 @@
   register: image_label_mismatch_3
 
 - name: image_label_mismatch (ignore,match img label)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_labels }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2442,7 +2442,7 @@
   register: image_label_mismatch_4
 
 - name: image_label_mismatch (ignore,mismatched img label)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_labels }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2454,7 +2454,7 @@
   register: image_label_mismatch_5
 
 - name: image_label_mismatch (ignore,remove img label)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_labels }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2465,7 +2465,7 @@
   register: image_label_mismatch_6
 
 - name: image_label_mismatch (fail,unmanaged labels)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_labels }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2474,7 +2474,7 @@
   register: image_label_mismatch_7
 
 - name: image_label_mismatch (fail,non-strict,missing img label)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_labels }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2484,7 +2484,7 @@
   register: image_label_mismatch_8
 
 - name: image_label_mismatch (fail,strict,missing img label)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_labels }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2497,7 +2497,7 @@
   register: image_label_mismatch_9
 
 - name: image_label_mismatch (fail,match img label)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_labels }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2508,7 +2508,7 @@
   register: image_label_mismatch_10
 
 - name: image_label_mismatch (fail,mismatched img label)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_labels }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2520,18 +2520,18 @@
   register: image_label_mismatch_11
 
 - name: cleanup container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
 - name: cleanup image
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ iname_labels }}"
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - image_label_mismatch_1 is changed
       - image_label_mismatch_1.container.Config.Labels.img_label == "base"
@@ -2556,14 +2556,14 @@
 
 - name: Pull images to make sure ignore_image test succeeds
   # If the image isn't there, it will pull it and return 'changed'.
-  docker_image_pull:
+  community.docker.docker_image_pull:
     name: "{{ item }}"
   loop:
     - "{{ docker_test_image_hello_world }}"
     - "{{ docker_test_image_registry_nginx }}"
 
 - name: image
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2571,7 +2571,7 @@
   register: image_1
 
 - name: image (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2580,7 +2580,7 @@
   diff: true
 
 - name: ignore_image
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     comparisons:
       image: ignore
@@ -2590,7 +2590,7 @@
   diff: true
 
 - name: ignore_image (labels and env differ in image, image_comparison=current-image)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_registry_nginx }}"
     image_comparison: current-image
     comparisons:
@@ -2601,7 +2601,7 @@
   diff: true
 
 - name: ignore_image (labels and env differ in image, image_comparison=desired-image)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_registry_nginx }}"
     image_comparison: desired-image
     comparisons:
@@ -2613,7 +2613,7 @@
   diff: true
 
 - name: image change
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     name: "{{ cname }}"
     state: started
@@ -2622,13 +2622,13 @@
   diff: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - image_1 is changed
       - image_2 is not changed
@@ -2642,19 +2642,19 @@
 ####################################################################
 
 - name: Registering image name
-  set_fact:
+  ansible.builtin.set_fact:
     iname_name_mismatch: "{{ cname_prefix ~ '-image-name' }}"
 - name: Registering image name
-  set_fact:
+  ansible.builtin.set_fact:
     inames: "{{ inames + [iname_name_mismatch] }}"
 
 - name: Tag hello world image (pulled earlier) with new name
-  docker_image_tag:
+  community.docker.docker_image_tag:
     name: "{{ docker_test_image_registry_nginx }}"
     repository: "{{ iname_name_mismatch }}:latest"
 
 - name: image_name_mismatch
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_registry_nginx }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2662,7 +2662,7 @@
   register: image_name_mismatch_1
 
 - name: image_name_mismatch (ignore)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_name_mismatch }}:latest"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2671,7 +2671,7 @@
   register: image_name_mismatch_2
 
 - name: image_name_mismatch (recreate)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ iname_name_mismatch }}:latest"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2681,18 +2681,18 @@
   register: image_name_mismatch_3
 
 - name: Cleanup container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
 - name: Cleanup image
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ iname_name_mismatch }}"
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - image_name_mismatch_1 is changed
       - image_name_mismatch_2 is not changed
@@ -2704,7 +2704,7 @@
 ####################################################################
 
 - name: start helpers
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ container_name }}"
@@ -2716,7 +2716,7 @@
     loop_var: container_name
 
 - name: ipc_mode
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2726,7 +2726,7 @@
   register: ipc_mode_1
 
 - name: ipc_mode (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2736,7 +2736,7 @@
   register: ipc_mode_2
 
 - name: ipc_mode (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2746,7 +2746,7 @@
   register: ipc_mode_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ container_name }}"
     state: absent
     force_kill: true
@@ -2757,7 +2757,7 @@
     loop_var: container_name
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - ipc_mode_1 is changed
       - ipc_mode_2 is not changed
@@ -2768,7 +2768,7 @@
 ####################################################################
 
 - name: kernel_memory
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2778,7 +2778,7 @@
   ignore_errors: true
 
 - name: kernel_memory (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2788,7 +2788,7 @@
   ignore_errors: true
 
 - name: kernel_memory (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2799,13 +2799,13 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - kernel_memory_1 is changed
       - kernel_memory_2 is not changed
@@ -2828,7 +2828,7 @@
 ####################################################################
 
 - name: labels
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2839,7 +2839,7 @@
   register: labels_1
 
 - name: labels (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2850,7 +2850,7 @@
   register: labels_2
 
 - name: labels (less labels)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2860,7 +2860,7 @@
   register: labels_3
 
 - name: labels (more labels)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2872,13 +2872,13 @@
   register: labels_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - labels_1 is changed
       - labels_2 is not changed
@@ -2890,7 +2890,7 @@
 ####################################################################
 
 - name: start helpers
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ container_name }}"
@@ -2903,7 +2903,7 @@
     loop_var: container_name
 
 - name: links
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2914,7 +2914,7 @@
   register: links_1
 
 - name: links (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2925,7 +2925,7 @@
   register: links_2
 
 - name: links (less links)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2935,7 +2935,7 @@
   register: links_3
 
 - name: links (more links)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2947,7 +2947,7 @@
   register: links_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ container_name }}"
     state: absent
     force_kill: true
@@ -2960,7 +2960,7 @@
     loop_var: container_name
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - links_1 is changed
       - links_2 is not changed
@@ -2972,7 +2972,7 @@
 ####################################################################
 
 - name: log_driver
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2981,7 +2981,7 @@
   register: log_driver_1
 
 - name: log_driver (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -2990,7 +2990,7 @@
   register: log_driver_2
 
 - name: log_driver (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3000,13 +3000,13 @@
   register: log_driver_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - log_driver_1 is changed
       - log_driver_2 is not changed
@@ -3017,7 +3017,7 @@
 ####################################################################
 
 - name: log_options
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3030,7 +3030,7 @@
   register: log_options_1
 
 - name: log_options (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3043,7 +3043,7 @@
   register: log_options_2
 
 - name: log_options (less log options)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3054,7 +3054,7 @@
   register: log_options_3
 
 - name: log_options (more log options)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3067,13 +3067,13 @@
   register: log_options_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - log_options_1 is changed
       - log_options_2 is not changed
@@ -3089,7 +3089,7 @@
 - when: docker_api_version is version('1.44', '<')
   block:
     - name: mac_address
-      docker_container:
+      community.docker.docker_container:
         image: "{{ docker_test_image_alpine }}"
         command: '/bin/sh -c "sleep 10m"'
         name: "{{ cname }}"
@@ -3098,7 +3098,7 @@
       register: mac_address_1
 
     - name: mac_address (idempotency)
-      docker_container:
+      community.docker.docker_container:
         image: "{{ docker_test_image_alpine }}"
         command: '/bin/sh -c "sleep 10m"'
         name: "{{ cname }}"
@@ -3107,7 +3107,7 @@
       register: mac_address_2
 
     - name: mac_address (change)
-      docker_container:
+      community.docker.docker_container:
         image: "{{ docker_test_image_alpine }}"
         command: '/bin/sh -c "sleep 10m"'
         name: "{{ cname }}"
@@ -3117,13 +3117,13 @@
       register: mac_address_3
 
     - name: cleanup
-      docker_container:
+      community.docker.docker_container:
         name: "{{ cname }}"
         state: absent
         force_kill: true
       diff: false
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - mac_address_1 is changed
           - mac_address_2 is not changed
@@ -3134,7 +3134,7 @@
 ####################################################################
 
 - name: memory
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3143,7 +3143,7 @@
   register: memory_1
 
 - name: memory (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3152,7 +3152,7 @@
   register: memory_2
 
 - name: memory (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3162,13 +3162,13 @@
   register: memory_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - memory_1 is changed
       - memory_2 is not changed
@@ -3179,7 +3179,7 @@
 ####################################################################
 
 - name: memory_reservation
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3188,7 +3188,7 @@
   register: memory_reservation_1
 
 - name: memory_reservation (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3197,7 +3197,7 @@
   register: memory_reservation_2
 
 - name: memory_reservation (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3207,13 +3207,13 @@
   register: memory_reservation_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - memory_reservation_1 is changed
       - memory_reservation_2 is not changed
@@ -3224,7 +3224,7 @@
 ####################################################################
 
 - name: memory_swap
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3236,7 +3236,7 @@
   register: memory_swap_1
 
 - name: memory_swap (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3248,7 +3248,7 @@
   register: memory_swap_2
 
 - name: memory_swap (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3261,7 +3261,7 @@
   register: memory_swap_3
 
 - name: memory_swap (unlimited)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3274,7 +3274,7 @@
   register: memory_swap_4
 
 - name: memory_swap (unlimited via -1)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3287,13 +3287,13 @@
   register: memory_swap_5
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - memory_swap_1 is changed
       # Sometimes (in particular during integration tests, maybe when not running
@@ -3306,11 +3306,11 @@
       # Unlimited memory_swap (using '-1') should be allowed
       - memory_swap_5 is not changed and memory_swap_5.container.HostConfig.MemorySwap == -1
 
-- debug: var=memory_swap_1
+- ansible.builtin.debug: var=memory_swap_1
   when: memory_swap_2 is changed
-- debug: var=memory_swap_2
+- ansible.builtin.debug: var=memory_swap_2
   when: memory_swap_2 is changed
-- debug: var=memory_swap_3
+- ansible.builtin.debug: var=memory_swap_3
   when: memory_swap_2 is changed
 
 ####################################################################
@@ -3318,7 +3318,7 @@
 ####################################################################
 
 - name: memory_swappiness
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3327,7 +3327,7 @@
   register: memory_swappiness_1
 
 - name: memory_swappiness (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3336,7 +3336,7 @@
   register: memory_swappiness_2
 
 - name: memory_swappiness (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3346,13 +3346,13 @@
   register: memory_swappiness_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - memory_swappiness_1 is changed
       - memory_swappiness_2 is not changed
@@ -3365,7 +3365,7 @@
 ####################################################################
 
 - name: oom_killer
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3374,7 +3374,7 @@
   register: oom_killer_1
 
 - name: oom_killer (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3383,7 +3383,7 @@
   register: oom_killer_2
 
 - name: oom_killer (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3393,13 +3393,13 @@
   register: oom_killer_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - oom_killer_1 is changed
       - oom_killer_2 is not changed
@@ -3412,7 +3412,7 @@
 ####################################################################
 
 - name: oom_score_adj
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3421,7 +3421,7 @@
   register: oom_score_adj_1
 
 - name: oom_score_adj (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3430,7 +3430,7 @@
   register: oom_score_adj_2
 
 - name: oom_score_adj (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3440,13 +3440,13 @@
   register: oom_score_adj_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - oom_score_adj_1 is changed
       - oom_score_adj_2 is not changed
@@ -3465,7 +3465,7 @@
 ####################################################################
 
 - name: paused
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: "/bin/sh -c 'sleep 10m'"
     name: "{{ cname }}"
@@ -3475,11 +3475,11 @@
   register: paused_1
 
 - name: inspect paused
-  command: "docker inspect -f {% raw %}'{{.State.Status}} {{.State.Paused}}'{% endraw %} {{ cname }}"
+  ansible.builtin.command: "docker inspect -f {% raw %}'{{.State.Status}} {{.State.Paused}}'{% endraw %} {{ cname }}"
   register: paused_2
 
 - name: paused (idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: "/bin/sh -c 'sleep 10m'"
     name: "{{ cname }}"
@@ -3489,7 +3489,7 @@
   register: paused_3
 
 - name: paused (continue)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: "/bin/sh -c 'sleep 10m'"
     name: "{{ cname }}"
@@ -3499,17 +3499,17 @@
   register: paused_4
 
 - name: inspect paused
-  command: "docker inspect -f {% raw %}'{{.State.Status}} {{.State.Paused}}'{% endraw %} {{ cname }}"
+  ansible.builtin.command: "docker inspect -f {% raw %}'{{.State.Status}} {{.State.Paused}}'{% endraw %} {{ cname }}"
   register: paused_5
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - paused_1 is changed
       - 'paused_2.stdout == "paused true"'
@@ -3522,7 +3522,7 @@
 ####################################################################
 
 - name: start helpers
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname_h1 }}"
@@ -3530,7 +3530,7 @@
   register: pid_mode_helper
 
 - name: pid_mode
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3539,7 +3539,7 @@
   register: pid_mode_1
 
 - name: pid_mode (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3548,7 +3548,7 @@
   register: pid_mode_2
 
 - name: pid_mode (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3558,7 +3558,7 @@
   register: pid_mode_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ container_name }}"
     state: absent
     force_kill: true
@@ -3569,7 +3569,7 @@
     loop_var: container_name
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - pid_mode_1 is changed
       - pid_mode_2 is not changed
@@ -3580,7 +3580,7 @@
 ####################################################################
 
 - name: pids_limit
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3589,7 +3589,7 @@
   register: pids_limit_1
 
 - name: pids_limit (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3598,7 +3598,7 @@
   register: pids_limit_2
 
 - name: pids_limit (changed)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3608,13 +3608,13 @@
   register: pids_limit_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - pids_limit_1 is changed
       - pids_limit_2 is not changed
@@ -3625,11 +3625,11 @@
 ####################################################################
 
 - name: Remove test image
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ docker_test_image_simple_1 }}"
 
 - name: platform
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_simple_1 }}"
     name: "{{ cname }}"
     state: present
@@ -3642,7 +3642,7 @@
 - name: platform (idempotency with full name)
   # Docker daemon only returns 'linux' as the platform for the container,
   # so this has to be handled correctly by our additional code
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_simple_1 }}"
     name: "{{ cname }}"
     state: present
@@ -3652,7 +3652,7 @@
   ignore_errors: true
 
 - name: platform (idempotency with shorter name)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_simple_1 }}"
     name: "{{ cname }}"
     state: present
@@ -3662,7 +3662,7 @@
   ignore_errors: true
 
 - name: platform (idempotency with shorter name)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_simple_1 }}"
     name: "{{ cname }}"
     state: present
@@ -3672,7 +3672,7 @@
   ignore_errors: true
 
 - name: platform (changed)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_simple_1 }}"
     name: "{{ cname }}"
     state: present
@@ -3687,7 +3687,7 @@
   ignore_errors: true
 
 - name: platform (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_simple_1 }}"
     name: "{{ cname }}"
     state: present
@@ -3699,13 +3699,13 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - platform_1 is changed
       - platform_2 is not changed and platform_2 is not failed
@@ -3714,7 +3714,7 @@
       - platform_5 is changed
       - platform_6 is not changed and platform_6 is not failed
   when: docker_api_version is version('1.41', '>=')
-- assert:
+- ansible.builtin.assert:
     that:
       - platform_1 is failed
       - |
@@ -3726,11 +3726,11 @@
 ####################################################################
 
 - name: Remove hello-world image
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ docker_test_image_hello_world }}"
 
 - name: pull (pull=never)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     name: "{{ cname }}"
     state: present
@@ -3740,7 +3740,7 @@
   ignore_errors: true
 
 - name: pull (pull=missing, check mode)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     name: "{{ cname }}"
     state: present
@@ -3751,7 +3751,7 @@
   ignore_errors: true
 
 - name: pull (pull=missing)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     name: "{{ cname }}"
     state: present
@@ -3761,7 +3761,7 @@
   ignore_errors: true
 
 - name: pull (pull=missing, idempotent, check mode)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     name: "{{ cname }}"
     state: present
@@ -3772,7 +3772,7 @@
   ignore_errors: true
 
 - name: pull (pull=missing, idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     name: "{{ cname }}"
     state: present
@@ -3782,7 +3782,7 @@
   ignore_errors: true
 
 - name: pull (pull=always, check mode, pull_check_mode_behavior=image_not_present)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     name: "{{ cname }}"
     state: present
@@ -3794,7 +3794,7 @@
   ignore_errors: true
 
 - name: pull (pull=always, check mode, pull_check_mode_behavior=always)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     name: "{{ cname }}"
     state: present
@@ -3806,7 +3806,7 @@
   ignore_errors: true
 
 - name: pull (pull=always)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_hello_world }}"
     name: "{{ cname }}"
     state: present
@@ -3816,13 +3816,13 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - pull_1 is failed
       - pull_1.msg == ("Cannot find image with name " ~ docker_test_image_hello_world ~ ", and pull=never")
@@ -3869,7 +3869,7 @@
 ####################################################################
 
 - name: privileged
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3878,7 +3878,7 @@
   register: privileged_1
 
 - name: privileged (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3887,7 +3887,7 @@
   register: privileged_2
 
 - name: privileged (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3897,13 +3897,13 @@
   register: privileged_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - privileged_1 is changed
       - privileged_2 is not changed
@@ -3914,7 +3914,7 @@
 ####################################################################
 
 - name: published_ports
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3925,7 +3925,7 @@
   register: published_ports_1
 
 - name: published_ports (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3936,7 +3936,7 @@
   register: published_ports_2
 
 - name: published_ports (less published_ports)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3946,7 +3946,7 @@
   register: published_ports_3
 
 - name: published_ports (more published_ports)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3958,7 +3958,7 @@
   register: published_ports_4
 
 - name: published_ports (ports with IP addresses)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3972,7 +3972,7 @@
   when: docker_host_info.host_info.ServerVersion is version('27.0.0', '<')
 
 - name: published_ports (ports with IP addresses, idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3985,7 +3985,7 @@
   when: docker_host_info.host_info.ServerVersion is version('27.0.0', '<')
 
 - name: published_ports (no published ports)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -3997,7 +3997,7 @@
   register: published_ports_7
 
 - name: published_ports (default_host_ip not set)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4009,7 +4009,7 @@
   register: published_ports_8
 
 - name: published_ports (default_host_ip set to empty string)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4022,7 +4022,7 @@
   register: published_ports_9
 
 - name: published_ports (default_host_ip set to empty string, idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4034,7 +4034,7 @@
   register: published_ports_10
 
 - name: published_ports (default_host_ip unset)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4046,13 +4046,13 @@
   register: published_ports_11
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - published_ports_1 is changed
       - published_ports_2 is not changed
@@ -4077,7 +4077,7 @@
 ####################################################################
 
 - name: read_only
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4086,7 +4086,7 @@
   register: read_only_1
 
 - name: read_only (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4095,7 +4095,7 @@
   register: read_only_2
 
 - name: read_only (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4105,13 +4105,13 @@
   register: read_only_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - read_only_1 is changed
       - read_only_2 is not changed
@@ -4122,7 +4122,7 @@
 ####################################################################
 
 - name: restart_policy
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4131,7 +4131,7 @@
   register: restart_policy_1
 
 - name: restart_policy (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4140,7 +4140,7 @@
   register: restart_policy_2
 
 - name: restart_policy (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4150,13 +4150,13 @@
   register: restart_policy_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - restart_policy_1 is changed
       - restart_policy_2 is not changed
@@ -4167,7 +4167,7 @@
 ####################################################################
 
 - name: restart_retries
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4177,7 +4177,7 @@
   register: restart_retries_1
 
 - name: restart_retries (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4187,7 +4187,7 @@
   register: restart_retries_2
 
 - name: restart_retries (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4198,13 +4198,13 @@
   register: restart_retries_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - restart_retries_1 is changed
       - restart_retries_2 is not changed
@@ -4215,7 +4215,7 @@
 ####################################################################
 
 - name: runtime
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4224,7 +4224,7 @@
   register: runtime_1
 
 - name: runtime (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4233,13 +4233,13 @@
   register: runtime_2
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - runtime_1 is changed
       - runtime_2 is not changed
@@ -4265,7 +4265,7 @@
 #   apparmor=docker-default
 
 - name: security_opts
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4276,7 +4276,7 @@
   register: security_opts_1
 
 - name: security_opts (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4287,7 +4287,7 @@
   register: security_opts_2
 
 - name: security_opts (less security options)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4297,7 +4297,7 @@
   register: security_opts_3
 
 - name: security_opts (more security options)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4309,13 +4309,13 @@
   register: security_opts_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - security_opts_1 is changed
       - security_opts_2 is not changed
@@ -4327,7 +4327,7 @@
 ####################################################################
 
 - name: shm_size
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4336,7 +4336,7 @@
   register: shm_size_1
 
 - name: shm_size (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4345,7 +4345,7 @@
   register: shm_size_2
 
 - name: shm_size (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4355,13 +4355,13 @@
   register: shm_size_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - shm_size_1 is changed
       - shm_size_2 is not changed
@@ -4372,7 +4372,7 @@
 ####################################################################
 
 - name: stop_signal
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4381,7 +4381,7 @@
   register: stop_signal_1
 
 - name: stop_signal (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4390,7 +4390,7 @@
   register: stop_signal_2
 
 - name: stop_signal (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4400,13 +4400,13 @@
   register: stop_signal_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - stop_signal_1 is changed
       - stop_signal_2 is not changed
@@ -4417,7 +4417,7 @@
 ####################################################################
 
 - name: stop_timeout
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4426,7 +4426,7 @@
   register: stop_timeout_1
 
 - name: stop_timeout (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4436,7 +4436,7 @@
 
 - name: stop_timeout (no change)
   # stop_timeout changes are ignored by default
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4445,13 +4445,13 @@
   register: stop_timeout_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - stop_timeout_1 is changed
       - stop_timeout_2 is not changed
@@ -4462,7 +4462,7 @@
 ####################################################################
 
 - name: storage_opts
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4473,7 +4473,7 @@
   ignore_errors: true
 
 - name: storage_opts (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4484,7 +4484,7 @@
   ignore_errors: true
 
 - name: storage_opts (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4496,20 +4496,20 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - storage_opts_1 is changed
       - storage_opts_2 is not failed and storage_opts_2 is not changed
       - storage_opts_3 is not failed and storage_opts_3 is changed
   when: storage_opts_1 is not failed
 
-- assert:
+- ansible.builtin.assert:
     that:
       - "'is supported only for' in storage_opts_1.msg"
       - storage_opts_2 is failed
@@ -4531,7 +4531,7 @@
 #   net.ipv4.conf.all.send_redirects: 0
 
 - name: sysctls
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4542,7 +4542,7 @@
   register: sysctls_1
 
 - name: sysctls (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4553,7 +4553,7 @@
   register: sysctls_2
 
 - name: sysctls (less sysctls)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4563,7 +4563,7 @@
   register: sysctls_3
 
 - name: sysctls (more sysctls)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4575,13 +4575,13 @@
   register: sysctls_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - sysctls_1 is changed
       - sysctls_2 is not changed
@@ -4593,7 +4593,7 @@
 ####################################################################
 
 - name: tmpfs
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4604,7 +4604,7 @@
   register: tmpfs_1
 
 - name: tmpfs (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4615,7 +4615,7 @@
   register: tmpfs_2
 
 - name: tmpfs (less tmpfs)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4625,7 +4625,7 @@
   register: tmpfs_3
 
 - name: tmpfs (more tmpfs)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4637,13 +4637,13 @@
   register: tmpfs_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - tmpfs_1 is changed
       - tmpfs_2 is not changed
@@ -4655,7 +4655,7 @@
 ####################################################################
 
 - name: tty
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4665,7 +4665,7 @@
   ignore_errors: true
 
 - name: tty (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4675,7 +4675,7 @@
   ignore_errors: true
 
 - name: tty (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4686,20 +4686,20 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - tty_1 is changed
       - tty_2 is not changed and tty_2 is not failed
       - tty_3 is changed
   when: tty_1 is not failed
 
-- assert:
+- ansible.builtin.assert:
     that:
       - "'error during container init: open /dev/pts/' in tty_1.msg"
       - "': operation not permitted: ' in tty_1.msg"
@@ -4710,7 +4710,7 @@
 ####################################################################
 
 - name: ulimits
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4721,7 +4721,7 @@
   register: ulimits_1
 
 - name: ulimits (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4732,7 +4732,7 @@
   register: ulimits_2
 
 - name: ulimits (less ulimits)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4742,7 +4742,7 @@
   register: ulimits_3
 
 - name: ulimits (more ulimits)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4754,13 +4754,13 @@
   register: ulimits_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - ulimits_1 is changed
       - ulimits_2 is not changed
@@ -4772,7 +4772,7 @@
 ####################################################################
 
 - name: user
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4781,7 +4781,7 @@
   register: user_1
 
 - name: user (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4790,7 +4790,7 @@
   register: user_2
 
 - name: user (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4800,13 +4800,13 @@
   register: user_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - user_1 is changed
       - user_2 is not changed
@@ -4817,7 +4817,7 @@
 ####################################################################
 
 - name: userns_mode
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4826,7 +4826,7 @@
   register: userns_mode_1
 
 - name: userns_mode (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4835,7 +4835,7 @@
   register: userns_mode_2
 
 - name: userns_mode (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4845,13 +4845,13 @@
   register: userns_mode_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - userns_mode_1 is changed
       - userns_mode_2 is not changed
@@ -4862,7 +4862,7 @@
 ####################################################################
 
 - name: uts
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4871,7 +4871,7 @@
   register: uts_1
 
 - name: uts (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4880,7 +4880,7 @@
   register: uts_2
 
 - name: uts (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4890,13 +4890,13 @@
   register: uts_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - uts_1 is changed
       - uts_2 is not changed
@@ -4907,7 +4907,7 @@
 ####################################################################
 
 - name: working_dir
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4916,7 +4916,7 @@
   register: working_dir_1
 
 - name: working_dir (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4925,7 +4925,7 @@
   register: working_dir_2
 
 - name: working_dir (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -4935,13 +4935,13 @@
   register: working_dir_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - working_dir_1 is changed
       - working_dir_2 is not changed

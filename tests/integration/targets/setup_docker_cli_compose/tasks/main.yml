@@ -12,7 +12,7 @@
   when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in  ['CentOS6', 'RedHat6']
   block:
     - name:
-      debug:
+      ansible.builtin.debug:
         msg: |-
           OS family: {{ ansible_facts.os_family }}
           Distribution: {{ ansible_facts.distribution }}
@@ -20,12 +20,12 @@
           Distribution full version: {{ ansible_facts.distribution_version }}
 
     - name: Set facts for Docker features to defaults
-      set_fact:
+      ansible.builtin.set_fact:
         docker_has_compose: true
         docker_compose_version: "0.0"
 
     - name: Include distribution specific variables
-      include_vars: "{{ lookup('first_found', params) }}"
+      ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
       vars:
         params:
           files:
@@ -38,7 +38,7 @@
             - "{{ role_path }}/vars"
 
     - name: Include distribution specific tasks
-      include_tasks: "{{ lookup('first_found', params) }}"
+      ansible.builtin.include_tasks: "{{ lookup('first_found', params) }}"
       vars:
         params:
           files:
@@ -53,14 +53,14 @@
       when: docker_has_compose
       block:
         - name: Obtain docker info
-          command:
+          ansible.builtin.command:
             cmd: docker info --format '{% raw %}{{ json .ClientInfo.Plugins }}{% endraw %}'
           register: docker_cli_plugins_stdout
-        - set_fact:
+        - ansible.builtin.set_fact:
             docker_has_compose: >-
               {{ docker_cli_plugins_stdout.stdout | from_json | selectattr('Name', 'eq', 'compose') | map(attribute='Version') | length > 0 }}
             docker_compose_version: >-
               {{ docker_cli_plugins_stdout.stdout | from_json | selectattr('Name', 'eq', 'compose') | map(attribute='Version') | first | default('0.0') | regex_replace('^v', '') }}
 
-    - debug:
+    - ansible.builtin.debug:
         msg: "Has Docker compoes plugin: {{ docker_has_compose }}; Docker compose plugin version: {{ docker_compose_version }}"

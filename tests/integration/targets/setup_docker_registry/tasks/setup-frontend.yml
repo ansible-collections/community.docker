@@ -5,12 +5,12 @@
 
 # Set up first nginx frontend for registry
 - name: Start nginx frontend for registry
-  docker_volume:
+  community.docker.docker_volume:
     name: '{{ docker_registry_container_name_frontend }}'
     state: present
 
 - name: Create container for nginx frontend for registry
-  docker_container:
+  community.docker.docker_container:
     state: stopped
     name: '{{ docker_registry_container_name_frontend }}'
     image: "{{ docker_test_image_registry_nginx }}"
@@ -30,7 +30,7 @@
   register: nginx_container
 
 - name: Copy config files
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ remote_tmp_dir }}/{{ item }}"
     mode: "0644"
@@ -39,7 +39,7 @@
     - nginx.htpasswd
 
 - name: Copy static files into volume
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ docker_registry_container_name_frontend }}'
     path: '{{ remote_tmp_dir }}/{{ item }}'
     container_path: '/etc/nginx/{{ item }}'
@@ -76,7 +76,7 @@
         provider: selfsigned
 
     - name: Copy dynamic files into volume
-      docker_container_copy_into:
+      community.docker.docker_container_copy_into:
         container: '{{ docker_registry_container_name_frontend }}'
         path: '{{ remote_tmp_dir }}/{{ item }}'
         container_path: '/etc/nginx/{{ item }}'
@@ -87,17 +87,17 @@
         - cert.key
 
     - name: Start nginx frontend for registry
-      docker_container:
+      community.docker.docker_container:
         name: '{{ docker_registry_container_name_frontend }}'
         state: started
       register: nginx_container
 
     - name: Output nginx container network settings
-      debug:
+      ansible.builtin.debug:
         var: nginx_container.container.NetworkSettings
 
     - name: Get registry URL
-      set_fact:
+      ansible.builtin.set_fact:
         # Note that this host/port combination is used by the Docker daemon, that's why `localhost` is appropriate!
         # This host/port combination cannot be used if the tests are running inside a docker container.
         docker_registry_frontend_address: localhost:{{ nginx_container.container.NetworkSettings.Ports['5000/tcp'].0.HostPort }}
@@ -105,7 +105,7 @@
         docker_registry_frontend_address_internal: "{{ nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress if current_container_network_ip else nginx_container.container.NetworkSettings.IPAddress }}:5000"
 
     - name: Wait for registry frontend
-      uri:
+      ansible.builtin.uri:
         url: https://{{ docker_registry_frontend_address_internal }}/v2/
         url_username: testuser
         url_password: hunter2
@@ -115,6 +115,6 @@
       retries: 5
       delay: 1
 
-- set_fact:
+- ansible.builtin.set_fact:
     docker_registry_frontend_address: 'n/a'
   when: can_copy_files is failed

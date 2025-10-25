@@ -4,16 +4,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cname: "{{ cname_prefix ~ '-c' }}"
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cnames: "{{ cnames + [cname] }}"
 
 # Create container
 
 - name: Create container
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command:
       - /bin/sh
@@ -31,7 +31,7 @@
 # Do tests
 
 - name: Copy content without mode
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -40,7 +40,7 @@
   ignore_errors: true
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result is failed
       - |-
@@ -51,7 +51,7 @@
 ######################### Copy
 
 - name: Copy content (check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -63,7 +63,7 @@
   register: result_1
 
 - name: Copy content (check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -75,7 +75,7 @@
   register: result_1_diff
 
 - name: Copy content (check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -85,7 +85,7 @@
   register: result_2
 
 - name: Copy content (idempotent, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -97,7 +97,7 @@
   register: result_3
 
 - name: Copy content (idempotent, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -109,7 +109,7 @@
   register: result_3_diff
 
 - name: Copy content (idempotent)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -119,7 +119,7 @@
   register: result_4
 
 - name: Copy content (idempotent, check mode, base 64)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: "{{ 'Content 1\n' | b64encode }}"
     content_is_b64: true
@@ -131,7 +131,7 @@
   register: result_3b64
 
 - name: Copy content (idempotent, check mode, base 64, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: "{{ 'Content 1\n' | b64encode }}"
     content_is_b64: true
@@ -143,7 +143,7 @@
   register: result_3b64_diff
 
 - name: Copy content (idempotent, base 64)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: "{{ 'Content 1\n' | b64encode }}"
     content_is_b64: true
@@ -153,7 +153,7 @@
   register: result_4b64
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -165,7 +165,7 @@
   register: result_5
 
 - name: Copy content (force, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -178,7 +178,7 @@
   register: result_6
 
 - name: Copy content (force, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -191,7 +191,7 @@
   register: result_6_diff
 
 - name: Copy content (force)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -202,7 +202,7 @@
   register: result_7
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -214,7 +214,7 @@
   register: result_8
 
 - name: Copy content (force=false, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Some other content
@@ -229,7 +229,7 @@
   register: result_9
 
 - name: Copy content (force=false, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Some other content
@@ -244,7 +244,7 @@
   register: result_9_diff
 
 - name: Copy content (force=false)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Some other content
@@ -257,7 +257,7 @@
   register: result_10
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -269,7 +269,7 @@
   register: result_11
 
 - name: Copy content (octal mode, mode_parse=modern)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -283,7 +283,7 @@
   register: result_12
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -295,7 +295,7 @@
   register: result_13
 
 - name: Copy content (octal mode, mode_parse=legacy)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -309,7 +309,7 @@
   register: result_14
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -321,7 +321,7 @@
   register: result_15
 
 - name: Copy content (string mode, mode_parse=legacy)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -333,7 +333,7 @@
   register: result_16
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -345,7 +345,7 @@
   register: result_17
 
 - name: Copy content (string mode, mode_parse=octal_string_only)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -357,7 +357,7 @@
   register: result_18
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -369,7 +369,7 @@
   register: result_19
 
 - name: Restore state for next tasks
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -380,7 +380,7 @@
     group_id: 0
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - "'diff' not in result_1"
@@ -444,7 +444,7 @@
 ######################### Follow link - idempotence
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -456,7 +456,7 @@
   register: result_0
 
 - name: Copy content following link (check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -469,7 +469,7 @@
   register: result_1
 
 - name: Copy content following link (check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -482,7 +482,7 @@
   register: result_1_diff
 
 - name: Copy content following link
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -493,7 +493,7 @@
   register: result_2
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -506,7 +506,7 @@
   register: result_3
 
 - name: Copy content following link (force, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -520,7 +520,7 @@
   register: result_4
 
 - name: Copy content following link (force, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -534,7 +534,7 @@
   register: result_4_diff
 
 - name: Copy content following link (force)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -546,7 +546,7 @@
   register: result_5
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -559,7 +559,7 @@
   register: result_6
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_0.stdout | b64decode == 'Content 1\n'
       - result_0.stderr == "4 777 symbolic link 0 0 '/lnk' -> 'file'"
@@ -593,7 +593,7 @@
 ######################### Do not follow link - replace by file
 
 - name: Copy content not following link (check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -606,7 +606,7 @@
   register: result_1
 
 - name: Copy content not following link (check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -619,7 +619,7 @@
   register: result_1_diff
 
 - name: Copy content not following link
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -630,7 +630,7 @@
   register: result_2
 
 - name: Copy content not following link (idempotent, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -642,7 +642,7 @@
   register: result_3
 
 - name: Copy content not following link (idempotent, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -654,7 +654,7 @@
   register: result_3_diff
 
 - name: Copy content not following link (idempotent)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -664,7 +664,7 @@
   register: result_4
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -676,7 +676,7 @@
   register: result_5
 
 - name: Copy content not following link (force, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -689,7 +689,7 @@
   register: result_6
 
 - name: Copy content not following link (force, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -702,7 +702,7 @@
   register: result_6_diff
 
 - name: Copy content not following link (force)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -713,7 +713,7 @@
   register: result_7
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -725,7 +725,7 @@
   register: result_8
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - result_1.container_path == '/lnk'
@@ -763,7 +763,7 @@
 ######################### Replace directory by file
 
 - name: Copy content to replace directory (check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -776,7 +776,7 @@
   register: result_1
 
 - name: Copy content to replace directory (check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -789,7 +789,7 @@
   register: result_1_diff
 
 - name: Copy content to replace directory (check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -800,7 +800,7 @@
   register: result_2
 
 - name: Copy content to replace directory (idempotent, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -812,7 +812,7 @@
   register: result_3
 
 - name: Copy content to replace directory (idempotent, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -824,7 +824,7 @@
   register: result_3_diff
 
 - name: Copy content to replace directory (idempotent)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -834,7 +834,7 @@
   register: result_4
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -846,7 +846,7 @@
   register: result_5
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - result_1.container_path == '/dir'
@@ -872,7 +872,7 @@
 ######################### Modify
 
 - name: Copy content (changed, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -885,7 +885,7 @@
   register: result_1
 
 - name: Copy content (changed, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -898,7 +898,7 @@
   register: result_1_diff
 
 - name: Copy content (changed)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -909,7 +909,7 @@
   register: result_2
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -921,7 +921,7 @@
   register: result_3
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - "'diff' not in result_1"
@@ -937,7 +937,7 @@
 ######################### Change mode
 
 - name: Copy content (mode changed, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -950,7 +950,7 @@
   register: result_1
 
 - name: Copy content (mode changed, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -963,7 +963,7 @@
   register: result_1_diff
 
 - name: Copy content (mode changed)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -974,7 +974,7 @@
   register: result_2
 
 - name: Copy content (idempotent, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -987,7 +987,7 @@
   register: result_3
 
 - name: Copy content (idempotent, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -1000,7 +1000,7 @@
   register: result_3_diff
 
 - name: Copy content (idempotent)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -1011,7 +1011,7 @@
   register: result_4
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -1023,7 +1023,7 @@
   register: result_5
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - "'diff' not in result_1"
@@ -1047,7 +1047,7 @@
 ######################### Change owner and group
 
 - name: Copy content (owner/group changed, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -1062,7 +1062,7 @@
   register: result_1
 
 - name: Copy content (owner/group changed, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -1077,7 +1077,7 @@
   register: result_1_diff
 
 - name: Copy content (owner/group changed)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -1090,7 +1090,7 @@
   register: result_2
 
 - name: Copy content (idempotent, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -1105,7 +1105,7 @@
   register: result_3
 
 - name: Copy content (idempotent, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -1120,7 +1120,7 @@
   register: result_3_diff
 
 - name: Copy content (idempotent)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -1133,7 +1133,7 @@
   register: result_4
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -1145,7 +1145,7 @@
   register: result_5
 
 - name: Copy content (owner/group changed again, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -1160,7 +1160,7 @@
   register: result_6
 
 - name: Copy content (owner/group changed again, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -1175,7 +1175,7 @@
   register: result_6_diff
 
 - name: Copy content (owner/group changed again)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |-
       Content 2
@@ -1188,7 +1188,7 @@
   register: result_7
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -1200,7 +1200,7 @@
   register: result_8
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - "'diff' not in result_1"
@@ -1234,13 +1234,13 @@
 ######################### Operate with stopped container
 
 - name: Stop container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: stopped
     stop_timeout: 1
 
 - name: Copy content (stopped container, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -1254,7 +1254,7 @@
   register: result_1
 
 - name: Copy content (stopped container, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -1268,7 +1268,7 @@
   register: result_1_diff
 
 - name: Copy content (stopped container)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -1280,7 +1280,7 @@
   register: result_2
 
 - name: Copy content (stopped container, idempotent, check mode)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -1294,7 +1294,7 @@
   register: result_3
 
 - name: Copy content (stopped container, idempotent, check mode, diff)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -1308,7 +1308,7 @@
   register: result_3_diff
 
 - name: Copy content (stopped container, idempotent)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -1320,7 +1320,7 @@
   register: result_4
 
 - name: Copy content (stopped container, no owner/group provided, should fail)
-  docker_container_copy_into:
+  community.docker.docker_container_copy_into:
     container: '{{ cname }}'
     content: |
       Content 1
@@ -1331,12 +1331,12 @@
   ignore_errors: true
 
 - name: Start container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: started
 
 - name: Dump file
-  docker_container_exec:
+  community.docker.docker_container_exec:
     container: '{{ cname }}'
     argv:
       - /bin/sh
@@ -1348,7 +1348,7 @@
   register: result_6
 
 - name: Check results
-  assert:
+  ansible.builtin.assert:
     that:
       - result_1 is changed
       - "'diff' not in result_1"
@@ -1375,7 +1375,7 @@
 # Cleanup
 
 - name: Remove container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true

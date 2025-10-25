@@ -4,6 +4,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Install docker-compose as system package
-  pacman:
+  community.general.pacman:
     name: "{{ docker_compose_packages }}"
     state: present

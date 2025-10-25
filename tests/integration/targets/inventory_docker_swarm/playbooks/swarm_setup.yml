@@ -10,11 +10,11 @@
 
   tasks:
     - name: Setup docker
-      import_role:
+      ansible.builtin.import_role:
         name: setup_docker
 
     - name: Setup Docker SDK for Python
-      import_role:
+      ansible.builtin.import_role:
         name: setup_docker_sdk_for_python
 
     - name: Create a Swarm cluster

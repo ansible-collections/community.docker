@@ -21,7 +21,7 @@
 
   block:
     - name: Registering container name
-      set_fact:
+      ansible.builtin.set_fact:
         cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
         dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
 
@@ -30,7 +30,7 @@
 ####################################################################
 
     - name: Present (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: present
@@ -38,14 +38,14 @@
       register: present_1_check
 
     - name: Present
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: present
       register: present_1
 
     - name: Present (idempotent check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: present
@@ -53,14 +53,14 @@
       register: present_2_check
 
     - name: Present (idempotent)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: present
       register: present_2
 
     - name: Present (changed check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service_mod | from_yaml }}'
         state: present
@@ -68,13 +68,13 @@
       register: present_3_check
 
     - name: Present (changed)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service_mod | from_yaml }}'
         state: present
       register: present_3
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - present_1_check is changed
           - present_1_check.warnings | default([]) | select('regex', ' please report this at ') | length == 0
@@ -103,7 +103,7 @@
 ####################################################################
 
     - name: Absent (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service_mod | from_yaml }}'
         state: absent
@@ -111,14 +111,14 @@
       register: absent_1_check
 
     - name: Absent
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service_mod | from_yaml }}'
         state: absent
       register: absent_1
 
     - name: Absent (idempotent check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service_mod | from_yaml }}'
         state: absent
@@ -126,13 +126,13 @@
       register: absent_2_check
 
     - name: Absent (idempotent)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service_mod | from_yaml }}'
         state: absent
       register: absent_2
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - absent_1_check is changed
           - absent_1_check.warnings | default([]) | select('regex', ' please report this at ') | length == 0
@@ -148,7 +148,7 @@
 ####################################################################
 
     - name: Present stopped (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: stopped
@@ -156,14 +156,14 @@
       register: present_1_check
 
     - name: Present stopped
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: stopped
       register: present_1
 
     - name: Present stopped (idempotent check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: stopped
@@ -171,14 +171,14 @@
       register: present_2_check
 
     - name: Present stopped (idempotent)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: stopped
       register: present_2
 
     - name: Started (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: present
@@ -186,14 +186,14 @@
       register: present_3_check
 
     - name: Started
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: present
       register: present_3
 
     - name: Started (idempotent check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: present
@@ -201,14 +201,14 @@
       register: present_4_check
 
     - name: Started (idempotent)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: present
       register: present_4
 
     - name: Restarted (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: restarted
@@ -216,14 +216,14 @@
       register: present_5_check
 
     - name: Restarted
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: restarted
       register: present_5
 
     - name: Stopped (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: stopped
@@ -231,14 +231,14 @@
       register: present_6_check
 
     - name: Stopped
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: stopped
       register: present_6
 
     - name: Restarted (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: restarted
@@ -246,19 +246,19 @@
       register: present_7_check
 
     - name: Restarted
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: restarted
       register: present_7
 
     - name: Cleanup
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_name: '{{ pname }}'
         definition: '{{ test_service | from_yaml }}'
         state: absent
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - present_1_check is changed
           - present_1_check.warnings | default([]) | select('regex', ' please report this at ') | length == 0
