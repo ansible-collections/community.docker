@@ -8,13 +8,13 @@
     docker_test_image_alpine: quay.io/ansible/docker-test-containers:alpine3.8
   tasks:
     - name: Find all roles
-      find:
+      ansible.builtin.find:
         paths:
           - "{{ (playbook_dir | default('.')) ~ '/roles' }}"
         file_type: directory
         depth: 1
       register: result
     - name: Include all roles
-      include_role:
+      ansible.builtin.include_role:
         name: "{{ item }}"
       loop: "{{ result.files | map(attribute='path') | map('regex_replace', '.*/', '') | sort }}"

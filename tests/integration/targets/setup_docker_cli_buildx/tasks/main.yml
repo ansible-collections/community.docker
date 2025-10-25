@@ -12,7 +12,7 @@
   when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in  ['CentOS6', 'RedHat6']
   block:
     - name:
-      debug:
+      ansible.builtin.debug:
         msg: |-
           OS family: {{ ansible_facts.os_family }}
           Distribution: {{ ansible_facts.distribution }}
@@ -20,11 +20,11 @@
           Distribution full version: {{ ansible_facts.distribution_version }}
 
     - name: Set facts for Docker features to defaults
-      set_fact:
+      ansible.builtin.set_fact:
         docker_has_buildx: true
 
     - name: Include distribution specific variables
-      include_vars: "{{ lookup('first_found', params) }}"
+      ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
       vars:
         params:
           files:
@@ -37,7 +37,7 @@
             - "{{ role_path }}/vars"
 
     - name: Include distribution specific tasks
-      include_tasks: "{{ lookup('first_found', params) }}"
+      ansible.builtin.include_tasks: "{{ lookup('first_found', params) }}"
       vars:
         params:
           files:

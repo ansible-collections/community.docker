@@ -4,11 +4,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cname: "{{ cname_prefix ~ '-options' }}"
     cname2: "{{ cname_prefix ~ '-options-h1' }}"
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cnames: "{{ cnames + [cname, cname2] }}"
 
 ####################################################################
@@ -16,7 +16,7 @@
 ####################################################################
 
 - name: published_ports -- non-closing square bracket
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -27,7 +27,7 @@
   ignore_errors: true
 
 - name: published_ports -- forgot square brackets for IPv6
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -38,7 +38,7 @@
   ignore_errors: true
 
 - name: published_ports -- disallow hostnames
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -48,7 +48,7 @@
   register: published_ports_3
   ignore_errors: true
 
-- assert:
+- ansible.builtin.assert:
     that:
       - published_ports_1 is failed
       - published_ports_1.msg == 'Cannot find closing "]" in input "[::1:2000:3000" for opening "[" at index 1!'
@@ -62,7 +62,7 @@
 ####################################################################
 
 - name: published_ports -- port range
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -77,7 +77,7 @@
   register: published_ports_1
 
 - name: published_ports -- port range (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -92,7 +92,7 @@
   register: published_ports_2
 
 - name: published_ports -- port range (different range)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -107,13 +107,13 @@
   register: published_ports_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - published_ports_1 is changed
       - published_ports_2 is not changed
@@ -124,7 +124,7 @@
 ####################################################################
 
 - name: published_ports -- one-element container port range
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ item }}"
@@ -138,7 +138,7 @@
   register: published_ports_1
 
 - name: published_ports -- one-element container port range (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ item }}"
@@ -152,7 +152,7 @@
   register: published_ports_2
 
 - name: published_ports -- one-element container port range (different range)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ item }}"
@@ -166,7 +166,7 @@
   register: published_ports_3
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ item }}"
     state: absent
     force_kill: true
@@ -175,7 +175,7 @@
     - '{{ cname2 }}'
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - published_ports_1 is changed
       - published_ports_2 is not changed
@@ -188,7 +188,7 @@
 - when: docker_host_info.host_info.ServerVersion is version('27.0.0', '<')
   block:
     - name: published_ports -- IPv6
-      docker_container:
+      community.docker.docker_container:
         image: "{{ docker_test_image_alpine }}"
         command: '/bin/sh -c "sleep 10m"'
         name: "{{ cname }}"
@@ -199,7 +199,7 @@
       register: published_ports_1
 
     - name: published_ports -- IPv6 (idempotency)
-      docker_container:
+      community.docker.docker_container:
         image: "{{ docker_test_image_alpine }}"
         command: '/bin/sh -c "sleep 10m"'
         name: "{{ cname }}"
@@ -210,7 +210,7 @@
       register: published_ports_2
 
     - name: published_ports -- IPv6 (different IP)
-      docker_container:
+      community.docker.docker_container:
         image: "{{ docker_test_image_alpine }}"
         command: '/bin/sh -c "sleep 10m"'
         name: "{{ cname }}"
@@ -221,7 +221,7 @@
       register: published_ports_3
 
     - name: published_ports -- IPv6 (hostname)
-      docker_container:
+      community.docker.docker_container:
         image: "{{ docker_test_image_alpine }}"
         command: '/bin/sh -c "sleep 10m"'
         name: "{{ cname }}"
@@ -233,13 +233,13 @@
       ignore_errors: true
 
     - name: cleanup
-      docker_container:
+      community.docker.docker_container:
         name: "{{ cname }}"
         state: absent
         force_kill: true
       diff: false
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - published_ports_1 is changed
           - published_ports_2 is not changed
@@ -250,7 +250,7 @@
 ## publish_all_ports ###############################################
 ####################################################################
 
-- set_fact:
+- ansible.builtin.set_fact:
     publish_all_ports_test_cases:
       - test_name: no_options
         changed: true
@@ -306,7 +306,7 @@
         changed: false
 
 - name: publish_all_ports ({{ test_case.test_name }})
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -319,7 +319,7 @@
     loop_var: test_case
   loop: "{{ publish_all_ports_test_cases }}"
 
-- assert:
+- ansible.builtin.assert:
     that:
       - publish_all_ports.results[index].changed == test_case.changed
   loop: "{{ publish_all_ports_test_cases }}"

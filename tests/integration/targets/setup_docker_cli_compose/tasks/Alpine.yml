@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Compose is available from Alpine 3.15 on
-  set_fact:
+  ansible.builtin.set_fact:
     docker_has_compose: "{{ ansible_facts.distribution_version is version('3.15', '>=') }}"
 
 - name: Install Docker compose CLI plugin
-  apk:
+  community.general.apk:
     name: docker-cli-compose
   when: docker_has_compose

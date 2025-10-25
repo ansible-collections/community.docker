@@ -8,12 +8,12 @@
   gather_facts: false
   tasks:
     - name: Show all groups
-      debug:
+      ansible.builtin.debug:
         var: groups
     - name: Load variables
-      include_vars: ../../setup_docker/vars/main.yml
+      ansible.builtin.include_vars: ../../setup_docker/vars/main.yml
     - name: Make sure that the expected groups are there
-      assert:
+      ansible.builtin.assert:
         that:
           - groups.all | length >= 2
           - groups.ungrouped | length >= 0
@@ -36,10 +36,10 @@
   gather_facts: false
   tasks:
     - name: Show all variables
-      debug:
+      ansible.builtin.debug:
         var: hostvars[inventory_hostname]
     - name: Make sure SSH is set up
-      assert:
+      ansible.builtin.assert:
         that:
           - ansible_ssh_host == '1.2.3.4'
           - ansible_ssh_port == docker_networksettings.Ports['22/tcp'][0].HostPort
@@ -48,7 +48,7 @@
         # will be other containers.
         - inventory_hostname.startswith('ansible-docker-test-docker-inventory-container-')
     - name: Write labels into file
-      copy:
+      ansible.builtin.copy:
         dest: "/tmp/{{ inventory_hostname }}-labels.txt"
         content: |-
           {{ docker_config.Labels }}

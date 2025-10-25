@@ -5,52 +5,52 @@
 
 - block:
     - name: Make sure we're not already using Docker swarm
-      docker_swarm:
+      community.docker.docker_swarm:
         state: absent
         force: true
 
     - name: Create a Swarm cluster
-      docker_swarm:
+      community.docker.docker_swarm:
         state: present
         advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
 
     - name: install docker_stack python requirements
-      pip:
+      ansible.builtin.pip:
         name: jsondiff,pyyaml
 
     - name: Create a stack without name
       register: output
-      docker_stack:
+      community.docker.docker_stack:
         state: present
       ignore_errors: true
 
     - name: assert failure when name not set
-      assert:
+      ansible.builtin.assert:
         that:
           - output is failed
           - 'output.msg == "missing required arguments: name"'
 
     - name: Create a stack without compose
       register: output
-      docker_stack:
+      community.docker.docker_stack:
         name: test_stack
       ignore_errors: true
 
     - name: assert failure when compose not set
-      assert:
+      ansible.builtin.assert:
         that:
           - output is failed
           - 'output.msg == "compose parameter must be a list containing at least one element"'
 
     - name: Ensure stack is absent
       register: output
-      docker_stack:
+      community.docker.docker_stack:
         state: absent
         name: test_stack
         absent_retries: 30
 
     - name: Template compose files
-      template:
+      ansible.builtin.template:
         src: "{{item}}"
         dest: "{{remote_tmp_dir}}/"
       with_items:
@@ -59,14 +59,14 @@
 
     - name: Create stack with compose file
       register: output
-      docker_stack:
+      community.docker.docker_stack:
         state: present
         name: test_stack
         compose:
           - "{{remote_tmp_dir}}/stack_compose_base.yml"
 
     - name: assert test_stack changed on stack creation with compose file
-      assert:
+      ansible.builtin.assert:
         that:
           - output is changed
 
@@ -88,30 +88,30 @@
 
     - name: Delete stack
       register: output
-      docker_stack:
+      community.docker.docker_stack:
         state: absent
         name: test_stack
         absent_retries: 30
 
     - name: assert delete of existing stack returns changed
-      assert:
+      ansible.builtin.assert:
         that:
           - output is changed
 
     - name: Delete stack again
       register: output
-      docker_stack:
+      community.docker.docker_stack:
         state: absent
         name: test_stack
         absent_retries: 30
 
     - name: assert state=absent idempotency
-      assert:
+      ansible.builtin.assert:
         that:
           - output is not changed
 
   always:
     - name: Remove a Swarm cluster
-      docker_swarm:
+      community.docker.docker_swarm:
         state: absent
         force: true

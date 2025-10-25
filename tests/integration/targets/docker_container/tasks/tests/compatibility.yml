@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cname: "{{ cname_prefix ~ '-hi' }}"
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cnames: "{{ cnames + [cname] }}"
 
 ####################################################################
@@ -15,7 +15,7 @@
 ####################################################################
 
 - name: Start container (check)
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
@@ -25,7 +25,7 @@
   register: start_1
 
 - name: Start container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
@@ -34,7 +34,7 @@
   register: start_2
 
 - name: Start container (idempotent)
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
@@ -43,7 +43,7 @@
   register: start_3
 
 - name: Start container (idempotent check)
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_alpine }}"
     state: started
@@ -52,13 +52,13 @@
   register: start_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - start_1 is changed
       - start_2 is changed
@@ -70,7 +70,7 @@
 ####################################################################
 
 - name: Start container (check)
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
@@ -80,7 +80,7 @@
   register: start_1
 
 - name: Start container
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
@@ -89,7 +89,7 @@
   register: start_2
 
 - name: Start container (idempotent)
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
@@ -98,7 +98,7 @@
   register: start_3
 
 - name: Start container (idempotent check)
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
@@ -108,13 +108,13 @@
   register: start_4
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - start_1 is changed
       - start_2 is changed

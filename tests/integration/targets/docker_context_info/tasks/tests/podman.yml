@@ -12,7 +12,7 @@
       register: docker_contexts
 
     - name: Ensure that there are at least two contexts
-      assert:
+      ansible.builtin.assert:
         that:
           - docker_contexts.contexts | length >= 2
 
@@ -21,7 +21,7 @@
         name: podman
       register: docker_podman_context
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - docker_podman_context.contexts | length == 1
           - docker_podman_context.contexts[0].name == 'podman'
@@ -38,11 +38,11 @@
       block:
 
         - name: Get info on Podman host
-          docker_host_info:
+          community.docker.docker_host_info:
           register: output
 
         - name: Check for some Podman specific values
-          assert:
+          ansible.builtin.assert:
             that:
               - output.host_info.ProductLicense == 'Apache-2.0'
               - >-

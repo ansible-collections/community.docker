@@ -12,21 +12,21 @@
   when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in  ['CentOS6', 'RedHat6']
   block:
     - name: Detect whether we are running inside a container
-      current_container_facts:
+      community.docker.current_container_facts:
 
     - name: Look for marker whether Podman was already set up
-      stat:
+      ansible.builtin.stat:
         path: /root/community.docker-podman-is-set-up
       register: podman_setup_marker
 
     - name: Figure out user ID
-      command: id -u
+      ansible.builtin.command: id -u
       register: podman_user_id
 
     - when: not podman_setup_marker.stat.exists and not ansible_module_running_in_container
       block:
         - name:
-          debug:
+          ansible.builtin.debug:
             msg: |-
               OS family: {{ ansible_facts.os_family }}
               Distribution: {{ ansible_facts.distribution }}
@@ -34,7 +34,7 @@
               Distribution full version: {{ ansible_facts.distribution_version }}
 
         - name: Include distribution specific variables
-          include_vars: "{{ lookup('first_found', params) }}"
+          ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
           vars:
             params:
               files:
@@ -49,12 +49,12 @@
         - when: has_podman
           block:
             - name: Install podman
-              package:
+              ansible.builtin.package:
                 name: "{{ podman_packages }}"
               notify: cleanup podman
 
             - name: Start podman socket for this user
-              systemd_service:
+              ansible.builtin.systemd_service:
                 name: "{{ podman_socket_service }}"
                 state: started
                 scope: "{{ 'global' if podman_user_id.stdout == '0' and ansible_facts.os_family == 'RedHat' and (ansible_facts.distribution_major_version | int < 10) else 'user' }}"
@@ -62,30 +62,30 @@
                 XDG_RUNTIME_DIR: "{{ '/run' if podman_user_id.stdout == '0' else ('/run/user/' ~ podman_user_id.stdout) }}"
 
         - name: Set marker that Podman was already set up
-          file:
+          ansible.builtin.file:
             path: /root/community.docker-podman-is-set-up
             state: touch
           when: podman_skip_cleanup
 
     - when: not has_podman or ansible_module_running_in_container
       block:
-        - set_fact:
+        - ansible.builtin.set_fact:
             podman_cli_version: "0.0"
             podman_socket: "not available"
 
     - when: has_podman and not ansible_module_running_in_container
       block:
         - name: Check Podman CLI version
-          command: "podman version -f {% raw %}'{{.Client.Version}}'{% endraw %}"
+          ansible.builtin.command: "podman version -f {% raw %}'{{.Client.Version}}'{% endraw %}"
           register: podman_cli_version_stdout
           ignore_errors: true
 
-        - set_fact:
+        - ansible.builtin.set_fact:
             podman_cli_version: "{{ podman_cli_version_stdout.stdout | default('0.0', true) }}"
             podman_socket: "unix://{{ '/run' if podman_user_id.stdout == '0' else ('/run/user/' ~ podman_user_id.stdout) }}/podman/podman.sock"
 
         - name: Create podman Docker context
-          command:
+          ansible.builtin.command:
             cmd: >-
               docker context
               create podman
@@ -93,7 +93,7 @@
               --docker "host={{ podman_socket }}"
           ignore_errors: true
 
-    - debug:
+    - ansible.builtin.debug:
         msg: |-
           Podman CLI version: {{ podman_cli_version }}
           Podman socket: {{ podman_socket }}
@@ -102,10 +102,10 @@
       block:
         # Cleanup podman
         - name: Show all containers
-          command: 'podman ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %}'
+          ansible.builtin.command: 'podman ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %}'
 
         - name: "Remove all ansible-docker-test-* podman containers"
-          shell: 'podman ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r podman container rm -f'
+          ansible.builtin.shell: 'podman ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r podman container rm -f'
           register: podman_containers
           retries: 3
           delay: 3
@@ -113,17 +113,17 @@
           ignore_errors: true
 
         - name: "Remove all ansible-docker-test-* podman volumes"
-          shell: 'podman volume ls --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r podman volume rm -f'
+          ansible.builtin.shell: 'podman volume ls --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r podman volume rm -f'
           register: podman_volumes
           ignore_errors: true
 
         - name: "Remove all ansible-docker-test-* podman networks"
-          shell: 'podman network ls --no-trunc --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r podman network rm'
+          ansible.builtin.shell: 'podman network ls --no-trunc --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r podman network rm'
           register: podman_networks
           ignore_errors: true
 
         - name: Cleaned podman resources
-          debug:
+          ansible.builtin.debug:
             var: podman_resources
           vars:
             podman_resources:
@@ -133,27 +133,27 @@
 
         # List all existing podman resources
         - name: List all podman containers
-          command: podman ps --no-trunc -a
+          ansible.builtin.command: podman ps --no-trunc -a
           register: podman_containers
           ignore_errors: true
 
         - name: List all podman volumes
-          command: podman volume ls
+          ansible.builtin.command: podman volume ls
           register: podman_volumes
           ignore_errors: true
 
         - name: List all podman networks
-          command: podman network ls --no-trunc
+          ansible.builtin.command: podman network ls --no-trunc
           register: podman_networks
           ignore_errors: true
 
         - name: List all podman images
-          command: podman images --no-trunc -a
+          ansible.builtin.command: podman images --no-trunc -a
           register: podman_images
           ignore_errors: true
 
         - name: Still existing podman resources
-          debug:
+          ansible.builtin.debug:
             var: podman_resources
           vars:
             podman_resources:

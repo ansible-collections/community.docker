@@ -7,41 +7,41 @@
     image_name: registry.example.com:5000/foo/bar:baz
   block:
     - name: Make sure image is not present
-      docker_image_remove:
+      community.docker.docker_image_remove:
         name: "{{ image_name }}"
 
     - name: Push non-existing image (must fail)
-      docker_image_push:
+      community.docker.docker_image_push:
         name: "{{ image_name }}"
       register: fail_1
       ignore_errors: true
 
     - name: Push image ID (must fail)
-      docker_image_push:
+      community.docker.docker_image_push:
         name: "sha256:{{ docker_test_image_digest_v1_image_id }}"
       register: fail_2
       ignore_errors: true
 
     - name: Push image with digest (must fail)
-      docker_image_push:
+      community.docker.docker_image_push:
         name: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
       register: fail_3
       ignore_errors: true
 
     - name: Push invalid tag (must fail)
-      docker_image_push:
+      community.docker.docker_image_push:
         name: "{{ docker_test_image_hello_world }}"
         tag: foo/bar
       register: fail_4
       ignore_errors: true
 
     - name: Push invalid tag 2 (must fail)
-      docker_image_push:
+      community.docker.docker_image_push:
         name: "{{ docker_test_image_digest_base }}:foo bar"
       register: fail_5
       ignore_errors: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - fail_1 is failed
           - >-

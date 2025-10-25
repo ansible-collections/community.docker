@@ -6,7 +6,7 @@
 - name: Image ID  pull tests
   block:
     - name: Make sure images are not there
-      docker_image_remove:
+      community.docker.docker_image_remove:
         name: "{{ item }}"
         force: true
       loop:
@@ -14,26 +14,26 @@
         - "sha256:{{ docker_test_image_digest_v2_image_id }}"
 
     - name: Pull image 1
-      docker_image_pull:
+      community.docker.docker_image_pull:
         name: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
       register: present_1
       diff: true
 
     - name: Pull image 1 (idempotent, do pull)
-      docker_image_pull:
+      community.docker.docker_image_pull:
         name: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
         pull: always
       register: present_2
       diff: true
 
     - name: Pull image 1 (idempotent, do not pull)
-      docker_image_pull:
+      community.docker.docker_image_pull:
         name: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
         pull: not_present
       register: present_3
       diff: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - present_1 is changed
           - present_1.actions | length == 1
@@ -51,7 +51,7 @@
           - present_3.diff.after.id == present_1.diff.after.id
 
     - name: Pull image 2 (check mode)
-      docker_image_pull:
+      community.docker.docker_image_pull:
         name: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v2 }}"
         pull: always
       register: present_4
@@ -59,13 +59,13 @@
       check_mode: true
 
     - name: Pull image 2
-      docker_image_pull:
+      community.docker.docker_image_pull:
         name: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v2 }}"
         pull: always
       register: present_5
       diff: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - present_4 is changed
           - present_4.actions | length == 1
@@ -81,7 +81,7 @@
 
   always:
     - name: cleanup
-      docker_image_remove:
+      community.docker.docker_image_remove:
         name: "{{ item }}"
         force: true
       loop:

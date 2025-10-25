@@ -4,11 +4,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering service name
-  set_fact:
+  ansible.builtin.set_fact:
     service_name: "{{ name_prefix ~ '-update_config' }}"
 
 - name: Registering service name
-  set_fact:
+  ansible.builtin.set_fact:
     service_names: "{{ service_names + [service_name] }}"
 
 ###################################################################
@@ -16,7 +16,7 @@
 ###################################################################
 
 - name: update_config.delay
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -26,7 +26,7 @@
   register: update_delay_1
 
 - name: update_config.delay (idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -36,7 +36,7 @@
   register: update_delay_2
 
 - name: update_config.delay (change)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -46,12 +46,12 @@
   register: update_delay_3
 
 - name: cleanup
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - update_delay_1 is changed
       - update_delay_2 is not changed
@@ -62,7 +62,7 @@
 ###################################################################
 
 - name: update_config.failure_action
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -72,7 +72,7 @@
   register: update_failure_action_1
 
 - name: update_config.failure_action (idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -82,7 +82,7 @@
   register: update_failure_action_2
 
 - name: update_config.failure_action (change)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -92,7 +92,7 @@
   register: update_failure_action_3
 
 - name: update_config.failure_action (rollback)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -103,7 +103,7 @@
   ignore_errors: true
 
 - name: update_config.failure_action (rollback idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -114,25 +114,25 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - update_failure_action_1 is changed
       - update_failure_action_2 is not changed
       - update_failure_action_3 is changed
 
-- assert:
+- ansible.builtin.assert:
     that:
       - update_failure_action_4 is changed
       - update_failure_action_5 is not failed
       - update_failure_action_5 is not changed
   when: docker_api_version is version('1.28', '>=') and docker_py_version is version('3.5.0', '>=')
 
-- assert:
+- ansible.builtin.assert:
     that:
       - update_failure_action_4 is failed
       - "'Minimum version required' in update_failure_action_4.msg"
@@ -143,7 +143,7 @@
 ###################################################################
 
 - name: update_config.max_failure_ratio
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -154,7 +154,7 @@
   ignore_errors: true
 
 - name: update_config.max_failure_ratio (idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -165,7 +165,7 @@
   ignore_errors: true
 
 - name: update_config.max_failure_ratio (change)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -176,18 +176,18 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - update_max_failure_ratio_1 is changed
       - update_max_failure_ratio_2 is not changed
       - update_max_failure_ratio_3 is changed
   when: docker_py_version is version('2.1.0', '>=')
-- assert:
+- ansible.builtin.assert:
     that:
       - update_max_failure_ratio_1 is failed
       - "'Minimum version required' in update_max_failure_ratio_1.msg"
@@ -198,7 +198,7 @@
 ###################################################################
 
 - name: update_config.monitor
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -209,7 +209,7 @@
   ignore_errors: true
 
 - name: update_config.monitor (idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -220,7 +220,7 @@
   ignore_errors: true
 
 - name: update_config.monitor (change)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -231,18 +231,18 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - update_monitor_1 is changed
       - update_monitor_2 is not changed
       - update_monitor_3 is changed
   when: docker_py_version is version('2.1.0', '>=')
-- assert:
+- ansible.builtin.assert:
     that:
       - update_monitor_1 is failed
       - "'Minimum version required' in update_monitor_1.msg"
@@ -253,7 +253,7 @@
 ###################################################################
 
 - name: update_config.order
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -264,7 +264,7 @@
   ignore_errors: true
 
 - name: update_config.order (idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -275,7 +275,7 @@
   ignore_errors: true
 
 - name: update_config.order (change)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -286,18 +286,18 @@
   ignore_errors: true
 
 - name: cleanup
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - update_order_1 is changed
       - update_order_2 is not changed
       - update_order_3 is changed
   when: docker_api_version is version('1.29', '>=') and docker_py_version is version('2.7.0', '>=')
-- assert:
+- ansible.builtin.assert:
     that:
       - update_order_1 is failed
       - "'Minimum version required' in update_order_1.msg"
@@ -308,7 +308,7 @@
 ###################################################################
 
 - name: update_config.parallelism
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -318,7 +318,7 @@
   register: update_parallelism_1
 
 - name: update_config.parallelism (idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -328,7 +328,7 @@
   register: update_parallelism_2
 
 - name: update_config.parallelism (change)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -338,12 +338,12 @@
   register: update_parallelism_3
 
 - name: cleanup
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - update_parallelism_1 is changed
       - update_parallelism_2 is not changed

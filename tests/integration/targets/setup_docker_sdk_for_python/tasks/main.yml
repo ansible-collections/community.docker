@@ -12,7 +12,7 @@
   when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in  ['CentOS6', 'RedHat6']
   block:
     - name: Include distribution specific variables
-      include_vars: "{{ lookup('first_found', params) }}"
+      ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
       vars:
         params:
           files:
@@ -25,18 +25,18 @@
             - "{{ role_path }}/vars"
 
     - name: Limit docker pypi package version to < 4.3.0
-      set_fact:
+      ansible.builtin.set_fact:
         docker_pip_package_limit: '<4.3.0'
       when: docker_api_version is version('1.39', '<')
 
     - name: Make sure git is installed
-      package:
+      ansible.builtin.package:
         name:
           - git
       when: force_docker_sdk_for_python_dev | default(false)
 
     - name: Install/upgrade Python requirements
-      pip:
+      ansible.builtin.pip:
         name: >-
           {{
             docker_pip_git_packages
@@ -53,12 +53,12 @@
           }}
 
     - name: Check docker-py version
-      command: "{{ ansible_python.executable }} -c 'import docker; print(docker.__version__)'"
+      ansible.builtin.command: "{{ ansible_python.executable }} -c 'import docker; print(docker.__version__)'"
       register: docker_py_version_stdout
       ignore_errors: true
 
-    - set_fact:
+    - ansible.builtin.set_fact:
         docker_py_version: "{{ docker_py_version_stdout.stdout | default('0.0') }}"
 
-    - debug:
+    - ansible.builtin.debug:
         msg: "Docker SDK for Python version: {{ docker_py_version }}"

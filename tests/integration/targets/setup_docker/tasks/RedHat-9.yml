@@ -7,7 +7,7 @@
 # See: https://docs.docker.com/engine/installation/linux/docker-ee/rhel/#install-using-the-repository
 
 - name: Install Docker pre-reqs
-  dnf:
+  ansible.builtin.dnf:
     name: "{{ docker_prereq_packages }}"
     state: present
   notify: cleanup docker
@@ -18,7 +18,7 @@
 
 # Docker broke their .repo file, so we set it up ourselves
 - name: Set-up repository
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: docker-ce
     description: docker-ce
     baseurl: https://download.docker.com/linux/centos/{{ ansible_facts.distribution_major_version }}/$basearch/stable
@@ -26,13 +26,13 @@
     gpgkey: https://download.docker.com/linux/centos/gpg
 
 - name: Install docker
-  dnf:
+  ansible.builtin.dnf:
     name: "{{ docker_packages if needs_docker_daemon else docker_cli_packages }}"
     state: present
   notify: cleanup docker
 
 - name: Make sure the docker daemon is running (failure expected inside docker container)
-  service:
+  ansible.builtin.service:
     name: docker
     state: started
   ignore_errors: "{{ ansible_virtualization_type in ['docker', 'container', 'containerd'] }}"

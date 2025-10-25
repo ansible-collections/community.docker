@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering volume name
-  set_fact:
+  ansible.builtin.set_fact:
     vname: "{{ name_prefix ~ '-basic' }}"
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     vnames: "{{ vnames + [vname] }}"
 
 ####################################################################
@@ -15,40 +15,40 @@
 ####################################################################
 
 - name: Create a volume
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
   register: create_1
 
 - name: Create a volume (idempotency)
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
   register: create_2
 
 - name: "Create a volume (recreate: options-changed)"
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     recreate: options-changed
   register: create_3
 
 - name: "Create a volume (recreate: always)"
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     recreate: always
   register: create_4
 
 - name: Remove a volume
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     state: absent
   register: absent_1
 
 - name: Remove a volume (idempotency)
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     state: absent
   register: absent_2
 
-- assert:
+- ansible.builtin.assert:
     that:
       - create_1 is changed
       - create_2 is not changed
@@ -62,7 +62,7 @@
 ####################################################################
 
 - name: Create a volume with options
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     driver: local
     driver_options:
@@ -72,7 +72,7 @@
   register: driver_options_1
 
 - name: Create a volume with options (idempotency)
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     driver: local
     driver_options:
@@ -82,7 +82,7 @@
   register: driver_options_2
 
 - name: Create a volume with options (changed)
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     driver: local
     driver_options:
@@ -92,7 +92,7 @@
   register: driver_options_3
 
 - name: "Create a volume with options (changed, recreate: options-changed)"
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     driver: local
     driver_options:
@@ -103,11 +103,11 @@
   register: driver_options_4
 
 - name: Cleanup
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     state: absent
 
-- assert:
+- ansible.builtin.assert:
     that:
       - driver_options_1 is changed
       - driver_options_2 is not changed
@@ -119,7 +119,7 @@
 ####################################################################
 
 - name: Create a volume with an invalid label
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     labels:
       foo: 1.0
@@ -127,7 +127,7 @@
   ignore_errors: true
 
 - name: Create a volume with labels
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     labels:
       ansible.test.1: hello
@@ -135,7 +135,7 @@
   register: driver_labels_1
 
 - name: Create a volume with labels (idempotency)
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     labels:
       ansible.test.2: world
@@ -143,14 +143,14 @@
   register: driver_labels_2
 
 - name: Create a volume with labels (less)
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     labels:
       ansible.test.1: hello
   register: driver_labels_3
 
 - name: "Create a volume with labels (less, recreate: options-changed)"
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     labels:
       ansible.test.1: hello
@@ -158,7 +158,7 @@
   register: driver_labels_4
 
 - name: Create a volume with labels (more)
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     labels:
       ansible.test.1: hello
@@ -166,7 +166,7 @@
   register: driver_labels_5
 
 - name: "Create a volume with labels (more, recreate: options-changed)"
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     labels:
       ansible.test.1: hello
@@ -175,11 +175,11 @@
   register: driver_labels_6
 
 - name: Cleanup
-  docker_volume:
+  community.docker.docker_volume:
     name: "{{ vname }}"
     state: absent
 
-- assert:
+- ansible.builtin.assert:
     that:
       - driver_labels_invalid is failed
       - driver_labels_invalid.msg == "The value 1.0 for 'foo' of labels is not a string or something than can be safely converted to a string!"

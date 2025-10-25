@@ -8,25 +8,25 @@
 # and should not be used as examples of how to write Ansible roles #
 ####################################################################
 
-- set_fact:
+- ansible.builtin.set_fact:
     pkg_mgr: community.general.pkgng
     ansible_pkg_mgr: community.general.pkgng
     cacheable: true
   when: ansible_os_family == "FreeBSD"
 
-- set_fact:
+- ansible.builtin.set_fact:
     pkg_mgr: community.general.zypper
     ansible_pkg_mgr: community.general.zypper
     cacheable: true
   when: ansible_os_family == "Suse"
 
-- shell:
+- ansible.builtin.shell:
     cmd: |
       sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/*.repo
       sed -i 's%#baseurl=http://mirror.centos.org/%baseurl=https://vault.centos.org/%g' /etc/yum.repos.d/*.repo
   when: ansible_distribution in 'CentOS' and ansible_distribution_major_version == '7'
 
-- shell:
+- ansible.builtin.shell:
     cmd: |
       sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-*.repo
       sed -i 's%#baseurl=http://mirror.centos.org/$contentdir/$releasever/%baseurl=https://vault.centos.org/8.4.2105/%g' /etc/yum.repos.d/CentOS-Linux-*.repo

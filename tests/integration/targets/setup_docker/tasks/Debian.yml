@@ -4,11 +4,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Get OS version
-  shell: uname -r
+  ansible.builtin.shell: uname -r
   register: os_version
 
 - name: Install pre-reqs
-  apt:
+  ansible.builtin.apt:
     name: '{{ docker_prereq_packages }}'
     state: present
     update_cache: true
@@ -20,12 +20,12 @@
   name: Add Docker repo on Ubuntu 22+ or Debian 12+
   block:
     - name: Add gpg key
-      get_url:
+      ansible.builtin.get_url:
         url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
         dest: /etc/apt/keyrings/docker.asc
 
     - name: Add Docker repo
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: deb [arch={{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
         state: present
 
@@ -35,16 +35,16 @@
   name: Add Docker repo on Ubuntu 20 or before, or Debian 11 or before
   block:
     - name: Add gpg key
-      shell: curl -fsSL https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg >key && apt-key add key
+      ansible.builtin.shell: curl -fsSL https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg >key && apt-key add key
 
     - name: Add Docker repo
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: deb [arch={{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
         state: present
 
 - block:
     - name: Prevent service restart
-      copy:
+      ansible.builtin.copy:
         content: exit 101
         dest: /usr/sbin/policy-rc.d
         backup: true
@@ -52,18 +52,18 @@
       register: policy_rc_d
 
     - name: Install Docker CE
-      apt:
+      ansible.builtin.apt:
         name: '{{ docker_packages if needs_docker_daemon else docker_cli_packages }}'
         state: present
 
   always:
     - name: Restore /usr/sbin/policy-rc.d (if needed)
-      command: mv {{ policy_rc_d.backup_file }} /usr/sbin/policy-rc.d
+      ansible.builtin.command: mv {{ policy_rc_d.backup_file }} /usr/sbin/policy-rc.d
       when:
         - '"backup_file" in policy_rc_d'
 
     - name: Remove /usr/sbin/policy-rc.d (if needed)
-      file:
+      ansible.builtin.file:
         path: /usr/sbin/policy-rc.d
         state: absent
       when:

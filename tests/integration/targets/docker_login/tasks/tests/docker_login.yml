@@ -5,14 +5,14 @@
 
 - block:
     - name: Log out server
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         username: testuser
         password: hunter2
         state: absent
 
     - name: Log in with wrong password (check mode)
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         username: testuser
         password: "1234"
@@ -22,7 +22,7 @@
       check_mode: true
 
     - name: Log in with wrong password
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         username: testuser
         password: "1234"
@@ -31,7 +31,7 @@
       ignore_errors: true
 
     - name: Make sure that login failed
-      assert:
+      ansible.builtin.assert:
         that:
           - login_failed_check is failed
           - "('login attempt to http://' ~ registry_frontend_address ~ '/v2/ failed') in login_failed_check.msg"
@@ -39,7 +39,7 @@
           - "('login attempt to http://' ~ registry_frontend_address ~ '/v2/ failed') in login_failed.msg"
 
     - name: Log in (check mode)
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         username: testuser
         password: hunter2
@@ -48,7 +48,7 @@
       check_mode: true
 
     - name: Log in
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         username: testuser
         password: hunter2
@@ -56,12 +56,12 @@
       register: login_2
 
     - name: Get permissions of ~/.docker/config.json
-      stat:
+      ansible.builtin.stat:
         path: ~/.docker/config.json
       register: login_2_stat
 
     - name: Log in (idempotent)
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         username: testuser
         password: hunter2
@@ -69,7 +69,7 @@
       register: login_3
 
     - name: Log in (idempotent, check mode)
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         username: testuser
         password: hunter2
@@ -78,7 +78,7 @@
       check_mode: true
 
     - name: Make sure that login worked
-      assert:
+      ansible.builtin.assert:
         that:
           - login_1 is changed
           - login_2 is changed
@@ -87,7 +87,7 @@
           - login_2_stat.stat.mode == '0600'
 
     - name: Log in again with wrong password (check mode)
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         username: testuser
         password: "1234"
@@ -97,7 +97,7 @@
       check_mode: true
 
     - name: Log in again with wrong password
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         username: testuser
         password: "1234"
@@ -106,7 +106,7 @@
       ignore_errors: true
 
     - name: Make sure that login failed again
-      assert:
+      ansible.builtin.assert:
         that:
           - login_failed_check is failed
           - "('login attempt to http://' ~ registry_frontend_address ~ '/v2/ failed') in login_failed_check.msg"
@@ -114,33 +114,33 @@
           - "('login attempt to http://' ~ registry_frontend_address ~ '/v2/ failed') in login_failed.msg"
 
     - name: Log out (check mode)
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         state: absent
       register: logout_1
       check_mode: true
 
     - name: Log out
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         state: absent
       register: logout_2
 
     - name: Log out (idempotent)
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         state: absent
       register: logout_3
 
     - name: Log out (idempotent, check mode)
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         state: absent
       register: logout_4
       check_mode: true
 
     - name: Make sure that login worked
-      assert:
+      ansible.builtin.assert:
         that:
           - logout_1 is changed
           - logout_2 is changed

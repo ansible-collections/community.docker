@@ -4,19 +4,19 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cname: "{{ cname_prefix ~ '-network' }}"
     cname_h1: "{{ cname_prefix ~ '-network-h1' }}"
     nname_1: "{{ cname_prefix ~ '-network-1' }}"
     nname_2: "{{ cname_prefix ~ '-network-2' }}"
     nname_3: "{{ cname_prefix ~ '-network-3' }}"
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cnames: "{{ cnames + [cname, cname_h1] }}"
     dnetworks: "{{ dnetworks + [nname_1, nname_2, nname_3] }}"
 
 - name: Create networks
-  docker_network:
+  community.docker.docker_network:
     name: "{{ network_name }}"
     state: present
   loop:
@@ -25,14 +25,14 @@
   loop_control:
     loop_var: network_name
 
-- set_fact:
+- ansible.builtin.set_fact:
     subnet_ipv4_base: 10.{{ 16 + (240 | random) }}.{{ 16 + (240 | random) }}
     subnet_ipv6_base: fdb6:feea:{{ '%0.4x:%0.4x' | format(65536 | random, 65536 | random) }}
     # If netaddr would be installed on the controller, one could do:
     # subnet_ipv4: "10.{{ 16 + (240 | random) }}.{{ 16 + (240 | random) }}.0/24"
     # subnet_ipv6: "fdb6:feea:{{ '%0.4x:%0.4x' | format(65536 | random, 65536 | random) }}::/64"
 
-- set_fact:
+- ansible.builtin.set_fact:
     subnet_ipv4: "{{ subnet_ipv4_base }}.0/24"
     subnet_ipv6: "{{ subnet_ipv6_base }}::/64"
     nname_3_ipv4_2: "{{ subnet_ipv4_base }}.2"
@@ -49,11 +49,11 @@
     # nname_3_ipv6_3: "{{ subnet_ipv6 | ansible.netcommon.next_nth_usable(3) }}"
     # nname_3_ipv6_4: "{{ subnet_ipv6 | ansible.netcommon.next_nth_usable(4) }}"
 
-- debug:
+- ansible.builtin.debug:
     msg: "Chose random IPv4 subnet {{ subnet_ipv4 }} and random IPv6 subnet {{ subnet_ipv6 }}"
 
 - name: Create network with fixed IPv4 and IPv6 subnets
-  docker_network:
+  community.docker.docker_network:
     name: "{{ nname_3 }}"
     enable_ipv6: true
     ipam_config:
@@ -66,7 +66,7 @@
 ####################################################################
 
 - name: network_mode
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -75,7 +75,7 @@
   register: network_mode_1
 
 - name: network_mode (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -84,7 +84,7 @@
   register: network_mode_2
 
 - name: network_mode (change)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -94,7 +94,7 @@
   register: network_mode_3
 
 - name: network_mode (container mode setup)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname_h1 }}"
@@ -102,7 +102,7 @@
   register: cname_h1_id
 
 - name: network_mode (container mode)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -112,7 +112,7 @@
   register: network_mode_4
 
 - name: network_mode (container mode idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -121,7 +121,7 @@
   register: network_mode_5
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ container_name }}"
     state: absent
     force_kill: true
@@ -132,7 +132,7 @@
     loop_var: container_name
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - network_mode_1 is changed
       - network_mode_1.container.HostConfig.NetworkMode == 'host'
@@ -150,7 +150,7 @@
 ####################################################################
 
 - name: networks_cli_compatible=no, networks w/o purge_networks
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -162,7 +162,7 @@
   register: networks_1
 
 - name: networks_cli_compatible=no, networks w/o purge_networks
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -174,7 +174,7 @@
   register: networks_2
 
 - name: networks_cli_compatible=no, networks, purge_networks
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -189,7 +189,7 @@
   register: networks_3
 
 - name: networks_cli_compatible=no, networks, purge_networks (idempotency)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -203,7 +203,7 @@
   register: networks_4
 
 - name: networks_cli_compatible=no, networks (less networks)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -214,7 +214,7 @@
   register: networks_5
 
 - name: networks_cli_compatible=no, networks, purge_networks (less networks)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -228,7 +228,7 @@
   register: networks_6
 
 - name: networks_cli_compatible=no, networks, purge_networks (more networks)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -243,13 +243,13 @@
   register: networks_7
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       # networks_1 has networks default, 'bridge', nname_1
       - networks_1 is changed
@@ -293,7 +293,7 @@
 ####################################################################
 
 - name: networks_cli_compatible=yes, networks specified
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -308,7 +308,7 @@
   register: networks_1
 
 - name: networks_cli_compatible=yes, networks specified
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -320,14 +320,14 @@
   register: networks_2
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
 - name: networks_cli_compatible=yes, empty networks list specified
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -337,7 +337,7 @@
   register: networks_3
 
 - name: networks_cli_compatible=yes, empty networks list specified
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -347,7 +347,7 @@
   register: networks_4
 
 - name: networks_cli_compatible=yes, empty networks list specified, purge_networks
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -360,14 +360,14 @@
   register: networks_5
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
 - name: networks_cli_compatible=yes, networks not specified
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -377,7 +377,7 @@
   register: networks_6
 
 - name: networks_cli_compatible=yes, networks not specified
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -386,7 +386,7 @@
   register: networks_7
 
 - name: networks_cli_compatible=yes, networks empty, purge_networks
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -399,15 +399,15 @@
   register: networks_8
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- debug: var=networks_3
+- ansible.builtin.debug: var=networks_3
 
-- assert:
+- ansible.builtin.assert:
     that:
       # networks_1 has networks nname_1, nname_2
       - networks_1 is changed
@@ -447,7 +447,7 @@
 ####################################################################
 
 - name: create container with one network
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -458,7 +458,7 @@
   register: networks_1
 
 - name: different networks, comparisons=ignore
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -472,7 +472,7 @@
   register: networks_2
 
 - name: less networks, comparisons=ignore
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -484,7 +484,7 @@
   register: networks_3
 
 - name: less networks, comparisons=allow_more_present
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -496,7 +496,7 @@
   register: networks_4
 
 - name: different networks, comparisons=allow_more_present
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -511,7 +511,7 @@
   register: networks_5
 
 - name: different networks, comparisons=strict
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -525,7 +525,7 @@
   register: networks_6
 
 - name: less networks, comparisons=strict
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -538,13 +538,13 @@
   register: networks_7
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       # networks_1 has networks nname_1
       - networks_1 is changed
@@ -580,7 +580,7 @@
 ####################################################################
 
 - name: create container (stopped) with one network and fixed IP
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -593,7 +593,7 @@
   register: networks_1
 
 - name: create container (stopped) with one network and fixed IP (idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -606,7 +606,7 @@
   register: networks_2
 
 - name: create container (stopped) with one network and fixed IP (different IPv4)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -619,7 +619,7 @@
   register: networks_3
 
 - name: create container (stopped) with one network and fixed IP (different IPv6)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -632,13 +632,13 @@
   register: networks_4
 
 - name: create container (started) with one network and fixed IP
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: started
   register: networks_5
 
 - name: create container (started) with one network and fixed IP (different IPv4)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -652,7 +652,7 @@
   register: networks_6
 
 - name: create container (started) with one network and fixed IP (different IPv6)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -666,7 +666,7 @@
   register: networks_7
 
 - name: create container (started) with one network and fixed IP (idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     command: '/bin/sh -c "sleep 10m"'
     name: "{{ cname }}"
@@ -679,13 +679,13 @@
   register: networks_8
 
 - name: cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - networks_1 is changed
       - networks_1.container.NetworkSettings.Networks[nname_3].IPAMConfig.IPv4Address == nname_3_ipv4_2
@@ -733,7 +733,7 @@
 ####################################################################
 
 - name: Delete networks
-  docker_network:
+  community.docker.docker_network:
     name: "{{ network_name }}"
     state: absent
     force: true

@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Compose is available in OpenSuSE 15.5, not sure which versions before
-  set_fact:
+  ansible.builtin.set_fact:
     docker_has_compose: "{{ ansible_facts.distribution_version is version('15.5', '>=') }}"
 
 - name: Install Docker compose CLI plugin

@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cname: "{{ cname_prefix ~ '-hi' }}"
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cnames: "{{ cnames + [cname] }}"
 
 - name: Get current context
@@ -15,7 +15,7 @@
     only_current: true
   register: docker_current_context
 
-- assert:
+- ansible.builtin.assert:
     that:
       - docker_current_context is not changed
       # Some of the following tests will not be true on all machines, but they should be in CI:
@@ -34,7 +34,7 @@
     group/community.docker.docker: "{{ docker_current_context.contexts[0].config }}"
   block:
     - name: Create container
-      docker_container:
+      community.docker.docker_container:
         image: "{{ docker_test_image_alpine }}"
         command: '/bin/sh -c "sleep 10m"'
         name: "{{ cname }}"
@@ -42,14 +42,14 @@
       register: create_1
 
     - name: Create container (idempotent)
-      docker_container:
+      community.docker.docker_container:
         image: "{{ docker_test_image_alpine }}"
         command: '/bin/sh -c "sleep 10m"'
         name: "{{ cname }}"
         state: present
       register: create_2
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - create_1 is changed
           - create_2 is not changed
@@ -59,24 +59,24 @@
         cmd: docker inspect {{ cname }}
       register: result
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - (result.stdout | from_json) | length == 1
           - (result.stdout | from_json)[0].State.Status == "created"
 
     - name: Start container
-      docker_container:
+      community.docker.docker_container:
         name: "{{ cname }}"
         state: started
       register: start_1
 
     - name: Start container (idempotent)
-      docker_container:
+      community.docker.docker_container:
         name: "{{ cname }}"
         state: started
       register: start_2
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - start_1 is changed
           - start_2 is not changed
@@ -86,26 +86,26 @@
         cmd: docker inspect {{ cname }}
       register: result
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - (result.stdout | from_json) | length == 1
           - (result.stdout | from_json)[0].State.Status == "running"
 
     - name: Remove container
-      docker_container:
+      community.docker.docker_container:
         name: "{{ cname }}"
         state: absent
         force_kill: true
       register: remove_1
 
     - name: Remove container (idempotent)
-      docker_container:
+      community.docker.docker_container:
         name: "{{ cname }}"
         state: absent
         force_kill: true
       register: remove_2
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - remove_1 is changed
           - remove_2 is not changed
@@ -116,6 +116,6 @@
       register: result
       failed_when: result.rc != 1
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - (result.stdout | from_json) | length == 0

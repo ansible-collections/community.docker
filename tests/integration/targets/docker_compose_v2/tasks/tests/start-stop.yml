@@ -22,12 +22,12 @@
 
   block:
     - name: Registering container name
-      set_fact:
+      ansible.builtin.set_fact:
         cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
         dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
 
     - name: Create project directory
-      file:
+      ansible.builtin.file:
         path: '{{ project_src }}'
         state: directory
 
@@ -36,62 +36,62 @@
 ####################################################################
 
     - name: Template default project file
-      copy:
+      ansible.builtin.copy:
         dest: '{{ project_src }}/docker-compose.yml'
         content: '{{ test_service }}'
 
     - name: Present (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       check_mode: true
       register: present_1_check
 
     - name: Present
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       register: present_1
 
     - name: Present (idempotent check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       check_mode: true
       register: present_2_check
 
     - name: Present (idempotent)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       register: present_2
 
     - name: Template modified project file
-      copy:
+      ansible.builtin.copy:
         dest: '{{ project_src }}/docker-compose.yml'
         content: '{{ test_service_mod }}'
 
     - name: Present (changed check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       check_mode: true
       register: present_3_check
 
     - name: Present (changed)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       register: present_3
 
     - name: Present with --yes
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         assume_yes: true
       when: docker_compose_version is version('2.32.0', '>=')
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - present_1_check is changed
           - present_1_check.warnings | default([]) | select('regex', ' please report this at ') | length == 0
@@ -120,32 +120,32 @@
 ####################################################################
 
     - name: Absent (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: absent
       check_mode: true
       register: absent_1_check
 
     - name: Absent
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: absent
       register: absent_1
 
     - name: Absent (idempotent check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: absent
       check_mode: true
       register: absent_2_check
 
     - name: Absent (idempotent)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: absent
       register: absent_2
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - absent_1_check is changed
           - absent_1_check.warnings | default([]) | select('regex', ' please report this at ') | length == 0
@@ -161,107 +161,107 @@
 ####################################################################
 
     - name: Template default project file
-      copy:
+      ansible.builtin.copy:
         dest: '{{ project_src }}/docker-compose.yml'
         content: '{{ test_service }}'
 
     - name: Present stopped (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: stopped
       check_mode: true
       register: present_1_check
 
     - name: Present stopped
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: stopped
       register: present_1
 
     - name: Present stopped (idempotent check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: stopped
       check_mode: true
       register: present_2_check
 
     - name: Present stopped (idempotent)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: stopped
       register: present_2
 
     - name: Started (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       check_mode: true
       register: present_3_check
 
     - name: Started
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       register: present_3
 
     - name: Started (idempotent check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       check_mode: true
       register: present_4_check
 
     - name: Started (idempotent)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       register: present_4
 
     - name: Restarted (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: restarted
       check_mode: true
       register: present_5_check
 
     - name: Restarted
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: restarted
       register: present_5
 
     - name: Stopped (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: stopped
       check_mode: true
       register: present_6_check
 
     - name: Stopped
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: stopped
       register: present_6
 
     - name: Restarted (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: restarted
       check_mode: true
       register: present_7_check
 
     - name: Restarted
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: restarted
       register: present_7
 
     - name: Cleanup
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: absent
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - present_1_check is changed
           - present_1_check.warnings | default([]) | select('regex', ' please report this at ') | length == 0

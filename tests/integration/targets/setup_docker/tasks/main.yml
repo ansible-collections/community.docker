@@ -12,21 +12,21 @@
   when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in  ['CentOS6', 'RedHat6']
   block:
     - name: Detect whether we are running inside a container
-      current_container_facts:
+      community.docker.current_container_facts:
 
     - name: Look for marker whether Docker was already set up
-      stat:
+      ansible.builtin.stat:
         path: /root/community.docker-docker-is-set-up
       register: docker_setup_marker
 
     - when: not docker_setup_marker.stat.exists
       block:
         - name: Determine whether Docker Daemon needs to be installed
-          set_fact:
+          ansible.builtin.set_fact:
             needs_docker_daemon: '{{ not ansible_module_running_in_container }}'
 
         - name:
-          debug:
+          ansible.builtin.debug:
             msg: |-
               OS family: {{ ansible_facts.os_family }}
               Distribution: {{ ansible_facts.distribution }}
@@ -34,7 +34,7 @@
               Distribution full version: {{ ansible_facts.distribution_version }}
 
         - name: Include distribution specific variables
-          include_vars: "{{ lookup('first_found', params) }}"
+          ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
           vars:
             params:
               files:
@@ -47,7 +47,7 @@
                 - "{{ role_path }}/vars"
 
         - name: Include distribution specific tasks
-          include_tasks: "{{ lookup('first_found', params) }}"
+          ansible.builtin.include_tasks: "{{ lookup('first_found', params) }}"
           vars:
             params:
               files:
@@ -59,43 +59,43 @@
                 - "{{ role_path }}/tasks"
 
         - name: Make sure that docker is running
-          service:
+          ansible.builtin.service:
             name: docker
             state: started
           when: not ansible_module_running_in_container
 
         - name: Set marker that Docker was already set up
-          file:
+          ansible.builtin.file:
             path: /root/community.docker-docker-is-set-up
             state: touch
           when: docker_skip_cleanup
 
     # Detect docker API version
     - name: Check Docker API version
-      command: "docker version -f {% raw %}'{{(index .Server.Components 0).Details.ApiVersion}}'{% endraw %}"
+      ansible.builtin.command: "docker version -f {% raw %}'{{(index .Server.Components 0).Details.ApiVersion}}'{% endraw %}"
       register: docker_api_version_stdout
       ignore_errors: true
 
     # Detect docker CLI and docker-py versions
     - name: Check Docker CLI version
-      command: "docker version -f {% raw %}'{{.Client.Version}}'{% endraw %}"
+      ansible.builtin.command: "docker version -f {% raw %}'{{.Client.Version}}'{% endraw %}"
       register: docker_cli_version_stdout
       ignore_errors: true
 
-    - set_fact:
+    - ansible.builtin.set_fact:
         docker_cli_version: "{{ docker_cli_version_stdout.stdout | default('0.0') }}"
         docker_api_version: "{{ docker_api_version_stdout.stdout | default('0.0') }}"
 
-    - debug:
+    - ansible.builtin.debug:
         msg: "Docker CLI version: {{ docker_cli_version }}; Docker API version: {{ docker_api_version }}"
 
     - block:
         # Cleanup docker daemon
         - name: Show all containers
-          command: 'docker ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %}'
+          ansible.builtin.command: 'docker ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %}'
 
         - name: "Remove all ansible-docker-test-* docker containers"
-          shell: 'docker ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r docker rm -f'
+          ansible.builtin.shell: 'docker ps --no-trunc --format {% raw %}"{{.Names}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r docker rm -f'
           register: docker_containers
           retries: 3
           delay: 3
@@ -103,17 +103,17 @@
           ignore_errors: true
 
         - name: "Remove all ansible-docker-test-* docker volumes"
-          shell: 'docker volume ls --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r docker volume rm -f'
+          ansible.builtin.shell: 'docker volume ls --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r docker volume rm -f'
           register: docker_volumes
           ignore_errors: true
 
         - name: "Remove all ansible-docker-test-* docker networks"
-          shell: 'docker network ls --no-trunc --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r docker network rm'
+          ansible.builtin.shell: 'docker network ls --no-trunc --format {% raw %}"{{.Name}}"{% endraw %} | grep "^ansible-docker-test-" | xargs -r docker network rm'
           register: docker_networks
           ignore_errors: true
 
         - name: Cleaned docker resources
-          debug:
+          ansible.builtin.debug:
             var: docker_resources
           vars:
             docker_resources:
@@ -123,27 +123,27 @@
 
         # List all existing docker resources
         - name: List all docker containers
-          command: docker ps --no-trunc -a
+          ansible.builtin.command: docker ps --no-trunc -a
           register: docker_containers
           ignore_errors: true
 
         - name: List all docker volumes
-          command: docker volume ls
+          ansible.builtin.command: docker volume ls
           register: docker_volumes
           ignore_errors: true
 
         - name: List all docker networks
-          command: docker network ls --no-trunc
+          ansible.builtin.command: docker network ls --no-trunc
           register: docker_networks
           ignore_errors: true
 
         - name: List all docker images
-          command: docker images --no-trunc -a
+          ansible.builtin.command: docker images --no-trunc -a
           register: docker_images
           ignore_errors: true
 
         - name: Still existing docker resources
-          debug:
+          ansible.builtin.debug:
             var: docker_resources
           vars:
             docker_resources:

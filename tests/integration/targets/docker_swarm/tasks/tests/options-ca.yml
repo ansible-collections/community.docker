@@ -3,7 +3,7 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-- debug:
+- ansible.builtin.debug:
     msg: Running tests/options-ca.yml
 - name: options-ca
   when: cryptography_version.stdout is version('1.6', '>=')
@@ -43,21 +43,21 @@
         csr_path: '{{ remote_tmp_dir }}/ansible_{{ key }}.csr'
         provider: selfsigned
     - name: Load certificates
-      slurp:
+      ansible.builtin.slurp:
         src: '{{ remote_tmp_dir }}/{{ item }}'
       loop:
         - ansible_key1.pem
         - ansible_key2.pem
       register: ansible_certificates
     - name: Load certificate keys
-      slurp:
+      ansible.builtin.slurp:
         src: '{{ remote_tmp_dir }}/{{ item }}'
       loop:
         - ansible_key1.key
         - ansible_key2.key
       register: ansible_keys
     - name: signing_ca_cert and signing_ca_key (check mode)
-      docker_swarm:
+      community.docker.docker_swarm:
         advertise_addr: '{{ansible_default_ipv4.address | default("127.0.0.1")}}'
         state: present
         signing_ca_cert: '{{ ansible_certificates.results[0].content | b64decode }}'
@@ -68,7 +68,7 @@
       register: output_1
       ignore_errors: true
     - name: signing_ca_cert and signing_ca_key
-      docker_swarm:
+      community.docker.docker_swarm:
         advertise_addr: '{{ansible_default_ipv4.address | default("127.0.0.1")}}'
         state: present
         signing_ca_cert: '{{ ansible_certificates.results[0].content | b64decode }}'
@@ -78,15 +78,15 @@
       register: output_2
       ignore_errors: true
     - name: Private key
-      debug: msg="{{ ansible_keys.results[0].content | b64decode }}"
+      ansible.builtin.debug: msg="{{ ansible_keys.results[0].content | b64decode }}"
     - name: Cert
-      debug: msg="{{ ansible_certificates.results[0].content | b64decode }}"
-    - docker_swarm_info: null
+      ansible.builtin.debug: msg="{{ ansible_certificates.results[0].content | b64decode }}"
+    - community.docker.docker_swarm_info:
       register: output
       ignore_errors: true
-    - debug: var=output
+    - ansible.builtin.debug: var=output
     - name: signing_ca_cert and signing_ca_key (change, check mode)
-      docker_swarm:
+      community.docker.docker_swarm:
         state: present
         signing_ca_cert: '{{ ansible_certificates.results[1].content | b64decode }}'
         signing_ca_key: '{{ ansible_keys.results[1].content | b64decode }}'
@@ -96,7 +96,7 @@
       register: output_5
       ignore_errors: true
     - name: signing_ca_cert and signing_ca_key (change)
-      docker_swarm:
+      community.docker.docker_swarm:
         state: present
         signing_ca_cert: '{{ ansible_certificates.results[1].content | b64decode }}'
         signing_ca_key: '{{ ansible_keys.results[1].content | b64decode }}'
@@ -105,7 +105,7 @@
       register: output_6
       ignore_errors: true
     - name: assert signing_ca_cert and signing_ca_key
-      assert:
+      ansible.builtin.assert:
         that:
           - output_1 is changed
           - '(output_1.actions[0] | regex_search("New Swarm cluster created: ")) is truthy'
@@ -124,10 +124,10 @@
           - output_6.diff.before is defined
           - output_6.diff.after is defined
       when: docker_py_version is version('2.6.0', '>=')
-    - assert:
+    - ansible.builtin.assert:
         that:
           - output_1 is failed
           - ('version is ' ~ docker_py_version ~ ' ') in output_1.msg
           - '"Minimum version required is 2.6.0 " in output_1.msg'
       when: docker_py_version is version('2.6.0', '<')
-    - include_tasks: cleanup.yml
+    - ansible.builtin.include_tasks: cleanup.yml

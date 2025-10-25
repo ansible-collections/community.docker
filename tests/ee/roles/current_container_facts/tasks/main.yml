@@ -10,11 +10,11 @@
 # The following two tasks are useful if we ever have to debug why this fails.
 
 - name: Print all Ansible facts
-  debug:
+  ansible.builtin.debug:
     var: ansible_facts
 
 - name: Read some files
-  slurp:
+  ansible.builtin.slurp:
     src: "{{ path }}"
   loop:
     - /proc/self/cpuset
@@ -24,11 +24,11 @@
     loop_var: path
 
 - name: Print facts returned by module
-  debug:
+  ansible.builtin.debug:
     var: result.ansible_facts
 
 - name: Validate results
-  assert:
+  ansible.builtin.assert:
     that:
       - ansible_module_running_in_container
       - ansible_module_container_type != ''

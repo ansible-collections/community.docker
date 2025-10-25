@@ -5,21 +5,21 @@
 
 - block:
     - name: Log out server 1
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         username: testuser
         password: hunter2
         state: absent
 
     - name: Log out server 2
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend2_address }}"
         username: testuser
         password: hunter2
         state: absent
 
     - name: Log in server 1
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         username: testuser
         password: hunter2
@@ -27,7 +27,7 @@
       register: login_1
 
     - name: Log in server 2
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend2_address }}"
         username: testuser
         password: hunter2
@@ -35,7 +35,7 @@
       register: login_2
 
     - name: Log in server 1 (idempotent)
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend_address }}"
         username: testuser
         password: hunter2
@@ -43,7 +43,7 @@
       register: login_1_2
 
     - name: Log in server 2 (idempotent)
-      docker_login:
+      community.docker.docker_login:
         registry_url: "{{ registry_frontend2_address }}"
         username: testuser
         password: hunter2
@@ -51,7 +51,7 @@
       register: login_2_2
 
     - name: Make sure that login worked
-      assert:
+      ansible.builtin.assert:
         that:
           - login_1 is changed
           - login_2 is changed

@@ -21,17 +21,17 @@
 
   block:
     - name: Registering container name
-      set_fact:
+      ansible.builtin.set_fact:
         cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
         dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
 
     - name: Create project directory
-      file:
+      ansible.builtin.file:
         path: '{{ project_src }}'
         state: directory
 
     - name: Make sure images are not around
-      docker_image_remove:
+      community.docker.docker_image_remove:
         name: '{{ item }}'
       loop:
         - '{{ non_existing_image }}'
@@ -42,12 +42,12 @@
 ####################################################################
 
     - name: Template project file with non-existing image
-      copy:
+      ansible.builtin.copy:
         dest: '{{ project_src }}/docker-compose.yml'
         content: '{{ test_service_non_existing }}'
 
     - name: Present with pull=never (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         pull: never
@@ -56,7 +56,7 @@
       ignore_errors: true
 
     - name: Present with pull=never
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         pull: never
@@ -64,7 +64,7 @@
       ignore_errors: true
 
     - name: Present without explicit pull (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       check_mode: true
@@ -72,13 +72,13 @@
       ignore_errors: true
 
     - name: Present without explicit pull
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
       register: present_2
       ignore_errors: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - present_1_check is failed or present_1_check is changed
           - present_1_check is changed or present_1_check.msg.startswith('General error:')
@@ -98,12 +98,12 @@
 ####################################################################
 
     - name: Template project file with simple image
-      copy:
+      ansible.builtin.copy:
         dest: '{{ project_src }}/docker-compose.yml'
         content: '{{ test_service_simple }}'
 
     - name: Present with pull=missing (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         pull: missing
@@ -111,14 +111,14 @@
       register: present_1_check
 
     - name: Present with pull=missing
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         pull: missing
       register: present_1
 
     - name: Present with pull=missing (idempotent, check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         pull: missing
@@ -126,14 +126,14 @@
       register: present_2_check
 
     - name: Present with pull=missing (idempotent)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         pull: missing
       register: present_2
 
     - name: Present with pull=always (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         pull: always
@@ -141,19 +141,19 @@
       register: present_3_check
 
     - name: Present with pull=always
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         pull: always
       register: present_3
 
     - name: Stopping service
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: absent
 
     - name: Present with pull=never (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         pull: missing
@@ -161,14 +161,14 @@
       register: present_4_check
 
     - name: Present with pull=never
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         pull: missing
       register: present_4
 
     - name: Present with pull=never (idempotent, check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         pull: missing
@@ -176,18 +176,18 @@
       register: present_5_check
 
     - name: Present with pull=never (idempotent)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         pull: missing
       register: present_5
 
     - name: Cleanup
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: absent
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - present_1_check is changed
           - (present_1_check.actions | selectattr('status', 'eq', 'Pulling') | first) is truthy

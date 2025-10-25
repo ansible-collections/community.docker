@@ -8,10 +8,10 @@
   gather_facts: false
   tasks:
     - name: Show all groups
-      debug:
+      ansible.builtin.debug:
         var: groups
     - name: Make sure docker_swarm groups are there
-      assert:
+      ansible.builtin.assert:
         that:
           - groups.all | length > 0
           - groups.leader | length == 1
@@ -27,7 +27,7 @@
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
   tasks:
     - name: Check for groups
-      assert:
+      ansible.builtin.assert:
         that:
           - "groups.manager | length > 0"
           - "groups.worker | length >= 0"
@@ -35,28 +35,28 @@
       run_once: true
 
     - name: List manager group
-      debug:
+      ansible.builtin.debug:
         var: groups.manager
       run_once: true
 
     - name: List worker group
-      debug:
+      ansible.builtin.debug:
         var: groups.worker
       run_once: true
 
     - name: List leader group
-      debug:
+      ansible.builtin.debug:
         var: groups.leader
       run_once: true
 
     - name: Print ansible_host per host
-      debug:
+      ansible.builtin.debug:
         var: ansible_host
 
     - name: Make sure docker_swarm_node_attributes is available
-      assert:
+      ansible.builtin.assert:
         that:
           - docker_swarm_node_attributes is not undefined
     - name: Print docker_swarm_node_attributes per host
-      debug:
+      ansible.builtin.debug:
         var: docker_swarm_node_attributes

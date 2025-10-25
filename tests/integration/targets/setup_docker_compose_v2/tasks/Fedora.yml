@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Install docker-compose as system package
-  dnf:
+  ansible.builtin.dnf:
     name: "{{ docker_compose_packages }}"
     state: present
     enablerepo: docker-ce-test

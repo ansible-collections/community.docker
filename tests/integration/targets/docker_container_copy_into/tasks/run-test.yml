@@ -4,4 +4,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: "Loading tasks from {{ test_name }}"
-  include_tasks: "{{ test_name }}"
+  ansible.builtin.include_tasks: "{{ test_name }}"

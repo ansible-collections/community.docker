@@ -5,38 +5,38 @@
 
 - block:
     - name: Make sure we're not already using Docker swarm
-      docker_swarm:
+      community.docker.docker_swarm:
         state: absent
         force: true
 
     - name: Get docker_stack_info when docker is not running in swarm mode
-      docker_stack_info:
+      community.docker.docker_stack_info:
       ignore_errors: true
       register: output
 
     - name: Assert failure when called when swarm is not running
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output is failed'
           - '"Error response from daemon: This node is not a swarm manager" in output.msg'
 
     - name: Create a swarm cluster
-      docker_swarm:
+      community.docker.docker_swarm:
         state: present
         advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
 
     - name: Get docker_stack_info when docker is running and not stack available
-      docker_stack_info:
+      community.docker.docker_stack_info:
       register: output
 
     - name: Assert stack facts
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output.results | type_debug == "list"'
           - 'output.results | length == 0'
 
     - name: Template compose files
-      template:
+      ansible.builtin.template:
         src: "{{ item }}"
         dest: "{{ remote_tmp_dir }}/"
       with_items:
@@ -44,37 +44,37 @@
         - stack_compose_overrides.yml
 
     - name: Install docker_stack python requirements
-      pip:
+      ansible.builtin.pip:
         name: jsondiff,pyyaml
 
     - name: Create stack with compose file
       register: output
-      docker_stack:
+      community.docker.docker_stack:
         state: present
         name: test_stack
         compose:
           - "{{ remote_tmp_dir }}/stack_compose_base.yml"
 
     - name: Assert test_stack changed on stack creation with compose file
-      assert:
+      ansible.builtin.assert:
         that:
           - output is changed
 
     - name: Wait a bit to make sure stack is running
-      pause:
+      ansible.builtin.pause:
         seconds: 5
 
     - name: Get docker_stack_info when docker is running
-      docker_stack_info:
+      community.docker.docker_stack_info:
       register: output
 
     - name: Get docker_stack_task_info first element
-      docker_stack_task_info:
+      community.docker.docker_stack_task_info:
         name: "{{ output.results[0].Name }}"
       register: output
 
     - name: assert stack facts
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output.results | type_debug == "list"'
           - 'output.results[0].DesiredState == "Running"'
@@ -83,6 +83,6 @@
 
   always:
     - name: Cleanup
-      docker_swarm:
+      community.docker.docker_swarm:
         state: absent
         force: true

@@ -8,10 +8,10 @@
   gather_facts: false
   tasks:
     - name: Show all groups
-      debug:
+      ansible.builtin.debug:
         var: groups
     - name: Make sure docker_swarm groups are there
-      assert:
+      ansible.builtin.assert:
         that:
           - groups.all | length > 0
           - groups.leader | length == 1
@@ -27,13 +27,13 @@
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
   tasks:
     - name: Make sure docker_swarm_node_attributes is not available
-      assert:
+      ansible.builtin.assert:
         that:
           - docker_swarm_node_attributes is undefined
     - name: Make sure ansible_host_uri is available
-      assert:
+      ansible.builtin.assert:
         that:
           - ansible_host_uri is defined
     - name: Print ansible_host_uri
-      debug:
+      ansible.builtin.debug:
         var: ansible_host_uri

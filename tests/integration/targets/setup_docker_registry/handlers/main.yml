@@ -4,4 +4,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Remove test registry
-  include_tasks: ../handlers/cleanup.yml
+  ansible.builtin.include_tasks: ../handlers/cleanup.yml

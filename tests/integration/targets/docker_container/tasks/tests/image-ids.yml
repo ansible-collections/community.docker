@@ -4,14 +4,14 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cname: "{{ cname_prefix ~ '-iid' }}"
 - name: Registering container name
-  set_fact:
+  ansible.builtin.set_fact:
     cnames: "{{ cnames + [cname] }}"
 
 - name: Pull images
-  docker_image_pull:
+  community.docker.docker_image_pull:
     name: "{{ image }}"
   loop:
     - "{{ docker_test_image_hello_world }}"
@@ -20,22 +20,22 @@
     loop_var: image
 
 - name: Get image ID of {{ docker_test_image_hello_world }} and {{ docker_test_image_alpine }} images
-  docker_image_info:
+  community.docker.docker_image_info:
     name:
       - "{{ docker_test_image_hello_world }}"
       - "{{ docker_test_image_alpine }}"
   register: image_info
 
-- assert:
+- ansible.builtin.assert:
     that:
       - image_info.images | length == 2
 
 - name: Print image IDs
-  debug:
+  ansible.builtin.debug:
     msg: "{{ docker_test_image_hello_world }}: {{ image_info.images[0].Id }}; {{ docker_test_image_alpine }}: {{ image_info.images[1].Id }}"
 
 - name: Create container with {{ docker_test_image_hello_world }} image via ID
-  docker_container:
+  community.docker.docker_container:
     image: "{{ image_info.images[0].Id }}"
     name: "{{ cname }}"
     state: present
@@ -43,7 +43,7 @@
   register: create_1
 
 - name: Create container with {{ docker_test_image_hello_world }} image via ID (idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ image_info.images[0].Id }}"
     name: "{{ cname }}"
     state: present
@@ -51,7 +51,7 @@
   register: create_2
 
 - name: Create container with {{ docker_test_image_alpine }} image via ID
-  docker_container:
+  community.docker.docker_container:
     image: "{{ image_info.images[1].Id }}"
     name: "{{ cname }}"
     state: present
@@ -59,7 +59,7 @@
   register: create_3
 
 - name: Create container with {{ docker_test_image_alpine }} image via ID (idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ image_info.images[1].Id }}"
     name: "{{ cname }}"
     state: present
@@ -68,12 +68,12 @@
 
 - name: Untag image
   # Image will not be deleted since the container still uses it
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ docker_test_image_alpine }}"
     force: true
 
 - name: Create container with {{ docker_test_image_alpine }} image via name (check mode, will pull, same image)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     name: "{{ cname }}"
     state: present
@@ -82,7 +82,7 @@
   check_mode: true
 
 - name: Create container with {{ docker_test_image_alpine }} image via name (will pull, same image)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_alpine }}"
     name: "{{ cname }}"
     state: present
@@ -90,13 +90,13 @@
   register: create_6
 
 - name: Cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - create_1 is changed
       - create_2 is not changed
@@ -108,7 +108,7 @@
       - create_6.container.Id == create_4.container.Id  # make sure container wasn't recreated
 
 - name: Create container with {{ docker_test_image_digest_base }} image via old digest
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
     name: "{{ cname }}"
     state: present
@@ -116,7 +116,7 @@
   register: digest_1
 
 - name: Create container with {{ docker_test_image_digest_base }} image via old digest (idempotent)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
     name: "{{ cname }}"
     state: present
@@ -124,7 +124,7 @@
   register: digest_2
 
 - name: Create container with {{ docker_test_image_digest_base }} image via old digest (idempotent, pull)
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v1 }}"
     name: "{{ cname }}"
     pull: true
@@ -133,7 +133,7 @@
   register: digest_3
 
 - name: Update container with {{ docker_test_image_digest_base }} image via new digest
-  docker_container:
+  community.docker.docker_container:
     image: "{{ docker_test_image_digest_base }}@sha256:{{ docker_test_image_digest_v2 }}"
     name: "{{ cname }}"
     state: present
@@ -141,13 +141,13 @@
   register: digest_4
 
 - name: Cleanup
-  docker_container:
+  community.docker.docker_container:
     name: "{{ cname }}"
     state: absent
     force_kill: true
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - digest_1 is changed
       - digest_2 is not changed

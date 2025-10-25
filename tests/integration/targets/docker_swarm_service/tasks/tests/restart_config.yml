@@ -4,11 +4,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering service name
-  set_fact:
+  ansible.builtin.set_fact:
     service_name: "{{ name_prefix ~ '-restart_config' }}"
 
 - name: Registering service name
-  set_fact:
+  ansible.builtin.set_fact:
     service_names: "{{ service_names + [service_name] }}"
 
 ###################################################################
@@ -16,7 +16,7 @@
 ###################################################################
 
 - name: restart_config.condition
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -26,7 +26,7 @@
   register: restart_policy_1
 
 - name: restart_config.condition (idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -36,7 +36,7 @@
   register: restart_policy_2
 
 - name: restart_config.condition (change)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -46,12 +46,12 @@
   register: restart_policy_3
 
 - name: cleanup
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - restart_policy_1 is changed
       - restart_policy_2 is not changed
@@ -62,7 +62,7 @@
 ###################################################################
 
 - name: restart_config.max_attempts
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -72,7 +72,7 @@
   register: restart_policy_attempts_1
 
 - name: restart_config.max_attempts (idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -82,7 +82,7 @@
   register: restart_policy_attempts_2
 
 - name: restart_config.max_attempts (change)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -92,12 +92,12 @@
   register: restart_policy_attempts_3
 
 - name: cleanup
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - restart_policy_attempts_1 is changed
       - restart_policy_attempts_2 is not changed
@@ -108,7 +108,7 @@
 ###################################################################
 
 - name: restart_config.delay
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -118,7 +118,7 @@
   register: restart_policy_delay_1
 
 - name: restart_config.delay (idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -128,7 +128,7 @@
   register: restart_policy_delay_2
 
 - name: restart_config.delay (change)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -138,12 +138,12 @@
   register: restart_policy_delay_3
 
 - name: cleanup
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - restart_policy_delay_1 is changed
       - restart_policy_delay_2 is not changed
@@ -154,7 +154,7 @@
 ###################################################################
 
 - name: restart_config.window
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -164,7 +164,7 @@
   register: restart_policy_window_1
 
 - name: restart_config.window (idempotency)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -174,7 +174,7 @@
   register: restart_policy_window_2
 
 - name: restart_config.window (change)
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     image: "{{ docker_test_image_alpine }}"
     resolve_image: false
@@ -184,12 +184,12 @@
   register: restart_policy_window_3
 
 - name: cleanup
-  docker_swarm_service:
+  community.docker.docker_swarm_service:
     name: "{{ service_name }}"
     state: absent
   diff: false
 
-- assert:
+- ansible.builtin.assert:
     that:
       - restart_policy_window_1 is changed
       - restart_policy_window_2 is not changed

@@ -4,11 +4,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering image name
-  set_fact:
+  ansible.builtin.set_fact:
     iname: "{{ name_prefix ~ '-options' }}"
 
 - name: Registering image name
-  set_fact:
+  ansible.builtin.set_fact:
     inames: "{{ inames + [iname] }}"
 
 ####################################################################
@@ -16,11 +16,11 @@
 ####################################################################
 
 - name: cleanup
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ iname }}"
 
 - name: buildargs
-  docker_image_build:
+  community.docker.docker_image_build:
     name: "{{ iname }}"
     path: "{{ remote_tmp_dir }}/files"
     dockerfile: "ArgsDockerfile"
@@ -33,7 +33,7 @@
   register: buildargs_1
 
 - name: buildargs (idempotency)
-  docker_image_build:
+  community.docker.docker_image_build:
     name: "{{ iname }}"
     path: "{{ remote_tmp_dir }}/files"
     dockerfile: "ArgsDockerfile"
@@ -46,10 +46,10 @@
   register: buildargs_2
 
 - name: cleanup
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ iname }}"
 
-- assert:
+- ansible.builtin.assert:
     that:
       - buildargs_1 is changed
       - buildargs_2 is not changed
@@ -59,7 +59,7 @@
 ####################################################################
 
 - name: dockerfile
-  docker_image_build:
+  community.docker.docker_image_build:
     name: "{{ iname }}"
     path: "{{ remote_tmp_dir }}/files"
     dockerfile: "MyDockerfile"
@@ -67,10 +67,10 @@
   register: dockerfile_1
 
 - name: cleanup
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ iname }}"
 
-- assert:
+- ansible.builtin.assert:
     that:
       - dockerfile_1 is changed
       - "('FROM ' ~ docker_test_image_alpine) in dockerfile_1.stderr"
@@ -81,11 +81,11 @@
 ####################################################################
 
 - name: cleanup
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ iname }}"
 
 - name: platform
-  docker_image_build:
+  community.docker.docker_image_build:
     name: "{{ iname }}"
     path: "{{ remote_tmp_dir }}/files"
     platform: linux
@@ -93,7 +93,7 @@
   register: platform_1
 
 - name: platform (idempotency)
-  docker_image_build:
+  community.docker.docker_image_build:
     name: "{{ iname }}"
     path: "{{ remote_tmp_dir }}/files"
     platform: linux
@@ -101,10 +101,10 @@
   register: platform_2
 
 - name: cleanup
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ iname }}"
 
-- assert:
+- ansible.builtin.assert:
     that:
       - platform_1 is changed
       - platform_2 is not changed
@@ -114,7 +114,7 @@
 ####################################################################
 
 - name: Build multi-stage image
-  docker_image_build:
+  community.docker.docker_image_build:
     name: "{{ iname }}"
     path: "{{ remote_tmp_dir }}/files"
     dockerfile: "StagedDockerfile"
@@ -123,10 +123,10 @@
   register: dockerfile_2
 
 - name: cleanup
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ iname }}"
 
-- assert:
+- ansible.builtin.assert:
     that:
       - dockerfile_2 is changed
       - dockerfile_2.image.Config.WorkingDir == '/first'
@@ -136,7 +136,7 @@
 ####################################################################
 
 - name: Build image with custom etc_hosts
-  docker_image_build:
+  community.docker.docker_image_build:
     name: "{{ iname }}"
     path: "{{ remote_tmp_dir }}/files"
     dockerfile: "EtcHostsDockerfile"
@@ -146,10 +146,10 @@
   register: path_1
 
 - name: cleanup
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ iname }}"
 
-- assert:
+- ansible.builtin.assert:
     that:
       - path_1 is changed
 
@@ -158,7 +158,7 @@
 ####################################################################
 
 - name: Build image with custom shm_size
-  docker_image_build:
+  community.docker.docker_image_build:
     name: "{{ iname }}"
     path: "{{ remote_tmp_dir }}/files"
     dockerfile: "MyDockerfile"
@@ -167,10 +167,10 @@
   register: path_1
 
 - name: cleanup
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ iname }}"
 
-- assert:
+- ansible.builtin.assert:
     that:
       - path_1 is changed
 
@@ -179,7 +179,7 @@
 ####################################################################
 
 - name: Build image with labels
-  docker_image_build:
+  community.docker.docker_image_build:
     name: "{{ iname }}"
     path: "{{ remote_tmp_dir }}/files"
     dockerfile: "MyDockerfile"
@@ -190,14 +190,14 @@
   register: labels_1
 
 - name: cleanup
-  docker_image_remove:
+  community.docker.docker_image_remove:
     name: "{{ iname }}"
 
 - name: Show image information
-  debug:
+  ansible.builtin.debug:
     var: labels_1.image
 
-- assert:
+- ansible.builtin.assert:
     that:
       - labels_1 is changed
       - labels_1.image.Config.Labels.FOO == 'BAR'
@@ -208,13 +208,13 @@
 ####################################################################
 
 - name: Generate secret
-  set_fact:
+  ansible.builtin.set_fact:
     docker_image_build_secret_value: this is my secret {{ '%0x' % ((2**32) | random) }}
 
 - when: buildx_version is version('0.6.0', '>=')
   block:
     - name: Build image with secrets via environment variables
-      docker_image_build:
+      community.docker.docker_image_build:
         name: "{{ iname }}"
         path: "{{ remote_tmp_dir }}/files"
         dockerfile: "SecretsDockerfile"
@@ -227,14 +227,14 @@
       register: secrets_1
 
     - name: cleanup
-      docker_image_remove:
+      community.docker.docker_image_remove:
         name: "{{ iname }}"
 
     - name: Show image information
-      debug:
+      ansible.builtin.debug:
         var: secrets_1.stderr_lines
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - secrets_1 is changed
           - (docker_image_build_secret_value | b64encode) in secrets_1.stderr
@@ -246,16 +246,16 @@
 - when: buildx_version is version('0.13.0', '>=')
   block:
     - name: Make sure the image is not there
-      docker_image_remove:
+      community.docker.docker_image_remove:
         name: "{{ iname }}"
 
     - name: Make sure the image tarball is not there
-      file:
+      ansible.builtin.file:
         path: "{{ remote_tmp_dir }}/container.tar"
         state: absent
 
     - name: Build image with outputs
-      docker_image_build:
+      community.docker.docker_image_build:
         name: "{{ iname }}"
         path: "{{ remote_tmp_dir }}/files"
         dockerfile: "Dockerfile"
@@ -269,24 +269,24 @@
     - when: outputs_1 is not failed
       block:
         - name: cleanup (should be changed)
-          docker_image_remove:
+          community.docker.docker_image_remove:
             name: "{{ iname }}"
           register: outputs_1_cleanup
 
         - name: Gather information on tarball
-          stat:
+          ansible.builtin.stat:
             path: "{{ remote_tmp_dir }}/container.tar"
           register: outputs_1_stat
 
         - name: Show image information
-          debug:
+          ansible.builtin.debug:
             var: outputs_1.image
 
         - name: Show tarball information
-          debug:
+          ansible.builtin.debug:
             var: outputs_1_stat.stat
 
-        - assert:
+        - ansible.builtin.assert:
             that:
               - outputs_1 is changed
               - outputs_1.image | length > 0
@@ -294,7 +294,7 @@
               - outputs_1_stat.stat.exists
 
     - when: outputs_1 is failed
-      assert:
+      ansible.builtin.assert:
         that:
           - >-
             'ERROR: multiple outputs currently unsupported by the current BuildKit daemon' in outputs_1.stderr

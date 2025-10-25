@@ -8,8 +8,8 @@
 # and should not be used as examples of how to write Ansible roles #
 ####################################################################
 
-- include_tasks: test_stack_task_info.yml
+- ansible.builtin.include_tasks: test_stack_task_info.yml
   when: docker_api_version is version('1.25', '>=')
 
-- fail: msg="Too old docker / docker-py version to run docker_stack tests!"
+- ansible.builtin.fail: msg="Too old docker / docker-py version to run docker_stack tests!"
   when: not(docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)

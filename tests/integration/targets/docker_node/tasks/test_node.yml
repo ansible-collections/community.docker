@@ -5,29 +5,29 @@
 
 - block:
     - name: Make sure we're not already using Docker swarm
-      docker_swarm:
+      community.docker.docker_swarm:
         state: absent
         force: true
 
     - name: Try to get docker_node_info when docker is not running in swarm mode
-      docker_node_info:
+      community.docker.docker_node_info:
       ignore_errors: true
       register: output
 
     - name: assert failure when called when swarm is not in use or not run on manager node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output is failed'
           - 'output.msg == "Error running docker swarm module: must run on swarm manager node"'
 
     - name: Create a Swarm cluster
-      docker_swarm:
+      community.docker.docker_swarm:
         state: present
         advertise_addr: "{{ansible_default_ipv4.address | default('127.0.0.1')}}"
       register: output
 
     - name: assert changed when create a new swarm cluster
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output is changed'
           - '(output.actions[0] | regex_search("New Swarm cluster created: ")) is truthy'
@@ -35,17 +35,17 @@
           - 'output.swarm_facts.JoinTokens.Worker is truthy'
 
     - name: Try to get docker_node_info when docker is running in swarm mode and as manager
-      docker_node_info:
+      community.docker.docker_node_info:
       register: output
 
     - name: assert reading docker swarm node facts
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output.nodes | length > 0'
           - 'output.nodes[0].ID is string'
 
     - name: Register node ID
-      set_fact:
+      ansible.builtin.set_fact:
         nodeid: "{{ output.nodes[0].ID }}"
 
   ####################################################################
@@ -53,33 +53,33 @@
   ####################################################################
 
     - name: Try to set node as manager (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         role: manager
       check_mode: true
       register: set_as_manager_1
 
     - name: Try to set node as manager
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         role: manager
       register: set_as_manager_2
 
     - name: Try to set node as manager (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         role: manager
       register: set_as_manager_3
 
     - name: Try to set node as manager (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         role: manager
       check_mode: true
       register: set_as_manager_4
 
     - name: assert that node role does has not changed
-      assert:
+      ansible.builtin.assert:
         that:
           - 'set_as_manager_1 is not changed'
           - 'set_as_manager_2 is not changed'
@@ -95,21 +95,21 @@
   ####################################################################
 
     - name: Try to set node as worker (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         role: worker
       check_mode: true
       register: set_as_worker_1
 
     - name: Try to set node as worker
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         role: worker
       ignore_errors: true
       register: set_as_worker_2
 
     - name: assert that node cannot change role to worker
-      assert:
+      ansible.builtin.assert:
         that:
           - 'set_as_worker_1 is changed'
           - 'set_as_worker_2 is failed'
@@ -120,33 +120,33 @@
   ####################################################################
 
     - name: Try to set node availability as paused  (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         availability: pause
       check_mode: true
       register: set_as_paused_1
 
     - name: Try to set node availability as paused
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         availability: pause
       register: set_as_paused_2
 
     - name: Try to set node availability as paused (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         availability: pause
       register: set_as_paused_3
 
     - name: Try to set node availability as paused (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         availability: pause
       check_mode: true
       register: set_as_paused_4
 
     - name: assert node changed availability to paused
-      assert:
+      ansible.builtin.assert:
         that:
           - 'set_as_paused_1 is changed'
           - 'set_as_paused_2 is changed'
@@ -159,33 +159,33 @@
   ####################################################################
 
     - name: Try to set node availability as drained (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         availability: drain
       check_mode: true
       register: output_drain_1
 
     - name: Try to set node availability as drained
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         availability: drain
       register: output_drain_2
 
     - name: Try to set node availability as drained (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         availability: drain
       register: output_drain_3
 
     - name: Try to set node availability as drained (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         availability: drain
       check_mode: true
       register: output_drain_4
 
     - name: assert node changed availability to drained
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_drain_1 is changed'
           - 'output_drain_2 is changed'
@@ -199,33 +199,33 @@
   ####################################################################
 
     - name: Try to set node availability as active (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         availability: active
       check_mode: true
       register: output_active_1
 
     - name: Try to set node availability as active
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         availability: active
       register: output_active_2
 
     - name: Try to set node availability as active (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         availability: active
       register: output_active_3
 
     - name: Try to set node availability as active (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         availability: active
       check_mode: true
       register: output_active_4
 
     - name: assert node changed availability to active
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_active_1 is changed'
           - 'output_active_2 is changed'
@@ -238,7 +238,7 @@
   ####################################################################
 
     - name: Try to add single label to swarm node (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label1: value1
@@ -246,21 +246,21 @@
       register: output_add_single_label_1
 
     - name: Try to add single label to swarm node
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label1: value1
       register: output_add_single_label_2
 
     - name: Try to add single label to swarm node (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label1: value1
       register: output_add_single_label_3
 
     - name: Try to add single label to swarm node (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label1: value1
@@ -268,7 +268,7 @@
       register: output_add_single_label_4
 
     - name: assert adding single label to swarm node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_add_single_label_1 is changed'
           - 'output_add_single_label_2 is changed'
@@ -282,7 +282,7 @@
   ####################################################################
 
     - name: Try to add five labels to swarm node (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label2: value2
@@ -294,7 +294,7 @@
       register: output_add_multiple_labels_1
 
     - name: Try to add five labels to swarm node
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label2: value2
@@ -305,7 +305,7 @@
       register: output_add_multiple_labels_2
 
     - name: Try to add five labels to swarm node (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label2: value2
@@ -316,7 +316,7 @@
       register: output_add_multiple_labels_3
 
     - name: Try to add five labels to swarm node (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label2: value2
@@ -328,7 +328,7 @@
       register: output_add_multiple_labels_4
 
     - name: assert adding multiple labels to swarm node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_add_multiple_labels_1 is changed'
           - 'output_add_multiple_labels_2 is changed'
@@ -343,7 +343,7 @@
   ####################################################################
 
     - name: Update value of existing label (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label1: value1111
@@ -351,21 +351,21 @@
       register: output_update_label_1
 
     - name: Update value of existing label
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label1: value1111
       register: output_update_label_2
 
     - name: Update value of existing label (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label1: value1111
       register: output_update_label_3
 
     - name: Update value of existing label (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label1: value1111
@@ -373,7 +373,7 @@
       register: output_update_label_4
 
     - name: assert updating single label assigned to swarm node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_update_label_1 is changed'
           - 'output_update_label_2 is changed'
@@ -388,7 +388,7 @@
   ####################################################################
 
     - name: Update value of multiple existing label (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label2: value2222
@@ -397,7 +397,7 @@
       register: output_update_labels_1
 
     - name: Update value of multiple existing label
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label2: value2222
@@ -405,7 +405,7 @@
       register: output_update_labels_2
 
     - name: Update value of multiple existing label (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label2: value2222
@@ -413,7 +413,7 @@
       register: output_update_labels_3
 
     - name: Update value of multiple existing label (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label2: value2222
@@ -422,7 +422,7 @@
       register: output_update_labels_4
 
     - name: assert updating multiple labels assigned to swarm node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_update_labels_1 is changed'
           - 'output_update_labels_2 is changed'
@@ -438,7 +438,7 @@
   ####################################################################
 
     - name: Try to remove single existing label from swarm node (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - label1
@@ -446,21 +446,21 @@
       register: output_remove_label_1
 
     - name: Try to remove single existing label from swarm node
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - label1
       register: output_remove_label_2
 
     - name: Try to remove single existing label from swarm node (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - label1
       register: output_remove_label_3
 
     - name: Try to remove single existing label from swarm node (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - label1
@@ -468,7 +468,7 @@
       register: output_remove_label_4
 
     - name: assert removing single label from swarm node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_remove_label_1 is changed'
           - 'output_remove_label_2 is changed'
@@ -485,7 +485,7 @@
   ####################################################################
 
     - name: Try to remove single non-existing label from swarm node (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - labelnotexist
@@ -493,21 +493,21 @@
       register: output_remove_nonexist_label_1
 
     - name: Try to remove single non-existing label from swarm node
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - labelnotexist
       register: output_remove_nonexist_label_2
 
     - name: Try to remove single non-existing label from swarm node (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - labelnotexist
       register: output_remove_nonexist_label_3
 
     - name: Try to remove single non-existing label from swarm node (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - labelnotexist
@@ -515,7 +515,7 @@
       register: output_remove_nonexist_label_4
 
     - name: assert removing single non-existing label from swarm node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_remove_nonexist_label_1 is not changed'
           - 'output_remove_nonexist_label_2 is not changed'
@@ -531,7 +531,7 @@
   ####################################################################
 
     - name: Try to remove two existing labels from swarm node (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - label2
@@ -540,7 +540,7 @@
       register: output_remove_label_1
 
     - name: Try to remove two existing labels from swarm node
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - label2
@@ -548,7 +548,7 @@
       register: output_remove_label_2
 
     - name: Try to remove two existing labels from swarm node (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - label2
@@ -556,7 +556,7 @@
       register: output_remove_label_3
 
     - name: Try to remove two existing labels from swarm node (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - label2
@@ -565,7 +565,7 @@
       register: output_remove_label_4
 
     - name: assert removing multiple labels from swarm node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_remove_label_1 is changed'
           - 'output_remove_label_2 is changed'
@@ -581,7 +581,7 @@
   ####################################################################
 
     - name: Try to remove mix of existing amd non-existing labels from swarm node (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - label4
@@ -590,7 +590,7 @@
       register: output_remove_mix_labels_1
 
     - name: Try to remove mix of existing amd non-existing labels from swarm node
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - label4
@@ -598,7 +598,7 @@
       register: output_remove_mix_labels_2
 
     - name: Try to remove mix of existing amd non-existing labels from swarm node (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - label4
@@ -606,7 +606,7 @@
       register: output_remove_mix_labels_3
 
     - name: Try to remove mix of existing amd non-existing labels from swarm node (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_to_remove:
           - label4
@@ -615,7 +615,7 @@
       register: output_remove_mix_labels_4
 
     - name: assert removing mix of existing and non-existing labels from swarm node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_remove_mix_labels_1 is changed'
           - 'output_remove_mix_labels_2 is changed'
@@ -631,7 +631,7 @@
   ####################################################################
 
     - name: Try to add and remove nonoverlapping labels at the same time (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label7: value7
@@ -642,7 +642,7 @@
       register: output_add_del_labels_1
 
     - name: Try to add and remove nonoverlapping labels at the same time
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label7: value7
@@ -652,7 +652,7 @@
       register: output_add_del_labels_2
 
     - name: Try to add and remove nonoverlapping labels at the same time (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label7: value7
@@ -662,7 +662,7 @@
       register: output_add_del_labels_3
 
     - name: Try to add and remove nonoverlapping labels at the same time (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label7: value7
@@ -673,7 +673,7 @@
       register: output_add_del_labels_4
 
     - name: assert adding and removing nonoverlapping labels from swarm node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_add_del_labels_1 is changed'
           - 'output_add_del_labels_2 is changed'
@@ -688,7 +688,7 @@
   ####################################################################
 
     - name: Try to add or update and remove overlapping labels at the same time (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label22: value22
@@ -700,7 +700,7 @@
       register: output_add_del_overlap_labels_1
 
     - name: Try to add or update and remove overlapping labels at the same time
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label22: value22
@@ -711,7 +711,7 @@
       register: output_add_del_overlap_labels_2
 
     - name: Try to add or update and remove overlapping labels at the same time (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label22: value22
@@ -722,7 +722,7 @@
       register: output_add_del_overlap_labels_3
 
     - name: Try to add or update and remove overlapping labels at the same time (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label22: value22
@@ -734,7 +734,7 @@
       register: output_add_del_overlap_labels_4
 
     - name: assert adding or updating and removing overlapping labels from swarm node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_add_del_overlap_labels_1 is changed'
           - 'output_add_del_overlap_labels_2 is changed'
@@ -750,7 +750,7 @@
   ####################################################################
 
     - name: Replace labels on swarm node (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label11: value11
@@ -760,7 +760,7 @@
       register: output_replace_labels_1
 
     - name: Replace labels on swarm node
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label11: value11
@@ -769,7 +769,7 @@
       register: output_replace_labels_2
 
     - name: Replace labels on swarm node (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label11: value11
@@ -778,7 +778,7 @@
       register: output_replace_labels_3
 
     - name: Replace labels on swarm node (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels:
           label11: value11
@@ -788,7 +788,7 @@
       register: output_replace_labels_4
 
     - name: assert replacing labels from swarm node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_replace_labels_1 is changed'
           - 'output_replace_labels_2 is changed'
@@ -803,33 +803,33 @@
   ####################################################################
 
     - name: Remove all labels from swarm node (check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_state: replace
       check_mode: true
       register: output_remove_labels_1
 
     - name: Remove all labels from swarm node
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_state: replace
       register: output_remove_labels_2
 
     - name: Remove all labels from swarm node (idempotent)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_state: replace
       register: output_remove_labels_3
 
     - name: Remove all labels from swarm node (idempotent check)
-      docker_node:
+      community.docker.docker_node:
         hostname: "{{ nodeid }}"
         labels_state: replace
       check_mode: true
       register: output_remove_labels_4
 
     - name: assert removing all labels from swarm node
-      assert:
+      ansible.builtin.assert:
         that:
           - 'output_remove_labels_1 is changed'
           - 'output_remove_labels_2 is changed'
@@ -839,6 +839,6 @@
 
   always:
     - name: Cleanup
-      docker_swarm:
+      community.docker.docker_swarm:
         state: absent
         force: true

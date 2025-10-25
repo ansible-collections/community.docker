@@ -4,16 +4,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Registering network name
-  set_fact:
+  ansible.builtin.set_fact:
     nname_1: "{{ name_prefix ~ '-network-1' }}"
 - name: Registering network name
-  set_fact:
+  ansible.builtin.set_fact:
     dnetworks: "{{ dnetworks + [nname_1] }}"
 
 - block:
     # Overlay networks require swarm initialization before they'll work
     - name: swarm
-      docker_swarm:
+      community.docker.docker_swarm:
         state: present
         advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
 
@@ -22,7 +22,7 @@
   ####################################################################
 
     - name: overlay
-      docker_network:
+      community.docker.docker_network:
         name: "{{ nname_1 }}"
         driver: overlay
         driver_options:
@@ -30,7 +30,7 @@
       register: overlay_1
 
     - name: overlay (idempotency)
-      docker_network:
+      community.docker.docker_network:
         name: "{{ nname_1 }}"
         driver: overlay
         driver_options:
@@ -38,18 +38,18 @@
       register: overlay_2
 
     - name: overlay (change)
-      docker_network:
+      community.docker.docker_network:
         name: "{{ nname_1 }}"
         driver: bridge
       register: overlay_3
 
     - name: cleanup network
-      docker_network:
+      community.docker.docker_network:
         name: "{{ nname_1 }}"
         state: absent
         force: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - overlay_1 is changed
           - overlay_2 is not changed
@@ -60,38 +60,38 @@
   ####################################################################
 
     - name: cleanup default swarm ingress network
-      docker_network:
+      community.docker.docker_network:
         name: ingress
         state: absent
 
     - name: ingress
-      docker_network:
+      community.docker.docker_network:
         name: "{{ nname_1 }}"
         driver: overlay
         ingress: true
       register: ingress_1
 
     - name: ingress (idempotency)
-      docker_network:
+      community.docker.docker_network:
         name: "{{ nname_1 }}"
         driver: overlay
         ingress: true
       register: ingress_2
 
     - name: ingress (change)
-      docker_network:
+      community.docker.docker_network:
         name: "{{ nname_1 }}"
         driver: overlay
         ingress: false
       register: ingress_3
 
     - name: cleanup network
-      docker_network:
+      community.docker.docker_network:
         name: "{{ nname_1 }}"
         state: absent
         force: true
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - ingress_1 is changed
           - ingress_2 is not changed
@@ -99,6 +99,6 @@
 
   always:
     - name: cleanup swarm
-      docker_swarm:
+      community.docker.docker_swarm:
         state: absent
         force: true

@@ -4,5 +4,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: For some reason we don't have the buildx plugin
-  set_fact:
+  ansible.builtin.set_fact:
     docker_has_compose: false

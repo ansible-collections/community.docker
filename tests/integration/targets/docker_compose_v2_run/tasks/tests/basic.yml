@@ -16,28 +16,28 @@
 
   block:
     - name: Registering container name
-      set_fact:
+      ansible.builtin.set_fact:
         cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
         dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
 
     - name: Create project directory
-      file:
+      ansible.builtin.file:
         path: '{{ project_src }}'
         state: directory
 
     - name: Template default project file
-      copy:
+      ansible.builtin.copy:
         dest: '{{ project_src }}/docker-compose.yml'
         content: '{{ test_service }}'
 
     - block:
         - name: Start services
-          docker_compose_v2:
+          community.docker.docker_compose_v2:
             project_src: '{{ project_src }}'
             state: present
 
         - name: Run command with command
-          docker_compose_v2_run:
+          community.docker.docker_compose_v2_run:
             project_src: '{{ project_src }}'
             service: '{{ cname }}'
             command: /bin/sh -c "ls /"
@@ -45,7 +45,7 @@
           register: result_1
 
         - name: Run command with argv
-          docker_compose_v2_run:
+          community.docker.docker_compose_v2_run:
             project_src: '{{ project_src }}'
             service: '{{ cname }}'
             argv:
@@ -58,7 +58,7 @@
           failed_when: result_2.rc != 1
 
         - name: Run detached command
-          docker_compose_v2_run:
+          community.docker.docker_compose_v2_run:
             project_src: '{{ project_src }}'
             service: '{{ cname }}'
             command: /bin/sh -c "sleep 1"
@@ -67,14 +67,14 @@
           register: result_3
 
         - name: Run command with input
-          docker_compose_v2_run:
+          community.docker.docker_compose_v2_run:
             project_src: '{{ project_src }}'
             service: '{{ cname }}'
             command: /bin/sh -c "cat"
             stdin: This is a test
           register: result_4
 
-        - assert:
+        - ansible.builtin.assert:
             that:
               - result_1.rc == 0
               - result_1.stderr == ""
@@ -99,6 +99,6 @@
 
       always:
         - name: Cleanup
-          docker_compose_v2:
+          community.docker.docker_compose_v2:
             project_src: '{{ project_src }}'
             state: absent

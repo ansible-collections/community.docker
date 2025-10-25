@@ -16,22 +16,22 @@
 
   block:
     - name: Registering container name
-      set_fact:
+      ansible.builtin.set_fact:
         cnames: "{{ cnames + [pname ~ '-' ~ cname ~ '-1'] }}"
         dnetworks: "{{ dnetworks + [pname ~ '_default'] }}"
 
     - name: Create project directory
-      file:
+      ansible.builtin.file:
         path: '{{ project_src }}'
         state: directory
 
     - name: Template default project file
-      copy:
+      ansible.builtin.copy:
         dest: '{{ project_src }}/docker-compose.yml'
         content: '{{ test_service }}'
 
     - name: Present (check)
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         wait: true
@@ -39,7 +39,7 @@
       register: present_1_check
 
     - name: Present
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: present
         wait: true
@@ -47,11 +47,11 @@
       ignore_errors: true
 
     - name: Cleanup
-      docker_compose_v2:
+      community.docker.docker_compose_v2:
         project_src: '{{ project_src }}'
         state: absent
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - present_1_check is changed
           - present_1_check.warnings | default([]) | select('regex', ' please report this at ') | length == 0

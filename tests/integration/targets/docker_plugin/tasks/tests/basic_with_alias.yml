@@ -4,67 +4,67 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Register plugin name and alias
-  set_fact:
+  ansible.builtin.set_fact:
     plugin_name: "{{ name_prefix }}"
     alias: "test"
 
 - name: Create a plugin with an alias
-  docker_plugin:
+  community.docker.docker_plugin:
     plugin_name: "{{ plugin_name }}"
     alias: "{{ alias }}"
     state: present
   register: create_1
 
 - name: Create a plugin  with an alias (Idempotent)
-  docker_plugin:
+  community.docker.docker_plugin:
     plugin_name: "{{ plugin_name }}"
     alias: "{{ alias }}"
     state: present
   register: create_2
 
 - name: Enable a plugin with an alias
-  docker_plugin:
+  community.docker.docker_plugin:
     plugin_name: "{{ plugin_name }}"
     alias: "{{ alias }}"
     state: enable
   register: create_3
 
 - name: Enable a plugin with an alias (Idempotent)
-  docker_plugin:
+  community.docker.docker_plugin:
     plugin_name: "{{ plugin_name }}"
     alias: "{{ alias }}"
     state: enable
   register: create_4
 
 - name: Disable a plugin with an alias
-  docker_plugin:
+  community.docker.docker_plugin:
     plugin_name: "{{ plugin_name }}"
     alias: "{{ alias }}"
     state: disable
   register: absent_1
 
 - name: Disable a plugin with an alias (Idempotent)
-  docker_plugin:
+  community.docker.docker_plugin:
     plugin_name: "{{ plugin_name }}"
     alias: "{{ alias }}"
     state: disable
   register: absent_2
 
 - name: Remove a plugin with an alias
-  docker_plugin:
+  community.docker.docker_plugin:
     plugin_name: "{{ plugin_name }}"
     alias: "{{ alias }}"
     state: absent
   register: absent_3
 
 - name: Remove a plugin with an alias (Idempotent)
-  docker_plugin:
+  community.docker.docker_plugin:
     plugin_name: "{{ plugin_name }}"
     alias: "{{ alias }}"
     state: absent
   register: absent_4
 
-- assert:
+- ansible.builtin.assert:
     that:
       - create_1 is changed
       - create_2 is not changed
@@ -76,7 +76,7 @@
       - absent_4 is not changed
 
 - name: Cleanup plugin with an alias
-  docker_plugin:
+  community.docker.docker_plugin:
     plugin_name: "{{ plugin_name }}"
     alias: "{{ alias }}"
     state: absent

@@ -9,7 +9,7 @@
 ####################################################################
 
 - name: Get facts
-  current_container_facts:
+  community.docker.current_container_facts:
   register: result
 
   # WARNING: This is not a proper test as it won't fail when the module does not work!
