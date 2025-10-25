@@ -790,17 +790,17 @@ def _preprocess_mounts(
 ) -> dict[str, t.Any]:
     last: dict[str, str] = {}
 
-    def check_collision(t: str, name: str) -> None:
-        if t in last:
-            if name == last[t]:
+    def check_collision(target: str, name: str) -> None:
+        if target in last:
+            if name == last[target]:
                 module.fail_json(
-                    msg=f'The mount point "{t}" appears twice in the {name} option'
+                    msg=f'The mount point "{target}" appears twice in the {name} option'
                 )
             else:
                 module.fail_json(
-                    msg=f'The mount point "{t}" appears both in the {name} and {last[t]} option'
+                    msg=f'The mount point "{target}" appears both in the {name} and {last[target]} option'
                 )
-        last[t] = name
+        last[target] = name
 
     if "mounts" in values:
         mounts = []

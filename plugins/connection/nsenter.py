@@ -50,7 +50,7 @@ import typing as t
 
 import ansible.constants as C
 from ansible.errors import AnsibleError
-from ansible.module_utils.common.text.converters import to_bytes, to_native, to_text
+from ansible.module_utils.common.text.converters import to_bytes, to_text
 from ansible.plugins.connection import ConnectionBase
 from ansible.utils.display import Display
 from ansible.utils.path import unfrackpath
@@ -92,6 +92,7 @@ class Connection(ConnectionBase):
 
         display.debug("in nsenter.exec_command()")
 
+        # pylint: disable-next=no-member
         def_executable: str | None = C.DEFAULT_EXECUTABLE  # type: ignore[attr-defined]
         executable = def_executable.split()[0] if def_executable else None
 
@@ -178,7 +179,7 @@ class Connection(ConnectionBase):
                             stdout, stderr = p.communicate()
                             raise AnsibleError(
                                 "timeout waiting for privilege escalation password prompt:\n"
-                                + to_native(become_output)
+                                + to_text(become_output)
                             )
 
                         chunks = b""
@@ -196,7 +197,7 @@ class Connection(ConnectionBase):
                             stdout, stderr = p.communicate()
                             raise AnsibleError(
                                 "privilege output closed while waiting for password prompt:\n"
-                                + to_native(become_output)
+                                + to_text(become_output)
                             )
                         become_output += chunks
                 finally:
@@ -279,7 +280,7 @@ class Connection(ConnectionBase):
                 out_file.write(out)
         except IOError as e:
             raise AnsibleError(
-                f"failed to transfer file to {to_native(out_path)}: {e}"
+                f"failed to transfer file to {to_text(out_path)}: {e}"
             ) from e
 
     def close(self) -> None:

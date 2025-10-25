@@ -161,7 +161,7 @@ import traceback
 import typing as t
 from time import sleep
 
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 
 from ansible_collections.community.docker.plugins.module_utils._common_cli import (
     AnsibleModuleDockerClient,
@@ -190,9 +190,9 @@ def docker_stack_services(
     dummy_rc, out, err = client.call_cli(
         "stack", "services", stack_name, "--format", "{{.Name}}"
     )
-    if to_native(err) == f"Nothing found in stack: {stack_name}\n":
+    if to_text(err) == f"Nothing found in stack: {stack_name}\n":
         return []
-    return to_native(out).strip().split("\n")
+    return to_text(out).strip().split("\n")
 
 
 def docker_service_inspect(
@@ -221,7 +221,7 @@ def docker_stack_deploy(
         command += ["--compose-file", compose_file]
     command += [stack_name]
     rc, out, err = client.call_cli(*command)
-    return rc, to_native(out), to_native(err)
+    return rc, to_text(out), to_text(err)
 
 
 def docker_stack_inspect(
@@ -244,11 +244,11 @@ def docker_stack_rm(
         command += ["--detach=false"]
     rc, out, err = client.call_cli(*command)
 
-    while to_native(err) != f"Nothing found in stack: {stack_name}\n" and retries > 0:
+    while to_text(err) != f"Nothing found in stack: {stack_name}\n" and retries > 0:
         sleep(interval)
         retries = retries - 1
         rc, out, err = client.call_cli(*command)
-    return rc, to_native(out), to_native(err)
+    return rc, to_text(out), to_text(err)
 
 
 def main() -> None:

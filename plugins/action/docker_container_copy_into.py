@@ -29,6 +29,7 @@ class ActionModule(ActionBase):
         result = super().run(tmp, task_vars)
         del tmp  # tmp no longer has any effect
 
+        # pylint: disable-next=no-member
         max_file_size_for_diff: int = C.MAX_FILE_SIZE_FOR_DIFF  # type: ignore
         self._task.args["_max_file_size_for_diff"] = max_file_size_for_diff
 

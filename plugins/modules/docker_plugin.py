@@ -131,7 +131,7 @@ actions:
 import traceback
 import typing as t
 
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 
 from ansible_collections.community.docker.plugins.module_utils._api import auth
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
@@ -215,7 +215,7 @@ class DockerPluginManager:
         except NotFound:
             return None
         except APIError as e:
-            self.client.fail(to_native(e))
+            self.client.fail(to_text(e))
 
     def has_different_config(self) -> DifferenceTracker:
         """
@@ -293,7 +293,7 @@ class DockerPluginManager:
                             "/plugins/{0}/set", self.preferred_name, data=data
                         )
                 except APIError as e:
-                    self.client.fail(to_native(e))
+                    self.client.fail(to_text(e))
 
             self.actions.append(f"Installed plugin {self.preferred_name}")
             self.changed = True
@@ -307,7 +307,7 @@ class DockerPluginManager:
                         "/plugins/{0}", self.preferred_name, params={"force": force}
                     )
                 except APIError as e:
-                    self.client.fail(to_native(e))
+                    self.client.fail(to_text(e))
 
             self.actions.append(f"Removed plugin {self.preferred_name}")
             self.changed = True
@@ -323,7 +323,7 @@ class DockerPluginManager:
                             "/plugins/{0}/set", self.preferred_name, data=data
                         )
                     except APIError as e:
-                        self.client.fail(to_native(e))
+                        self.client.fail(to_text(e))
                 self.actions.append(f"Updated plugin {self.preferred_name} settings")
                 self.changed = True
         else:
@@ -361,7 +361,7 @@ class DockerPluginManager:
                             params={"timeout": timeout},
                         )
                     except APIError as e:
-                        self.client.fail(to_native(e))
+                        self.client.fail(to_text(e))
                 self.actions.append(f"Enabled plugin {self.preferred_name}")
                 self.changed = True
         else:
@@ -374,7 +374,7 @@ class DockerPluginManager:
                         params={"timeout": timeout},
                     )
                 except APIError as e:
-                    self.client.fail(to_native(e))
+                    self.client.fail(to_text(e))
             self.actions.append(f"Enabled plugin {self.preferred_name}")
             self.changed = True
 
@@ -387,7 +387,7 @@ class DockerPluginManager:
                             "/plugins/{0}/disable", self.preferred_name
                         )
                     except APIError as e:
-                        self.client.fail(to_native(e))
+                        self.client.fail(to_text(e))
                 self.actions.append(f"Disable plugin {self.preferred_name}")
                 self.changed = True
         else:

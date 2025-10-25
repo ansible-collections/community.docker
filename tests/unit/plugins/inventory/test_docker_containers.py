@@ -24,14 +24,14 @@ if t.TYPE_CHECKING:
     from collections.abc import Callable
 
 
-@pytest.fixture(scope="module")
-def templar() -> Templar:
+@pytest.fixture(scope="module", name="templar")
+def templar_fixture() -> Templar:
     dataloader = create_autospec(DataLoader, instance=True)
     return Templar(loader=dataloader)
 
 
-@pytest.fixture(scope="module")
-def inventory(templar: Templar) -> InventoryModule:
+@pytest.fixture(scope="module", name="inventory")
+def inventory_fixture(templar: Templar) -> InventoryModule:
     r = InventoryModule()
     r.inventory = InventoryData()
     r.templar = templar

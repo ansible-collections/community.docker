@@ -58,7 +58,11 @@ class SSLHTTPAdapter(BaseHTTPAdapter):
         We already take care of a normal poolmanager via init_poolmanager
 
         But we still need to take care of when there is a proxy poolmanager
+
+        Note that this method is no longer called for newer requests versions.
         """
+        # pylint finds our HTTPAdapter stub instead of requests.adapters.HTTPAdapter:
+        # pylint: disable-next=no-member
         conn = super().get_connection(*args, **kwargs)
         if (
             self.assert_hostname is not None

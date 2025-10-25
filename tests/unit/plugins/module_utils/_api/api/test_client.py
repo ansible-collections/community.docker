@@ -52,7 +52,7 @@ if t.TYPE_CHECKING:
 DEFAULT_TIMEOUT_SECONDS = constants.DEFAULT_TIMEOUT_SECONDS
 
 
-def response(
+def create_response(
     status_code: int = 200,
     content: bytes | dict[str, t.Any] | list[dict[str, t.Any]] = b"",
     headers: dict[str, str] | None = None,
@@ -95,7 +95,7 @@ def fake_resp(
     if not key:
         raise NotImplementedError(f"{method} {url}")
     status_code, content = fake_api.fake_responses[key]()
-    return response(status_code=status_code, content=content)
+    return create_response(status_code=status_code, content=content)
 
 
 fake_request = mock.Mock(side_effect=fake_resp)
@@ -328,26 +328,26 @@ class DockerApiTest(BaseAPIClientTest):
 
         # pass `decode=False` to the helper
         raw_resp._fp.seek(0)
-        resp = response(status_code=status_code, content=content, raw=raw_resp)
+        resp = create_response(status_code=status_code, content=content, raw=raw_resp)
         result = next(self.client._stream_helper(resp))
         assert result == content_str
 
         # pass `decode=True` to the helper
         raw_resp._fp.seek(0)
-        resp = response(status_code=status_code, content=content, raw=raw_resp)
+        resp = create_response(status_code=status_code, content=content, raw=raw_resp)
         result = next(self.client._stream_helper(resp, decode=True))
         assert result == content
 
         # non-chunked response, pass `decode=False` to the helper
         setattr(raw_resp._fp, "chunked", False)
         raw_resp._fp.seek(0)
-        resp = response(status_code=status_code, content=content, raw=raw_resp)
+        resp = create_response(status_code=status_code, content=content, raw=raw_resp)
         result = next(self.client._stream_helper(resp))
         assert result == content_str.decode("utf-8")  # type: ignore
 
         # non-chunked response, pass `decode=True` to the helper
         raw_resp._fp.seek(0)
-        resp = response(status_code=status_code, content=content, raw=raw_resp)
+        resp = create_response(status_code=status_code, content=content, raw=raw_resp)
         result = next(self.client._stream_helper(resp, decode=True))
         assert result == content
 

@@ -286,7 +286,7 @@ import time
 import traceback
 import typing as t
 
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     DockerException,
@@ -412,7 +412,7 @@ class DockerNetworkManager:
                 for ipam_config in self.parameters.ipam_config:
                     validate_cidr(ipam_config["subnet"])
             except ValueError as e:
-                self.client.fail(to_native(e))
+                self.client.fail(to_text(e))
 
         if self.parameters.driver_options:
             self.parameters.driver_options = clean_dict_booleans_for_docker_api(

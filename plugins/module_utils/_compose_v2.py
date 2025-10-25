@@ -19,7 +19,7 @@ from collections import namedtuple
 from shlex import quote
 
 from ansible.module_utils.basic import missing_required_lib
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 
 from ansible_collections.community.docker.plugins.module_utils._logfmt import (
     InvalidLogFmt as _InvalidLogFmt,
@@ -418,7 +418,7 @@ def parse_json_events(
                     ResourceType.UNKNOWN,
                     None,
                     "Warning",
-                    to_native(line[len(b"Warning: ") :]),
+                    to_text(line[len(b"Warning: ") :]),
                 )
                 events.append(event)
                 continue
@@ -557,7 +557,7 @@ def parse_events(
     if stderr_lines and stderr_lines[-1] == b"":
         del stderr_lines[-1]
     for index, line in enumerate(stderr_lines):
-        line = to_native(line.strip())
+        line = to_text(line.strip())
         if not line:
             continue
         warn_missing_dry_run_prefix = False
@@ -731,8 +731,8 @@ def update_failed(
     result["failed"] = True
     result["msg"] = "\n".join(errors)
     result["cmd"] = " ".join(quote(arg) for arg in [cli] + args)
-    result["stdout"] = to_native(stdout)
-    result["stderr"] = to_native(stderr)
+    result["stdout"] = to_text(stdout)
+    result["stderr"] = to_text(stderr)
     result["rc"] = rc
     return True
 
@@ -978,8 +978,8 @@ class BaseComposeManager(DockerBaseClass):
             ignore_build_events=ignore_build_events,
         )
         result["actions"] = result.get("actions", []) + extract_actions(events)
-        result["stdout"] = combine_text_output(result.get("stdout"), to_native(stdout))
-        result["stderr"] = combine_text_output(result.get("stderr"), to_native(stderr))
+        result["stdout"] = combine_text_output(result.get("stdout"), to_text(stdout))
+        result["stderr"] = combine_text_output(result.get("stderr"), to_text(stderr))
 
     def update_failed(
         self,

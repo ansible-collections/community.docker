@@ -105,7 +105,7 @@ import typing as t
 
 from ansible.errors import AnsibleError
 from ansible.module_utils.common.process import get_bin_path
-from ansible.module_utils.common.text.converters import to_native, to_text
+from ansible.module_utils.common.text.converters import to_text
 from ansible.plugins.inventory import BaseInventoryPlugin, Cacheable, Constructable
 from ansible.utils.display import Display
 from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin_utils.inventory_filter import (
@@ -142,7 +142,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             try:
                 self.docker_machine_path = get_bin_path("docker-machine")
             except ValueError as e:
-                raise AnsibleError(to_native(e)) from e
+                raise AnsibleError(to_text(e)) from e
 
         command = [self.docker_machine_path]
         command.extend(args)

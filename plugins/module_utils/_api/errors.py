@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import typing as t
 
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 
 from ._import_helper import HTTPError as _HTTPError
 
@@ -39,7 +39,7 @@ def create_api_error_from_http_exception(e: _HTTPError) -> t.NoReturn:
     try:
         explanation = response.json()["message"]
     except ValueError:
-        explanation = to_native((response.content or "").strip())
+        explanation = to_text((response.content or "").strip())
     cls = APIError
     if response.status_code == 404:
         if explanation and (

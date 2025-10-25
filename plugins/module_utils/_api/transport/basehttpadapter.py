@@ -16,6 +16,8 @@ from .._import_helper import HTTPAdapter as _HTTPAdapter
 
 class BaseHTTPAdapter(_HTTPAdapter):
     def close(self) -> None:
+        # pylint finds our HTTPAdapter stub instead of requests.adapters.HTTPAdapter:
+        # pylint: disable-next=no-member
         super().close()
         if hasattr(self, "pools"):
             self.pools.clear()

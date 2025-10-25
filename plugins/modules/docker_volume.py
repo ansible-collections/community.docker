@@ -120,7 +120,7 @@ volume:
 import traceback
 import typing as t
 
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 
 from ansible_collections.community.docker.plugins.module_utils._api.errors import (
     APIError,
@@ -185,7 +185,7 @@ class DockerVolumeManager:
         try:
             volumes = self.client.get_json("/volumes")
         except APIError as e:
-            self.client.fail(to_native(e))
+            self.client.fail(to_text(e))
 
         if volumes["Volumes"] is None:
             return None
@@ -259,7 +259,7 @@ class DockerVolumeManager:
                         "/volumes/{0}", resp["Name"]
                     )
                 except APIError as e:
-                    self.client.fail(to_native(e))
+                    self.client.fail(to_text(e))
 
             self.actions.append(
                 f"Created volume {self.parameters.volume_name} with driver {self.parameters.driver}"
@@ -272,7 +272,7 @@ class DockerVolumeManager:
                 try:
                     self.client.delete_call("/volumes/{0}", self.parameters.volume_name)
                 except APIError as e:
-                    self.client.fail(to_native(e))
+                    self.client.fail(to_text(e))
 
             self.actions.append(f"Removed volume {self.parameters.volume_name}")
             self.results["changed"] = True

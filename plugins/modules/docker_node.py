@@ -143,7 +143,7 @@ except ImportError:
     # missing Docker SDK for Python handled in ansible.module_utils.docker.common
     pass
 
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 
 from ansible_collections.community.docker.plugins.module_utils._common import (
     RequestException,
@@ -237,11 +237,12 @@ class SwarmNodeManager(DockerBaseClass):
                     node_spec["Labels"] = self.parameters.labels
                     changed = True
         elif self.parameters.labels_state == "merge":
-            node_spec["Labels"] = dict(node_info["Spec"]["Labels"] or {})
+            labels: dict[str, str] = dict(node_info["Spec"]["Labels"] or {})
+            node_spec["Labels"] = labels
             if self.parameters.labels is not None:
                 for key, value in self.parameters.labels.items():
-                    if node_spec["Labels"].get(key) != value:
-                        node_spec["Labels"][key] = value
+                    if labels.get(key) != value:
+                        labels[key] = value
                         changed = True
 
             if self.parameters.labels_to_remove is not None:
@@ -253,7 +254,7 @@ class SwarmNodeManager(DockerBaseClass):
                                 changed = True
                         else:
                             self.client.module.warn(
-                                f"Label '{to_native(key)}' listed both in 'labels' and 'labels_to_remove'. "
+                                f"Label '{to_text(key)}' listed both in 'labels' and 'labels_to_remove'. "
                                 "Keeping the assigned label value."
                             )
                     else:

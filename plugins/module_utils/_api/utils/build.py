@@ -97,49 +97,50 @@ def create_archive(
 ) -> t.IO[bytes]:
     extra_files = extra_files or []
     if not fileobj:
+        # pylint: disable-next=consider-using-with
         fileobj = tempfile.NamedTemporaryFile()
-    t = tarfile.open(mode="w:gz" if gzip else "w", fileobj=fileobj)
-    if files is None:
-        files = build_file_list(root)
-    extra_names = set(e[0] for e in extra_files)
-    for path in files:
-        if path in extra_names:
-            # Extra files override context files with the same name
-            continue
-        full_path = os.path.join(root, path)
 
-        i = t.gettarinfo(full_path, arcname=path)
-        if i is None:
-            # This happens when we encounter a socket file. We can safely
-            # ignore it and proceed.
-            continue  # type: ignore
+    with tarfile.open(mode="w:gz" if gzip else "w", fileobj=fileobj) as tarf:
+        if files is None:
+            files = build_file_list(root)
+        extra_names = set(e[0] for e in extra_files)
+        for path in files:
+            if path in extra_names:
+                # Extra files override context files with the same name
+                continue
+            full_path = os.path.join(root, path)
 
-        # Workaround https://bugs.python.org/issue32713
-        if i.mtime < 0 or i.mtime > 8**11 - 1:
-            i.mtime = int(i.mtime)
+            i = tarf.gettarinfo(full_path, arcname=path)
+            if i is None:
+                # This happens when we encounter a socket file. We can safely
+                # ignore it and proceed.
+                continue  # type: ignore
 
-        if IS_WINDOWS_PLATFORM:
-            # Windows does not keep track of the execute bit, so we make files
-            # and directories executable by default.
-            i.mode = i.mode & 0o755 | 0o111
+            # Workaround https://bugs.python.org/issue32713
+            if i.mtime < 0 or i.mtime > 8**11 - 1:
+                i.mtime = int(i.mtime)
 
-        if i.isfile():
-            try:
-                with open(full_path, "rb") as f:
-                    t.addfile(i, f)
-            except IOError as exc:
-                raise IOError(f"Can not read file in context: {full_path}") from exc
-        else:
-            # Directories, FIFOs, symlinks... do not need to be read.
-            t.addfile(i, None)
+            if IS_WINDOWS_PLATFORM:
+                # Windows does not keep track of the execute bit, so we make files
+                # and directories executable by default.
+                i.mode = i.mode & 0o755 | 0o111
 
-    for name, contents in extra_files:
-        info = tarfile.TarInfo(name)
-        contents_encoded = contents.encode("utf-8")
-        info.size = len(contents_encoded)
-        t.addfile(info, io.BytesIO(contents_encoded))
+            if i.isfile():
+                try:
+                    with open(full_path, "rb") as f:
+                        tarf.addfile(i, f)
+                except IOError as exc:
+                    raise IOError(f"Can not read file in context: {full_path}") from exc
+            else:
+                # Directories, FIFOs, symlinks... do not need to be read.
+                tarf.addfile(i, None)
 
-    t.close()
+        for name, contents in extra_files:
+            info = tarfile.TarInfo(name)
+            contents_encoded = contents.encode("utf-8")
+            info.size = len(contents_encoded)
+            tarf.addfile(info, io.BytesIO(contents_encoded))
+
     fileobj.seek(0)
     return fileobj
 
@@ -147,7 +148,7 @@ def create_archive(
 def mkbuildcontext(dockerfile: io.BytesIO | t.IO[bytes]) -> t.IO[bytes]:
     f = tempfile.NamedTemporaryFile()  # pylint: disable=consider-using-with
     try:
-        with tarfile.open(mode="w", fileobj=f) as t:
+        with tarfile.open(mode="w", fileobj=f) as tarf:
             if isinstance(dockerfile, io.StringIO):  # type: ignore
                 raise TypeError("Please use io.BytesIO to create in-memory Dockerfiles")
             if isinstance(dockerfile, io.BytesIO):
@@ -155,8 +156,8 @@ def mkbuildcontext(dockerfile: io.BytesIO | t.IO[bytes]) -> t.IO[bytes]:
                 dfinfo.size = len(dockerfile.getvalue())
                 dockerfile.seek(0)
             else:
-                dfinfo = t.gettarinfo(fileobj=dockerfile, arcname="Dockerfile")
-            t.addfile(dfinfo, dockerfile)
+                dfinfo = tarf.gettarinfo(fileobj=dockerfile, arcname="Dockerfile")
+            tarf.addfile(dfinfo, dockerfile)
         f.seek(0)
     except Exception:  # noqa: E722
         f.close()

@@ -37,8 +37,8 @@ def capture_logging(messages: list[str]) -> Callable[[str], None]:
     return capture
 
 
-@pytest.fixture
-def tar_file_name(tmpdir: t.Any) -> str:
+@pytest.fixture(name="tar_file_name")
+def tar_file_name_fixture(tmpdir: t.Any) -> str:
     """
     Return the name of a non-existing tar file in an existing temporary directory.
     """
