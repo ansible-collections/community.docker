@@ -28,5 +28,5 @@
       - git+https://github.com/psf/requests
       - git+https://github.com/urllib3/urllib3
     extra_args: "-c {{ remote_constraints }}"
-    state: latest
+    state: latest  # noqa: package-latest
   when: force_docker_sdk_for_python_dev | default(false)

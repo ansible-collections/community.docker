@@ -25,7 +25,7 @@
           ansible.builtin.set_fact:
             needs_docker_daemon: '{{ not ansible_module_running_in_container }}'
 
-        - name:
+        - name: Print information
           ansible.builtin.debug:
             msg: |-
               OS family: {{ ansible_facts.os_family }}

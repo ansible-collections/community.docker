@@ -8,11 +8,11 @@
   tasks:
     - name: Setup docker
       ansible.builtin.include_role:
-        name: setup_docker
+        name: setup_docker  # noqa: syntax-check[specific]
 
     - name: Setup Docker Python deps
       ansible.builtin.import_role:
-        name: setup_docker_python_deps
+        name: setup_docker_python_deps  # noqa: syntax-check[specific]
 
     # There seems to be no better way to install docker-machine. At least I couldn't find any packages for RHEL7/8.
     - name: Download docker-machine binary

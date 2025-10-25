@@ -20,7 +20,7 @@
         advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
 
     - name: Parameter name should be required
-      community.docker.docker_config:
+      community.docker.docker_config:  # noqa: args[module]
         state: present
       ignore_errors: true
       register: output
@@ -32,7 +32,7 @@
           - 'output.msg == "missing required arguments: name"'
 
     - name: Test parameters
-      community.docker.docker_config:
+      community.docker.docker_config:  # noqa: args[module]
         name: foo
         state: present
       ignore_errors: true
@@ -261,7 +261,7 @@
           community.docker.docker_config:
             name: db_password
             data: opensesame!
-            template_driver: "not a template driver"
+            template_driver: "not a template driver"  # noqa: args[module]
             state: present
           ignore_errors: true
           register: output

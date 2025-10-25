@@ -25,7 +25,7 @@
 
     - when: not podman_setup_marker.stat.exists and not ansible_module_running_in_container
       block:
-        - name:
+        - name: Print information
           ansible.builtin.debug:
             msg: |-
               OS family: {{ ansible_facts.os_family }}

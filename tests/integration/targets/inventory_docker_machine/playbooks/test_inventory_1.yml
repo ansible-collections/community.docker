@@ -8,7 +8,7 @@
   tasks:
     - name: sanity check Docker Machine output
       vars:
-        dm_ls_format: !unsafe '{{.Name}} | {{.DriverName}} | {{.State}} | {{.URL}} | {{.Error}}'
+        dm_ls_format: !unsafe '{{.Name}} | {{.DriverName}} | {{.State}} | {{.URL}} | {{.Error}}'  # noqa: jinja[invalid]
         success_regex: "^vm | [^|]+ | Running | tcp://.+ |$"
       ansible.builtin.command: docker-machine ls --format '{{ dm_ls_format }}'
       register: result
