@@ -30,7 +30,6 @@ schedules:
     branches:
       include:
         - stable-4
-        - stable-3
 
 variables:
   - name: checkoutPath
