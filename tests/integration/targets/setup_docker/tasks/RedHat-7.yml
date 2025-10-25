@@ -30,7 +30,7 @@
     gpgkey: https://download.docker.com/linux/centos/gpg
 
 - name: Update cache
-  ansible.builtin.command: yum -y makecache fast
+  ansible.builtin.command: yum -y makecache fast  # noqa: command-instead-of-module
 
 - name: Install docker
   ansible.builtin.dnf:

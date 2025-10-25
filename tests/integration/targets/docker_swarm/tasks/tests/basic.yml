@@ -10,7 +10,7 @@
 ## Errors ##########################################################
 ####################################################################
 - name: Test parameters with state=join
-  community.docker.docker_swarm:
+  community.docker.docker_swarm:  # noqa: args[module]
     state: join
   ignore_errors: true
   register: output
@@ -22,7 +22,7 @@
       - 'output.msg == "state is join but all of the following are missing: remote_addrs, join_token"'
 
 - name: Test parameters with state=remove
-  community.docker.docker_swarm:
+  community.docker.docker_swarm:  # noqa: args[module]
     state: remove
   ignore_errors: true
   register: output

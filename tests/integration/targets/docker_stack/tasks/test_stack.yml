@@ -20,7 +20,7 @@
 
     - name: Create a stack without name
       register: output
-      community.docker.docker_stack:
+      community.docker.docker_stack:  # noqa: args[module]
         state: present
       ignore_errors: true
 

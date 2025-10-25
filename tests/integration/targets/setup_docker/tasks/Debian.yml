@@ -35,7 +35,7 @@
   name: Add Docker repo on Ubuntu 20 or before, or Debian 11 or before
   block:
     - name: Add gpg key
-      ansible.builtin.shell: curl -fsSL https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg >key && apt-key add key
+      ansible.builtin.shell: curl -fsSL https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg >key && apt-key add key  # noqa: command-instead-of-module
 
     - name: Add Docker repo
       ansible.builtin.apt_repository:

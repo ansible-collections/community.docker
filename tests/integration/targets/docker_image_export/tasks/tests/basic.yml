@@ -46,7 +46,7 @@
       register: result
 
     - name: Extract manifest.json files
-      ansible.builtin.command: tar xvf "{{ remote_tmp_dir }}/{{ item.file }}" manifest.json --to-stdout
+      ansible.builtin.command: tar xvf "{{ remote_tmp_dir }}/{{ item.file }}" manifest.json --to-stdout  # noqa: command-instead-of-module
       loop: "{{ image_tasks }}"
       loop_control:
         label: "{{ item.file }}"

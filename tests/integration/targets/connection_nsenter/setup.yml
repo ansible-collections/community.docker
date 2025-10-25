@@ -11,4 +11,4 @@
   tasks:
     - name: Setup docker
       import_role:
-        name: setup_docker
+        name: setup_docker  # noqa: syntax-check[specific]

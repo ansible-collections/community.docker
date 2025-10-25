@@ -11,7 +11,7 @@
   tasks:
     - name: Setup docker
       ansible.builtin.import_role:
-        name: setup_docker
+        name: setup_docker  # noqa: syntax-check[specific]
 
     - name: Setup Docker SDK for Python
       ansible.builtin.import_role:
