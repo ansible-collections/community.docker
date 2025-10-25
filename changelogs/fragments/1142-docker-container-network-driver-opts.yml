@@ -1,4 +1,0 @@
----
-minor_changes:
-  - "docker_container - add ``driver_opts`` option in ``networks`` (https://github.com/ansible-collections/community.docker/issues/1142, https://github.com/ansible-collections/community.docker/pull/1143)."
-  - "docker_container - add ``gw_priority`` option in ``networks`` (https://github.com/ansible-collections/community.docker/issues/1142, https://github.com/ansible-collections/community.docker/pull/1143)."

@@ -1,2 +1,0 @@
-bugfixes:
-  - "docker_container_exec - make ``detach=true`` work. So far this resulted in no execution being done (https://github.com/ansible-collections/community.docker/pull/1145)."

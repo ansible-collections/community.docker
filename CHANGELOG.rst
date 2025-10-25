@@ -4,6 +4,51 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v5.0.0-a1
+=========
+
+Release Summary
+---------------
+
+First alpha release of community.docker 5.0.0.
+
+The main changes are that the collection dropped support for some ansible-core versions that are End of Life, and thus dropped support for Python 2.7.
+This allowed to modernize the Python code, in particular with type hints.
+Also all module and plugin utils are now private to the collection, which makes it easier to refactor code.
+All these changes should have no effect on end-users.
+
+The current plan is to release 5.0.0 in time for Ansible 13's feature freeze, so in roughly one week.
+
+Minor Changes
+-------------
+
+- docker_container - add ``driver_opts`` option in ``networks`` (https://github.com/ansible-collections/community.docker/issues/1142, https://github.com/ansible-collections/community.docker/pull/1143).
+- docker_container - add ``gw_priority`` option in ``networks`` (https://github.com/ansible-collections/community.docker/issues/1142, https://github.com/ansible-collections/community.docker/pull/1143).
+
+Breaking Changes / Porting Guide
+--------------------------------
+
+- All doc fragments, module utils, and plugin utils are from now on private. They can change at any time, and have breaking changes even in bugfix releases (https://github.com/ansible-collections/community.docker/pull/1144).
+
+Removed Features (previously deprecated)
+----------------------------------------
+
+- Remove support for Docker SDK for Python version 1.x.y, also known as ``docker-py``. Modules and plugins that use Docker SDK for Python require version 2.0.0+ (https://github.com/ansible-collections/community.docker/pull/1171).
+- The collection no longer supports Python 3.6 and before. Note that this coincides with the Python requirements of ansible-core 2.17+ (https://github.com/ansible-collections/community.docker/pull/1123).
+- The collection no longer supports ansible-core 2.15 and 2.16. You need ansible-core 2.17.0 or newer to use community.docker 5.x.y (https://github.com/ansible-collections/community.docker/pull/1123).
+
+Bugfixes
+--------
+
+- docker connection plugin - fix crash instead of warning if Docker version does not support ``remote_user`` (https://github.com/ansible-collections/community.docker/pull/1161).
+- docker, nsenter connection plugins - fix handling of ``become`` plugin password prompt handling in case multiple events arrive at the same time (https://github.com/ansible-collections/community.docker/pull/1158).
+- docker_api connection plugin - fix bug that could lead to loss of data when waiting for ``become`` plugin prompt (https://github.com/ansible-collections/community.docker/pull/1152).
+- docker_compose_v2_exec - fix crash instead of reporting error if ``detach=true`` and ``stdin`` is provided (https://github.com/ansible-collections/community.docker/pull/1161).
+- docker_compose_v2_run - fix crash instead of reporting error if ``detach=true`` and ``stdin`` is provided (https://github.com/ansible-collections/community.docker/pull/1161).
+- docker_container_exec - fix bug that could lead to loss of stdout/stderr data (https://github.com/ansible-collections/community.docker/pull/1152).
+- docker_container_exec - make ``detach=true`` work. So far this resulted in no execution being done (https://github.com/ansible-collections/community.docker/pull/1145).
+- docker_plugin - fix diff mode for plugin options (https://github.com/ansible-collections/community.docker/pull/1146).
+
 v4.8.1
 ======
 
