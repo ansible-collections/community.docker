@@ -690,9 +690,7 @@ def emit_warnings(
 
 
 def is_failed(events: Sequence[Event], rc: int) -> bool:
-    if rc:
-        return True
-    return False
+    return bool(rc)
 
 
 def update_failed(

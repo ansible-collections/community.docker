@@ -2380,12 +2380,12 @@ class DockerServiceManager:
         ds.container_labels = task_template_data["ContainerSpec"].get("Labels")
 
         mode = raw_data["Spec"]["Mode"]
-        if "Replicated" in mode.keys():
+        if "Replicated" in mode:
             ds.mode = to_text("replicated", encoding="utf-8")
             ds.replicas = mode["Replicated"]["Replicas"]
-        elif "Global" in mode.keys():
+        elif "Global" in mode:
             ds.mode = "global"
-        elif "ReplicatedJob" in mode.keys():
+        elif "ReplicatedJob" in mode:
             ds.mode = to_text("replicated-job", encoding="utf-8")
             ds.replicas = mode["ReplicatedJob"]["TotalCompletions"]
         else:
@@ -2649,10 +2649,9 @@ class DockerServiceManager:
 
 
 def _detect_publish_mode_usage(client: AnsibleDockerClient) -> bool:
-    for publish_def in client.module.params["publish"] or []:
-        if publish_def.get("mode"):
-            return True
-    return False
+    return any(
+        publish_def.get("mode") for publish_def in client.module.params["publish"] or []
+    )
 
 
 def _detect_healthcheck_start_period(client: AnsibleDockerClient) -> bool:

@@ -554,9 +554,8 @@ class SwarmManager(DockerBaseClass):
             except APIError as exc:
                 self.client.fail(f"Can not create a new Swarm Cluster: {exc}")
 
-        if not self.client.check_if_swarm_manager():
-            if not self.check_mode:
-                self.client.fail("Swarm not created or other error!")
+        if not self.client.check_if_swarm_manager() and not self.check_mode:
+            self.client.fail("Swarm not created or other error!")
 
         self.created = True
         self.inspect_swarm()

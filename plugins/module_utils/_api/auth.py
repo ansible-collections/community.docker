@@ -292,7 +292,7 @@ class AuthConfig(dict):
             log.debug("No entry found")
             return None
         except StoreError as e:
-            raise errors.DockerException(f"Credentials store error: {e}")
+            raise errors.DockerException(f"Credentials store error: {e}") from e
 
     def _get_store_instance(self, name: str) -> Store:
         if name not in self._stores:
@@ -310,7 +310,7 @@ class AuthConfig(dict):
         if self.creds_store:
             # Retrieve all credentials from the default store
             store = self._get_store_instance(self.creds_store)
-            for k in store.list().keys():
+            for k in store.list():
                 auth_data[k] = self._resolve_authconfig_credstore(k, self.creds_store)
                 auth_data[convert_to_hostname(k)] = auth_data[k]
 

@@ -585,10 +585,10 @@ class ServicesManager(BaseComposeManager):
         return args
 
     def _are_containers_stopped(self) -> bool:
-        for container in self.list_containers_raw():
-            if container["State"] not in ("created", "exited", "stopped", "killed"):
-                return False
-        return True
+        return all(
+            container["State"] in ("created", "exited", "stopped", "killed")
+            for container in self.list_containers_raw()
+        )
 
     def cmd_stop(self) -> dict[str, t.Any]:
         # Since 'docker compose stop' **always** claims it is stopping containers, even if they are already

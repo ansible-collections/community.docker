@@ -322,7 +322,7 @@ def main() -> None:
             before_after_differences = json_diff(
                 before_stack_services, after_stack_services
             )
-            for k in before_after_differences.keys():
+            for k in before_after_differences:
                 if isinstance(before_after_differences[k], dict):
                     before_after_differences[k].pop("UpdatedAt", None)
                     before_after_differences[k].pop("Version", None)

@@ -217,11 +217,13 @@ class ContainerManager(DockerBaseClass, t.Generic[Client]):
                         "The wildcard can only be used with comparison modes 'strict' and 'ignore'!"
                     )
                 for option in self.all_options.values():
-                    if option.name == "networks":
-                        # `networks` is special: only update if
-                        # some value is actually specified
-                        if self.module.params["networks"] is None:
-                            continue
+                    # `networks` is special: only update if
+                    # some value is actually specified
+                    if (
+                        option.name == "networks"
+                        and self.module.params["networks"] is None
+                    ):
+                        continue
                     option.comparison = value
             # Now process all other comparisons.
             comp_aliases_used: dict[str, str] = {}
@@ -679,13 +681,17 @@ class ContainerManager(DockerBaseClass, t.Generic[Client]):
     def _image_is_different(
         self, image: dict[str, t.Any] | None, container: Container
     ) -> bool:
-        if image and image.get("Id"):
-            if container and container.image:
-                if image.get("Id") != container.image:
-                    self.diff_tracker.add(
-                        "image", parameter=image.get("Id"), active=container.image
-                    )
-                    return True
+        if (
+            image
+            and image.get("Id")
+            and container
+            and container.image
+            and image.get("Id") != container.image
+        ):
+            self.diff_tracker.add(
+                "image", parameter=image.get("Id"), active=container.image
+            )
+            return True
         return False
 
     def _compose_create_parameters(self, image: str) -> dict[str, t.Any]:
@@ -927,14 +933,13 @@ class ContainerManager(DockerBaseClass, t.Generic[Client]):
                     "ipv6_address"
                 ] != network_info_ipam.get("IPv6Address"):
                     diff = True
-                if network.get("aliases"):
-                    if not compare_generic(
-                        network["aliases"],
-                        network_info.get("Aliases"),
-                        "allow_more_present",
-                        "set",
-                    ):
-                        diff = True
+                if network.get("aliases") and not compare_generic(
+                    network["aliases"],
+                    network_info.get("Aliases"),
+                    "allow_more_present",
+                    "set",
+                ):
+                    diff = True
                 if network.get("links"):
                     expected_links = []
                     for link, alias in network["links"]:

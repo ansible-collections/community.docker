@@ -36,7 +36,6 @@ from ..tls import TLSConfig
 
 
 if t.TYPE_CHECKING:
-    import ssl
     from collections.abc import Mapping, Sequence
 
 
@@ -298,7 +297,7 @@ def parse_host(addr: str | None, is_win32: bool = False, tls: bool = False) -> s
     if proto == "unix" and parsed_url.hostname is not None:
         # For legacy reasons, we consider unix://path
         # to be valid and equivalent to unix:///path
-        path = "/".join((parsed_url.hostname, path))
+        path = f"{parsed_url.hostname}/{path}"
 
     netloc = parsed_url.netloc
     if proto in ("tcp", "ssh"):
@@ -429,9 +428,8 @@ def parse_bytes(s: int | float | str) -> int | float:
     if len(s) == 0:
         return 0
 
-    if s[-2:-1].isalpha() and s[-1].isalpha():
-        if s[-1] == "b" or s[-1] == "B":
-            s = s[:-1]
+    if s[-2:-1].isalpha() and s[-1].isalpha() and (s[-1] == "b" or s[-1] == "B"):
+        s = s[:-1]
     units = BYTE_UNITS
     suffix = s[-1].lower()
 

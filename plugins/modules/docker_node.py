@@ -216,14 +216,14 @@ class SwarmNodeManager(DockerBaseClass):
         if self.parameters.role is None:
             node_spec["Role"] = node_info["Spec"]["Role"]
         else:
-            if not node_info["Spec"]["Role"] == self.parameters.role:
+            if node_info["Spec"]["Role"] != self.parameters.role:
                 node_spec["Role"] = self.parameters.role
                 changed = True
 
         if self.parameters.availability is None:
             node_spec["Availability"] = node_info["Spec"]["Availability"]
         else:
-            if not node_info["Spec"]["Availability"] == self.parameters.availability:
+            if node_info["Spec"]["Availability"] != self.parameters.availability:
                 node_info["Spec"]["Availability"] = self.parameters.availability
                 changed = True
 

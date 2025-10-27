@@ -718,9 +718,8 @@ class AnsibleDockerClient(AnsibleDockerClientBase):
     ) -> None:
         self.option_minimal_versions: dict[str, dict[str, t.Any]] = {}
         for option in self.module.argument_spec:
-            if ignore_params is not None:
-                if option in ignore_params:
-                    continue
+            if ignore_params is not None and option in ignore_params:
+                continue
             self.option_minimal_versions[option] = {}
         self.option_minimal_versions.update(option_minimal_versions)
 

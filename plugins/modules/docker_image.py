@@ -902,7 +902,7 @@ class ImageManager(DockerBaseClass):
                 buildargs[key] = to_text(value)
 
         container_limits = self.container_limits or {}
-        for key in container_limits.keys():
+        for key in container_limits:
             if key not in CONTAINER_LIMITS_KEYS:
                 raise DockerException(f"Invalid container_limits key {key}")
 
@@ -1207,13 +1207,13 @@ def main() -> None:
     if not is_valid_tag(client.module.params["tag"], allow_empty=True):
         client.fail(f'"{client.module.params["tag"]}" is not a valid docker tag!')
 
-    if client.module.params["source"] == "build":
-        if not client.module.params["build"] or not client.module.params["build"].get(
-            "path"
-        ):
-            client.fail(
-                'If "source" is set to "build", the "build.path" option must be specified.'
-            )
+    if client.module.params["source"] == "build" and (
+        not client.module.params["build"]
+        or not client.module.params["build"].get("path")
+    ):
+        client.fail(
+            'If "source" is set to "build", the "build.path" option must be specified.'
+        )
 
     try:
         results = {"changed": False, "actions": [], "image": {}}

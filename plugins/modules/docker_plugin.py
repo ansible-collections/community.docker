@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# coding: utf-8
 #
 # Copyright (c) 2021 Red Hat | Ansible Sakar Mehra<@sakarmehra100@gmail.com | @sakar97>
 # Copyright (c) 2019, Vladimir Porshkevich (@porshkevich) <neosonic@mail.ru>
@@ -281,7 +280,7 @@ class DockerPluginManager:
                         stream=True,
                     )
                     self.client._raise_for_status(response)
-                    for data in self.client._stream_helper(response, decode=True):
+                    for dummy in self.client._stream_helper(response, decode=True):
                         pass
                     # Inspect and configure plugin
                     self.existing_plugin = self.client.get_json(

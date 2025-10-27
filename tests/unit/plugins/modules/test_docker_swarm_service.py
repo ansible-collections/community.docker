@@ -156,7 +156,7 @@ def test_has_list_changed() -> None:
         [{"a": 1}, {"a": 2}], [{"a": 1}, {"a": 2}], sort_key="a"
     )
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         docker_swarm_service.has_list_changed(
             [{"a": 1}, {"a": 2}], [{"a": 1}, {"a": 2}]
         )

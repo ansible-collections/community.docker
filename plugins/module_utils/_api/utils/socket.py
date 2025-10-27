@@ -22,7 +22,7 @@ from ..transport.npipesocket import NpipeSocket
 
 
 if t.TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Sequence
 
     from ..._socket_helper import SocketLike
 
@@ -59,8 +59,8 @@ def read(socket: SocketLike, n: int = 4096) -> bytes | None:
     try:
         if hasattr(socket, "recv"):
             return socket.recv(n)
-        if isinstance(socket, getattr(pysocket, "SocketIO")):
-            return socket.read(n)
+        if isinstance(socket, pysocket.SocketIO):  # type: ignore
+            return socket.read(n)  # type: ignore[unreachable]
         return os.read(socket.fileno(), n)
     except EnvironmentError as e:
         if e.errno not in recoverable_errors:

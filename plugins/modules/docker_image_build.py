@@ -368,16 +368,20 @@ class ImageBuilder(DockerBaseClass):
 
         if self.secrets:
             for secret in self.secrets:
-                if secret["type"] in ("env", "value"):
-                    if LooseVersion(buildx_version) < LooseVersion("0.6.0"):
-                        self.fail(
-                            f"The Docker buildx plugin has version {buildx_version}, but 0.6.0 is needed for secrets of type=env and type=value"
-                        )
-        if self.outputs and len(self.outputs) > 1:
-            if LooseVersion(buildx_version) < LooseVersion("0.13.0"):
-                self.fail(
-                    f"The Docker buildx plugin has version {buildx_version}, but 0.13.0 is needed to specify more than one output"
-                )
+                if secret["type"] in ("env", "value") and LooseVersion(
+                    buildx_version
+                ) < LooseVersion("0.6.0"):
+                    self.fail(
+                        f"The Docker buildx plugin has version {buildx_version}, but 0.6.0 is needed for secrets of type=env and type=value"
+                    )
+        if (
+            self.outputs
+            and len(self.outputs) > 1
+            and LooseVersion(buildx_version) < LooseVersion("0.13.0")
+        ):
+            self.fail(
+                f"The Docker buildx plugin has version {buildx_version}, but 0.13.0 is needed to specify more than one output"
+            )
 
         self.path = parameters["path"]
         if not os.path.isdir(self.path):
@@ -530,9 +534,8 @@ class ImageBuilder(DockerBaseClass):
             "image": image or {},
         }
 
-        if image:
-            if self.rebuild == "never":
-                return results
+        if image and self.rebuild == "never":
+            return results
 
         results["changed"] = True
         if not self.check_mode:

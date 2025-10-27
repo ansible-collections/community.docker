@@ -23,7 +23,6 @@ from ..test_support.docker_image_archive_stubbing import (
 
 if t.TYPE_CHECKING:
     from collections.abc import Callable
-    from pathlib import Path
 
 
 def assert_no_logging(msg: str) -> t.NoReturn:

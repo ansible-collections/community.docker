@@ -73,7 +73,7 @@ class DockerSocketHandlerBase:
 
     def __exit__(
         self,
-        type_: t.Type[BaseException] | None,
+        type_: type[BaseException] | None,
         value: BaseException | None,
         tb: TracebackType | None,
     ) -> None:
@@ -199,10 +199,9 @@ class DockerSocketHandlerBase:
                 if event & selectors.EVENT_WRITE != 0:
                     self._write()
         result = len(events)
-        if self._paramiko_read_workaround and len(self._write_buffer) > 0:
-            if self._sock.send_ready():  # type: ignore
-                self._write()
-                result += 1
+        if self._paramiko_read_workaround and len(self._write_buffer) > 0 and self._sock.send_ready():  # type: ignore
+            self._write()
+            result += 1
         return result > 0
 
     def is_eof(self) -> bool:

@@ -226,7 +226,7 @@ class DockerApiTest(BaseAPIClientTest):
     def test_retrieve_server_version(self) -> None:
         client = APIClient(version="auto")
         assert isinstance(client._version, str)
-        assert not (client._version == "auto")
+        assert client._version != "auto"
         client.close()
 
     def test_auto_retrieve_server_version(self) -> None:
@@ -323,8 +323,8 @@ class DockerApiTest(BaseAPIClientTest):
 
         # mock a stream interface
         raw_resp = urllib3.HTTPResponse(body=body)
-        setattr(raw_resp._fp, "chunked", True)
-        setattr(raw_resp._fp, "chunk_left", len(body.getvalue()) - 1)
+        raw_resp._fp.chunked = True
+        raw_resp._fp.chunk_left = len(body.getvalue()) - 1
 
         # pass `decode=False` to the helper
         raw_resp._fp.seek(0)
@@ -339,7 +339,7 @@ class DockerApiTest(BaseAPIClientTest):
         assert result == content
 
         # non-chunked response, pass `decode=False` to the helper
-        setattr(raw_resp._fp, "chunked", False)
+        raw_resp._fp.chunked = False
         raw_resp._fp.seek(0)
         resp = create_response(status_code=status_code, content=content, raw=raw_resp)
         result = next(self.client._stream_helper(resp))
@@ -503,7 +503,7 @@ class TCPSocketStreamTest(unittest.TestCase):
         cls.thread.join()
 
     @classmethod
-    def get_handler_class(cls) -> t.Type[BaseHTTPRequestHandler]:
+    def get_handler_class(cls) -> type[BaseHTTPRequestHandler]:
         stdout_data = cls.stdout_data
         stderr_data = cls.stderr_data
 

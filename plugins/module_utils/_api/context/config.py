@@ -102,8 +102,7 @@ def get_tls_dir(name: str | None = None, endpoint: str = "") -> str:
 
 def get_context_host(path: str | None = None, tls: bool = False) -> str:
     host = parse_host(path, IS_WINDOWS_PLATFORM, tls)
-    if host == DEFAULT_UNIX_SOCKET:
+    if host == DEFAULT_UNIX_SOCKET and host.startswith("http+"):
         # remove http+ from default docker socket url
-        if host.startswith("http+"):
-            host = host[5:]
+        host = host[5:]
     return host

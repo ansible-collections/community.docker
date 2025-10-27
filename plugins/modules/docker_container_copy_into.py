@@ -287,20 +287,20 @@ def are_fileobjs_equal_read_first(
 
 
 def is_container_file_not_regular_file(container_stat: dict[str, t.Any]) -> bool:
-    for bit in (
-        # https://pkg.go.dev/io/fs#FileMode
-        32 - 1,  # ModeDir
-        32 - 4,  # ModeTemporary
-        32 - 5,  # ModeSymlink
-        32 - 6,  # ModeDevice
-        32 - 7,  # ModeNamedPipe
-        32 - 8,  # ModeSocket
-        32 - 11,  # ModeCharDevice
-        32 - 13,  # ModeIrregular
-    ):
-        if container_stat["mode"] & (1 << bit) != 0:
-            return True
-    return False
+    return any(
+        container_stat["mode"] & 1 << bit != 0
+        for bit in (
+            # https://pkg.go.dev/io/fs#FileMode
+            32 - 1,  # ModeDir
+            32 - 4,  # ModeTemporary
+            32 - 5,  # ModeSymlink
+            32 - 6,  # ModeDevice
+            32 - 7,  # ModeNamedPipe
+            32 - 8,  # ModeSocket
+            32 - 11,  # ModeCharDevice
+            32 - 13,  # ModeIrregular
+        )
+    )
 
 
 def get_container_file_mode(container_stat: dict[str, t.Any]) -> int:
@@ -420,7 +420,7 @@ def retrieve_diff(
 
 
 def is_binary(content: bytes) -> bool:
-    if b"\x00" in content:
+    if b"\x00" in content:  # noqa: SIM103
         return True
     # TODO: better detection
     # (ansible-core also just checks for 0x00, and even just sticks to the first 8k, so this is not too bad...)
@@ -695,11 +695,10 @@ def is_file_idempotent(
         mf = tar.extractfile(member)
         if mf is None:
             raise AssertionError("Member should be present for regular file")
-        with mf as tar_f:
-            with open(managed_path, "rb") as local_f:
-                is_equal = are_fileobjs_equal_with_diff_of_first(
-                    tar_f, local_f, member.size, diff, max_file_size_for_diff, in_path
-                )
+        with mf as tar_f, open(managed_path, "rb") as local_f:
+            is_equal = are_fileobjs_equal_with_diff_of_first(
+                tar_f, local_f, member.size, diff, max_file_size_for_diff, in_path
+            )
         return container_path, mode, is_equal
 
     def process_symlink(in_path: str, member: tarfile.TarInfo) -> tuple[str, int, bool]:

@@ -256,7 +256,7 @@ class ResolveAuthTest(unittest.TestCase):
             m.return_value = None
             ac = auth.resolve_authconfig(auth_config, None)
             assert ac is not None
-            assert "indexuser" == ac["username"]
+            assert ac["username"] == "indexuser"
 
 
 class LoadConfigTest(unittest.TestCase):

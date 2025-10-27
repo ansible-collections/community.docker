@@ -698,9 +698,7 @@ class APIClient(_Session):
             if auth.INDEX_URL not in auth_data and auth.INDEX_NAME in auth_data:
                 auth_data[auth.INDEX_URL] = auth_data.get(auth.INDEX_NAME, {})
 
-            log.debug(
-                "Sending auth config (%s)", ", ".join(repr(k) for k in auth_data.keys())
-            )
+            log.debug("Sending auth config (%s)", ", ".join(repr(k) for k in auth_data))
 
             if auth_data:
                 headers["X-Registry-Config"] = auth.encode_header(auth_data)
