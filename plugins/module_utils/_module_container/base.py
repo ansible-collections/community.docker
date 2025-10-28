@@ -890,14 +890,15 @@ def _preprocess_mounts(
                     check_collision(container, "volumes")
                     new_vols.append(f"{host}:{container}:{mode}")
                     continue
-                if len(parts) == 2:
-                    if not _is_volume_permissions(parts[1]) and re.match(
-                        r"[.~]", parts[0]
-                    ):
-                        host = os.path.abspath(os.path.expanduser(parts[0]))
-                        check_collision(parts[1], "volumes")
-                        new_vols.append(f"{host}:{parts[1]}:rw")
-                        continue
+                if (
+                    len(parts) == 2
+                    and not _is_volume_permissions(parts[1])
+                    and re.match(r"[.~]", parts[0])
+                ):
+                    host = os.path.abspath(os.path.expanduser(parts[0]))
+                    check_collision(parts[1], "volumes")
+                    new_vols.append(f"{host}:{parts[1]}:rw")
+                    continue
             check_collision(parts[min(1, len(parts) - 1)], "volumes")
             new_vols.append(vol)
         values["volumes"] = new_vols

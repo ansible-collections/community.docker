@@ -581,7 +581,7 @@ fake_responses: dict[str | tuple[str, str], Callable] = {
     f"{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b/restart": post_fake_restart_container,
     f"{prefix}/{CURRENT_VERSION}/containers/3cc2351ab11b": delete_fake_remove_container,
     # TODO: the following is a duplicate of the import endpoint further above!
-    f"{prefix}/{CURRENT_VERSION}/images/create": post_fake_image_create,
+    f"{prefix}/{CURRENT_VERSION}/images/create": post_fake_image_create,  # noqa: F601
     f"{prefix}/{CURRENT_VERSION}/images/e9aa60c60128": delete_fake_remove_image,
     f"{prefix}/{CURRENT_VERSION}/images/e9aa60c60128/get": get_fake_get_image,
     f"{prefix}/{CURRENT_VERSION}/images/load": post_fake_load_image,

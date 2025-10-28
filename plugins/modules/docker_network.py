@@ -478,23 +478,21 @@ class DockerNetworkManager:
                 )
             else:
                 for key, value in self.parameters.driver_options.items():
-                    if not (key in net["Options"]) or value != net["Options"][key]:
+                    if key not in net["Options"] or value != net["Options"][key]:
                         differences.add(
                             f"driver_options.{key}",
                             parameter=value,
                             active=net["Options"].get(key),
                         )
 
-        if self.parameters.ipam_driver:
-            if (
-                not net.get("IPAM")
-                or net["IPAM"]["Driver"] != self.parameters.ipam_driver
-            ):
-                differences.add(
-                    "ipam_driver",
-                    parameter=self.parameters.ipam_driver,
-                    active=net.get("IPAM"),
-                )
+        if self.parameters.ipam_driver and (
+            not net.get("IPAM") or net["IPAM"]["Driver"] != self.parameters.ipam_driver
+        ):
+            differences.add(
+                "ipam_driver",
+                parameter=self.parameters.ipam_driver,
+                active=net.get("IPAM"),
+            )
 
         if self.parameters.ipam_driver_options is not None:
             ipam_driver_options = net["IPAM"].get("Options") or {}
@@ -597,7 +595,7 @@ class DockerNetworkManager:
                 )
             else:
                 for key, value in self.parameters.labels.items():
-                    if not (key in net["Labels"]) or value != net["Labels"][key]:
+                    if key not in net["Labels"] or value != net["Labels"][key]:
                         differences.add(
                             f"labels.{key}",
                             parameter=value,

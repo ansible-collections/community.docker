@@ -36,15 +36,14 @@ def write_imitation_archive(
 def write_imitation_archive_with_manifest(
     file_name: str, manifest: list[dict[str, t.Any]]
 ) -> None:
-    with tarfile.open(file_name, "w") as tf:
-        with TemporaryFile() as f:
-            f.write(json.dumps(manifest).encode("utf-8"))
+    with tarfile.open(file_name, "w") as tf, TemporaryFile() as f:
+        f.write(json.dumps(manifest).encode("utf-8"))
 
-            ti = tarfile.TarInfo("manifest.json")
-            ti.size = f.tell()
+        ti = tarfile.TarInfo("manifest.json")
+        ti.size = f.tell()
 
-            f.seek(0)
-            tf.addfile(ti, f)
+        f.seek(0)
+        tf.addfile(ti, f)
 
 
 def write_irrelevant_tar(file_name: str) -> None:
@@ -55,12 +54,11 @@ def write_irrelevant_tar(file_name: str) -> None:
     :type file_name: str
     """
 
-    with tarfile.open(file_name, "w") as tf:
-        with TemporaryFile() as f:
-            f.write("Hello, world.".encode("utf-8"))
+    with tarfile.open(file_name, "w") as tf, TemporaryFile() as f:
+        f.write("Hello, world.".encode("utf-8"))
 
-            ti = tarfile.TarInfo("hi.txt")
-            ti.size = f.tell()
+        ti = tarfile.TarInfo("hi.txt")
+        ti.size = f.tell()
 
-            f.seek(0)
-            tf.addfile(ti, f)
+        f.seek(0)
+        tf.addfile(ti, f)

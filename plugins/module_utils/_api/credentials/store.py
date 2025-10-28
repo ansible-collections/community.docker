@@ -90,13 +90,13 @@ class Store:
                 env=env,
             )
         except subprocess.CalledProcessError as e:
-            raise errors.process_store_error(e, self.program)
+            raise errors.process_store_error(e, self.program) from e
         except OSError as e:
             if e.errno == errno.ENOENT:
                 raise errors.StoreError(
                     f"{self.program} not installed or not available in PATH"
-                )
+                ) from e
             raise errors.StoreError(
                 f'Unexpected OS error "{e.strerror}", errno={e.errno}'
-            )
+            ) from e
         return output

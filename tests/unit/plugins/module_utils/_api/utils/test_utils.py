@@ -58,7 +58,12 @@ class KwargsFromEnvTest(unittest.TestCase):
         self.os_environ = os.environ.copy()
 
     def tearDown(self) -> None:
-        os.environ = self.os_environ  # type: ignore
+        for k, v in self.os_environ.items():
+            if os.environ.get(k) != v:
+                os.environ[k] = v
+        for k in os.environ:
+            if k not in self.os_environ:
+                os.environ.pop(k)
 
     def test_kwargs_from_env_empty(self) -> None:
         os.environ.update(DOCKER_HOST="", DOCKER_CERT_PATH="")
@@ -75,7 +80,7 @@ class KwargsFromEnvTest(unittest.TestCase):
             DOCKER_TLS_VERIFY="1",
         )
         kwargs = kwargs_from_env(assert_hostname=False)
-        assert "tcp://192.168.59.103:2376" == kwargs["base_url"]
+        assert kwargs["base_url"] == "tcp://192.168.59.103:2376"
         assert "ca.pem" in kwargs["tls"].ca_cert
         assert "cert.pem" in kwargs["tls"].cert[0]
         assert "key.pem" in kwargs["tls"].cert[1]
@@ -99,7 +104,7 @@ class KwargsFromEnvTest(unittest.TestCase):
             DOCKER_TLS_VERIFY="",
         )
         kwargs = kwargs_from_env(assert_hostname=True)
-        assert "tcp://192.168.59.103:2376" == kwargs["base_url"]
+        assert kwargs["base_url"] == "tcp://192.168.59.103:2376"
         assert "ca.pem" in kwargs["tls"].ca_cert
         assert "cert.pem" in kwargs["tls"].cert[0]
         assert "key.pem" in kwargs["tls"].cert[1]
@@ -125,7 +130,7 @@ class KwargsFromEnvTest(unittest.TestCase):
         )
         os.environ.pop("DOCKER_CERT_PATH", None)
         kwargs = kwargs_from_env(assert_hostname=True)
-        assert "tcp://192.168.59.103:2376" == kwargs["base_url"]
+        assert kwargs["base_url"] == "tcp://192.168.59.103:2376"
 
     def test_kwargs_from_env_no_cert_path(self) -> None:
         try:
@@ -157,7 +162,7 @@ class KwargsFromEnvTest(unittest.TestCase):
                 "DOCKER_HOST": "http://docker.gensokyo.jp:2581",
             }
         )
-        assert "http://docker.gensokyo.jp:2581" == kwargs["base_url"]
+        assert kwargs["base_url"] == "http://docker.gensokyo.jp:2581"
         assert "tls" not in kwargs
 
 

@@ -98,7 +98,7 @@ def create_archive(
     extra_files = extra_files or []
     if not fileobj:
         # pylint: disable-next=consider-using-with
-        fileobj = tempfile.NamedTemporaryFile()
+        fileobj = tempfile.NamedTemporaryFile()  # noqa: SIM115
 
     with tarfile.open(mode="w:gz" if gzip else "w", fileobj=fileobj) as tarf:
         if files is None:
@@ -146,7 +146,8 @@ def create_archive(
 
 
 def mkbuildcontext(dockerfile: io.BytesIO | t.IO[bytes]) -> t.IO[bytes]:
-    f = tempfile.NamedTemporaryFile()  # pylint: disable=consider-using-with
+    # pylint: disable-next=consider-using-with
+    f = tempfile.NamedTemporaryFile()  # noqa: SIM115
     try:
         with tarfile.open(mode="w", fileobj=f) as tarf:
             if isinstance(dockerfile, io.StringIO):  # type: ignore
@@ -195,11 +196,14 @@ class PatternMatcher:
         for pattern in self.patterns:
             negative = pattern.exclusion
             match = pattern.match(filepath)
-            if not match and parent_path != "":
-                if len(pattern.dirs) <= len(parent_path_dirs):
-                    match = pattern.match(
-                        os.path.sep.join(parent_path_dirs[: len(pattern.dirs)])
-                    )
+            if (
+                not match
+                and parent_path != ""
+                and len(pattern.dirs) <= len(parent_path_dirs)
+            ):
+                match = pattern.match(
+                    os.path.sep.join(parent_path_dirs[: len(pattern.dirs)])
+                )
 
             if match:
                 matched = not negative

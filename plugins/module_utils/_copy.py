@@ -479,9 +479,8 @@ def fetch_file(
 
         reader = tar.extractfile(member)
         if reader:
-            with reader as in_f:
-                with open(b_out_path, "wb") as out_f:
-                    shutil.copyfileobj(in_f, out_f)
+            with reader as in_f, open(b_out_path, "wb") as out_f:
+                shutil.copyfileobj(in_f, out_f)
         return in_path
 
     def process_symlink(in_path: str, member: tarfile.TarInfo) -> str:

@@ -219,12 +219,11 @@ class DockerAPIEngineDriver(EngineDriver[AnsibleDockerClient]):
         return False
 
     def is_container_running(self, container: dict[str, t.Any]) -> bool:
-        if container.get("State"):
-            if container["State"].get("Running") and not container["State"].get(
-                "Ghost", False
-            ):
-                return True
-        return False
+        return bool(
+            container.get("State")
+            and container["State"].get("Running")
+            and not container["State"].get("Ghost", False)
+        )
 
     def is_container_paused(self, container: dict[str, t.Any]) -> bool:
         if container.get("State"):
@@ -1706,9 +1705,8 @@ def _get_expected_values_mounts(
                 parts = vol.split(":")
                 if len(parts) == 3:
                     continue
-                if len(parts) == 2:
-                    if not _is_volume_permissions(parts[1]):
-                        continue
+                if len(parts) == 2 and not _is_volume_permissions(parts[1]):
+                    continue
             expected_vols[vol] = {}
     if expected_vols:
         expected_values["volumes"] = expected_vols
@@ -1805,9 +1803,8 @@ def _set_values_mounts(
                 parts = volume.split(":")
                 if len(parts) == 3:
                     continue
-                if len(parts) == 2:
-                    if not _is_volume_permissions(parts[1]):
-                        continue
+                if len(parts) == 2 and not _is_volume_permissions(parts[1]):
+                    continue
             volumes[volume] = {}
         data["Volumes"] = volumes
     if "volume_binds" in values:

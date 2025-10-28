@@ -421,18 +421,18 @@ class TarTest(unittest.TestCase):
         base = make_tree(dirs, files)
         self.addCleanup(shutil.rmtree, base)
 
-        with tar(base, exclude=exclude) as archive:
-            with tarfile.open(fileobj=archive) as tar_data:
-                assert sorted(tar_data.getnames()) == sorted(expected_names)
+        with tar(base, exclude=exclude) as archive, tarfile.open(
+            fileobj=archive
+        ) as tar_data:
+            assert sorted(tar_data.getnames()) == sorted(expected_names)
 
     def test_tar_with_empty_directory(self) -> None:
         base = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, base)
         for d in ["foo", "bar"]:
             os.makedirs(os.path.join(base, d))
-        with tar(base) as archive:
-            with tarfile.open(fileobj=archive) as tar_data:
-                assert sorted(tar_data.getnames()) == ["bar", "foo"]
+        with tar(base) as archive, tarfile.open(fileobj=archive) as tar_data:
+            assert sorted(tar_data.getnames()) == ["bar", "foo"]
 
     @pytest.mark.skipif(
         IS_WINDOWS_PLATFORM or os.geteuid() == 0,
@@ -458,9 +458,8 @@ class TarTest(unittest.TestCase):
             f.write("content")
         os.makedirs(os.path.join(base, "bar"))
         os.symlink("../foo", os.path.join(base, "bar/foo"))
-        with tar(base) as archive:
-            with tarfile.open(fileobj=archive) as tar_data:
-                assert sorted(tar_data.getnames()) == ["bar", "bar/foo", "foo"]
+        with tar(base) as archive, tarfile.open(fileobj=archive) as tar_data:
+            assert sorted(tar_data.getnames()) == ["bar", "bar/foo", "foo"]
 
     @pytest.mark.skipif(IS_WINDOWS_PLATFORM, reason="No symlinks on Windows")
     def test_tar_with_directory_symlinks(self) -> None:
@@ -469,9 +468,8 @@ class TarTest(unittest.TestCase):
         for d in ["foo", "bar"]:
             os.makedirs(os.path.join(base, d))
         os.symlink("../foo", os.path.join(base, "bar/foo"))
-        with tar(base) as archive:
-            with tarfile.open(fileobj=archive) as tar_data:
-                assert sorted(tar_data.getnames()) == ["bar", "bar/foo", "foo"]
+        with tar(base) as archive, tarfile.open(fileobj=archive) as tar_data:
+            assert sorted(tar_data.getnames()) == ["bar", "bar/foo", "foo"]
 
     @pytest.mark.skipif(IS_WINDOWS_PLATFORM, reason="No symlinks on Windows")
     def test_tar_with_broken_symlinks(self) -> None:
@@ -481,9 +479,8 @@ class TarTest(unittest.TestCase):
             os.makedirs(os.path.join(base, d))
 
         os.symlink("../baz", os.path.join(base, "bar/foo"))
-        with tar(base) as archive:
-            with tarfile.open(fileobj=archive) as tar_data:
-                assert sorted(tar_data.getnames()) == ["bar", "bar/foo", "foo"]
+        with tar(base) as archive, tarfile.open(fileobj=archive) as tar_data:
+            assert sorted(tar_data.getnames()) == ["bar", "bar/foo", "foo"]
 
     @pytest.mark.skipif(IS_WINDOWS_PLATFORM, reason="No UNIX sockets on Win32")
     def test_tar_socket_file(self) -> None:
@@ -494,9 +491,8 @@ class TarTest(unittest.TestCase):
         sock = socket.socket(socket.AF_UNIX)
         self.addCleanup(sock.close)
         sock.bind(os.path.join(base, "test.sock"))
-        with tar(base) as archive:
-            with tarfile.open(fileobj=archive) as tar_data:
-                assert sorted(tar_data.getnames()) == ["bar", "foo"]
+        with tar(base) as archive, tarfile.open(fileobj=archive) as tar_data:
+            assert sorted(tar_data.getnames()) == ["bar", "foo"]
 
     def tar_test_negative_mtime_bug(self) -> None:
         base = tempfile.mkdtemp()
@@ -505,10 +501,9 @@ class TarTest(unittest.TestCase):
         with open(filename, "wt", encoding="utf-8") as f:
             f.write("Invisible Full Moon")
         os.utime(filename, (12345, -3600.0))
-        with tar(base) as archive:
-            with tarfile.open(fileobj=archive) as tar_data:
-                assert tar_data.getnames() == ["th.txt"]
-                assert tar_data.getmember("th.txt").mtime == -3600
+        with tar(base) as archive, tarfile.open(fileobj=archive) as tar_data:
+            assert tar_data.getnames() == ["th.txt"]
+            assert tar_data.getmember("th.txt").mtime == -3600
 
     @pytest.mark.skipif(IS_WINDOWS_PLATFORM, reason="No symlinks on Windows")
     def test_tar_directory_link(self) -> None:

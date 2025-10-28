@@ -27,7 +27,7 @@ if t.TYPE_CHECKING:
     from ._common_api import AnsibleDockerClientBase as CAPIADCB
     from ._common_cli import AnsibleDockerClientBase as CCLIADCB
 
-    Client = t.Union[CADCB, CAPIADCB, CCLIADCB]
+    Client = t.Union[CADCB, CAPIADCB, CCLIADCB]  # noqa: UP007
 
 
 DEFAULT_DOCKER_HOST = "unix:///var/run/docker.sock"
@@ -94,9 +94,7 @@ BYTE_SUFFIXES = ["B", "KB", "MB", "GB", "TB", "PB"]
 
 def is_image_name_id(name: str) -> bool:
     """Check whether the given image name is in fact an image ID (hash)."""
-    if re.match("^sha256:[0-9a-fA-F]{64}$", name):
-        return True
-    return False
+    return bool(re.match("^sha256:[0-9a-fA-F]{64}$", name))
 
 
 def is_valid_tag(tag: str, allow_empty: bool = False) -> bool:
