@@ -4,20 +4,20 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
-v5.0.0-a1
-=========
+v5.0.0
+======
 
 Release Summary
 ---------------
 
-First alpha release of community.docker 5.0.0.
+New major release.
 
-The main changes are that the collection dropped support for some ansible-core versions that are End of Life, and thus dropped support for Python 2.7.
+The main changes are that the collection dropped support for some ansible-core
+versions that are End of Life, and thus dropped support for Python 2.7.
 This allowed to modernize the Python code, in particular with type hints.
-Also all module and plugin utils are now private to the collection, which makes it easier to refactor code.
-All these changes should have no effect on end-users.
-
-The current plan is to release 5.0.0 in time for Ansible 13's feature freeze, so in roughly one week.
+Also all module and plugin utils are now private to the collection, which
+makes it easier to refactor code. All these changes should have no effect on
+end-users.
 
 Minor Changes
 -------------

@@ -2250,3 +2250,23 @@ releases:
       - 5.0.0-a1.yml
       - 5.0.0.yml
     release_date: '2025-10-25'
+  5.0.0:
+    changes:
+      release_summary: 'New major release.
+
+
+        The main changes are that the collection dropped support for some ansible-core
+
+        versions that are End of Life, and thus dropped support for Python 2.7.
+
+        This allowed to modernize the Python code, in particular with type hints.
+
+        Also all module and plugin utils are now private to the collection, which
+
+        makes it easier to refactor code. All these changes should have no effect
+        on
+
+        end-users.'
+    fragments:
+      - 5.0.0.yml
+    release_date: '2025-11-02'
