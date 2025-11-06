@@ -556,8 +556,8 @@ def parse_events(
     stderr_lines = stderr.splitlines()
     if stderr_lines and stderr_lines[-1] == b"":
         del stderr_lines[-1]
-    for index, line in enumerate(stderr_lines):
-        line = to_text(line.strip())
+    for index, line_b in enumerate(stderr_lines):
+        line = to_text(line_b.strip())
         if not line:
             continue
         warn_missing_dry_run_prefix = False

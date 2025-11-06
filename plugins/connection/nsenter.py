@@ -116,9 +116,9 @@ class Connection(ConnectionBase):
         ]
 
         cmd_parts = nsenter_cmd_parts + [cmd]
-        cmd = to_bytes(" ".join(cmd_parts))
+        cmd_b = to_bytes(" ".join(cmd_parts))
 
-        display.vvv(f"EXEC {to_text(cmd)}", host=self._play_context.remote_addr)
+        display.vvv(f"EXEC {to_text(cmd_b)}", host=self._play_context.remote_addr)
         display.debug("opening command with Popen()")
 
         master = None
@@ -137,9 +137,9 @@ class Connection(ConnectionBase):
                 display.debug(f"Unable to open pty: {e}")
 
         with subprocess.Popen(
-            cmd,
-            shell=isinstance(cmd, (str, bytes)),
-            executable=executable if isinstance(cmd, (str, bytes)) else None,
+            cmd_b,
+            shell=True,
+            executable=executable,
             cwd=self.cwd,
             stdin=stdin,
             stdout=subprocess.PIPE,
