@@ -368,13 +368,13 @@ class ExecManager(BaseComposeManager):
             kwargs["data"] = self.stdin.encode("utf-8")
         if self.detach:
             kwargs["check_rc"] = True
-        rc, stdout, stderr = self.client.call_cli(*args, **kwargs)
+        rc, stdout_b, stderr_b = self.client.call_cli(*args, **kwargs)
         if self.detach:
             return {
-                "container_id": stdout.strip(),
+                "container_id": to_text(stdout_b.strip()),
             }
-        stdout = to_text(stdout)
-        stderr = to_text(stderr)
+        stdout = to_text(stdout_b)
+        stderr = to_text(stderr_b)
         if self.strip_empty_ends:
             stdout = stdout.rstrip("\r\n")
             stderr = stderr.rstrip("\r\n")

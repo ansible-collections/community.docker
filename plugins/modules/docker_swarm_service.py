@@ -2381,12 +2381,12 @@ class DockerServiceManager:
 
         mode = raw_data["Spec"]["Mode"]
         if "Replicated" in mode:
-            ds.mode = to_text("replicated", encoding="utf-8")
+            ds.mode = to_text("replicated", encoding="utf-8")  # type: ignore
             ds.replicas = mode["Replicated"]["Replicas"]
         elif "Global" in mode:
             ds.mode = "global"
         elif "ReplicatedJob" in mode:
-            ds.mode = to_text("replicated-job", encoding="utf-8")
+            ds.mode = to_text("replicated-job", encoding="utf-8")  # type: ignore
             ds.replicas = mode["ReplicatedJob"]["TotalCompletions"]
         else:
             raise ValueError(f"Unknown service mode: {mode}")

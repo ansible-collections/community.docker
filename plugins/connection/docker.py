@@ -228,12 +228,12 @@ class Connection(ConnectionBase):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         ) as p:
-            out, err = p.communicate()
-            out = to_text(out, errors="surrogate_or_strict")
+            out_b, err_b = p.communicate()
+            out = to_text(out_b, errors="surrogate_or_strict")
 
             if p.returncode != 0:
                 display.warning(
-                    f"unable to retrieve default user from docker container: {out} {to_text(err)}"
+                    f"unable to retrieve default user from docker container: {out} {to_text(err_b)}"
                 )
                 self._container_user_cache[container] = None
                 return None
