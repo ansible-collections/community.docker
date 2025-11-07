@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_image - fix 'Cannot locate specified Dockerfile' error (https://github.com/ansible-collections/community.docker/pull/1184)."
