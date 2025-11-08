@@ -906,7 +906,9 @@ class ImageManager(DockerBaseClass):
             if key not in CONTAINER_LIMITS_KEYS:
                 raise DockerException(f"Invalid container_limits key {key}")
 
-        dockerfile = self.dockerfile
+        dockerfile: tuple[str, str | None] | tuple[None, None] | str | None = (
+            self.dockerfile
+        )
         if self.build_path.startswith(
             ("http://", "https://", "git://", "github.com/", "git@")
         ):
@@ -924,7 +926,8 @@ class ImageManager(DockerBaseClass):
                             [line.strip() for line in f.read().splitlines()],
                         )
                     )
-            dockerfile_data = process_dockerfile(dockerfile, self.build_path)
+            dockerfile_data = process_dockerfile(self.dockerfile, self.build_path)
+            dockerfile = dockerfile_data
             context = tar(
                 self.build_path, exclude=exclude, dockerfile=dockerfile_data, gzip=False
             )
