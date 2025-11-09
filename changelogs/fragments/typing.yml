@@ -1,2 +1,0 @@
-bugfixes:
-  - "docker_compose_v2_run - when ``detach=true``, ensure that the returned container ID is not a bytes string (https://github.com/ansible-collections/community.docker/pull/1183)."

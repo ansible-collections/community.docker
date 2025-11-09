@@ -4,6 +4,20 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v5.0.1
+======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- docker_compose_v2_run - when ``detach=true``, ensure that the returned container ID is not a bytes string (https://github.com/ansible-collections/community.docker/pull/1183).
+- docker_image - fix 'Cannot locate specified Dockerfile' error (https://github.com/ansible-collections/community.docker/pull/1184).
+
 v5.0.0
 ======
 

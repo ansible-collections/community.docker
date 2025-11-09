@@ -2270,3 +2270,15 @@ releases:
     fragments:
       - 5.0.0.yml
     release_date: '2025-11-02'
+  5.0.1:
+    changes:
+      bugfixes:
+        - docker_compose_v2_run - when ``detach=true``, ensure that the returned container
+          ID is not a bytes string (https://github.com/ansible-collections/community.docker/pull/1183).
+        - docker_image - fix 'Cannot locate specified Dockerfile' error (https://github.com/ansible-collections/community.docker/pull/1184).
+      release_summary: Bugfix release.
+    fragments:
+      - 1185-fix.yml
+      - 5.0.1.yml
+      - typing.yml
+    release_date: '2025-11-09'
