@@ -86,9 +86,10 @@ class AnsibleDockerClientBase(object):
         self._info = None
 
         if needs_api_version:
-            if not isinstance(self._version.get('Server'), dict) or not isinstance(self._version['Server'].get('ApiVersion'), string_types):
+            api_version_string = self._version["Server"].get("ApiVersion") or self._version["Server"].get("APIVersion")
+            if not isinstance(self._version.get('Server'), dict) or not isinstance(api_version_string, string_types):
                 self.fail('Cannot determine Docker Daemon information. Are you maybe using podman instead of docker?')
-            self.docker_api_version_str = to_native(self._version['Server']['ApiVersion'])
+            self.docker_api_version_str = to_native(api_version_string)
             self.docker_api_version = LooseVersion(self.docker_api_version_str)
             min_docker_api_version = min_docker_api_version or '1.25'
             if self.docker_api_version < LooseVersion(min_docker_api_version):
