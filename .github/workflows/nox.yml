@@ -30,6 +30,6 @@ jobs:
       upload-codecov-pr: false
       upload-codecov-push: false
       upload-codecov-schedule: true
-      max-ansible-core: "2.16"
+      max-ansible-core: "2.17"
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
