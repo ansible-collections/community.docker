@@ -519,6 +519,15 @@ class AnsibleDockerClientBase(Client):
         except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error inspecting image ID {image_id} - {exc}")
 
+    @staticmethod
+    def _compare_images(img1: dict[str, t.Any] | None, img2: dict[str, t.Any] | None) -> bool:
+        if img1 is None or img2 is None:
+            return img1 == img2
+        filter_keys = {"metadata"}
+        img1_filtered = {k: v for k, v in img1.items() if k not in filter_keys}
+        img2_filtered = {k: v for k, v in img2.items() if k not in filter_keys}
+        return img1_filtered == img2_filtered
+
     def pull_image(
         self, name: str, tag: str = "latest", image_platform: str | None = None
     ) -> tuple[dict[str, t.Any] | None, bool]:
@@ -526,7 +535,7 @@ class AnsibleDockerClientBase(Client):
         Pull an image
         """
         self.log(f"Pulling image {name}:{tag}")
-        old_tag = self.find_image(name, tag)
+        old_image = self.find_image(name, tag)
         try:
             repository, image_tag = parse_repository_tag(name)
             registry, dummy_repo_name = auth.resolve_repository_name(repository)
@@ -563,9 +572,9 @@ class AnsibleDockerClientBase(Client):
         except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error pulling image {name}:{tag} - {exc}")
 
-        new_tag = self.find_image(name, tag)
+        new_image = self.find_image(name, tag)
 
-        return new_tag, old_tag == new_tag
+        return new_image, self._compare_images(old_image, new_image)
 
 
 class AnsibleDockerClient(AnsibleDockerClientBase):

@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_container - fix ``pull`` idempotency with Docker 29.0.0 (https://github.com/ansible-collections/community.docker/pull/1192)."
