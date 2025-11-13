@@ -641,7 +641,6 @@ class ContainerManager(DockerBaseClass, t.Generic[Client]):
             if not image or self.param_pull == "always":
                 if not self.check_mode:
                     self.log("Pull the image.")
-                    old_image = self.engine_driver.inspect_image_by_name(self.client, repository, tag)
                     image, already_to_latest = self.engine_driver.pull_image(
                         self.client,
                         repository,
@@ -656,7 +655,7 @@ class ContainerManager(DockerBaseClass, t.Generic[Client]):
                     else:
                         self.results["changed"] = True
                         self._add_action(
-                            {"pulled_image": f"{repository}:{tag}", "changed": True, "old": old_image, "new": image}
+                            {"pulled_image": f"{repository}:{tag}", "changed": True}
                         )
                 elif not image or self.param_pull_check_mode_behavior == "always":
                     # If the image is not there, or pull_check_mode_behavior == 'always', claim we'll
