@@ -523,7 +523,7 @@ class AnsibleDockerClientBase(Client):
     def _compare_images(img1: dict[str, t.Any] | None, img2: dict[str, t.Any] | None) -> bool:
         if img1 is None or img2 is None:
             return img1 == img2
-        filter_keys = {"metadata"}
+        filter_keys = {"Metadata"}
         img1_filtered = {k: v for k, v in img1.items() if k not in filter_keys}
         img2_filtered = {k: v for k, v in img2.items() if k not in filter_keys}
         return img1_filtered == img2_filtered
