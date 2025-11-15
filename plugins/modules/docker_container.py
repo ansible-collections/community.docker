@@ -23,6 +23,10 @@ notes:
   - If the module needs to recreate the container, it will only use the options provided to the module to create the new container
     (except O(image)). Therefore, always specify B(all) options relevant to the container.
   - When O(restart) is set to V(true), the module will only restart the container if no config changes are detected.
+  - When specifying IPv6 addresses for networks, Docker since version 29 no longer returns the orignal address used
+    when adding a container to a network, but normalizes them. The module will try to normalize IP addresses for comparison,
+    but it uses the C(ipaddress) module from the Python 3 standard library for that. When using the module with Python 2,
+    please install the L(ipaddress backport for Python 2.x, https://pypi.org/project/ipaddress/).
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
   - community.docker.attributes

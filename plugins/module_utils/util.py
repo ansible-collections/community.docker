@@ -15,6 +15,12 @@ from ansible.module_utils.common.collections import is_sequence
 from ansible_collections.community.docker.plugins.module_utils._six import string_types, urlparse
 from ansible.module_utils.common.text.converters import to_text
 
+try:
+    import ipaddress
+    HAS_IPADDRESS = True
+except ImportError:
+    HAS_IPADDRESS = False
+
 
 DEFAULT_DOCKER_HOST = 'unix:///var/run/docker.sock'
 DEFAULT_TLS = False
@@ -423,3 +429,21 @@ def omit_none_from_dict(d):
     Return a copy of the dictionary with all keys with value None omitted.
     """
     return dict((k, v) for (k, v) in d.items() if v is not None)
+
+
+def normalize_ip_address(ip_address):
+    """
+    Given an IP address as a string, normalize it so that it can be
+    used to compare IP addresses as strings.
+    """
+    if ip_address is None:
+        return None
+    if HAS_IPADDRESS:
+        try:
+            return ipaddress.ip_address(ip_address).compressed
+        except ValueError:
+            # Fallback for invalid addresses: simply return the input
+            return ip_address
+    # If we don't have ipaddress, simply give up...
+    # This mainly affects Python 2.7.
+    return ip_address

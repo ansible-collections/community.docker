@@ -420,12 +420,21 @@ class AnsibleDockerClientBase(Client):
         except Exception as exc:
             self.fail("Error inspecting image ID %s - %s" % (image_id, str(exc)))
 
+    @staticmethod
+    def _compare_images(img1, img2):
+        if img1 is None or img2 is None:
+            return img1 == img2
+        filter_keys = {"Metadata"}
+        img1_filtered = {k: v for k, v in img1.items() if k not in filter_keys}
+        img2_filtered = {k: v for k, v in img2.items() if k not in filter_keys}
+        return img1_filtered == img2_filtered
+
     def pull_image(self, name, tag="latest", platform=None):
         '''
         Pull an image
         '''
         self.log("Pulling image %s:%s" % (name, tag))
-        old_tag = self.find_image(name, tag)
+        old_image = self.find_image(name, tag)
         try:
             repository, image_tag = parse_repository_tag(name)
             registry, repo_name = auth.resolve_repository_name(repository)
@@ -459,9 +468,9 @@ class AnsibleDockerClientBase(Client):
         except Exception as exc:
             self.fail("Error pulling image %s:%s - %s" % (name, tag, str(exc)))
 
-        new_tag = self.find_image(name, tag)
+        new_image = self.find_image(name, tag)
 
-        return new_tag, old_tag == new_tag
+        return new_image, self._compare_images(old_image, new_image)
 
 
 class AnsibleDockerClient(AnsibleDockerClientBase):
