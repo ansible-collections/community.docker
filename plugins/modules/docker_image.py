@@ -803,7 +803,7 @@ class ImageManager(DockerBaseClass):
                         if line.get("errorDetail"):
                             raise RuntimeError(line["errorDetail"]["message"])
                         status = line.get("status")
-                        if status == "Pushing":
+                        if status in ("Pushing", "Pushed"):
                             changed = True
                     self.results["changed"] = changed
                 except Exception as exc:  # pylint: disable=broad-exception-caught
