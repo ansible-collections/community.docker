@@ -73,10 +73,16 @@
   loop: "{{ all_images }}"
   when: remove_all_images is failed
 
+- name: Show all images
+  ansible.builtin.command: docker image ls
+
 - name: Load all images (IDs)
   community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-2.tar"
   register: result
+
+- name: Show all images
+  ansible.builtin.command: docker image ls
 
 - name: Print loaded image names
   ansible.builtin.debug:
@@ -110,10 +116,16 @@
     name: "{{ item }}"
   loop: "{{ all_images }}"
 
+- name: Show all images
+  ansible.builtin.command: docker image ls
+
 - name: Load all images (mixed images and IDs)
   community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-3.tar"
   register: result
+
+- name: Show all images
+  ansible.builtin.command: docker image ls
 
 - name: Print loading log
   ansible.builtin.debug:
@@ -127,10 +139,14 @@
     that:
       - result is changed
       # For some reason, *sometimes* only the named image is found; in fact, in that case, the log only mentions that image and nothing else
-      - "result.images | length == 3 or ('Loaded image: ' ~ docker_test_image_hello_world) == result.stdout"
-      - (result.image_names | sort) in [[image_names[0], image_ids[0], image_ids[1]] | sort, [image_names[0]]]
-      - result.images | length in [1, 3]
-      - (result.images | map(attribute='Id') | sort) in [[image_ids[0], image_ids[0], image_ids[1]] | sort, [image_ids[0]]]
+      # With Docker 29, a third possibility appears: just two entries.
+      - >-
+        result.images | length == 3
+        or ('Loaded image: ' ~ docker_test_image_hello_world) == result.stdout
+        or result.images | length == 2
+      - (result.image_names | sort) in [[image_names[0], image_ids[0], image_ids[1]] | sort, [image_names[0], image_ids[1]] | sort, [image_names[0]]]
+      - result.images | length in [1, 2, 3]
+      - (result.images | map(attribute='Id') | sort) in [[image_ids[0], image_ids[0], image_ids[1]] | sort, [image_ids[0], image_ids[1]] | sort, [image_ids[0]]]
 
 # Same image twice
 
@@ -139,10 +155,16 @@
     name: "{{ item }}"
   loop: "{{ all_images }}"
 
+- name: Show all images
+  ansible.builtin.command: docker image ls
+
 - name: Load all images (same image twice)
   community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-4.tar"
   register: result
+
+- name: Show all images
+  ansible.builtin.command: docker image ls
 
 - name: Print loaded image names
   ansible.builtin.debug:
@@ -151,10 +173,11 @@
 - ansible.builtin.assert:
     that:
       - result is changed
-      - result.image_names | length == 1
-      - result.image_names[0] == image_names[0]
-      - result.images | length == 1
+      - result.image_names | length in [1, 2]
+      - (result.image_names | sort) in [[image_names[0]], [image_names[0], image_ids[0]] | sort]
+      - result.images | length in [1, 2]
       - result.images[0].Id == image_ids[0]
+      - result.images[1].Id | default(image_ids[0]) == image_ids[0]
 
 # Single image by ID
 
@@ -163,10 +186,16 @@
     name: "{{ item }}"
   loop: "{{ all_images }}"
 
+- name: Show all images
+  ansible.builtin.command: docker image ls
+
 - name: Load all images (single image by ID)
   community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-5.tar"
   register: result
+
+- name: Show all images
+  ansible.builtin.command: docker image ls
 
 - name: Print loaded image names
   ansible.builtin.debug:
@@ -197,10 +226,16 @@
     name: "{{ item }}"
   loop: "{{ all_images }}"
 
+- name: Show all images
+  ansible.builtin.command: docker image ls
+
 - name: Load all images (names)
   community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-1.tar"
   register: result
+
+- name: Show all images
+  ansible.builtin.command: docker image ls
 
 - name: Print loaded image names
   ansible.builtin.debug:
