@@ -644,8 +644,8 @@ class ImageManager(DockerBaseClass):
             self.results["actions"].append(f"Removed image {name}")
             self.results["image"]["state"] = "Deleted"
 
-    @staticmethod
     def archived_image_action(
+        self,
         failure_logger: Callable[[str], None],
         archive_path: str,
         current_image_name: str,
@@ -678,6 +678,9 @@ class ImageManager(DockerBaseClass):
 
         if archived is None:
             return build_msg("since none present")
+        self.results["actions"].append(f"Manifest data: {archived.other}")
+        self.results["actions"].append(f"{current_image_id} vs. {api_image_id(archived.image_id)}: {current_image_id == api_image_id(archived.image_id)}")
+        self.results["actions"].append(f"{[current_image_name]} vs. {archived.repo_tags}: {[current_image_name] == archived.repo_tags}")
         if (
             current_image_id == api_image_id(archived.image_id)
             and [current_image_name] == archived.repo_tags
