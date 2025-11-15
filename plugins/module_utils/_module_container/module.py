@@ -25,6 +25,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
     DockerBaseClass,
     compare_generic,
     is_image_name_id,
+    normalize_ip_address,
     sanitize_result,
 )
 
@@ -925,13 +926,13 @@ class ContainerManager(DockerBaseClass, t.Generic[Client]):
             else:
                 diff = False
                 network_info_ipam = network_info.get("IPAMConfig") or {}
-                if network.get("ipv4_address") and network[
-                    "ipv4_address"
-                ] != network_info_ipam.get("IPv4Address"):
+                if network.get("ipv4_address") and normalize_ip_address(
+                    network["ipv4_address"]
+                ) != normalize_ip_address(network_info_ipam.get("IPv4Address")):
                     diff = True
-                if network.get("ipv6_address") and network[
-                    "ipv6_address"
-                ] != network_info_ipam.get("IPv6Address"):
+                if network.get("ipv6_address") and normalize_ip_address(
+                    network["ipv6_address"]
+                ) != normalize_ip_address(network_info_ipam.get("IPv6Address")):
                     diff = True
                 if network.get("aliases") and not compare_generic(
                     network["aliases"],
