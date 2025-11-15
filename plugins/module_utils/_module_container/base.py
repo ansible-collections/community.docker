@@ -1016,7 +1016,7 @@ def _preprocess_ports(
                 else:
                     port_binds = len(container_ports) * [(ipaddr,)]
             else:
-                return module.fail_json(
+                module.fail_json(
                     msg=f'Invalid port description "{port}" - expected 1 to 3 colon-separated parts, but got {p_len}. '
                     "Maybe you forgot to use square brackets ([...]) around an IPv6 address?"
                 )
@@ -1037,38 +1037,43 @@ def _preprocess_ports(
                     binds[idx] = bind
         values["published_ports"] = binds
 
-    exposed = []
+    exposed: set[tuple[int, str]] = set()
     if "exposed_ports" in values:
         for port in values["exposed_ports"]:
             port = to_text(port, errors="surrogate_or_strict").strip()
             protocol = "tcp"
-            matcher = re.search(r"(/.+$)", port)
-            if matcher:
-                protocol = matcher.group(1).replace("/", "")
-                port = re.sub(r"/.+$", "", port)
-            exposed.append((port, protocol))
+            parts = port.split("/", maxsplit=1)
+            if len(parts) == 2:
+                port, protocol = parts
+            parts = port.split("-", maxsplit=1)
+            if len(parts) < 2:
+                try:
+                    exposed.add((int(port), protocol))
+                except ValueError as e:
+                    module.fail_json(msg=f"Cannot parse port {port!r}: {e}")
+            else:
+                try:
+                    start_port = int(parts[0])
+                    end_port = int(parts[1])
+                    if start_port > end_port:
+                        raise ValueError(
+                            "start port must be smaller or equal to end port."
+                        )
+                except ValueError as e:
+                    module.fail_json(msg=f"Cannot parse port range {port!r}: {e}")
+                for port in range(start_port, end_port + 1):
+                    exposed.add((port, protocol))
     if "published_ports" in values:
         # Any published port should also be exposed
         for publish_port in values["published_ports"]:
-            match = False
             if isinstance(publish_port, str) and "/" in publish_port:
                 port, protocol = publish_port.split("/")
                 port = int(port)
             else:
                 protocol = "tcp"
                 port = int(publish_port)
-            for exposed_port in exposed:
-                if exposed_port[1] != protocol:
-                    continue
-                if isinstance(exposed_port[0], str) and "-" in exposed_port[0]:
-                    start_port, end_port = exposed_port[0].split("-")
-                    if int(start_port) <= port <= int(end_port):
-                        match = True
-                elif exposed_port[0] == port:
-                    match = True
-            if not match:
-                exposed.append((port, protocol))
-    values["ports"] = exposed
+            exposed.add((port, protocol))
+    values["ports"] = sorted(exposed)
     return values
 
 
