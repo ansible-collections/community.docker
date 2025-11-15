@@ -161,7 +161,7 @@ class ImagePusher(DockerBaseClass):
                 if line.get('errorDetail'):
                     raise Exception(line['errorDetail']['message'])
                 status = line.get('status')
-                if status == 'Pushing':
+                if status in ("Pushing", "Pushed"):
                     results['changed'] = True
         except Exception as exc:
             if 'unauthorized' in str(exc):

@@ -102,7 +102,17 @@
         # This host/port combination cannot be used if the tests are running inside a docker container.
         docker_registry_frontend_address: localhost:{{ nginx_container.container.NetworkSettings.Ports['5000/tcp'].0.HostPort }}
         # The following host/port combination can be used from inside the docker container.
-        docker_registry_frontend_address_internal: "{{ nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress if current_container_network_ip else nginx_container.container.NetworkSettings.IPAddress }}:5000"
+        docker_registry_frontend_address_internal: >-
+          {{
+            nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress
+            if current_container_network_ip else
+            (
+              nginx_container.container.NetworkSettings.IPAddress
+              | default(nginx_container.container.NetworkSettings.Networks['bridge'].IPAddress)
+            )
+          }}:5000
+        # Since Docker 29, nginx_container.container.NetworkSettings.IPAddress no longer exists.
+        # Use the bridge network's IP address instead...
 
     - name: Wait for registry frontend
       uri:

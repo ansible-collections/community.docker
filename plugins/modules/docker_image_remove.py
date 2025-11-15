@@ -210,6 +210,7 @@ class ImageRemover(DockerBaseClass):
 
         elif is_image_name_id(name):
             results['deleted'].append(image['Id'])
+            # TODO: the following is no longer correct with Docker 29+...
             results['untagged'] = sorted((image.get('RepoTags') or []) + (image.get('RepoDigests') or []))
             if not self.force and results['untagged']:
                 self.fail('Cannot delete image by ID that is still in use - use force=true')
