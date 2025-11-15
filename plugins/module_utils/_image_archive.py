@@ -18,7 +18,7 @@ class ImageArchiveManifestSummary:
     "docker image save some:tag > some.tar" command.
     """
 
-    def __init__(self, image_id: str, repo_tags: list[str]) -> None:
+    def __init__(self, image_id: str, repo_tags: list[str], other) -> None:
         """
         :param image_id:  File name portion of Config entry, e.g. abcde12345 from abcde12345.json
         :param repo_tags  Docker image names, e.g. ["hello-world:latest"]
@@ -26,6 +26,7 @@ class ImageArchiveManifestSummary:
 
         self.image_id = image_id
         self.repo_tags = repo_tags
+        self.other = other
 
 
 class ImageArchiveInvalidException(Exception):
@@ -120,7 +121,7 @@ def load_archived_image_manifest(
 
                     result.append(
                         ImageArchiveManifestSummary(
-                            image_id=image_id, repo_tags=repo_tags
+                            image_id=image_id, repo_tags=repo_tags, other=manifest
                         )
                     )
                 return result

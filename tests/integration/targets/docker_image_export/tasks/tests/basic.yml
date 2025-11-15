@@ -67,3 +67,7 @@
         manifests_json: "{{ manifests.results | map(attribute='stdout') | map('from_json') }}"
         manifest_json_images: "{{ item.2 | map(attribute='Config') | map('regex_replace', '.json$', '') | map('regex_replace', '^blobs/sha256/', '') | sort }}"
         export_image_ids: "{{ item.1 | map('regex_replace', '^sha256:', '') | unique | sort }}"
+      when: docker_cli_version is version("29.0.0", "<")
+      # Apparently idempotency no longer works with the default storage backend
+      # in Docker 29.0.0.
+      # https://github.com/ansible-collections/community.docker/pull/1199
