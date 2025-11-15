@@ -18,7 +18,7 @@
 
     - name: Push image ID (must fail)
       community.docker.docker_image_push:
-        name: "sha256:{{ docker_test_image_digest_v1_image_id }}"
+        name: "sha256:{{ docker_test_image_digest_v1_image_ids[0] }}"
       register: fail_2
       ignore_errors: true
 
