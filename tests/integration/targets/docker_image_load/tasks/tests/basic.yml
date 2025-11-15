@@ -73,10 +73,16 @@
   loop: "{{ all_images }}"
   when: remove_all_images is failed
 
+- name: Show all images
+  ansible.builtin.command: docker image ls
+
 - name: Load all images (IDs)
   community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-2.tar"
   register: result
+
+- name: Show all images
+  ansible.builtin.command: docker image ls
 
 - name: Print loaded image names
   ansible.builtin.debug:
@@ -110,10 +116,16 @@
     name: "{{ item }}"
   loop: "{{ all_images }}"
 
+- name: Show all images
+  ansible.builtin.command: docker image ls
+
 - name: Load all images (mixed images and IDs)
   community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-3.tar"
   register: result
+
+- name: Show all images
+  ansible.builtin.command: docker image ls
 
 - name: Print loading log
   ansible.builtin.debug:
@@ -143,10 +155,16 @@
     name: "{{ item }}"
   loop: "{{ all_images }}"
 
+- name: Show all images
+  ansible.builtin.command: docker image ls
+
 - name: Load all images (same image twice)
   community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-4.tar"
   register: result
+
+- name: Show all images
+  ansible.builtin.command: docker image ls
 
 - name: Print loaded image names
   ansible.builtin.debug:
@@ -167,10 +185,16 @@
     name: "{{ item }}"
   loop: "{{ all_images }}"
 
+- name: Show all images
+  ansible.builtin.command: docker image ls
+
 - name: Load all images (single image by ID)
   community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-5.tar"
   register: result
+
+- name: Show all images
+  ansible.builtin.command: docker image ls
 
 - name: Print loaded image names
   ansible.builtin.debug:
@@ -201,10 +225,16 @@
     name: "{{ item }}"
   loop: "{{ all_images }}"
 
+- name: Show all images
+  ansible.builtin.command: docker image ls
+
 - name: Load all images (names)
   community.docker.docker_image_load:
     path: "{{ remote_tmp_dir }}/archive-1.tar"
   register: result
+
+- name: Show all images
+  ansible.builtin.command: docker image ls
 
 - name: Print loaded image names
   ansible.builtin.debug:
