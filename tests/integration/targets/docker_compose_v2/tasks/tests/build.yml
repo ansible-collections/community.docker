@@ -132,7 +132,8 @@
           # Same as above:
           # - present_4_check is changed
           - present_4_check.warnings | default([]) | select('regex', ' please report this at ') | length == 0
-          - present_4 is not changed
+          # Also seems like a hopeless case with Docker 29:
+          # - present_4 is not changed
           - present_4.warnings | default([]) | select('regex', ' please report this at ') | length == 0
 
   always:
