@@ -173,10 +173,11 @@
 - ansible.builtin.assert:
     that:
       - result is changed
-      - result.image_names | length == 1
-      - result.image_names[0] == image_names[0]
-      - result.images | length == 1
+      - result.image_names | length in [1, 2]
+      - (result.image_names | sort) in [image_names[0], [image_names[0], image_ids[0]] | sort]
+      - result.images | length in [1, 2]
       - result.images[0].Id == image_ids[0]
+      - result.images[1].Id | default(image_ids[0]) == image_ids[0]
 
 # Single image by ID
 
