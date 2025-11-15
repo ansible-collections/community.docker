@@ -799,6 +799,7 @@ class ImageManager(DockerBaseClass):
                     )
                     self.client._raise_for_status(response)
                     for line in self.client._stream_helper(response, decode=True):
+                        self.results["actions"].append({"push_log": line})
                         self.log(line, pretty_print=True)
                         if line.get("errorDetail"):
                             raise RuntimeError(line["errorDetail"]["message"])
