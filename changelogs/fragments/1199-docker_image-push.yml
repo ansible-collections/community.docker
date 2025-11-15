@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_image, docker_image_push - adjust image push detection to Docker 29 (https://github.com/ansible-collections/community.docker/pull/1199)."
