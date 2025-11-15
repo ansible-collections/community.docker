@@ -28,7 +28,13 @@ attributes:
   diff_mode:
     support: none
   idempotent:
-    support: full
+    support: partial
+    details:
+      - Whether the module is idempotent depends on the storage API used for images,
+        which determines how the image ID is computed. The idempotency check needs
+        that the image ID equals the ID stored in archive's C(manifest.json).
+        This seemed to have worked fine with the default storage backend up to Docker 28,
+        but seems to have changed in Docker 29.
 
 options:
   names:

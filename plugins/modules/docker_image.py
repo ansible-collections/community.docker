@@ -21,6 +21,8 @@ description:
 notes:
   - Building images is done using Docker daemon's API. It is not possible to use BuildKit / buildx this way. Use M(community.docker.docker_image_build)
     to build images with BuildKit.
+  - Exporting images is generally not idempotent. It depends on whether the image ID equals the IDs found in the generated tarball's C(manifest.json).
+    This was the case with the default storage backend up to Docker 28, but seems to have changed in Docker 29.
 extends_documentation_fragment:
   - community.docker._docker.api_documentation
   - community.docker._attributes

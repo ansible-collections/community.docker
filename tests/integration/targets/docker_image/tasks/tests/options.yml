@@ -256,6 +256,10 @@
 - ansible.builtin.assert:
     that:
       - archive_image_2 is not changed
+  when: docker_cli_version is version("29.0.0", "<")
+  # Apparently idempotency no longer works with the default storage backend
+  # in Docker 29.0.0.
+  # https://github.com/ansible-collections/community.docker/pull/1199
 
 - name: Archive image 3rd time, should overwrite due to different id
   community.docker.docker_image:
