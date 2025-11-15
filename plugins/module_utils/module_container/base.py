@@ -766,38 +766,43 @@ def _preprocess_ports(module, values):
                     binds[idx] = bind
         values['published_ports'] = binds
 
-    exposed = []
+    exposed = set()
     if 'exposed_ports' in values:
         for port in values['exposed_ports']:
             port = to_text(port, errors='surrogate_or_strict').strip()
             protocol = 'tcp'
-            match = re.search(r'(/.+$)', port)
-            if match:
-                protocol = match.group(1).replace('/', '')
-                port = re.sub(r'/.+$', '', port)
-            exposed.append((port, protocol))
+            parts = port.split("/", maxsplit=1)
+            if len(parts) == 2:
+                port, protocol = parts
+            parts = port.split("-", maxsplit=1)
+            if len(parts) < 2:
+                try:
+                    exposed.add((int(port), protocol))
+                except ValueError as e:
+                    module.fail_json(msg="Cannot parse port {port!r}: {e}".format(port=port, e=e))
+            else:
+                try:
+                    start_port = int(parts[0])
+                    end_port = int(parts[1])
+                    if start_port > end_port:
+                        raise ValueError(
+                            "start port must be smaller or equal to end port."
+                        )
+                except ValueError as e:
+                    module.fail_json(msg="Cannot parse port range {port!r}: {e}".format(port=port, e=e))
+                for port in range(start_port, end_port + 1):
+                    exposed.add((port, protocol))
     if 'published_ports' in values:
         # Any published port should also be exposed
         for publish_port in values['published_ports']:
-            match = False
             if isinstance(publish_port, string_types) and '/' in publish_port:
                 port, protocol = publish_port.split('/')
                 port = int(port)
             else:
                 protocol = 'tcp'
                 port = int(publish_port)
-            for exposed_port in exposed:
-                if exposed_port[1] != protocol:
-                    continue
-                if isinstance(exposed_port[0], string_types) and '-' in exposed_port[0]:
-                    start_port, end_port = exposed_port[0].split('-')
-                    if int(start_port) <= port <= int(end_port):
-                        match = True
-                elif exposed_port[0] == port:
-                    match = True
-            if not match:
-                exposed.append((port, protocol))
-    values['ports'] = exposed
+            exposed.add((port, protocol))
+    values['ports'] = sorted(exposed)
     return values
 
 

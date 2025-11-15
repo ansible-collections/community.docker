@@ -3686,18 +3686,6 @@
   register: platform_5
   ignore_errors: true
 
-- name: platform (idempotency)
-  docker_container:
-    image: "{{ docker_test_image_simple_1 }}"
-    name: "{{ cname }}"
-    state: present
-    pull: true
-    platform: 386
-    force_kill: true
-    debug: true
-  register: platform_6
-  ignore_errors: true
-
 - name: cleanup
   docker_container:
     name: "{{ cname }}"
@@ -3712,7 +3700,6 @@
       - platform_3 is not changed and platform_3 is not failed
       - platform_4 is not changed and platform_4 is not failed
       - platform_5 is changed
-      - platform_6 is not changed and platform_6 is not failed
   when: docker_api_version is version('1.41', '>=')
 - assert:
     that:

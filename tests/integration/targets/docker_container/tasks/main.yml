@@ -37,7 +37,10 @@
   register: docker_host_info
 
 # Run the tests
-- block:
+- module_defaults:
+    community.general.docker_container:
+      debug: true
+  block:
     - include_tasks: run-test.yml
       with_fileglob:
         - "tests/*.yml"

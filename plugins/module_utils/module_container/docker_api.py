@@ -1185,10 +1185,20 @@ def _get_values_ports(module, container, api_version, options, image, host_info)
     config = container['Config']
 
     # "ExposedPorts": null returns None type & causes AttributeError - PR #5517
+    expected_exposed = []
     if config.get('ExposedPorts') is not None:
-        expected_exposed = [_normalize_port(p) for p in config.get('ExposedPorts', dict()).keys()]
-    else:
-        expected_exposed = []
+        for port_and_protocol in config.get("ExposedPorts", {}):
+            port, protocol = _normalize_port(port_and_protocol).rsplit("/")
+            try:
+                start, end = port.split("-", 1)
+                start_port = int(start)
+                end_port = int(end)
+                for port_no in range(start_port, end_port + 1):
+                    expected_exposed.append("{port_no}/{protocol}".format(port_no=port_no, protocol=protocol))
+                continue
+            except ValueError:
+                # Either it is not a range, or a broken one - in both cases, simply add the original form
+                expected_exposed.append("{port}/{protocol}".format(port=port, protocol=protocol))
 
     return {
         'published_ports': host_config.get('PortBindings'),
@@ -1224,8 +1234,8 @@ def _get_expected_values_ports(module, client, api_version, options, image, valu
         image_ports = [_normalize_port(p) for p in image_exposed_ports]
     param_ports = []
     if 'ports' in values:
-        param_ports = [to_text(p[0], errors='surrogate_or_strict') + '/' + p[1] for p in values['ports']]
-    result = list(set(image_ports + param_ports))
+        param_ports = ["{0}/{1}".format(to_native(p[0]), p[1]) for p in values['ports']]
+    result = sorted(set(image_ports + param_ports))
     expected_values['exposed_ports'] = result
 
     if 'publish_all_ports' in values:
