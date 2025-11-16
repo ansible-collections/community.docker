@@ -464,4 +464,4 @@ def normalize_ip_network(network):
             return network
     # If we don't have ipaddress, simply give up...
     # This mainly affects Python 2.7.
-    return ip_address
+    return network
