@@ -104,10 +104,11 @@
           - remove_2 is changed
           - remove_2.diff.before.id == pulled_image.image.Id
           - remove_2.diff.before.tags | length == 4
-          - remove_2.diff.before.digests | length == 1
+          # With Docker 29, there are now two digests in before and after:
+          - remove_2.diff.before.digests | length in [1, 2]
           - remove_2.diff.after.id == pulled_image.image.Id
           - remove_2.diff.after.tags | length == 3
-          - remove_2.diff.after.digests | length == 1
+          - remove_2.diff.after.digests | length in [1, 2]
           - remove_2.deleted | length == 0
           - remove_2.untagged | length == 1
           - remove_2.untagged[0] == (iname_prefix ~ '-tagged-1:latest')
@@ -176,10 +177,11 @@
           - remove_4 is changed
           - remove_4.diff.before.id == pulled_image.image.Id
           - remove_4.diff.before.tags | length == 3
-          - remove_4.diff.before.digests | length == 1
+          # With Docker 29, there are now two digests in before and after:
+          - remove_4.diff.before.digests | length in [1, 2]
           - remove_4.diff.after.id == pulled_image.image.Id
           - remove_4.diff.after.tags | length == 2
-          - remove_4.diff.after.digests | length == 1
+          - remove_4.diff.after.digests | length in [1, 2]
           - remove_4.deleted | length == 0
           - remove_4.untagged | length == 1
           - remove_4.untagged[0] == (iname_prefix ~ '-tagged-1:foo')
@@ -247,16 +249,22 @@
           - remove_6 is changed
           - remove_6.diff.before.id == pulled_image.image.Id
           - remove_6.diff.before.tags | length == 2
-          - remove_6.diff.before.digests | length == 1
+          # With Docker 29, there are now two digests in before and after:
+          - remove_6.diff.before.digests | length in [1, 2]
           - remove_6.diff.after.exists is false
-          - remove_6.deleted | length > 1
+          - remove_6.deleted | length >= 1
           - pulled_image.image.Id in remove_6.deleted
-          - remove_6.untagged | length == 3
+          - remove_6.untagged | length in [2, 3]
           - (iname_prefix ~ '-tagged-1:bar') in remove_6.untagged
           - image in remove_6.untagged
           - remove_6_check.deleted | length == 1
           - remove_6_check.deleted[0] == pulled_image.image.Id
-          - remove_6_check.untagged == remove_6.untagged
+          # The following is only true for Docker < 29...
+          # We use the CLI version as a proxy...
+          - >-
+            remove_6_check.untagged == remove_6.untagged
+            or
+            docker_cli_version is version("29.0.0", ">=")
           - info_5.images | length == 0
 
     - name: Remove image ID (force, idempotent, check mode)

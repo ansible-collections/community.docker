@@ -219,6 +219,7 @@ class ImageRemover(DockerBaseClass):
 
         elif is_image_name_id(name):
             deleted.append(image["Id"])
+            # TODO: the following is no longer correct with Docker 29+...
             untagged[:] = sorted(
                 (image.get("RepoTags") or []) + (image.get("RepoDigests") or [])
             )
