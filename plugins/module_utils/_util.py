@@ -528,3 +528,25 @@ def normalize_ip_address(ip_address: str | None) -> str | None:
     except ValueError:
         # Fallback for invalid addresses: simply return the input
         return ip_address
+
+
+@t.overload
+def normalize_ip_network(network: str) -> str: ...
+
+
+@t.overload
+def normalize_ip_network(network: str | None) -> str | None: ...
+
+
+def normalize_ip_network(network: str | None) -> str | None:
+    """
+    Given a network in CIDR notation as a string, normalize it so that it can be
+    used to compare networks as strings.
+    """
+    if network is None:
+        return None
+    try:
+        return ipaddress.ip_network(network).compressed
+    except ValueError:
+        # Fallback for invalid networks: simply return the input
+        return network
