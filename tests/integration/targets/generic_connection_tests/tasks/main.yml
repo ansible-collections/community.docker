@@ -133,8 +133,24 @@
 
         - name: Get proxied daemon URLs
           set_fact:
-            docker_daemon_frontend_https: "https://{{ nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress if current_container_network_ip else nginx_container.container.NetworkSettings.IPAddress }}:5000"
-            docker_daemon_frontend_http: "http://{{ nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress if current_container_network_ip else nginx_container.container.NetworkSettings.IPAddress }}:6000"
+            # Since Docker 29, nginx_container.container.NetworkSettings.IPAddress no longer exists.
+            # Use the bridge network's IP address instead...
+            docker_daemon_frontend_https: >-
+              https://{{
+                nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress
+                if current_container_network_ip else (
+                  nginx_container.container.NetworkSettings.IPAddress
+                  | default(nginx_container.container.NetworkSettings.Networks['bridge'].IPAddress)
+                )
+              }}:5000
+            docker_daemon_frontend_http: >-
+              http://{{
+                nginx_container.container.NetworkSettings.Networks[current_container_network_ip].IPAddress
+                if current_container_network_ip else (
+                  nginx_container.container.NetworkSettings.IPAddress
+                  | default(nginx_container.container.NetworkSettings.Networks['bridge'].IPAddress)
+                )
+              }}:6000
 
         - name: Wait for registry frontend
           uri:
