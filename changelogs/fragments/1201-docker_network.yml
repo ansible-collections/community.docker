@@ -1,2 +1,8 @@
 bugfixes:
   - "docker_network - fix idempotency for IPv6 addresses and networks with Docker 29.0.0 (https://github.com/ansible-collections/community.docker/pull/1201)."
+known_issues:
+  - "docker_network - when specifying IPv6 addresses or networks, Docker since version 29 no longer returns the orignal address/network used
+    when creating a network, but normalizes them. The module will try to normalize IP addresses for comparison,
+    but it uses the ``ipaddress`` module from the Python 3 standard library for that. When using the module with Python 2,
+    please install the `ipaddress backport for Python 2.x <https://pypi.org/project/ipaddress/>`__
+    (https://github.com/ansible-collections/community.docker/pull/1203)."

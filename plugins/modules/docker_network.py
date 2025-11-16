@@ -193,6 +193,10 @@ notes:
   - The module does not support Docker Swarm. This means that it will not try to disconnect or reconnect services. If services
     are connected to the network, deleting the network will fail. When network options are changed, the network has to be
     deleted and recreated, so this will fail as well.
+  - When specifying IPv6 addresses for networks, Docker since version 29 no longer returns the orignal address used
+    when creating a network, but normalizes them. The module will try to normalize IP addresses for comparison,
+    but it uses the C(ipaddress) module from the Python 3 standard library for that. When using the module with Python 2,
+    please install the L(ipaddress backport for Python 2.x, https://pypi.org/project/ipaddress/).
 author:
   - "Ben Keith (@keitwb)"
   - "Chris Houseknecht (@chouseknecht)"
