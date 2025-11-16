@@ -282,11 +282,11 @@ class Connection(ConnectionBase):
                     if not isinstance(val, str):
                         raise AnsibleConnectionFailure(
                             f"Non-string {what.lower()} found for extra_env option. Ambiguous env options must be "
-                            f"wrapped in quotes to avoid them being interpreted. {what}: {val!r}"
+                            "wrapped in quotes to avoid them being interpreted when directly specified "
+                            "in YAML, or explicitly converted to strings when the option is templated. "
+                            f"{what}: {val!r}"
                         )
-                kk = to_text(k, errors="surrogate_or_strict")
-                vv = to_text(v, errors="surrogate_or_strict")
-                data["Env"].append(f"{kk}={vv}")
+                data["Env"].append(f"{k}={v}")
 
         if self.get_option("working_dir") is not None:
             data["WorkingDir"] = self.get_option("working_dir")

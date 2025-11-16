@@ -659,7 +659,9 @@ def _preprocess_env(
             if not isinstance(value, str):
                 module.fail_json(
                     msg="Non-string value found for env option. Ambiguous env options must be "
-                    f"wrapped in quotes to avoid them being interpreted. Key: {name}"
+                    "wrapped in quotes to avoid them being interpreted when directly specified "
+                    "in YAML, or explicitly converted to strings when the option is templated. "
+                    f"Key: {name}"
                 )
             final_env[name] = to_text(value, errors="surrogate_or_strict")
     formatted_env = []
@@ -947,7 +949,8 @@ def _preprocess_log(
                 value = to_text(v, errors="surrogate_or_strict")
                 module.warn(
                     f"Non-string value found for log_options option '{k}'. The value is automatically converted to {value!r}. "
-                    "If this is not correct, or you want to avoid such warnings, please quote the value."
+                    "If this is not correct, or you want to avoid such warnings, please quote the value,"
+                    " or explicitly convert the values to strings when templating them."
                 )
                 v = value
             options[k] = v
