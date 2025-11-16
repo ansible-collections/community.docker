@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_network - fix idempotency for IPv6 addresses and networks with Docker 29.0.0 (https://github.com/ansible-collections/community.docker/pull/1201)."
