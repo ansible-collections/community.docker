@@ -432,7 +432,8 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 <tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="attribute-idempotent"></div><p class="ansible-option-title" id="ansible-collections-community-docker-docker-image-export-module-attribute-idempotent"><strong>idempotent</strong></p>
 <a class="ansibleOptionLink" href="#attribute-idempotent" title="Permalink to this attribute"></a></div></td>
-<td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-full">full</strong></p>
+<td><div class="ansible-option-cell"><p><strong class="ansible-attribute-support-label">Support: </strong><strong class="ansible-attribute-support-partial">partial</strong></p>
+<p>Whether the module is idempotent depends on the storage API used for images, which determines how the image ID is computed. The idempotency check needs that the image ID equals the ID stored in archive’s <code class="docutils literal notranslate"><span class="pre">manifest.json</span></code>. This seemed to have worked fine with the default storage backend up to Docker 28, but seems to have changed in Docker 29.</p>
 </div></td>
 <td><div class="ansible-option-cell"><p>When run twice in a row outside check mode, with the same arguments, the second invocation indicates no change.</p>
 <p>This assumes that the system controlled/queried by the module has not changed in a relevant way.</p>
