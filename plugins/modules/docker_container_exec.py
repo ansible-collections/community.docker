@@ -221,16 +221,15 @@ def main() -> None:
     stdin: str | None = client.module.params["stdin"]
     strip_empty_ends: bool = client.module.params["strip_empty_ends"]
     tty: bool = client.module.params["tty"]
-    env: dict[str, t.Any] = client.module.params["env"]
+    env: dict[str, t.Any] | None = client.module.params["env"]
 
     if env is not None:
-        for name, value in list(env.items()):
+        for name, value in env.items():
             if not isinstance(value, str):
                 client.module.fail_json(
                     msg="Non-string value found for env option. Ambiguous env options must be "
                     f"wrapped in quotes to avoid them being interpreted. Key: {name}"
                 )
-            env[name] = to_text(value, errors="surrogate_or_strict")
 
     if command is not None:
         argv = shlex.split(command)

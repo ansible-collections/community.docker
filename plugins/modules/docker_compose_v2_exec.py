@@ -210,13 +210,12 @@ class ExecManager(BaseComposeManager):
             self.stdin += "\n"
 
         if self.env is not None:
-            for name, value in list(self.env.items()):
+            for name, value in self.env.items():
                 if not isinstance(value, str):
                     self.fail(
                         "Non-string value found for env option. Ambiguous env options must be "
                         f"wrapped in quotes to avoid them being interpreted. Key: {name}"
                     )
-                self.env[name] = to_text(value, errors="surrogate_or_strict")
 
     def get_exec_cmd(self, dry_run: bool) -> list[str]:
         args = self.get_base_args(plain_progress=True) + ["exec"]

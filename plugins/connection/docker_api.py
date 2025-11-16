@@ -284,9 +284,7 @@ class Connection(ConnectionBase):
                             f"Non-string {what.lower()} found for extra_env option. Ambiguous env options must be "
                             f"wrapped in quotes to avoid them being interpreted. {what}: {val!r}"
                         )
-                kk = to_text(k, errors="surrogate_or_strict")
-                vv = to_text(v, errors="surrogate_or_strict")
-                data["Env"].append(f"{kk}={vv}")
+                data["Env"].append(f"{k}={v}")
 
         if self.get_option("working_dir") is not None:
             data["WorkingDir"] = self.get_option("working_dir")
