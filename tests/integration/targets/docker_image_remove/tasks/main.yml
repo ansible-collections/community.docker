@@ -8,15 +8,16 @@
 # and should not be used as examples of how to write Ansible roles #
 ####################################################################
 
-- block:
+- vars:
+    image: "{{ docker_test_image_hello_world }}"
+    image_ids: "{{ docker_test_image_hello_world_image_ids }}"
+  block:
     - name: Pick image prefix
       ansible.builtin.set_fact:
         iname_prefix: "{{ 'ansible-docker-test-%0x' % ((2**32) | random) }}"
 
     - name: Define image names
       ansible.builtin.set_fact:
-        image: "{{ docker_test_image_hello_world }}"
-        image_id: "{{ docker_test_image_hello_world_image_id }}"
         image_names:
           - "{{ iname_prefix }}-tagged-1:latest"
           - "{{ iname_prefix }}-tagged-1:foo"
@@ -24,8 +25,9 @@
 
     - name: Remove image complete
       community.docker.docker_image_remove:
-        name: "{{ image_id }}"
+        name: "{{ item }}"
         force: true
+      loop: "{{ image_ids }}"
 
     - name: Remove tagged images
       community.docker.docker_image_remove:
@@ -102,10 +104,11 @@
           - remove_2 is changed
           - remove_2.diff.before.id == pulled_image.image.Id
           - remove_2.diff.before.tags | length == 4
-          - remove_2.diff.before.digests | length == 1
+          # With Docker 29, there are now two digests in before and after:
+          - remove_2.diff.before.digests | length in [1, 2]
           - remove_2.diff.after.id == pulled_image.image.Id
           - remove_2.diff.after.tags | length == 3
-          - remove_2.diff.after.digests | length == 1
+          - remove_2.diff.after.digests | length in [1, 2]
           - remove_2.deleted | length == 0
           - remove_2.untagged | length == 1
           - remove_2.untagged[0] == (iname_prefix ~ '-tagged-1:latest')
@@ -174,10 +177,11 @@
           - remove_4 is changed
           - remove_4.diff.before.id == pulled_image.image.Id
           - remove_4.diff.before.tags | length == 3
-          - remove_4.diff.before.digests | length == 1
+          # With Docker 29, there are now two digests in before and after:
+          - remove_4.diff.before.digests | length in [1, 2]
           - remove_4.diff.after.id == pulled_image.image.Id
           - remove_4.diff.after.tags | length == 2
-          - remove_4.diff.after.digests | length == 1
+          - remove_4.diff.after.digests | length in [1, 2]
           - remove_4.deleted | length == 0
           - remove_4.untagged | length == 1
           - remove_4.untagged[0] == (iname_prefix ~ '-tagged-1:foo')
@@ -245,16 +249,22 @@
           - remove_6 is changed
           - remove_6.diff.before.id == pulled_image.image.Id
           - remove_6.diff.before.tags | length == 2
-          - remove_6.diff.before.digests | length == 1
+          # With Docker 29, there are now two digests in before and after:
+          - remove_6.diff.before.digests | length in [1, 2]
           - remove_6.diff.after.exists is false
-          - remove_6.deleted | length > 1
+          - remove_6.deleted | length >= 1
           - pulled_image.image.Id in remove_6.deleted
-          - remove_6.untagged | length == 3
+          - remove_6.untagged | length in [2, 3]
           - (iname_prefix ~ '-tagged-1:bar') in remove_6.untagged
           - image in remove_6.untagged
           - remove_6_check.deleted | length == 1
           - remove_6_check.deleted[0] == pulled_image.image.Id
-          - remove_6_check.untagged == remove_6.untagged
+          # The following is only true for Docker < 29...
+          # We use the CLI version as a proxy...
+          - >-
+            remove_6_check.untagged == remove_6.untagged
+            or
+            docker_cli_version is version("29.0.0", ">=")
           - info_5.images | length == 0
 
     - name: Remove image ID (force, idempotent, check mode)

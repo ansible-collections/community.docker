@@ -80,4 +80,6 @@
             that:
               - push_4 is failed
               - >-
-                push_4.msg == ('Error pushing image ' ~ image_name_base2 ~ ':' ~ image_tag ~ ': no basic auth credentials')
+                push_4.msg.startswith('Error pushing image ' ~ image_name_base2 ~ ':' ~ image_tag ~ ': ')
+              - >-
+                push_4.msg.endswith(': no basic auth credentials')
