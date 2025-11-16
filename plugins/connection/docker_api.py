@@ -282,7 +282,9 @@ class Connection(ConnectionBase):
                     if not isinstance(val, str):
                         raise AnsibleConnectionFailure(
                             f"Non-string {what.lower()} found for extra_env option. Ambiguous env options must be "
-                            f"wrapped in quotes to avoid them being interpreted. {what}: {val!r}"
+                            "wrapped in quotes to avoid them being interpreted when directly specified "
+                            "in YAML, or explicitly converted to strings when the option is templated. "
+                            f"{what}: {val!r}"
                         )
                 data["Env"].append(f"{k}={v}")
 

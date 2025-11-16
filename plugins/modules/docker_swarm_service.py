@@ -914,8 +914,10 @@ def get_docker_environment(
         for name, value in env.items():
             if not isinstance(value, str):
                 raise ValueError(
-                    "Non-string value found for env option. "
-                    f"Ambiguous env options must be wrapped in quotes to avoid YAML parsing. Key: {name}"
+                    "Non-string value found for env option. Ambiguous env options must be "
+                    "wrapped in quotes to avoid them being interpreted when directly specified "
+                    "in YAML, or explicitly converted to strings when the option is templated. "
+                    f"Key: {name}"
                 )
             env_dict[name] = str(value)
     elif env is not None and isinstance(env, list):

@@ -228,7 +228,9 @@ def main() -> None:
             if not isinstance(value, str):
                 client.module.fail_json(
                     msg="Non-string value found for env option. Ambiguous env options must be "
-                    f"wrapped in quotes to avoid them being interpreted. Key: {name}"
+                    "wrapped in quotes to avoid them being interpreted when directly specified "
+                    "in YAML, or explicitly converted to strings when the option is templated. "
+                    f"Key: {name}"
                 )
 
     if command is not None:

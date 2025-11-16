@@ -3077,10 +3077,14 @@
     that:
       - log_options_1 is changed
       - log_options_2 is not changed
-      - "'Non-string value found for log_options option \\'max-file\\'. The value is automatically converted to \\'5\\'. If this is not correct, or you want to
-  avoid such warnings, please quote the value.' in (log_options_2.warnings | default([]))"
+      - message in (log_options_2.warnings | default([]))
       - log_options_3 is not changed
       - log_options_4 is changed
+  vars:
+    message: >-
+      Non-string value found for log_options option 'max-file'. The value is automatically converted to '5'.
+      If this is not correct, or you want to avoid such warnings, please quote the value,
+      or explicitly convert the values to strings when templating them.
 
 ####################################################################
 ## mac_address #####################################################

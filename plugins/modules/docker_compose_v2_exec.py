@@ -214,7 +214,9 @@ class ExecManager(BaseComposeManager):
                 if not isinstance(value, str):
                     self.fail(
                         "Non-string value found for env option. Ambiguous env options must be "
-                        f"wrapped in quotes to avoid them being interpreted. Key: {name}"
+                        "wrapped in quotes to avoid them being interpreted when directly specified "
+                        "in YAML, or explicitly converted to strings when the option is templated. "
+                        f"Key: {name}"
                     )
 
     def get_exec_cmd(self, dry_run: bool) -> list[str]:
