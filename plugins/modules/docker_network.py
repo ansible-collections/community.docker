@@ -193,6 +193,10 @@ notes:
   - The module does not support Docker Swarm. This means that it will not try to disconnect or reconnect services. If services
     are connected to the network, deleting the network will fail. When network options are changed, the network has to be
     deleted and recreated, so this will fail as well.
+  - When specifying IPv6 addresses for networks, Docker since version 29 no longer returns the orignal address used
+    when creating a network, but normalizes them. The module will try to normalize IP addresses for comparison,
+    but it uses the C(ipaddress) module from the Python 3 standard library for that. When using the module with Python 2,
+    please install the L(ipaddress backport for Python 2.x, https://pypi.org/project/ipaddress/).
 author:
   - "Ben Keith (@keitwb)"
   - "Chris Houseknecht (@chouseknecht)"
@@ -296,6 +300,8 @@ from ansible_collections.community.docker.plugins.module_utils.util import (
     DockerBaseClass,
     DifferenceTracker,
     clean_dict_booleans_for_docker_api,
+    normalize_ip_address,
+    normalize_ip_network,
     sanitize_labels,
 )
 from ansible_collections.community.docker.plugins.module_utils._api.errors import DockerException
@@ -352,6 +358,7 @@ def validate_cidr(cidr):
     :rtype: str
     :raises ValueError: If ``cidr`` is not a valid CIDR
     """
+    # TODO: Use ipaddress for this instead of rolling your own...
     if CIDR_IPV4.match(cidr):
         return 'ipv4'
     elif CIDR_IPV6.match(cidr):
@@ -381,6 +388,19 @@ def dicts_are_essentially_equal(a, b):
         if b.get(k) != v:
             return False
     return True
+
+
+def normalize_ipam_values(ipam_config):
+    result = {}
+    for key, value in ipam_config.items():
+        if key in ("subnet", "iprange"):
+            value = normalize_ip_network(value)
+        elif key in ("gateway",):
+            value = normalize_ip_address(value)
+        elif key in ("aux_addresses",) and value is not None:
+            value = {k: normalize_ip_address(v) for k, v in value.items()}
+        result[key] = value
+    return result
 
 
 class DockerNetworkManager(object):
@@ -480,24 +500,35 @@ class DockerNetworkManager(object):
             else:
                 # Put network's IPAM config into the same format as module's IPAM config
                 net_ipam_configs = []
+                net_ipam_configs_normalized = []
                 for net_ipam_config in net['IPAM']['Config']:
                     config = dict()
                     for k, v in net_ipam_config.items():
                         config[normalize_ipam_config_key(k)] = v
                     net_ipam_configs.append(config)
+                    net_ipam_configs_normalized.append(normalize_ipam_values(config))
                 # Compare lists of dicts as sets of dicts
                 for idx, ipam_config in enumerate(self.parameters.ipam_config):
-                    net_config = dict()
-                    for net_ipam_config in net_ipam_configs:
-                        if dicts_are_essentially_equal(ipam_config, net_ipam_config):
+                    ipam_config_normalized = normalize_ipam_values(ipam_config)
+                    net_config = {}
+                    net_config_normalized = {}
+                    for net_ipam_config, net_ipam_config_normalized in zip(
+                        net_ipam_configs, net_ipam_configs_normalized
+                    ):
+                        if dicts_are_essentially_equal(
+                            ipam_config_normalized, net_ipam_config_normalized
+                        ):
                             net_config = net_ipam_config
+                            net_config_normalized = net_ipam_config_normalized
                             break
                     for key, value in ipam_config.items():
                         if value is None:
                             # due to recursive argument_spec, all keys are always present
                             # (but have default value None if not specified)
                             continue
-                        if value != net_config.get(key):
+                        if ipam_config_normalized[key] != net_config_normalized.get(
+                            key
+                        ):
                             differences.add('ipam_config[%s].%s' % (idx, key),
                                             parameter=value,
                                             active=net_config.get(key))

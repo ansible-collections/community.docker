@@ -447,3 +447,21 @@ def normalize_ip_address(ip_address):
     # If we don't have ipaddress, simply give up...
     # This mainly affects Python 2.7.
     return ip_address
+
+
+def normalize_ip_network(network):
+    """
+    Given a network in CIDR notation as a string, normalize it so that it can be
+    used to compare networks as strings.
+    """
+    if network is None:
+        return None
+    if HAS_IPADDRESS:
+        try:
+            return ipaddress.ip_network(network).compressed
+        except ValueError:
+            # Fallback for invalid networks: simply return the input
+            return network
+    # If we don't have ipaddress, simply give up...
+    # This mainly affects Python 2.7.
+    return network
