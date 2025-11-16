@@ -2282,3 +2282,39 @@ releases:
       - 5.0.1.yml
       - typing.yml
     release_date: '2025-11-09'
+  5.0.2:
+    changes:
+      bugfixes:
+        - Docker CLI based modules - work around bug in Docker 29.0.0 that caused
+          a breaking change in ``docker version --format json`` output (https://github.com/ansible-collections/community.docker/issues/1185,
+          https://github.com/ansible-collections/community.docker/pull/1187).
+        - docker_container - fix ``pull`` idempotency with Docker 29.0.0 (https://github.com/ansible-collections/community.docker/pull/1192).
+        - docker_container - fix handling of exposed port ranges. So far, the module
+          used an undocumented feature of Docker that was removed from Docker 29.0.0,
+          that allowed to pass the range to the deamon and let handle it. Now the
+          module explodes ranges into a list of all contained ports, same as the Docker
+          CLI does. For backwards compatibility with Docker < 29.0.0, it also explodes
+          ranges returned by the API for existing containers so that comparison should
+          only indicate a difference if the ranges actually change (https://github.com/ansible-collections/community.docker/pull/1192).
+        - docker_container - fix idempotency for IPv6 addresses with Docker 29.0.0
+          (https://github.com/ansible-collections/community.docker/pull/1192).
+        - docker_image - fix ``source=pull`` idempotency with Docker 29.0.0 (https://github.com/ansible-collections/community.docker/pull/1192).
+        - docker_image, docker_image_push - adjust image push detection to Docker
+          29 (https://github.com/ansible-collections/community.docker/pull/1199).
+        - docker_image_pull - fix idempotency with Docker 29.0.0 (https://github.com/ansible-collections/community.docker/pull/1192).
+        - docker_network - fix idempotency for IPv6 addresses and networks with Docker
+          29.0.0 (https://github.com/ansible-collections/community.docker/pull/1201).
+      known_issues:
+        - docker_image, docker_image_export - idempotency for archiving images depends
+          on whether the image IDs used by the image storage backend correspond to
+          the IDs used in the tarball's ``manifest.json`` files. The new default backend
+          in Docker 29 apparently uses image IDs that no longer correspond, whence
+          idempotency no longer works (https://github.com/ansible-collections/community.docker/pull/1199).
+      release_summary: Bugfix release for Docker 29.
+    fragments:
+      - 1187-docker.yml
+      - 1192-docker_container.yml
+      - 1199-docker_image-push.yml
+      - 1201-docker_network.yml
+      - 5.0.2.yml
+    release_date: '2025-11-16'
