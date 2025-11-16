@@ -142,6 +142,8 @@
           - present_3_check.actions[0] == ('Pulled image ' ~ image_name)
           - present_3_check.diff.before.id == present_1.diff.after.id
           - present_3_check.diff.after.id == 'unknown'
+    - ansible.builtin.assert:
+        that:
           - present_3 is changed
           - present_3.actions | length == 1
           - present_3.actions[0] == ('Pulled image ' ~ image_name)
@@ -166,6 +168,11 @@
           - present_5.actions[0] == ('Pulled image ' ~ image_name)
           - present_5.diff.before.id == present_3.diff.after.id
           - present_5.diff.after.id == present_1.diff.after.id
+      when: docker_cli_version is version("29.0.0", "<")
+      # From Docker 29 on, Docker won't pull images for other architectures
+      # if there are better matching ones. The above tests assume it will
+      # just do what it is told, and thus fail from 29.0.0 on.
+      # https://github.com/ansible-collections/community.docker/pull/1199
 
   always:
     - name: cleanup

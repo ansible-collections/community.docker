@@ -7,11 +7,9 @@
   block:
     - name: Make sure images are not there
       docker_image_remove:
-        name: "{{ item }}"
+        name: "sha256:{{ item }}"
         force: true
-      loop:
-        - "sha256:{{ docker_test_image_digest_v1_image_id }}"
-        - "sha256:{{ docker_test_image_digest_v2_image_id }}"
+      loop: "{{ docker_test_image_digest_v1_image_ids + docker_test_image_digest_v2_image_ids }}"
 
     - name: Pull image 1
       docker_image_pull:
@@ -82,8 +80,6 @@
   always:
     - name: cleanup
       docker_image_remove:
-        name: "{{ item }}"
+        name: "sha256:{{ item }}"
         force: true
-      loop:
-        - "sha256:{{ docker_test_image_digest_v1_image_id }}"
-        - "sha256:{{ docker_test_image_digest_v2_image_id }}"
+      loop: "{{ docker_test_image_digest_v1_image_ids + docker_test_image_digest_v2_image_ids }}"

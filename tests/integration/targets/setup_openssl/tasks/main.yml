@@ -27,7 +27,7 @@
 - name: Install cryptography (Darwin, and potentially upgrade for other OSes)
   become: true
   pip:
-    name: cryptography>=1.3.0
+    name: cryptography>=3.3.0
     extra_args: "-c {{ remote_constraints }}"
 
 - name: Register cryptography version
