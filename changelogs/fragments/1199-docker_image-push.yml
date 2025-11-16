@@ -1,5 +1,0 @@
-bugfixes:
-  - "docker_image, docker_image_push - adjust image push detection to Docker 29 (https://github.com/ansible-collections/community.docker/pull/1199)."
-known_issues:
-  - "docker_image, docker_image_export - idempotency for archiving images depends on whether the image IDs used by the image storage backend correspond to the IDs used in the tarball's ``manifest.json`` files.
-     The new default backend in Docker 29 apparently uses image IDs that no longer correspond, whence idempotency no longer works (https://github.com/ansible-collections/community.docker/pull/1199)."
