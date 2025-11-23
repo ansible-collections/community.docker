@@ -359,6 +359,24 @@ class ParseRepositoryTagTest(unittest.TestCase):
             f"sha256:{self.sha}",
         )
 
+    def test_index_image_tag_and_sha(self) -> None:
+        assert parse_repository_tag(f"root:tag@sha256:{self.sha}") == (
+            "root",
+            f"tag@sha256:{self.sha}",
+        )
+
+    def test_index_user_image_tag_and_sha(self) -> None:
+        assert parse_repository_tag(f"user/repo:tag@sha256:{self.sha}") == (
+            "user/repo",
+            f"tag@sha256:{self.sha}",
+        )
+
+    def test_private_reg_image_tag_and_sha(self) -> None:
+        assert parse_repository_tag(f"url:5000/repo:tag@sha256:{self.sha}") == (
+            "url:5000/repo",
+            f"tag@sha256:{self.sha}",
+        )
+
 
 class ParseDeviceTest(unittest.TestCase):
     def test_dict(self) -> None:
