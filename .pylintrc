@@ -388,6 +388,8 @@ disable=raw-checker-failed,
         unused-argument,
         # Cannot remove yet due to inadequacy of rules
         inconsistent-return-statements,  # doesn't notice that fail_json() does not return
+        # Buggy impementation in pylint:
+        relative-beyond-top-level,  # TODO
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
