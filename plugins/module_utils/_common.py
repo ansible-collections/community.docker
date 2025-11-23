@@ -27,6 +27,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
     DOCKER_COMMON_ARGS,
     DOCKER_MUTUALLY_EXCLUSIVE,
     DOCKER_REQUIRED_TOGETHER,
+    filter_images_by_tag,
     sanitize_result,
     update_tls_hostname,
 )
@@ -563,18 +564,7 @@ class AnsibleDockerClientBase(Client):
             response = self.images(name=name)
         except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error searching for image {name} - {exc}")
-        images = response
-        if tag:
-            lookup = f"{name}:{tag}"
-            lookup_digest = f"{name}@{tag}"
-            images = []
-            for image in response:
-                tags = image.get("RepoTags")
-                digests = image.get("RepoDigests")
-                if (tags and lookup in tags) or (digests and lookup_digest in digests):
-                    images = [image]
-                    break
-        return images
+        return filter_images_by_tag(name, tag, response)
 
     def pull_image(
         self, name: str, tag: str = "latest", image_platform: str | None = None
