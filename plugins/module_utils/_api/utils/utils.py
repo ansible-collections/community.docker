@@ -240,9 +240,23 @@ def convert_service_networks(
 
 
 def parse_repository_tag(repo_name: str) -> tuple[str, str | None]:
+    # Check for digest (@ separator) first
     parts = repo_name.rsplit("@", 1)
     if len(parts) == 2:
-        return tuple(parts)  # type: ignore
+        # We have a digest, but there might also be a tag before it
+        repo_and_tag = parts[0]
+        digest = parts[1]
+
+        # Check if there's a tag in the part before the digest
+        tag_parts = repo_and_tag.rsplit(":", 1)
+        if len(tag_parts) == 2 and "/" not in tag_parts[1]:
+            # We have both tag and digest: return repo and "tag@digest"
+            return tag_parts[0], f"{tag_parts[1]}@{digest}"
+        else:
+            # Only digest, no tag: return repo and digest
+            return repo_and_tag, digest
+
+    # No digest, check for tag only
     parts = repo_name.rsplit(":", 1)
     if len(parts) == 2 and "/" not in parts[1]:
         return tuple(parts)  # type: ignore
