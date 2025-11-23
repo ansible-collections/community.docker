@@ -565,15 +565,31 @@ class AnsibleDockerClientBase(Client):
             self.fail(f"Error searching for image {name} - {exc}")
         images = response
         if tag:
-            lookup = f"{name}:{tag}"
-            lookup_digest = f"{name}@{tag}"
             images = []
-            for image in response:
-                tags = image.get("RepoTags")
-                digests = image.get("RepoDigests")
-                if (tags and lookup in tags) or (digests and lookup_digest in digests):
-                    images = [image]
-                    break
+            # Handle combined tag@digest format (e.g., "v1.0@sha256:abc123")
+            # Docker stores RepoTags and RepoDigests separately, so we need to
+            # split the combined format and match both independently
+            if "@" in tag and not tag.startswith("sha256:"):
+                tag_part, digest_part = tag.split("@", 1)
+                lookup_tag = f"{name}:{tag_part}"
+                lookup_digest = f"{name}@{digest_part}"
+                for image in response:
+                    tags = image.get("RepoTags") or []
+                    digests = image.get("RepoDigests") or []
+                    # For combined format, match BOTH tag AND digest
+                    if lookup_tag in tags and lookup_digest in digests:
+                        images = [image]
+                        break
+            else:
+                # Original logic for tag-only or digest-only
+                lookup = f"{name}:{tag}"
+                lookup_digest = f"{name}@{tag}"
+                for image in response:
+                    tags = image.get("RepoTags")
+                    digests = image.get("RepoDigests")
+                    if (tags and lookup in tags) or (digests and lookup_digest in digests):
+                        images = [image]
+                        break
         return images
 
     def pull_image(
