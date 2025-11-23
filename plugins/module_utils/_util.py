@@ -98,6 +98,54 @@ def is_image_name_id(name: str) -> bool:
     return bool(re.match("^sha256:[0-9a-fA-F]{64}$", name))
 
 
+def filter_images_by_tag(
+    name: str, tag: str | None, images: list[dict[str, t.Any]]
+) -> list[dict[str, t.Any]]:
+    """
+    Filter a list of images by name and tag.
+
+    Docker stores RepoTags and RepoDigests separately, never as combined references.
+    This function handles three formats:
+    - Tag-only: "v1.0" -> matches "repo:v1.0" in RepoTags
+    - Digest-only: "sha256:abc..." -> matches "repo@sha256:abc..." in RepoDigests
+    - Combined tag@digest: "v1.0@sha256:abc..." -> matches BOTH RepoTags AND RepoDigests
+
+    Args:
+        name: The repository name (e.g., "nginx" or "ghcr.io/user/repo")
+        tag: The tag, digest, or combined tag@digest (e.g., "v1.0", "sha256:abc...", "v1.0@sha256:abc...")
+        images: List of image dicts from Docker API with RepoTags and RepoDigests keys
+
+    Returns:
+        Filtered list of matching images (typically 0 or 1 items)
+    """
+    if not tag:
+        return images
+
+    # Handle combined tag@digest format (e.g., "v1.0@sha256:abc123")
+    # The @ is for digest, but if it doesn't start with sha256:, it's combined format
+    if "@" in tag and not tag.startswith("sha256:"):
+        tag_part, digest_part = tag.split("@", 1)
+        lookup_tag = f"{name}:{tag_part}"
+        lookup_digest = f"{name}@{digest_part}"
+        for image in images:
+            repo_tags = image.get("RepoTags") or []
+            repo_digests = image.get("RepoDigests") or []
+            # For combined format, match BOTH tag AND digest
+            if lookup_tag in repo_tags and lookup_digest in repo_digests:
+                return [image]
+        return []
+
+    # Original logic for tag-only or digest-only
+    lookup = f"{name}:{tag}"
+    lookup_digest = f"{name}@{tag}"
+    for image in images:
+        repo_tags = image.get("RepoTags")
+        repo_digests = image.get("RepoDigests")
+        if (repo_tags and lookup in repo_tags) or (repo_digests and lookup_digest in repo_digests):
+            return [image]
+    return []
+
+
 def is_valid_tag(tag: str, allow_empty: bool = False) -> bool:
     """Check whether the given string is a valid docker tag name."""
     if not tag:
