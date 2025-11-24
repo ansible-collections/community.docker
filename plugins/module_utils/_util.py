@@ -125,13 +125,13 @@ def filter_images_by_tag(
     # The @ is for digest, but if it doesn't start with sha256:, it's combined format
     if "@" in tag and not tag.startswith("sha256:"):
         tag_part, digest_part = tag.split("@", 1)
-        lookup_tag = f"{name}:{tag_part}"
         lookup_digest = f"{name}@{digest_part}"
         for image in images:
-            repo_tags = image.get("RepoTags") or []
             repo_digests = image.get("RepoDigests") or []
-            # For combined format, match BOTH tag AND digest
-            if lookup_tag in repo_tags and lookup_digest in repo_digests:
+            # When digest is specified, match by digest only.
+            # Docker doesn't preserve the tag in RepoTags when pulling by digest,
+            # so we can't require both to match.
+            if lookup_digest in repo_digests:
                 return [image]
         return []
 

@@ -544,9 +544,11 @@ class TestFilterImagesByTag:
         assert len(result) == 0
 
     # ========== Combined tag@digest tests ==========
+    # When a digest is specified, we match by digest ONLY because Docker doesn't
+    # preserve tags in RepoTags when pulling by digest. The tag is informational.
 
-    def test_combined_tag_digest_matches_both(self) -> None:
-        """Combined tag@digest should match when BOTH tag AND digest match."""
+    def test_combined_tag_digest_matches_by_digest(self) -> None:
+        """Combined tag@digest should match when digest matches (tag is informational)."""
         image = _create_mock_image(
             repo_tags=["nginx:1.21"],
             repo_digests=["nginx@sha256:" + SHA],
@@ -566,14 +568,18 @@ class TestFilterImagesByTag:
         )
         assert len(result) == 1
 
-    def test_combined_tag_digest_fails_if_tag_mismatch(self) -> None:
-        """Combined tag@digest should NOT match if tag doesn't match."""
+    def test_combined_tag_digest_matches_even_if_tag_differs(self) -> None:
+        """Combined tag@digest SHOULD match even if tag differs - digest is authoritative.
+
+        Docker doesn't store tags when pulling by digest, so requiring tag match
+        would cause lookups to always fail. The digest is the authoritative identifier.
+        """
         image = _create_mock_image(
-            repo_tags=["nginx:1.20"],  # Different tag
+            repo_tags=["nginx:1.20"],  # Different tag - doesn't matter
             repo_digests=["nginx@sha256:" + SHA],
         )
         result = filter_images_by_tag("nginx", f"1.21@sha256:{SHA}", [image])
-        assert len(result) == 0
+        assert len(result) == 1  # Should match by digest
 
     def test_combined_tag_digest_fails_if_digest_mismatch(self) -> None:
         """Combined tag@digest should NOT match if digest doesn't match."""
@@ -585,27 +591,40 @@ class TestFilterImagesByTag:
         result = filter_images_by_tag("nginx", f"1.21@sha256:{SHA}", [image])
         assert len(result) == 0
 
-    def test_combined_tag_digest_fails_if_both_mismatch(self) -> None:
-        """Combined tag@digest should NOT match if both tag and digest don't match."""
+    def test_combined_tag_digest_fails_if_digest_mismatch_tag_irrelevant(self) -> None:
+        """Combined tag@digest should NOT match if digest doesn't match, regardless of tag."""
         other_sha = "a" * 64
         image = _create_mock_image(
-            repo_tags=["nginx:1.20"],  # Different tag
-            repo_digests=["nginx@sha256:" + other_sha],  # Different digest
+            repo_tags=["nginx:1.20"],  # Different tag - irrelevant
+            repo_digests=["nginx@sha256:" + other_sha],  # Different digest - this matters
         )
         result = filter_images_by_tag("nginx", f"1.21@sha256:{SHA}", [image])
         assert len(result) == 0
 
     # ========== Edge cases ==========
 
-    def test_empty_repo_tags(self) -> None:
-        """Handle images where RepoTags is empty or None."""
+    def test_empty_repo_tags_matches_by_digest(self) -> None:
+        """Handle images where RepoTags is empty or None - should still match by digest.
+
+        This is the critical real-world case: Docker doesn't store tags when pulling
+        by digest, so RepoTags is often empty. We must match by digest only.
+        """
         image = _create_mock_image(
-            repo_tags=None,
+            repo_tags=None,  # Empty - typical when pulled by digest
             repo_digests=["nginx@sha256:" + SHA],
         )
-        # Combined format should not match if RepoTags is empty
+        # Combined format SHOULD match because digest matches
         result = filter_images_by_tag("nginx", f"1.21@sha256:{SHA}", [image])
-        assert len(result) == 0
+        assert len(result) == 1
+
+    def test_empty_repo_tags_list_matches_by_digest(self) -> None:
+        """Empty list RepoTags should still match by digest."""
+        image = _create_mock_image(
+            repo_tags=[],  # Empty list - typical when pulled by digest
+            repo_digests=["nginx@sha256:" + SHA],
+        )
+        result = filter_images_by_tag("nginx", f"1.21@sha256:{SHA}", [image])
+        assert len(result) == 1
 
     def test_empty_repo_digests(self) -> None:
         """Handle images where RepoDigests is empty or None."""
@@ -613,21 +632,23 @@ class TestFilterImagesByTag:
             repo_tags=["nginx:1.21"],
             repo_digests=None,
         )
-        # Combined format should not match if RepoDigests is empty
+        # Combined format should not match if RepoDigests is empty (digest is authoritative)
         result = filter_images_by_tag("nginx", f"1.21@sha256:{SHA}", [image])
         assert len(result) == 0
 
-    def test_multiple_tags(self) -> None:
-        """Image with multiple tags should match on any of them."""
+    def test_multiple_tags_irrelevant_for_combined(self) -> None:
+        """For combined tag@digest, tags are irrelevant - digest is authoritative."""
         image = _create_mock_image(
             repo_tags=["nginx:1.21", "nginx:latest", "nginx:stable"],
             repo_digests=["nginx@sha256:" + SHA],
         )
-        # Should match on 1.21
+        # All of these should match because the digest matches
         result = filter_images_by_tag("nginx", f"1.21@sha256:{SHA}", [image])
         assert len(result) == 1
-        # Should also match on latest
         result = filter_images_by_tag("nginx", f"latest@sha256:{SHA}", [image])
+        assert len(result) == 1
+        # Even a non-existent tag should match because digest matches
+        result = filter_images_by_tag("nginx", f"nonexistent@sha256:{SHA}", [image])
         assert len(result) == 1
 
     def test_multiple_digests(self) -> None:
@@ -637,11 +658,14 @@ class TestFilterImagesByTag:
             repo_tags=["nginx:1.21"],
             repo_digests=["nginx@sha256:" + SHA, "nginx@sha256:" + other_sha],
         )
-        # Should match on first digest
+        # Should match on first digest (tag is irrelevant)
         result = filter_images_by_tag("nginx", f"1.21@sha256:{SHA}", [image])
         assert len(result) == 1
         # Should also match on second digest
         result = filter_images_by_tag("nginx", f"1.21@sha256:{other_sha}", [image])
+        assert len(result) == 1
+        # Should match even with different tag
+        result = filter_images_by_tag("nginx", f"different@sha256:{SHA}", [image])
         assert len(result) == 1
 
     def test_port_in_registry_name(self) -> None:
