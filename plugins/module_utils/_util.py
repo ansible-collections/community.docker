@@ -146,6 +146,36 @@ def filter_images_by_tag(
     return []
 
 
+def build_pull_arguments(
+    name: str, tag: str
+) -> tuple[str, str | None]:
+    """
+    Build the correct arguments for Docker pull operations.
+
+    Docker SDK and API don't accept combined "tag@digest" in the tag parameter.
+    This function handles the three formats:
+    - Tag-only: "v1.0" -> (name, "v1.0")
+    - Digest-only: "sha256:abc..." -> (name, "sha256:abc...")
+    - Combined tag@digest: "v1.0@sha256:abc..." -> ("name:v1.0@sha256:abc...", None)
+
+    Args:
+        name: Repository name (e.g., "nginx", "ghcr.io/user/repo")
+        tag: Tag, digest, or combined tag@digest
+
+    Returns:
+        Tuple of (pull_name, pull_tag) where:
+        - For combined format: pull_name is full reference, pull_tag is None
+        - For other formats: pull_name is just the name, pull_tag is the tag/digest
+    """
+    # Handle combined tag@digest format (e.g., "v1.0@sha256:abc123")
+    # The @ indicates a digest, but if it doesn't START with sha256:, it's combined
+    if "@" in tag and not tag.startswith("sha256:"):
+        tag_part, digest = tag.split("@", 1)
+        return f"{name}:{tag_part}@{digest}", None
+    else:
+        return name, tag
+
+
 def is_valid_tag(tag: str, allow_empty: bool = False) -> bool:
     """Check whether the given string is a valid docker tag name."""
     if not tag:

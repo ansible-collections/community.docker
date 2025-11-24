@@ -56,6 +56,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
     DOCKER_COMMON_ARGS,
     DOCKER_MUTUALLY_EXCLUSIVE,
     DOCKER_REQUIRED_TOGETHER,
+    build_pull_arguments,
     filter_images_by_tag,
     sanitize_result,
     update_tls_hostname,
@@ -531,10 +532,15 @@ class AnsibleDockerClientBase(Client):
         try:
             repository, image_tag = parse_repository_tag(name)
             registry, dummy_repo_name = auth.resolve_repository_name(repository)
-            params = {
-                "tag": tag or image_tag or "latest",
-                "fromImage": repository,
-            }
+
+            # Build pull arguments - handles combined tag@digest format
+            effective_tag = tag or image_tag or "latest"
+            pull_name, pull_tag = build_pull_arguments(repository, effective_tag)
+
+            params: dict[str, t.Any] = {"fromImage": pull_name}
+            if pull_tag is not None:
+                params["tag"] = pull_tag
+
             if image_platform is not None:
                 params["platform"] = image_platform
 

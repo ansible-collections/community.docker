@@ -27,6 +27,7 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
     DOCKER_COMMON_ARGS,
     DOCKER_MUTUALLY_EXCLUSIVE,
     DOCKER_REQUIRED_TOGETHER,
+    build_pull_arguments,
     filter_images_by_tag,
     sanitize_result,
     update_tls_hostname,
@@ -572,17 +573,22 @@ class AnsibleDockerClientBase(Client):
         """
         Pull an image
         """
-        kwargs = {
-            "tag": tag,
+        kwargs: dict[str, t.Any] = {
             "stream": True,
             "decode": True,
         }
         if image_platform is not None:
             kwargs["platform"] = image_platform
+
+        # Build pull arguments - handles combined tag@digest format
+        pull_name, pull_tag = build_pull_arguments(name, tag)
+        if pull_tag is not None:
+            kwargs["tag"] = pull_tag
+
         self.log(f"Pulling image {name}:{tag}")
         old_tag = self.find_image(name, tag)
         try:
-            for line in self.pull(name, **kwargs):
+            for line in self.pull(pull_name, **kwargs):
                 self.log(line, pretty_print=True)
                 if line.get("error"):
                     if line.get("errorDetail"):
