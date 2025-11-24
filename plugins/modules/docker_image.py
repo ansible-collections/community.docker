@@ -405,6 +405,7 @@ from ansible_collections.community.docker.plugins.module_utils._image_archive im
 )
 from ansible_collections.community.docker.plugins.module_utils._util import (
     DockerBaseClass,
+    build_pull_arguments,
     clean_dict_booleans_for_docker_api,
     is_image_name_id,
     is_valid_tag,
@@ -784,6 +785,10 @@ class ImageManager(DockerBaseClass):
                         push_repository, push_tag = parse_repository_tag(
                             push_repository
                         )
+
+                    # Handle combined tag@digest format - Docker API doesn't accept it in tag param
+                    push_name, push_tag_param = build_pull_arguments(push_repository, push_tag)
+
                     push_registry, dummy = resolve_repository_name(push_repository)
                     headers = {}
                     header = get_config_header(self.client, push_registry)
@@ -792,12 +797,17 @@ class ImageManager(DockerBaseClass):
                         # See https://github.com/moby/moby/issues/50614.
                         header = base64.urlsafe_b64encode(b"{}")
                     headers["X-Registry-Auth"] = header
+
+                    params: dict[str, t.Any] = {}
+                    if push_tag_param is not None:
+                        params["tag"] = push_tag_param
+
                     response = self.client._post_json(
-                        self.client._url("/images/{0}/push", push_repository),
+                        self.client._url("/images/{0}/push", push_name),
                         data=None,
                         headers=headers,
                         stream=True,
-                        params={"tag": push_tag},
+                        params=params,
                     )
                     self.client._raise_for_status(response)
                     for line in self.client._stream_helper(response, decode=True):

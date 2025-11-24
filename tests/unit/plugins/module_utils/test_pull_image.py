@@ -12,6 +12,10 @@ The Docker SDK and API don't accept "tag@digest" in the tag parameter.
 build_pull_arguments handles this by:
 - Returning full reference as name when tag contains @
 - Returning None for tag in that case
+
+This function is used by:
+- pull_image() in _common.py and _common_api.py (for pulling images)
+- push_image() in docker_image.py (for pushing images)
 """
 
 from __future__ import annotations
