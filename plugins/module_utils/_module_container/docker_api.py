@@ -29,6 +29,7 @@ from ansible_collections.community.docker.plugins.module_utils._common_api impor
     RequestException,
 )
 from ansible_collections.community.docker.plugins.module_utils._module_container.base import (
+    _DEFAULT_IP_REPLACEMENT_STRING,
     OPTION_AUTO_REMOVE,
     OPTION_BLKIO_WEIGHT,
     OPTION_CAP_DROP,
@@ -125,11 +126,6 @@ if t.TYPE_CHECKING:
     from .base import Option, OptionGroup
 
     Sentry = object
-
-
-_DEFAULT_IP_REPLACEMENT_STRING = (
-    "[[DEFAULT_IP:iewahhaeB4Sae6Aen8IeShairoh4zeph7xaekoh8Geingunaesaeweiy3ooleiwi]]"
-)
 
 
 _SENTRY: Sentry = object()
