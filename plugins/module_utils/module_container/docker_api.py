@@ -23,6 +23,7 @@ from ansible_collections.community.docker.plugins.module_utils._platform import 
 )
 
 from ansible_collections.community.docker.plugins.module_utils.module_container.base import (
+    _DEFAULT_IP_REPLACEMENT_STRING,
     OPTION_AUTO_REMOVE,
     OPTION_BLKIO_WEIGHT,
     OPTION_CAPABILITIES,
@@ -115,9 +116,6 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.utils 
     convert_port_bindings,
     normalize_links,
 )
-
-
-_DEFAULT_IP_REPLACEMENT_STRING = '[[DEFAULT_IP:iewahhaeB4Sae6Aen8IeShairoh4zeph7xaekoh8Geingunaesaeweiy3ooleiwi]]'
 
 
 def _get_ansible_type(type):
@@ -1270,16 +1268,26 @@ def _preprocess_value_ports(module, client, api_version, options, values):
     if 'published_ports' not in values:
         return values
     found = False
-    for port_spec in values['published_ports'].values():
-        if port_spec[0] == _DEFAULT_IP_REPLACEMENT_STRING:
-            found = True
-            break
+    for port_specs in values["published_ports"].values():
+        if not isinstance(port_specs, list):
+            port_specs = [port_specs]
+        for port_spec in port_specs:
+            if port_spec[0] == _DEFAULT_IP_REPLACEMENT_STRING:
+                found = True
+                break
     if not found:
         return values
     default_ip = _get_default_host_ip(module, client)
-    for port, port_spec in values['published_ports'].items():
-        if port_spec[0] == _DEFAULT_IP_REPLACEMENT_STRING:
-            values['published_ports'][port] = tuple([default_ip] + list(port_spec[1:]))
+    for port, port_specs in values["published_ports"].items():
+        if isinstance(port_specs, list):
+            for index, port_spec in enumerate(port_specs):
+                if port_spec[0] == _DEFAULT_IP_REPLACEMENT_STRING:
+                    port_specs[index] = tuple([default_ip] + list(port_spec[1:]))
+        else:
+            if port_specs[0] == _DEFAULT_IP_REPLACEMENT_STRING:
+                values["published_ports"][port] = tuple(
+                    [default_ip] + list(port_specs[1:])
+                )
     return values
 
 
