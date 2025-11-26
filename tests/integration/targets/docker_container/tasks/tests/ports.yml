@@ -278,6 +278,58 @@
       - published_ports_3 is changed
 
 ####################################################################
+## published_ports: duplicate ports ################################
+####################################################################
+
+- name: published_ports -- duplicate ports
+  community.docker.docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    published_ports:
+      - 8000:80
+      - 10000:80
+  register: published_ports_1
+
+- name: published_ports -- duplicate ports (idempotency)
+  community.docker.docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    published_ports:
+      - 8000:80
+      - 10000:80
+    force_kill: true
+  register: published_ports_2
+
+- name: published_ports -- duplicate ports (idempotency w/ protocol)
+  community.docker.docker_container:
+    image: "{{ docker_test_image_alpine }}"
+    command: '/bin/sh -c "sleep 10m"'
+    name: "{{ cname }}"
+    state: started
+    published_ports:
+      - 8000:80/tcp
+      - 10000:80/tcp
+    force_kill: true
+  register: published_ports_3
+
+- name: cleanup
+  community.docker.docker_container:
+    name: "{{ cname }}"
+    state: absent
+    force_kill: true
+  diff: false
+
+- ansible.builtin.assert:
+    that:
+      - published_ports_1 is changed
+      - published_ports_2 is not changed
+      - published_ports_3 is not changed
+
+####################################################################
 ## published_ports: IPv6 addresses #################################
 ####################################################################
 
