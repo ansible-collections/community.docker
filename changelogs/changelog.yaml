@@ -2264,3 +2264,15 @@ releases:
       - 1201-docker_network.yml
       - 4.8.3.yml
     release_date: '2025-11-16'
+  4.8.4:
+    changes:
+      bugfixes:
+        - docker_container - when the same port is mapped more than once for the same
+          protocol without specifying an interface, a bug caused an invalid value
+          to be passed for the interface (https://github.com/ansible-collections/community.docker/issues/1213,
+          https://github.com/ansible-collections/community.docker/pull/1214).
+      release_summary: Bugfix release.
+    fragments:
+      - 1214-docker_container-ports.yml
+      - 4.8.4.yml
+    release_date: '2025-11-29'
