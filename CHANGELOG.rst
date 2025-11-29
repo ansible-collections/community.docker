@@ -4,6 +4,19 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v5.0.3
+======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- docker_container - when the same port is mapped more than once for the same protocol without specifying an interface, a bug caused an invalid value to be passed for the interface (https://github.com/ansible-collections/community.docker/issues/1213, https://github.com/ansible-collections/community.docker/pull/1214).
+
 v5.0.2
 ======
 
