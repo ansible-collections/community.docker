@@ -16,7 +16,7 @@ import traceback
 from collections import namedtuple
 
 from ansible.module_utils.basic import missing_required_lib
-from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_native, to_text
 from ansible_collections.community.docker.plugins.module_utils._six import shlex_quote, string_types
 
 from ansible_collections.community.docker.plugins.module_utils.util import DockerBaseClass
@@ -395,7 +395,7 @@ def parse_json_events(stderr, warn_function=None):
                 )
             continue
         try:
-            line_data = json.loads(line)
+            line_data = json.loads(to_text(line))
         except Exception as exc:
             if warn_function:
                 warn_function(
@@ -430,9 +430,12 @@ def parse_json_events(stderr, warn_function=None):
             )
         else:
             resource_type = ResourceType.UNKNOWN
-            resource_id = line_data.get('id')
-            status = line_data.get('status')
-            text = line_data.get('text')
+            resource_id = to_native(line_data.get('id'), nonstring='passthru')
+            parent_id = to_native(line_data.get("parent_id"), nonstring='passthru')
+            status = to_native(line_data.get('status'), nonstring='passthru')
+            text = to_native(line_data.get('text'), nonstring='passthru')
+            level = to_native(line_data.get('level'), nonstring='passthru')
+            msg = to_native(line_data.get('msg'), nonstring='passthru')
             if resource_id == " " and text and text.startswith("build service "):
                 # Example:
                 # {"dry-run":true,"id":" ","text":"build service app"}
@@ -450,16 +453,12 @@ def parse_json_events(stderr, warn_function=None):
                 # {"dry-run":true,"id":"ansible-docker-test-dc713f1f-container ==> ==>","text":"naming to ansible-docker-test-dc713f1f-image"}
                 # (The longer form happens since Docker Compose 2.39.0)
                 continue
-            if (
-                status in ("Working", "Done")
-                and isinstance(line_data.get("parent_id"), str)
-                and line_data["parent_id"].startswith("Image ")
-            ):
+            if status in ("Working", "Done") and isinstance(parent_id, str) and parent_id.startswith("Image "):
                 # Compose 5.0.0+:
                 # {"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working"}
                 # {"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Done","percent":100}
                 resource_type = ResourceType.IMAGE_LAYER
-                resource_id = line_data["parent_id"][len("Image ") :]
+                resource_id = parent_id[len("Image ") :]
             elif isinstance(resource_id, str) and ' ' in resource_id:
                 resource_type_str, resource_id = resource_id.split(' ', 1)
                 try:
@@ -476,14 +475,14 @@ def parse_json_events(stderr, warn_function=None):
             elif text in DOCKER_STATUS_PULL:
                 resource_type = ResourceType.IMAGE
                 status, text = text, status
-            elif text in DOCKER_PULL_PROGRESS_DONE or line_data.get('text') in DOCKER_PULL_PROGRESS_WORKING_OLD:
+            elif text in DOCKER_PULL_PROGRESS_DONE or text in DOCKER_PULL_PROGRESS_WORKING_OLD:
                 resource_type = ResourceType.IMAGE_LAYER
                 status, text = text, status
             elif status is None and isinstance(text, string_types) and text.startswith('Skipped - '):
                 status, text = text.split(' - ', 1)
-            elif line_data.get('level') in _JSON_LEVEL_TO_STATUS_MAP and 'msg' in line_data:
-                status = _JSON_LEVEL_TO_STATUS_MAP[line_data['level']]
-                text = line_data['msg']
+            elif level in _JSON_LEVEL_TO_STATUS_MAP and 'msg' in line_data:
+                status = _JSON_LEVEL_TO_STATUS_MAP[level]
+                text = msg
             if status not in DOCKER_STATUS_AND_WARNING and text in DOCKER_STATUS_AND_WARNING:
                 status, text = text, status
             event = Event(

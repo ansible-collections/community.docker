@@ -1,2 +1,3 @@
 bugfixes:
   - "docker_compose_v2, docker_compose_v2_pull - adjust parsing from image pull events to changes in Docker Compose 5.0.0 (https://github.com/ansible-collections/community.docker/pull/1219)."
+  - "docker_compose_v2* modules - fix Python 2 compatibility when parsing JSON events (https://github.com/ansible-collections/community.docker/pull/1220)."
