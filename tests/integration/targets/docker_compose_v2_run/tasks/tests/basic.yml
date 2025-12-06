@@ -77,7 +77,8 @@
         - ansible.builtin.assert:
             that:
               - result_1.rc == 0
-              - result_1.stderr == ""
+              # Since Compose 5, unrelated output shows up in stderr...
+              - result_1.stderr == "" or ("Creating" in result_1.stderr and "Created" in result_1.stderr)
               - >-
                 "usr" in result_1.stdout_lines
                 and
