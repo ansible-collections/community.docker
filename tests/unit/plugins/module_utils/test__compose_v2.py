@@ -391,14 +391,19 @@ JSON_TEST_CASES: list[tuple[str, str, str, list[Event], list[str]]] = [
     (
         "pull-compose-2",
         "2.40.3",
-        '{"level":"warning","msg":"/tmp/ansible.f9pcm_i3.test/ansible-docker-test-3c46cd06-pull/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion","time":"2025-12-06T13:16:30Z"}\n'
+        '{"level":"warning","msg":"/tmp/ansible.f9pcm_i3.test/ansible-docker-test-3c46cd06-pull/docker-compose.yml: the attribute `version`'
+        ' is obsolete, it will be ignored, please remove it to avoid potential confusion","time":"2025-12-06T13:16:30Z"}\n'
         '{"id":"ansible-docker-test-3c46cd06-cont","text":"Pulling"}\n'
         '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Pulling fs layer"}\n'
-        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Downloading","status":"[\\u003e                                                  ]   6.89kB/599.9kB","current":6890,"total":599883,"percent":1}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Downloading","status":"[\\u003e    '
+        '                                              ]   6.89kB/599.9kB","current":6890,"total":599883,"percent":1}\n'
         '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Download complete","percent":100}\n'
-        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Extracting","status":"[==\\u003e                                                ]  32.77kB/599.9kB","current":32768,"total":599883,"percent":5}\n'
-        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Extracting","status":"[==================================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
-        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Extracting","status":"[==================================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Extracting","status":"[==\\u003e   '
+        '                                             ]  32.77kB/599.9kB","current":32768,"total":599883,"percent":5}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Extracting","status":"[============'
+        '======================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Extracting","status":"[============'
+        '======================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
         '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Pull complete","percent":100}\n'
         '{"id":"ansible-docker-test-3c46cd06-cont","text":"Pulled"}\n',
         [
@@ -406,7 +411,8 @@ JSON_TEST_CASES: list[tuple[str, str, str, list[Event], list[str]]] = [
                 "unknown",
                 None,
                 "Warning",
-                "/tmp/ansible.f9pcm_i3.test/ansible-docker-test-3c46cd06-pull/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion",
+                "/tmp/ansible.f9pcm_i3.test/ansible-docker-test-3c46cd06-pull/docker-compose.yml: the attribute `version` is obsolete,"
+                " it will be ignored, please remove it to avoid potential confusion",
             ),
             Event(
                 "image",
@@ -468,16 +474,22 @@ JSON_TEST_CASES: list[tuple[str, str, str, list[Event], list[str]]] = [
     (
         "pull-compose-5",
         "5.0.0",
-        '{"level":"warning","msg":"/tmp/ansible.1n0q46aj.test/ansible-docker-test-b2fa9191-pull/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion","time":"2025-12-06T13:08:22Z"}\n'
+        '{"level":"warning","msg":"/tmp/ansible.1n0q46aj.test/ansible-docker-test-b2fa9191-pull/docker-compose.yml: the attribute'
+        ' `version` is obsolete, it will be ignored, please remove it to avoid potential confusion","time":"2025-12-06T13:08:22Z"}\n'
         '{"id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"Pulling"}\n'
         '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working"}\n'
-        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[\\u003e                                                  ]   6.89kB/599.9kB","current":6890,"total":599883,"percent":1}\n'
-        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[==================================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[\\u003e       '
+        '                                           ]   6.89kB/599.9kB","current":6890,"total":599883,"percent":1}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[=============='
+        '====================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
         '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working"}\n'
         '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Done","percent":100}\n'
-        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[==\\u003e                                                ]  32.77kB/599.9kB","current":32768,"total":599883,"percent":5}\n'
-        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[==================================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
-        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[==================================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[==\\u003e     '
+        '                                           ]  32.77kB/599.9kB","current":32768,"total":599883,"percent":5}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[=============='
+        '====================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[=============='
+        '====================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
         '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Done","percent":100}\n'
         '{"id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Done","text":"Pulled"}\n',
         [
@@ -485,7 +497,8 @@ JSON_TEST_CASES: list[tuple[str, str, str, list[Event], list[str]]] = [
                 "unknown",
                 None,
                 "Warning",
-                "/tmp/ansible.1n0q46aj.test/ansible-docker-test-b2fa9191-pull/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion",
+                "/tmp/ansible.1n0q46aj.test/ansible-docker-test-b2fa9191-pull/docker-compose.yml: the attribute `version`"
+                " is obsolete, it will be ignored, please remove it to avoid potential confusion",
             ),
             Event(
                 "image",
