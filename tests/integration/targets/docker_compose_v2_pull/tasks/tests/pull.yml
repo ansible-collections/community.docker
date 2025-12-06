@@ -9,12 +9,10 @@
     non_existing_image: does-not-exist:latest
     project_src: "{{ remote_tmp_dir }}/{{ pname }}"
     test_service_non_existing: |
-      version: '3'
       services:
         {{ cname }}:
           image: {{ non_existing_image }}
     test_service_simple: |
-      version: '3'
       services:
         {{ cname }}:
           image: {{ docker_test_image_simple_1 }}
