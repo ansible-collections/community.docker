@@ -197,7 +197,11 @@ class AnsibleDockerClientBase:
             data = json.loads(stdout)
         except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(
-                f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_text(stdout)}"
+                f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_text(stdout)}\n\nError output:\n{to_text(stderr)}",
+                cmd=self._compose_cmd_str(args),
+                rc=rc,
+                stdout=stdout,
+                stderr=stderr,
             )
         return rc, data, stderr
 
@@ -223,7 +227,11 @@ class AnsibleDockerClientBase:
                     result.append(json.loads(line))
         except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(
-                f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_text(stdout)}"
+                f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_text(stdout)}\n\nError output:\n{to_text(stderr)}",
+                cmd=self._compose_cmd_str(args),
+                rc=rc,
+                stdout=stdout,
+                stderr=stderr,
             )
         return rc, result, stderr
 
