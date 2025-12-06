@@ -133,11 +133,18 @@ class AnsibleDockerClientBase(object):
         try:
             data = json.loads(stdout)
         except Exception as exc:
-            self.fail('Error while parsing JSON output of {cmd}: {exc}\nJSON output: {stdout}'.format(
+            self.fail(
+                'Error while parsing JSON output of {cmd}: {exc}\nJSON output: {stdout}\n\nError output:\n{stderr}'.format(
+                    cmd=self._compose_cmd_str(args),
+                    exc=to_native(exc),
+                    stdout=to_native(stdout),
+                    stderr=to_native(stderr),
+                ),
                 cmd=self._compose_cmd_str(args),
-                exc=to_native(exc),
+                rc=rc,
                 stdout=to_native(stdout),
-            ))
+                stderr=to_native(stderr),
+            )
         return rc, data, stderr
 
     # def call_cli_json_stream(self, *args, check_rc=False, data=None, cwd=None, environ_update=None, warn_on_stderr=False):
@@ -153,11 +160,18 @@ class AnsibleDockerClientBase(object):
                 if line.startswith(b'{'):
                     result.append(json.loads(line))
         except Exception as exc:
-            self.fail('Error while parsing JSON output of {cmd}: {exc}\nJSON output: {stdout}'.format(
+            self.fail(
+                'Error while parsing JSON output of {cmd}: {exc}\nJSON output: {stdout}\n\nError output:\n{stderr}'.format(
+                    cmd=self._compose_cmd_str(args),
+                    exc=to_native(exc),
+                    stdout=to_native(stdout),
+                    stderr=to_native(stderr),
+                ),
                 cmd=self._compose_cmd_str(args),
-                exc=to_native(exc),
+                rc=rc,
                 stdout=to_native(stdout),
-            ))
+                stderr=to_native(stderr),
+            )
         return rc, result, stderr
 
     @abc.abstractmethod
