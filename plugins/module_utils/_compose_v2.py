@@ -132,7 +132,7 @@ DOCKER_PULL_PROGRESS_DONE = frozenset(
         "Pull complete",
     )
 )
-DOCKER_PULL_PROGRESS_WORKING = frozenset(
+DOCKER_PULL_PROGRESS_WORKING_OLD = frozenset(
     (
         "Pulling fs layer",
         "Waiting",
@@ -141,6 +141,7 @@ DOCKER_PULL_PROGRESS_WORKING = frozenset(
         "Extracting",
     )
 )
+DOCKER_PULL_PROGRESS_WORKING = frozenset(DOCKER_PULL_PROGRESS_WORKING_OLD | {"Working"})
 
 
 class ResourceType:
@@ -191,7 +192,7 @@ _RE_PULL_EVENT = re.compile(
 )
 
 _DOCKER_PULL_PROGRESS_WD = sorted(
-    DOCKER_PULL_PROGRESS_DONE | DOCKER_PULL_PROGRESS_WORKING
+    DOCKER_PULL_PROGRESS_DONE | DOCKER_PULL_PROGRESS_WORKING_OLD
 )
 
 _RE_PULL_PROGRESS = re.compile(
@@ -523,7 +524,7 @@ def parse_json_events(
                 status, text = text, status
             elif (
                 text in DOCKER_PULL_PROGRESS_DONE
-                or line_data.get("text") in DOCKER_PULL_PROGRESS_WORKING
+                or line_data.get("text") in DOCKER_PULL_PROGRESS_WORKING_OLD
             ):
                 resource_type = ResourceType.IMAGE_LAYER
                 status, text = text, status
