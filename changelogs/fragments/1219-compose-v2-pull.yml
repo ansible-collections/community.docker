@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_compose_v2, docker_compose_v2_pull - adjust parsing from image pull events to changes in Docker Compose 5.0.0 (https://github.com/ansible-collections/community.docker/pull/1219)."
