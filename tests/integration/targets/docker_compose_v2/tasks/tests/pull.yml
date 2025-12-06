@@ -81,16 +81,19 @@
     - ansible.builtin.assert:
         that:
           - present_1_check is failed or present_1_check is changed
-          - present_1_check is changed or present_1_check.msg.startswith('General error:')
+          - present_1_check is changed or 'General error:' in present_1_check.msg
           - present_1_check.warnings | default([]) | select('regex', ' please report this at ') | length == 0
           - present_1 is failed
-          - present_1.msg.startswith('General error:')
+          - >-
+            'General error:' in present_1.msg
           - present_1.warnings | default([]) | select('regex', ' please report this at ') | length == 0
           - present_2_check is failed
-          - present_2_check.msg.startswith('Error when processing ' ~ cname ~ ':')
+          - present_2_check.msg.startswith('Error when processing ' ~ cname ~ ':') or
+            present_2_check.msg.startswith('Error when processing image ' ~ non_existing_image ~ ':')
           - present_2_check.warnings | default([]) | select('regex', ' please report this at ') | length == 0
           - present_2 is failed
-          - present_2.msg.startswith('Error when processing ' ~ cname ~ ':')
+          - present_2.msg.startswith('Error when processing ' ~ cname ~ ':') or
+            present_2.msg.startswith('Error when processing image ' ~ non_existing_image ~ ':')
           - present_2.warnings | default([]) | select('regex', ' please report this at ') | length == 0
 
 ####################################################################
