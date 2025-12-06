@@ -494,7 +494,17 @@ def parse_json_events(
                 # {"dry-run":true,"id":"ansible-docker-test-dc713f1f-container ==> ==>","text":"naming to ansible-docker-test-dc713f1f-image"}
                 # (The longer form happens since Docker Compose 2.39.0)
                 continue
-            if isinstance(resource_id, str) and " " in resource_id:
+            if (
+                status in ("Working", "Done")
+                and isinstance(line_data.get("parent_id"), str)
+                and line_data["parent_id"].startswith("Image ")
+            ):
+                # Compose 5.0.0+:
+                # {"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working"}
+                # {"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Done","percent":100}
+                resource_type = ResourceType.IMAGE_LAYER
+                resource_id = line_data["parent_id"][len("Image ") :]
+            elif isinstance(resource_id, str) and " " in resource_id:
                 resource_type_str, resource_id = resource_id.split(" ", 1)
                 try:
                     resource_type = ResourceType.from_docker_compose_event(
