@@ -4,6 +4,21 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v4.8.5
+======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- CLI-based modules - when parsing JSON output fails, also provide standard error output. Also provide information on the command and its result in machine-readable way (https://github.com/ansible-collections/community.docker/issues/1216, https://github.com/ansible-collections/community.docker/pull/1221).
+- docker_compose_v2* modules - fix Python 2 compatibility when parsing JSON events (https://github.com/ansible-collections/community.docker/pull/1220).
+- docker_compose_v2, docker_compose_v2_pull - adjust parsing from image pull events to changes in Docker Compose 5.0.0 (https://github.com/ansible-collections/community.docker/pull/1219).
+
 v4.8.4
 ======
 
