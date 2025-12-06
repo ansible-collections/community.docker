@@ -10,6 +10,7 @@ import pytest
 from ansible_collections.community.docker.plugins.module_utils.compose_v2 import (
     Event,
     parse_events,
+    parse_json_events,
 )
 
 from .compose_v2_test_cases import EVENT_TEST_CASES
@@ -366,6 +367,211 @@ def test_parse_events(test_id, compose_version, dry_run, nonzero_rc, stderr, eve
         collected_warnings.append(msg)
 
     collected_events = parse_events(stderr, dry_run=dry_run, warn_function=collect_warning, nonzero_rc=nonzero_rc)
+
+    print(collected_events)
+    print(collected_warnings)
+
+    assert collected_events == events
+    assert collected_warnings == warnings
+
+
+JSON_TEST_CASES = [
+    (
+        "pull-compose-2",
+        "2.40.3",
+        '{"level":"warning","msg":"/tmp/ansible.f9pcm_i3.test/ansible-docker-test-3c46cd06-pull/docker-compose.yml: the attribute `version`'
+        ' is obsolete, it will be ignored, please remove it to avoid potential confusion","time":"2025-12-06T13:16:30Z"}\n'
+        '{"id":"ansible-docker-test-3c46cd06-cont","text":"Pulling"}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Pulling fs layer"}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Downloading","status":"[\\u003e    '
+        '                                              ]   6.89kB/599.9kB","current":6890,"total":599883,"percent":1}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Download complete","percent":100}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Extracting","status":"[==\\u003e   '
+        '                                             ]  32.77kB/599.9kB","current":32768,"total":599883,"percent":5}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Extracting","status":"[============'
+        '======================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Extracting","status":"[============'
+        '======================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"ansible-docker-test-3c46cd06-cont","text":"Pull complete","percent":100}\n'
+        '{"id":"ansible-docker-test-3c46cd06-cont","text":"Pulled"}\n',
+        [
+            Event(
+                "unknown",
+                None,
+                "Warning",
+                "/tmp/ansible.f9pcm_i3.test/ansible-docker-test-3c46cd06-pull/docker-compose.yml: the attribute `version` is obsolete,"
+                " it will be ignored, please remove it to avoid potential confusion",
+            ),
+            Event(
+                "image",
+                "ansible-docker-test-3c46cd06-cont",
+                "Pulling",
+                None,
+            ),
+            Event(
+                "image-layer",
+                "63a26ae4e8a8",
+                "Pulling fs layer",
+                None,
+            ),
+            Event(
+                "image-layer",
+                "63a26ae4e8a8",
+                "Downloading",
+                "[>                                                  ]   6.89kB/599.9kB",
+            ),
+            Event(
+                "image-layer",
+                "63a26ae4e8a8",
+                "Download complete",
+                None,
+            ),
+            Event(
+                "image-layer",
+                "63a26ae4e8a8",
+                "Extracting",
+                "[==>                                                ]  32.77kB/599.9kB",
+            ),
+            Event(
+                "image-layer",
+                "63a26ae4e8a8",
+                "Extracting",
+                "[==================================================>]  599.9kB/599.9kB",
+            ),
+            Event(
+                "image-layer",
+                "63a26ae4e8a8",
+                "Extracting",
+                "[==================================================>]  599.9kB/599.9kB",
+            ),
+            Event(
+                "image-layer",
+                "63a26ae4e8a8",
+                "Pull complete",
+                None,
+            ),
+            Event(
+                "image",
+                "ansible-docker-test-3c46cd06-cont",
+                "Pulled",
+                None,
+            ),
+        ],
+        [],
+    ),
+    (
+        "pull-compose-5",
+        "5.0.0",
+        '{"level":"warning","msg":"/tmp/ansible.1n0q46aj.test/ansible-docker-test-b2fa9191-pull/docker-compose.yml: the attribute'
+        ' `version` is obsolete, it will be ignored, please remove it to avoid potential confusion","time":"2025-12-06T13:08:22Z"}\n'
+        '{"id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"Pulling"}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working"}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[\\u003e       '
+        '                                           ]   6.89kB/599.9kB","current":6890,"total":599883,"percent":1}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[=============='
+        '====================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working"}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Done","percent":100}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[==\\u003e     '
+        '                                           ]  32.77kB/599.9kB","current":32768,"total":599883,"percent":5}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[=============='
+        '====================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working","text":"[=============='
+        '====================================\\u003e]  599.9kB/599.9kB","current":599883,"total":599883,"percent":100}\n'
+        '{"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Done","percent":100}\n'
+        '{"id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Done","text":"Pulled"}\n',
+        [
+            Event(
+                "unknown",
+                None,
+                "Warning",
+                "/tmp/ansible.1n0q46aj.test/ansible-docker-test-b2fa9191-pull/docker-compose.yml: the attribute `version`"
+                " is obsolete, it will be ignored, please remove it to avoid potential confusion",
+            ),
+            Event(
+                "image",
+                "ghcr.io/ansible-collections/simple-1:tag",
+                "Pulling",
+                "Working",
+            ),
+            Event(
+                "image-layer",
+                "ghcr.io/ansible-collections/simple-1:tag",
+                "Working",
+                None,
+            ),
+            Event(
+                "image-layer",
+                "ghcr.io/ansible-collections/simple-1:tag",
+                "Working",
+                "[>                                                  ]   6.89kB/599.9kB",
+            ),
+            Event(
+                "image-layer",
+                "ghcr.io/ansible-collections/simple-1:tag",
+                "Working",
+                "[==================================================>]  599.9kB/599.9kB",
+            ),
+            Event(
+                "image-layer",
+                "ghcr.io/ansible-collections/simple-1:tag",
+                "Working",
+                None,
+            ),
+            Event(
+                "image-layer", "ghcr.io/ansible-collections/simple-1:tag", "Done", None
+            ),
+            Event(
+                "image-layer",
+                "ghcr.io/ansible-collections/simple-1:tag",
+                "Working",
+                "[==>                                                ]  32.77kB/599.9kB",
+            ),
+            Event(
+                "image-layer",
+                "ghcr.io/ansible-collections/simple-1:tag",
+                "Working",
+                "[==================================================>]  599.9kB/599.9kB",
+            ),
+            Event(
+                "image-layer",
+                "ghcr.io/ansible-collections/simple-1:tag",
+                "Working",
+                "[==================================================>]  599.9kB/599.9kB",
+            ),
+            Event(
+                "image-layer", "ghcr.io/ansible-collections/simple-1:tag", "Done", None
+            ),
+            Event(
+                "image", "ghcr.io/ansible-collections/simple-1:tag", "Pulled", "Done"
+            ),
+        ],
+        [],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test_id, compose_version, stderr, events, warnings",
+    JSON_TEST_CASES,
+    ids=[tc[0] for tc in JSON_TEST_CASES],
+)
+def test_parse_json_events(
+    test_id,
+    compose_version,
+    stderr,
+    events,
+    warnings,
+):
+    collected_warnings = []
+
+    def collect_warning(msg):
+        collected_warnings.append(msg)
+
+    collected_events = parse_json_events(
+        stderr.encode("utf-8"),
+        warn_function=collect_warning,
+    )
 
     print(collected_events)
     print(collected_warnings)
