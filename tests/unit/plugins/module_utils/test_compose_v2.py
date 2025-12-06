@@ -375,7 +375,7 @@ def test_parse_events(test_id, compose_version, dry_run, nonzero_rc, stderr, eve
     assert collected_warnings == warnings
 
 
-JSON_TEST_CASES: list[tuple[str, str, str, list[Event], list[str]]] = [
+JSON_TEST_CASES = [
     (
         "pull-compose-2",
         "2.40.3",
@@ -557,15 +557,15 @@ JSON_TEST_CASES: list[tuple[str, str, str, list[Event], list[str]]] = [
     ids=[tc[0] for tc in JSON_TEST_CASES],
 )
 def test_parse_json_events(
-    test_id: str,
-    compose_version: str,
-    stderr: str,
-    events: list[Event],
-    warnings: list[str],
-) -> None:
+    test_id,
+    compose_version,
+    stderr,
+    events,
+    warnings,
+):
     collected_warnings = []
 
-    def collect_warning(msg: str) -> None:
+    def collect_warning(msg):
         collected_warnings.append(msg)
 
     collected_events = parse_json_events(
