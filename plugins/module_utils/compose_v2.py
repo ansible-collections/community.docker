@@ -98,13 +98,16 @@ DOCKER_PULL_PROGRESS_DONE = frozenset((
     'Download complete',
     'Pull complete',
 ))
-DOCKER_PULL_PROGRESS_WORKING = frozenset((
-    'Pulling fs layer',
-    'Waiting',
-    'Downloading',
-    'Verifying Checksum',
-    'Extracting',
-))
+DOCKER_PULL_PROGRESS_WORKING_OLD = frozenset(
+    (
+        "Pulling fs layer",
+        "Waiting",
+        "Downloading",
+        "Verifying Checksum",
+        "Extracting",
+    )
+)
+DOCKER_PULL_PROGRESS_WORKING = frozenset(DOCKER_PULL_PROGRESS_WORKING_OLD | set(["Working"]))
 
 
 class ResourceType(object):
@@ -168,7 +171,7 @@ _RE_PULL_PROGRESS = re.compile(
     r'\s*'
     r'(?:|\s\[[^]]+\]\s+\S+\s*|\s+[0-9.kKmMgGbB]+/[0-9.kKmMgGbB]+\s*)'
     r'$'
-    % '|'.join(re.escape(status) for status in sorted(DOCKER_PULL_PROGRESS_DONE | DOCKER_PULL_PROGRESS_WORKING))
+    % '|'.join(re.escape(status) for status in sorted(DOCKER_PULL_PROGRESS_DONE | DOCKER_PULL_PROGRESS_WORKING_OLD))
 )
 
 _RE_ERROR_EVENT = re.compile(
@@ -447,7 +450,17 @@ def parse_json_events(stderr, warn_function=None):
                 # {"dry-run":true,"id":"ansible-docker-test-dc713f1f-container ==> ==>","text":"naming to ansible-docker-test-dc713f1f-image"}
                 # (The longer form happens since Docker Compose 2.39.0)
                 continue
-            if isinstance(resource_id, str) and ' ' in resource_id:
+            if (
+                status in ("Working", "Done")
+                and isinstance(line_data.get("parent_id"), str)
+                and line_data["parent_id"].startswith("Image ")
+            ):
+                # Compose 5.0.0+:
+                # {"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Working"}
+                # {"id":"63a26ae4e8a8","parent_id":"Image ghcr.io/ansible-collections/simple-1:tag","status":"Done","percent":100}
+                resource_type = ResourceType.IMAGE_LAYER
+                resource_id = line_data["parent_id"][len("Image ") :]
+            elif isinstance(resource_id, str) and ' ' in resource_id:
                 resource_type_str, resource_id = resource_id.split(' ', 1)
                 try:
                     resource_type = ResourceType.from_docker_compose_event(resource_type_str)
@@ -463,7 +476,7 @@ def parse_json_events(stderr, warn_function=None):
             elif text in DOCKER_STATUS_PULL:
                 resource_type = ResourceType.IMAGE
                 status, text = text, status
-            elif text in DOCKER_PULL_PROGRESS_DONE or line_data.get('text') in DOCKER_PULL_PROGRESS_WORKING:
+            elif text in DOCKER_PULL_PROGRESS_DONE or line_data.get('text') in DOCKER_PULL_PROGRESS_WORKING_OLD:
                 resource_type = ResourceType.IMAGE_LAYER
                 status, text = text, status
             elif status is None and isinstance(text, string_types) and text.startswith('Skipped - '):
