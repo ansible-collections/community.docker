@@ -32,12 +32,10 @@ schedules:
         - stable-4
 
 variables:
-  - name: checkoutPath
-    value: ansible_collections/community/docker
   - name: coverageBranches
     value: main
   - name: entryPoint
-    value: tests/utils/shippable/shippable.sh
+    value: .azure-pipelines/scripts/run-nox.sh
   - name: fetchDepth
     value: 0
 
@@ -50,231 +48,35 @@ pool: Standard
 
 stages:
 
-### Sanity & units
-  - stage: Ansible_devel
-    displayName: Sanity & Units devel
-    dependsOn: []
+  - stage: nox
+    displayName: Run extra sanity tests
     jobs:
-      - template: templates/matrix.yml
+      - template: templates/run-nox.yml
         parameters:
-          targets:
-            - name: Sanity
-              test: 'devel/sanity/1'
-            - name: Units
-              test: 'devel/units/1'
-  - stage: Ansible_2_20
-    displayName: Sanity & Units 2.20
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          targets:
-            - name: Sanity
-              test: '2.20/sanity/1'
-            - name: Units
-              test: '2.20/units/1'
-  - stage: Ansible_2_19
-    displayName: Sanity & Units 2.19
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          targets:
-            - name: Sanity
-              test: '2.19/sanity/1'
-            - name: Units
-              test: '2.19/units/1'
-  - stage: Ansible_2_18
-    displayName: Sanity & Units 2.18
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          targets:
-            - name: Sanity
-              test: '2.18/sanity/1'
-            - name: Units
-              test: '2.18/units/1'
+          jobs:
+            - job: extra_sanity
+              name: Extra sanity tests
+              sessions: ""
 
-### Docker
-  - stage: Docker_devel
-    displayName: Docker devel
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: devel/linux/{0}
-          targets:
-            - name: Fedora 42
-              test: fedora42
-            - name: Ubuntu 22.04
-              test: ubuntu2204
-            - name: Ubuntu 24.04
-              test: ubuntu2404
-            - name: Alpine 3.22
-              test: alpine322
-          groups:
-            - 4
-            - 5
-  - stage: Docker_2_20
-    displayName: Docker 2.20
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.20/linux/{0}
-          targets:
-            - name: Fedora 42
-              test: fedora42
-            - name: Alpine 3.22
-              test: alpine322
-          groups:
-            - 4
-            - 5
-  - stage: Docker_2_19
-    displayName: Docker 2.19
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.19/linux/{0}
-          targets:
-            - name: Fedora 41
-              test: fedora41
-            - name: Alpine 3.21
-              test: alpine321
-          groups:
-            - 4
-            - 5
-  - stage: Docker_2_18
-    displayName: Docker 2.18
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.18/linux/{0}
-          targets:
-            - name: Fedora 40
-              test: fedora40
-            - name: Ubuntu 22.04
-              test: ubuntu2204
-            - name: Alpine 3.20
-              test: alpine320
-          groups:
-            - 4
-            - 5
+#  - stage: create-matrixes
+#    displayName: Create matrixes
+#    jobs:
+#      - job: A
+#        steps:
+#          - task: Bash@3
+#            inputs:
+#              filePath: 'script-a.sh'
+#            name: setvar
+#          - bash: |
+#              echo "##vso[task.setVariable variable=legs;isOutput=true]{'a':{'myvar':'A'}, 'b':{'myvar':'B'}}"
+#            name: mtrx
 
-### Community Docker
-  - stage: Docker_community_devel
-    displayName: Docker (community images) devel
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: devel/linux-community/{0}
-          targets:
-            - name: Debian 11 Bullseye
-              test: debian-bullseye/3.9
-            - name: Debian 12 Bookworm
-              test: debian-bookworm/3.11
-            - name: Debian 13 Trixie
-              test: debian-13-trixie/3.13
-            - name: ArchLinux
-              test: archlinux/3.13
-          groups:
-            - 4
-            - 5
-
-### Remote
-  - stage: Remote_devel
-    displayName: Remote devel
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: devel/{0}
-          targets:
-            - name: RHEL 10.0
-              test: rhel/10.0
-            - name: RHEL 9.6 with Docker SDK, urllib3, requests from sources
-              test: rhel/9.6-dev-latest
-            # For some reason, Ubuntu 24.04 is *extremely* slower than RHEL 9.6
-            # - name: Ubuntu 24.04
-            #   test: ubuntu/24.04
-          groups:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-  - stage: Remote_2_20
-    displayName: Remote 2.20
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.20/{0}
-          targets:
-            - name: RHEL 9.6
-              test: rhel/9.6
-          groups:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-  - stage: Remote_2_19
-    displayName: Remote 2.19
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.19/{0}
-          targets:
-            - name: RHEL 9.5
-              test: rhel/9.5
-            - name: Ubuntu 22.04
-              test: ubuntu/22.04
-          groups:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-  - stage: Remote_2_18
-    displayName: Remote 2.18
-    dependsOn: []
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          testFormat: 2.18/{0}
-          targets:
-            - name: RHEL 9.4
-              test: rhel/9.4
-          groups:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-
-  ## Finally
-
-  - stage: Summary
-    condition: succeededOrFailed()
-    dependsOn:
-      - Ansible_devel
-      - Ansible_2_20
-      - Ansible_2_19
-      - Ansible_2_18
-      - Remote_devel
-      - Remote_2_20
-      - Remote_2_19
-      - Remote_2_18
-      - Docker_devel
-      - Docker_2_20
-      - Docker_2_19
-      - Docker_2_18
-      - Docker_community_devel
-    jobs:
-      - template: templates/coverage.yml
+#  - stage: sanity
+#    displayName: Sanity tests
+#    dependsOn: create-matrixes
+#      - job: runner
+#        dependsOn: generator
+#        strategy:
+#          matrix: $[ stageDependencies.create-matrixes.A.outputs['mtrx.legs'] ]
+#        steps:
+#          - script: echo $(myvar) # echos A or B depending on which leg is running

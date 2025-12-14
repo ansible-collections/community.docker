@@ -7,11 +7,7 @@
 
 set -o pipefail -eu
 
-if [[ "$PWD" =~ /ansible_collections/ ]]; then
-    output_path="tests/output"
-else
-    output_path="test/results"
-fi
+output_path="tests/output"
 
 echo "##vso[task.setVariable variable=outputPath]${output_path}"
 
