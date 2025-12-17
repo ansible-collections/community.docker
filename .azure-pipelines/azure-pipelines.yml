@@ -38,6 +38,11 @@ variables:
     value: .azure-pipelines/scripts/run-nox.sh
   - name: fetchDepth
     value: 0
+  - name: minAnsibleCore
+    value: "2.17"
+  - name: noxSource
+    # value: https://github.com/ansible-community/antsibull-nox/archive/main.tar.gz
+    value: https://github.com/felixfontein/antsibull-nox/archive/azp.tar.gz
 
 resources:
   containers:
@@ -50,33 +55,65 @@ stages:
 
   - stage: nox
     displayName: Run extra sanity tests
+    dependsOn: []
     jobs:
-      - template: templates/run-nox.yml
-        parameters:
-          jobs:
-            - job: extra_sanity
-              name: Extra sanity tests
+      - job: extra_sanity
+        displayName: Extra sanity tests
+        container: default
+        workspace:
+          clean: all
+        steps:
+          - template: templates/run-nox.yml
+            parameters:
               sessions: ""
 
-#  - stage: create-matrixes
-#    displayName: Create matrixes
-#    jobs:
-#      - job: A
-#        steps:
-#          - task: Bash@3
-#            inputs:
-#              filePath: 'script-a.sh'
-#            name: setvar
-#          - bash: |
-#              echo "##vso[task.setVariable variable=legs;isOutput=true]{'a':{'myvar':'A'}, 'b':{'myvar':'B'}}"
-#            name: mtrx
+  - stage: create_matrixes
+    displayName: Create matrixes
+    dependsOn: []
+    jobs:
+      - template: templates/create-nox-matrix.yml
 
-#  - stage: sanity
-#    displayName: Sanity tests
-#    dependsOn: create-matrixes
-#      - job: runner
-#        dependsOn: generator
-#        strategy:
-#          matrix: $[ stageDependencies.create-matrixes.A.outputs['mtrx.legs'] ]
-#        steps:
-#          - script: echo $(myvar) # echos A or B depending on which leg is running
+  - stage: sanity
+    displayName: Sanity tests
+    dependsOn: create_matrixes
+    jobs:
+      - job: sanity
+        strategy:
+          matrix: >-
+            $[ coalesce(stageDependencies.create_matrixes.create_matrixes.outputs['matrix.sanity'], '{"none": {"display_name": "(none)", "skip": true}}') ]
+        displayName: "$[ variables.display_name ]"
+        container: default
+        workspace:
+          clean: all
+        steps:
+          - template: templates/run-nox.yml
+            parameters:
+              sessions: $(name)
+
+  - stage: foo
+    displayName: Foo tests
+    dependsOn: create_matrixes
+    jobs:
+      - job: foo
+        strategy:
+          matrix: >-
+            $[ coalesce(stageDependencies.create_matrixes.create_matrixes.outputs['matrix.foo'], '{"none": {"display_name": "(none)", "skip": true}}') ]
+        displayName: "$[ variables.display_name ]"
+        container: default
+        workspace:
+          clean: all
+        steps:
+          - template: templates/run-nox.yml
+            parameters:
+              sessions: $(name)
+
+  - stage: Summary
+    condition: succeededOrFailed()
+    dependsOn:
+      - nox
+      - sanity
+      # - units
+      # - integration
+      - foo
+    jobs:
+      - template: templates/coverage.yml

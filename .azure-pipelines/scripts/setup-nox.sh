@@ -5,13 +5,14 @@
 
 set -o pipefail -e
 
-SESSIONS=""
+declare -a SESSIONS
 if [ "$1" != "" ]; then
-    SESSIONS="--sessions $1"
+    IFS=' ' read -ra SESSIONS <<< "$1"
+    SESSIONS=('--sessions' "${SESSIONS[@]}")
 fi
 
 export FORCE_COLOR=1
 export ANTSIBULL_NOX_IGNORE_INSTALLED_COLLECTIONS=true
 
 echo "Set up nox environments"
-nox --verbose --install-only ${SESSIONS} 2>&1 | "$(dirname "$0")/time-command.py"
+nox --verbose --install-only "${SESSIONS[@]}" 2>&1 | "$(dirname "$0")/time-command.py"

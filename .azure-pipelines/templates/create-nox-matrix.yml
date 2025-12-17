@@ -1,0 +1,24 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# This template runs antsibull-nox' matrix generator
+
+jobs:
+  - job: create_matrixes
+    displayName: Create matrixes
+    container: default
+    workspace:
+      clean: all
+    steps:
+      - checkout: self
+        fetchDepth: $(fetchDepth)
+      - bash: pip install $(noxSource)
+        displayName: Install nox and antsibull-nox
+      - bash: |
+          export FORCE_COLOR=1
+          export AZP_STDOUT=true
+          nox --session matrix-generator -- --min-ansible-core $(minAnsibleCore) 2>&1
+        displayName: Run nox
+        name: matrix
