@@ -219,10 +219,6 @@ remote = [
 ##################################################################################################
 
 [sessions.ansible_lint]
-ansible_lint_package = [
-    "ansible-lint",
-    "ansible-compat < 25.8.2",
-]
 
 [[sessions.ee_check.execution_environments]]
 name = "devel-ubi-9"
