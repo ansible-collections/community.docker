@@ -14,7 +14,6 @@ from __future__ import annotations
 import traceback
 import typing as t
 
-
 REQUESTS_IMPORT_ERROR: str | None  # pylint: disable=invalid-name
 try:
     from requests import Session  # noqa: F401, pylint: disable=unused-import

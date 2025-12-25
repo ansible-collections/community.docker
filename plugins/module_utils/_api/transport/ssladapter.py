@@ -16,7 +16,6 @@ import typing as t
 from .._import_helper import HTTPAdapter, urllib3
 from .basehttpadapter import BaseHTTPAdapter
 
-
 # Resolves OpenSSL issues in some servers:
 #   https://lukasa.co.uk/2013/01/Choosing_SSL_Version_In_Requests/
 #   https://github.com/kennethreitz/requests/pull/799

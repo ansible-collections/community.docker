@@ -22,7 +22,6 @@ import typing as t
 from ..constants import IS_WINDOWS_PLATFORM, WINDOWS_LONGPATH_PREFIX
 from . import fnmatch
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Sequence
 

@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_node
 short_description: Manage Docker Swarm node
@@ -135,7 +134,6 @@ node:
 
 import traceback
 import typing as t
-
 
 try:
     from docker.errors import APIError, DockerException

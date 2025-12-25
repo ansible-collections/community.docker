@@ -13,7 +13,6 @@ from ansible_collections.community.docker.plugins.module_utils._socket_handler i
     DockerSocketHandlerBase,
 )
 
-
 if t.TYPE_CHECKING:
     from ansible.utils.display import Display
 

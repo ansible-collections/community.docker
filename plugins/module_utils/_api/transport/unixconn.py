@@ -18,7 +18,6 @@ from .. import constants
 from .._import_helper import HTTPAdapter, urllib3, urllib3_connection
 from .basehttpadapter import BaseHTTPAdapter
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Mapping
 

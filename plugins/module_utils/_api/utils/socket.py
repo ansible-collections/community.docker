@@ -20,7 +20,6 @@ import typing as t
 
 from ..transport.npipesocket import NpipeSocket
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Sequence
 

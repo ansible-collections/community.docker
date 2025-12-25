@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_context_info
 
@@ -192,7 +191,6 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
     ContextException,
     DockerException,
 )
-
 
 if t.TYPE_CHECKING:
     from ansible_collections.community.docker.plugins.module_utils._api.tls import (

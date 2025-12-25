@@ -32,7 +32,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
     sanitize_labels,
 )
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Callable, Sequence
 

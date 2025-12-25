@@ -13,7 +13,6 @@ from ansible_collections.community.docker.plugins.module_utils._logfmt import (
     parse_line,
 )
 
-
 SUCCESS_TEST_CASES: list[tuple[str, dict[str, t.Any], dict[str, t.Any]]] = [
     (
         'time="2024-02-02T08:14:10+01:00" level=warning msg="a network with name influxNetwork exists but was not'

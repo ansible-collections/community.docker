@@ -8,7 +8,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 name: docker_containers
 short_description: Ansible dynamic inventory plugin for Docker containers
@@ -194,7 +193,6 @@ from ansible_collections.community.docker.plugins.plugin_utils._common_api impor
 from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
     make_unsafe,
 )
-
 
 if t.TYPE_CHECKING:
     from ansible.inventory.data import InventoryData

@@ -14,7 +14,6 @@ from ansible_collections.community.docker.plugins.module_utils._compose_v2 impor
 
 from .compose_v2_test_cases import EVENT_TEST_CASES
 
-
 EXTRA_TEST_CASES: list[tuple[str, str, bool, bool, str, list[Event], list[str]]] = [
     (
         "2.24.2-manual-build-dry-run",

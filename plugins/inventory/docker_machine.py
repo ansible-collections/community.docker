@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 name: docker_machine
 author: Ximon Eighteen (@ximon18)
@@ -116,7 +115,6 @@ from ansible_collections.community.library_inventory_filtering_v1.plugins.plugin
 from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
     make_unsafe,
 )
-
 
 if t.TYPE_CHECKING:
     from ansible.inventory.data import InventoryData

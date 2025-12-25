@@ -14,7 +14,6 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.proxy 
     ProxyConfig,
 )
 
-
 HTTP = "http://test:80"
 HTTPS = "https://test:443"
 FTP = "ftp://user:password@host:23"

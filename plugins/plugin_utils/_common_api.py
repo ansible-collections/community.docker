@@ -19,7 +19,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
     DOCKER_COMMON_ARGS,
 )
 
-
 if t.TYPE_CHECKING:
     from ansible.plugins import AnsiblePlugin
 

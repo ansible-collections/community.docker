@@ -19,7 +19,6 @@ from ansible_collections.community.docker.plugins.inventory.docker_containers im
     InventoryModule,
 )
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Callable
 

@@ -31,7 +31,6 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 

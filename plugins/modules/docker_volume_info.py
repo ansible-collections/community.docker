@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_volume_info
 short_description: Retrieve facts about Docker volumes

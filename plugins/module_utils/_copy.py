@@ -25,7 +25,6 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
     NotFound,
 )
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Callable
 

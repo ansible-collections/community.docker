@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_stack_info
 author: "Jose Angel Munoz (@imjoseangel)"

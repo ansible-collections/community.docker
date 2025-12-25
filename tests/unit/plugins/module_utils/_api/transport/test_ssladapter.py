@@ -17,7 +17,6 @@ from ansible_collections.community.docker.plugins.module_utils._api.transport im
     ssladapter,
 )
 
-
 try:
     from ssl import CertificateError, match_hostname  # type: ignore
 except ImportError:

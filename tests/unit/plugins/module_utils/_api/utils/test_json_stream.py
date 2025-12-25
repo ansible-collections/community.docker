@@ -16,7 +16,6 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.json_s
     stream_as_text,
 )
 
-
 if t.TYPE_CHECKING:
     T = t.TypeVar("T")
 

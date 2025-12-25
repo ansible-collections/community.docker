@@ -14,7 +14,6 @@ import socket as pysocket
 import typing as t
 from collections.abc import Callable
 
-
 if t.TYPE_CHECKING:
     SocketLike = pysocket.socket
 

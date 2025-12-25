@@ -18,7 +18,6 @@ from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.common.collections import is_sequence
 from ansible.module_utils.common.text.converters import to_text
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Callable
 

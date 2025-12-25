@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 author:
   - Felix Fontein (@felixfontein)
@@ -137,7 +136,6 @@ from ansible_collections.community.docker.plugins.plugin_utils._common_api impor
 from ansible_collections.community.docker.plugins.plugin_utils._socket_handler import (
     DockerSocketHandler,
 )
-
 
 if t.TYPE_CHECKING:
     from collections.abc import Callable

@@ -9,7 +9,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 author:
   - Lorin Hochestein (!UNKNOWN)
@@ -130,7 +129,6 @@ from ansible.utils.display import Display
 from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
-
 
 display = Display()
 

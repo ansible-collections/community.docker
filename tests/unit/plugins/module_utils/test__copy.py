@@ -12,7 +12,6 @@ from ansible_collections.community.docker.plugins.module_utils._copy import (
     _stream_generator_to_fileobj,
 )
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Sequence
 

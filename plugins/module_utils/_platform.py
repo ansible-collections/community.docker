@@ -16,7 +16,6 @@ from __future__ import annotations
 import re
 import typing as t
 
-
 _VALID_STR = re.compile("^[A-Za-z0-9_-]+$")
 
 

@@ -34,7 +34,6 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
 
-
 HAS_DOCKER_PY_2 = False  # pylint: disable=invalid-name
 HAS_DOCKER_PY_3 = False  # pylint: disable=invalid-name
 HAS_DOCKER_ERROR: None | str  # pylint: disable=invalid-name

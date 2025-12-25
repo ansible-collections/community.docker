@@ -16,7 +16,6 @@ from __future__ import annotations
 import typing as t
 from enum import Enum
 
-
 # The format is defined in https://pkg.go.dev/github.com/kr/logfmt?utm_source=godoc
 # (look for "EBNFish")
 

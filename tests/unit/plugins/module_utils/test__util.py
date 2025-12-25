@@ -15,7 +15,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
     parse_healthcheck,
 )
 
-
 if t.TYPE_CHECKING:
 
     class DAMSpec(t.TypedDict):

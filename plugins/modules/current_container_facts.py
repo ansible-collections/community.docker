@@ -7,7 +7,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: current_container_facts
 short_description: Return facts about whether the module runs in a container

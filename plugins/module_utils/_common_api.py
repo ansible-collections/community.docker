@@ -21,7 +21,6 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
 
-
 try:
     from requests.exceptions import (  # noqa: F401, pylint: disable=unused-import
         RequestException,
@@ -59,7 +58,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
     sanitize_result,
     update_tls_hostname,
 )
-
 
 if t.TYPE_CHECKING:
     from collections.abc import Callable

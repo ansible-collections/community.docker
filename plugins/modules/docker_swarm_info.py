@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_swarm_info
 
@@ -187,7 +186,6 @@ tasks:
 
 import traceback
 import typing as t
-
 
 try:
     from docker.errors import APIError, DockerException
