@@ -7,4 +7,4 @@
 # Reformat with black and isort
 d65d37e9e9a78e03a35643704b413121515ee39c
 # Reformat with ruff check --fix instead of isort
-81a8bcd01f271c955a8ea773467e2d1d2c418aed
+712d920941d8e95d2826e0dbdc5f02914671d02a
