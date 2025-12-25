@@ -14,7 +14,6 @@ from __future__ import annotations
 import re
 import typing as t
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Collection, Sequence
 

@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 name: docker_swarm
 author:
@@ -167,7 +166,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
     make_unsafe,
 )
-
 
 if t.TYPE_CHECKING:
     from ansible.inventory.data import InventoryData

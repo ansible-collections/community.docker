@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import sys
 
-
 MINIMUM_DOCKER_API_VERSION = "1.21"
 DEFAULT_TIMEOUT_SECONDS = 60
 STREAM_HEADER_SIZE_BYTES = 8

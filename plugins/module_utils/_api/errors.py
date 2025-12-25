@@ -17,7 +17,6 @@ from ansible.module_utils.common.text.converters import to_text
 
 from ._import_helper import HTTPError as _HTTPError
 
-
 if t.TYPE_CHECKING:
     from requests import Response
 

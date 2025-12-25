@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_swarm_service
 author:
@@ -873,7 +872,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
-
 
 try:
     from docker import types

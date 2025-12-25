@@ -24,7 +24,6 @@ from ansible_collections.community.docker.plugins.plugin_utils._unsafe import (
     make_unsafe,
 )
 
-
 TEST_MAKE_UNSAFE: list[
     tuple[t.Any, list[tuple[t.Any, ...]], list[tuple[t.Any, ...]]]
 ] = [

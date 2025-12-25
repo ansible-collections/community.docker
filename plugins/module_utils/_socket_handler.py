@@ -23,7 +23,6 @@ from ansible_collections.community.docker.plugins.module_utils._socket_helper im
     write_to_socket,
 )
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType

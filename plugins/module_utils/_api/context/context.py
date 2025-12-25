@@ -25,7 +25,6 @@ from .config import (
     get_tls_dir,
 )
 
-
 IN_MEMORY = "IN MEMORY"
 
 

@@ -44,7 +44,6 @@ from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.c
     DEFAULT_DOCKER_API_VERSION,
 )
 
-
 TEST_CERT_DIR = os.path.join(
     os.path.dirname(__file__),
     "testdata/certs",

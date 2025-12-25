@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_image_build
 
@@ -303,7 +302,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
-
 
 if t.TYPE_CHECKING:
     from ansible.module_utils.basic import AnsibleModule

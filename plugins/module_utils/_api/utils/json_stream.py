@@ -17,7 +17,6 @@ import typing as t
 
 from ..errors import StreamParseError
 
-
 if t.TYPE_CHECKING:
     import re
     from collections.abc import Callable

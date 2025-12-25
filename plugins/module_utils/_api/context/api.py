@@ -24,7 +24,6 @@ from .config import (
 )
 from .context import Context
 
-
 if t.TYPE_CHECKING:
     from ..tls import TLSConfig
 

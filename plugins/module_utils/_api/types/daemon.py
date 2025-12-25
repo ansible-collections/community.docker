@@ -17,7 +17,6 @@ import typing as t
 from .._import_helper import urllib3
 from ..errors import DockerException
 
-
 if t.TYPE_CHECKING:
     from requests import Response
 

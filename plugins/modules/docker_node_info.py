@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_node_info
 
@@ -95,7 +94,6 @@ from ansible_collections.community.docker.plugins.module_utils._common import (
 from ansible_collections.community.docker.plugins.module_utils._swarm import (
     AnsibleDockerSwarmClient,
 )
-
 
 try:
     from docker.errors import DockerException

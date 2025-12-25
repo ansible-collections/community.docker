@@ -17,7 +17,6 @@ import typing as t
 from .. import errors
 from . import utils
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Callable
 

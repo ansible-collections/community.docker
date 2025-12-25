@@ -17,7 +17,6 @@ import typing as t
 from . import errors
 from .transport.ssladapter import SSLHTTPAdapter
 
-
 if t.TYPE_CHECKING:
     from ansible_collections.community.docker.plugins.module_utils._api.api.client import (
         APIClient,

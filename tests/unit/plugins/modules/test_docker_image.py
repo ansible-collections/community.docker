@@ -20,7 +20,6 @@ from ..test_support.docker_image_archive_stubbing import (
     write_irrelevant_tar,
 )
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Callable
 

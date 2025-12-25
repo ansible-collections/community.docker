@@ -12,7 +12,6 @@ import json
 import typing as t
 from time import sleep
 
-
 try:
     from docker.errors import APIError, NotFound
 except ImportError:

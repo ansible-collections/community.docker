@@ -34,7 +34,6 @@ from ansible_collections.community.docker.plugins.module_utils._version import (
     LooseVersion,
 )
 
-
 PYYAML_IMPORT_ERROR: None | str  # pylint: disable=invalid-name
 try:
     import yaml

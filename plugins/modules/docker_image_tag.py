@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_image_tag
 
@@ -120,7 +119,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
     is_image_name_id,
     is_valid_tag,
 )
-
 
 if t.TYPE_CHECKING:
     from ansible.module_utils.basic import AnsibleModule

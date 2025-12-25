@@ -52,7 +52,6 @@ from ..utils.decorators import minimum_version, update_headers
 from ..utils.proxy import ProxyConfig
 from ..utils.socket import consume_socket_output, demux_adaptor, frames_iter
 
-
 if t.TYPE_CHECKING:
     from requests import Response
     from requests.adapters import BaseAdapter

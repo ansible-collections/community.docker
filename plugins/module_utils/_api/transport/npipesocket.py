@@ -17,7 +17,6 @@ import time
 import traceback
 import typing as t
 
-
 PYWIN32_IMPORT_ERROR: str | None  # pylint: disable=invalid-name
 try:
     import pywintypes

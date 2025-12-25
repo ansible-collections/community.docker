@@ -34,7 +34,6 @@ from ..constants import (
 )
 from ..tls import TLSConfig
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 

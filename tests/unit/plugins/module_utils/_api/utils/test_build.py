@@ -27,7 +27,6 @@ from ansible_collections.community.docker.plugins.module_utils._api.utils.build 
     tar,
 )
 
-
 if t.TYPE_CHECKING:
     from collections.abc import Collection
 

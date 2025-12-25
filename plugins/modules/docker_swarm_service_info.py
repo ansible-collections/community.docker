@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_swarm_service_info
 
@@ -64,7 +63,6 @@ service:
 
 import traceback
 import typing as t
-
 
 try:
     from docker.errors import DockerException

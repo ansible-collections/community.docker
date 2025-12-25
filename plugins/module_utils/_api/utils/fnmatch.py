@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import re
 
-
 __all__ = ["fnmatch", "fnmatchcase", "translate"]
 
 _cache: dict[str, re.Pattern] = {}

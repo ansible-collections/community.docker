@@ -12,7 +12,6 @@ from ansible_collections.community.docker.plugins.modules import (
     docker_swarm_service,
 )
 
-
 APIError = pytest.importorskip("docker.errors.APIError")
 
 

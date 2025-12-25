@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_stack
 author: "Dario Zanzico (@dariko)"
@@ -167,7 +166,6 @@ from ansible_collections.community.docker.plugins.module_utils._common_cli impor
     AnsibleModuleDockerClient,
     DockerException,
 )
-
 
 try:
     from jsondiff import diff as json_diff

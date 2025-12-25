@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_swarm
 short_description: Manage Swarm cluster
@@ -293,7 +292,6 @@ actions:
 import json
 import traceback
 import typing as t
-
 
 try:
     from docker.errors import APIError, DockerException

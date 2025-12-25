@@ -21,7 +21,6 @@ from .credentials.errors import CredentialsNotFound, StoreError
 from .credentials.store import Store
 from .utils import config
 
-
 if t.TYPE_CHECKING:
     from ansible_collections.community.docker.plugins.module_utils._api.api.client import (
         APIClient,

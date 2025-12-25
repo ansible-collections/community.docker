@@ -8,5 +8,4 @@
 
 from __future__ import annotations
 
-
 DEFAULT_DOCKER_API_VERSION = "1.45"

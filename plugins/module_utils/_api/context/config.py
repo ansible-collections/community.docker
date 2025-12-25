@@ -19,7 +19,6 @@ from ..constants import DEFAULT_UNIX_SOCKET, IS_WINDOWS_PLATFORM
 from ..utils.config import find_config_file, get_default_config_file
 from ..utils.utils import parse_host
 
-
 METAFILE = "meta.json"
 
 

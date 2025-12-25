@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-
 DOCUMENTATION = r"""
 module: docker_container_copy_into
 
@@ -197,7 +196,6 @@ from ansible_collections.community.docker.plugins.module_utils._scramble import 
     generate_insecure_key,
     scramble,
 )
-
 
 if t.TYPE_CHECKING:
     import tarfile
