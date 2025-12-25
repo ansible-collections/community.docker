@@ -16,9 +16,14 @@ stable_branches = [ "stable-*" ]
 [sessions]
 
 [sessions.lint]
-run_isort = true
-isort_config = ".isort.cfg"
+run_isort = false
 run_black = true
+run_ruff_autofix = true
+ruff_autofix_config = "ruff.toml"
+ruff_autofix_select = [
+    "I",
+    "RUF022",
+]
 run_ruff_check = true
 ruff_check_config = "ruff.toml"
 run_flake8 = true
