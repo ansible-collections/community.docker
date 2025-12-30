@@ -160,9 +160,10 @@ def get_connect_params(auth, fail_function):
         # TLS with verification
         tls_config = dict(
             verify=True,
-            assert_hostname=auth['tls_hostname'],
             fail_function=fail_function,
         )
+        if auth["tls_hostname"] is not None:
+            tls_config["assert_hostname"] = auth["tls_hostname"]
         if auth['cert_path'] and auth['key_path']:
             tls_config['client_cert'] = (auth['cert_path'], auth['key_path'])
         if auth['cacert_path']:
@@ -327,7 +328,8 @@ class AnsibleDockerClientBase(Client):
             use_ssh_client=self._get_value('use_ssh_client', params['use_ssh_client'], None, False, type='bool'),
         )
 
-        update_tls_hostname(result)
+        if LooseVersion(docker_version) < LooseVersion("7.0.0b1"):
+            update_tls_hostname(result)
 
         return result
 
