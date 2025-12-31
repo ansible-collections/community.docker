@@ -4,6 +4,19 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v5.0.5
+======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- modules and plugins using the Docker SDK for Python - do not automatically set ``tls_hostname`` when ``validate_certs=true`` for Docker SDK for Python 7.0.0+ (https://github.com/ansible-collections/community.docker/issues/1225, https://github.com/ansible-collections/community.docker/pull/1226).
+
 v5.0.4
 ======
 
