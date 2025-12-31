@@ -2293,3 +2293,15 @@ releases:
       - 1221-cli-json-errors.yml
       - 4.8.5.yml
     release_date: '2025-12-06'
+  4.8.6:
+    changes:
+      bugfixes:
+        - modules and plugins using the Docker SDK for Python - do not automatically
+          set ``tls_hostname`` when ``validate_certs=true`` for Docker SDK for Python
+          7.0.0+ (https://github.com/ansible-collections/community.docker/issues/1225,
+          https://github.com/ansible-collections/community.docker/pull/1226).
+      release_summary: Bugfix release.
+    fragments:
+      - 1226-docker-sdk-tls.yml
+      - 4.8.6.yml
+    release_date: '2025-12-31'
