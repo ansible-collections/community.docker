@@ -137,7 +137,7 @@ docker = [ "fedora40", "ubuntu2204", "alpine320" ]
 [[sessions.ansible_test_integration.groups.sessions]]
 ansible_core = "2.18"
 target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
-remote = [ "rhel/9.4" ]
+remote = [ "rhel/9.7" ]
 
 # Ansible-core 2.19:
 
@@ -153,7 +153,7 @@ docker = [ "fedora41", "alpine321" ]
 [[sessions.ansible_test_integration.groups.sessions]]
 ansible_core = "2.19"
 target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
-remote = [ "rhel/9.5", "ubuntu/22.04" ]
+remote = [ "ubuntu/22.04" ]
 
 # Ansible-core 2.20:
 
@@ -169,7 +169,7 @@ docker = [ "fedora42", "alpine322" ]
 [[sessions.ansible_test_integration.groups.sessions]]
 ansible_core = "2.20"
 target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
-remote = [ "rhel/9.6" ]
+remote = [ "rhel/9.7" ]
 
 # Ansible-core devel:
 
@@ -209,7 +209,7 @@ docker = "quay.io/ansible-community/test-image:archlinux"
 [[sessions.ansible_test_integration.groups.sessions]]
 ansible_core = "devel"
 target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
-remote = [ "rhel/9.6" ]
+remote = [ "rhel/9.7" ]
 ansible_vars = { force_docker_sdk_for_python_dev = { type = "value", value = true, template_value = "sdk-dev-latest" } }
 
 [[sessions.ansible_test_integration.groups.sessions]]
