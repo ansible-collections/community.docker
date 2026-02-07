@@ -194,10 +194,10 @@ stages:
         parameters:
           testFormat: devel/{0}
           targets:
-            - name: RHEL 10.1
-              test: rhel/10.1
-            - name: RHEL 9.7 with Docker SDK, urllib3, requests from sources
-              test: rhel/9.7-dev-latest
+            - name: RHEL 10.1 with Docker SDK, urllib3, requests from sources
+              test: rhel/10.1-dev-latest
+            - name: RHEL 9.7
+              test: rhel/9.7
             # For some reason, Ubuntu 24.04 is *extremely* slower than RHEL 9.6
             # - name: Ubuntu 24.04
             #   test: ubuntu/24.04
