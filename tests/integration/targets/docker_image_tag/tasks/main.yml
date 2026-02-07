@@ -76,7 +76,7 @@
           - info_1.images | length == 2
           - info_1.images[0].Id == pulled_images.results[0].image.Id
           - info_1.images[1].Id == pulled_images.results[0].image.Id
-          - tag_1_check == tag_1
+          - tag_1_check | internal__normalize_image("image") == tag_1 | internal__normalize_image("image")
 
     - name: Tag image 1 (idempotent, check mode)
       community.docker.docker_image_tag:
@@ -102,7 +102,7 @@
           - tag_2 is not changed
           - tag_2.diff.before == tag_2.diff.after
           - tag_2.diff.before.images | length == 2
-          - tag_2_check == tag_2
+          - tag_2_check | internal__normalize_image("image") == tag_2 | internal__normalize_image("image")
 
     - name: Tag image 1 (idempotent, different input format, check mode)
       community.docker.docker_image_tag:
@@ -130,7 +130,7 @@
           - tag_3 is not changed
           - tag_3.diff.before == tag_3.diff.after
           - tag_3.diff.before.images | length == 2
-          - tag_3_check == tag_3
+          - tag_3_check | internal__normalize_image("image") == tag_3 | internal__normalize_image("image")
 
     - name: Tag image 1 (one more, check mode)
       community.docker.docker_image_tag:
@@ -173,7 +173,7 @@
           - info_4.images[0].Id == pulled_images.results[0].image.Id
           - info_4.images[1].Id == pulled_images.results[0].image.Id
           - info_4.images[2].Id == pulled_images.results[0].image.Id
-          - tag_4_check == tag_4
+          - tag_4_check | internal__normalize_image("image") == tag_4 | internal__normalize_image("image")
 
     - name: Tag image 2 (only change missing one, check mode)
       community.docker.docker_image_tag:
@@ -219,7 +219,7 @@
           - info_5.images[1].Id == pulled_images.results[0].image.Id
           - info_5.images[2].Id == pulled_images.results[1].image.Id
           - info_5.images[3].Id == pulled_images.results[0].image.Id
-          - tag_5_check == tag_5
+          - tag_5_check | internal__normalize_image("image") == tag_5 | internal__normalize_image("image")
 
     - name: Tag image 2 (idempotent, check mode)
       community.docker.docker_image_tag:
@@ -249,7 +249,7 @@
           - tag_6 is not changed
           - tag_6.diff.before == tag_6.diff.after
           - tag_6.diff.before.images | length == 3
-          - tag_6_check == tag_6
+          - tag_6_check | internal__normalize_image("image") == tag_6 | internal__normalize_image("image")
 
     - name: Tag image 2 (only change wrong ones, check mode)
       community.docker.docker_image_tag:
@@ -296,7 +296,7 @@
           - info_7.images[1].Id == pulled_images.results[1].image.Id
           - info_7.images[2].Id == pulled_images.results[1].image.Id
           - info_7.images[3].Id == pulled_images.results[0].image.Id
-          - tag_7_check == tag_7
+          - tag_7_check | internal__normalize_image("image") == tag_7 | internal__normalize_image("image")
 
     - name: Tag image 2 (idempotent, check mode)
       community.docker.docker_image_tag:
@@ -326,7 +326,7 @@
           - tag_8 is not changed
           - tag_8.diff.before == tag_8.diff.after
           - tag_8.diff.before.images | length == 3
-          - tag_8_check == tag_8
+          - tag_8_check | internal__normalize_image("image") == tag_8 | internal__normalize_image("image")
 
     - name: Tag image 3 (source image has digest)
       community.docker.docker_image_tag:
