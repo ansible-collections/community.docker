@@ -27,7 +27,7 @@
     - name: Create a Swarm cluster
       community.docker.docker_swarm:
         state: present
-        advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
+        advertise_addr: "{{ ansible_facts.default_ipv4.address | default('127.0.0.1') }}"
 
     - ansible.builtin.include_tasks: run-test.yml
       with_fileglob:
@@ -82,4 +82,4 @@
   when: docker_py_version is version('2.0.2', '>=') and docker_api_version is version('1.25', '>=')
 
 - ansible.builtin.fail: msg="Too old docker / docker-py version to run docker_swarm_service tests!"
-  when: not(docker_py_version is version('2.0.2', '>=') and docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)
+  when: not(docker_py_version is version('2.0.2', '>=') and docker_api_version is version('1.25', '>=')) and (ansible_facts.distribution != 'CentOS' or ansible_facts.distribution_major_version|int > 6)

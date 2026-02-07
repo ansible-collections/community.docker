@@ -17,7 +17,7 @@
       community.docker.docker_swarm:
         name: default
         state: present
-        advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
+        advertise_addr: "{{ ansible_facts.default_ipv4.address | default('127.0.0.1') }}"
 
     - name: Parameter name should be required
       community.docker.docker_config:  # noqa: args[module]

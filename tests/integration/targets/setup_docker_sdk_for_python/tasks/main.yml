@@ -53,7 +53,7 @@
           }}
 
     - name: Check docker-py version
-      ansible.builtin.command: "{{ ansible_python.executable }} -c 'import docker; print(docker.__version__)'"
+      ansible.builtin.command: "{{ ansible_facts.python.executable }} -c 'import docker; print(docker.__version__)'"
       register: docker_py_version_stdout
       ignore_errors: true
 

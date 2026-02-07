@@ -12,4 +12,4 @@
   when: docker_py_version is version('2.6.0', '>=') and docker_api_version is version('1.30', '>=')
 
 - ansible.builtin.fail: msg="Too old docker / docker-py version to run docker_config tests!"
-  when: not(docker_py_version is version('2.6.0', '>=') and docker_api_version is version('1.30', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)
+  when: not(docker_py_version is version('2.6.0', '>=') and docker_api_version is version('1.30', '>=')) and (ansible_facts.distribution != 'CentOS' or ansible_facts.distribution_major_version|int > 6)

@@ -11,6 +11,6 @@
 - ansible.builtin.set_fact:
     has_docker_compose: false
 
-- when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in ['CentOS6', 'RedHat6'] and ansible_python_version is version('3.7', '>=')
+- when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in ['CentOS6', 'RedHat6'] and ansible_facts.python_version is version('3.7', '>=')
   ansible.builtin.include_tasks:
     file: setup.yml

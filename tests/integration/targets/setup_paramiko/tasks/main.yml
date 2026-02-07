@@ -8,7 +8,7 @@
     name: python-paramiko
   become: true
   when:
-    - ansible_distribution == 'CentOS' and ansible_distribution_major_version|int <= 7
+    - ansible_facts.distribution == 'CentOS' and ansible_facts.distribution_major_version|int <= 7
 
 - name: Install paramiko
   ansible.builtin.pip:

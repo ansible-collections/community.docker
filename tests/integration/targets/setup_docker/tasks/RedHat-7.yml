@@ -42,5 +42,5 @@
   ansible.builtin.service:
     name: docker
     state: started
-  ignore_errors: "{{ ansible_virtualization_type in ['docker', 'container', 'containerd'] }}"
+  ignore_errors: "{{ ansible_facts.virtualization_type in ['docker', 'container', 'containerd'] }}"
   when: needs_docker_daemon

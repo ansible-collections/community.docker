@@ -9,20 +9,20 @@
 ####################################################################
 
 - name: Include OS-specific variables
-  ansible.builtin.include_vars: '{{ ansible_os_family }}.yml'
-  when: not ansible_os_family == "Darwin"
+  ansible.builtin.include_vars: '{{ ansible_facts.os_family }}.yml'
+  when: not ansible_facts.os_family == "Darwin"
 
 - name: Install cryptography (Python 3)
   become: true
   ansible.builtin.package:
     name: '{{ cryptography_package_name_python3 }}'
-  when: ansible_os_family != 'Darwin' and ansible_python_version is version('3.0', '>=')
+  when: ansible_facts.os_family != 'Darwin' and ansible_facts.python_version is version('3.0', '>=')
 
 - name: Install cryptography (Python 2)
   become: true
   ansible.builtin.package:
     name: '{{ cryptography_package_name }}'
-  when: ansible_os_family != 'Darwin' and ansible_python_version is version('3.0', '<')
+  when: ansible_facts.os_family != 'Darwin' and ansible_facts.python_version is version('3.0', '<')
 
 - name: Install cryptography (Darwin, and potentially upgrade for other OSes)
   become: true
@@ -31,5 +31,5 @@
     extra_args: "-c {{ remote_constraints }}"
 
 - name: Register cryptography version
-  ansible.builtin.command: "{{ ansible_python.executable }} -c 'import cryptography; print(cryptography.__version__)'"
+  ansible.builtin.command: "{{ ansible_facts.python.executable }} -c 'import cryptography; print(cryptography.__version__)'"
   register: cryptography_version

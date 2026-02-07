@@ -16,10 +16,10 @@
 
     - name: Inspect current container
       community.docker.docker_container_info:
-        name: "{{ ansible_module_container_id }}"
+        name: "{{ ansible_facts.module_container_id }}"
       register: current_container_info
-      when: ansible_module_running_in_container
+      when: ansible_facts.module_running_in_container
 
     - name: Determine network name
       ansible.builtin.set_fact:
-        current_container_network_ip: "{{ (current_container_info.container.NetworkSettings.Networks | dictsort)[0].0 | default('') if ansible_module_running_in_container else '' }}"
+        current_container_network_ip: "{{ (current_container_info.container.NetworkSettings.Networks | dictsort)[0].0 | default('') if ansible_facts.module_running_in_container else '' }}"

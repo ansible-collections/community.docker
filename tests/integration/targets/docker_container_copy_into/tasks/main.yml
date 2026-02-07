@@ -44,4 +44,4 @@
   when: docker_api_version is version('1.25', '>=')
 
 - ansible.builtin.fail: msg="Too old Docker API version to run all docker_container_copy_into tests!"
-  when: not(docker_api_version is version('1.25', '>=')) and (ansible_distribution != 'CentOS' or ansible_distribution_major_version|int > 6)
+  when: not(docker_api_version is version('1.25', '>=')) and (ansible_facts.distribution != 'CentOS' or ansible_facts.distribution_major_version|int > 6)

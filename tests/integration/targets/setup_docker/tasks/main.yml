@@ -23,7 +23,7 @@
       block:
         - name: Determine whether Docker Daemon needs to be installed
           ansible.builtin.set_fact:
-            needs_docker_daemon: '{{ not ansible_module_running_in_container }}'
+            needs_docker_daemon: '{{ not ansible_facts.module_running_in_container }}'
 
         - name: Print information
           ansible.builtin.debug:
@@ -62,7 +62,7 @@
           ansible.builtin.service:
             name: docker
             state: started
-          when: not ansible_module_running_in_container
+          when: not ansible_facts.module_running_in_container
 
         - name: Set marker that Docker was already set up
           ansible.builtin.file:
