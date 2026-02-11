@@ -523,7 +523,10 @@ class AnsibleDockerClientBase(Client):
     ) -> bool:
         if img1 is None or img2 is None:
             return img1 == img2
-        filter_keys = {"Metadata"}
+        filter_keys = {"Metadata", "Identity"}
+        # Since Docker 29.2 (?) the order of entries in Identity.Pull can change
+        # even though the image is the same. Since we're only really interested
+        # in the image's Id field, we simply skip all of Identity.
         img1_filtered = {k: v for k, v in img1.items() if k not in filter_keys}
         img2_filtered = {k: v for k, v in img2.items() if k not in filter_keys}
         return img1_filtered == img2_filtered
