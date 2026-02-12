@@ -4,6 +4,19 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v4.8.7
+======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- docker_image_pull, docker_container - fix pulled image change detection for Docker 29.2+ (https://github.com/ansible-collections/community.docker/pull/1242).
+
 v4.8.6
 ======
 
