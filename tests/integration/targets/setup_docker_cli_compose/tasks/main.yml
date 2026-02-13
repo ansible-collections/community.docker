@@ -63,4 +63,8 @@
               {{ docker_cli_plugins_stdout.stdout | from_json | selectattr('Name', 'eq', 'compose') | map(attribute='Version') | first | default('0.0') | regex_replace('^v', '') }}
 
     - ansible.builtin.debug:
-        msg: "Has Docker compoes plugin: {{ docker_has_compose }}; Docker compose plugin version: {{ docker_compose_version }}"
+        msg: "Has Docker compose plugin: {{ docker_has_compose }}; Docker compose plugin version: {{ docker_compose_version }}"
+
+    - name: Retrieve more information
+      ansible.builtin.command:
+        cmd: docker version

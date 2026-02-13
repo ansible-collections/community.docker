@@ -70,6 +70,26 @@
             state: touch
           when: docker_skip_cleanup
 
+        - name: Retrieve more information (0/4)
+          ansible.builtin.command:
+            cmd: sh -c export
+
+        - name: Retrieve more information (1/4)
+          ansible.builtin.command:
+            cmd: docker version
+
+        - name: Retrieve more information (2/4)
+          ansible.builtin.command:
+            cmd: docker info
+
+        - name: Retrieve more information (3/4)
+          ansible.builtin.command:
+            cmd: docker context ls
+
+        - name: Retrieve more information (4/4)
+          ansible.builtin.command:
+            cmd: which docker
+
     # Detect docker API version
     - name: Check Docker API version
       ansible.builtin.command: "docker version -f {% raw %}'{{(index .Server.Components 0).Details.ApiVersion}}'{% endraw %}"
