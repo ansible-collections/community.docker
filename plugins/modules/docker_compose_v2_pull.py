@@ -51,6 +51,12 @@ options:
     type: bool
     default: false
     version_added: 3.12.0
+  ignore_pull_failures:
+    description:
+      - If set to V(true), will pull what it can and ignores images with pull failures.
+    type: bool
+    default: false
+    version_added: 5.1.0
   include_deps:
     description:
       - If set to V(true), also pull services that are declared as dependencies.
@@ -132,6 +138,7 @@ class PullManager(BaseComposeManager):
 
         self.policy: t.Literal["always", "missing"] = parameters["policy"]
         self.ignore_buildable: bool = parameters["ignore_buildable"]
+        self.ignore_pull_failures: bool = parameters["ignore_pull_failures"]
         self.include_deps: bool = parameters["include_deps"]
         self.services: list[str] = parameters["services"] or []
 
@@ -152,6 +159,8 @@ class PullManager(BaseComposeManager):
             args.extend(["--policy", self.policy])
         if self.ignore_buildable:
             args.append("--ignore-buildable")
+        if self.ignore_pull_failures:
+            args.append("--ignore-pull-failures")
         if self.include_deps:
             args.append("--include-deps")
         if dry_run:
@@ -187,6 +196,7 @@ def main() -> None:
             "default": "always",
         },
         "ignore_buildable": {"type": "bool", "default": False},
+        "ignore_pull_failures": {"type": "bool", "default": False},
         "include_deps": {"type": "bool", "default": False},
         "services": {"type": "list", "elements": "str"},
     }
