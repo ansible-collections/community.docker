@@ -1,0 +1,2 @@
+minor_changes:
+  - Adds `ignore_pull_failures` parameter to docker_compose_v2_pull, that adds a --ignore-pull-failures to the `docker compose pull` call when set true
