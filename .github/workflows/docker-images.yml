@@ -28,7 +28,7 @@ env:
 jobs:
   build:
     name: Build image ${{ matrix.name }}:${{ matrix.tag }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -53,10 +53,10 @@ jobs:
         run: |
           sudo apt-get install podman buildah
 
-      - name: Set up Go 1.22
+      - name: Set up Go 1.26
         uses: actions/setup-go@v6
         with:
-          go-version: '1.22'
+          go-version: '1.26'
           cache: false  # true (default) results in warnings since we don't use Go modules
 
       - name: Build ${{ matrix.name }} image
@@ -66,25 +66,22 @@ jobs:
 
       - name: Tag image as latest
         if: matrix.tag-as-latest && matrix.tag != 'latest'
-        run: |
-          podman tag "${CONTAINER_REGISTRY}/${{ matrix.name }}:${{ matrix.tag }}" "${CONTAINER_REGISTRY}/${{ matrix.name }}:latest"
+        env:
+          SOURCE_IMAGE: ${{ matrix.name }}:${{ matrix.tag }}
+          DEST_IMAGE: ${{ matrix.name }}:latest
+        run: >-
+          podman tag "${CONTAINER_REGISTRY}/${SOURCE_IMAGE}" "${CONTAINER_REGISTRY}/${DEST_IMAGE}"
 
       - name: Publish container image ${{ env.CONTAINER_REGISTRY }}/${{ matrix.name }}:${{ matrix.tag }}
         if: github.event_name != 'pull_request'
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          registry: ${{ env.CONTAINER_REGISTRY }}
-          image: ${{ matrix.name }}
-          tags: ${{ matrix.tag }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          IMAGE: ${{ matrix.name }}:${{ matrix.tag }}
+        run: >-
+          podman push "${IMAGE}" "${CONTAINER_REGISTRY}/${IMAGE}" --tls-verify=true --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish container image ${{ env.CONTAINER_REGISTRY }}/${{ matrix.name }}:latest
         if: github.event_name != 'pull_request' && matrix.tag-as-latest && matrix.tag != 'latest'
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          registry: ${{ env.CONTAINER_REGISTRY }}
-          image: ${{ matrix.name }}
-          tags: latest
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          IMAGE: ${{ matrix.name }}:latest
+        run: >-
+          podman push "${IMAGE}" "${CONTAINER_REGISTRY}/${IMAGE}" --tls-verify=true --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
