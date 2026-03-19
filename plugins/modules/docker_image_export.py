@@ -61,6 +61,13 @@ options:
       - Export the image even if the C(.tar) file already exists and seems to contain the right image.
     type: bool
     default: false
+  platform:
+    description:
+      - Ask for this specific platform when exporting.
+      - For example, C(linux/amd64), C(linux/arm64/v8).
+      - Requires Docker API 1.48 or newer.
+    type: str
+    version_added: "5.1.0"
 
 requirements:
   - "Docker API >= 1.25"
@@ -98,6 +105,7 @@ images:
   sample: []
 """
 
+import json
 import traceback
 import typing as t
 
@@ -109,6 +117,9 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
 )
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
     parse_repository_tag,
+)
+from ansible_collections.community.docker.plugins.module_utils._platform import (
+    _Platform,
 )
 from ansible_collections.community.docker.plugins.module_utils._common_api import (
     AnsibleDockerClient,
@@ -137,6 +148,7 @@ class ImageExportManager(DockerBaseClass):
         self.path = parameters["path"]
         self.force = parameters["force"]
         self.tag = parameters["tag"]
+        self.platform = parameters["platform"]
 
         if not is_valid_tag(self.tag, allow_empty=True):
             self.fail(f'"{self.tag}" is not a valid docker tag')
@@ -198,15 +210,31 @@ class ImageExportManager(DockerBaseClass):
         except Exception as exc:  # pylint: disable=broad-exception-caught
             self.fail(f"Error writing image archive {self.path} - {exc}")
 
+    def _platform_param(self) -> str:
+        platform = _Platform.parse_platform_string(self.platform)
+        platform_spec: dict[str, str] = {}
+        if platform.os:
+            platform_spec["os"] = platform.os
+        if platform.arch:
+            platform_spec["architecture"] = platform.arch
+        if platform.variant:
+            platform_spec["variant"] = platform.variant
+        return json.dumps(platform_spec)
+
     def export_images(self) -> None:
         image_names = [name["joined"] for name in self.names]
         image_names_str = ", ".join(image_names)
         if len(image_names) == 1:
             self.log(f"Getting archive of image {image_names[0]}")
+            params: dict[str, t.Any] = {}
+            if self.platform:
+                params["platform"] = self._platform_param()
             try:
                 chunks = self.client._stream_raw_result(
                     self.client._get(
-                        self.client._url("/images/{0}/get", image_names[0]), stream=True
+                        self.client._url("/images/{0}/get", image_names[0]),
+                        stream=True,
+                        params=params,
                     ),
                     chunk_size=DEFAULT_DATA_CHUNK_SIZE,
                     decode=False,
@@ -215,12 +243,15 @@ class ImageExportManager(DockerBaseClass):
                 self.fail(f"Error getting image {image_names[0]} - {exc}")
         else:
             self.log(f"Getting archive of images {image_names_str}")
+            params: dict[str, t.Any] = {"names": image_names}
+            if self.platform:
+                params["platform"] = self._platform_param()
             try:
                 chunks = self.client._stream_raw_result(
                     self.client._get(
                         self.client._url("/images/get"),
                         stream=True,
-                        params={"names": image_names},
+                        params=params,
                     ),
                     chunk_size=DEFAULT_DATA_CHUNK_SIZE,
                     decode=False,
@@ -277,11 +308,17 @@ def main() -> None:
             "aliases": ["name"],
         },
         "tag": {"type": "str", "default": "latest"},
+        "platform": {"type": "str"},
+    }
+
+    option_minimal_versions = {
+        "platform": {"docker_api_version": "1.48"},
     }
 
     client = AnsibleDockerClient(
         argument_spec=argument_spec,
         supports_check_mode=True,
+        option_minimal_versions=option_minimal_versions,
     )
 
     try:
