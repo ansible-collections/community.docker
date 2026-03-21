@@ -77,11 +77,11 @@ jobs:
         env:
           IMAGE: ${{ matrix.name }}:${{ matrix.tag }}
         run: >-
-          podman push "${IMAGE}" "${CONTAINER_REGISTRY}/${IMAGE}" --tls-verify=true --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
+          podman push "${IMAGE}" "${CONTAINER_REGISTRY}/${IMAGE}" --all --tls-verify=true --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish container image ${{ env.CONTAINER_REGISTRY }}/${{ matrix.name }}:latest
         if: github.event_name != 'pull_request' && matrix.tag-as-latest && matrix.tag != 'latest'
         env:
           IMAGE: ${{ matrix.name }}:latest
         run: >-
-          podman push "${IMAGE}" "${CONTAINER_REGISTRY}/${IMAGE}" --tls-verify=true --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
+          podman push "${IMAGE}" "${CONTAINER_REGISTRY}/${IMAGE}" --all --tls-verify=true --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
