@@ -64,7 +64,7 @@ options:
   platform:
     description:
       - Ask for this specific platform when exporting.
-      - For example, C(linux/amd64), C(linux/arm64/v8).
+      - For example, C(linux/amd64), C(linux/arm64).
       - Requires Docker API 1.48 or newer.
     type: str
     version_added: "5.1.0"
