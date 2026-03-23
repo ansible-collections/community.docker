@@ -4,6 +4,19 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v5.1.0
+======
+
+Release Summary
+---------------
+
+Feature release.
+
+Minor Changes
+-------------
+
+- docker_compose_v2_pull - adds ``ignore_pull_failures`` parameter that passes ``--ignore-pull-failures`` to the ``docker compose pull`` call when set to ``true`` (https://github.com/ansible-collections/community.docker/pull/1248).
+
 v5.0.6
 ======
 

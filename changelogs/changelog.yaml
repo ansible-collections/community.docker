@@ -2367,3 +2367,14 @@ releases:
       - 1242-pull.yml
       - 5.0.6.yml
     release_date: '2026-02-12'
+  5.1.0:
+    changes:
+      minor_changes:
+        - docker_compose_v2_pull - adds ``ignore_pull_failures`` parameter that passes
+          ``--ignore-pull-failures`` to the ``docker compose pull`` call when set
+          to ``true`` (https://github.com/ansible-collections/community.docker/pull/1248).
+      release_summary: Feature release.
+    fragments:
+      - 1248-ignore-pull-failures.yml
+      - 5.1.0.yml
+    release_date: '2026-03-23'
