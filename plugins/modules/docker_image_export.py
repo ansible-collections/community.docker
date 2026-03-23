@@ -243,7 +243,7 @@ class ImageExportManager(DockerBaseClass):
                 self.fail(f"Error getting image {image_names[0]} - {exc}")
         else:
             self.log(f"Getting archive of images {image_names_str}")
-            params: dict[str, t.Any] = {"names": image_names}
+            params = {"names": image_names}
             if self.platform:
                 params["platform"] = self._platform_param()
             try:
