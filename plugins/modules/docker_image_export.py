@@ -118,9 +118,6 @@ from ansible_collections.community.docker.plugins.module_utils._api.errors impor
 from ansible_collections.community.docker.plugins.module_utils._api.utils.utils import (
     parse_repository_tag,
 )
-from ansible_collections.community.docker.plugins.module_utils._platform import (
-    _Platform,
-)
 from ansible_collections.community.docker.plugins.module_utils._common_api import (
     AnsibleDockerClient,
     RequestException,
@@ -129,6 +126,9 @@ from ansible_collections.community.docker.plugins.module_utils._image_archive im
     ImageArchiveInvalidException,
     api_image_id,
     load_archived_image_manifest,
+)
+from ansible_collections.community.docker.plugins.module_utils._platform import (
+    _Platform,
 )
 from ansible_collections.community.docker.plugins.module_utils._util import (
     DockerBaseClass,
