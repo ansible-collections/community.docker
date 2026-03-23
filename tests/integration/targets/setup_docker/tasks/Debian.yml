@@ -9,38 +9,32 @@
 
 - name: Install pre-reqs
   ansible.builtin.apt:
-    name: '{{ docker_prereq_packages }}'
+    name: '{{ docker_prereq_packages + ["python3-debian"] }}'
     state: present
     update_cache: true
   notify: cleanup docker
 
-- when:
-    - (ansible_facts.distribution == "Ubuntu" and (ansible_facts.distribution_major_version | int) >= 22) or
-      (ansible_facts.distribution == "Debian" and (ansible_facts.distribution_major_version | int) >= 12)
-  name: Add Docker repo on Ubuntu 22+ or Debian 12+
-  block:
-    - name: Add gpg key
-      ansible.builtin.get_url:
-        url: "https://download.docker.com/linux/{{ ansible_facts.distribution | lower }}/gpg"
-        dest: /etc/apt/keyrings/docker.asc
+- name: Add Docker repo on Ubuntu or Debian
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: deb
+    architectures:
+      - >-
+        {{ 'arm64' if ansible_facts.architecture == 'aarch64' else 'amd64' }}
+    signed_by: "https://download.docker.com/linux/{{ ansible_facts.distribution | lower }}/gpg"
+    uris:
+      - https://download.docker.com/linux/{{ ansible_facts.distribution | lower }}
+    suites:
+      - "{{ ansible_facts.distribution_release }}"
+    components:
+      - stable
+    state: present
+  register: apt_repo
 
-    - name: Add Docker repo
-      ansible.builtin.apt_repository:
-        repo: deb [arch={{ 'arm64' if ansible_facts.architecture == 'aarch64' else 'amd64' }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/{{ ansible_facts.distribution | lower }} {{ ansible_facts.distribution_release }} stable
-        state: present
-
-- when:
-    - (ansible_facts.distribution == "Ubuntu" and (ansible_facts.distribution_major_version | int) < 22) or
-      (ansible_facts.distribution == "Debian" and (ansible_facts.distribution_major_version | int) < 12)
-  name: Add Docker repo on Ubuntu 20 or before, or Debian 11 or before
-  block:
-    - name: Add gpg key
-      ansible.builtin.shell: curl -fsSL https://download.docker.com/linux/{{ ansible_facts.distribution | lower }}/gpg >key && apt-key add key  # noqa: command-instead-of-module
-
-    - name: Add Docker repo
-      ansible.builtin.apt_repository:
-        repo: deb [arch={{ 'arm64' if ansible_facts.architecture == 'aarch64' else 'amd64' }}] https://download.docker.com/linux/{{ ansible_facts.distribution | lower }} {{ ansible_facts.distribution_release }} stable
-        state: present
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+  when: apt_repo is changed
 
 - block:
     - name: Prevent service restart
