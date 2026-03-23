@@ -67,7 +67,7 @@ options:
       - For example, C(linux/amd64), C(linux/arm64).
       - Requires Docker API 1.48 or newer.
     type: str
-    version_added: "5.1.0"
+    version_added: 5.2.0
 
 requirements:
   - "Docker API >= 1.25"
