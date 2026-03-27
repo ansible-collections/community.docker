@@ -1,0 +1,34 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- when: docker_api_version is version('1.48', '>=')
+  block:
+    - name: Pull image for platform test
+      community.docker.docker_image_pull:
+        name: "{{ docker_test_image_hello_world }}"
+        platform: linux/amd64
+
+    - name: Export image with platform (check mode)
+      community.docker.docker_image_export:
+        name: "{{ docker_test_image_hello_world }}"
+        path: "{{ remote_tmp_dir }}/platform-test.tar"
+        platform: linux/amd64
+      register: result_check
+      check_mode: true
+
+    - ansible.builtin.assert:
+        that:
+          - result_check is changed
+
+    - name: Export image with platform
+      community.docker.docker_image_export:
+        name: "{{ docker_test_image_hello_world }}"
+        path: "{{ remote_tmp_dir }}/platform-test.tar"
+        platform: linux/amd64
+      register: result
+
+    - ansible.builtin.assert:
+        that:
+          - result is changed
