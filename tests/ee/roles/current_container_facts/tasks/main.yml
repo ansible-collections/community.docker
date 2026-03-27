@@ -7,6 +7,10 @@
   community.docker.current_container_facts:
   register: result
 
+- name: Print facts returned by module
+  ansible.builtin.debug:
+    var: result.ansible_facts
+
 # The following two tasks are useful if we ever have to debug why this fails.
 
 - name: Print all Ansible facts
@@ -20,12 +24,9 @@
     - /proc/self/cpuset
     - /proc/1/cgroup
     - /proc/1/environ
+  ignore_errors: true  # not all of these files always exist
   loop_control:
     loop_var: path
-
-- name: Print facts returned by module
-  ansible.builtin.debug:
-    var: result.ansible_facts
 
 - name: Validate results
   ansible.builtin.assert:
