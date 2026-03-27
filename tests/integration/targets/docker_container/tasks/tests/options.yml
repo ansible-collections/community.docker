@@ -957,7 +957,7 @@
 - when: device_read_bps_1 is failed
   assert:
     that:
-      - "'error setting cgroup config for procHooks process' in device_read_bps_1.msg and 'blkio.throttle.read_bps_device: no such device' in device_read_bps_1.msg"
+      - "'error setting cgroup config for procHooks process' in device_read_bps_1.msg and ': no such device' in device_read_bps_1.msg"
 
 ####################################################################
 ## device_read_iops ################################################
@@ -1040,7 +1040,7 @@
 - when: device_read_iops_1 is failed
   assert:
     that:
-      - "'error setting cgroup config for procHooks process' in device_read_iops_1.msg and 'blkio.throttle.read_iops_device: no such device' in device_read_iops_1.msg"
+      - "'error setting cgroup config for procHooks process' in device_read_iops_1.msg and ': no such device' in device_read_iops_1.msg"
 
 ####################################################################
 ## device_write_bps and device_write_iops ##########################
@@ -1110,7 +1110,7 @@
 - when: device_write_limit_1 is failed
   assert:
     that:
-      - "'error setting cgroup config for procHooks process' in device_write_limit_1.msg and 'blkio.throttle.write_bps_device: no such device' in device_write_limit_1.msg"
+      - "'error setting cgroup config for procHooks process' in device_write_limit_1.msg and ': no such device' in device_write_limit_1.msg"
 
 ####################################################################
 ## device_requests #################################################

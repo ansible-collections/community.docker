@@ -27,8 +27,8 @@
     - /proc/self/cgroup
     - /proc/self/cpuset
     - /proc/self/mountinfo
+  ignore_errors: true  # not all of these files always exist
   register: slurp
-  ignore_errors: true
 
 - name: Print files
   ansible.builtin.debug:
