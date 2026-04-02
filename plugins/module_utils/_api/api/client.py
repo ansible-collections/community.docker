@@ -388,7 +388,7 @@ class APIClient(_Session):
     @t.overload
     def _stream_helper(
         self, response: Response, *, decode: t.Literal[False] = False
-    ) -> t.Generator[bytes]: ...
+    ) -> t.Generator[bytes | str]: ...
 
     @t.overload
     def _stream_helper(
