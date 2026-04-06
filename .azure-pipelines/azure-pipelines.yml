@@ -62,6 +62,17 @@ stages:
               test: 'devel/sanity/1'
             - name: Units
               test: 'devel/units/1'
+  - stage: Ansible_2_21
+    displayName: Sanity & Units 2.21
+    dependsOn: []
+    jobs:
+      - template: templates/matrix.yml
+        parameters:
+          targets:
+            - name: Sanity
+              test: '2.21/sanity/1'
+            - name: Units
+              test: '2.21/units/1'
   - stage: Ansible_2_20
     displayName: Sanity & Units 2.20
     dependsOn: []
@@ -113,6 +124,25 @@ stages:
               test: ubuntu2404
             - name: Alpine 3.23
               test: alpine323
+          groups:
+            - 4
+            - 5
+  - stage: Docker_2_21
+    displayName: Docker 2.21
+    dependsOn: []
+    jobs:
+      - template: templates/matrix.yml
+        parameters:
+          testFormat: 2.21/linux/{0}
+          targets:
+            - name: Fedora 43
+              test: fedora43
+            # - name: Ubuntu 22.04
+            #   test: ubuntu2204
+            - name: Ubuntu 24.04
+              test: ubuntu2404
+            # - name: Alpine 3.23
+            #   test: alpine323
           groups:
             - 4
             - 5
@@ -207,6 +237,24 @@ stages:
             - 3
             - 4
             - 5
+  - stage: Remote_2_21
+    displayName: Remote 2.21
+    dependsOn: []
+    jobs:
+      - template: templates/matrix.yml
+        parameters:
+          testFormat: 2.21/{0}
+          targets:
+            - name: RHEL 10.1
+              test: rhel/10.1
+            # - name: RHEL 9.7
+            #   test: rhel/9.7
+          groups:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
   - stage: Remote_2_20
     displayName: Remote 2.20
     dependsOn: []
@@ -262,14 +310,17 @@ stages:
     condition: succeededOrFailed()
     dependsOn:
       - Ansible_devel
+      - Ansible_2_21
       - Ansible_2_20
       - Ansible_2_19
       - Ansible_2_18
       - Remote_devel
+      - Remote_2_21
       - Remote_2_20
       - Remote_2_19
       - Remote_2_18
       - Docker_devel
+      - Docker_2_21
       - Docker_2_20
       - Docker_2_19
       - Docker_2_18
