@@ -2378,3 +2378,14 @@ releases:
       - 1248-ignore-pull-failures.yml
       - 5.1.0.yml
     release_date: '2026-03-23'
+  5.2.0:
+    changes:
+      minor_changes:
+        - docker_image_export - adds ``platform`` parameter to allow exporting a specific
+          platform variant from a multi-arch image (https://github.com/ansible-collections/community.docker/issues/1064,
+          https://github.com/ansible-collections/community.docker/pull/1251).
+      release_summary: Feature release.
+    fragments:
+      - 1064-docker-image-export-platform.yml
+      - 5.2.0.yml
+    release_date: '2026-04-08'

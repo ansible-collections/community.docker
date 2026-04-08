@@ -4,6 +4,19 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v5.2.0
+======
+
+Release Summary
+---------------
+
+Feature release.
+
+Minor Changes
+-------------
+
+- docker_image_export - adds ``platform`` parameter to allow exporting a specific platform variant from a multi-arch image (https://github.com/ansible-collections/community.docker/issues/1064, https://github.com/ansible-collections/community.docker/pull/1251).
+
 v5.1.0
 ======
 
