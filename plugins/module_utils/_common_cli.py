@@ -178,6 +178,30 @@ class AnsibleDockerClientBase:
     ) -> tuple[int, bytes, bytes]:
         pass
 
+    def _fail_with_cli_error(
+        self,
+        args: t.Sequence[str],
+        rc: int,
+        stdout: bytes,
+        stderr: bytes,
+    ) -> t.NoReturn:
+        """Fail with a clear message that leads with the CLI's own error output
+        and exit code. Used when stdout could not be parsed as JSON *and* the
+        CLI exited non-zero -- in that situation the underlying CLI error
+        (which lives in stderr) is the real cause and is far more informative
+        than the downstream JSON parsing failure.
+        """
+        cmd = self._compose_cmd_str(args)
+        self.fail(
+            f"Error while executing {cmd}: command exited with rc={rc}.\n"
+            f"Error output:\n{to_text(stderr)}\n"
+            f"Standard output:\n{to_text(stdout)}",
+            cmd=cmd,
+            rc=rc,
+            stdout=stdout,
+            stderr=stderr,
+        )
+
     def call_cli_json(
         self,
         *args: str,
@@ -195,6 +219,13 @@ class AnsibleDockerClientBase:
         try:
             data = json.loads(stdout)
         except Exception as exc:  # pylint: disable=broad-exception-caught
+            # If JSON parsing failed and the CLI also exited non-zero, the real
+            # cause is almost certainly in stderr (e.g. "No such image:
+            # sha256:..." with rc=1 and empty stdout). Surface the CLI's error
+            # instead of a misleading JSONDecodeError such as
+            # "Expecting value: line 1 column 1 (char 0)".
+            if rc != 0:
+                self._fail_with_cli_error(args, rc, stdout, stderr)
             self.fail(
                 f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_text(stdout)}\n\nError output:\n{to_text(stderr)}",
                 cmd=self._compose_cmd_str(args),
@@ -225,6 +256,10 @@ class AnsibleDockerClientBase:
                 if line.startswith(b"{"):
                     result.append(json.loads(line))
         except Exception as exc:  # pylint: disable=broad-exception-caught
+            # See call_cli_json: prefer the CLI's own error message when the
+            # command failed and the JSON stream is unparseable.
+            if rc != 0:
+                self._fail_with_cli_error(args, rc, stdout, stderr)
             self.fail(
                 f"Error while parsing JSON output of {self._compose_cmd_str(args)}: {exc}\nJSON output: {to_text(stdout)}\n\nError output:\n{to_text(stderr)}",
                 cmd=self._compose_cmd_str(args),

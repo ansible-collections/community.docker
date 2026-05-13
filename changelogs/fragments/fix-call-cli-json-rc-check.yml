@@ -1,0 +1,2 @@
+bugfixes:
+  - "CLI-based modules - when the docker CLI exits non-zero and produces no parseable JSON on stdout, surface the CLI's own ``stderr`` and exit code instead of the misleading ``Expecting value: line 1 column 1 (char 0)`` ``JSONDecodeError``. This addresses cases such as a stale ``Config.Image`` SHA causing ``docker compose images --format json`` to fail with ``Error response from daemon: No such image: ...`` on stderr and empty stdout (https://github.com/ansible-collections/community.docker/issues/1216)."
