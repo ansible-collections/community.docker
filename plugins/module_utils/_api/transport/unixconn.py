@@ -117,7 +117,9 @@ class UnixHTTPAdapter(BaseHTTPAdapter):
 
         return pool
 
-    def request_url(self, request: PreparedRequest, proxies: Mapping[str, str] | None) -> str:
+    def request_url(
+        self, request: PreparedRequest, proxies: Mapping[str, str] | None
+    ) -> str:
         # The select_proxy utility in requests errors out when the provided URL
         # does not have a hostname, like is the case when using a UNIX socket.
         # Since proxies are an irrelevant notion in the case of UNIX sockets
