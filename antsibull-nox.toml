@@ -99,8 +99,8 @@ include_devel = true
 
 [sessions.ansible_test_integration]
 session_name_template = "ansible-test-integration-{ansible_core}{dash_docker_short}{dash_remote}{dash_python_version}{dash_target_dashized}"
-display_name_template = "main+Ⓐ{ansible_core}{plus_docker_short}{plus_remote}{plus_py_python_version}{plus_target}{plus_force_docker_sdk_for_python_dev}{plus_force_docker_sdk_for_python_pypi}"
-description_template = "Run main integration tests with ansible-core {ansible_core}{comma_docker_short}{comma_remote}{comma_py_python_version}{comma_target}{comma_force_docker_sdk_for_python_dev}{comma_force_docker_sdk_for_python_pypi}"
+display_name_template = "Ⓐ{ansible_core}{plus_docker_short}{plus_remote}{plus_py_python_version}{plus_target}{plus_force_docker_sdk_for_python_dev}{plus_force_docker_sdk_for_python_pypi}"
+description_template = "Run integration tests with ansible-core {ansible_core}{comma_docker_short}{comma_remote}{comma_py_python_version}{comma_target}{comma_force_docker_sdk_for_python_dev}{comma_force_docker_sdk_for_python_pypi}"
 
 [sessions.ansible_test_integration.ansible_vars]
 force_docker_sdk_for_python_dev = { type = "value", value = false, template_value = "" }
