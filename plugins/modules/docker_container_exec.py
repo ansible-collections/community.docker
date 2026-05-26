@@ -274,7 +274,7 @@ def main() -> None:
             stdout: bytes | None
             stderr: bytes | None
             if stdin and not detach:
-                exec_socket = client.post_json_to_stream_socket(
+                exec_socket, response = client.post_json_to_stream_socket(
                     "/exec/{0}/start", exec_id, data=data
                 )
                 try:
@@ -286,7 +286,7 @@ def main() -> None:
 
                         stdout, stderr = exec_socket_handler.consume()
                 finally:
-                    exec_socket.close()
+                    response.close()
             elif tty:
                 stdout, stderr = client.post_json_to_stream(
                     "/exec/{0}/start",
