@@ -2389,3 +2389,16 @@ releases:
       - 1064-docker-image-export-platform.yml
       - 5.2.0.yml
     release_date: '2026-04-08'
+  5.2.1:
+    changes:
+      bugfixes:
+        - docker_container_exec module, docker_api connection plugin - ensure that
+          when a command is run in a container with stdin provided, that the actual
+          response is closed and not a socket derived from it. The old behavior causes
+          warnings to be shown on Python 3.13+ under certain conditions (https://github.com/ansible-collections/community.docker/issues/1247,
+          https://github.com/ansible-collections/community.docker/pull/1260).
+      release_summary: Bugfix release.
+    fragments:
+      - 1260-close.yml
+      - 5.2.1.yml
+    release_date: '2026-05-26'

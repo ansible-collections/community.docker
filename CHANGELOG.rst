@@ -4,6 +4,19 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v5.2.1
+======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- docker_container_exec module, docker_api connection plugin - ensure that when a command is run in a container with stdin provided, that the actual response is closed and not a socket derived from it. The old behavior causes warnings to be shown on Python 3.13+ under certain conditions (https://github.com/ansible-collections/community.docker/issues/1247, https://github.com/ansible-collections/community.docker/pull/1260).
+
 v5.2.0
 ======
 
