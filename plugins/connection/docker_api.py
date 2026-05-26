@@ -303,7 +303,7 @@ class Connection(ConnectionBase):
 
         data = {"Tty": False, "Detach": False}
         if need_stdin:
-            exec_socket = self._call_client(
+            exec_socket, response = self._call_client(
                 lambda client: client.post_json_to_stream_socket(
                     "/exec/{0}/start", exec_id, data=data
                 )
@@ -356,7 +356,7 @@ class Connection(ConnectionBase):
 
                     stdout, stderr = exec_socket_handler.consume()
             finally:
-                exec_socket.close()
+                response.close()
         else:
             stdout, stderr = self._call_client(
                 lambda client: client.post_json_to_stream(

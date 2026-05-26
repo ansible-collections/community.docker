@@ -795,7 +795,7 @@ class APIClient(_Session):
         data: t.Any = None,
         headers: dict[str, str] | None = None,
         **kwargs: t.Any,
-    ) -> SocketLike:
+    ) -> tuple[SocketLike, Response]:
         headers = headers.copy() if headers else {}
         headers.update(
             {
@@ -803,15 +803,14 @@ class APIClient(_Session):
                 "Upgrade": "tcp",
             }
         )
-        return self._get_raw_response_socket(
-            self._post_json(
-                self._url(pathfmt, *args, versioned_api=True),
-                data,
-                headers=headers,
-                stream=True,
-                **kwargs,
-            )
+        response = self._post_json(
+            self._url(pathfmt, *args, versioned_api=True),
+            data,
+            headers=headers,
+            stream=True,
+            **kwargs,
         )
+        return self._get_raw_response_socket(response), response
 
     @t.overload
     def post_json_to_stream(
