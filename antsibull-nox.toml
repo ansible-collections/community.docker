@@ -9,6 +9,10 @@
 "community.internal_test_tools" = "git+https://github.com/ansible-collections/community.internal_test_tools.git,main"
 "community.library_inventory_filtering_v1" = "git+https://github.com/ansible-collections/community.library_inventory_filtering.git,stable-1"
 
+[collection_sources_per_ansible.'2.17']
+# community.general's main branch needs ansible-core >= 2.18
+"community.general" = "git+https://github.com/ansible-collections/community.general.git,stable-12"
+
 [vcs]
 vcs = "git"
 development_branch = "main"
