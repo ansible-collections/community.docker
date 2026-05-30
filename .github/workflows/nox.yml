@@ -30,7 +30,6 @@ jobs:
       upload-codecov-pr: false
       upload-codecov-push: false
       upload-codecov-schedule: true
-      max-ansible-core: "2.17"
       # For some reason GitHub decided to bump Docker on the ubuntu-24.04 image,
       # which is not compatible with podman and various other things.
       pre-test-cmd-integration: |-
