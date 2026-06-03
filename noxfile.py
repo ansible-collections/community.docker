@@ -36,7 +36,7 @@ def update_azp_config(session: nox.Session) -> None:
     session.debug(" ".join(command))
     result = run_antsibull_nox(command)
     if result != 0:
-        session.fail(f"Execution failed with status code {result}")
+        session.error(f"Execution failed with status code {result}")
 
 
 # Allow to run the noxfile with `python noxfile.py`, `pipx run noxfile.py`, or similar.
