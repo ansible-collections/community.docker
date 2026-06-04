@@ -23,7 +23,7 @@ jobs:
           - checkout: self
             fetchDepth: $(fetchDepth)
             path: $(checkoutPath)
-          - bash: .azure-pipelines/scripts/run-tests.sh "$(entryPoint)" "${{ job.test }}" "$(coverageBranches)"
+          - bash: .azure-pipelines/scripts/run-tests.sh "$(entryPoint)" "${{ job.test }}" "$(coverageBranches)" "$(Agent.TempDirectory)"
             displayName: Run Tests
           - bash: .azure-pipelines/scripts/process-results.sh
             condition: succeededOrFailed()
