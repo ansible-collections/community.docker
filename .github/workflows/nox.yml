@@ -35,5 +35,6 @@ jobs:
       upload-codecov-pr: false
       upload-codecov-push: false
       upload-codecov-schedule: true
+      allow-coverage-cd-override: true
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
