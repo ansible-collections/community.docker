@@ -60,7 +60,7 @@ if [ -n "${COMPLETE:-}" ]; then
 elif [[ "${COMMIT_MESSAGE}" =~ ci_complete ]]; then
     # disable change detection triggered by having 'ci_complete' in the latest commit message
     export ANTSIBULL_CHANGE_DETECTION=""
-if [ "${IS_PULL_REQUEST:-}" == "true" ]; then
+elif [ "${IS_PULL_REQUEST:-}" == "true" ]; then
     # enable change detection for PRs (default behavior)
     export ANTSIBULL_CHANGE_DETECTION="true"
     export ANTSIBULL_BASE_BRANCH="${SYSTEM_PULLREQUEST_TARGETBRANCH}"
