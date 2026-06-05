@@ -49,26 +49,6 @@ resources:
 pool: Standard
 
 stages:
-  - stage: remote_2_18
-    displayName: Remote ansible-core 2.18
-    dependsOn: []
-    variables:
-      entryPoint: tests/utils/shippable/nox.sh
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          targets:
-            - name: RHEL 9.7 + group 1
-              test: ansible-test-integration-2.18-rhel-9.7-azp-1
-            - name: RHEL 9.7 + group 2
-              test: ansible-test-integration-2.18-rhel-9.7-azp-2
-            - name: RHEL 9.7 + group 3
-              test: ansible-test-integration-2.18-rhel-9.7-azp-3
-            - name: RHEL 9.7 + group 4
-              test: ansible-test-integration-2.18-rhel-9.7-azp-4
-            - name: RHEL 9.7 + group 5
-              test: ansible-test-integration-2.18-rhel-9.7-azp-5
-
   - stage: remote_2_19
     displayName: Remote ansible-core 2.19
     dependsOn: []
@@ -162,7 +142,6 @@ stages:
   - stage: Summary
     condition: succeededOrFailed()
     dependsOn:
-      - remote_2_18
       - remote_2_19
       - remote_2_20
       - remote_2_21
