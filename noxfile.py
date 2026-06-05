@@ -30,7 +30,7 @@ def update_azp_config(session: nox.Session) -> None:
         "--exclude-tags",
         "docker",
         "--min-ansible-core",
-        "2.18",
+        "2.19",
     ]
     if antsibull_nox.IN_CI:
         command.append("--fail-on-change")
