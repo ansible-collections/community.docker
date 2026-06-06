@@ -43,7 +43,7 @@ from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.c
 from .. import fake_api
 
 if t.TYPE_CHECKING:
-    from ansible_collections.community.docker.plugins.module_utils._api.auth import (
+    from ansible_collections.community.docker.plugins.module_utils._api.auth import (  # pragma: no cover
         AuthConfig,
     )
 

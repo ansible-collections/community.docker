@@ -13,9 +13,9 @@ from ansible_collections.community.docker.plugins.module_utils._copy import (
 )
 
 if t.TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Sequence  # pragma: no cover
 
-    T = t.TypeVar("T")
+    T = t.TypeVar("T")  # pragma: no cover
 
 
 def _simple_generator(sequence: Sequence[T]) -> t.Generator[T]:

@@ -18,7 +18,7 @@ from ansible_collections.community.docker.tests.unit.plugins.module_utils._api.c
 from . import fake_stat
 
 if t.TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable  # pragma: no cover
 
 
 CURRENT_VERSION = f"v{DEFAULT_DOCKER_API_VERSION}"

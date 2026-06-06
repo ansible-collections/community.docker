@@ -17,12 +17,12 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 
 if t.TYPE_CHECKING:
 
-    class DAMSpec(t.TypedDict):
+    class DAMSpec(t.TypedDict):  # pragma: no cover
         av: dict[str, t.Any]
         bv: dict[str, t.Any]
         result: bool
 
-    class Spec(t.TypedDict):
+    class Spec(t.TypedDict):  # pragma: no cover
         a: t.Any
         b: t.Any
         method: t.Literal["strict", "ignore", "allow_more_present"]
