@@ -20,7 +20,7 @@ from ansible_collections.community.docker.plugins.inventory.docker_containers im
 )
 
 if t.TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable  # pragma: no cover
 
 
 @pytest.fixture(scope="module", name="templar")

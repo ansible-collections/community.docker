@@ -21,11 +21,13 @@ from ..test_support.docker_image_archive_stubbing import (
 )
 
 if t.TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable  # pragma: no cover
 
 
 def assert_no_logging(msg: str) -> t.NoReturn:
-    raise AssertionError(f"Should not have logged anything but logged {msg}")
+    raise AssertionError(
+        f"Should not have logged anything but logged {msg}"
+    )  # pragma: no cover
 
 
 def capture_logging(messages: list[str]) -> Callable[[str], None]:

@@ -12,7 +12,8 @@ from ansible_collections.community.docker.plugins.modules import (
     docker_swarm_service,
 )
 
-APIError = pytest.importorskip("docker.errors.APIError")
+docker_errors = pytest.importorskip("docker.errors")
+APIError = docker_errors.APIError
 
 
 def test_retry_on_out_of_sequence_error(mocker: t.Any) -> None:

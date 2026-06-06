@@ -61,12 +61,10 @@ def test_archived_image_manifest_extracts_nothing_when_file_not_present(
 
 
 def test_archived_image_manifest_raises_when_file_not_a_tar() -> None:
-    try:
+    with pytest.raises(ImageArchiveInvalidException, match=__file__) as exc_info:
         archived_image_manifest(__file__)
-        raise AssertionError()
-    except ImageArchiveInvalidException as e:
-        assert isinstance(e.__cause__, tarfile.ReadError)
-        assert str(__file__) in str(e)
+    assert isinstance(exc_info.value.__cause__, tarfile.ReadError)
+    assert str(__file__) in str(exc_info.value)
 
 
 def test_archived_image_manifest_raises_when_tar_missing_manifest(
@@ -74,12 +72,10 @@ def test_archived_image_manifest_raises_when_tar_missing_manifest(
 ) -> None:
     write_irrelevant_tar(tar_file_name)
 
-    try:
+    with pytest.raises(ImageArchiveInvalidException) as exc_info:
         archived_image_manifest(tar_file_name)
-        raise AssertionError()
-    except ImageArchiveInvalidException as e:
-        assert isinstance(e.__cause__, KeyError)
-        assert "manifest.json" in str(e.__cause__)
+    assert isinstance(exc_info.value.__cause__, KeyError)
+    assert "manifest.json" in str(exc_info.value.__cause__)
 
 
 def test_archived_image_manifest_raises_when_manifest_missing_id(
@@ -89,9 +85,7 @@ def test_archived_image_manifest_raises_when_manifest_missing_id(
 
     write_imitation_archive_with_manifest(tar_file_name, manifest)
 
-    try:
+    with pytest.raises(ImageArchiveInvalidException) as exc_info:
         archived_image_manifest(tar_file_name)
-        raise AssertionError()
-    except ImageArchiveInvalidException as e:
-        assert isinstance(e.__cause__, KeyError)
-        assert "Config" in str(e.__cause__)
+    assert isinstance(exc_info.value.__cause__, KeyError)
+    assert "Config" in str(exc_info.value.__cause__)
