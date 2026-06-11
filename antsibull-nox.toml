@@ -123,6 +123,7 @@ force_docker_sdk_for_python_pypi = { type = "value", value = false, template_val
 "quay.io/ansible-community/test-image:debian-bookworm" = "Debian 12"
 "quay.io/ansible-community/test-image:debian-13-trixie" = "Debian 13"
 "quay.io/ansible-community/test-image:archlinux" = "Arch Linux"
+"quay.io/ansible-community/test-image:opensuse-tumbleweed" = "OpenSuSE Tumbleweed"
 
 ##################################################################################################
 
@@ -234,6 +235,12 @@ ansible_core = "devel"
 target = [ "azp/4/", "azp/5/" ]
 python_version = "3.13"
 docker = "quay.io/ansible-community/test-image:debian-13-trixie"
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "devel"
+target = [ "azp/4/", "azp/5/" ]
+python_version = "3.13"
+docker = "quay.io/ansible-community/test-image:opensuse-tumbleweed"
 
 [[sessions.ansible_test_integration.groups.sessions]]
 ansible_core = "devel"
