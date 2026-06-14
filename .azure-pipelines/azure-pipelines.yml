@@ -37,7 +37,9 @@ variables:
   - name: coverageBranches
     value: main
   - name: entryPoint
-    value: tests/utils/shippable/shippable.sh
+    value: tests/utils/shippable/nox.sh
+  - name: prepareEntryPoint
+    value: tests/utils/shippable/nox-prepare.sh
   - name: fetchDepth
     value: 0
 
