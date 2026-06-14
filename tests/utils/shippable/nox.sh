@@ -7,40 +7,6 @@ set -o pipefail -eux
 
 nox_session="$1"
 
-docker images ansible/ansible
-docker images quay.io/ansible/*
-docker ps
-
-for container in $(docker ps --format '{{.Image}} {{.ID}}' | grep -v -e '^drydock/' -e '^quay.io/ansible/azure-pipelines-test-container:' | sed 's/^.* //'); do
-    docker rm -f "${container}" || true  # ignore errors
-done
-
-docker ps
-command -v python
-python -V
-
-function retry
-{
-    # shellcheck disable=SC2034
-    for repetition in 1 2 3; do
-        set +e
-        "$@"
-        result=$?
-        set -e
-        if [ ${result} == 0 ]; then
-            return ${result}
-        fi
-        echo "@* -> ${result}"
-    done
-    echo "Command '@*' failed 3 times!"
-    exit 255
-}
-
-command -v pip
-pip --version
-pip list --disable-pip-version-check
-retry pip install https://github.com/ansible-community/antsibull-nox/archive/main.tar.gz --disable-pip-version-check
-
 export PYTHONIOENCODING='utf-8'
 
 if [ -n "${COVERAGE:-}" ]; then
@@ -91,4 +57,8 @@ export ANTSIBULL_NOX_COVERAGE_DESTINATION="${COVERAGE_DESTINATION_DIRECTORY}"
 export ANTSIBULL_NOX_COVERAGE_ANALYSIS_FILE="${COVERAGE_DESTINATION_DIRECTORY}/coverage-analyze-targets.json"
 export ANTSIBULL_NOX_COVERAGE_NO_XML="true"
 
-nox -e "${nox_session}" -- ${COVERAGE}
+if [ "${nox_session}" == "extra-sanity-tests" ]; then
+    nox --reuse-existing-virtualenvs --no-install
+else
+    nox --reuse-existing-virtualenvs --no-install -e "${nox_session}" -- ${COVERAGE}
+fi
