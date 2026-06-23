@@ -5,6 +5,10 @@
 
 set -o pipefail -eux
 
+# Fix for https://github.com/ansible-community/antsibull-nox/issues/222#issuecomment-4778928615
+# caused by https://github.com/ansible/azure-pipelines-test-container/blob/7714d81f64f268bbb10779e1265d312128607b76/Containerfile#L4
+export PATH="${PATH//:~\//:${HOME}/}"
+
 nox_session="$1"
 
 docker images ansible/ansible
@@ -47,6 +51,8 @@ export FORCE_COLOR=1
 export ANTSIBULL_NOX_IGNORE_INSTALLED_COLLECTIONS="true"
 
 if [ "${nox_session}" == "extra-sanity-tests" ]; then
+    # We need the ansible-galaxy CLI tool to install collection dependencies
+    retry pip install ansible-core --disable-pip-version-check
     nox --verbose --install-only
 else
     nox --verbose --install-only -e "${nox_session}"
