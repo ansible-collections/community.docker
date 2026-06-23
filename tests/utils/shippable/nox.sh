@@ -5,6 +5,10 @@
 
 set -o pipefail -eux
 
+# Fix for https://github.com/ansible-community/antsibull-nox/issues/222#issuecomment-4778928615
+# caused by https://github.com/ansible/azure-pipelines-test-container/blob/7714d81f64f268bbb10779e1265d312128607b76/Containerfile#L4
+export PATH="${PATH//:~\//:${HOME}/}"
+
 nox_session="$1"
 
 export PYTHONIOENCODING='utf-8'
