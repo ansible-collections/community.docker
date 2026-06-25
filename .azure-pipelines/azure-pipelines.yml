@@ -120,26 +120,26 @@ stages:
       - template: templates/matrix.yml
         parameters:
           targets:
-            - name: RHEL 10.1 + group 1 + sdk-dev-latest
-              test: ansible-test-integration-devel-rhel-10.1-azp-1
-            - name: RHEL 10.1 + group 2 + sdk-dev-latest
-              test: ansible-test-integration-devel-rhel-10.1-azp-2
-            - name: RHEL 10.1 + group 3 + sdk-dev-latest
-              test: ansible-test-integration-devel-rhel-10.1-azp-3
-            - name: RHEL 10.1 + group 4 + sdk-dev-latest
-              test: ansible-test-integration-devel-rhel-10.1-azp-4
-            - name: RHEL 10.1 + group 5 + sdk-dev-latest
-              test: ansible-test-integration-devel-rhel-10.1-azp-5
-            - name: RHEL 9.7 + group 1
-              test: ansible-test-integration-devel-rhel-9.7-azp-1
-            - name: RHEL 9.7 + group 2
-              test: ansible-test-integration-devel-rhel-9.7-azp-2
-            - name: RHEL 9.7 + group 3
-              test: ansible-test-integration-devel-rhel-9.7-azp-3
-            - name: RHEL 9.7 + group 4
-              test: ansible-test-integration-devel-rhel-9.7-azp-4
-            - name: RHEL 9.7 + group 5
-              test: ansible-test-integration-devel-rhel-9.7-azp-5
+            - name: RHEL 10.2 + group 1 + sdk-dev-latest
+              test: ansible-test-integration-devel-rhel-10.2-azp-1
+            - name: RHEL 10.2 + group 2 + sdk-dev-latest
+              test: ansible-test-integration-devel-rhel-10.2-azp-2
+            - name: RHEL 10.2 + group 3 + sdk-dev-latest
+              test: ansible-test-integration-devel-rhel-10.2-azp-3
+            - name: RHEL 10.2 + group 4 + sdk-dev-latest
+              test: ansible-test-integration-devel-rhel-10.2-azp-4
+            - name: RHEL 10.2 + group 5 + sdk-dev-latest
+              test: ansible-test-integration-devel-rhel-10.2-azp-5
+            - name: RHEL 9.8 + group 1
+              test: ansible-test-integration-devel-rhel-9.8-azp-1
+            - name: RHEL 9.8 + group 2
+              test: ansible-test-integration-devel-rhel-9.8-azp-2
+            - name: RHEL 9.8 + group 3
+              test: ansible-test-integration-devel-rhel-9.8-azp-3
+            - name: RHEL 9.8 + group 4
+              test: ansible-test-integration-devel-rhel-9.8-azp-4
+            - name: RHEL 9.8 + group 5
+              test: ansible-test-integration-devel-rhel-9.8-azp-5
 
   - stage: Summary
     condition: succeededOrFailed()
