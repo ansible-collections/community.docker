@@ -7,7 +7,7 @@
 
 namespace: community
 name: docker
-version: 5.3.0
+version: 5.3.1
 readme: README.md
 authors:
   - Ansible Docker Working Group
@@ -28,3 +28,16 @@ build_ignore:
 # https://docs.ansible.com/ansible/devel/dev_guide/developing_collections.html#ignoring-files-and-folders
   - .gitignore
   - changelogs/.plugin-cache.yaml
+  - .azure-pipelines
+  - .github
+  - .git-blame-ignore-revs
+  - tests
+  - .ansible-lint
+  - .flake8
+  - .mypy.ini
+  - .pylintrc
+  - .yamllint*
+  - noxfile.py
+  - antsibull-nox.toml
+  - ruff.toml
+  - '*.tar.gz'
