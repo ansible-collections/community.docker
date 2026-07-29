@@ -17,6 +17,7 @@ author:
 extends_documentation_fragment:
   - ansible.builtin.constructed
   - community.docker._docker.api_documentation
+  - community.docker._docker.api_environment_documentation
   - community.library_inventory_filtering_v1.inventory_filter
 description:
   - Reads inventories from the Docker API.
