@@ -20,6 +20,7 @@ notes:
     with Python's C(SSLSocket)s. See U(https://github.com/ansible-collections/community.docker/issues/605) for more information.
 extends_documentation_fragment:
   - community.docker.docker.api_documentation
+  - community.docker.docker._api_environment_documentation
   - community.docker.docker.var_names
 options:
   remote_user:
