@@ -406,3 +406,25 @@ notes:
   - This module does B(not) use the L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) to
     communicate with the Docker daemon. It directly calls the Docker CLI program.
 '''
+
+    _API_ENVIRONMENT_DOCUMENTATION = r"""
+options:
+  docker_host:
+    env:
+      - name: DOCKER_HOST
+  tls_hostname:
+    env:
+      - name: DOCKER_TLS_HOSTNAME
+  api_version:
+    env:
+      - name: DOCKER_API_VERSION
+  timeout:
+    env:
+      - name: DOCKER_TIMEOUT
+  tls:
+    env:
+      - name: DOCKER_TLS
+  validate_certs:
+    env:
+      - name: DOCKER_TLS_VERIFY
+"""
