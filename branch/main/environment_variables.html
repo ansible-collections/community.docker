@@ -205,6 +205,80 @@ Environment variables used by the ansible-core configuration are documented in <
 <a class="reference internal" href="nsenter_connection.html#ansible-collections-community-docker-nsenter-connection"><span class="std std-ref">community.docker.nsenter connection plugin</span></a></p>
 </dd></dl>
 
+<dl class="std envvar">
+<dt class="sig sig-object std">
+<span class="sig-name descname"><span class="pre">DOCKER_API_VERSION</span></span></dt>
+<dd><blockquote>
+<div><p>The version of the Docker API running on the Docker Host.</p>
+<p>Defaults to the latest version of the API supported by this collection and the docker daemon.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_API_VERSION"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_API_VERSION</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p><em>Used by:</em>
+<a class="reference internal" href="docker_api_connection.html#ansible-collections-community-docker-docker-api-connection"><span class="std std-ref">community.docker.docker_api connection plugin</span></a>,
+<a class="reference internal" href="docker_containers_inventory.html#ansible-collections-community-docker-docker-containers-inventory"><span class="std std-ref">community.docker.docker_containers inventory plugin</span></a></p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std">
+<span class="sig-name descname"><span class="pre">DOCKER_HOST</span></span></dt>
+<dd><blockquote>
+<div><p>The URL or Unix socket path used to connect to the Docker API. To connect to a remote host, provide the TCP connection string. For example, <code class="ansible-value docutils literal notranslate"><span class="pre">tcp://192.0.2.23:2376</span></code>. If TLS is used to encrypt the connection, the module will automatically replace <code class="docutils literal notranslate"><span class="pre">tcp</span></code> in the connection URL with <code class="docutils literal notranslate"><span class="pre">https</span></code>.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_HOST"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_HOST</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p><em>Used by:</em>
+<a class="reference internal" href="docker_api_connection.html#ansible-collections-community-docker-docker-api-connection"><span class="std std-ref">community.docker.docker_api connection plugin</span></a>,
+<a class="reference internal" href="docker_containers_inventory.html#ansible-collections-community-docker-docker-containers-inventory"><span class="std std-ref">community.docker.docker_containers inventory plugin</span></a></p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std">
+<span class="sig-name descname"><span class="pre">DOCKER_TIMEOUT</span></span></dt>
+<dd><blockquote>
+<div><p>The maximum amount of time in seconds to wait on a response from the API.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TIMEOUT</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p><em>Used by:</em>
+<a class="reference internal" href="docker_api_connection.html#ansible-collections-community-docker-docker-api-connection"><span class="std std-ref">community.docker.docker_api connection plugin</span></a>,
+<a class="reference internal" href="docker_containers_inventory.html#ansible-collections-community-docker-docker-containers-inventory"><span class="std std-ref">community.docker.docker_containers inventory plugin</span></a></p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std">
+<span class="sig-name descname"><span class="pre">DOCKER_TLS</span></span></dt>
+<dd><blockquote>
+<div><p>Secure the connection to the API by using TLS without verifying the authenticity of the Docker host server. Note that if <code class="ansible-option docutils literal notranslate"><strong><span><span class="pre">validate_certs</span></span></strong></code> is set to <code class="ansible-value docutils literal notranslate"><span class="pre">true</span></code> as well, it will take precedence.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p><em>Used by:</em>
+<a class="reference internal" href="docker_api_connection.html#ansible-collections-community-docker-docker-api-connection"><span class="std std-ref">community.docker.docker_api connection plugin</span></a>,
+<a class="reference internal" href="docker_containers_inventory.html#ansible-collections-community-docker-docker-containers-inventory"><span class="std std-ref">community.docker.docker_containers inventory plugin</span></a></p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std">
+<span class="sig-name descname"><span class="pre">DOCKER_TLS_HOSTNAME</span></span></dt>
+<dd><blockquote>
+<div><p>When verifying the authenticity of the Docker Host server, provide the expected name of the server.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_HOSTNAME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_HOSTNAME</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p>Note that this option had a default value <code class="ansible-value docutils literal notranslate"><span class="pre">localhost</span></code> in older versions. It was removed in community.docker 3.0.0.</p>
+<p><em>Used by:</em>
+<a class="reference internal" href="docker_api_connection.html#ansible-collections-community-docker-docker-api-connection"><span class="std std-ref">community.docker.docker_api connection plugin</span></a>,
+<a class="reference internal" href="docker_containers_inventory.html#ansible-collections-community-docker-docker-containers-inventory"><span class="std std-ref">community.docker.docker_containers inventory plugin</span></a></p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std envvar">
+<dt class="sig sig-object std">
+<span class="sig-name descname"><span class="pre">DOCKER_TLS_VERIFY</span></span></dt>
+<dd><blockquote>
+<div><p>Secure the connection to the API by using TLS and verifying the authenticity of the Docker host server.</p>
+<p>If the value is not specified in the task, the value of environment variable <a class="reference internal" href="docsite/scenario_guide.html#envvar-DOCKER_TLS_VERIFY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">DOCKER_TLS_VERIFY</span></code></a> will be used instead. If the environment variable is not set, the default value will be used.</p>
+<p><em>Used by:</em>
+<a class="reference internal" href="docker_api_connection.html#ansible-collections-community-docker-docker-api-connection"><span class="std std-ref">community.docker.docker_api connection plugin</span></a>,
+<a class="reference internal" href="docker_containers_inventory.html#ansible-collections-community-docker-docker-containers-inventory"><span class="std std-ref">community.docker.docker_containers inventory plugin</span></a></p>
+</div></blockquote>
+</dd></dl>
+
 </section>
 
 
