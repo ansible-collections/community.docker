@@ -911,7 +911,7 @@ class ImageManager(DockerBaseClass):
             self.log(line, pretty_print=True)
             self._extract_output_line(line, build_output)
 
-            if line.get('error'):
+            if line.get('error') or line.get('errorDetail'):
                 if line.get('errorDetail'):
                     errorDetail = line.get('errorDetail')
                     self.fail(
