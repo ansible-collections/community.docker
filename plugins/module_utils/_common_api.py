@@ -564,7 +564,7 @@ class AnsibleDockerClientBase(Client):
             self._raise_for_status(response)
             for line in self._stream_helper(response, decode=True):
                 self.log(line, pretty_print=True)
-                if line.get("error"):
+                if line.get("error") or line.get("errorDetail"):
                     if line.get("errorDetail"):
                         error_detail = line.get("errorDetail")
                         self.fail(
