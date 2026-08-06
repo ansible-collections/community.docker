@@ -1,0 +1,2 @@
+bugfixes:
+  - "Handle empty 'docker compose images' stdout in case of errors (https://github.com/ansible-collections/community.docker/pull/1305)."
