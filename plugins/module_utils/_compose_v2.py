@@ -707,7 +707,7 @@ def update_failed(
     result: dict[str, t.Any],
     events: Sequence[Event],
     args: list[str],
-    stdout: str | bytes,
+    stdout: str | bytes | None,
     stderr: str | bytes,
     rc: int,
     cli: str,
@@ -739,7 +739,7 @@ def update_failed(
     result["failed"] = True
     result["msg"] = "\n".join(errors)
     result["cmd"] = " ".join(quote(arg) for arg in [cli] + args)
-    result["stdout"] = to_text(stdout)
+    result["stdout"] = to_text(stdout) if stdout is not None else ""
     result["stderr"] = to_text(stderr)
     result["rc"] = rc
     return True
@@ -900,7 +900,7 @@ class BaseComposeManager(DockerBaseClass):
         return args
 
     def _handle_failed_cli_call(
-        self, args: list[str], rc: int, stdout: str | bytes, stderr: bytes
+        self, args: list[str], rc: int, stdout: str | bytes | None, stderr: bytes
     ) -> t.NoReturn:
         events = parse_json_events(stderr, warn_function=self.client.warn)
         result: dict[str, t.Any] = {}
@@ -945,15 +945,20 @@ class BaseComposeManager(DockerBaseClass):
     def list_images(self) -> list[str]:
         args = self.get_base_args() + ["images", "--format", "json"]
         rc, images, stderr = self.client.call_cli_json(
-            *args, cwd=self.project_src, check_rc=not self.use_json_events
+            *args,
+            cwd=self.project_src,
+            check_rc=not self.use_json_events,
+            parse_empty_as_none=True,
         )
         if self.use_json_events and rc != 0:
             self._handle_failed_cli_call(args, rc, images, stderr)
+        if images is None:
+            return []
         if isinstance(images, dict):
             # Handle breaking change in Docker Compose 2.37.0; see
             # https://github.com/ansible-collections/community.docker/issues/1082
             # and https://github.com/docker/compose/issues/12916 for details
-            images = list(images.values())
+            return list(images.values())
         return images
 
     def parse_events(
@@ -994,7 +999,7 @@ class BaseComposeManager(DockerBaseClass):
         result: dict[str, t.Any],
         events: Sequence[Event],
         args: list[str],
-        stdout: str | bytes,
+        stdout: str | bytes | None,
         stderr: bytes,
         rc: int,
     ) -> bool:

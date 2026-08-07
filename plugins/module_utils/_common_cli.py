@@ -186,12 +186,15 @@ class AnsibleDockerClientBase:
         cwd: str | None = None,
         environ_update: dict[str, str] | None = None,
         warn_on_stderr: bool = False,
+        parse_empty_as_none: bool = False,
     ) -> tuple[int, t.Any, bytes]:
         rc, stdout, stderr = self.call_cli(
             *args, check_rc=check_rc, data=data, cwd=cwd, environ_update=environ_update
         )
         if warn_on_stderr and stderr:
             self.warn(to_text(stderr))
+        if parse_empty_as_none and not stdout.strip():
+            return rc, None, stderr
         try:
             data = json.loads(stdout)
         except Exception as exc:  # pylint: disable=broad-exception-caught
