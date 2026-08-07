@@ -647,7 +647,7 @@ def update_failed(result, events, args, stdout, stderr, rc, cli):
     result['failed'] = True
     result['msg'] = '\n'.join(errors)
     result['cmd'] = ' '.join(shlex_quote(arg) for arg in [cli] + args)
-    result['stdout'] = to_native(stdout)
+    result['stdout'] = to_native(stdout) if stdout is not None else ''
     result['stderr'] = to_native(stderr)
     result['rc'] = rc
     return True
@@ -834,15 +834,17 @@ class BaseComposeManager(DockerBaseClass):
 
     def list_images(self):
         args = self.get_base_args() + ['images', '--format', 'json']
-        kwargs = dict(cwd=self.project_src, check_rc=not self.use_json_events)
+        kwargs = dict(cwd=self.project_src, check_rc=not self.use_json_events, parse_empty_as_none=True)
         rc, images, stderr = self.client.call_cli_json(*args, **kwargs)
         if self.use_json_events and rc != 0:
             self._handle_failed_cli_call(args, rc, images, stderr)
+        if images is None:
+            return []
         if isinstance(images, dict):
             # Handle breaking change in Docker Compose 2.37.0; see
             # https://github.com/ansible-collections/community.docker/issues/1082
             # and https://github.com/docker/compose/issues/12916 for details
-            images = list(images.values())
+            return list(images.values())
         return images
 
     def parse_events(self, stderr, dry_run=False, nonzero_rc=False):

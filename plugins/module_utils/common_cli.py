@@ -124,12 +124,15 @@ class AnsibleDockerClientBase(object):
         # Python 2.7 does not like anything than '**kwargs' after '*args', so we have to do this manually...
         pass
 
-    # def call_cli_json(self, *args, check_rc=False, data=None, cwd=None, environ_update=None, warn_on_stderr=False):
+    # def call_cli_json(self, *args, check_rc=False, data=None, cwd=None, environ_update=None, warn_on_stderr=False, parse_empty_as_none=False):
     def call_cli_json(self, *args, **kwargs):
         warn_on_stderr = kwargs.pop('warn_on_stderr', False)
+        parse_empty_as_none = kwargs.pop('parse_empty_as_none', False)
         rc, stdout, stderr = self.call_cli(*args, **kwargs)
         if warn_on_stderr and stderr:
             self.warn(to_native(stderr))
+        if parse_empty_as_none and not stdout.strip():
+            return rc, None, stderr
         try:
             data = json.loads(stdout)
         except Exception as exc:
