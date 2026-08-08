@@ -263,6 +263,9 @@ There are several modules for working with Docker Compose projects:
     community.docker.docker_compose_v2
         The :ansplugin:`community.docker.docker_compose_v2 module <community.docker.docker_compose_v2#module>` allows you to use your existing Docker Compose files to orchestrate containers on a single Docker daemon or on Swarm.
 
+    community.docker.docker_compose_v2_build
+        The :ansplugin:`community.docker.docker_compose_v2_pull module <community.docker.docker_compose_v2_pull#module>` allows you to build images for Docker compose projects.
+
     community.docker.docker_compose_v2_exec
         The :ansplugin:`community.docker.docker_compose_v2_exec module <community.docker.docker_compose_v2_exec#module>` allows you to run a command in a container of Docker Compose projects.
 
