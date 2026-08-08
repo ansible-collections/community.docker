@@ -1,3 +1,0 @@
-bugfixes:
-  - "docker_api connection plugin - the environment fallbacks for ``docker_host``, ``tls_hostname``, ``api_version``, ``timeout``, ``tls``, and ``validate_certs`` now finally work (https://github.com/ansible-collections/community.docker/issues/1298, https://github.com/ansible-collections/community.docker/pull/1299)."
-  - "docker_containers inventory plugin - the environment fallbacks for ``docker_host``, ``tls_hostname``, ``api_version``, ``timeout``, ``tls``, and ``validate_certs`` now finally work (https://github.com/ansible-collections/community.docker/issues/1298, https://github.com/ansible-collections/community.docker/pull/1299)."
