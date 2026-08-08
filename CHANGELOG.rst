@@ -4,6 +4,22 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v4.8.8
+======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- Handle empty 'docker compose images' stdout in case of errors (https://github.com/ansible-collections/community.docker/pull/1305).
+- docker_api connection plugin - the environment fallbacks for ``docker_host``, ``tls_hostname``, ``api_version``, ``timeout``, ``tls``, and ``validate_certs`` now finally work (https://github.com/ansible-collections/community.docker/issues/1298, https://github.com/ansible-collections/community.docker/pull/1299).
+- docker_containers inventory plugin - the environment fallbacks for ``docker_host``, ``tls_hostname``, ``api_version``, ``timeout``, ``tls``, and ``validate_certs`` now finally work (https://github.com/ansible-collections/community.docker/issues/1298, https://github.com/ansible-collections/community.docker/pull/1299).
+- docker_image, docker_image_pull, docker_container - also handle errors if only ``errorDetail`` is set, but not ``error``. The ``error`` field has been `deprecated in Moby apparently a very long time ago <https://github.com/moby/moby/commit/3043c2641990d94298c6377b7ef14709263a4709>`__ (https://github.com/ansible-collections/community.docker/pull/1302).
+
 v4.8.7
 ======
 
