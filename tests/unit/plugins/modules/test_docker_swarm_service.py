@@ -376,3 +376,19 @@ def test_get_docker_networks() -> None:
         docker_swarm_service.get_docker_networks(
             [{"name": "test", "nonexisting_option": "foo"}], {"test": "1"}
         )
+
+
+def test_combine_command_args() -> None:
+    """command + args must form ContainerSpec.Args (docker CLI compatible)."""
+    combine = docker_swarm_service._combine_command_args
+    assert combine(None, None) is None
+    assert combine(["sleep"], ["3600"]) == ["sleep", "3600"]
+    # Flag-style command alone (issue #1044 / #212) becomes Args, not Command
+    assert combine(["-config.file=/etc/loki/loki-config.yaml"], None) == [
+        "-config.file=/etc/loki/loki-config.yaml"
+    ]
+    assert combine(None, ["--path.rootfs=/host"]) == ["--path.rootfs=/host"]
+    assert combine(["prometheus"], ["--config.file=a.yml"]) == [
+        "prometheus",
+        "--config.file=a.yml",
+    ]

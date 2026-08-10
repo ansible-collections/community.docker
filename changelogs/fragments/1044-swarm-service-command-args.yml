@@ -1,0 +1,7 @@
+bugfixes:
+  - docker_swarm_service - map ``command`` and ``args`` to ContainerSpec.Args
+    (matching ``docker service create IMAGE [COMMAND] [ARG...]``) so the image
+    ENTRYPOINT is preserved. Previously ``command`` was sent as ContainerSpec.Command,
+    which replaced the entrypoint and broke flag-style commands such as
+    ``-config.file=...`` (https://github.com/ansible-collections/community.docker/issues/1044,
+    https://github.com/ansible-collections/community.docker/issues/212).

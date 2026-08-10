@@ -36,6 +36,9 @@ options:
     description:
       - List arguments to be passed to the container.
       - Corresponds to the C(ARG) parameter of C(docker service create).
+      - Appended after O(command) when building the service's ContainerSpec.
+      - Together with O(command), these values are sent as ContainerSpec.Args
+        (matching the Docker CLI), so the image C(ENTRYPOINT) is preserved.
     type: list
     elements: str
   command:
@@ -43,6 +46,11 @@ options:
       - Command to execute when the container starts.
       - A command may be either a string or a list or a list of strings.
       - Corresponds to the C(COMMAND) parameter of C(docker service create).
+      - Together with O(args), this is sent as ContainerSpec.Args (same as the
+        Docker CLI C(docker service create IMAGE [COMMAND] [ARG...])), so the
+        image C(ENTRYPOINT) is preserved. Previously this was incorrectly sent
+        as ContainerSpec.Command, which replaced the entrypoint and broke
+        common flag-style commands (for example C(-config.file=...)).
     type: raw
   configs:
     description:
@@ -1054,6 +1062,23 @@ def has_dict_changed(
     return False
 
 
+def _combine_command_args(
+    command: list[str] | None, args: list[str] | None
+) -> list[str] | None:
+    """
+    Combine ansible command + args into a single argv list.
+
+    Matches docker CLI ``service create IMAGE [COMMAND] [ARG...]``, which places
+    all post-image tokens into ContainerSpec.Args (preserving ENTRYPOINT).
+    """
+    combined: list[str] = []
+    if command is not None:
+        combined.extend(command)
+    if args is not None:
+        combined.extend(args)
+    return combined if combined else None
+
+
 def has_list_changed(
     new_list: list[t.Any] | None,
     old_list: list[t.Any] | None,
@@ -1675,10 +1700,15 @@ class DockerService(DockerBaseClass):
             needs_rebuild = not self.can_update_networks
         if self.replicas != os.replicas:
             differences.add("replicas", parameter=self.replicas, active=os.replicas)
-        if has_list_changed(self.command, os.command, sort_lists=False):
-            differences.add("command", parameter=self.command, active=os.command)
-        if has_list_changed(self.args, os.args, sort_lists=False):
-            differences.add("args", parameter=self.args, active=os.args)
+        # command + args are stored as ContainerSpec.Args (CLI-compatible).
+        # Older module versions incorrectly wrote command to ContainerSpec.Command,
+        # so compare the combined command line from either field.
+        desired_cmdline = _combine_command_args(self.command, self.args)
+        active_cmdline = _combine_command_args(os.command, os.args)
+        if has_list_changed(desired_cmdline, active_cmdline, sort_lists=False):
+            differences.add(
+                "command", parameter=desired_cmdline, active=active_cmdline
+            )
         if has_list_changed(self.constraints, os.constraints):
             differences.add(
                 "constraints", parameter=self.constraints, active=os.constraints
@@ -1999,10 +2029,13 @@ class DockerService(DockerBaseClass):
         dns_config = types.DNSConfig(**dns_config_args) if dns_config_args else None
 
         container_spec_args: dict[str, t.Any] = {}
-        if self.command is not None:
-            container_spec_args["command"] = self.command
-        if self.args is not None:
-            container_spec_args["args"] = self.args
+        # Match `docker service create IMAGE [COMMAND] [ARG...]`: the CLI places
+        # all post-image tokens into ContainerSpec.Args so ENTRYPOINT is kept.
+        # Writing Command instead replaces ENTRYPOINT and breaks flag-style
+        # commands such as `-config.file=...` (see #1044, #212).
+        combined_args = _combine_command_args(self.command, self.args)
+        if combined_args is not None:
+            container_spec_args["args"] = combined_args
         if self.env is not None:
             container_spec_args["env"] = self.env
         if self.user is not None:
