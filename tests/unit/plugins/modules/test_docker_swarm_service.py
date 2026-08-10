@@ -379,11 +379,11 @@ def test_get_docker_networks() -> None:
 
 
 def test_combine_command_args() -> None:
-    """command + args must form ContainerSpec.Args (docker CLI compatible)."""
+    """command + args combine into a single argv list for CLI-compatible mode."""
     combine = docker_swarm_service._combine_command_args
     assert combine(None, None) is None
     assert combine(["sleep"], ["3600"]) == ["sleep", "3600"]
-    # Flag-style command alone (issue #1044 / #212) becomes Args, not Command
+    # Flag-style command alone (issue #1044 / #212)
     assert combine(["-config.file=/etc/loki/loki-config.yaml"], None) == [
         "-config.file=/etc/loki/loki-config.yaml"
     ]
@@ -392,3 +392,63 @@ def test_combine_command_args() -> None:
         "prometheus",
         "--config.file=a.yml",
     ]
+
+
+def _make_service(
+    command: list[str] | None = None,
+    args: list[str] | None = None,
+    command_as_args: bool = False,
+) -> docker_swarm_service.DockerService:
+    svc = docker_swarm_service.DockerService(
+        docker_swarm_service.LooseVersion("1.40"),
+        docker_swarm_service.LooseVersion("5.0.0"),
+    )
+    svc.image = "alpine:latest"
+    svc.command = command
+    svc.args = args
+    svc.command_as_args = command_as_args
+    return svc
+
+
+def test_build_container_spec_legacy_command_mapping(mocker: t.Any) -> None:
+    """Default command_as_args=false keeps historical Command/Args split."""
+    captured: dict[str, t.Any] = {}
+
+    class FakeContainerSpec:
+        def __init__(self, image: str, **kwargs: t.Any) -> None:
+            captured["image"] = image
+            captured.update(kwargs)
+
+    mocker.patch.object(docker_swarm_service.types, "ContainerSpec", FakeContainerSpec)
+
+    svc = _make_service(command=["sleep"], args=["3600"], command_as_args=False)
+    svc.build_container_spec()
+    assert captured.get("command") == ["sleep"]
+    assert captured.get("args") == ["3600"]
+
+
+def test_build_container_spec_command_as_args(mocker: t.Any) -> None:
+    """command_as_args=true maps command+args to ContainerSpec.Args only."""
+    captured: dict[str, t.Any] = {}
+
+    class FakeContainerSpec:
+        def __init__(self, image: str, **kwargs: t.Any) -> None:
+            captured["image"] = image
+            captured.update(kwargs)
+
+    mocker.patch.object(docker_swarm_service.types, "ContainerSpec", FakeContainerSpec)
+
+    svc = _make_service(
+        command=["-config.file=/etc/loki/loki-config.yaml"],
+        args=None,
+        command_as_args=True,
+    )
+    svc.build_container_spec()
+    assert "command" not in captured
+    assert captured.get("args") == ["-config.file=/etc/loki/loki-config.yaml"]
+
+    captured.clear()
+    svc = _make_service(command=["sleep"], args=["3600"], command_as_args=True)
+    svc.build_container_spec()
+    assert "command" not in captured
+    assert captured.get("args") == ["sleep", "3600"]
