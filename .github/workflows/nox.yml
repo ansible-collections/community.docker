@@ -15,6 +15,9 @@ name: nox
     - cron: '0 9 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   # Make sure there is at most one active run per PR, but do not cancel any non-PR runs
   group: ${{ github.workflow }}-${{ (github.head_ref && github.event.number) || github.run_id }}
