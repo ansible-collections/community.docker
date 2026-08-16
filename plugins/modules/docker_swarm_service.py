@@ -38,7 +38,7 @@ options:
       - Corresponds to the C(ARG) parameter of C(docker service create).
       - When O(command_as_args=true), these values are appended after O(command)
         and both are sent as ContainerSpec.Args (matching the Docker CLI).
-      - When O(command_as_args=false) (default), O(args) is sent as ContainerSpec.Args
+      - When O(command_as_args=false), O(args) is sent as C(ContainerSpec.Args)
         while O(command) is sent as ContainerSpec.Command.
     type: list
     elements: str
