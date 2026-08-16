@@ -58,12 +58,12 @@ options:
     type: raw
   command_as_args:
     description:
-      - Controls how O(command) and O(args) are mapped to the service ContainerSpec.
-      - If V(false) (default), O(command) is written to ContainerSpec.Command and
-        O(args) to ContainerSpec.Args. This matches the historical module behavior
+      - Controls how O(command) and O(args) are mapped to the service C(ContainerSpec).
+      - If V(false) (default), O(command) is written to C(ContainerSpec.Command) and
+        O(args) to C(ContainerSpec.Args). This matches the historical module behavior
         (ContainerSpec.Command replaces the image C(ENTRYPOINT)).
       - If V(true), O(command) and O(args) are concatenated and written only to
-        ContainerSpec.Args, matching C(docker service create IMAGE [COMMAND] [ARG...])
+        C(ContainerSpec.Args), matching C(docker service create IMAGE [COMMAND] [ARG...])
         so the image C(ENTRYPOINT) is preserved.
       - The default may change to V(true) in a future major release after a deprecation
         period.
