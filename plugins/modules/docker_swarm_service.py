@@ -65,8 +65,7 @@ options:
       - If V(true), O(command) and O(args) are concatenated and written only to
         C(ContainerSpec.Args), matching C(docker service create IMAGE [COMMAND] [ARG...])
         so the image C(ENTRYPOINT) is preserved.
-      - The default may change to V(true) in a future major release after a deprecation
-        period.
+      - The current default will eventually be depreacted and change to V(true).
     type: bool
     default: false
     version_added: 5.3.0
