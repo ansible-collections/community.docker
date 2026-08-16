@@ -52,7 +52,7 @@ options:
       - When O(command_as_args=true), this is combined with O(args) and sent as
         C(ContainerSpec.Args) (same as the Docker CLI
         C(docker service create IMAGE [COMMAND] [ARG...])), so the image C(ENTRYPOINT)
-        is preserved. Use this for flag-style commands (for example C(-config.file=...))
+        is preserved. Use this for flag-style commands (for example V(--config.file=...))
         that must be passed as arguments to the image entrypoint
         (see U(https://github.com/ansible-collections/community.docker/issues/1044)).
     type: raw
