@@ -47,7 +47,7 @@ options:
       - Command to execute when the container starts.
       - A command may be either a string or a list or a list of strings.
       - Corresponds to the C(COMMAND) parameter of C(docker service create).
-      - When O(command_as_args=false) (default), this is sent as ContainerSpec.Command,
+      - When O(command_as_args=false), this is sent as C(ContainerSpec.Command),
         which replaces the image C(ENTRYPOINT). This is the historical module behavior.
       - When O(command_as_args=true), this is combined with O(args) and sent as
         C(ContainerSpec.Args) (same as the Docker CLI
