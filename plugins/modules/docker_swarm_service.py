@@ -50,7 +50,7 @@ options:
       - When O(command_as_args=false) (default), this is sent as ContainerSpec.Command,
         which replaces the image C(ENTRYPOINT). This is the historical module behavior.
       - When O(command_as_args=true), this is combined with O(args) and sent as
-        ContainerSpec.Args (same as the Docker CLI
+        C(ContainerSpec.Args) (same as the Docker CLI
         C(docker service create IMAGE [COMMAND] [ARG...])), so the image C(ENTRYPOINT)
         is preserved. Use this for flag-style commands (for example C(-config.file=...))
         that must be passed as arguments to the image entrypoint
