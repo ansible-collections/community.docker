@@ -1097,12 +1097,11 @@ def _combine_command_args(
     Matches docker CLI ``service create IMAGE [COMMAND] [ARG...]``, which places
     all post-image tokens into ContainerSpec.Args (preserving ENTRYPOINT).
     """
-    combined: list[str] = []
-    if command is not None:
-        combined.extend(command)
-    if args is not None:
-        combined.extend(args)
-    return combined if combined else None
+    if command is None:
+        return args
+    if args is None:
+        return command
+    return command + args
 
 
 def has_list_changed(
