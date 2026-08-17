@@ -576,14 +576,14 @@ For example, an ansible.cfg entry (further up in the list) is overwritten by an 
 <span class="nt">keyed_groups</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># add for example x86_64 hosts to an arch_x86_64 group</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arch</span>
-<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Description.Platform.Architecture&#39;</span>
+<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">'Description.Platform.Architecture'</span>
 <span class="w">  </span><span class="c1"># add for example linux hosts to an os_linux group</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">os</span>
-<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Description.Platform.OS&#39;</span>
+<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">'Description.Platform.OS'</span>
 <span class="w">  </span><span class="c1"># create a group per node label</span>
-<span class="w">  </span><span class="c1"># for exomple a node labeled w/ &quot;production&quot; ends up in group &quot;label_production&quot;</span>
+<span class="w">  </span><span class="c1"># for exomple a node labeled w/ "production" ends up in group "label_production"</span>
 <span class="w">  </span><span class="c1"># hint: labels containing special characters will be converted to safe names</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Spec.Labels&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">'Spec.Labels'</span>
 <span class="w">    </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">label</span>
 </pre></div>
 </div>

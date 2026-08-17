@@ -679,7 +679,7 @@ For example, an ansible.cfg entry (further up in the list) is overwritten by an 
 <span class="nt">keyed_groups</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># Add containers with primary network foo to a network_foo group</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">network</span>
-<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;docker_hostconfig.NetworkMode&#39;</span>
+<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">'docker_hostconfig.NetworkMode'</span>
 <span class="w">  </span><span class="c1"># Add Linux hosts to an os_linux group</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">os</span>
 <span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker_platform</span>
@@ -694,15 +694,15 @@ For example, an ansible.cfg entry (further up in the list) is overwritten by an 
 <span class="w">  </span><span class="nt">ansible_ssh_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ansible_ssh_port | default(22, true)</span>
 
 <span class="nn">---</span>
-<span class="c1"># Only consider containers which have a label &#39;foo&#39;, or whose name starts with &#39;a&#39;</span>
+<span class="c1"># Only consider containers which have a label 'foo', or whose name starts with 'a'</span>
 <span class="nt">plugin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">community.docker.docker_containers</span>
 <span class="nt">filters</span><span class="p">:</span>
-<span class="w">  </span><span class="c1"># Accept all containers which have a label called &#39;foo&#39;</span>
+<span class="w">  </span><span class="c1"># Accept all containers which have a label called 'foo'</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
-<span class="w">      </span><span class="no">&quot;foo&quot; in docker_config.Labels</span>
-<span class="w">  </span><span class="c1"># Next accept all containers whose inventory_hostname starts with &#39;a&#39;</span>
+<span class="w">      </span><span class="no">"foo" in docker_config.Labels</span>
+<span class="w">  </span><span class="c1"># Next accept all containers whose inventory_hostname starts with 'a'</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
-<span class="w">      </span><span class="no">inventory_hostname.startswith(&quot;a&quot;)</span>
+<span class="w">      </span><span class="no">inventory_hostname.startswith("a")</span>
 <span class="w">  </span><span class="c1"># Exclude all containers that did not match any of the above filters</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">exclude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>

@@ -444,7 +444,7 @@ see <a class="reference internal" href="#ansible-collections-community-docker-do
 
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Print the loaded image names</span>
 <span class="w">  </span><span class="nt">ansible.builtin.debug</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">msg</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Loaded</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">following</span><span class="nv"> </span><span class="s">images:</span><span class="nv"> </span><span class="cp">{{</span> <span class="nv">result.image_names</span> <span class="o">|</span> <span class="nf">join</span><span class="o">(</span><span class="s1">&#39;, &#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="s">&quot;</span>
+<span class="w">    </span><span class="nt">msg</span><span class="p">:</span><span class="w"> </span><span class="s">"Loaded</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">following</span><span class="nv"> </span><span class="s">images:</span><span class="nv"> </span><span class="cp">{{</span> <span class="nv">result.image_names</span> <span class="o">|</span> <span class="nf">join</span><span class="o">(</span><span class="s1">', '</span><span class="o">)</span> <span class="cp">}}</span><span class="s">"</span>
 </pre></div>
 </div>
 </section>

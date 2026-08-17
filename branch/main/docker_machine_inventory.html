@@ -458,16 +458,16 @@ For example, an ansible.cfg entry (further up in the list) is overwritten by an 
 <span class="c1">#   $ ansible-inventory -i ./path/to/docker-machine.yml --host=mymachine</span>
 <span class="c1">#   {</span>
 <span class="c1">#     ...</span>
-<span class="c1">#     &quot;digitalocean&quot;: {</span>
-<span class="c1">#       &quot;hosts&quot;: [</span>
-<span class="c1">#           &quot;mymachine&quot;</span>
+<span class="c1">#     "digitalocean": {</span>
+<span class="c1">#       "hosts": [</span>
+<span class="c1">#           "mymachine"</span>
 <span class="c1">#       ]</span>
 <span class="c1">#     ...</span>
 <span class="c1">#   }</span>
 <span class="nt">plugin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">community.docker.docker_machine</span>
 <span class="nt">strict</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="nt">keyed_groups</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">separator</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">separator</span><span class="p">:</span><span class="w"> </span><span class="s">''</span>
 <span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker_machine_node_attributes.DriverName</span>
 
 <span class="nn">---</span>
@@ -476,13 +476,13 @@ For example, an ansible.cfg entry (further up in the list) is overwritten by an 
 <span class="nt">strict</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="nt">keyed_groups</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tag</span>
-<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;dm_tags&#39;</span>
+<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">'dm_tags'</span>
 
 <span class="nn">---</span>
 <span class="c1"># Example using compose to override the default SSH behaviour of asking the user to accept the remote host key</span>
 <span class="nt">plugin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">community.docker.docker_machine</span>
 <span class="nt">compose</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">ansible_ssh_common_args</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&quot;-o</span><span class="nv"> </span><span class="s">StrictHostKeyChecking=accept-new&quot;&#39;</span>
+<span class="w">  </span><span class="nt">ansible_ssh_common_args</span><span class="p">:</span><span class="w"> </span><span class="s">'"-o</span><span class="nv"> </span><span class="s">StrictHostKeyChecking=accept-new"'</span>
 </pre></div>
 </div>
 <section id="authors">
