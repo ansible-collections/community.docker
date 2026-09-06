@@ -4,6 +4,19 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v5.3.0
+======
+
+Release Summary
+---------------
+
+Feature release.
+
+Minor Changes
+-------------
+
+- docker_swarm_service - add ``command_as_args`` option. When set to ``true``, ``command`` and ``args`` are concatenated and mapped to ``ContainerSpec.Args`` (matching ``docker service create IMAGE [COMMAND] [ARG...]``), preserving the image ``ENTRYPOINT``. The default remains ``false`` (historical mapping of ``command`` to ``ContainerSpec.Command`` and ``args`` to ``ContainerSpec.Args``) for backward compatibility (https://github.com/ansible-collections/community.docker/issues/1044, https://github.com/ansible-collections/community.docker/issues/212, https://github.com/ansible-collections/community.docker/pull/1307).
+
 v5.2.2
 ======
 
