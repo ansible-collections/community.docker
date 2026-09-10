@@ -106,7 +106,6 @@ force_docker_sdk_for_python_pypi = { type = "value", value = false, template_val
 "azp/5/" = "group 5"
 
 [sessions.ansible_test_integration.nice_docker_names]
-"quay.io/ansible-community/test-image:debian-bullseye" = "Debian 11"
 "quay.io/ansible-community/test-image:debian-bookworm" = "Debian 12"
 "quay.io/ansible-community/test-image:debian-13-trixie" = "Debian 13"
 "quay.io/ansible-community/test-image:archlinux" = "Arch Linux"
@@ -210,12 +209,6 @@ description = "Meta session for running all ansible-test-integration-2.20-* sess
 ansible_core = "2.20"
 target = [ "azp/4/", "azp/5/" ]
 docker = [ "fedora42", "ubuntu2204", "ubuntu2404", "alpine322" ]
-
-[[sessions.ansible_test_integration.groups.sessions]]
-ansible_core = "2.20"
-target = [ "azp/4/", "azp/5/" ]
-python_version = "3.9"
-docker = "quay.io/ansible-community/test-image:debian-bullseye"
 
 [[sessions.ansible_test_integration.groups.sessions]]
 ansible_core = "2.20"
