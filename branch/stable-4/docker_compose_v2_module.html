@@ -4,7 +4,7 @@
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="2.26.0" name="antsibull-docs" />
+<meta content="2.27.0" name="antsibull-docs" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>community.docker.docker_compose_v2 module – Manage multi-container Docker applications with Docker Compose CLI plugin &mdash; Community.Docker Collection  documentation</title>
@@ -726,13 +726,13 @@ will change over time. New releases of the Docker compose CLI plugin can break t
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Verify that web and db services are not running</span>
 <span class="w">      </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">that</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web_container.State != &#39;running&#39;</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db_container.State != &#39;running&#39;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web_container.State != 'running'</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db_container.State != 'running'</span>
 <span class="w">      </span><span class="nt">vars</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">web_container</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
-<span class="w">          </span><span class="cp">{{</span> <span class="nv">output.containers</span> <span class="o">|</span> <span class="nf">selectattr</span><span class="o">(</span><span class="s2">&quot;Service&quot;</span><span class="o">,</span> <span class="s2">&quot;equalto&quot;</span><span class="o">,</span> <span class="s2">&quot;web&quot;</span><span class="o">)</span> <span class="o">|</span> <span class="nf">first</span> <span class="cp">}}</span>
+<span class="w">          </span><span class="cp">{{</span> <span class="nv">output.containers</span> <span class="o">|</span> <span class="nf">selectattr</span><span class="o">(</span><span class="s2">"Service"</span><span class="o">,</span> <span class="s2">"equalto"</span><span class="o">,</span> <span class="s2">"web"</span><span class="o">)</span> <span class="o">|</span> <span class="nf">first</span> <span class="cp">}}</span>
 <span class="w">        </span><span class="nt">db_container</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
-<span class="w">          </span><span class="cp">{{</span> <span class="nv">output.containers</span> <span class="o">|</span> <span class="nf">selectattr</span><span class="o">(</span><span class="s2">&quot;Service&quot;</span><span class="o">,</span> <span class="s2">&quot;equalto&quot;</span><span class="o">,</span> <span class="s2">&quot;db&quot;</span><span class="o">)</span> <span class="o">|</span> <span class="nf">first</span> <span class="cp">}}</span>
+<span class="w">          </span><span class="cp">{{</span> <span class="nv">output.containers</span> <span class="o">|</span> <span class="nf">selectattr</span><span class="o">(</span><span class="s2">"Service"</span><span class="o">,</span> <span class="s2">"equalto"</span><span class="o">,</span> <span class="s2">"db"</span><span class="o">)</span> <span class="o">|</span> <span class="nf">first</span> <span class="cp">}}</span>
 
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Restart services</span>
 <span class="w">      </span><span class="nt">community.docker.docker_compose_v2</span><span class="p">:</span>
@@ -747,13 +747,13 @@ will change over time. New releases of the Docker compose CLI plugin can break t
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Verify that web and db services are running</span>
 <span class="w">      </span><span class="nt">ansible.builtin.assert</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">that</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web_container.State == &#39;running&#39;</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db_container.State == &#39;running&#39;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web_container.State == 'running'</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db_container.State == 'running'</span>
 <span class="w">      </span><span class="nt">vars</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">web_container</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
-<span class="w">          </span><span class="cp">{{</span> <span class="nv">output.containers</span> <span class="o">|</span> <span class="nf">selectattr</span><span class="o">(</span><span class="s2">&quot;Service&quot;</span><span class="o">,</span> <span class="s2">&quot;equalto&quot;</span><span class="o">,</span> <span class="s2">&quot;web&quot;</span><span class="o">)</span> <span class="o">|</span> <span class="nf">first</span> <span class="cp">}}</span>
+<span class="w">          </span><span class="cp">{{</span> <span class="nv">output.containers</span> <span class="o">|</span> <span class="nf">selectattr</span><span class="o">(</span><span class="s2">"Service"</span><span class="o">,</span> <span class="s2">"equalto"</span><span class="o">,</span> <span class="s2">"web"</span><span class="o">)</span> <span class="o">|</span> <span class="nf">first</span> <span class="cp">}}</span>
 <span class="w">        </span><span class="nt">db_container</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
-<span class="w">          </span><span class="cp">{{</span> <span class="nv">output.containers</span> <span class="o">|</span> <span class="nf">selectattr</span><span class="o">(</span><span class="s2">&quot;Service&quot;</span><span class="o">,</span> <span class="s2">&quot;equalto&quot;</span><span class="o">,</span> <span class="s2">&quot;db&quot;</span><span class="o">)</span> <span class="o">|</span> <span class="nf">first</span> <span class="cp">}}</span>
+<span class="w">          </span><span class="cp">{{</span> <span class="nv">output.containers</span> <span class="o">|</span> <span class="nf">selectattr</span><span class="o">(</span><span class="s2">"Service"</span><span class="o">,</span> <span class="s2">"equalto"</span><span class="o">,</span> <span class="s2">"db"</span><span class="o">)</span> <span class="o">|</span> <span class="nf">first</span> <span class="cp">}}</span>
 </pre></div>
 </div>
 </section>
