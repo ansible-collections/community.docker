@@ -262,21 +262,29 @@ swarm_facts:
         Worker:
           description:
             - Token to join the cluster as a new *worker* node.
-            - B(Note:) if this value has been specified as O(join_token), the value here will not be the token, but C(VALUE_SPECIFIED_IN_NO_LOG_PARAMETER).
+            - B(Note:) for ansible-core before 2.22, if this value has been specified as O(join_token),
+              the value here will not be the token, but C(VALUE_SPECIFIED_IN_NO_LOG_PARAMETER).
               If you pass O(join_token), make sure your playbook/role does not depend on this return value!
+              For ansible-core 2.22+, this value is always properly returned. It will be registered as a secret,
+              though, and thus cannot be shown with M(ansible.builtin.debug).
           returned: success
           type: str
           example: SWMTKN-1--xxxxx
         Manager:
           description:
             - Token to join the cluster as a new *manager* node.
-            - B(Note:) if this value has been specified as O(join_token), the value here will not be the token, but C(VALUE_SPECIFIED_IN_NO_LOG_PARAMETER).
+            - B(Note:) for ansible-core before 2.22, if this value has been specified as O(join_token),
+              the value here will not be the token, but C(VALUE_SPECIFIED_IN_NO_LOG_PARAMETER).
               If you pass O(join_token), make sure your playbook/role does not depend on this return value!
+              For ansible-core 2.22+, this value is always properly returned. It will be registered as a secret,
+              though, and thus cannot be shown with M(ansible.builtin.debug).
           returned: success
           type: str
           example: SWMTKN-1--xxxxx
     UnlockKey:
-      description: The swarm unlock-key if O(autolock_managers=true).
+      description:
+        - The swarm unlock-key if O(autolock_managers=true).
+        - B(Note) that on ansible-core 2.22+, this will be registered as a secret.
       returned: on success if O(autolock_managers=true) and swarm is initialised, or if O(autolock_managers) has changed.
       type: str
       example: SWMKEY-1-xxx
@@ -301,6 +309,9 @@ except ImportError:
 
 from ansible_collections.community.docker.plugins.module_utils._common import (
     RequestException,
+)
+from ansible_collections.community.docker.plugins.module_utils._secrets import (
+    mark_values_as_secrets,
 )
 from ansible_collections.community.docker.plugins.module_utils._swarm import (
     AnsibleDockerSwarmClient,
@@ -563,8 +574,8 @@ class SwarmManager(DockerBaseClass):
         self.differences.add("state", parameter="present", active="absent")
         self.results["changed"] = True
         self.results["swarm_facts"] = {
-            "JoinTokens": self.swarm_info.get("JoinTokens"),
-            "UnlockKey": self.swarm_info.get("UnlockKey"),
+            "JoinTokens": mark_values_as_secrets(self.swarm_info.get("JoinTokens")),
+            "UnlockKey": mark_values_as_secrets(self.swarm_info.get("UnlockKey")),
         }
 
     def __update_swarm(self) -> None:
