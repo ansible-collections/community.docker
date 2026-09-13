@@ -1,9 +1,3 @@
-<!--
-Copyright (c) Ansible Project
-GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
-SPDX-License-Identifier: GPL-3.0-or-later
--->
-
 # Docker Community Collection
 
 [![Documentation](https://img.shields.io/badge/docs-brightgreen.svg)](https://docs.ansible.com/ansible/devel/collections/community/docker/)
@@ -161,4 +155,4 @@ See [LICENSES/GPL-3.0-or-later.txt](https://github.com/ansible-collections/commu
 
 Parts of the collection are licensed under the [Apache 2.0 license](https://github.com/ansible-collections/community.docker/blob/main/LICENSES/Apache-2.0.txt). This mostly applies to files vendored from the [Docker SDK for Python](https://github.com/docker/docker-py/).
 
-All files have a machine readable `SDPX-License-Identifier:` comment denoting its respective license(s) or an equivalent entry in an accompanying `.license` file. Only changelog fragments (which will not be part of a release) are covered by a blanket statement in `REUSE.toml`. This conforms to the [REUSE specification](https://reuse.software/spec/).
+All files have a machine readable `SPDX-License-Identifier:` comment denoting its respective license(s) or an equivalent entry in an accompanying `.license` file. Only changelog fragments (which will not be part of a release) are covered by a blanket statement in `REUSE.toml`. This conforms to the [REUSE specification](https://reuse.software/spec/).
