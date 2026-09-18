@@ -111,6 +111,26 @@ stages:
             - name: RHEL 10.1 + group 5
               test: ansible-test-integration-2.21-rhel-10.1-azp-5
 
+  - stage: remote_2_22
+    displayName: Remote 2.22
+    dependsOn: []
+    variables:
+      entryPoint: tests/utils/shippable/nox.sh
+    jobs:
+      - template: templates/matrix.yml
+        parameters:
+          targets:
+            - name: RHEL 10.2 + group 1
+              test: ansible-test-integration-2.22-rhel-10.2-azp-1
+            - name: RHEL 10.2 + group 2
+              test: ansible-test-integration-2.22-rhel-10.2-azp-2
+            - name: RHEL 10.2 + group 3
+              test: ansible-test-integration-2.22-rhel-10.2-azp-3
+            - name: RHEL 10.2 + group 4
+              test: ansible-test-integration-2.22-rhel-10.2-azp-4
+            - name: RHEL 10.2 + group 5
+              test: ansible-test-integration-2.22-rhel-10.2-azp-5
+
   - stage: remote_devel
     displayName: Remote devel
     dependsOn: []
@@ -147,6 +167,7 @@ stages:
       - remote_2_19
       - remote_2_20
       - remote_2_21
+      - remote_2_22
       - remote_devel
     jobs:
       - template: templates/coverage.yml
