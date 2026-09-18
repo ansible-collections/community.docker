@@ -206,6 +206,32 @@ ansible_core = "2.21"
 target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
 remote = [ "rhel/10.1" ]
 
+# Ansible-core 2.22:
+
+[[sessions.ansible_test_integration.groups]]
+session_name = "ansible-test-integration-2.22"
+description = "Meta session for running all ansible-test-integration-2.22-* sessions."
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "2.22"
+target = [ "azp/4/", "azp/5/" ]
+docker = [
+    "fedora44",
+    # "ubuntu2404",
+    "ubuntu2604",
+    # "alpine324",
+]
+
+[[sessions.ansible_test_integration.groups.sessions]]
+ansible_core = "2.22"
+target = [ "azp/1/", "azp/2/", "azp/3/", "azp/4/", "azp/5/" ]
+remote = [
+    # "rhel/9.8",
+    "rhel/10.2",
+    # For some reason, Ubuntu 24.04 is *extremely* slower than RHEL 9.6
+    # "ubuntu/24.04",
+]
+
 # Ansible-core devel:
 
 [[sessions.ansible_test_integration.groups]]
