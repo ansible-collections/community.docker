@@ -14,10 +14,10 @@ try:
 except ImportError:
     HAS_SECRETS_API = False
 
+_T = t.TypeVar("_T")
 
-def _collect_recursively(
-    value: t.Any, collected_values: list[str], *, int_to_string: bool = False
-) -> None:
+
+def _collect_recursively(value: t.Any, collected_values: list[str], *, int_to_string: bool = False) -> None:
     if isinstance(value, Mapping):
         for v in value.items():
             _collect_recursively(v, collected_values, int_to_string=int_to_string)
@@ -30,7 +30,7 @@ def _collect_recursively(
         collected_values.append(str(value))
 
 
-def mark_values_as_secrets(value: t.Any, *, int_to_string: bool = False) -> t.Any:
+def mark_values_as_secrets(value: _T, *, int_to_string: bool = False) -> _T:
     """Register all strings appearing in the (potentially nested) data structure ``value`` as secrets."""
     if HAS_SECRETS_API:
         collected_values: list[str] = []
