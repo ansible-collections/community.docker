@@ -17,7 +17,9 @@ except ImportError:
 _T = t.TypeVar("_T")
 
 
-def _collect_recursively(value: t.Any, collected_values: list[str], *, int_to_string: bool = False) -> None:
+def _collect_recursively(
+    value: t.Any, collected_values: list[str], *, int_to_string: bool = False
+) -> None:
     if isinstance(value, Mapping):
         for v in value.items():
             _collect_recursively(v, collected_values, int_to_string=int_to_string)
