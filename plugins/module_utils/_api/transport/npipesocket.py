@@ -155,14 +155,14 @@ class NpipeSocket:
         return io.BufferedReader(rawio, buffer_size=bufsize)
 
     @check_closed
-    def recv(self, bufsize: int, flags: int = 0) -> str:
+    def recv(self, bufsize: int, flags: int = 0) -> bytes:
         if self._handle is None:
             raise ValueError("Handle not present")
         dummy_err, data = win32file.ReadFile(self._handle, bufsize)
         return data
 
     @check_closed
-    def recvfrom(self, bufsize: int, flags: int = 0) -> tuple[str, str | None]:
+    def recvfrom(self, bufsize: int, flags: int = 0) -> tuple[bytes, str | None]:
         data = self.recv(bufsize, flags)
         return (data, self._address)
 
