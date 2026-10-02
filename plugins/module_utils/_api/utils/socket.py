@@ -68,7 +68,7 @@ def read(socket: SocketLike, n: int = 4096) -> bytes | None:
     except Exception as e:
         is_pipe_ended = (
             isinstance(socket, NpipeSocket)  # type: ignore[unreachable]
-            and len(e.args) > 0
+            and len(e.args) > 0  # type: ignore[unreachable]
             and e.args[0] == NPIPE_ENDED
         )
         if is_pipe_ended:
