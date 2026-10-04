@@ -2440,3 +2440,17 @@ releases:
       - 1044-swarm-service-command-args.yml
       - 5.3.0.yml
     release_date: '2026-09-06'
+  5.4.0:
+    changes:
+      bugfixes:
+        - all modules using the vendored Docker SDK for Python - update list of reasons
+          for not found images (https://github.com/ansible-collections/community.docker/pull/1315).
+      minor_changes:
+        - docker_swarm - on ansible-core 2.22+, the ``Manager`` and ``Worker`` join
+          tokens and ``UnlockKey`` are marked as secrets (https://github.com/ansible-collections/community.docker/pull/1312).
+      release_summary: Bugfix and feature release.
+    fragments:
+      - 1312-swarm-secrets.yml
+      - 1315-images.yml
+      - 5.4.0.yml
+    release_date: '2026-10-04'

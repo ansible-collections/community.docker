@@ -4,6 +4,24 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v5.4.0
+======
+
+Release Summary
+---------------
+
+Bugfix and feature release.
+
+Minor Changes
+-------------
+
+- docker_swarm - on ansible-core 2.22+, the ``Manager`` and ``Worker`` join tokens and ``UnlockKey`` are marked as secrets (https://github.com/ansible-collections/community.docker/pull/1312).
+
+Bugfixes
+--------
+
+- all modules using the vendored Docker SDK for Python - update list of reasons for not found images (https://github.com/ansible-collections/community.docker/pull/1315).
+
 v5.3.0
 ======
 
