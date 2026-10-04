@@ -4,6 +4,19 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v4.8.9
+======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- all modules using the vendored Docker SDK for Python - update list of reasons for not found images (https://github.com/ansible-collections/community.docker/pull/1315).
+
 v4.8.8
 ======
 

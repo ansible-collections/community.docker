@@ -2338,3 +2338,13 @@ releases:
       - 1305-docker-compose.yml
       - 4.8.8.yml
     release_date: '2026-08-08'
+  4.8.9:
+    changes:
+      bugfixes:
+        - all modules using the vendored Docker SDK for Python - update list of reasons
+          for not found images (https://github.com/ansible-collections/community.docker/pull/1315).
+      release_summary: Bugfix release.
+    fragments:
+      - 1315-images.yml
+      - 4.8.9.yml
+    release_date: '2026-10-04'
