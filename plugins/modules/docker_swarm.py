@@ -66,7 +66,8 @@ options:
     default: false
   state:
     description:
-      - Set to V(present), to create/update a new cluster.
+      - Set to V(present), to create/update a new cluster. When an existing cluster is updated, O(keep_unspecified_options)
+        controls what happens to the options that are not specified.
       - Set to V(join), to join an existing cluster.
       - Set to V(absent), to leave an existing cluster.
       - Set to V(remove), to remove an absent node from the cluster. Note that removing requires Docker SDK for Python >=
@@ -195,6 +196,21 @@ options:
       - Requires API version >= 1.40.
     type: int
     version_added: 3.1.0
+  keep_unspecified_options:
+    description:
+      - Controls what happens to the swarm options that are not specified in the task, such as O(task_history_retention_limit)
+        or O(autolock_managers), when the module updates a swarm that already exists.
+      - If V(false) (default), the module sends the Docker daemon only the options that are specified. The daemon takes that
+        as the complete specification of the swarm, so every option that is not specified is reset to zero or to nothing, which
+        is not always the Docker default value. This also happens when only O(rotate_worker_token) or O(rotate_manager_token)
+        is used. Options that are not specified are still ignored when the module checks whether the swarm has to be updated,
+        so the next run reports no change and does not repair them.
+      - If V(true), the module starts from the current specification of the swarm and changes only the options that are
+        specified, as C(docker swarm update) does.
+      - The current default will eventually be deprecated and change to V(true).
+    type: bool
+    default: false
+    version_added: 5.5.0
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.0.0"
@@ -214,6 +230,12 @@ EXAMPLES = r"""
   community.docker.docker_swarm:
     state: present
     election_tick: 5
+
+- name: Update swarm configuration, keeping the options that are not specified
+  community.docker.docker_swarm:
+    state: present
+    election_tick: 5
+    keep_unspecified_options: true
 
 - name: Add nodes
   community.docker.docker_swarm:
@@ -297,6 +319,7 @@ actions:
   example: ['This cluster is already a swarm cluster']
 """
 
+import copy
 import json
 import traceback
 import typing as t
@@ -321,6 +344,25 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
     DockerBaseClass,
     sanitize_labels,
 )
+
+# Where each option that is part of the swarm spec lives in the spec the daemon returns (GET /swarm), and expects back
+# in full when the swarm is updated (POST /swarm/update).
+SPEC_OPTION_PATHS: dict[str, tuple[str, ...]] = {
+    "task_history_retention_limit": ("Orchestration", "TaskHistoryRetentionLimit"),
+    "snapshot_interval": ("Raft", "SnapshotInterval"),
+    "keep_old_snapshots": ("Raft", "KeepOldSnapshots"),
+    "log_entries_for_slow_followers": ("Raft", "LogEntriesForSlowFollowers"),
+    "heartbeat_tick": ("Raft", "HeartbeatTick"),
+    "election_tick": ("Raft", "ElectionTick"),
+    "dispatcher_heartbeat_period": ("Dispatcher", "HeartbeatPeriod"),
+    "node_cert_expiry": ("CAConfig", "NodeCertExpiry"),
+    "signing_ca_cert": ("CAConfig", "SigningCACert"),
+    "signing_ca_key": ("CAConfig", "SigningCAKey"),
+    "ca_force_rotate": ("CAConfig", "ForceRotate"),
+    "autolock_managers": ("EncryptionConfig", "AutoLockManagers"),
+    "name": ("Name",),
+    "labels": ("Labels",),
+}
 
 
 class TaskParameters(DockerBaseClass):
@@ -437,6 +479,32 @@ class TaskParameters(DockerBaseClass):
                 params[dest] = value
         self.spec = client.create_swarm_spec(**params)
 
+    def update_swarm_spec(
+        self, current_spec: dict[str, t.Any], client: AnsibleDockerSwarmClient
+    ) -> dict[str, t.Any]:
+        """
+        Return the spec to send to the daemon to update a swarm: the current spec of the swarm
+        with the options that were specified applied to it.
+
+        The daemon takes the body of POST /swarm/update as the complete spec of the swarm, so
+        anything left out of it is reset. This is why this does not use create_swarm_spec(),
+        which only returns the specified options and drops the ones set to zero.
+        """
+        spec = copy.deepcopy(current_spec)
+        for option, path in SPEC_OPTION_PATHS.items():
+            if not client.option_minimal_versions[option]["supported"]:
+                continue
+            value = getattr(self, option)
+            if value is None:
+                continue
+            section = spec
+            for key in path[:-1]:
+                if not isinstance(section.get(key), dict):
+                    section[key] = {}
+                section = section[key]
+            section[path[-1]] = value
+        return spec
+
     def compare_to_active(
         self,
         other: TaskParameters,
@@ -489,6 +557,9 @@ class SwarmManager(DockerBaseClass):
         )
         self.force: bool = client.module.params["force"]
         self.node_id: str | None = client.module.params["node_id"]
+        self.keep_unspecified_options: bool = client.module.params[
+            "keep_unspecified_options"
+        ]
 
         self.differences = DifferenceTracker()
         self.parameters = TaskParameters.from_ansible_params(client)
@@ -593,11 +664,18 @@ class SwarmManager(DockerBaseClass):
                 self.results["changed"] = False
                 return
             update_parameters = TaskParameters.from_ansible_params(self.client)
-            update_parameters.update_parameters(self.client)
+            swarm_spec: dict[str, t.Any] | None
+            if self.keep_unspecified_options:
+                swarm_spec = update_parameters.update_swarm_spec(
+                    self.swarm_info["Spec"], self.client
+                )
+            else:
+                update_parameters.update_parameters(self.client)
+                swarm_spec = update_parameters.spec
             if not self.check_mode:
                 self.client.update_swarm(
                     version=version,
-                    swarm_spec=update_parameters.spec,
+                    swarm_spec=swarm_spec,
                     rotate_worker_token=self.parameters.rotate_worker_token,
                     rotate_manager_token=self.parameters.rotate_manager_token,
                 )
@@ -708,6 +786,7 @@ def main() -> None:
         "rotate_manager_token": {"type": "bool", "default": False},
         "default_addr_pool": {"type": "list", "elements": "str"},
         "subnet_size": {"type": "int"},
+        "keep_unspecified_options": {"type": "bool", "default": False},
     }
 
     required_if = [
