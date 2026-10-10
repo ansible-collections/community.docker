@@ -202,11 +202,13 @@ options:
         or O(autolock_managers), when the module updates a swarm that already exists.
       - If V(false) (default), the module sends the Docker daemon only the options that are specified. The daemon takes that
         as the complete specification of the swarm, so every option that is not specified is reset to zero or to nothing, which
-        is not always the Docker default value. This also happens when only O(rotate_worker_token) or O(rotate_manager_token)
-        is used. Options that are not specified are still ignored when the module checks whether the swarm has to be updated,
-        so the next run reports no change and does not repair them.
+        is not always the Docker default value. For example, O(autolock_managers) goes back to V(false), and O(ca_force_rotate)
+        goes back to V(0), which makes the swarm rotate its root CA again. This also happens when only O(rotate_worker_token)
+        or O(rotate_manager_token) is used. Options that are not specified are still ignored when the module checks whether
+        the swarm has to be updated, so the next run reports no change and does not repair them.
       - If V(true), the module starts from the current specification of the swarm and changes only the options that are
-        specified, as C(docker swarm update) does.
+        specified, as C(docker swarm update) does. The signing CA certificate and key are an exception, since the daemon
+        never returns them. Using V(true) requires Docker SDK for Python 2.6.0 or newer.
       - The current default will eventually be deprecated and change to V(true).
     type: bool
     default: false
@@ -319,7 +321,6 @@ actions:
   example: ['This cluster is already a swarm cluster']
 """
 
-import copy
 import json
 import traceback
 import typing as t
@@ -344,25 +345,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
     DockerBaseClass,
     sanitize_labels,
 )
-
-# Where each option that is part of the swarm spec lives in the spec the daemon returns (GET /swarm), and expects back
-# in full when the swarm is updated (POST /swarm/update).
-SPEC_OPTION_PATHS: dict[str, tuple[str, ...]] = {
-    "task_history_retention_limit": ("Orchestration", "TaskHistoryRetentionLimit"),
-    "snapshot_interval": ("Raft", "SnapshotInterval"),
-    "keep_old_snapshots": ("Raft", "KeepOldSnapshots"),
-    "log_entries_for_slow_followers": ("Raft", "LogEntriesForSlowFollowers"),
-    "heartbeat_tick": ("Raft", "HeartbeatTick"),
-    "election_tick": ("Raft", "ElectionTick"),
-    "dispatcher_heartbeat_period": ("Dispatcher", "HeartbeatPeriod"),
-    "node_cert_expiry": ("CAConfig", "NodeCertExpiry"),
-    "signing_ca_cert": ("CAConfig", "SigningCACert"),
-    "signing_ca_key": ("CAConfig", "SigningCAKey"),
-    "ca_force_rotate": ("CAConfig", "ForceRotate"),
-    "autolock_managers": ("EncryptionConfig", "AutoLockManagers"),
-    "name": ("Name",),
-    "labels": ("Labels",),
-}
 
 
 class TaskParameters(DockerBaseClass):
@@ -389,6 +371,7 @@ class TaskParameters(DockerBaseClass):
         self.name: str | None = None
         self.labels: dict[str, t.Any] | None = None
         self.log_driver = None
+        self.external_cas: list[dict[str, t.Any]] | None = None
         self.signing_ca_cert: str | None = None
         self.signing_ca_key: str | None = None
         self.ca_force_rotate: int | None = None
@@ -416,6 +399,9 @@ class TaskParameters(DockerBaseClass):
             self.node_cert_expiry = ca_config.get("NodeCertExpiry")
         if self.ca_force_rotate is None:
             self.ca_force_rotate = ca_config.get("ForceRotate")
+        # There is no option for the external CAs: they are only carried over, so that an update does not drop them.
+        if self.external_cas is None:
+            self.external_cas = ca_config.get("ExternalCAs")
 
         dispatcher = spec.get("Dispatcher") or {}
         if self.dispatcher_heartbeat_period is None:
@@ -452,7 +438,11 @@ class TaskParameters(DockerBaseClass):
         if "LogDriver" in spec["TaskDefaults"]:
             self.log_driver = spec["TaskDefaults"]["LogDriver"]
 
-    def update_parameters(self, client: AnsibleDockerSwarmClient) -> None:
+    def update_parameters(
+        self,
+        client: AnsibleDockerSwarmClient,
+        old_parameters: TaskParameters | None = None,
+    ) -> None:
         assign = {
             "snapshot_interval": "snapshot_interval",
             "task_history_retention_limit": "task_history_retention_limit",
@@ -469,41 +459,18 @@ class TaskParameters(DockerBaseClass):
             "ca_force_rotate": "ca_force_rotate",
             "autolock_managers": "autolock_managers",
             "log_driver": "log_driver",
+            "external_cas": "external_cas",
         }
         params = {}
         for dest, source in assign.items():
             if not client.option_minimal_versions[source]["supported"]:
                 continue
             value = getattr(self, source)
+            if value is None and old_parameters is not None:
+                value = getattr(old_parameters, source)
             if value is not None:
                 params[dest] = value
         self.spec = client.create_swarm_spec(**params)
-
-    def update_swarm_spec(
-        self, current_spec: dict[str, t.Any], client: AnsibleDockerSwarmClient
-    ) -> dict[str, t.Any]:
-        """
-        Return the spec to send to the daemon to update a swarm: the current spec of the swarm
-        with the options that were specified applied to it.
-
-        The daemon takes the body of POST /swarm/update as the complete spec of the swarm, so
-        anything left out of it is reset. This is why this does not use create_swarm_spec(),
-        which only returns the specified options and drops the ones set to zero.
-        """
-        spec = copy.deepcopy(current_spec)
-        for option, path in SPEC_OPTION_PATHS.items():
-            if not client.option_minimal_versions[option]["supported"]:
-                continue
-            value = getattr(self, option)
-            if value is None:
-                continue
-            section = spec
-            for key in path[:-1]:
-                if not isinstance(section.get(key), dict):
-                    section[key] = {}
-                section = section[key]
-            section[path[-1]] = value
-        return spec
 
     def compare_to_active(
         self,
@@ -664,18 +631,14 @@ class SwarmManager(DockerBaseClass):
                 self.results["changed"] = False
                 return
             update_parameters = TaskParameters.from_ansible_params(self.client)
-            swarm_spec: dict[str, t.Any] | None
-            if self.keep_unspecified_options:
-                swarm_spec = update_parameters.update_swarm_spec(
-                    self.swarm_info["Spec"], self.client
-                )
-            else:
-                update_parameters.update_parameters(self.client)
-                swarm_spec = update_parameters.spec
+            update_parameters.update_parameters(
+                self.client,
+                old_parameters if self.keep_unspecified_options else None,
+            )
             if not self.check_mode:
                 self.client.update_swarm(
                     version=version,
-                    swarm_spec=swarm_spec,
+                    swarm_spec=update_parameters.spec,
                     rotate_worker_token=self.parameters.rotate_worker_token,
                     rotate_manager_token=self.parameters.rotate_manager_token,
                 )
@@ -801,6 +764,8 @@ def main() -> None:
         "ca_force_rotate": {"docker_py_version": "2.6.0", "docker_api_version": "1.30"},
         "autolock_managers": {"docker_py_version": "2.6.0"},
         "log_driver": {"docker_py_version": "2.6.0"},
+        "external_cas": {"docker_py_version": "2.6.0"},
+        "keep_unspecified_options": {"docker_py_version": "2.6.0"},
         "remove_operation": {
             "docker_py_version": "2.4.0",
             "detect_usage": _detect_remove_operation,

@@ -111,4 +111,23 @@
           - 'output_8.swarm_facts.Spec.EncryptionConfig.AutoLockManagers == false'
           - 'output_8.swarm_facts.Spec.Raft.SnapshotInterval | default(0) == 0'
 
+    # The module has no option for the external CAs of a swarm, but an update must not drop them
+    - name: Add an external CA to the swarm
+      ansible.builtin.command: docker swarm update --external-ca protocol=cfssl,url=https://ca.example.com
+
+    - name: Change a single option of a swarm that has an external CA
+      community.docker.docker_swarm:
+        state: present
+        keep_unspecified_options: true
+        task_history_retention_limit: 13
+      register: output_9
+
+    - name: assert that the external CA is still there
+      ansible.builtin.assert:
+        that:
+          - 'output_9 is changed'
+          - 'output_9.swarm_facts.Spec.Orchestration.TaskHistoryRetentionLimit == 13'
+          - 'output_9.swarm_facts.Spec.CAConfig.ExternalCAs | length == 1'
+          - 'output_9.swarm_facts.Spec.CAConfig.ExternalCAs[0].URL == "https://ca.example.com"'
+
 - ansible.builtin.include_tasks: cleanup.yml

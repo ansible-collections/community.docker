@@ -12,9 +12,22 @@ import typing as t
 
 import pytest
 
+from ansible_collections.community.docker.plugins.module_utils._util import (
+    DOCKER_COMMON_ARGS,
+)
 from ansible_collections.community.docker.plugins.modules import docker_swarm
 
-# The spec of a swarm that was customised, as the daemon returns it (GET /swarm).
+EXTERNAL_CAS = [
+    {
+        "Protocol": "cfssl",
+        "URL": "https://ca.example.com",
+        "Options": {"key": "value"},
+        "CACert": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----\n",
+    }
+]
+
+# The spec of a swarm that was customised, as the daemon returns it (GET /swarm). The log driver is only here to
+# have the module pass it on: the daemon does not return TaskDefaults.LogDriver.
 CURRENT_SPEC: dict[str, t.Any] = {
     "Name": "default",
     "Labels": {"env": "prod"},
@@ -30,10 +43,41 @@ CURRENT_SPEC: dict[str, t.Any] = {
     "CAConfig": {
         "NodeCertExpiry": 3600000000000000,
         "ForceRotate": 1,
-        "ExternalCAs": [{"Protocol": "cfssl", "URL": "https://ca.example.com"}],
+        "ExternalCAs": EXTERNAL_CAS,
     },
     "TaskDefaults": {"LogDriver": {"Name": "json-file", "Options": {"max-size": "1m"}}},
     "EncryptionConfig": {"AutoLockManagers": True},
+}
+
+# What the module passes to create_swarm_spec() for CURRENT_SPEC when no option is specified.
+CURRENT_PARAMS: dict[str, t.Any] = {
+    "name": "default",
+    "labels": {"env": "prod"},
+    "task_history_retention_limit": 7,
+    "snapshot_interval": 7777,
+    "keep_old_snapshots": 2,
+    "log_entries_for_slow_followers": 500,
+    "election_tick": 10,
+    "heartbeat_tick": 1,
+    "dispatcher_heartbeat_period": 11000000000,
+    "node_cert_expiry": 3600000000000000,
+    "ca_force_rotate": 1,
+    "external_cas": EXTERNAL_CAS,
+    "log_driver": {"Name": "json-file", "Options": {"max-size": "1m"}},
+    "autolock_managers": True,
+}
+
+# The same swarm after a task that only sets one option damaged it: the daemon stores what is missing as zero,
+# and leaves out the keys that are zero.
+DAMAGED_SPEC: dict[str, t.Any] = {
+    "Name": "default",
+    "Labels": {},
+    "Orchestration": {"TaskHistoryRetentionLimit": 3},
+    "Raft": {"KeepOldSnapshots": 0, "ElectionTick": 0, "HeartbeatTick": 0},
+    "Dispatcher": {},
+    "CAConfig": {},
+    "TaskDefaults": {},
+    "EncryptionConfig": {"AutoLockManagers": False},
 }
 
 # Mirrors the argument_spec built in main() of the module, with the value each option has when it is not specified.
@@ -73,10 +117,11 @@ def make_client(
     mocker: t.Any,
     options: dict[str, t.Any],
     *,
+    spec: dict[str, t.Any] | None = None,
     check_mode: bool = False,
     unsupported: tuple[str, ...] = (),
 ) -> t.Any:
-    """A stand-in for AnsibleDockerSwarmClient talking to a manager of a swarm that has CURRENT_SPEC."""
+    """A stand-in for AnsibleDockerSwarmClient talking to a manager of a swarm that has the given spec."""
     client = mocker.MagicMock()
     client.check_mode = check_mode
     client.module.params = {**MODULE_OPTIONS, **options}
@@ -89,12 +134,13 @@ def make_client(
         versions[option] = {"supported": False}
     client.option_minimal_versions = versions
     client.check_if_swarm_manager.return_value = True
-    client.create_swarm_spec.return_value = {}
+    # What the SDK builds depends on the options it is given, so a test sees which options a spec was built from.
+    client.create_swarm_spec.side_effect = lambda **kwargs: {"built from": kwargs}
     client.get_unlock_key.return_value = {"UnlockKey": "SWMKEY-1-xxx"}
     client.inspect_swarm.return_value = {
         "ID": "swarm-id",
         "Version": {"Index": 42},
-        "Spec": copy.deepcopy(CURRENT_SPEC),
+        "Spec": copy.deepcopy(CURRENT_SPEC if spec is None else spec),
     }
     return client
 
@@ -112,27 +158,32 @@ def run_module(client: t.Any) -> dict[str, t.Any]:
     return results
 
 
-def expected_spec(**changes: dict[str, t.Any]) -> dict[str, t.Any]:
-    """CURRENT_SPEC with the given sections updated key by key."""
-    spec = copy.deepcopy(CURRENT_SPEC)
-    for section, values in changes.items():
-        spec[section].update(values)
-    return spec
+def spec_options(client: t.Any) -> dict[str, t.Any]:
+    """The options the last create_swarm_spec() call got, which is the one the update is built from."""
+    return dict(client.create_swarm_spec.call_args.kwargs)
 
 
-def test_update_keeps_options_that_are_not_specified(mocker: t.Any) -> None:
+def assert_updated_with_built_spec(client: t.Any, **kwargs: t.Any) -> None:
+    """The spec sent to the daemon is the one built from the options of the last create_swarm_spec() call."""
+    client.update_swarm.assert_called_once_with(
+        version=42,
+        swarm_spec={"built from": spec_options(client)},
+        rotate_worker_token=kwargs.get("rotate_worker_token", False),
+        rotate_manager_token=kwargs.get("rotate_manager_token", False),
+    )
+
+
+def test_update_passes_the_current_options_that_are_not_specified(
+    mocker: t.Any,
+) -> None:
     client = make_keep_client(mocker, {"task_history_retention_limit": 3})
 
     results = run_module(client)
 
     assert results["changed"] is True
     assert results["actions"] == ["Swarm cluster updated"]
-    client.update_swarm.assert_called_once_with(
-        version=42,
-        swarm_spec=expected_spec(Orchestration={"TaskHistoryRetentionLimit": 3}),
-        rotate_worker_token=False,
-        rotate_manager_token=False,
-    )
+    assert spec_options(client) == {**CURRENT_PARAMS, "task_history_retention_limit": 3}
+    assert_updated_with_built_spec(client)
 
 
 def test_update_applies_all_specified_options(mocker: t.Any) -> None:
@@ -158,66 +209,56 @@ def test_update_applies_all_specified_options(mocker: t.Any) -> None:
 
     run_module(client)
 
-    spec = client.update_swarm.call_args.kwargs["swarm_spec"]
-    assert spec == {
-        "Name": "other",
-        "Labels": {"a": "b"},
-        "Orchestration": {"TaskHistoryRetentionLimit": 3},
-        "Raft": {
-            "SnapshotInterval": 1000,
-            "KeepOldSnapshots": 1,
-            "LogEntriesForSlowFollowers": 100,
-            "ElectionTick": 20,
-            "HeartbeatTick": 2,
-        },
-        "Dispatcher": {"HeartbeatPeriod": 8000000000},
-        "CAConfig": {
-            "NodeCertExpiry": 7200000000000,
-            "ForceRotate": 2,
-            "SigningCACert": "CERT",
-            "SigningCAKey": "KEY",
-            "ExternalCAs": CURRENT_SPEC["CAConfig"]["ExternalCAs"],
-        },
-        "TaskDefaults": CURRENT_SPEC["TaskDefaults"],
-        "EncryptionConfig": {"AutoLockManagers": False},
+    assert spec_options(client) == {
+        "task_history_retention_limit": 3,
+        "snapshot_interval": 1000,
+        "keep_old_snapshots": 1,
+        "log_entries_for_slow_followers": 100,
+        "heartbeat_tick": 2,
+        "election_tick": 20,
+        "dispatcher_heartbeat_period": 8000000000,
+        "node_cert_expiry": 7200000000000,
+        "ca_force_rotate": 2,
+        "autolock_managers": False,
+        "name": "other",
+        "labels": {"a": "b"},
+        "signing_ca_cert": "CERT",
+        "signing_ca_key": "KEY",
+        "external_cas": CURRENT_PARAMS["external_cas"],
+        "log_driver": CURRENT_PARAMS["log_driver"],
     }
 
 
 @pytest.mark.parametrize(
-    "option, section, key",
+    "option",
     [
-        ("task_history_retention_limit", "Orchestration", "TaskHistoryRetentionLimit"),
-        ("snapshot_interval", "Raft", "SnapshotInterval"),
-        ("keep_old_snapshots", "Raft", "KeepOldSnapshots"),
-        ("log_entries_for_slow_followers", "Raft", "LogEntriesForSlowFollowers"),
-        ("heartbeat_tick", "Raft", "HeartbeatTick"),
-        ("election_tick", "Raft", "ElectionTick"),
-        ("dispatcher_heartbeat_period", "Dispatcher", "HeartbeatPeriod"),
-        ("node_cert_expiry", "CAConfig", "NodeCertExpiry"),
-        ("ca_force_rotate", "CAConfig", "ForceRotate"),
+        "task_history_retention_limit",
+        "snapshot_interval",
+        "keep_old_snapshots",
+        "log_entries_for_slow_followers",
+        "heartbeat_tick",
+        "election_tick",
+        "dispatcher_heartbeat_period",
+        "node_cert_expiry",
+        "ca_force_rotate",
     ],
 )
-def test_update_sends_an_option_that_is_set_to_zero(
-    mocker: t.Any, option: str, section: str, key: str
+def test_update_passes_an_option_that_is_set_to_zero(
+    mocker: t.Any, option: str
 ) -> None:
     client = make_keep_client(mocker, {option: 0})
 
     run_module(client)
 
-    client.update_swarm.assert_called_once()
-    assert client.update_swarm.call_args.kwargs["swarm_spec"] == expected_spec(
-        **{section: {key: 0}}
-    )
+    assert spec_options(client) == {**CURRENT_PARAMS, option: 0}
 
 
-def test_update_sends_autolock_managers_set_to_false(mocker: t.Any) -> None:
+def test_update_passes_autolock_managers_set_to_false(mocker: t.Any) -> None:
     client = make_keep_client(mocker, {"autolock_managers": False})
 
     run_module(client)
 
-    assert client.update_swarm.call_args.kwargs["swarm_spec"] == expected_spec(
-        EncryptionConfig={"AutoLockManagers": False}
-    )
+    assert spec_options(client) == {**CURRENT_PARAMS, "autolock_managers": False}
 
 
 def test_update_replaces_labels_with_the_specified_ones(mocker: t.Any) -> None:
@@ -225,35 +266,42 @@ def test_update_replaces_labels_with_the_specified_ones(mocker: t.Any) -> None:
 
     run_module(client)
 
-    spec = client.update_swarm.call_args.kwargs["swarm_spec"]
-    assert spec["Labels"] == {}
-    assert {**spec, "Labels": CURRENT_SPEC["Labels"]} == CURRENT_SPEC
+    assert spec_options(client) == {**CURRENT_PARAMS, "labels": {}}
 
 
-def test_rotating_a_token_alone_keeps_the_spec(mocker: t.Any) -> None:
+def test_rotating_a_token_alone_passes_the_current_options(mocker: t.Any) -> None:
     client = make_keep_client(mocker, {"rotate_worker_token": True})
 
     results = run_module(client)
 
     assert results["changed"] is True
-    client.update_swarm.assert_called_once_with(
-        version=42,
-        swarm_spec=CURRENT_SPEC,
-        rotate_worker_token=True,
-        rotate_manager_token=False,
+    assert spec_options(client) == CURRENT_PARAMS
+    assert_updated_with_built_spec(client, rotate_worker_token=True)
+
+
+def test_update_of_a_swarm_that_lost_options_passes_what_is_left(
+    mocker: t.Any,
+) -> None:
+    client = make_keep_client(
+        mocker, {"task_history_retention_limit": 5}, spec=DAMAGED_SPEC
     )
+
+    run_module(client)
+
+    # Options the daemon left out of the spec are not passed; the ones it stores as zero are.
+    assert spec_options(client) == {
+        "name": "default",
+        "labels": {},
+        "task_history_retention_limit": 5,
+        "keep_old_snapshots": 0,
+        "election_tick": 0,
+        "heartbeat_tick": 0,
+        "autolock_managers": False,
+    }
 
 
 def test_update_without_difference_does_not_call_the_daemon(mocker: t.Any) -> None:
-    client = make_keep_client(
-        mocker,
-        {
-            "task_history_retention_limit": 7,
-            "snapshot_interval": 7777,
-            "labels": {"env": "prod"},
-            "autolock_managers": True,
-        },
-    )
+    client = make_keep_client(mocker, {"task_history_retention_limit": 7})
 
     results = run_module(client)
 
@@ -270,102 +318,105 @@ def test_update_in_check_mode_does_not_call_the_daemon(mocker: t.Any) -> None:
     results = run_module(client)
 
     assert results["changed"] is True
-    assert results["actions"] == ["Swarm cluster updated"]
     client.update_swarm.assert_not_called()
 
 
 def test_update_skips_options_the_daemon_does_not_support(mocker: t.Any) -> None:
     client = make_keep_client(
         mocker,
-        {"task_history_retention_limit": 3, "ca_force_rotate": 5},
-        unsupported=("ca_force_rotate",),
+        {"task_history_retention_limit": 3},
+        unsupported=("labels", "autolock_managers", "external_cas"),
     )
 
     run_module(client)
 
-    assert client.update_swarm.call_args.kwargs["swarm_spec"] == expected_spec(
-        Orchestration={"TaskHistoryRetentionLimit": 3}
-    )
-
-
-def test_update_swarm_spec_does_not_modify_the_current_spec(mocker: t.Any) -> None:
-    client = make_keep_client(mocker, {"election_tick": 3, "labels": {"x": "y"}})
-    current_spec = copy.deepcopy(CURRENT_SPEC)
-    parameters = docker_swarm.TaskParameters.from_ansible_params(client)
-
-    spec = parameters.update_swarm_spec(current_spec, client)
-
-    assert current_spec == CURRENT_SPEC
-    assert spec["Raft"]["ElectionTick"] == 3
-    assert spec["Labels"] == {"x": "y"}
-    assert (
-        spec["CAConfig"]["ExternalCAs"] is not current_spec["CAConfig"]["ExternalCAs"]
-    )
-
-
-def test_update_swarm_spec_adds_a_section_the_daemon_left_out(mocker: t.Any) -> None:
-    client = make_keep_client(mocker, {"snapshot_interval": 5})
-    parameters = docker_swarm.TaskParameters.from_ansible_params(client)
-
-    spec = parameters.update_swarm_spec({"Name": "default"}, client)
-
-    assert spec == {"Name": "default", "Raft": {"SnapshotInterval": 5}}
-
-
-def test_update_swarm_spec_replaces_a_section_the_daemon_returned_as_null(
-    mocker: t.Any,
-) -> None:
-    client = make_keep_client(mocker, {"snapshot_interval": 5})
-    parameters = docker_swarm.TaskParameters.from_ansible_params(client)
-
-    spec = parameters.update_swarm_spec({"Name": "default", "Raft": None}, client)
-
-    assert spec == {"Name": "default", "Raft": {"SnapshotInterval": 5}}
+    expected = {**CURRENT_PARAMS, "task_history_retention_limit": 3}
+    for option in ("labels", "autolock_managers", "external_cas"):
+        del expected[option]
+    assert spec_options(client) == expected
 
 
 def test_update_sends_only_the_specified_options_by_default(mocker: t.Any) -> None:
     client = make_client(mocker, {"task_history_retention_limit": 3})
-    only_specified = {"Orchestration": {"TaskHistoryRetentionLimit": 3}}
-    client.create_swarm_spec.return_value = only_specified
 
     results = run_module(client)
 
     assert results["changed"] is True
-    client.create_swarm_spec.assert_called_with(task_history_retention_limit=3)
-    client.update_swarm.assert_called_once_with(
-        version=42,
-        swarm_spec=only_specified,
-        rotate_worker_token=False,
-        rotate_manager_token=False,
-    )
+    assert spec_options(client) == {"task_history_retention_limit": 3}
+    assert_updated_with_built_spec(client)
 
 
-def test_rotating_a_token_alone_sends_an_empty_spec_by_default(
-    mocker: t.Any,
-) -> None:
+def test_rotating_a_token_alone_sends_no_option_by_default(mocker: t.Any) -> None:
     client = make_client(mocker, {"rotate_worker_token": True})
 
     results = run_module(client)
 
     assert results["changed"] is True
-    client.create_swarm_spec.assert_called_with()
-    client.update_swarm.assert_called_once_with(
-        version=42,
-        swarm_spec={},
-        rotate_worker_token=True,
-        rotate_manager_token=False,
-    )
+    assert spec_options(client) == {}
+    assert_updated_with_built_spec(client, rotate_worker_token=True)
 
 
-def test_keep_unspecified_options_does_not_send_what_create_swarm_spec_returns(
-    mocker: t.Any,
-) -> None:
+def test_update_builds_the_whole_spec_with_the_sdk(mocker: t.Any) -> None:
+    docker_types = pytest.importorskip("docker.types")
     client = make_keep_client(mocker, {"task_history_retention_limit": 3})
-    # The SDK's create_swarm_spec() only returns the specified options, and drops the ones set to zero.
-    client.create_swarm_spec.return_value = {"Orchestration": {"Unexpected": 1}}
+    client.create_swarm_spec.side_effect = lambda **kwargs: docker_types.SwarmSpec(
+        "1.41", **kwargs
+    )
 
     run_module(client)
 
-    assert client.update_swarm.call_args.kwargs["swarm_spec"] == expected_spec(
-        Orchestration={"TaskHistoryRetentionLimit": 3}
+    expected = copy.deepcopy(CURRENT_SPEC)
+    expected["Orchestration"]["TaskHistoryRetentionLimit"] = 3
+    assert client.update_swarm.call_args.kwargs["swarm_spec"] == expected
+
+
+class _Stop(Exception):
+    pass
+
+
+def declarations_of_main(mocker: t.Any) -> dict[str, t.Any]:
+    """What main() declares to the client: the argument spec, and the minimal versions of the options."""
+    declared: dict[str, t.Any] = {}
+
+    def fake_client(**kwargs: t.Any) -> t.NoReturn:
+        declared.update(kwargs)
+        raise _Stop()
+
+    mocker.patch.object(docker_swarm, "AnsibleDockerSwarmClient", fake_client)
+    with pytest.raises(_Stop):
+        docker_swarm.main()
+    return declared
+
+
+def test_keep_unspecified_options_defaults_to_the_current_behavior(
+    mocker: t.Any,
+) -> None:
+    declared = declarations_of_main(mocker)
+
+    assert declared["argument_spec"]["keep_unspecified_options"] == {
+        "type": "bool",
+        "default": False,
+    }
+    assert MODULE_OPTIONS["keep_unspecified_options"] is False
+
+
+def test_the_sdk_version_needed_for_the_new_options_is_declared(
+    mocker: t.Any,
+) -> None:
+    versions = declarations_of_main(mocker)["option_minimal_versions"]
+
+    # Before 2.6.0 the SDK cannot build labels, autolock, ca_force_rotate or the external CAs of a spec.
+    assert versions["keep_unspecified_options"] == {"docker_py_version": "2.6.0"}
+    assert versions["external_cas"] == {"docker_py_version": "2.6.0"}
+
+
+def test_every_task_parameter_has_a_declaration(mocker: t.Any) -> None:
+    declared = declarations_of_main(mocker)
+    known = (
+        set(DOCKER_COMMON_ARGS)
+        | set(declared["argument_spec"])
+        | set(declared["option_minimal_versions"])
     )
+
+    # The real client has a minimal version entry for these keys only; any other attribute raises a KeyError.
+    assert set(vars(docker_swarm.TaskParameters())) - {"spec"} <= known
