@@ -1,0 +1,114 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- ansible.builtin.debug:
+    msg: Running tests/keep-unspecified-options.yml
+
+####################################################################
+## keep_unspecified_options ########################################
+####################################################################
+
+- when: docker_py_version is version('2.6.0', '>=')
+  block:
+    - name: Create a Swarm cluster
+      community.docker.docker_swarm:
+        state: present
+        advertise_addr: "{{ ansible_facts.default_ipv4.address | default('127.0.0.1') }}"
+
+    - name: Set many options at once
+      community.docker.docker_swarm:
+        state: present
+        task_history_retention_limit: 10
+        snapshot_interval: 12345
+        keep_old_snapshots: 2
+        log_entries_for_slow_followers: 150
+        heartbeat_tick: 2
+        election_tick: 12
+        dispatcher_heartbeat_period: 7000000000
+        node_cert_expiry: 7000000000000000
+        labels:
+          kept: label
+        autolock_managers: true
+      register: output_1
+
+    - name: Change a single option (check mode)
+      community.docker.docker_swarm:
+        state: present
+        keep_unspecified_options: true
+        task_history_retention_limit: 11
+      check_mode: true
+      register: output_2
+
+    - name: Change a single option
+      community.docker.docker_swarm:
+        state: present
+        keep_unspecified_options: true
+        task_history_retention_limit: 11
+      register: output_3
+
+    - name: Change a single option (idempotent)
+      community.docker.docker_swarm:
+        state: present
+        keep_unspecified_options: true
+        task_history_retention_limit: 11
+      register: output_4
+
+    - name: Rotate the worker join token and nothing else
+      community.docker.docker_swarm:
+        state: present
+        keep_unspecified_options: true
+        rotate_worker_token: true
+      register: output_5
+
+    - name: Set an option to zero
+      community.docker.docker_swarm:
+        state: present
+        keep_unspecified_options: true
+        keep_old_snapshots: 0
+      register: output_6
+
+    - name: Set an option to zero (idempotent)
+      community.docker.docker_swarm:
+        state: present
+        keep_unspecified_options: true
+        keep_old_snapshots: 0
+      register: output_7
+
+    - name: Change a single option without keep_unspecified_options
+      community.docker.docker_swarm:
+        state: present
+        task_history_retention_limit: 12
+      register: output_8
+
+    - name: assert that only the options that were specified changed
+      ansible.builtin.assert:
+        that:
+          - 'output_1 is changed'
+          - 'output_1.swarm_facts.Spec.Orchestration.TaskHistoryRetentionLimit == 10'
+          - 'output_1.swarm_facts.Spec.Raft.SnapshotInterval == 12345'
+          - 'output_1.swarm_facts.Spec.EncryptionConfig.AutoLockManagers == true'
+          - 'output_1.swarm_facts.Spec.Labels == {"kept": "label"}'
+          - 'output_2 is changed'
+          - 'output_2.actions[0] == "Swarm cluster updated"'
+          - 'output_3 is changed'
+          - 'output_3.actions[0] == "Swarm cluster updated"'
+          - 'output_3.swarm_facts.Spec == output_1.swarm_facts.Spec | combine({"Orchestration": {"TaskHistoryRetentionLimit": 11}})'
+          - 'output_4 is not changed'
+          - 'output_4.actions[0] == "No modification"'
+          - 'output_4.swarm_facts.Spec == output_3.swarm_facts.Spec'
+          - 'output_5 is changed'
+          - 'output_5.swarm_facts.JoinTokens.Worker != output_4.swarm_facts.JoinTokens.Worker'
+          - 'output_5.swarm_facts.Spec == output_3.swarm_facts.Spec'
+          - 'output_6 is changed'
+          - 'output_6.swarm_facts.Spec == output_3.swarm_facts.Spec | combine({"Raft": output_3.swarm_facts.Spec.Raft | combine({"KeepOldSnapshots": 0})})'
+          - 'output_7 is not changed'
+          - 'output_7.actions[0] == "No modification"'
+          # The default, false, resets the options that are not specified
+          - 'output_8 is changed'
+          - 'output_8.swarm_facts.Spec.Orchestration.TaskHistoryRetentionLimit == 12'
+          - 'output_8.swarm_facts.Spec.EncryptionConfig.AutoLockManagers == false'
+          - 'output_8.swarm_facts.Spec.Raft.SnapshotInterval | default(0) == 0'
+
+- ansible.builtin.include_tasks: cleanup.yml

@@ -1,0 +1,5 @@
+minor_changes:
+  - "docker_swarm - add ``keep_unspecified_options`` option. When set to ``true``, updating an existing swarm keeps the options
+     that are not specified, as ``docker swarm update`` does. The default remains ``false``, which sends the daemon only the options
+     that are specified, so that every other option is reset, for backward compatibility
+     (https://github.com/ansible-collections/community.docker/issues/1319)."
