@@ -15,6 +15,10 @@ version = 1
 # community.general's main branch needs ansible-core >= 2.18
 "community.general" = "git+https://github.com/ansible-collections/community.general.git,stable-12"
 
+[collection_sources_per_ansible.'2.18']
+# community.general's main branch needs ansible-core >= 2.19
+"community.general" = "git+https://github.com/ansible-collections/community.general.git,stable-13"
+
 [vcs]
 vcs = "git"
 development_branch = "main"
