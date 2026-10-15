@@ -66,7 +66,8 @@ options:
     default: false
   state:
     description:
-      - Set to V(present), to create/update a new cluster.
+      - Set to V(present), to create/update a new cluster. When an existing cluster is updated, O(keep_unspecified_options)
+        controls what happens to the options that are not specified.
       - Set to V(join), to join an existing cluster.
       - Set to V(absent), to leave an existing cluster.
       - Set to V(remove), to remove an absent node from the cluster. Note that removing requires Docker SDK for Python >=
@@ -195,6 +196,23 @@ options:
       - Requires API version >= 1.40.
     type: int
     version_added: 3.1.0
+  keep_unspecified_options:
+    description:
+      - Controls what happens to the swarm options that are not specified in the task, such as O(task_history_retention_limit)
+        or O(autolock_managers), when the module updates a swarm that already exists.
+      - If V(false) (default), the module sends the Docker daemon only the options that are specified. The daemon takes that
+        as the complete specification of the swarm, so every option that is not specified is reset to zero or to nothing, which
+        is not always the Docker default value. For example, O(autolock_managers) goes back to V(false), and O(ca_force_rotate)
+        goes back to V(0), which makes the swarm rotate its root CA again. This also happens when only O(rotate_worker_token)
+        or O(rotate_manager_token) is used. Options that are not specified are still ignored when the module checks whether
+        the swarm has to be updated, so the next run reports no change and does not repair them.
+      - If V(true), the module starts from the current specification of the swarm and changes only the options that are
+        specified, as C(docker swarm update) does. The signing CA certificate and key are an exception, since the daemon
+        never returns them. Using V(true) requires Docker SDK for Python 2.6.0 or newer.
+      - The current default will eventually be deprecated and change to V(true).
+    type: bool
+    default: false
+    version_added: 5.5.0
 
 requirements:
   - "L(Docker SDK for Python,https://docker-py.readthedocs.io/en/stable/) >= 2.0.0"
@@ -214,6 +232,12 @@ EXAMPLES = r"""
   community.docker.docker_swarm:
     state: present
     election_tick: 5
+
+- name: Update swarm configuration, keeping the options that are not specified
+  community.docker.docker_swarm:
+    state: present
+    election_tick: 5
+    keep_unspecified_options: true
 
 - name: Add nodes
   community.docker.docker_swarm:
@@ -347,6 +371,7 @@ class TaskParameters(DockerBaseClass):
         self.name: str | None = None
         self.labels: dict[str, t.Any] | None = None
         self.log_driver = None
+        self.external_cas: list[dict[str, t.Any]] | None = None
         self.signing_ca_cert: str | None = None
         self.signing_ca_key: str | None = None
         self.ca_force_rotate: int | None = None
@@ -374,6 +399,9 @@ class TaskParameters(DockerBaseClass):
             self.node_cert_expiry = ca_config.get("NodeCertExpiry")
         if self.ca_force_rotate is None:
             self.ca_force_rotate = ca_config.get("ForceRotate")
+        # There is no option for the external CAs: they are only carried over, so that an update does not drop them.
+        if self.external_cas is None:
+            self.external_cas = ca_config.get("ExternalCAs")
 
         dispatcher = spec.get("Dispatcher") or {}
         if self.dispatcher_heartbeat_period is None:
@@ -410,7 +438,11 @@ class TaskParameters(DockerBaseClass):
         if "LogDriver" in spec["TaskDefaults"]:
             self.log_driver = spec["TaskDefaults"]["LogDriver"]
 
-    def update_parameters(self, client: AnsibleDockerSwarmClient) -> None:
+    def update_parameters(
+        self,
+        client: AnsibleDockerSwarmClient,
+        old_parameters: TaskParameters | None = None,
+    ) -> None:
         assign = {
             "snapshot_interval": "snapshot_interval",
             "task_history_retention_limit": "task_history_retention_limit",
@@ -427,12 +459,15 @@ class TaskParameters(DockerBaseClass):
             "ca_force_rotate": "ca_force_rotate",
             "autolock_managers": "autolock_managers",
             "log_driver": "log_driver",
+            "external_cas": "external_cas",
         }
         params = {}
         for dest, source in assign.items():
             if not client.option_minimal_versions[source]["supported"]:
                 continue
             value = getattr(self, source)
+            if value is None and old_parameters is not None:
+                value = getattr(old_parameters, source)
             if value is not None:
                 params[dest] = value
         self.spec = client.create_swarm_spec(**params)
@@ -489,6 +524,9 @@ class SwarmManager(DockerBaseClass):
         )
         self.force: bool = client.module.params["force"]
         self.node_id: str | None = client.module.params["node_id"]
+        self.keep_unspecified_options: bool = client.module.params[
+            "keep_unspecified_options"
+        ]
 
         self.differences = DifferenceTracker()
         self.parameters = TaskParameters.from_ansible_params(client)
@@ -593,7 +631,10 @@ class SwarmManager(DockerBaseClass):
                 self.results["changed"] = False
                 return
             update_parameters = TaskParameters.from_ansible_params(self.client)
-            update_parameters.update_parameters(self.client)
+            update_parameters.update_parameters(
+                self.client,
+                old_parameters if self.keep_unspecified_options else None,
+            )
             if not self.check_mode:
                 self.client.update_swarm(
                     version=version,
@@ -708,6 +749,7 @@ def main() -> None:
         "rotate_manager_token": {"type": "bool", "default": False},
         "default_addr_pool": {"type": "list", "elements": "str"},
         "subnet_size": {"type": "int"},
+        "keep_unspecified_options": {"type": "bool", "default": False},
     }
 
     required_if = [
@@ -722,6 +764,8 @@ def main() -> None:
         "ca_force_rotate": {"docker_py_version": "2.6.0", "docker_api_version": "1.30"},
         "autolock_managers": {"docker_py_version": "2.6.0"},
         "log_driver": {"docker_py_version": "2.6.0"},
+        "external_cas": {"docker_py_version": "2.6.0"},
+        "keep_unspecified_options": {"docker_py_version": "2.6.0"},
         "remove_operation": {
             "docker_py_version": "2.4.0",
             "detect_usage": _detect_remove_operation,
