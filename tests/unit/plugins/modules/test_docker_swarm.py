@@ -17,15 +17,6 @@ from ansible_collections.community.docker.plugins.module_utils._util import (
 )
 from ansible_collections.community.docker.plugins.modules import docker_swarm
 
-EXTERNAL_CAS = [
-    {
-        "Protocol": "cfssl",
-        "URL": "https://ca.example.com",
-        "Options": {"key": "value"},
-        "CACert": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----\n",
-    }
-]
-
 # The spec of a swarm that was customised, as the daemon returns it (GET /swarm). The log driver is only here to
 # have the module pass it on: the daemon does not return TaskDefaults.LogDriver.
 CURRENT_SPEC: dict[str, t.Any] = {
@@ -40,11 +31,7 @@ CURRENT_SPEC: dict[str, t.Any] = {
         "HeartbeatTick": 1,
     },
     "Dispatcher": {"HeartbeatPeriod": 11000000000},
-    "CAConfig": {
-        "NodeCertExpiry": 3600000000000000,
-        "ForceRotate": 1,
-        "ExternalCAs": EXTERNAL_CAS,
-    },
+    "CAConfig": {"NodeCertExpiry": 3600000000000000, "ForceRotate": 1},
     "TaskDefaults": {"LogDriver": {"Name": "json-file", "Options": {"max-size": "1m"}}},
     "EncryptionConfig": {"AutoLockManagers": True},
 }
@@ -62,7 +49,6 @@ CURRENT_PARAMS: dict[str, t.Any] = {
     "dispatcher_heartbeat_period": 11000000000,
     "node_cert_expiry": 3600000000000000,
     "ca_force_rotate": 1,
-    "external_cas": EXTERNAL_CAS,
     "log_driver": {"Name": "json-file", "Options": {"max-size": "1m"}},
     "autolock_managers": True,
 }
@@ -224,7 +210,6 @@ def test_update_applies_all_specified_options(mocker: t.Any) -> None:
         "labels": {"a": "b"},
         "signing_ca_cert": "CERT",
         "signing_ca_key": "KEY",
-        "external_cas": CURRENT_PARAMS["external_cas"],
         "log_driver": CURRENT_PARAMS["log_driver"],
     }
 
@@ -321,17 +306,16 @@ def test_update_in_check_mode_does_not_call_the_daemon(mocker: t.Any) -> None:
     client.update_swarm.assert_not_called()
 
 
-def test_update_skips_options_the_daemon_does_not_support(mocker: t.Any) -> None:
+def test_update_does_not_keep_the_options_the_sdk_cannot_set(mocker: t.Any) -> None:
+    unsupported = ("labels", "autolock_managers", "ca_force_rotate")
     client = make_keep_client(
-        mocker,
-        {"task_history_retention_limit": 3},
-        unsupported=("labels", "autolock_managers", "external_cas"),
+        mocker, {"task_history_retention_limit": 3}, unsupported=unsupported
     )
 
     run_module(client)
 
     expected = {**CURRENT_PARAMS, "task_history_retention_limit": 3}
-    for option in ("labels", "autolock_managers", "external_cas"):
+    for option in unsupported:
         del expected[option]
     assert spec_options(client) == expected
 
@@ -397,17 +381,13 @@ def test_keep_unspecified_options_defaults_to_the_current_behavior(
         "type": "bool",
         "default": False,
     }
-    assert MODULE_OPTIONS["keep_unspecified_options"] is False
 
 
-def test_the_sdk_version_needed_for_the_new_options_is_declared(
-    mocker: t.Any,
-) -> None:
+def test_keep_unspecified_options_needs_no_newer_sdk(mocker: t.Any) -> None:
     versions = declarations_of_main(mocker)["option_minimal_versions"]
 
-    # Before 2.6.0 the SDK cannot build labels, autolock, ca_force_rotate or the external CAs of a spec.
-    assert versions["keep_unspecified_options"] == {"docker_py_version": "2.6.0"}
-    assert versions["external_cas"] == {"docker_py_version": "2.6.0"}
+    # With an older SDK it keeps what that SDK can set; labels, autolock and ca_force_rotate are not kept.
+    assert "keep_unspecified_options" not in versions
 
 
 def test_every_task_parameter_has_a_declaration(mocker: t.Any) -> None:

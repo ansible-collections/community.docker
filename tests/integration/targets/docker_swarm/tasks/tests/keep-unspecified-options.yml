@@ -10,6 +10,7 @@
 ## keep_unspecified_options ########################################
 ####################################################################
 
+# labels and autolock_managers, which this test sets, need Docker SDK for Python 2.6.0. The option itself works with older versions.
 - when: docker_py_version is version('2.6.0', '>=')
   block:
     - name: Create a Swarm cluster
@@ -85,49 +86,30 @@
     - name: assert that only the options that were specified changed
       ansible.builtin.assert:
         that:
-          - 'output_1 is changed'
-          - 'output_1.swarm_facts.Spec.Orchestration.TaskHistoryRetentionLimit == 10'
-          - 'output_1.swarm_facts.Spec.Raft.SnapshotInterval == 12345'
-          - 'output_1.swarm_facts.Spec.EncryptionConfig.AutoLockManagers == true'
+          - output_1 is changed
+          - output_1.swarm_facts.Spec.Orchestration.TaskHistoryRetentionLimit == 10
+          - output_1.swarm_facts.Spec.Raft.SnapshotInterval == 12345
+          - output_1.swarm_facts.Spec.EncryptionConfig.AutoLockManagers == true
           - 'output_1.swarm_facts.Spec.Labels == {"kept": "label"}'
-          - 'output_2 is changed'
-          - 'output_2.actions[0] == "Swarm cluster updated"'
-          - 'output_3 is changed'
-          - 'output_3.actions[0] == "Swarm cluster updated"'
+          - output_2 is changed
+          - output_2.actions[0] == "Swarm cluster updated"
+          - output_3 is changed
+          - output_3.actions[0] == "Swarm cluster updated"
           - 'output_3.swarm_facts.Spec == output_1.swarm_facts.Spec | combine({"Orchestration": {"TaskHistoryRetentionLimit": 11}})'
-          - 'output_4 is not changed'
-          - 'output_4.actions[0] == "No modification"'
-          - 'output_4.swarm_facts.Spec == output_3.swarm_facts.Spec'
-          - 'output_5 is changed'
-          - 'output_5.swarm_facts.JoinTokens.Worker != output_4.swarm_facts.JoinTokens.Worker'
-          - 'output_5.swarm_facts.Spec == output_3.swarm_facts.Spec'
-          - 'output_6 is changed'
+          - output_4 is not changed
+          - output_4.actions[0] == "No modification"
+          - output_4.swarm_facts.Spec == output_3.swarm_facts.Spec
+          - output_5 is changed
+          - output_5.swarm_facts.JoinTokens.Worker != output_4.swarm_facts.JoinTokens.Worker
+          - output_5.swarm_facts.Spec == output_3.swarm_facts.Spec
+          - output_6 is changed
           - 'output_6.swarm_facts.Spec == output_3.swarm_facts.Spec | combine({"Raft": output_3.swarm_facts.Spec.Raft | combine({"KeepOldSnapshots": 0})})'
-          - 'output_7 is not changed'
-          - 'output_7.actions[0] == "No modification"'
+          - output_7 is not changed
+          - output_7.actions[0] == "No modification"
           # The default, false, resets the options that are not specified
-          - 'output_8 is changed'
-          - 'output_8.swarm_facts.Spec.Orchestration.TaskHistoryRetentionLimit == 12'
-          - 'output_8.swarm_facts.Spec.EncryptionConfig.AutoLockManagers == false'
-          - 'output_8.swarm_facts.Spec.Raft.SnapshotInterval | default(0) == 0'
-
-    # The module has no option for the external CAs of a swarm, but an update must not drop them
-    - name: Add an external CA to the swarm
-      ansible.builtin.command: docker swarm update --external-ca protocol=cfssl,url=https://ca.example.com
-
-    - name: Change a single option of a swarm that has an external CA
-      community.docker.docker_swarm:
-        state: present
-        keep_unspecified_options: true
-        task_history_retention_limit: 13
-      register: output_9
-
-    - name: assert that the external CA is still there
-      ansible.builtin.assert:
-        that:
-          - 'output_9 is changed'
-          - 'output_9.swarm_facts.Spec.Orchestration.TaskHistoryRetentionLimit == 13'
-          - 'output_9.swarm_facts.Spec.CAConfig.ExternalCAs | length == 1'
-          - 'output_9.swarm_facts.Spec.CAConfig.ExternalCAs[0].URL == "https://ca.example.com"'
+          - output_8 is changed
+          - output_8.swarm_facts.Spec.Orchestration.TaskHistoryRetentionLimit == 12
+          - output_8.swarm_facts.Spec.EncryptionConfig.AutoLockManagers == false
+          - output_8.swarm_facts.Spec.Raft.SnapshotInterval | default(0) == 0
 
 - ansible.builtin.include_tasks: cleanup.yml

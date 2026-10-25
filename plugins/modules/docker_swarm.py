@@ -207,8 +207,10 @@ options:
         or O(rotate_manager_token) is used. Options that are not specified are still ignored when the module checks whether
         the swarm has to be updated, so the next run reports no change and does not repair them.
       - If V(true), the module starts from the current specification of the swarm and changes only the options that are
-        specified, as C(docker swarm update) does. The signing CA certificate and key are an exception, since the daemon
-        never returns them. Using V(true) requires Docker SDK for Python 2.6.0 or newer.
+        specified, as C(docker swarm update) does. There are three exceptions. The signing CA certificate and key are not
+        kept, since the daemon never returns them. The external CAs of the swarm are not kept either, since the module has
+        no option for them. And with Docker SDK for Python older than 2.6.0, O(labels), O(autolock_managers) and
+        O(ca_force_rotate) are not kept, since that SDK cannot set them.
       - The current default will eventually be deprecated and change to V(true).
     type: bool
     default: false
@@ -371,7 +373,6 @@ class TaskParameters(DockerBaseClass):
         self.name: str | None = None
         self.labels: dict[str, t.Any] | None = None
         self.log_driver = None
-        self.external_cas: list[dict[str, t.Any]] | None = None
         self.signing_ca_cert: str | None = None
         self.signing_ca_key: str | None = None
         self.ca_force_rotate: int | None = None
@@ -399,9 +400,6 @@ class TaskParameters(DockerBaseClass):
             self.node_cert_expiry = ca_config.get("NodeCertExpiry")
         if self.ca_force_rotate is None:
             self.ca_force_rotate = ca_config.get("ForceRotate")
-        # There is no option for the external CAs: they are only carried over, so that an update does not drop them.
-        if self.external_cas is None:
-            self.external_cas = ca_config.get("ExternalCAs")
 
         dispatcher = spec.get("Dispatcher") or {}
         if self.dispatcher_heartbeat_period is None:
@@ -459,7 +457,6 @@ class TaskParameters(DockerBaseClass):
             "ca_force_rotate": "ca_force_rotate",
             "autolock_managers": "autolock_managers",
             "log_driver": "log_driver",
-            "external_cas": "external_cas",
         }
         params = {}
         for dest, source in assign.items():
@@ -764,8 +761,6 @@ def main() -> None:
         "ca_force_rotate": {"docker_py_version": "2.6.0", "docker_api_version": "1.30"},
         "autolock_managers": {"docker_py_version": "2.6.0"},
         "log_driver": {"docker_py_version": "2.6.0"},
-        "external_cas": {"docker_py_version": "2.6.0"},
-        "keep_unspecified_options": {"docker_py_version": "2.6.0"},
         "remove_operation": {
             "docker_py_version": "2.4.0",
             "detect_usage": _detect_remove_operation,
