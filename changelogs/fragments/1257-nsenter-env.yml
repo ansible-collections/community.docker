@@ -1,0 +1,2 @@
+minor_changes:
+  - "nsenter connection plugin - add the ``nsenter_env`` option to pass ``--env`` to ``nsenter``, so that commands run with the environment of the target process instead of the controller's environment (https://github.com/ansible-collections/community.docker/issues/1257)."
