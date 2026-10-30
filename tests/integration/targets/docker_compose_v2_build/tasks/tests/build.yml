@@ -1,0 +1,159 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- vars:
+    bname: "{{ name_prefix }}-build"
+    cname: "{{ name_prefix }}-cont"
+    non_existing_image: does-not-exist:latest
+    dockerfile_path: test-dockerfile
+    base_image: "{{ docker_test_image_hello_world }}"
+    image_name: "{{ name_prefix }}-image"
+    project_src: "{{ remote_tmp_dir }}/{{ bname }}"
+    test_service_non_existing: |
+      services:
+        {{ cname }}:
+          image: {{ non_existing_image }}
+          build:
+            dockerfile: Dockerfile-does-not-exist
+    test_service_simple: |
+      services:
+        {{ cname }}:
+          image: {{ image_name }}
+          build:
+            dockerfile: {{ dockerfile_path }}
+          command: 10m
+          stop_grace_period: 1s
+    test_service_simple_dockerfile: |
+      FROM {{ base_image }}
+      RUN [ "/hello" ]
+
+  block:
+    - name: Registering container name
+      set_fact:
+        cnames: "{{ cnames + [bname ~ '-' ~ cname ~ '-1'] }}"
+        inames: "{{ inames + [ base_image, image_name ] }}"
+        dnetworks: "{{ dnetworks + [bname ~ '_default'] }}"
+
+    - name: Create project directory
+      file:
+        path: '{{ project_src }}'
+        state: directory
+
+    - name: Make sure images are not around
+      docker_image_remove:
+        name: '{{ item }}'
+      loop:
+        - '{{ non_existing_image }}'
+        - '{{ image_name }}'
+
+    - name: Prune docker build cache
+      docker_prune:
+        builder_cache: true
+        builder_cache_all: true
+
+####################################################################
+## Image with missing dockerfile ###################################
+####################################################################
+
+    - name: Template project file with non-existing image
+      copy:
+        dest: '{{ project_src }}/docker-compose.yml'
+        content: '{{ test_service_non_existing }}'
+
+    - name: Build (check)
+      docker_compose_v2_build:
+        project_src: '{{ project_src }}'
+      check_mode: true
+      register: build_1_check
+      ignore_errors: true
+
+    - name: Build
+      docker_compose_v2_build:
+        project_src: '{{ project_src }}'
+      register: build_1
+      ignore_errors: true
+
+    - assert:
+        that:
+          - build_1_check is failed
+          - >-
+            build_1_check.msg | trim == "General error: failed to solve: failed to read dockerfile: open Dockerfile-does-not-exist: no such file or directory"
+          - build_1_check.warnings | default([]) | select('regex', 'Cannot parse event from ') | length == 0
+          - build_1 is failed
+          - >-
+            build_1.msg | trim == "General error: failed to solve: failed to read dockerfile: open Dockerfile-does-not-exist: no such file or directory"
+          - build_1.warnings | default([]) | select('regex', 'Cannot parse event from ') | length == 0
+
+####################################################################
+## Regular image ###################################################
+####################################################################
+
+    - name: Template project file with simple dockerfile
+      copy:
+        dest: '{{ project_src }}/docker-compose.yml'
+        content: '{{ test_service_simple }}'
+
+    - name: Template dockerfile
+      copy:
+        dest: '{{ project_src }}/{{ dockerfile_path }}'
+        content: '{{ test_service_simple_dockerfile }}'
+
+    - docker_image_info:
+        name: "{{ image_name }}"
+      register: pre_image
+
+    - name: Build (check)
+      docker_compose_v2_build:
+        project_src: '{{ project_src }}'
+      check_mode: true
+      register: build_1_check
+
+    - docker_image_info:
+        name: "{{ image_name }}"
+      register: build_1_check_image
+
+    - name: Build
+      docker_compose_v2_build:
+        project_src: '{{ project_src }}'
+      register: build_1
+
+    - docker_image_info:
+        name: "{{ image_name }}"
+      register: build_1_image
+
+    - name: Build (idempotent, check)
+      docker_compose_v2_build:
+        project_src: '{{ project_src }}'
+      check_mode: true
+      register: build_2_check
+
+    - docker_image_info:
+        name: "{{ image_name }}"
+      register: build_2_check_image
+
+    - name: Build (idempotent)
+      docker_compose_v2_build:
+        project_src: '{{ project_src }}'
+      register: build_2
+
+    - docker_image_info:
+        name: "{{ image_name }}"
+      register: build_2_image
+
+    - assert:
+        that:
+          - build_1_check is changed
+          - (build_1_check.actions | selectattr('status', 'eq', 'Building') | first) is truthy
+          - build_1_check.warnings | default([]) | select('regex', 'Cannot parse event from ') | length == 0
+          - build_1 is changed
+          - (build_1.actions | selectattr('status', 'eq', 'Building') | first) is truthy
+          - build_1.warnings | default([]) | select('regex', 'Cannot parse event from ') | length == 0
+
+          - build_2_check is not changed
+          - build_2_check.actions | selectattr('status', 'eq', 'Building') | length == 0
+          - build_2_check.warnings | default([]) | select('regex', 'Cannot parse event from ') | length == 0
+          - build_2 is not changed
+          - build_2.actions | selectattr('status', 'eq', 'Building') | length == 0
+          - build_2.warnings | default([]) | select('regex', 'Cannot parse event from ') | length == 0
