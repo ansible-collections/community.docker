@@ -51,26 +51,6 @@ resources:
 pool: Standard
 
 stages:
-  - stage: remote_2_19
-    displayName: Remote 2.19
-    dependsOn: []
-    variables:
-      entryPoint: tests/utils/shippable/nox.sh
-    jobs:
-      - template: templates/matrix.yml
-        parameters:
-          targets:
-            - name: Ubuntu 22.04 + group 1
-              test: ansible-test-integration-2.19-ubuntu-22.04-azp-1
-            - name: Ubuntu 22.04 + group 2
-              test: ansible-test-integration-2.19-ubuntu-22.04-azp-2
-            - name: Ubuntu 22.04 + group 3
-              test: ansible-test-integration-2.19-ubuntu-22.04-azp-3
-            - name: Ubuntu 22.04 + group 4
-              test: ansible-test-integration-2.19-ubuntu-22.04-azp-4
-            - name: Ubuntu 22.04 + group 5
-              test: ansible-test-integration-2.19-ubuntu-22.04-azp-5
-
   - stage: remote_2_20
     displayName: Remote 2.20
     dependsOn: []
@@ -104,7 +84,6 @@ stages:
   - stage: Summary
     condition: succeededOrFailed()
     dependsOn:
-      - remote_2_19
       - remote_2_20
     jobs:
       - template: templates/coverage.yml
