@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_compose_v2_run - ``interactive=false`` passed the non-existing ``--no-interactive`` flag to ``docker compose run``, so the task always failed; it now passes ``--interactive=false`` (https://github.com/ansible-collections/community.docker/issues/1324)."
