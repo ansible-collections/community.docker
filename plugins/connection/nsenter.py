@@ -32,6 +32,22 @@ options:
     ini:
       - section: nsenter_connection
         key: nsenter_pid
+  nsenter_env:
+    description:
+      - When set to V(true), passes C(--env) to C(nsenter), so that commands run with the environment of the target
+        process (see O(nsenter_pid)) instead of the environment of the Ansible controller.
+      - This avoids leaking controller environment variables such as E(PATH) or E(VIRTUAL_ENV) into the host.
+      - The C(--env) option requires C(nsenter) from util-linux 2.39 or newer. BusyBox C(nsenter) does not support it.
+    type: bool
+    default: false
+    version_added: 5.5.0
+    vars:
+      - name: ansible_nsenter_env
+    env:
+      - name: ANSIBLE_NSENTER_ENV
+    ini:
+      - section: nsenter_connection
+        key: nsenter_env
 notes:
   - The remote user is ignored; this plugin always runs as root.
   - "This plugin requires the Ansible controller container to be launched in the following way: (1) The container image contains
@@ -67,9 +83,11 @@ class Connection(ConnectionBase):
         super().__init__(*args, **kwargs)
         self.cwd = None
         self._nsenter_pid = None
+        self._nsenter_env = False
 
     def _connect(self) -> t.Self:
         self._nsenter_pid = self.get_option("nsenter_pid")
+        self._nsenter_env = self.get_option("nsenter_env")
 
         # Because nsenter requires very high privileges, our remote user
         # is always assumed to be root.
@@ -110,8 +128,10 @@ class Connection(ConnectionBase):
             "--uts",
             "--preserve-credentials",
             f"--target={self._nsenter_pid}",
-            "--",
         ]
+        if self._nsenter_env:
+            nsenter_cmd_parts.append("--env")
+        nsenter_cmd_parts.append("--")
 
         cmd_parts = nsenter_cmd_parts + [cmd]
         cmd_b = to_bytes(" ".join(cmd_parts))
