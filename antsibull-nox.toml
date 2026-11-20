@@ -267,7 +267,7 @@ description = "Meta session for running all ansible-test-integration-devel-* ses
 [[sessions.ansible_test_integration.groups.sessions]]
 ansible_core = "devel"
 target = [ "azp/4/", "azp/5/" ]
-docker = [ "fedora44", "ubuntu2404", "ubuntu2604", "alpine324" ]
+docker = [ "fedora45", "ubuntu2404", "ubuntu2604", "alpine324" ]
 
 [[sessions.ansible_test_integration.groups.sessions]]
 ansible_core = "devel"
