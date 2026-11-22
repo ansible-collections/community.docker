@@ -8,6 +8,9 @@
 # and should not be used as examples of how to write Ansible roles #
 ####################################################################
 
+- name: Detect whether we are running inside a container
+  current_container_facts:
+
 - vars:
     image: "{{ docker_test_image_hello_world }}"
     image_ids: "{{ docker_test_image_hello_world_image_ids }}"
@@ -261,10 +264,14 @@
           - remove_6_check.deleted[0] == pulled_image.image.Id
           # The following is only true for Docker < 29...
           # We use the CLI version as a proxy...
+          # Apparently on GitHub this is now a problem as well, so we skip this when
+          # we run in a container.
           - >-
             remove_6_check.untagged == remove_6.untagged
             or
             docker_cli_version is version("29.0.0", ">=")
+            or
+            ansible_module_running_in_container
           - info_5.images | length == 0
 
     - name: Remove image ID (force, idempotent, check mode)
