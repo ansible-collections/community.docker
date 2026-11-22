@@ -317,7 +317,7 @@ class ExecManager(BaseComposeManager):
         if self.entrypoint is not None:
             args.extend(["--entrypoint", self.entrypoint])
         if not self.interactive:
-            args.append("--no-interactive")
+            args.append("--interactive=false")
         if self.labels:
             for label in self.labels:
                 args.extend(["--label", label])

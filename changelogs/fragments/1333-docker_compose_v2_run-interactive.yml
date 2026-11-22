@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_compose_v2_run - make ``interactive=false`` work (https://github.com/ansible-collections/community.docker/issues/1324, https://github.com/ansible-collections/community.docker/pull/1333)."
