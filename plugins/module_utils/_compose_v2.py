@@ -201,7 +201,7 @@ _RE_PULL_PROGRESS = re.compile(
     r"\s+"
     f"(?P<status>{'|'.join(re.escape(status) for status in _DOCKER_PULL_PROGRESS_WD)})"
     r"\s*"
-    r"(?:|\s\[[^]]+\]\s+\S+\s*|\s+[0-9.kKmMgGbB]+/[0-9.kKmMgGbB]+\s*)"
+    r"(?:|\s\[[^]]+\]\s+\S+\s*|\s+[0-9.kKmMgGbB]+/[0-9.kKmMgGbB]+\s*|\s+[0-9.]\s*[smh]\s*)"
     r"$"
 )
 
