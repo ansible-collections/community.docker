@@ -168,11 +168,13 @@
           - present_5.actions[0] == ('Pulled image ' ~ image_name)
           - present_5.diff.before.id == present_3.diff.after.id
           - present_5.diff.after.id == present_1.diff.after.id
-      when: docker_cli_version is version("29.0.0", "<")
+      when: docker_cli_version is version("29.0.0", "<") and not ansible_module_running_in_container
       # From Docker 29 on, Docker won't pull images for other architectures
       # if there are better matching ones. The above tests assume it will
       # just do what it is told, and thus fail from 29.0.0 on.
       # https://github.com/ansible-collections/community.docker/pull/1199
+      # Apparently on GitHub this is now a problem as well, so we skip this when
+      # we run in a container.
 
   always:
     - name: cleanup
