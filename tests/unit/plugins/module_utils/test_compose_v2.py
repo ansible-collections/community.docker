@@ -350,6 +350,58 @@ EXTRA_TEST_CASES = [
         ],
         [],
     ),
+    (
+        # https://github.com/ansible-collections/community.docker/actions/runs/45047094406/job/137284050516
+        "2.23.3-gha",
+        "2.23.3",
+        False,
+        False,
+        " ansible-docker-test-d24d3c07-cont Pulling \n"
+        " a0f0e54018a1 Pulling fs layer \n"
+        " a0f0e54018a1 Download complete \n"
+        " a0f0e54018a1 Extracting 1 s\n"
+        " a0f0e54018a1 Pull complete \n"
+        " ansible-docker-test-d24d3c07-cont Pulled \n",
+        [
+            Event(
+                "service",
+                "ansible-docker-test-d24d3c07-cont",
+                "Pulling",
+                None,
+            ),
+            Event(
+                "image-layer",
+                "a0f0e54018a1",
+                "Pulling fs layer",
+                None,
+            ),
+            Event(
+                "image-layer",
+                "a0f0e54018a1",
+                "Download complete",
+                None,
+            ),
+            Event(
+                "image-layer",
+                "a0f0e54018a1",
+                "Extracting",
+                None,
+            ),
+            Event(
+                "image-layer",
+                "a0f0e54018a1",
+                "Pull complete",
+                None,
+            ),
+            Event(
+                "service",
+                "ansible-docker-test-d24d3c07-cont",
+                "Pulled",
+                None,
+            ),
+        ],
+        [],
+    ),
 ]
 
 _ALL_TEST_CASES = EVENT_TEST_CASES + EXTRA_TEST_CASES
