@@ -205,7 +205,7 @@
         name: "{{ nname_ipam_3 }}"
         driver: "macvlan"
         driver_options:
-          parent: "{{ ansible_facts.default_ipv4.alias }}"
+          parent: "{{ ansible_facts.default_ipv4.alias }}.50"
         ipam_config:
           - subnet: 10.26.120.0/24
           - subnet: 10.26.121.0/24
@@ -220,7 +220,7 @@
         name: "{{ nname_ipam_3 }}"
         driver: "macvlan"
         driver_options:
-          parent: "{{ ansible_facts.default_ipv4.alias }}"
+          parent: "{{ ansible_facts.default_ipv4.alias }}.50"
         ipam_config:
           - subnet: 10.26.121.0/24
           - subnet: 10.26.120.0/24
@@ -235,7 +235,7 @@
         name: "{{ nname_ipam_3 }}"
         driver: "macvlan"
         driver_options:
-          parent: "{{ ansible_facts.default_ipv4.alias }}"
+          parent: "{{ ansible_facts.default_ipv4.alias }}.50"
         ipam_config:
           - subnet: 10.26.120.0/24
           - subnet: 10.26.122.0/24
@@ -252,7 +252,7 @@
         name: "{{ nname_ipam_3 }}"
         driver: "macvlan"
         driver_options:
-          parent: "{{ ansible_facts.default_ipv4.alias }}"
+          parent: "{{ ansible_facts.default_ipv4.alias }}.50"
         ipam_config:
           - subnet: 10.26.122.0/24
       register: network
