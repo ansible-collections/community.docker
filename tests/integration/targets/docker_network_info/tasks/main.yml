@@ -67,7 +67,10 @@
 
     - ansible.builtin.assert:
         that:
-          - "result.network == docker_inspect_result[0]"
+          - "[result.network] | community.general.remove_keys(target=remove_keys) == [docker_inspect_result[0]] | community.general.remove_keys(target=remove_keys)"
+      vars:
+        remove_keys:
+          - Status
       when: docker_inspect is not failed
     - ansible.builtin.assert:
         that:

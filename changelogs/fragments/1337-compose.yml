@@ -1,0 +1,2 @@
+bugfixes:
+  - "docker_compose_v2_pull - handle more old-style status messages (https://github.com/ansible-collections/community.docker/pull/1337)."
