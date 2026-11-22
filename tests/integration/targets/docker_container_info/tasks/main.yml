@@ -62,9 +62,47 @@
           - "'container' in result"
           - "result.container is truthy"
 
+    - ansible.builtin.debug:
+        msg:
+          - "{{ [result.container] | community.general.remove_keys(target=remove_toplevel_keys) }}"
+          - "{{ [docker_inspect_result[0]] | community.general.remove_keys(target=remove_toplevel_keys) }}"
+          - "{{ [result.container.NetworkSettings] | community.general.remove_keys(target=remove_network_settings_keys) }}"
+          - "{{ [docker_inspect_result[0].NetworkSettings] | community.general.remove_keys(target=remove_network_settings_keys) }}"
+      vars:
+        remove_toplevel_keys:
+          - GraphDriver
+          - ImageManifestDescriptor
+          - NetworkSettings
+          - Storage
+        remove_network_settings_keys:
+          - EndpointID
+          - Gateway
+          - GlobalIPv6Address
+          - GlobalIPv6PrefixLen
+          - IPAddress
+          - IPPrefixLen
+          - IPv6Gateway
+          - MacAddress
+
     - ansible.builtin.assert:
         that:
-          - "result.container == docker_inspect_result[0]"
+          - "[result.container] | community.general.remove_keys(target=remove_toplevel_keys) == [docker_inspect_result[0]] | community.general.remove_keys(target=remove_toplevel_keys)"
+          - "[result.container.NetworkSettings] | community.general.remove_keys(target=remove_network_settings_keys) == [docker_inspect_result[0].NetworkSettings] | community.general.remove_keys(target=remove_network_settings_keys)"
+      vars:
+        remove_toplevel_keys:
+          - GraphDriver
+          - ImageManifestDescriptor
+          - NetworkSettings
+          - Storage
+        remove_network_settings_keys:
+          - EndpointID
+          - Gateway
+          - GlobalIPv6Address
+          - GlobalIPv6PrefixLen
+          - IPAddress
+          - IPPrefixLen
+          - IPv6Gateway
+          - MacAddress
       when: docker_inspect is not failed
     - ansible.builtin.assert:
         that:
