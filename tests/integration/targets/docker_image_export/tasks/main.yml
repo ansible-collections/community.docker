@@ -8,6 +8,9 @@
 # and should not be used as examples of how to write Ansible roles #
 ####################################################################
 
+- name: Detect whether we are running inside a container
+  current_container_facts:
+
 - when: ansible_facts.distribution ~ ansible_facts.distribution_major_version not in ['CentOS6', 'RedHat6']
   include_tasks:
     file: test.yml
