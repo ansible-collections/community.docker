@@ -74,6 +74,14 @@
             stdin: This is a test
           register: result_4
 
+        - name: Run command with interactive=false
+          community.docker.docker_compose_v2_run:
+            project_src: '{{ project_src }}'
+            service: '{{ cname }}'
+            command: /bin/sh -c "cat"
+            interactive: false
+          register: result_5
+
         - ansible.builtin.assert:
             that:
               - result_1.rc == 0
@@ -97,6 +105,10 @@
               - result_4.stdout == "This is a test"
               - result_4.stderr is string
               - result_4.container_id is not defined
+              - result_5.rc == 0
+              - result_5.stdout == ""
+              - result_5.stderr is string
+              - result_5.container_id is not defined
 
       always:
         - name: Cleanup
