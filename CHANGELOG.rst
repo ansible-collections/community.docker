@@ -4,6 +4,20 @@ Docker Community Collection Release Notes
 
 .. contents:: Topics
 
+v4.8.10
+=======
+
+Release Summary
+---------------
+
+Bugfix release.
+
+Bugfixes
+--------
+
+- docker_compose_v2_pull - handle more old-style status messages (https://github.com/ansible-collections/community.docker/pull/1337).
+- docker_compose_v2_run - make ``interactive=false`` work (https://github.com/ansible-collections/community.docker/issues/1324, https://github.com/ansible-collections/community.docker/pull/1333).
+
 v4.8.9
 ======
 
